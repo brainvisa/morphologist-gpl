@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+  <d name="fr" length="3">
+    <xhtml name="short"><img SRC="../../images/II_nobias.jpg" ALT=""/>
+<img SRC="../../images/II_hana.jpg" ALT=""/>
+<img SRC="../../images/II_brain.jpg" ALT=""/>
+<img SRC="../../images/II_voronoi.jpg" ALT=""/>
+<img SRC="../../images/II_hemi.jpg" ALT=""/>
+<img SRC="../../images/II_white.jpg" ALT=""/>
+<br/>Gestion centralisée des briques de validation</xhtml>
+    <xhtml name="long"/>
+    <d name="parameters" length="19">
+      <xhtml name="validation_brain_voronoi"/>
+      <xhtml name="mri_corrected"><img SRC="../../images/III_nobias.jpg" ALT=""/></xhtml>
+      <xhtml name="right_hemi_mesh"/>
+      <xhtml name="T1mri"><img SRC="../../images/III_T1mri.jpg" ALT=""/></xhtml>
+      <xhtml name="left_hemi_mesh"><img SRC="../../images/III_hemi.jpg" ALT=""/></xhtml>
+      <xhtml name="brain_voronoi"><img SRC="../../images/III_voronoi.jpg" ALT=""/></xhtml>
+      <xhtml name="validation_right_white_mesh"/>
+      <xhtml name="validation_brain_mask"/>
+      <xhtml name="brain_mask"><img SRC="../../images/III_brain.jpg" ALT=""/></xhtml>
+      <xhtml name="left_white_mesh"><img SRC="../../images/III_white.jpg" ALT=""/></xhtml>
+      <xhtml name="validation_left_white_mesh"/>
+      <xhtml name="validation_total"/>
+      <xhtml name="validation_left_hemi_mesh"/>
+      <xhtml name="validation_right_hemi_mesh"/>
+      <xhtml name="validation_mri_corrected"/>
+      <xhtml name="readme"/>
+      <xhtml name="right_white_mesh"/>
+      <xhtml name="validation_histo_analysis"/>
+      <xhtml name="histo_analysis"><img SRC="../../images/III_hana.jpg" ALT=""/></xhtml>
+    </d>
+  </d>
+  <d name="en" length="3">
+    <xhtml name="short"><img SRC="../../images/II_nobias.jpg" ALT=""/>
+<img SRC="../../images/II_hana.jpg" ALT=""/>
+<img SRC="../../images/II_brain.jpg" ALT=""/>
+<img SRC="../../images/II_voronoi.jpg" ALT=""/>
+<img SRC="../../images/II_hemi.jpg" ALT=""/>
+<img SRC="../../images/II_white.jpg" ALT=""/>
+<br/>Control panel of the validation processes</xhtml>
+    <xhtml name="long"/>
+    <d name="parameters" length="19">
+      <xhtml name="validation_brain_voronoi"/>
+      <xhtml name="mri_corrected"><img SRC="../../images/III_nobias.jpg" ALT=""/></xhtml>
+      <xhtml name="right_hemi_mesh"/>
+      <xhtml name="T1mri"><img SRC="../../images/III_T1mri.jpg" ALT=""/></xhtml>
+      <xhtml name="left_hemi_mesh"/>
+      <xhtml name="brain_voronoi"><img SRC="../../images/III_voronoi.jpg" ALT=""/></xhtml>
+      <xhtml name="validation_right_white_mesh"/>
+      <xhtml name="validation_brain_mask"/>
+      <xhtml name="brain_mask"><img SRC="../../images/III_brain.jpg" ALT=""/></xhtml>
+      <xhtml name="left_white_mesh"/>
+      <xhtml name="validation_left_white_mesh"/>
+      <xhtml name="validation_total"/>
+      <xhtml name="validation_left_hemi_mesh"/>
+      <xhtml name="validation_right_hemi_mesh"/>
+      <xhtml name="validation_mri_corrected"/>
+      <xhtml name="readme"/>
+      <xhtml name="right_white_mesh"/>
+      <xhtml name="validation_histo_analysis"/>
+      <xhtml name="histo_analysis"><img SRC="../../images/III_hana.jpg" ALT=""/></xhtml>
+    </d>
+  </d>
+</minf>

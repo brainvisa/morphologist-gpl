@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+  <d name="fr" length="3">
+    <xhtml name="short"><img SRC="../../images/II_voronoi.jpg" ALT=""/><br/>
+Segmente le masque du cerveau en trois parties : les hémisphères cérébraux et le reste (cervelet/tronc)</xhtml>
+    <xhtml name="long">
+Le principe de base de cette routine est décrit dans
+<a HREF="AnaSplitBrainFromBrainMask.html">Ana Split Brain From Brain Mask</a>.
+En outre elle est très bavarde pendant son exécution...<br/><br/>
+
+Pour plus d'information et une alternative à la procédure
+de morphologie mathématique:<br/>
+<em>Shape bottlenecks and Conservative Flow systems,</em>
+J.- F. Mangin, J. Regis and V. Frouin
+IEEE/SIAM MMBIA Workshop (Math. Methods in
+Biomed. Image Analysis), San Francisco, IEEE Press
+319-328, 1996<br/><br/>
+
+Vous pouvez également essayer:<br/>
+VipSplitBrain -help
+</xhtml>
+    <d name="parameters" length="13">
+      <xhtml name="white_algo"/>
+      <xhtml name="white_threshold">seuil définissant la matière blanche</xhtml>
+      <xhtml name="voronoi_template">un modèle de segmentation dans l'espace de Talairach</xhtml>
+      <xhtml name="initial_erosion">première érosion puis incrément de 0.5mm</xhtml>
+      <xhtml name="brain_voronoi"><img SRC="../../images/III_voronoi.jpg" ALT=""/>
+le résultat (une image à 3 couleurs)</xhtml>
+      <xhtml name="mri_corrected"><a HREF="vip_bias_correction.html"><img SRC="../../images/III_nobias.jpg" ALT=""/></a>
+MRI corrigée du biais</xhtml>
+      <xhtml name="Commissure_coordinates"/>
+      <xhtml name="mult_factor">seuil définissant la matière blanche: moyenne - mult_factor*sigma</xhtml>
+      <xhtml name="bary_factor">seuil définissant la matière blanche
+comme un barycentre des moyennes gris/blanc</xhtml>
+      <xhtml name="Use_template"/>
+      <xhtml name="histo_analysis"><a HREF="VipHistoAnalysis.html"><img SRC="../../images/III_hana.jpg" ALT=""/></a>
+statistiques sur les niveaux de gris</xhtml>
+      <xhtml name="brain_mask"><a HREF="AnaT1toBrainMask.html"><img SRC="../../images/III_brain.jpg" ALT=""/></a>
+un masque binaire</xhtml>
+      <xhtml name="cc_min_size">taille minimale d'une cc pour la sélection des graines</xhtml>
+    </d>
+  </d>
+  <d name="en" length="3">
+    <xhtml name="short"><img SRC="../../images/II_voronoi.jpg" ALT=""/><br/>
+Split the brain into three parts (hemispheres + cerebellum)
+</xhtml>
+    <d name="parameters" length="13">
+      <xhtml name="white_algo"/>
+      <xhtml name="white_threshold">direct input</xhtml>
+      <xhtml name="voronoi_template">segmentation model in Talairach space</xhtml>
+      <xhtml name="initial_erosion"/>
+      <xhtml name="brain_voronoi"><img SRC="../../images/III_voronoi.jpg" ALT=""/></xhtml>
+      <xhtml name="mri_corrected"><a HREF="vip_bias_correction.html"><img SRC="../../images/III_nobias.jpg" ALT=""/></a></xhtml>
+      <xhtml name="Commissure_coordinates"/>
+      <xhtml name="mult_factor">threshold for white matter: mean - mult_factor*sigma</xhtml>
+      <xhtml name="bary_factor">threshold for white matter as barycenter between grey and white</xhtml>
+      <xhtml name="Use_template"/>
+      <xhtml name="cc_min_size"/>
+      <xhtml name="brain_mask"><a HREF="AnaT1toBrainMask.html"><img SRC="../../images/III_brain.jpg" ALT=""/></a></xhtml>
+      <xhtml name="histo_analysis"><a HREF="VipHistoAnalysis.html"><img SRC="../../images/III_hana.jpg" ALT=""/></a>
+</xhtml>
+    </d>
+    <xhtml name="long">The basic principle of this procedure is described in
+<a HREF="AnaSplitBrainFromBrainMask.html">Ana Split Brain From Brain Mask</a>.
+Furthermore, a lot of information may be found in the log file.
+<br/><br/>
+
+For more information and to discover a funny alternative to the mathematical morphology
+based approach:
+<br/>
+<em><a href="/pdf/mangin-MMBIA96.pdf">Shape bottlenecks and Conservative Flow systems</a>,</em>
+J.- F. Mangin, J. Regis and V. Frouin
+IEEE/SIAM MMBIA Workshop (Math. Methods in
+Biomed. Image Analysis), San Francisco, IEEE Press
+319-328, 1996<br/><br/>
+
+You can also try the commandline:<br/>
+VipSplitBrain -help
+</xhtml>
+  </d>
+</minf>

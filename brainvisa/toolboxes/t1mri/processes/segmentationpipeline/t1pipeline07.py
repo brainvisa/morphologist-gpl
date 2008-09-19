@@ -1,0 +1,375 @@
+# Copyright CEA and IFR 49 (2000-2005)
+#
+#  This software and supporting documentation were developed by
+#      CEA/DSV/SHFJ and IFR 49
+#      4 place du General Leclerc
+#      91401 Orsay cedex
+#      France
+#
+# This software is governed by the CeCILL license version 2 under 
+# French law and abiding by the rules of distribution of free software.
+# You can  use, modify and/or redistribute the software under the 
+# terms of the CeCILL license version 2 as circulated by CEA, CNRS
+# and INRIA at the following URL "http://www.cecill.info". 
+# 
+# As a counterpart to the access to the source code and  rights to copy,
+# modify and redistribute granted by the license, users are provided only
+# with a limited warranty  and the software's author,  the holder of the
+# economic rights,  and the successive licensors  have only  limited
+# liability. 
+# 
+# In this respect, the user's attention is drawn to the risks associated
+# with loading,  using,  modifying and/or developing or reproducing the
+# software by the user in light of its specific status of free software,
+# that may mean  that it is complicated to manipulate,  and  that  also
+# therefore means  that it is reserved for developers  and  experienced
+# professionals having in-depth computer knowledge. Users are therefore
+# encouraged to load and test the software's suitability as regards their
+# requirements in conditions enabling the security of their systems and/or 
+# data to be ensured and,  more generally, to use and operate it in the 
+# same conditions as regards security. 
+# 
+# The fact that you are presently reading this means that you have had
+# knowledge of the CeCILL license version 2 and that you accept its terms.
+
+from neuroProcesses import *
+import shfjGlobals     
+
+name = 'T1 Pipeline 2007'
+userLevel = 0
+
+signature = Signature(
+  'mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.vipVolumeFormats ),
+  'mri_corrected', WriteDiskItem( "T1 MRI Bias Corrected", 'GIS Image' ),
+  'Normalised',Choice('No','MNI from SPM','MNI from Mritotal',
+      'Marseille from SPM'),
+  'Anterior_Commissure', Point3D(),
+  'Posterior_Commissure', Point3D(),
+  'Interhemispheric_Point', Point3D(),
+  'Left_Hemisphere_Point', Point3D(),
+  )
+
+
+def initialization( self ):
+  eNode = SerialExecutionNode( self.name, parameterized=self )
+
+  eNode.addChild( 'PrepareSubject',
+                  ProcessExecutionNode( 'preparesubject', optional = 1 ) )
+
+
+  eNode.addChild( 'BiasCorrection',
+                  ProcessExecutionNode( 'T1BiasCorrectionGeneral',
+                                        optional = 1 ) )
+
+  eNode.addChild( 'HistoAnalysis',
+                   ProcessExecutionNode( 'HistoAnalysisGeneral',
+                                         optional = 1 ) )
+
+  eNode.addChild( 'BrainSegmentation',
+                   ProcessExecutionNode( 'BrainSegmentationGeneral',
+                                         optional = 1 ) )
+
+  eNode.addChild( 'SplitBrain',
+                   ProcessExecutionNode( 'SplitBrainGeneral', optional = 1 ) )
+
+  eNode.addChild( 'TalairachTransformation',
+                   ProcessExecutionNode( 'TalairachTransformation',
+                                         optional = 1 ) )
+
+  eNode.addChild( 'GreyWhiteInterface',
+                   ProcessExecutionNode( 'GreyWhiteInterfaceGeneral',
+                                         optional = 1 ) )
+
+  eNode.addChild( 'HemispheresMesh',
+                  ProcessExecutionNode( 'AnaGetOpenedHemiSurface',
+                                        optional = 1 ) )
+
+  eNode.addChild( 'HeadMesh', ProcessExecutionNode( 'headMesh',
+                                                    optional = 1 ) )
+
+  eNode.addChild( 'CorticalFoldsGraph',
+                  ProcessExecutionNode( 'CorticalFoldsGraphGeneral',
+                                        optional = 1 ) )
+
+
+  reco = getProcess( 'recognition' )
+  if reco:
+    # these recognition processes are part of the sulci toolbox and are
+    # not necessarily present.
+    eNode2 = ProcessExecutionNode( 'recognition', optional = 1 )
+    eNode3 = ProcessExecutionNode( 'recognition', optional = 1 )
+    eNode1 = ParallelExecutionNode( 'SulciRecognition', optional = 1, selected=0  )
+    eNode1.addChild( 'LeftSulciRecognition', eNode2 )
+    eNode1.addChild( 'RightSulciRecognition', eNode3 )
+    eNode.addChild( 'SulciRecognition', eNode1 )
+
+  # links
+
+  eNode.addLink( 'PrepareSubject.T1mri', 'mri' )
+  eNode.addLink( 'mri', 'PrepareSubject.T1mri' )
+
+  eNode.addLink( 'PrepareSubject.Normalised', 'Normalised' )
+  eNode.addLink( 'Normalised', 'PrepareSubject.Normalised' )
+  eNode.addLink( 'PrepareSubject.Anterior_Commissure', 'Anterior_Commissure' )
+  eNode.addLink( 'Anterior_Commissure', 'PrepareSubject.Anterior_Commissure' )
+  eNode.addLink( 'PrepareSubject.Posterior_Commissure',
+    'Posterior_Commissure' )
+  eNode.addLink( 'Posterior_Commissure',
+    'PrepareSubject.Posterior_Commissure' )
+  eNode.addLink( 'PrepareSubject.Interhemispheric_Point',
+    'Interhemispheric_Point' )
+  eNode.addLink( 'Interhemispheric_Point',
+    'PrepareSubject.Interhemispheric_Point' )
+  eNode.addLink( 'PrepareSubject.Left_Hemisphere_Point',
+    'Left_Hemisphere_Point' )
+  eNode.addLink( 'Left_Hemisphere_Point',
+    'PrepareSubject.Left_Hemisphere_Point' )
+  self.setOptional( 'Normalised' )
+  self.setOptional( 'Anterior_Commissure' )
+  self.setOptional( 'Posterior_Commissure' )
+  self.setOptional( 'Interhemispheric_Point' )
+  self.setOptional( 'Left_Hemisphere_Point' )
+
+  self.signature[ 'Anterior_Commissure' ].add3DLink( self, 'mri' )
+  self.signature[ 'Posterior_Commissure' ].add3DLink( self, 'mri' )
+  self.signature[ 'Interhemispheric_Point' ].add3DLink( self, 'mri' )
+  self.signature[ 'Left_Hemisphere_Point' ].add3DLink( self, 'mri' )
+
+
+
+  #eNode.BiasCorrection.removeLink( 'mri_corrected', 'mri' )
+  eNode.addLink( 'BiasCorrection.mri', 'mri' )
+  eNode.addLink( 'mri', 'BiasCorrection.mri' )
+  eNode.addLink( 'BiasCorrection.mri_corrected', 'mri_corrected' )
+  eNode.addLink( 'mri_corrected', 'BiasCorrection.mri_corrected' )
+
+
+  eNode.HistoAnalysis.removeLink( 'hfiltered', 'mri_corrected' )
+  eNode.HistoAnalysis.removeLink( 'white_ridges', 'mri_corrected' )
+
+  eNode.addLink( 'HistoAnalysis.mri_corrected',
+                 'BiasCorrection.mri_corrected' )
+  eNode.addLink( 'BiasCorrection.mri_corrected',
+                 'HistoAnalysis.mri_corrected' )
+
+  eNode.addLink( 'HistoAnalysis.hfiltered', 'BiasCorrection.hfiltered' )
+  eNode.addLink( 'HistoAnalysis.white_ridges', 'BiasCorrection.white_ridges' )
+
+
+  eNode.BrainSegmentation.removeLink( 'histo_analysis', 'mri_corrected' )
+  eNode.BrainSegmentation.removeLink( 'Commissure_coordinates',
+                                      'mri_corrected' )
+  eNode.BrainSegmentation.removeLink( 'white_ridges', 'mri_corrected' )
+
+  eNode.addLink( 'BrainSegmentation.mri_corrected',
+                 'BiasCorrection.mri_corrected' )
+  eNode.addLink( 'BiasCorrection.mri_corrected',
+                 'BrainSegmentation.mri_corrected' )
+
+  eNode.addLink( 'BrainSegmentation.histo_analysis',
+                 'HistoAnalysis.histo_analysis' )
+  eNode.addLink( 'HistoAnalysis.histo_analysis',
+                 'BrainSegmentation.histo_analysis' )
+
+  eNode.addLink( 'BrainSegmentation.Commissure_coordinates',
+                 'PrepareSubject.Commissure_coordinates' )
+  eNode.addLink( 'PrepareSubject.Commissure_coordinates',
+                 'BrainSegmentation.Commissure_coordinates' )
+
+  eNode.addLink( 'BrainSegmentation.white_ridges',
+                 'BiasCorrection.white_ridges' )
+  eNode.addLink( 'BiasCorrection.white_ridges',
+                 'BrainSegmentation.white_ridges' )
+
+
+  eNode.SplitBrain.removeLink( 'histo_analysis', 'mri_corrected' )
+  eNode.SplitBrain.removeLink( 'brain_mask', 'mri_corrected' )
+  eNode.SplitBrain.removeLink( 'commissure_coordinates', 'mri_corrected' )
+  eNode.SplitBrain.removeLink( 'white_ridges', 'mri_corrected' )
+
+  eNode.addLink( 'SplitBrain.mri_corrected',
+                 'BiasCorrection.mri_corrected' )
+  eNode.addLink( 'BiasCorrection.mri_corrected',
+                 'SplitBrain.mri_corrected' )
+
+  eNode.addLink( 'SplitBrain.histo_analysis',
+                 'HistoAnalysis.histo_analysis' )
+  eNode.addLink( 'HistoAnalysis.histo_analysis',
+                 'SplitBrain.histo_analysis' )
+
+  eNode.addLink( 'SplitBrain.brain_mask',
+                 'BrainSegmentation.brain_mask' )
+  eNode.addLink( 'BrainSegmentation.brain_mask',
+                 'SplitBrain.brain_mask' )
+
+  eNode.addLink( 'SplitBrain.commissure_coordinates',
+                 'PrepareSubject.Commissure_coordinates' )
+  eNode.addLink( 'PrepareSubject.Commissure_coordinates',
+                 'SplitBrain.commissure_coordinates' )
+
+##  eNode.addLink( 'SplitBrain.use_ridges',
+##                 'BiasCorrection.write_wridges' )
+##  eNode.addLink( 'BiasCorrection.write_wridges',
+##                 'SplitBrain.use_ridges' )
+
+  eNode.addLink( 'SplitBrain.white_ridges',
+                 'BiasCorrection.white_ridges' )
+  eNode.addLink( 'BiasCorrection.white_ridges',
+                 'SplitBrain.white_ridges' )
+
+
+  eNode.TalairachTransformation.removeLink( 'Commissure_coordinates',
+                                            'split_mask' )
+
+  eNode.addLink( 'TalairachTransformation.split_mask',
+                 'SplitBrain.split_mask' )
+  eNode.addLink( 'SplitBrain.split_mask',
+                 'TalairachTransformation.split_mask' )
+
+  eNode.addLink( 'TalairachTransformation.Commissure_coordinates',
+                 'PrepareSubject.Commissure_coordinates' )
+  eNode.addLink( 'PrepareSubject.Commissure_coordinates',
+                 'TalairachTransformation.Commissure_coordinates' )
+
+
+  eNode.GreyWhiteInterface.removeLink( 'histo_analysis', 'mri_corrected' )
+  eNode.GreyWhiteInterface.removeLink( 'split_mask', 'mri_corrected' )
+  eNode.GreyWhiteInterface.removeLink( 'white_ridges', 'mri_corrected' )
+
+  eNode.addLink( 'GreyWhiteInterface.mri_corrected',
+                 'BiasCorrection.mri_corrected' )
+  eNode.addLink( 'BiasCorrection.mri_corrected',
+                 'GreyWhiteInterface.mri_corrected' )
+
+  eNode.addLink( 'GreyWhiteInterface.histo_analysis',
+                 'HistoAnalysis.histo_analysis' )
+  eNode.addLink( 'HistoAnalysis.histo_analysis',
+                 'GreyWhiteInterface.histo_analysis' )
+
+  eNode.addLink( 'GreyWhiteInterface.split_mask',
+                 'SplitBrain.split_mask' )
+  eNode.addLink( 'SplitBrain.split_mask',
+                 'GreyWhiteInterface.split_mask' )
+
+##  eNode.addLink( 'SplitBrain.use_ridges',
+##                 'BiasCorrection.write_wridges' )
+##  eNode.addLink( 'BiasCorrection.write_wridges',
+##                 'SplitBrain.use_ridges' )
+
+  eNode.addLink( 'GreyWhiteInterface.white_ridges',
+                 'BiasCorrection.white_ridges' )
+  eNode.addLink( 'BiasCorrection.white_ridges',
+                 'GreyWhiteInterface.white_ridges' )
+
+
+  eNode.HemispheresMesh.removeLink( 'histo_analysis', 'mri_corrected' )
+  eNode.HemispheresMesh.removeLink( 'brain_voronoi', 'mri_corrected' )
+
+  eNode.addLink( 'HemispheresMesh.mri_corrected',
+                 'BiasCorrection.mri_corrected' )
+  eNode.addLink( 'BiasCorrection.mri_corrected',
+                 'HemispheresMesh.mri_corrected' )
+
+  eNode.addLink( 'HemispheresMesh.histo_analysis',
+                 'HistoAnalysis.histo_analysis' )
+  eNode.addLink( 'HistoAnalysis.histo_analysis',
+                 'HemispheresMesh.histo_analysis' )
+
+  eNode.addLink( 'HemispheresMesh.brain_voronoi',
+                 'SplitBrain.split_mask' )
+  eNode.addLink( 'SplitBrain.split_mask',
+                 'HemispheresMesh.brain_voronoi' )
+
+
+  eNode.HeadMesh.removeLink( 'histo_analysis', 'mri_corrected' )
+
+  eNode.addLink( 'HeadMesh.mri_corrected',
+                 'BiasCorrection.mri_corrected' )
+  eNode.addLink( 'BiasCorrection.mri_corrected',
+                 'HeadMesh.mri_corrected' )
+
+  eNode.addLink( 'HeadMesh.histo_analysis',
+                 'HistoAnalysis.histo_analysis' )
+  eNode.addLink( 'HistoAnalysis.histo_analysis',
+                 'HeadMesh.histo_analysis' )
+
+
+  eNode.CorticalFoldsGraph.removeLink( 'split_mask', 'mri_corrected' )
+  eNode.CorticalFoldsGraph.removeLink( 'commissure_coordinates',
+                                       'mri_corrected' )
+  eNode.CorticalFoldsGraph.removeLink( 'Talairach_transform', 'mri_corrected' )
+  eNode.CorticalFoldsGraph.CorticalFoldsGraph05.LeftCorticalFoldsGraph05.clearLinksTo( \
+    'hemi_cortex' )
+  eNode.CorticalFoldsGraph.CorticalFoldsGraph05.RightCorticalFoldsGraph05.clearLinksTo( \
+    'hemi_cortex' )
+  eNode.CorticalFoldsGraph.CorticalFoldsGraph04.clearLinksTo( 'histo_analysis' )
+  eNode.CorticalFoldsGraph.CorticalFoldsGraph04.clearLinksTo( \
+    'left_hemi_cortex' )
+  eNode.CorticalFoldsGraph.CorticalFoldsGraph04.clearLinksTo( \
+    'right_hemi_cortex' )
+
+  eNode.addLink( 'CorticalFoldsGraph.mri_corrected',
+                 'BiasCorrection.mri_corrected' )
+  eNode.addLink( 'BiasCorrection.mri_corrected', 
+                 'CorticalFoldsGraph.mri_corrected' )
+
+  eNode.addLink( 'CorticalFoldsGraph.split_mask',
+                 'SplitBrain.split_mask' )
+  eNode.addLink( 'SplitBrain.split_mask', 
+                 'CorticalFoldsGraph.split_mask' )
+
+  eNode.addLink( 'CorticalFoldsGraph.commissure_coordinates',
+                 'PrepareSubject.Commissure_coordinates' )
+  eNode.addLink( 'PrepareSubject.Commissure_coordinates', 
+                 'CorticalFoldsGraph.commissure_coordinates' )
+
+  eNode.addLink( 'CorticalFoldsGraph.Talairach_transform',
+                 'TalairachTransformation.Talairach_transform' )
+  eNode.addLink( 'TalairachTransformation.Talairach_transform', 
+                 'CorticalFoldsGraph.Talairach_transform' )
+
+  eNode.addLink( 'CorticalFoldsGraph.CorticalFoldsGraph05.LeftCorticalFoldsGraph05.hemi_cortex',
+                 'HemispheresMesh.left_hemi_cortex' )
+  eNode.addLink( 'HemispheresMesh.left_hemi_cortex', 
+                 'CorticalFoldsGraph.CorticalFoldsGraph05.LeftCorticalFoldsGraph05.hemi_cortex' )
+
+  eNode.addLink( 'CorticalFoldsGraph.CorticalFoldsGraph05.RightCorticalFoldsGraph05.hemi_cortex',
+                 'HemispheresMesh.right_hemi_cortex' )
+  eNode.addLink( 'HemispheresMesh.right_hemi_cortex', 
+                 'CorticalFoldsGraph.CorticalFoldsGraph05.RightCorticalFoldsGraph05.hemi_cortex' )
+
+  eNode.addLink( 'CorticalFoldsGraph.CorticalFoldsGraph04.histo_analysis', 'HistoAnalysis.histo_analysis' )
+  eNode.addLink( 'HistoAnalysis.histo_analysis', 'CorticalFoldsGraph.CorticalFoldsGraph04.histo_analysis' )
+  
+  eNode.addLink( \
+    'CorticalFoldsGraph.CorticalFoldsGraph04.left_hemi_cortex',
+    'HemispheresMesh.left_hemi_cortex' )
+  eNode.addLink( \
+    'HemispheresMesh.left_hemi_cortex', 
+    'CorticalFoldsGraph.CorticalFoldsGraph04.left_hemi_cortex' )
+
+  eNode.addLink( \
+    'CorticalFoldsGraph.CorticalFoldsGraph04.right_hemi_cortex',
+    'HemispheresMesh.right_hemi_cortex' )
+  eNode.addLink( \
+    'HemispheresMesh.right_hemi_cortex', 
+    'CorticalFoldsGraph.CorticalFoldsGraph04.right_hemi_cortex' )
+
+
+  if reco:
+    eNode.addLink( 'SulciRecognition.LeftSulciRecognition.data_graph',
+                  'CorticalFoldsGraph.left_graph' )
+    eNode.addLink( 'CorticalFoldsGraph.left_graph',
+                  'SulciRecognition.LeftSulciRecognition.data_graph' )
+  
+    eNode.addLink( 'SulciRecognition.RightSulciRecognition.data_graph',
+                  'CorticalFoldsGraph.right_graph' )
+    eNode.addLink( 'CorticalFoldsGraph.right_graph',
+                  'SulciRecognition.RightSulciRecognition.data_graph' )
+
+
+    eNode.CorticalFoldsGraph.CorticalFoldsGraph05.LeftCorticalFoldsGraph05.side = 'Left'
+    eNode.CorticalFoldsGraph.CorticalFoldsGraph05.RightCorticalFoldsGraph05.side = 'Right'
+
+  self.setExecutionNode( eNode )
+

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+  <d name="fr" length="3">
+    <xhtml name="short"><img SRC="../../images/II_cortex.jpg" ALT=""/><br/>
+Fusionne la détection de l'interface gris/blanc avec l'IRM</xhtml>
+    <xhtml name="long"/>
+    <d name="parameters" length="2">
+      <xhtml name="mri_corrected"><img SRC="../../images/III_nobias.jpg" ALT=""/></xhtml>
+      <xhtml name="snake"><img SRC="../../images/III_cortex.jpg" ALT=""/></xhtml>
+    </d>
+  </d>
+</minf>

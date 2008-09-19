@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+  <d name="fr" length="3">
+    <xhtml name="short">Guide pour la correction d'une erreur de <a HREF="AnaT1toBrainMask.html">Ana Brain Mask From T1 MRI</a></xhtml>
+    <d name="parameters" length="11">
+      <xhtml name="first_slice">Nombre de coupes à effacer au début</xhtml>
+      <xhtml name="lesion_mask"/>
+      <xhtml name="help">Différentes visualisations auxiliaires</xhtml>
+      <xhtml name="mri_corrected">L'image précédente corrigée du biais</xhtml>
+      <xhtml name="variant">Une variante de la procédure <a HREF="VipGetBrain.html">Vip Get Brain</a></xhtml>
+      <xhtml name="Commissure_coordinates"/>
+      <xhtml name="mri"/>
+      <xhtml name="readme"/>
+      <xhtml name="last_slice">Nombre de coupes à effacer à la fin</xhtml>
+      <xhtml name="brain_mask">Un masque binaire du cerveau</xhtml>
+      <xhtml name="histo_analysis">Statistiques sur les matières grises et blanches (fichier texte)</xhtml>
+    </d>
+    <xhtml name="long">Pour une raison ou pour une autre, la procédure 
+<a HREF="AnaT1toBrainMask.html">Brain Mask From T1 MRI</a>
+ a échoué sur une de vos images.
+Avec un peu de chance, votre problème est répertorié dans ce qui suit,
+auquel cas vous devriez disposer d'une solution simple qui consistera à varier
+certains des paramètres pilotant le processus d'érosion. Des variantes utiles sont
+accessibles directement dans le menu <em>variant</em> de cette procédure.
+Une visualisation du résultat dans Anatomist est obtenue si vous sélectionnez
+<em>Mask visualization</em> dans le menu <em>help</em>. <br/><br/>
+
+Si rien ne marche, vous pourrez
+réaliser certaines corrections en dessinant dans Anatomist: 
+<a HREF="AnaLabelVolumeEditor.html"> Label volume editor</a> (vous pouvez d'ailleurs utiliser un racourci vers ce traitement sous forme d'icone).<br/><br/>
+
+Si vous n'avez pas
+beaucoup de recul sur le processus mis en oeuvre pour extraire le masque
+du cerveau, essayez les variantes une à une jusqu'à obtenir satisfaction.
+Vous pouvez sélectionner la bonne variante en vous appuyant sur les exemples de problèmes
+qui suivent, classés par fréquence d'occurence.
+Si aucune variante ne vous satisfait vraiment, vous pourrez soit choisir
+la moins mauvaise, soit essayer d'accéder directement aux paramètres de la
+procédure. Les plus importants sont ajustables dans brainVISA à travers
+la brique <a HREF="VipGetBrain.html">Vip Get Brain</a>, les autres
+sont accessibles dans la commande en ligne (VipGetBrain -help).
+Il devrait également être possible de corriger les problèmes directement
+à la main avec le module de dessin d'Anatomist, mais la documentation
+reste à développer...<br/><br/>
+
+<hr/>
+<h1>Structures extra-cérébrales</h1>
+
+Le masque contient des structures situées en dehors du cerveau:<br/><br/>
+<img SRC="../../images/brain+peau.jpg" ALT=""/>
+<img SRC="../../images/brain+peauSag.jpg" ALT=""/><br/><br/>
+<em>Verdict  : </em>le processus d'érosion sensé casser les connections
+entre le cerveau et l'extérieur (nerfs optiques, etc...) n'a pas été suffisamment important.
+Il s'agit d'un échec de la procédure visant à l'ajuster automatiquement. En général,
+les structures extracérébrales se situent sous le cervelet et le lobe temporal.
+Si seul le cervelet est en cause, vous pouvez en rester là dans la mesure ou la
+suite du pipeline vise à éliminer le cervelet. Si les hémisphères ont des excroissances,
+vous pourrez les éliminer à partir d'une des variantes permettant d'imposer la taille de l'érosion,
+en cherchant à minimiser cette taille.
+En cas de succès, vérifiez qu'une érosion trop importante n'a pas fait disparaître certains gyri.<br/><br/>
+
+Si les choix précédents ne vous ont pas satisfaits, il est possible que votre problème provienne
+d'un artefact de l'acquisition qui fait quasiment disparaître le liserai noir correspondant au crâne
+à certains endroits :<br/><br/>
+<img SRC="../../images/artefact-crane.jpg" ALT=""/><br/><br/>
+Auquel cas, la binarisation initiale qui essaie normalement de boucher les petites
+cavités résultant du bruit d'acquisition dans le cerveau doit être effectuée plus prudemment.
+En temps normal, ce traitement cherche à protéger les circonvolutions qui risquent d'être effacées par des 
+érosions parasites venant de ces cavités. Si malheureusement, le liserai correspondant
+au crâne a été en partie effacé, le processus d'erosion ne peux plus séparer le cerveau
+des tissus externes. Essayez les choix suivant :
+<h3>"Standard/Robust ... without regularisation"</h3>
+
+
+Une autre source d'erreur est liée au repliement fréquemment observé dans les premières
+et les dernières coupes de l'image (répétition de l'image en miroir, différences d'intensité, etc...).
+Ce type de problème peut engendrer un disfonctionnement complet de la procédure.
+Une solution "miracle" consiste à effacer les premières et les dernières coupes.
+Vous pouvez réessayer les différents choix ci-dessus en effaçant plus ou moins de coupes
+à l'aide des paramètres <em> first_slice</em> et <em>last_slice</em>. Vous pouvez même réessayer
+la procédure standard :<br/>
+<h3>"Standard (iterative erosion from 2mm)"</h3>
+
+<hr/>
+<h1>Structures cérébrales érodées</h1>
+
+Vous avez perdu quelques gyri en route... <br/>
+<img SRC="../../images/brain_eroded1.jpg" ALT=""/>
+<img SRC="../../images/brain_eroded2.jpg" ALT=""/><br/><br/>
+ce sont des choses
+qui arrivent.  Si l'effet est trop important, essayez la variante de la procédure standard qui démarre avec
+une érosion de 1.5mm seulement:
+<h3>"Standard/Robust (iterative or fixed erosion from 1.5mm)"</h3>
+Si ca ne suffit pas, voici quelques
+conseils à appliquer avec le traitement "Vip Get Brain" ou la commande ligne VipGetBrain.
+<ol>
+<li> Essayez de diminuer la taille de l'érosion (en particulier en cas d'atrophie);</li>
+<li> Vérifiez que les résultats de l'analyse d'histogramme sont corrects. En désespoir de cause,
+diminuez manuellement la moyenne du gris, ou augmentez son écart type;</li>
+<li> Augmentez le nombre d'itérations de la régularisation.</li>
+</ol>
+Ne soyez pas trop maniaques, ces morceaux de gyri peuvent être négligés dans
+la plupart des applications.
+
+<hr/>
+<h1>Résultats bizarres</h1>
+
+La multitude d'ajouts permettant d'obtenir de bon résultats avec une grande variété d'images
+conduit parfois à des surprises. Par exemple, avec les procédures "Robust...", il arrive qu'une partie de la matière blanche
+du corps calleux et du tronc cérébral disparaisse:
+<img SRC="../../images/while_matter_eroded1.jpg" ALT=""/><br/><br/>
+La meilleure solution est alors de se rabattre sur une variante plus simple
+de la procédure:<br/>
+<h3>"Fast (2mm erosion)"</h3>
+<h3>"Fast (2.5mm erosion)"</h3>
+<h3>"Fast (3mm erosion)"</h3>
+
+<hr/>
+
+<h1>Echec de l'analyse d'histogramme</h1>
+
+Pour réaliser la binarisation initiale, c'est-à-dire une image noir et blanc qui indique les plages
+de tissu susceptibles d'appartenir au cerveau, une analyse automatique de l'histogramme
+est effectuée. Cette analyse recherche les deux bosses qui correspondent à la matière
+grise et à la matière blanche (<a HREF="VipHistoAnalysis.html">Vip Histogram Analysis</a>). Cette analyse est réussie si deux lignes bleu clair
+émergent du sommet de ces deux bosses comme dans l'exemple qui suit :<br/><br/>
+<img SRC="../../images/HistoAnalysis.jpg" ALT=""/><br/><br/>
+Vous pouvez accéder à cette visualisation en choisissant:<br/>
+<h3>histogram analysis visualization</h3>
+dans le menu <em>Help</em> (vous pouvez désactiver le processus
+de segmentation en choisissant  <em>Nothing</em> dans le menu <em>variant</em>).
+Malheureusement, pour l'instant, cette visualisation bloque la brique
+de traitement, utilisez la avec parcimonie...<br/><br/>
+
+Si votre analyse d'histogramme n'est pas similaire à l'exemple
+(d'autres exemples <a HREF="VipHistoAnalysis.html#examples">ici</a>),
+il est probable que la procédure de correction de biais
+qui précède cette analyse n'a pas atteint son objectif (cf ci-dessous), ou que votre image
+brute n'a pas un contraste gris/blanc suffisant.<br/><br/>
+En cas de désespoir profond, vous pouvez effectuer cette analyse manuellement
+en modifiant le fichier qui résulte de l'analyse automatique et qui sera
+utilisé par les procédure suivantes. Ce fichier, qui est doté de l'extension .han,
+peut être édité avec un éditeur de texte quelconque (textedit,nedit,xemacs,vi,etc...).
+Si votre machine est dotée de nedit, vous pouvez accéder au fichier *.han (situé
+dans le répertoire anatomy), en cliquant sur l'oeuil correspondant.<br/>
+Ce fichier a le format suivant :<br/><br/>
+sequence: inversion recovery<br/>
+background: mean: 1<br/>
+gray: mean: 25 sigma: 5<br/>
+white: mean: 41 sigma: 4<br/><br/>
+Il vous suffit de spécifier une estimation grossière de la moyenne et de l'écart type
+des matières grises et blanches, puis de créer un fichier indiquant qu'il
+ne faut plus modifier cette analyse ultérieurement avec la commande:<br/><br/>
+touch nobias_dionysos.han.loc<br/>
+Vous pouvez obtenir le même résultat avec la procédure
+<a HREF="AnaHistoAnalysisValidation.html">Validation Nobias Histo analysis</a> 
+en mettant validation à Lock (+ execute)<br/><br/>
+Nous essaierons de simplifier cette interaction le plus rapidement possible...<br/><br/>
+
+Pour plus d'info:<br/>
+<a HREF="VipHistoAnalysis.html">Vip Histogram Analysis</a><br/><br/>
+
+<h2>Echec de la correction du biais</h2>
+
+Pour évaluer si un échec de la correction de biais pourrait être à l'origine d'un échec
+de l'analyse d'histogramme, voire d'un échec du processus de segmentation (si une zone
+de l'image est trop claire ou trop sombre par rapport au reste, elle risque d'être éliminée),
+vous pouvez accéder à une visualisation en cliquant sur l'oeuil adéquat.<br/><br/>
+Pour apprendre à interpréter la visualisation: <a HREF="AnaT1toBiasCorrectionValidation.html#visu">
+Validation Bias Correction from T1 mri.</a><br/><br/>
+
+Pour plus d'information sur la méthode de correction de biais :<br/>
+<a HREF="VipBiasCorrection.html">Vip Bias Correction</a><br/><br/>
+
+Si tout vous semble correct, vous pouvez l'indiquer à brainvisa avec la procédure
+<a HREF="AnaT1toBiasCorrectionValidation.html">Validation Bias Correction from T1 MRI</a> 
+en mettant validation à Lock (+ execute)
+
+
+
+
+
+
+</xhtml>
+  </d>
+  <d name="en" length="3">
+    <xhtml name="short">Guide to overcome <a HREF="AnaT1toBrainMask.html">Ana Brain Mask From T1 MRI</a> problems</xhtml>
+    <d name="parameters" length="11">
+      <xhtml name="first_slice"/>
+      <xhtml name="lesion_mask"/>
+      <xhtml name="help"/>
+      <xhtml name="mri_corrected"/>
+      <xhtml name="variant"/>
+      <xhtml name="Commissure_coordinates"/>
+      <xhtml name="mri"/>
+      <xhtml name="readme"/>
+      <xhtml name="last_slice"/>
+      <xhtml name="brain_mask"/>
+      <xhtml name="histo_analysis"/>
+    </d>
+    <xhtml name="long">For some reason, the procedure
+<a HREF="AnaT1toBrainMask.html">Brain Mask From T1 MRI</a>
+failed for one of your images. A solution may be
+provided by this procedure, which proposes variants of the standard one.
+You can choose one of these variants in the menu.
+After applying this treatment, the result can be visualized
+in Anatomist if you select 
+<em>Mask visualization</em>.<br/><br/>
+If nothing solve your problems, you will have to
+perform some manual corrections with Anatomist drawing's capacities: 
+<a HREF="AnaLabelVolumeEditor.html"> Label volume editor</a>
+(you can use a shortcut
+to this treatment through a dedicated icon in brainVISA interface).
+<br/><br/>
+
+If you have no real understanding of the process leading to extract the brain mask,
+just try the variants one after another until you reach a good result.
+If none of the variants is successful, you can get access to more parameters
+either in brainVISA using 
+<a HREF="VipGetBrain.html">Vip Get Brain</a>, 
+or from the command line (VipGetBrain -help).
+Finally, it should be possible to perform a manual correction
+with Anatomist's drawing module, but no documentation is provided yet.
+<br/><br/>
+
+<hr/>
+<h1>extra-cerebral structures</h1>
+
+The mask includes anatomical structures which do not belong to the brain:<br/><br/>
+<img SRC="../../images/brain+peau.jpg" ALT=""/>
+<img SRC="../../images/brain+peauSag.jpg" ALT=""/><br/><br/>
+This is a failure of the erosion process supposed to break down brain connexions with the outside world
+(optical nerves, etc.). This failure results from a bad tuning of the erosion size during
+the automatic adjustment loop. Usually, the extra-cerebral structures are connected
+to cerebellum and/or temporal lobes. If only the cerebellum has this problem, you can proceed
+further because the cerebellum will be removed during further processing. Otherwise,
+try one of the variants with fixed erosion size, trying to keep this size
+as small as possible.
+In case of success, check that the erosion did not become too large. In such a case,
+some gyri may have been deleted. Then, you will have to choose the best trade-off.<br/><br/>
+
+If the previous choices did not work, the problem may stem from some artifact hiding
+in some places the black areas corresponding to the skull:<br/><br/>
+<img SRC="../../images/artefact-crane.jpg" ALT=""/><br/><br/>
+In such cases, the initial binarization which is trying to fill small cavities resulting from noise has
+to be discarded, otherwise the skull is partly cancelled and the erosion has not a chance to do its job.
+Try the following variants:<br/>
+<h3>"Standard/Robust... without regularisation"</h3>
+
+Another source of trouble is MR reconstruction artifacts in the first/last slices.
+You can blank some of these slices using two parameters:
+<em> first_slice</em> and <em>last_slice</em>. 
+Then try the standard procedure or one of its variants:<br/>
+<h3>"Standard (iterative erosion from 2mm)"</h3>
+
+<hr/>
+<h1>Eroded cerebral structures</h1>
+
+Some of the gyri have been lost somewhere: <br/>
+<img SRC="../../images/brain_eroded1.jpg" ALT=""/>
+<img SRC="../../images/brain_eroded2.jpg" ALT=""/><br/><br/>
+This problem occurs with very thin gyri, which width is less than two times
+the erosion size. Try the variants beginning with a 1.5mm erosion size:<br/>
+<h3>"Standard/Robust (iterative or fixed erosion from 1.5mm)"</h3>
+If it is not sufficient, try the procedure "Vip Get Brain" or the command line VipGetBrain,
+following these lines:
+<ol>
+<li> Try to reduce erosion size;</li>
+<li> Check histogram analysis, manually lower grey matter mean or increase grey matter standard deviation;</li>
+<li> Increase the number of iterations in the classification regularization.</li>
+</ol>
+Do not be too maniac, these eroded gyri may be forget for most applications.
+
+<hr/>
+<h1>Strange results</h1>
+
+the numerous refinements of the simple erosion/dilation procedure allowing robustness
+to a wide range of images may sometime create strange problems. For instance,
+with "Robust..." procedures,
+a piece of white matter may be deleted in corpus callosum and brain stem:<br/>
+<img SRC="../../images/while_matter_eroded1.jpg" ALT=""/><br/><br/>
+The best solution is the use of the simplest variants:<br/>
+<h3>"Fast (2mm erosion)"</h3>
+<h3>"Fast (2.5mm erosion)"</h3>
+<h3>"Fast (3mm erosion)"</h3>
+
+<hr/>
+
+<h1>Failure of histogram analysis</h1>
+
+To perform the initial binarization, namely to create the black and white image
+describing the range of tissues which may belong to the brain, an automatic analysis of the 3D image's
+histogram is computed. This analysis is looking for two modes/peaks corresponding to grey and white matter
+ (<a HREF="VipHistoAnalysis.html">Vip Histogram Analysis</a>). 
+This analysis is successful if two cyan lines stem from these two peaks,
+like in the following example:<br/><br/>
+<img SRC="../../images/HistoAnalysis.jpg" ALT=""/><br/><br/>
+You may have access to this visualization (gnuplot required), if you choose
+<h3>"Histogram analysis visualization"</h3> in the help menu.
+ (choose  <em>Nothing</em> in the <em>variant</em> menu).
+Unfortunatelly, this choise freezes the brainVISA procedure (stupid
+technical problem),
+hence you should not use it without good understanding of what you loose...
+<br/><br/>
+
+If your analysis is not similar to the previous example, the problem
+may stem from a failure of the bias correction procedure
+(Other examples <a HREF="VipHistoAnalysis.html#examples">there</a>).
+In such a case try to modify the bias correction options.<br/><br/>
+
+If your image suffers from a lack of grey/white contrast (monkey images,
+bad coil, etc.), you can provide manually the grey/white statistics,
+using any text editor (textedit,nedit,xemacs,vi,etc...).
+If your computer provides nedit, you have access to the file *.han (located in anatomy directory),
+with brainVISA's eye. The file format is the following:<br/>
+sequence: inversion recovery<br/>
+background: mean: 1<br/>
+gray: mean: 25 sigma: 5<br/>
+white: mean: 41 sigma: 4<br/><br/>
+Provide a raw estimation of means and standard deviations, then lock the file
+to prevent any further modification by the automatic procedure, using the validation
+procedure <a HREF="AnaHistoAnalysisValidation.html">Validation Nobias Histo analysis</a>  or the command line :<br/>
+"touch nobias_dionysos.han.loc"<br/>
+We will try to simplify this interraction in a near future...<br/><br/>
+
+
+
+</xhtml>
+  </d>
+</minf>

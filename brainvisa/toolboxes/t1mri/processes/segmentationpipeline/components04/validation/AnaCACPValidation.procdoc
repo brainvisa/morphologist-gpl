@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+  <d name="fr" length="3">
+    <xhtml name="short">Validation de <a HREF="PrepareSubject.html">Prepare Subject for Anatomical Pipeline</a></xhtml>
+    <d name="parameters" length="4">
+      <xhtml name="T1mri"/>
+      <xhtml name="readme"/>
+      <xhtml name="validation"/>
+      <xhtml name="Commissure_coordinates"/>
+    </d>
+    <xhtml name="long">Cette procédure devrait rapidement vous proposer la localisation
+des points de repères spécifiés sur l'image IRM... Pour l'instant,
+il faut vous débrouiller...</xhtml>
+  </d>
+  <d name="en" length="3">
+    <xhtml name="short">Validation of <a HREF="PrepareSubject.html">Prepare Subject for Anatomical Pipeline</a></xhtml>
+    <d name="parameters" length="4">
+      <xhtml name="T1mri"/>
+      <xhtml name="readme"/>
+      <xhtml name="validation"/>
+      <xhtml name="Commissure_coordinates"/>
+    </d>
+    <xhtml name="long">Cette procédure devrait rapidement vous proposer la localisation
+des points de repères spécifiés sur l'image IRM... Pour l'instant,
+il faut vous débrouiller...</xhtml>
+  </d>
+</minf>

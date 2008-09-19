@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+  <d name="fr" length="3">
+    <xhtml name="short">Cette nouvelle correction de biais devrait être beaucoup plus robuste en cas de faible  contraste gris/blanc et/ou large amplitude du biais.</xhtml>
+    <d name="parameters" length="22">
+      <xhtml name="edge_mask"/>
+      <xhtml name="sampling"/>
+      <xhtml name="zdir_multiply_regul"/>
+      <xhtml name="write_wridges"/>
+      <xhtml name="field"/>
+      <xhtml name="delete_last_n_slices"/>
+      <xhtml name="mode"/>
+      <xhtml name="field_rigidity"/>
+      <xhtml name="ngrid"/>
+      <xhtml name="write_meancurvature"/>
+      <xhtml name="variance_fraction"/>
+      <xhtml name="hfiltered"/>
+      <xhtml name="edges"/>
+      <xhtml name="write_hfiltered"/>
+      <xhtml name="meancurvature"/>
+      <xhtml name="write_edges"/>
+      <xhtml name="white_ridges"/>
+      <xhtml name="mri_corrected"/>
+      <xhtml name="mri"/>
+      <xhtml name="variance"/>
+      <xhtml name="write_field"/>
+      <xhtml name="write_variance"/>
+    </d>
+    <xhtml name="long"/>
+  </d>
+  <d name="en" length="3">
+    <xhtml name="short">This new bias correction is based on a method that should deal much better with low grey/white contrast and high bias magnitude.</xhtml>
+    <d name="parameters" length="22">
+      <xhtml name="edge_mask"/>
+      <xhtml name="sampling"/>
+      <xhtml name="zdir_multiply_regul"/>
+      <xhtml name="write_wridges"/>
+      <xhtml name="field"/>
+      <xhtml name="delete_last_n_slices"/>
+      <xhtml name="mode"/>
+      <xhtml name="field_rigidity"/>
+      <xhtml name="ngrid"/>
+      <xhtml name="write_meancurvature"/>
+      <xhtml name="variance_fraction"/>
+      <xhtml name="hfiltered"/>
+      <xhtml name="edges"/>
+      <xhtml name="write_hfiltered"/>
+      <xhtml name="meancurvature"/>
+      <xhtml name="write_edges"/>
+      <xhtml name="white_ridges"/>
+      <xhtml name="mri_corrected"/>
+      <xhtml name="mri"/>
+      <xhtml name="variance"/>
+      <xhtml name="write_field"/>
+      <xhtml name="write_variance"/>
+    </d>
+    <xhtml name="long"/>
+  </d>
+</minf>

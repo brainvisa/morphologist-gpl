@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+  <d name="fr" length="3">
+    <xhtml name="short"><img SRC="../../images/II_nobias.jpg" ALT=""/><br/>
+Validation de <a HREF="VipBiasCorrection.html">Vip Bias Correction</a></xhtml>
+    <d name="parameters" length="4">
+      <xhtml name="T1mri"><img SRC="../../images/III_T1mri.jpg" ALT=""/>
+L'image brute</xhtml>
+      <xhtml name="readme"/>
+      <xhtml name="mri_corrected"><img SRC="../../images/III_nobias.jpg" ALT=""/></xhtml>
+      <xhtml name="validation">Validation de la correction</xhtml>
+    </d>
+    <xhtml name="long">Pour évaluer si un échec de la correction de biais pourrait être à l'origine d'un échec
+de l'analyse d'histogramme, voire d'un échec d'un des processus de segmentation 
+ultérieurs (lorsque une zone
+de l'image est trop claire ou trop sombre par rapport au reste, elle risque d'être éliminée),
+vous pouvez comparer l'image corrigée avec l'image initiale, voire
+avec le résultat de la segmentation, en utilisant simultanément d'autres briques de visualisation:<br/>
+
+<a NAME="visu"/>
+<h3>Visualiser la correction de biais</h3>
+L'image IRM brute et sa version corrigée du biais vont apparaÎtre dans
+Anatomist dotées d'une table de couleur arc-en-ciel. En jouant sur le réglage
+de la table de couleur, vous pouvez prendre conscience du biais dans
+l'image initiale (en général, l'image est plus claire au centre du champ de vue) :<br/>
+<img SRC="../../images/rawbiasA.jpg" ALT="" ALIGN="RIGHT"/>
+<img SRC="../../images/rawbiasC.jpg" ALT="" ALIGN="RIGHT"/>
+<img SRC="../../images/rawLUTA.jpg" ALT="" ALIGN="RIGHT"/>
+<br/>
+En revanche, cet effet doit avoir disparu après la correction. Pour s'en convaincre, il faut
+pouvoir régler la table de couleur de manière à faire apparaître la matière blanche comme
+un mélange régulier de jaune et de rouge :<br/>
+<img SRC="../../images/correctbiasA.jpg" ALT="" ALIGN="RIGHT"/>
+<img SRC="../../images/correctbiasC.jpg" ALT="" ALIGN="RIGHT"/>
+<img SRC="../../images/correctLUTA.jpg" ALT="" ALIGN="RIGHT"/><br/>
+
+Si tout vous semble correct, vous pouvez l'indiquer à brainvisa 
+en mettant validation à Lock (+ execute). Cette commande crée le fichier
+nobias_dionysos.loc. S'il existe, la correction de biais, qui
+est assez longue, ne sera plus jamais effectuée.<br/></xhtml>
+  </d>
+  <d name="en" length="3">
+    <xhtml name="short"><img SRC="../../images/II_nobias.jpg" ALT=""/><br/>
+Validation of <a HREF="VipBiasCorrection.html">Vip Bias Correction</a></xhtml>
+    <d name="parameters" length="4">
+      <xhtml name="T1mri"><img SRC="../../images/III_T1mri.jpg" ALT=""/></xhtml>
+      <xhtml name="readme"/>
+      <xhtml name="mri_corrected"><img SRC="../../images/III_nobias.jpg" ALT=""/></xhtml>
+      <xhtml name="validation"/>
+    </d>
+    <xhtml name="long">Pour évaluer si un échec de la correction de biais pourrait être à l'origine d'un échec
+de l'analyse d'histogramme, voire d'un échec d'un des processus de segmentation 
+ultérieurs (lorsque une zone
+de l'image est trop claire ou trop sombre par rapport au reste, elle risque d'être éliminée),
+vous pouvez comparer l'image corrigée avec l'image initiale, voire
+avec le résultat de la segmentation, en utilisant simultanément d'autres briques de visualisation:<br/>
+
+<a NAME="visu"/>
+<h3>Visualiser la correction de biais</h3>
+L'image IRM brute et sa version corrigée du biais vont apparaÎtre dans
+Anatomist dotées d'une table de couleur arc-en-ciel. En jouant sur le réglage
+de la table de couleur, vous pouvez prendre conscience du biais dans
+l'image initiale (en général, l'image est plus claire au centre du champ de vue) :<br/>
+<img SRC="../../images/rawbiasA.jpg" ALT="" ALIGN="RIGHT"/>
+<img SRC="../../images/rawbiasC.jpg" ALT="" ALIGN="RIGHT"/>
+<img SRC="../../images/rawLUTA.jpg" ALT="" ALIGN="RIGHT"/>
+<br/>
+En revanche, cet effet doit avoir disparu après la correction. Pour s'en convaincre, il faut
+pouvoir régler la table de couleur de manière à faire apparaître la matière blanche comme
+un mélange régulier de jaune et de rouge :<br/>
+<img SRC="../../images/correctbiasA.jpg" ALT="" ALIGN="RIGHT"/>
+<img SRC="../../images/correctbiasC.jpg" ALT="" ALIGN="RIGHT"/>
+<img SRC="../../images/correctLUTA.jpg" ALT="" ALIGN="RIGHT"/><br/>
+
+Si tout vous semble correct, vous pouvez l'indiquer à brainvisa 
+en mettant validation à Lock (+ execute). Cette commande crée le fichier
+nobias_dionysos.loc. S'il existe, la correction de biais, qui
+est assez longue, ne sera plus jamais effectuée.<br/></xhtml>
+  </d>
+</minf>

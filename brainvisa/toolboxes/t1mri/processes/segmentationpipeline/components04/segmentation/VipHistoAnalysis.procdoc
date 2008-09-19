@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+  <d name="fr" length="3">
+    <xhtml name="short"><img SRC="../../images/II_hana.jpg" ALT=""/><br/>
+Extrait de l'histogramme d'une IRM T1 les moyennes et les écarts types des matières grises et blanches</xhtml>
+    <d name="parameters" length="3">
+      <xhtml name="mri_corrected"><img SRC="../../images/III_nobias.jpg" ALT=""/>
+l'IRM corrigée du biais</xhtml>
+      <xhtml name="histo_analysis"><img SRC="../../images/III_hana.jpg" ALT=""/>
+un fichier texte avec les statistiques</xhtml>
+      <xhtml name="visu">Affichage de l'analyse avec gnuplot</xhtml>
+    </d>
+    <xhtml name="long">Cette procédure analyse la forme de l'histogramme
+d'une IRM pondérée en T1 pour en déduire une estimation
+des moyennes et des écart types des matières grises et blanches.
+La multiplicité des constructeurs de scanners et des séquences
+utilisées, ainsi que la variabilité anatomique et les biais spatiaux
+qui entachent les images, rendent cette estimation
+difficile dans le cas général. En effet, la forme des
+histogrammes est très variées, ils contiennent généralement
+entre trois et cinq pics significatifs, voire plus en cas
+de problèmes d'échantillonage.<br/><br/>
+Les seules propriétés sur lesquels peut s'appuyer cette procédure
+sont donc:
+<ul>
+<li>l'existence systématique d'un pic pour le fond,
+le gris et le blanc, apparaissant dans cet ordre;</li>
+<li>le fait qu'il s'agit des pics correspondant aux plus grandes plages
+de voxels dans les cas non pathologiques. Cette propriété permet
+a priori de les distinguer des pics parfois induits par le liquide céphalo rachidien
+et la graisse.</li>
+</ul>
+Malheureusement, nous avons souvent été également confrontés à des images cliniques dotées
+d'un très mauvais contraste. Dans de telles situations, les tissus correspondant
+aux matières grises et blanches ne correspondent qu'à un pic dans l'histogramme.
+Heureusement, les dérivées de l'histogramme permettent néanmoins
+de déceler l'existence de deux classes de tissus.
+<br/><br/>
+L'heuristique qui réalise l'analyse d'un histogramme quelconque s'appuie
+sur la notion d'échelle. L'idée consiste à lisser l'histogramme jusqu'à ce
+que seuls les pics les plus importants restent visibles. Ce lissage correspond
+en fait à appliquer l'équation de la chaleur à l'histogramme (ce qui équivaut à des lissage gaussiens).
+L'évolution de l'histogramme dans l'espace des échelles est alors
+interprétée à partir du suivi des extremas de certaines dérivées.
+Ces extremas parcourent des trajectoires parfois relativement esthétiques
+qui nous permettent de déméler les choses dans la plupart des situations...
+<br/><br/>
+Lorsqu'un pic est isolé, il est doté d'une signature caractéristique dans
+le monde des trajectoires des extremas:<br/>
+<img SRC="../../images/gaussian.jpg" ALT=""/><br/><br/>
+Lorsque deux pics se rapprochent au cours du lissage,
+des trajectoires disparaissent peu à peu à travers des
+phénomène d'extinction dont la syntaxe est systématique.<br/><br/>
+<img SRC="../../images/gaussianss.jpg" ALT=""/><br/><br/>
+Les trajectoires propres à un pic donné sont
+démélées en s'appuyant sur ces règles de syntaxe.
+Il reste alors à extraire
+les signatures des pics qui nous intéressent:<br/><br/>
+L'ensemble des trajectoires:<br/>
+<img SRC="../../images/panfree.jpg" ALT=""/><br/><br/>
+Le résultat de l'analyse:<br/>
+<img SRC="../../images/panana.jpg" ALT=""/><br/><br/>
+
+<a NAME="examples"/>
+Des exemples variés d'analyses sont proposés ci
+dessous. Les pics gris et blanc, ainsi que
+le pic correspondant au liquide céphalo-rachidien,
+lorsqu'il existe, sont indiqués par une trajectoire cyan...<br/><br/>
+
+<img SRC="../../images/hana1.jpg" ALT=""/>
+<img SRC="../../images/hana2.jpg" ALT=""/><br/>
+<img SRC="../../images/hana3.jpg" ALT=""/>
+<img SRC="../../images/hana4.jpg" ALT=""/><br/>
+<img SRC="../../images/hana5.jpg" ALT=""/>
+<img SRC="../../images/hana6.jpg" ALT=""/><br/>
+<img SRC="../../images/hana7.jpg" ALT=""/>
+<img SRC="../../images/hana8.jpg" ALT=""/><br/>
+<img SRC="../../images/hana9.jpg" ALT=""/>
+
+
+<br/><br/>Pour plus d'information :<br/>
+<em>Robust brain segmentation using histogram
+scale-space analysis and mathematical morphology,</em>
+J.-F. Mangin, O. Coulon, and V. Frouin
+MICCAI, MIT, LNCS-1496, Springer Verlag
+1230-1241, 1998<br/><br/>
+Vous pouvez également essayer la commande ligne :<br/>
+VipHistoAnalysis -help<br/><br/>
+</xhtml>
+  </d>
+  <d name="en" length="3">
+    <xhtml name="short"><img SRC="../../images/II_hana.jpg" ALT=""/><br/>
+Analyse a T1-weighted histogram to estimate grey/white statistics 
+</xhtml>
+    <d name="parameters" length="3">
+      <xhtml name="mri_corrected"><img SRC="../../images/III_nobias.jpg" ALT=""/></xhtml>
+      <xhtml name="histo_analysis"><img SRC="../../images/III_hana.jpg" ALT=""/><br/>
+text file</xhtml>
+      <xhtml name="visu">gnuplot viewer</xhtml>
+    </d>
+    <xhtml name="long">Cette procédure analyse la forme de l'histogramme
+d'une IRM pondérée en T1 pour en déduire une estimation
+des moyennes et des écart types des matières grises et blanches.
+La multiplicité des constructeurs de scanners et des séquences
+utilisées, ainsi que la variabilité anatomique et les biais spatiaux
+qui entachent les images, rendent cette estimation
+difficile dans le cas général. En effet, la forme des
+histogrammes est très variées, ils contiennent généralement
+entre trois et cinq pics significatifs, voire plus en cas
+de problèmes d'échantillonage.<br/><br/>
+Les seules propriétés sur lesquels peut s'appuyer cette procédure
+sont donc:
+<ul>
+<li>l'existence systématique d'un pic pour le fond,
+le gris et le blanc, apparaissant dans cet ordre;</li>
+<li>le fait qu'il s'agit des pics correspondant aux plus grandes plages
+de voxels dans les cas non pathologiques. Cette propriété permet
+a priori de les distinguer des pics parfois induits par le liquide céphalo rachidien
+et la graisse.</li>
+</ul>
+Malheureusement, nous avons souvent été également confrontés à des images cliniques dotées
+d'un très mauvais contraste. Dans de telles situations, les tissus correspondant
+aux matières grises et blanches ne correspondent qu'à un pic dans l'histogramme.
+Heureusement, les dérivées de l'histogramme permettent néanmoins
+de déceler l'existence de deux classes de tissus.
+<br/><br/>
+L'heuristique qui réalise l'analyse d'un histogramme quelconque s'appuie
+sur la notion d'échelle. L'idée consiste à lisser l'histogramme jusqu'à ce
+que seuls les pics les plus importants restent visibles. Ce lissage correspond
+en fait à appliquer l'équation de la chaleur à l'histogramme (ce qui équivaut à des lissage gaussiens).
+L'évolution de l'histogramme dans l'espace des échelles est alors
+interprétée à partir du suivi des extremas de certaines dérivées.
+Ces extremas parcourent des trajectoires parfois relativement esthétiques
+qui nous permettent de déméler les choses dans la plupart des situations...
+<br/><br/>
+Lorsqu'un pic est isolé, il est doté d'une signature caractéristique dans
+le monde des trajectoires des extremas:<br/>
+<img SRC="../../images/gaussian.jpg" ALT=""/><br/><br/>
+Lorsque deux pics se rapprochent au cours du lissage,
+des trajectoires disparaissent peu à peu à travers des
+phénomène d'extinction dont la syntaxe est systématique.<br/><br/>
+<img SRC="../../images/gaussianss.jpg" ALT=""/><br/><br/>
+Les trajectoires propres à un pic donné sont
+démélées en s'appuyant sur ces règles de syntaxe.
+Il reste alors à extraire
+les signatures des pics qui nous intéressent:<br/><br/>
+L'ensemble des trajectoires:<br/>
+<img SRC="../../images/panfree.jpg" ALT=""/><br/><br/>
+Le résultat de l'analyse:<br/>
+<img SRC="../../images/panana.jpg" ALT=""/><br/><br/>
+
+<a NAME="examples"/>
+Des exemples variés d'analyses sont proposés ci
+dessous. Les pics gris et blanc, ainsi que
+le pic correspondant au liquide céphalo-rachidien,
+lorsqu'il existe, sont indiqués par une trajectoire cyan...<br/><br/>
+
+<img SRC="../../images/hana1.jpg" ALT=""/>
+<img SRC="../../images/hana2.jpg" ALT=""/><br/>
+<img SRC="../../images/hana3.jpg" ALT=""/>
+<img SRC="../../images/hana4.jpg" ALT=""/><br/>
+<img SRC="../../images/hana5.jpg" ALT=""/>
+<img SRC="../../images/hana6.jpg" ALT=""/><br/>
+<img SRC="../../images/hana7.jpg" ALT=""/>
+<img SRC="../../images/hana8.jpg" ALT=""/><br/>
+<img SRC="../../images/hana9.jpg" ALT=""/>
+
+
+<br/><br/>Pour plus d'information :<br/>
+<em><a href="/pdf/mangin-MICCAI98.pdf">Robust brain segmentation using histogram
+scale-space analysis and mathematical morphology</a>,</em>
+J.-F. Mangin, O. Coulon, and V. Frouin
+MICCAI, MIT, LNCS-1496, Springer Verlag
+1230-1241, 1998<br/><br/>
+Vous pouvez également essayer la commande ligne :<br/>
+VipHistoAnalysis -help<br/><br/>
+</xhtml>
+  </d>
+</minf>

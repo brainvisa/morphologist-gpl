@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+  <d name="fr" length="3">
+    <xhtml name="short"/>
+    <d name="parameters" length="8">
+      <xhtml name="keep_head_mask"/>
+      <xhtml name="first_slice"/>
+      <xhtml name="head_mesh"/>
+      <xhtml name="head_mask"/>
+      <xhtml name="mri_corrected"/>
+      <xhtml name="threshold"/>
+      <xhtml name="remove_mask"/>
+      <xhtml name="closing"/>
+    </d>
+    <xhtml name="long"/>
+  </d>
+  <d name="en" length="3">
+    <xhtml name="short">Extraction of the head scalp</xhtml>
+    <d name="parameters" length="8">
+      <xhtml name="keep_head_mask">If false, the head mask is not stored into the database</xhtml>
+      <xhtml name="first_slice">Optionally removes a number of sliced at the bottom of the image (where the signam is generally not very contrasted)</xhtml>
+      <xhtml name="head_mesh">Output mesh for the scalp</xhtml>
+      <xhtml name="head_mask">Mask volume of the segmented head. If it is omitted or keep_head_mask is false (which is the default), the mask is not kept in the database: only the mesh is stored in the database.</xhtml>
+      <xhtml name="mri_corrected"/>
+      <xhtml name="threshold">By default the threshold is automatically computed from the image histogram</xhtml>
+      <xhtml name="remove_mask">Mask of voxels to exclude from the segmentation. Useful to manually remove sharp edges induced by artefacts</xhtml>
+      <xhtml name="closing"/>
+    </d>
+    <xhtml name="long"/>
+  </d>
+</minf>

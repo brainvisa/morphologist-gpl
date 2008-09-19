@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+  <d name="fr" length="3">
+    <xhtml name="short"><img SRC="../../images/II_T1mri.jpg" ALT=""/>
+<img SRC="../../images/II_nobias.jpg" ALT=""/><br/>
+IRM brute et corrigée avec une table de couleur arc-en-ciel</xhtml>
+    <xhtml name="long"/>
+    <d name="parameters" length="2">
+      <xhtml name="T1mri"><img SRC="../../images/III_T1mri.jpg" ALT=""/></xhtml>
+      <xhtml name="mri_corrected"><img SRC="../../images/III_nobias.jpg" ALT=""/></xhtml>
+    </d>
+  </d>
+</minf>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+  <d name="fr" length="3">
+    <xhtml name="short">Calcule une texture de la courbure moyenne du maillage de la matière blanche</xhtml>
+    <d name="parameters" length="7">
+      <xhtml name="left_white_curvature"/>
+      <xhtml name="right_white_curvature"/>
+      <xhtml name="Side"/>
+      <xhtml name="left_white_mesh"/>
+      <xhtml name="Threshold_ratio"/>
+      <xhtml name="right_white_mesh"/>
+      <xhtml name="Method"/>
+    </d>
+    <xhtml name="long"/>
+  </d>
+  <d name="en" length="3">
+    <xhtml name="short">Compute mesh curvature of white matter mesh</xhtml>
+    <d name="parameters" length="7">
+      <xhtml name="left_white_curvature"/>
+      <xhtml name="right_white_curvature"/>
+      <xhtml name="Side"/>
+      <xhtml name="left_white_mesh"/>
+      <xhtml name="Threshold_ratio"/>
+      <xhtml name="right_white_mesh"/>
+      <xhtml name="Method"/>
+    </d>
+    <xhtml name="long"/>
+  </d>
+</minf>

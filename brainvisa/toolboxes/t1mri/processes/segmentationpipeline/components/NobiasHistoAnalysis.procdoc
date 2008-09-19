@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+  <d name="fr" length="3">
+    <xhtml name="short">Cette nouvelle analyse de l'histogramme ne peut être utilisée qu'après la nouvelle correction de biais.
+Elle permet d'éviter certaines faiblesses de la précédente lorsque l'histogramme présente un grand pic de graisse.</xhtml>
+    <d name="parameters" length="4">
+      <xhtml name="hfiltered"/>
+      <xhtml name="white_ridges"/>
+      <xhtml name="mri_corrected"/>
+      <xhtml name="histo_analysis"/>
+    </d>
+    <xhtml name="long"/>
+  </d>
+  <d name="en" length="3">
+    <xhtml name="short">This new histogram analysis can only be used after the new bias correction. It should deal better with large fat modes.</xhtml>
+    <d name="parameters" length="4">
+      <xhtml name="hfiltered"/>
+      <xhtml name="white_ridges"/>
+      <xhtml name="mri_corrected"/>
+      <xhtml name="histo_analysis"/>
+    </d>
+    <xhtml name="long"/>
+  </d>
+</minf>

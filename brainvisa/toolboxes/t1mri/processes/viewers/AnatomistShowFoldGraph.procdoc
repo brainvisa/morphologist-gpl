@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+  <d name="fr" length="3">
+    <xhtml name="short"><a HREF="AnaComputeCorticalFoldArg.html"><img SRC="../../images/II_sulci.jpg" ALT="" border="0"/></a>
+<img SRC="../../images/II_sulciMRI.jpg" ALT="" border="0"/>
+<a HREF="recognition.html"><img SRC="../../images/II_sulciLABEL.jpg" ALT="" border="0"/></a>
+<br/>
+Visualisation d'un graphe de sillons, étiqueté ou non</xhtml>
+    <d name="parameters" length="6">
+      <xhtml name="mri_corrected"><a HREF="VipBiasCorrection.html"><img SRC="../../images/III_nobias.jpg" ALT="" border="0"/></a>
+</xhtml>
+      <xhtml name="two_windows"/>
+      <xhtml name="graph"><a HREF="AnaComputeCorticalFoldArg.html"><img SRC="../../images/III_sulci.jpg" ALT="" border="0"/></a>
+</xhtml>
+      <xhtml name="load_MRI"/>
+      <xhtml name="nomenclature">La hiérarchie de noms utilisée pour les sillons</xhtml>
+      <xhtml name="hemi_mesh"><a HREF="AnaGetOpenedHemiSurface.html"><img SRC="../../images/III_hemi.jpg" ALT="" border="0"/></a></xhtml>
+    </d>
+    <xhtml name="long">Ce traitement chargera également le maillage de l'hémisphère associé,
+et si vous le souhaitez l'IRM corrigée du biais.</xhtml>
+  </d>
+  <d name="en" length="3">
+    <xhtml name="short"><a HREF="AnaComputeCorticalFoldArg.html"><img SRC="../../images/II_sulci.jpg" ALT="" border="0"/></a>
+<img SRC="../../images/II_sulciMRI.jpg" ALT=""/>
+<a HREF="recognition.html"><img SRC="../../images/II_sulciLABEL.jpg" ALT="" border="0"/></a>
+<br/>
+Visualisation of cortical fold graphs, with or without names</xhtml>
+    <d name="parameters" length="6">
+      <xhtml name="mri_corrected"><a HREF="VipBiasCorrection.html"><img SRC="../../images/III_nobias.jpg" ALT="" border="0"/></a></xhtml>
+      <xhtml name="two_windows"/>
+      <xhtml name="graph"><a HREF="AnaComputeCorticalFoldArg.html"><img SRC="../../images/III_sulci.jpg" ALT="" border="0"/></a>
+</xhtml>
+      <xhtml name="load_MRI"/>
+      <xhtml name="nomenclature">The hierarchy of names providing the color code</xhtml>
+      <xhtml name="hemi_mesh"><a HREF="AnaGetOpenedHemiSurface.html"><img SRC="../../images/III_hemi.jpg" ALT="" border="0"/></a>
+</xhtml>
+    </d>
+    <xhtml name="long">Ce traitement chargera également le maillage de l'hémisphère associé,
+et si vous le souhaitez l'IRM corrigée du biais.</xhtml>
+  </d>
+</minf>

@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+  <d name="fr" length="3">
+    <xhtml name="short"><a HREF="VipBiasCorrection.html"><img SRC="../../images/II_nobias.jpg" ALT=""/></a>
+<a HREF="VipHistoAnalysis.html"><img SRC="../../images/II_hana.jpg" ALT=""/></a>
+<a HREF="AnaSplitBrainFromBrainMask.html"><img SRC="../../images/II_voronoi.jpg" ALT=""/></a>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_moulin2.jpg" ALT=""/>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_cortex.jpg" ALT=""/>
+<img SRC="../../images/II_sulci.jpg" ALT=""/>
+<br/>Crée le graphe des plis corticaux.</xhtml>
+    <xhtml name="long">Cette procédure transforme l'image IRM en une structure qui résume l'essentiel
+de l'agencement des plissements du cortex. Il s'agit d'extraire de l'énorme quantité
+d'informations contenue dans les intensités de l'image volumique une représentation
+simplifiée mais suffisante pour procéder à la reconnaissance des sillons ou des racines
+sulcales. Cette nouvelle représentation est un graphe dont les noeuds correspondent à
+des plissements corticaux élémentaires, et dont les relations indiquent l'agencement
+relatif de ces plissements. Cette nouvelle représentation permet de manipuler les
+formes du cortex d'une manière abstraite plus adaptée à certaines techniques
+de reconnaissance des formes qui tentent de s'inspirer de la démarche du neuro-anatomiste:
+les entités manipulées ne seront plus des voxels et leurs intensités, mais des plissements
+corticaux, leurs tailles et leurs orientations, leurs connexions éventuelles...<br/><br/>
+
+Voici par exemple la représentation sous forme de graphe obtenue pour un sillon
+relativement simple:<br/>
+<img SRC="../../images/silgraph.jpg" ALT=""/>
+<br/>
+Le sillon est segmenté en 5 plis élémentaires qui correspondent aux
+noeuds du graphe (les carrés). L'enveloppe externe du cerveau
+apparaît également comme un noeud du graphe. Enfin, les relations
+qui relient ces noeuds (les ronds) représentent différentes informations topographiques:
+<ol>
+<li>T correspond à une jonction entre deux plis ou entre un pli et l'enveloppe du cerveau ;</li>
+<li>C correspond à une notion de voisinage géodésique à l'enveloppe du cerveau : on peut passer d'un pli à son voisin
+en passant par l'extérieur du cortex sans traverser un autre pli. Ce voisinage correspond aux adjacences
+d'un diagramme de Voronoï géodésique à l'enveloppe du cerveau calculé pour les jonctions des plis avec cette enveloppe.
+Ce diagramme est une parcellisation de l'enveloppe en fonction de la jonction la plus proche. Chaque pli élémentaire
+induit ainsi une zone d'influence autour de lui. Deux plis sont reliés si ces zones se touchent ;</li>
+<li>P correspond à la notion anatomique de "pli de passage" décrite au siècle dernier. Il s'agit d'un gyrus
+enfoui au fond d'un sillon qui peut émerger chez certains individus et par là même interrompre le sillon.
+La présence possible d'un gyrus enfoui est détectée à partir de critères de profondeur et de courbure
+de la surface corticale.</li>
+</ol>
+
+<br/><br/>
+La construction du graphe implique toute une chaîne de traitement:<br/>
+<ol>
+<a NAME="interface"/>
+<li>La détection d'une interface gris/blanc dotée de la topologie sphérique du cortex.
+La technique utilisée part du masque d'un hémisphère fourni par 
+<a HREF="AnaSplitBrainFromBrainMask.html">Ana Split Brain From Brain Mask</a>:<br/>
+<img SRC="../../images/compute1.jpg" ALT=""/>
+<img SRC="../../images/compute2.jpg" ALT=""/><br/>
+Ce masque est placé dans une boîte parallélépipédique dont l'interface interne se
+déforme pour atteindre l'interface gris blanc et dont l'interface externe se déforme
+pour atteindre l'enveloppe de l'hémisphère:<br/>
+<img SRC="../../images/compute3.jpg" ALT=""/>
+<img SRC="../../images/compute4.jpg" ALT=""/><br/>
+Le maillage de l'interface gris-blanc permet alors d'obtenir une représentation
+du cortex de topologie sphérique qui sera gonflée par d'autres briques de <em>Brainvisa</em>
+à des fins de visualisation:<br/>
+<img SRC="../../images/compute5.jpg" ALT=""/>
+<img SRC="../../images/compute7.jpg" ALT=""/>
+<img SRC="../../images/compute6.jpg" ALT=""/><br/>
+Une dilatation de cette interface vers l'extérieur permet également de réaliser des
+rendus de la surface du cortex relativement lisibles car les sillons sont ouverts
+(<a HREF="AnaGetOpenedHemiSurface.html">Ana Get Openen Hemi Surface</a>) :<br/>
+<img SRC="../../images/compute8.jpg" ALT=""/>
+<img SRC="../../images/compute10.jpg" ALT=""/>
+<img SRC="../../images/compute9.jpg" ALT=""/><br/>
+</li>
+<li>L'étape suivante consiste à squelettiser l'objet blanc évoqué ci-dessus. 
+Il s'agit en fait d'une érosion qui rogne cet objet de l'intérieur jusqu'à
+ce qu'il devienne sans épaisseur. Le squelette final ressemble à un moule
+en négatif du cerveau, ou aux feuillets qui émanent parfois de la cosse des noix
+de Grenoble et qui remplissent ses plissements.<br/>
+Imaginez qu'un hémisphère cérébral soit fendu en deux,
+et que la matière blanche soit retirée du résultat.
+Réalisé virtuellement, cette technique permet de visualiser
+les plissements corticaux de dessous:<br/> 
+<img SRC="../../images/compute17.jpg" ALT=""/><br/><br/>
+Il est alors facile
+de comprendre l'effet de la squelettisation:<br/>
+<img SRC="../../images/compute18.jpg" ALT=""/><br/><br/>
+Le squelette est donc constitué de l'enveloppe du cerveau et
+de nombreuses surfaces médiales aux plissements:<br/>
+<img SRC="../../images/compute19.jpg" ALT=""/><br/><br/>
+L'érosion pratiquée pour réaliser la squelettisation 
+n'est en fait pas uniforme. En effet,
+pour s'affranchir d'éventuelles différences d'épaisseur de cortex
+de part et d'autre du sillon, et pour maîtriser
+la profondeur finale du squelette, l'image en niveau de gris
+est utilisée pour définir la localisation préférentielle pour le
+squelette. Si on imagine que le niveau de gris correspond
+à une altitude, la matière blanche correspond aux crêtes des montagnes,
+et le liquide au fond des crevasses. Pour imposer la localisation
+du squelette
+au fond des crevasses, nous utilisons un "détecteur de crevasses"...
+Pour les initiés, il s'agit de la courbure moyenne des isophotes
+de l'image volumique:<br/>
+<img SRC="../../images/compute11.jpg" ALT=""/>
+<img SRC="../../images/compute12.jpg" ALT=""/><br/><br/>
+Ce détecteur n'est pas parfait, car le fond des crevasses peut contenir
+des trous. Le processus d'érosion utilisé permet
+de combler ces trous (pour les initiés, il
+s'agit s'une érosion homotopique). Il procède comme
+la montée des eaux qui détruit peu à peu un
+chateau de sable. L'altitude du chateau en chaque point correspond
+à la réponse du détecteur de crevasse. Chaque vague
+va enlever un peu de sable au niveau des murs extérieurs. Petit à petit,
+les murs vont s'effondrer et passer sous le niveau
+de l'eau. Les parties les plus élevées du chateau
+seront les dernières à s'effondrer. Lorsque deux fronts de vagues
+se rencontrent, une portion de squelette est édifiée:<br/><br/>
+Le détecteur de crevasse:<br/>
+<img SRC="../../images/compute13.jpg" ALT=""/>
+<img SRC="../../images/compute14.jpg" ALT=""/><br/><br/>
+Le squelette final (les couleurs correspondent à une
+classification topologique des jonctions et des fonds
+de sillons):<br/>
+<img SRC="../../images/compute15.jpg" ALT=""/>
+<img SRC="../../images/compute16.jpg" ALT=""/><br/>
+Cette visualisation en coupe est d'ailleurs plutôt
+perturbante, car elle ne permet pas d'appréhender le
+fait que ce squelette est toujours doté d'une topologie sphérique
+(l'homotopie d'une sphère en fait...)
+</li>
+<li>
+Etape suivante (pour ceux qui n'ont pas encore craqué...).<br/>
+Le but de cette squelettisation était d'atteindre un stade où il
+soit facile d'extraire un à un les plissements corticaux élémentaires.
+Il suffit de casser le squelette au niveau des jonctions
+pour obtenir le puzzle que nous désirons. Cette opération
+est réalisée à partir d'une technique de topologie discrète
+qui s'interprète de la facon suivante. Imaginez qu'on colle
+deux aimants de part et d'autre d'une portion du squelette :<br/>
+<img SRC="../../images/aimant.jpg" ALT=""/><br/>
+Tous les points atteignables en faisant glisser les aimants sans les
+décoller seront attribués au même pli élémentaire. Dans le jargon
+de la topologie discrète, un tel ensemble s'appelle une surface simple.
+Cette opération est appliquée à l'ensemble des points du squelette
+qui séparent le fond en deux composantes connexes (ce qui élimine
+le fond des sillons et certaines jonctions (il n'existe malheureusement
+pas de détecteur exhaustif de points de jonctions à l'heure actuelle,
+ce qui aurait le mérite de simplifier les choses...)).
+Il s'agit des points jaunes :<br/>
+<img SRC="../../images/compute20.jpg" ALT=""/><br/><br/>
+Zoom sur un morceau de squelette:<br/>
+<img SRC="../../images/compute22.jpg" ALT=""/><br/><br/>
+On ne garde plus que l'enveloppe du cerveau en orange :<br/>
+<img SRC="../../images/compute23.jpg" ALT=""/><br/><br/>
+La segmentation:<br/>
+<img SRC="../../images/compute24.jpg" ALT=""/>
+<img SRC="../../images/compute25.jpg" ALT=""/><br/><br/>
+</li>
+<li>
+Dernière étape, la détection des gyri enfouis putatifs (et oui
+je l'ai placé...). Il s'agit de doter notre représentation
+du cortex des informations nécessaires pour étudier la
+notion de racine sulcale sur laquelle je ne vais pas m'étendre ici.
+Nous tentons de définir un modèle des plissements corticaux fondé
+sur des unités élémentaires insécables susceptibles de correspondre
+aux premiers plissements corticaux apparaissant in utero. Ces
+efforts visent à pallier les faiblesses des descriptions actuelles
+en ce qui concerne la gestion des interruptions des sillons,
+phénomène qui a même été décrit pour le sillon central:<br/>
+<img SRC="../../images/compute26.jpg" ALT=""/><br/><br/>
+Nous cherchons donc à casser le sillon central au niveau
+du "pli de passage" qui le sépare en deux racines sulcales,
+ce qui donne, vu du dessous :<br/>
+<img SRC="../../images/compute27.jpg" ALT=""/><br/><br/>
+
+Les surfaces simples sont donc susceptibles d'être segmentées en plusieurs
+morceaux lorsque des variations de profondeur ou de courbure gausienne
+semblent indiquer la présence d'un gyrus enfoui. Je ne vais pas décrire
+en détail la procédure utilisée, car elle est encore loin d'être satisfaisante.
+Nos efforts actuels pour l'améliorer sont décrits dans:<br/><br/>
+
+A mean curvature based primal sketch to study the cortical folding
+  process from antenatal to adult brain. <br/>
+A. Cachia, J.-F. Mangin, D. Rivière, N. Boddaert, A. Andrade, F. Kherif,
+P. Sonigo, D. Papadopoulos-Orfanos, M. Zilbovicius, J.-B. Poline, I. Bloch,
+F. Brunelle, and J. Régis. <br/> In MICCAI, Utrecht, The Netherlands, LNCS-2208, pages 897--904.
+  Springer Verlag, 2001.
+<br/><br/>
+Voici quelques images pour se faire une idée du processus actuel sur
+la fissure calloso marginale :<br/>
+<img SRC="../../images/compute28.jpg" ALT=""/><br/><br/>
+LA profondeur géodésique :<br/>
+<img SRC="../../images/compute29.jpg" ALT=""/>
+<img SRC="../../images/compute29bis.jpg" ALT=""/><br/><br/>
+La courbure gausienne de la surface corticale, qui indique
+les zones de la forme d'une selle de cheval susceptibles
+de correspondre à un gyrus enfoui :<br/> 
+<img SRC="../../images/compute30.jpg" ALT=""/>
+<img SRC="../../images/compute31.jpg" ALT=""/><br/><br/>
+La parcellisation correspondant aux gyri enfouis :<br/>
+<img SRC="../../images/compute33.jpg" ALT=""/><br/><br/>
+Le squelette :<br/>
+<img SRC="../../images/compute32.jpg" ALT=""/><br/><br/>
+La segmentation finale qui combine la notion de surface
+simple et de gyrus enfoui :<br/>
+<img SRC="../../images/compute34.jpg" ALT=""/><br/><br/>
+Oui, je sais, ca fait beaucoup de morceaux...
+</li>
+</ol>   
+Pour le lecteur névrosé qui veut vraiment en savoir encore plus:<br/><br/>
+From 3D magnetic resonance images to structural representations of
+the cortex topography using topology preserving deformations.<br/>
+J.-F. Mangin, V. Frouin, I. Bloch, J. Regis, and J.Lopez-Krahe.<br/>
+Journal of Mathematical Imaging and Vision, 5(4):297--318,1995.
+<br/><br/>
+Automatic recognition of cortical sulci using a congregation of neural networks.<br/>
+D. Rivière, J.-F. Mangin, D. Papadopoulos-Orfanos, J.-M. Martinez, V. Frouin, and
+J. Régis. <br/> 
+In MICCAI, Pittsburgh, LNCS-1935, 40-49. Springer Verlag, 2000 (à paraître
+dans Medical Image Analysis, 2002).
+</xhtml>
+    <d name="parameters" length="14">
+      <xhtml name="compute_fold_meshes"/>
+      <xhtml name="right_hemi_cortex">détection de l'interface gris blanc</xhtml>
+      <xhtml name="brain_voronoi"><a HREF="AnaSplitBrainFromBrainMask.html"><img SRC="../../images/III_voronoi.jpg" ALT=""/></a></xhtml>
+      <xhtml name="mri_corrected"><a HREF="VipBiasCorrection.html"><img SRC="../../images/III_nobias.jpg" ALT=""/></a></xhtml>
+      <xhtml name="Rgraph"/>
+      <xhtml name="Commissure_coordinates"/>
+      <xhtml name="Lgraph"><img SRC="../../images/III_sulci.jpg" ALT=""/></xhtml>
+      <xhtml name="Lskeleton">Squelette de l'objet précédent</xhtml>
+      <xhtml name="Lroots">Bassins versants d'une ligne de partage des eaux</xhtml>
+      <xhtml name="left_hemi_cortex"><img SRC="../../images/III_cortex.jpg" ALT=""/></xhtml>
+      <xhtml name="Rskeleton"/>
+      <xhtml name="Rroots"/>
+      <xhtml name="Side">travaille sur un ou deux hémisphères</xhtml>
+      <xhtml name="histo_analysis"><a HREF="VipHistoAnalysis.html"><img SRC="../../images/III_hana.jpg" ALT=""/></a>
+</xhtml>
+    </d>
+  </d>
+  <d name="en" length="3">
+    <xhtml name="short"><a HREF="VipBiasCorrection.html"><img SRC="../../images/II_nobias.jpg" ALT=""/></a>
+<a HREF="VipHistoAnalysis.html"><img SRC="../../images/II_hana.jpg" ALT=""/></a>
+<a HREF="ana_split_brain_from_brain_mask.html"><img SRC="../../images/II_voronoi.jpg" ALT=""/></a>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_moulin2.jpg" ALT=""/>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_cortex.jpg" ALT=""/>
+<img SRC="../../images/II_sulci.jpg" ALT=""/>
+<br/>Compute the graph of the cortical folds</xhtml>
+    <d name="parameters" length="14">
+      <xhtml name="compute_fold_meshes"/>
+      <xhtml name="right_hemi_cortex">detection of grey/white interface</xhtml>
+      <xhtml name="brain_voronoi"><a HREF="AnaSplitBrainFromBrainMask.html"><img SRC="../../images/III_voronoi.jpg" ALT=""/></a></xhtml>
+      <xhtml name="mri_corrected"><a HREF="VipBiasCorrection.html"><img SRC="../../images/III_nobias.jpg" ALT=""/></a></xhtml>
+      <xhtml name="Rgraph"/>
+      <xhtml name="Commissure_coordinates"/>
+      <xhtml name="Lgraph"><img SRC="../../images/III_sulci.jpg" ALT=""/></xhtml>
+      <xhtml name="Lskeleton">Skeleton of the previous object</xhtml>
+      <xhtml name="Lroots">Bassins of a watershed</xhtml>
+      <xhtml name="left_hemi_cortex"><img SRC="../../images/III_cortex.jpg" ALT=""/></xhtml>
+      <xhtml name="histo_analysis"><a HREF="VipHistoAnalysis.html"><img SRC="../../images/III_hana.jpg" ALT=""/></a></xhtml>
+      <xhtml name="Rroots"/>
+      <xhtml name="Side">One or two hemispheres</xhtml>
+      <xhtml name="Rskeleton"/>
+    </d>
+    <xhtml name="long">This procedure compresses the T1-weighted MR image into a structure,
+which sums up the main information about the cortical folding patterns.
+The goal is a filtering of the huge amount of information embedded into
+the grey levels in order to build a simplified representation sufficient to
+perform the recognition of cortical sulci or sulcal roots.
+This representation is a graph, which nodes correspond to elementary cortical
+folds, and which links correspond to the relative topographies of these folds.
+This representation allows us to deal with folding patterns in an abstract way
+more adapted to pattern recognition technics that try to mimic the neuroanatomist's
+approach: the entities of interest are no more the voxels and their grey levels
+but the cortical folds, their sizes and orientations, possible connexions, etc...
+<br/><br/>
+
+For instance, here is the graph based representation of a relatively simple sulcus:
+<br/>
+<img SRC="../../images/silgraph.jpg" ALT=""/>
+<br/>
+The sulcus is split into 5 elementary folds, which are represented
+by the graph nodes (the squares). The external hull of the brain
+is also represented by a graph node. Finally, the relations between these
+nodes (the circles) represent various topographical information:
+<ol>
+<li>T represents a junction between two folds or one fold and the brain hull;</li>
+<li>C represents a neighborhood relationship geodesical to the brain hull : a direct path exists on the cortical
+surface between the two folds. This neighborhood corresponds to adjacencies in a Voronoï diagram
+geodesic to the brain hull and computed for the junctions with this hull.
+This diagram is a parcelling of the hull relative to the nearest junction.
+Each elementary fold is endowed with an influence zone around it. Two folds are linked
+if their relative zones touch each other;</li>
+<li>P represents the anatomical "pli de passage" notion described during the XIXth century.
+This notion corresponds to some gyri that are usually burried into the depth of a sulcus, but
+may reach the brain hull in some individuals and hence split the sulcus. These burried
+gyri are detected from depth and cortical surface curvature criteria.
+</li>
+</ol>
+
+<br/><br/>
+The graph construction relies on a long processing line:<br/>
+<ol>
+<a NAME="interface"/>
+<li> The grey/white interface is detected first as a spherical surface. The underlying
+algorithm uses a mask of each hemisphere yielded by
+<a HREF="AnaSplitBrainFromBrainMask.html">Ana Split Brain From Brain Mask</a>:<br/>
+<img SRC="../../images/compute1.jpg" ALT=""/>
+<img SRC="../../images/compute2.jpg" ALT=""/><br/>
+This mask is embedded into a parallelepipedic box, which inner interface deforms
+itself in order to reach the grey/white interface, and which outer interface
+reaches the hemisphere hull:<br/>
+<img SRC="../../images/compute3.jpg" ALT=""/>
+<img SRC="../../images/compute4.jpg" ALT=""/><br/>
+The resulting grey/white interface can be converted into a mesh endowed
+with the spherical topology, which will be inflated by some other <em>Brainvisa</em>
+treatments for visualization purpose (<a HREF="AnaInflateCorticalSurface.html">Ana Inflate Cortical Surface</a>):<br/>
+<img SRC="../../images/compute5.jpg" ALT=""/>
+<img SRC="../../images/compute7.jpg" ALT=""/>
+<img SRC="../../images/compute6.jpg" ALT=""/><br/>
+A dilation of this interface towards the outer brain edges may lead to
+nice 3D rendering of the cortical surface, which are easy to
+read because the folds are opened
+(<a HREF="AnaGetOpenedHemiSurface.html">Ana Get Opened Hemi Surface</a>) :<br/>
+<img SRC="../../images/compute8.jpg" ALT=""/>
+<img SRC="../../images/compute10.jpg" ALT=""/>
+<img SRC="../../images/compute9.jpg" ALT=""/><br/>
+</li>
+<li>
+The next stage consists of a skeletonization of the white object mentioned above.
+This object is eroded from the inside until no more "flesh" remains. The final
+skeleton looks like a negative mold of the brain, or like the husk of a Grenoble nut.<br/>
+Imagine that a cerebral hemisphere has been split in two, and that
+white matter has been removed. The cortical surface can then be visualised
+from the inside: <br/> 
+<img SRC="../../images/compute17.jpg" ALT=""/><br/><br/>
+This point of view helps to understand he skeletonization effect:
+<br/>
+<img SRC="../../images/compute18.jpg" ALT=""/><br/><br/>
+The skeleton is made up of the the brain hull and of the numerous
+surfaces medial to the folds:
+<br/>
+<img SRC="../../images/compute19.jpg" ALT=""/><br/><br/>
+In fact, the erosion applied to compute the skeleton has not
+a uniform speed. To deal with variable cortex thicknesses on
+both sides of the fold, and to master the final depth of the skeleton,
+the grey levels of the MR image are used to define the localization
+of the skeleton. Let us imagine that the grey level is an altitude,
+white matter is the mountain's crests, cerebro spinal fluid is
+the mountain's crevasses. To impose the skeleton localization
+in the depth of the crevasses, we use a "crevasse detector",
+the mean curvature of the MR image isosurfaces:<br/>
+<img SRC="../../images/compute11.jpg" ALT=""/>
+<img SRC="../../images/compute12.jpg" ALT=""/><br/><br/>
+This detector is not perfect: some of the crevasse's
+points are lost. The algorithm used to perform the skeletonization,
+however, can fill the holes in the crevasse surfaces (technically,
+it is a homotopic erosion). This erosion's effect looks like
+the effect of tide on sand castles. The castle's altitude at each
+point corresponds to the crevasse detector answer. Each wave will remove
+some sand of the castle's outside walls. Little by little,
+the walls will collapse under the water level. The highest parts
+of the castle will be the last to collapse. When two water fronts meet
+at the same place, a skeleton point is created:<br/><br/>
+The crevasse detector:<br/>
+<img SRC="../../images/compute13.jpg" ALT=""/>
+<img SRC="../../images/compute14.jpg" ALT=""/><br/><br/>
+The final skeleton (colors correspond to a topological classification
+of the fold junctions and of the fold bottoms):<br/>
+<img SRC="../../images/compute15.jpg" ALT=""/>
+<img SRC="../../images/compute16.jpg" ALT=""/><br/>
+The visualization of 2D slices is rather disturbing,
+because it is difficult to understand that the skeleton
+has kept the spherical topology (more precisely,
+the homotopy of a sphere...)
+</li>
+<li>
+Next step (if you are not fed up yet...):
+the goal of the skeletonization is to reach a point, where the
+elementary fold extraction is simple. The skeleton can be
+split at the level of junctions to get the puzzle toy we need.
+This operation is performed using a discrete topology technic,
+which may be understood from the following metaphor. Let us
+imagine two magnets stick together on both sides of a skeleton's
+surface:<br/>
+<img SRC="../../images/aimant.jpg" ALT=""/><br/>
+All the surface points, which can be reached when the two magnets slide together,
+are gathered into the same elementary fold. Using the discrete topology's jargon,
+these skeleton subsets are called simple surfaces. This parcelling is applied
+to the subset of skeleton points, which split the background into two connected
+components. This subset discards fold bottoms and most of the junction points (unfortunately,
+no exhaustive junction detector has been proposed up to now, as far as we are aware...).
+This surface points are yellow:<br/>
+<img SRC="../../images/compute20.jpg" ALT=""/><br/><br/>
+Zoom on a skeleton piece:<br/>
+<img SRC="../../images/compute22.jpg" ALT=""/><br/><br/>
+Only the brain hull survives in orange :<br/>
+<img SRC="../../images/compute23.jpg" ALT=""/><br/><br/>
+The parcelling:<br/>
+<img SRC="../../images/compute24.jpg" ALT=""/>
+<img SRC="../../images/compute25.jpg" ALT=""/><br/><br/>
+</li>
+<li>
+Last step, the detection of the putative burried gyri.
+The goal is to add into the cortex folding representation the necessary
+information to study the sulcal root notion. We are aiming indeed at
+defining a model of the cortical folding patterns built upon
+indivisible elementary units that may correspond to the first
+folds appearing during in utero life. This research program
+wants to overcome the weaknesses of the usual descriptions of the sulcus interruptions,
+a phenomenon which can even occur for the central sulcus:<br/>
+<img SRC="../../images/compute26.jpg" ALT=""/><br/><br/>
+We try to split the central sulcus at the level of the middle "pli de passage",
+which defines the two underlying sulcal roots. Viewed from beneath:
+<br/>
+<img SRC="../../images/compute27.jpg" ALT=""/><br/><br/>
+
+The simple surfaces are split into several pieces when depth variations or
+high values of the Gaussian curvature are clues of some putative gyrus.
+The current procedure is still far to be fully satisfying. Current efforts
+to improve it may be found in:<br/><br/>
+
+A mean curvature based primal sketch to study the cortical folding
+  process from antenatal to adult brain. <br/>
+A. Cachia, J.-F. Mangin, D. Rivière, N. Boddaert, A. Andrade, F. Kherif,
+P. Sonigo, D. Papadopoulos-Orfanos, M. Zilbovicius, J.-B. Poline, I. Bloch,
+F. Brunelle, and J. Régis. <br/> In MICCAI, Utrecht, The Netherlands, LNCS-2208, pages 897--904.
+  Springer Verlag, 2001.
+<br/><br/>
+Here are a few images to help to understand the splitting process
+at the level of Calloso marginal fissure:<br/>
+<img SRC="../../images/compute28.jpg" ALT=""/><br/><br/>
+Geodesic depth :<br/>
+<img SRC="../../images/compute29.jpg" ALT=""/>
+<img SRC="../../images/compute29bis.jpg" ALT=""/><br/><br/>
+Gaussian curvature of the cortical surface, which gives information
+about saddle points that may be related to burried gyri:<br/> 
+<img SRC="../../images/compute30.jpg" ALT=""/>
+<img SRC="../../images/compute31.jpg" ALT=""/><br/><br/>
+The parceling stemming from the burried gyri:<br/>
+<img SRC="../../images/compute33.jpg" ALT=""/><br/><br/>
+The skeleton :<br/>
+<img SRC="../../images/compute32.jpg" ALT=""/><br/><br/>
+The final segmentation, which mixes the simple surface and burried
+gyrus notions<br/>
+<img SRC="../../images/compute34.jpg" ALT=""/><br/><br/>
+Yes I know, it is a lot of pieces...
+</li>
+</ol>   
+For the neurotic reader, who really wants to know more:<br/><br/>
+<a href="/pdf/mangin-JMIV95.pdf">From 3D magnetic resonance images to structural representations of
+the cortex topography using topology preserving deformations</a>.<br/>
+J.-F. Mangin, V. Frouin, I. Bloch, J. Regis, and J.Lopez-Krahe.<br/>
+Journal of Mathematical Imaging and Vision, 5(4):297--318,1995.
+<br/><br/>
+<a href="/pdf/riviere-MIA02.pdf">Automatic recognition of cortical sulci of the human brain using a congregation of neural networks</a>.<br/>
+D. Rivière, J.-F. Mangin, D. Papadopoulos-Orfanos, J.-M. Martinez, V. Frouin, and
+J. Régis. <br/> 
+Medical Image Analysis, 6(2), pp 77-92
+I
+</xhtml>
+  </d>
+</minf>

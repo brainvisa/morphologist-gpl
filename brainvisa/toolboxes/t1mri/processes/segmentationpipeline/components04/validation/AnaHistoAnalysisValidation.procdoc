@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+  <d name="fr" length="3">
+    <xhtml name="short"><img SRC="../../images/II_hana.jpg" ALT=""/><br/>
+Validation de <a HREF="VipHistoAnalysis.html">Vip Histogram Analysis</a></xhtml>
+    <d name="parameters" length="4">
+      <xhtml name="readme"/>
+      <xhtml name="mri_corrected"><img SRC="../../images/III_nobias.jpg" ALT=""/></xhtml>
+      <xhtml name="histo_analysis"><img SRC="../../images/III_hana.jpg" ALT=""/>
+fichier ascii *.han</xhtml>
+      <xhtml name="validation"/>
+    </d>
+    <xhtml name="long">Cette procédure n'est pas tout à fait au point.
+Vous pouvez obtenir l'analyse de l'histogramme
+sur le mode graphique...mais la brique <em>Brainvisa</em>
+ne s'en remet pas. Nous travaillons sur le problème...
+
+PS: en cas d'analyse ratée, corrigez le fichier *.han à la main...
+A priori cet échec est dû à un échec de la procédure de correction
+de biais. Vous feriez donc mieux d'y regarder de plus près...</xhtml>
+  </d>
+  <d name="en" length="3">
+    <xhtml name="short"><img SRC="../../images/II_hana.jpg" ALT=""/><br/>
+Validation of <a HREF="VipHistoAnalysis.html">Vip Histogram Analysis</a></xhtml>
+    <d name="parameters" length="4">
+      <xhtml name="readme"/>
+      <xhtml name="mri_corrected"><img SRC="../../images/III_nobias.jpg" ALT=""/></xhtml>
+      <xhtml name="histo_analysis"><img SRC="../../images/III_hana.jpg" ALT=""/><br/>
+ascii file *.han</xhtml>
+      <xhtml name="validation"/>
+    </d>
+    <xhtml name="long">Cette procédure n'est pas tout à fait au point.
+Vous pouvez obtenir l'analyse de l'histogramme
+sur le mode graphique...mais la brique <em>Brainvisa</em>
+ne s'en remet pas. Nous travaillons sur le problème...
+
+PS: en cas d'analyse ratée, corrigez le fichier *.han à la main...
+A priori cet échec est dû à un échec de la procédure de correction
+de biais. Vous feriez donc mieux d'y regarder de plus près...</xhtml>
+  </d>
+</minf>

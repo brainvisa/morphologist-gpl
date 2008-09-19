@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+  <d name="fr" length="3">
+    <xhtml name="short">Guide pour corriger les erreurs de <a HREF="AnaSplitBrainFromBrainMask.html">Ana Split Brain From Brain Mask</a></xhtml>
+    <d name="parameters" length="9">
+      <xhtml name="voronoi_template"/>
+      <xhtml name="brain_voronoi"/>
+      <xhtml name="mri_corrected"/>
+      <xhtml name="variant"/>
+      <xhtml name="Commissure_coordinates"/>
+      <xhtml name="Use_template"/>
+      <xhtml name="readme"/>
+      <xhtml name="brain_mask"/>
+      <xhtml name="histo_analysis"/>
+    </d>
+    <xhtml name="long">Pour une raison ou une autre, la procédure séparant les hémisphères et le cervelet ne vous
+a pas donné entière satisfaction. En général les problèmes surviennent au niveau de l'interface avec le cervelet.
+Essayez une des variantes proposées ici. La seule différence entre ces variantes est le seuil initial
+permettant de définir le masque de la matière blanche sur lequel va être appliquée la procédure d'érosion.
+Avec un peu de chance, l'une des variantes devrait améliorer les choses.<br/><br/>
+
+Dans le cas contraire, il peut s'agir d'un problème lié au comportement de la correction
+de biais dans le cervelet. Essayez de la reprendre en modifiant certaines options.<br/><br/>
+
+Un autre problème peut survenir si une partie du cervelet manque dans l'image.
+Dans ce cas, modifiez les paramètres de <a HREF="VipSplitBrain.html">Vip Split Brain</a>,
+en particulier la taille minimale des composantes connexes prises en compte pour sélectionner les graines.<br/><br/>
+
+NB: si vous travaillez sur une espèce de singe, vous devriez tenter d'utiliser la commande ligne sans
+template.<br/><br/>
+
+Si rien ne marche, vous pourrez
+réaliser certaines corrections en dessinant dans Anatomist:
+<a HREF="AnaLabelVolumeEditor.html"> Label volume editor</a>
+(vous pouvez d'ailleurs utiliser un racourci vers ce traitement sous forme d'icone).
+</xhtml>
+  </d>
+  <d name="en" length="3">
+    <xhtml name="short">Guide to overcome <a HREF="AnaSplitBrainFromBrainMask.html">Ana Split Brain From Brain Mask</a> problems</xhtml>
+    <d name="parameters" length="9">
+      <xhtml name="voronoi_template"/>
+      <xhtml name="brain_voronoi"/>
+      <xhtml name="mri_corrected"/>
+      <xhtml name="variant"/>
+      <xhtml name="Commissure_coordinates"/>
+      <xhtml name="Use_template"/>
+      <xhtml name="readme"/>
+      <xhtml name="brain_mask"/>
+      <xhtml name="histo_analysis"/>
+    </d>
+    <xhtml name="long">The hemisphere/cerebellum splitting procedure failed. Usually, the problem occurs at the interface
+between hemisphere and cerebellum. Try one by one the variants provided here. The only difference
+between all of them is the threshold used to define the white matter mask.
+If you are lucky, you may get a better split. Otherwise,
+chech the behaviour of the bias correction result at the level of the cerebellum,
+and try to trigger it again using different parameters.<br/><br/>
+
+Another source of problem is limited field of view in Z. If one part
+of the cerebellum is missing, the algorithm can not find a seed for the cerebellum.
+In that case, try to modify some of the parameters of
+ <a HREF="VipSplitBrain.html">Vip Split Brain</a>,
+especially the minimal size of the connected component taken into account.<br/><br/>
+
+NB: if you work with monkey brains, you may have to use the command line without template.<br/><br/>
+
+If nothing solve your problems, you will have to
+perform some manual corrections with Anatomist drawing's capacities: 
+<a HREF="AnaLabelVolumeEditor.html"> Label volume editor</a> (you can use a shortcut
+to this treatment through a dedicated icon in brainVISA interface).
+</xhtml>
+  </d>
+</minf>

@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+  <d name="fr" length="3">
+    <xhtml name="short"><a HREF="VipBiasCorrection.html"><img SRC="../../images/II_nobias.jpg" ALT=""/></a>
+<a HREF="VipHistoAnalysis.html"><img SRC="../../images/II_hana.jpg" ALT=""/></a>
+<a HREF="AnaT1toBrainMask.html"><img SRC="../../images/II_brain.jpg" ALT=""/></a>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_moulin4.jpg" ALT=""/>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_voronoi.jpg" ALT=""/>
+<br/>Segmente le masque du cerveau en trois parties : les hémisphères cérébraux et le reste (cervelet/tronc)
+(procédure fondée sur <a HREF="VipSplitBrain.html">Vip Split Brain</a>)</xhtml>
+    <d name="parameters" length="7">
+      <xhtml name="voronoi_template">Modèle de segmentation dans Talairach</xhtml>
+      <xhtml name="brain_voronoi"><img SRC="../../images/III_voronoi.jpg" ALT=""/><br/>
+le résultat (une image à 3 couleurs: 1, 2, 3)
+</xhtml>
+      <xhtml name="mri_corrected"><a HREF="VipBiasCorrection.html"><img SRC="../../images/III_nobias.jpg" ALT=""/></a>
+</xhtml>
+      <xhtml name="Commissure_coordinates">pour l'utilisation du repère de Talairach</xhtml>
+      <xhtml name="Use_template">Utilisation du modèle</xhtml>
+      <xhtml name="brain_mask"><a HREF="AnaT1toBrainMask.html"><img SRC="../../images/III_brain.jpg" ALT=""/></a></xhtml>
+      <xhtml name="histo_analysis"><a HREF="VipHistoAnalysis.html"><img SRC="../../images/III_hana.jpg" ALT=""/></a>
+</xhtml>
+    </d>
+    <xhtml name="long">Cette procédure vise à séparer les hémisphères et à éliminer le cervelet et une partie 
+du tronc cérébral de manière à accéder aux faces internes et basses du cortex.
+Elle s'appuie sur un principe similaire à celui utilisé pour segmenter le cerveau
+(<a HREF="AnaT1toBrainMask.html">Brain Mask From T1 MRI</a>).
+Une érosion est appliquée à un masque de la matière blanche afin
+de la casser au niveau du corps calleux et du tronc cérébral. On récupère
+alors 3 graines correspondant aux hémisphères et au cervelet. Ces graines
+sont alors amenées à croître, dans un premier temps au sein de la matière blanche,
+puis au sein de la matière grise, de manière à retrouver les formes des hémisphères.<br/>
+L'image résultat s'appelle un diagramme de Voronoï, c'est-à-dire une parcellisation
+d'un domaine en fonction de la graine la plus proche. Ce diagramme
+ressemble aux zones d'influence des chateaux du moyen âge, dont le rôle est ici
+joué par les graines.<br/><br/>
+
+Une illustration du principe du processus appliqué ici avec cinq graines:<br/><br/>
+Un premier diagramme de Voronoï est construit à partir
+des 5 plus grosses graines issues d'une érosion de la matière blanche:<br/>
+<img SRC="../../images/axial_Bvor.jpg" ALT=""/>
+<img SRC="../../images/sagittal_Bvor.jpg" ALT=""/>
+<img SRC="../../images/Bvorfront.jpg" ALT=""/>
+<br/><br/>
+Ce premier diagramme fournit les graines permettant d'en construire
+un second au sein de l'ensemble du cerveau:<br/>
+<img SRC="../../images/axial_vor.jpg" ALT=""/>
+<img SRC="../../images/sagittal_vor.jpg" ALT=""/>
+<img SRC="../../images/vorfront.jpg" ALT=""/>
+<br/><br/>
+
+Si la localisation des commissures est spécifiée, un prédécoupage sera
+effectué dans la région du corps calleux et du tronc cérébral pour
+simplifier la séparation des graines.<br/><br/>
+
+Si le template de diagramme de Voronoï est également spécifié, il
+permettra à la procédure de déterminer la taille d'érosion
+qui permet d'obtenir les graines recherchées. Une région donnée
+(un hémisphère ou le cervelet) pourra alors être issue d'une
+graine dotée de plusieurs composantes connexes, ce qui augmente
+largement la robustesse de la procédure. En effet le processus
+d'érosion peut facilement séparer les hémisphères du cervelet,
+ou séparer le lobe temporal du reste du cerveau. Dans ces cas critiques,
+si les objets ne sont représentés que par une seule composante
+connexe, les frontières du diagramme de Voronoï final peuvent être mal placées.<br/><br/>
+
+Lorsque ces deux options sont spécifiées, la principale faiblesse de la procédure
+se situe au niveau de l'interface hémisphères/cervelet. Il s'agit en effet d'une
+interface gris/gris parfois difficile à déterminer du fait
+de l'effet de volume partiel mélangeant matière grise et matière blanche
+dans le cervelet.
+
+
+<h3>Vérification du résultat et corrections éventuelles:</h3>
+
+Cf. outils brainvisa:<br/>
+<a HREF="AnaSplitBrainfromBrainMaskValidation.html">Validation Split Brain from Brain Mask</a><br/>
+<a HREF="AnaSplitBrainFromBrainMaskCorrection.html">Correction Split Brain from Brain Mask</a>
+<br/><br/>
+
+Le résultat final, que vous pouvez visualiser en fusionnant l'image IRM et le diagramme de Voronoï,
+doit ressembler à ce qui suit :<br/>
+<img SRC="../../images/voronoiA1.jpg" ALT=""/>
+<img SRC="../../images/voronoiA2.jpg" ALT=""/>
+<img SRC="../../images/voronoiC.jpg" ALT=""/>
+<img SRC="../../images/voronoiS.jpg" ALT=""/><br/>
+<img SRC="../../images/voronoiAna.jpg" ALT=""/>
+<img SRC="../../images/voronoiLUT.jpg" ALT=""/>
+<img SRC="../../images/voronoiFusion.jpg" ALT=""/><br/><br/>
+
+Si tout vous semble correct, vous pouvez passer à une autre étape...<br/>
+Vous pouvez d'ailleurs signaler à brainvisa de ne plus remettre en question ce résultat
+avec la procédure:<a HREF="AnaSplitBrainfromBrainMaskValidation.html">Validation Split Brain from Brain Mask</a><br/>
+Dans le cas contraire, il va vous falloir exécuter la procédure d'erreur associée à cette moulinette (à venir):<br/>
+<a HREF="AnaSplitBrainFromBrainMaskCorrection.html">Correction Split Brain from Brain Mask</a></xhtml>
+  </d>
+  <d name="en" length="3">
+    <xhtml name="short"><a HREF="VipBiasCorrection.html"><img SRC="../../images/II_nobias.jpg" ALT=""/></a>
+<a HREF="VipHistoAnalysis.html"><img SRC="../../images/II_hana.jpg" ALT=""/></a>
+<a HREF="AnaT1toBrainMask.html"><img SRC="../../images/II_brain.jpg" ALT=""/></a>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_moulin4.jpg" ALT=""/>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_voronoi.jpg" ALT=""/>
+<br/>Split the brain mask into three parts: hemispheres + cerebellum/stem
+(procedure built upon <a HREF="VipSplitBrain.html">Vip Split Brain</a>)
+</xhtml>
+    <xhtml name="long">This procedure aims at splitting the two hemispheres and at removing the cerebellum
+and a part of brain stem in order to give access to the internal and low faces of the cortex.
+It is built upon an idea similar to the one used to segment the brain
+(<a HREF="AnaT1toBrainMask.html">Brain Mask From T1 MRI</a>).
+An erosion is applied to a mask of white matter in order to split it
+at the levels of corpus callosum and pons. This operation provides 3 seeds
+corresponding to the two hemispheres and cerebellum. Then, these seeds grow first
+inside white matter and finally throughout grey matter in order to recover
+the hemisphere shapes.<br/>
+
+The resulting image is called a Voronoï diagram, namely the parcelling of a domain
+related to the distance to the closest seed. This diagram looks like the influence zones
+of middle-age castles, which role is played by the seeds.<br/><br/>
+
+An illustration of this "split and grow" idea applied here with 5 seeds:
+<br/><br/>
+A first Voronoï diagram is built from the 5 largest seeds
+stemming from a white matter erosion:<br/>
+<img SRC="../../images/axial_Bvor.jpg" ALT=""/>
+<img SRC="../../images/sagittal_Bvor.jpg" ALT=""/>
+<img SRC="../../images/Bvorfront.jpg" ALT=""/>
+<br/><br/>
+This first diagram yields the seeds for the computation
+of a second diagram throughout the whole brain:
+<br/>
+<img SRC="../../images/axial_vor.jpg" ALT=""/>
+<img SRC="../../images/sagittal_vor.jpg" ALT=""/>
+<img SRC="../../images/vorfront.jpg" ALT=""/>
+<br/><br/>
+
+If the commissure localization is provided by the user, some holes
+will be dug inside corpus callosum and brain stem in order to speed
+up the split.<br/><br/>
+
+If a template of the Voronoï diagram in Talairach space is provided,
+it will help the procedure to select the erosion size which leads
+to the best seeds. Thanks to the template, moreover,
+a given anatomical entity can be represented by a seed made up of several
+connected components, which increases the process robustness. 
+The erosion process, indeed, can split the two cerebellum hemispheres, or
+split the temporal lobe from the ipsilateral cortex hemisphere.
+In such critical cases, if only one connected component is selected
+as seed, the Voronoï diagram boundaries may be wrong.<br/><br/>
+
+When these two options are selected, the main remaining weakness of the process
+is located at the level of hemisphere/cerebellum interfaces. This boundary,
+indeed, which delineates two grey matter areas, is difficult to locate using
+distance criteria, because partial volume often mix grey and white matter
+in the cerebellum. We think over that problem...
+
+
+<h3>Result checking and problem solving:</h3>
+
+Cf. <em>BrainVISA</em> tools:<br/>
+<a HREF="AnaSplitBrainfromBrainMaskValidation.html">Validation Split Brain from Brain Mask</a><br/>
+<a HREF="AnaSplitBrainFromBrainMaskCorrection.html">Correction Split Brain from Brain Mask</a>
+<br/><br/>
+
+
+The final result, that you can visualize with a volume fusion obtained from <em>BrainVISA</em>'s eye,
+should look like the following:<br/>
+<img SRC="../../images/voronoiA1.jpg" ALT=""/>
+<img SRC="../../images/voronoiA2.jpg" ALT=""/>
+<img SRC="../../images/voronoiC.jpg" ALT=""/>
+<img SRC="../../images/voronoiS.jpg" ALT=""/><br/>
+<img SRC="../../images/voronoiAna.jpg" ALT=""/>
+<img SRC="../../images/voronoiLUT.jpg" ALT=""/>
+<img SRC="../../images/voronoiFusion.jpg" ALT=""/><br/><br/>
+
+If all seems OK, you can go to the next step...<br/>
+You can signal to <em>BrainVISA</em> that the result should be frozen using:
+<a HREF="AnaSplitBrainfromBrainMaskValidation.html">Validation Split Brain from Brain Mask</a><br/>
+Otherwise, you have to execute the associated error procedure (not developped yet, sorry)<br/>
+<a HREF="AnaSplitBrainFromBrainMaskCorrection.html">Correction Split Brain from Brain Mask</a></xhtml>
+    <d name="parameters" length="7">
+      <xhtml name="voronoi_template">a split brain mask in Talairach space</xhtml>
+      <xhtml name="brain_voronoi"><img SRC="../../images/III_voronoi.jpg" ALT=""/><br/>
+the result (a 3 color image)</xhtml>
+      <xhtml name="mri_corrected"><a HREF="VipBiasCorrection.html"><img SRC="../../images/III_nobias.jpg" ALT=""/></a>
+</xhtml>
+      <xhtml name="Commissure_coordinates"/>
+      <xhtml name="Use_template"/>
+      <xhtml name="brain_mask"><a HREF="AnaT1toBrainMask.html"><img SRC="../../images/III_brain.jpg" ALT=""/></a></xhtml>
+      <xhtml name="histo_analysis"><a HREF="VipHistoAnalysis.html"><img SRC="../../images/III_hana.jpg" ALT=""/></a>
+</xhtml>
+    </d>
+  </d>
+</minf>

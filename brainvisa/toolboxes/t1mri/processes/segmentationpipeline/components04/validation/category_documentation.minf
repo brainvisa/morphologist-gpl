@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+
+<xhtml name="en">
+  <h1>Validation flags</h1>
+  
+  <p>
+You should find here some processes allowing the lock of some results, in order to prevent other treatments from deleting them. It is especially useful when triggering the pipeline step by step or when performing manual corrections. In the future, we hope to provide this locking process through brainVISA's interface.
+  </p>
+
+</xhtml>
+
+<xhtml name="fr">
+  <h1>Validations</h1>
+  
+  <p>
+Vous devriez trouver ici des traitements permettant de protéger certains résultats, de manière à empêcher d'autres traitements de les écraser. C'est particulièrement utile lorsqu'on utilise le pipeline pas à pas ou lorsqu'on procède à des corrections manuelles. Nous espérons intégrer un jour cette fonctionnalité à l'interface de brainVISA.
+  </p>
+
+</xhtml>
+
+</minf>

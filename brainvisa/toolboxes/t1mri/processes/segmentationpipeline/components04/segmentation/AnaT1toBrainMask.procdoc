@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+  <d name="fr" length="3">
+    <xhtml name="short"><img SRC="../../images/II_T1mri.jpg" ALT=""/>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_moulin1.jpg" ALT=""/>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<a HREF="VipBiasCorrection.html"><img SRC="../../images/II_nobias.jpg" ALT=""/></a>
+<a HREF="VipHistoAnalysis.html"><img SRC="../../images/II_hana.jpg" ALT=""/></a>
+<a HREF="VipGetBrain.html"><img SRC="../../images/II_brain.jpg" ALT=""/></a>
+<br/>Génère un masque binaire du cerveau à partir de l'IRM brute</xhtml>
+    <d name="parameters" length="8">
+      <xhtml name="Contrast"/>
+      <xhtml name="T1mri"><img SRC="../../images/III_T1mri.jpg" ALT=""/></xhtml>
+      <xhtml name="mri_corrected"><a HREF="VipBiasCorrection.html"><img SRC="../../images/III_nobias.jpg" ALT=""/></a>
+</xhtml>
+      <xhtml name="Commissure_coordinates"/>
+      <xhtml name="Bias_type"/>
+      <xhtml name="lesion_mask">masque binaire d'une lésion (optionnel)</xhtml>
+      <xhtml name="brain_mask"><img SRC="../../images/III_brain.jpg" ALT=""/></xhtml>
+      <xhtml name="histo_analysis"><a HREF="VipHistoAnalysis.html"><img SRC="../../images/III_hana.jpg" ALT=""/></a>
+</xhtml>
+    </d>
+    <xhtml name="long">Cette procédure s'appuie sur le fait que le cerveau est un 
+objet clair et massif entouré d'un liseré noir correspondant au crâne, qui 
+l'isole en grande partie du reste des tissus. La procédure d'analyse d'images 
+cherche à casser les quelques connections du cerveau avec le monde extérieur à 
+partir d'un processus d'érosion très similaire aux phénomènes géologiques ou à 
+l'action de la rouille lorsqu'elle fragilise les objets métalliques au niveau 
+de leurs goulots d'étranglement avant de les casser.<br/><br/>
+
+L'image en niveaux de gris est dans un premier temps seuillée de manière à 
+obtenir un objet binaire (blanc sur un fond noir). Dans un second temps, un processus d'érosion est 
+simulé de manière à rogner cet objet binaire sur une certaine épaisseur. Cette 
+érosion engendre plusieurs morceaux déconnectés. Le plus gros d'entre eux est 
+sélectionné en tant que graine du cerveau. Un processus de croissance permet 
+alors de faire croître cette graine de manière à récupérer la forme du cerveau.<br/><br/>
+
+Une illustration du processus au niveau d'une coupe:<br/>
+<img SRC="../../images/brainmask1.jpg" ALT=""/>
+<img SRC="../../images/brainmask2.jpg" ALT=""/>
+<img SRC="../../images/brainmask3.jpg" ALT=""/>
+<img SRC="../../images/brainmask4.jpg" ALT=""/>
+<img SRC="../../images/brainmask5.jpg" ALT=""/>
+
+<br/><br/>
+Pour parvenir à ses fins, cette moulinette enchaîne 3 étapes:
+<ol>
+<li>Une correction du biais spatial (<a HREF="VipBiasCorrection.html">Vip Bias Correction</a>).
+Il s'agit de l'étape clef de tout le processus. Si elle ne se passe pas parfaitement,
+les résultats en patiront. Il est donc important de s'assurer qu'elle se comporte
+bien sur quelques images de votre scanner avant de chercher à aller plus loin.
+Les deux choix proposés au départ (contrast, type de biais) sont dédiés à cette procédure.</li>
+<li>Une analyse de l'histogramme (<a HREF="VipHistoAnalysis.html">Vip Histogram Analysis</a>)</li>
+<li>Une segmentation du cerveau (<a HREF="VipGetBrain.html">Vip Get Brain</a>)</li>
+</ol>
+
+La procédure réalisant la segmentation intègre de nombreuses "verrues" visant à résoudre
+certaines difficultés apparaissant parfois pour certaines séquences ou certaines morphologies.
+Si vous observez son défilement dans la fenêtre de log, vous aurez un apercu d'une partie
+de ces ajouts. Le plus important est le réglage automatique de la taille d'érosion optimale
+pour une image donnée.<br/><br/>
+
+Si le fichier indiquant la localisation des commissures a été spécifié,
+une vérification finale tentera d'éliminer d'éventuels résidus des sinus/méninges
+faisant le tour du cerveau au niveau du plan interhémisphérique.<br/><br/>
+
+Si un masque de lésion est spécifié, la région indiquée sera
+ajoutée à la binarisation initiale quelque soient les niveaux de gris à l'intérieur.
+Cela corrigera les situations où, du fait de la présence d'une grosse lésion, une partie du cerveau
+disparaît au cours du processus d'érosion/dilatation (lorsque la graine
+est segmentée en plusieurs morceaux).
+<br/><br/>
+
+<h3>Vérification du résultat et corrections éventuelles:</h3>
+
+Cf. outils brainvisa:<br/>
+<a HREF="AnaT1toBrainMaskValidation.html">Validation Brain Mask from T1 MRI</a><br/>
+<a HREF="AnaT1toBrainMaskCorrection.html">Correction Brain Mask from T1 MRI</a>
+<br/><br/>
+La première manière de procéder consiste à visualiser simultanément l'image
+corrigée du biais et le masque du cerveau, en s'aidant du curseur lié d'<it>Anatomist</it> :<br/><br/>
+<img SRC="../../images/MRIT1C.jpg" ALT=""/>
+<img SRC="../../images/brain.jpg" ALT=""/>
+<br/><br/>
+Une seconde manière de procéder consiste à fusionner les deux images.
+L'oeuil de brainVISA le fait automatiquement.
+Manuellement, il vous faut fusionnez les deux volumes, appliquez une table uni-couleur dotée de l'extension ufusion au masque,
+puis passez la fusion en mode combinaison linéaire:<br/>
+<img SRC="../../images/MRI+BRAINfusion.jpg" ALT=""/><br/>
+<img SRC="../../images/LUTfusion.jpg" ALT=""/><br/>
+<img SRC="../../images/fusion-linear.jpg" ALT=""/>
+<img SRC="../../images/fusion.jpg" ALT=""/><br/>
+Si tout vous semble correct, vous pouvez passer à une autre étape...<br/>
+Vous pouvez d'ailleurs signaler à brainvisa de ne plus remettre en question ce résultat
+avec la procédure: <a HREF="AnaT1toBrainMaskValidation.html">Validation Brain Mask from T1 MRI</a><br/>
+Dans le cas contraire, il va vous falloir exécuter la procédure d'erreur associée à cette moulinette:<br/>
+<a HREF="AnaT1toBrainMaskCorrection.html">Correction Brain Mask from T1 MRI</a>
+</xhtml>
+  </d>
+  <d name="en" length="3">
+    <xhtml name="short"><img SRC="../../images/II_T1mri.jpg" ALT=""/>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_moulin1.jpg" ALT=""/>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<a HREF="VipBiasCorrection.html"><img SRC="../../images/II_nobias.jpg" ALT=""/></a>
+<a HREF="VipHistoAnalysis.html"><img SRC="../../images/II_hana.jpg" ALT=""/></a>
+<a HREF="VipGetBrain.html"><img SRC="../../images/II_brain.jpg" ALT=""/></a>
+<br/>Compute a binary mask of the brain from a raw MR scan</xhtml>
+    <xhtml name="long">This procedure relies on the fact that the brain is a light and massive object
+surrounded by a black strip related to the skull, which largely isolates it
+from the other tissues. The image analysis procedure aims at splitting the few
+connexions between the brain and the external world using an erosion process very
+similar to geological phenomena or to the action of the rust, when it weakens
+metallic objects at the level of their bottlenecks before breaking them.<br/><br/>
+
+The grey level image is thresholded first in order to get a binary object (white
+on black background). During a second stage, an erosion process is simulated in order
+to trim the object until a given thickness. This erosion fathers several disconnected pieces.
+The largest one is selected as a seed of the brain. A dilation process makes the seed
+growth in order to recover the actual brain shape.<br/><br/> 
+
+An illustration of the process at the level of a slice:<br/>
+<img SRC="../../images/brainmask1.jpg" ALT=""/>
+<img SRC="../../images/brainmask2.jpg" ALT=""/>
+<img SRC="../../images/brainmask3.jpg" ALT=""/>
+<img SRC="../../images/brainmask4.jpg" ALT=""/>
+<img SRC="../../images/brainmask5.jpg" ALT=""/>
+
+<br/><br/>
+In order to reach its goal, this line puts together 3 steps:
+<ol>
+<li>A correction of the spatial bias (<a HREF="VipBiasCorrection.html">Vip Bias Correction</a>).
+It is the key step of the whole process. If this correction is not close to perfect,
+the following results may suffer. Hence, it is important to check the bias
+correction behaviour on a few datasets from your scanner before going further.
+The two initial choices (contrast, bias type) are dedicated to this procedure.</li>
+<li>A histogram analysis (<a HREF="VipHistoAnalysis.html">Vip Histogram Analysis</a>)</li>
+<li>A brain segmentation (<a HREF="VipGetBrain.html">Vip Get Brain</a>)</li>
+</ol>
+
+The segmentation process embeds a lot of refinements aiming at overcoming some
+problems occuring with some specific sequences or unusual morphologies.
+You can have a glipmse of these refinements if you open the log window.
+The main one is the automatic tuning of the erosion size.<br/><br/>
+
+If the file including the localisation of the commisures has been filled,
+a final step will try to remove possible residuals related to sinus/meninges
+at the level of interhemispheric plane.<br/><br/>
+
+If a lesion mask has been provided, this area will be added to the initial
+binarisation whatever the greylevels inside. It will overcome situations
+where a part of the brain is lost because the erosion process leads to several
+brain seeds.
+<br/><br/>
+
+<h3>Checking result and problem solving:</h3>
+
+Cf. <em>brainVISA</em> tools:<br/>
+<a HREF="AnaT1toBrainMaskValidation.html">Validation Brain Mask from T1 MRI</a><br/>
+<a HREF="AnaT1toBrainMaskCorrection.html">Correction Brain Mask from T1 MRI</a>
+<br/><br/>
+You can for instance visualize simultaneously the bias corrected image and the brain mask,
+relying on <it>Anatomist</it> linked cursor:<br/><br/>
+<img SRC="../../images/MRIT1C.jpg" ALT=""/>
+<img SRC="../../images/brain.jpg" ALT=""/>
+<br/><br/>
+Another way consists of the two volume fusion.
+<em>brainVISA</em>'s eye can do it for you.
+If you prefer manual work, select the two volumes,
+give a unicolor colormap with the ufusion extension to the mask,
+and choose the linear combination fusion mode:<br/>
+<img SRC="../../images/MRI+BRAINfusion.jpg" ALT=""/><br/>
+<img SRC="../../images/LUTfusion.jpg" ALT=""/><br/>
+<img SRC="../../images/fusion-linear.jpg" ALT=""/>
+<img SRC="../../images/fusion.jpg" ALT=""/><br/>
+If all is OK, you can go further...<br/>
+You can signal to <em>brainVISA</em> that this result has to be frozen (not recomputed...)
+using the procedure:<a HREF="AnaT1toBrainMaskValidation.html">Validation Brain Mask from T1 MRI</a><br/>
+Otherwise, you have to execute the error procedure related to this processing line:<br/>
+<a HREF="AnaT1toBrainMaskCorrection.html">Correction Brain Mask from T1 MRI</a>
+</xhtml>
+    <d name="parameters" length="8">
+      <xhtml name="T1mri"><img SRC="../../images/III_T1mri.jpg" ALT=""/></xhtml>
+      <xhtml name="mri_corrected"><a HREF="VipBiasCorrection.html"><img SRC="../../images/III_nobias.jpg" ALT=""/></a></xhtml>
+      <xhtml name="Commissure_coordinates"/>
+      <xhtml name="Bias_type"/>
+      <xhtml name="Contrast"/>
+      <xhtml name="histo_analysis"><a HREF="VipHistoAnalysis.html"><img SRC="../../images/III_hana.jpg" ALT=""/></a></xhtml>
+      <xhtml name="brain_mask"><img SRC="../../images/III_brain.jpg" ALT=""/></xhtml>
+      <xhtml name="lesion_mask"/>
+    </d>
+  </d>
+</minf>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+  <d name="fr" length="3">
+    <xhtml name="short"><img SRC="../../images/II_gw.jpg" ALT=""/><br/>
+Fusionne la classification gris/blanc avec l'IRM</xhtml>
+    <xhtml name="long"/>
+    <d name="parameters" length="2">
+      <xhtml name="classif"><img SRC="../../images/III_gw.jpg" ALT=""/></xhtml>
+      <xhtml name="mri_corrected"><img SRC="../../images/III_nobias.jpg" ALT=""/></xhtml>
+    </d>
+  </d>
+</minf>

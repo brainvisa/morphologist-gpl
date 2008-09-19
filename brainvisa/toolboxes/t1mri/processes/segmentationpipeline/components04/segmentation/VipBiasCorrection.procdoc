@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+  <d name="fr" length="3">
+    <xhtml name="short"><img SRC="../../images/II_nobias.jpg" ALT=""/><br/>
+Corrige le biais spatial d'une IRM</xhtml>
+    <xhtml name="long">Cette procédure applique un traitement de l'ordre de la restauration de tableau...<br/><br/>
+
+Alors qu'on se laisse facilement aller à imaginer qu'il existe
+une correspondence univoque entre l'intensité d'un voxel IRM,
+et une propriété ésotérique du cube de tissu sous-jacent,
+il faut se garder de succomber à cette tentation.
+Il suffit d'observer rapidement une image anatomique
+standard (pondérée en T1) avec une table de couleur arc-en-ciel
+pour s'en convaincre:<br/>
+<img SRC="../../images/ares-axial.jpg" ALT=""/>
+<img SRC="../../images/ares-sag.jpg" ALT=""/>
+<img SRC="../../images/ares-coro.jpg" ALT=""/>
+<br/>
+Certaines portions de la matière blanche sont rouges, d'autres jaunes
+voire vertes. Il semble donc que la correspondence évoquée ci-dessus
+dépende largement de l'endroit où on se situe dans le champ de vue.
+En général, le centre de l'antenne est plus clair, mais ce n'est pas systématique.
+Lorsqu'on se contente de regarder une coupe de cerveau en niveaux
+de gris, comme en radiologie conventionnelle, ce défaut ne saute pas
+aux yeux. La vision humaine est en effet particulièrement efficace
+lorsqu'il s'agit de corriger ce type de dérive spatiale. Cette capacité n'est d'ailleurs
+pas étrangère au fait que nous considérions généralement la couleur
+des objets comme uniforme malgré des variations d'illumination.
+Malheureusement, ce potentiel n'a pas poussé les physiciens à chercher
+à corriger ce défaut intrinsèque aux acquisitions. La vision artificielle
+ayant encore beaucoup de progrés à réaliser, ces variations spatiales
+d'intensité lui posent beaucoup plus de problèmes qu'au radiologue... Cette procédure cherche
+donc à restaurer l'image avant de passer la main aux procédures de segmentation
+proprement dites.<br/><br/>
+
+Le phénomène physique à l'origine de ces dérives spatiales dépend malheureusement
+de la forme de la tête du sujet. Il n'est donc pas possible d'appliquer une
+correction systématique après évaluation du problème sur un fantôme. Il faut donc estimer
+pour chaque nouvelle image la correction à effectuer. La
+démarche adoptée consiste à optimiser un critère mesurant la qualité
+de l'image restaurée. Ce critère est simplement une mesure de dispersion des intensités,
+l'entropie de leur distribution. Une entropie faible correspondra à une image
+où chaque classe de tissu est représentée par un pic étroit de l'histogramme.
+Lorsque l'image est biaisée spatialement, ces pics s'élargissent et l'entropie augmente.<br/><br/>
+
+
+Le modèle le plus simple que nous puissions
+considérer en ce qui concerne l'origine des intensités observées est le suivant:<br/>
+<img SRC="../../images/model_image.jpg" ALT=""/><br/>
+L'intensité observée en un point x est supposée correspondre au produit d'une intensité
+intrinsèque au tissu I et d'un biais spatial F, auquel s'ajoute un bruit N propre à la RMN.
+Des considérations sur les multiples origines du biais nous conduisent à faire l'hypothèse
+qu'il est relativement régulier spatialement. Pour restaurer l'image O, nous
+cherchons donc à estimer le biais F, en supposant que le champ correctif Fc doit
+maximiser notre critère de qualité de l'image intrinsèque. Le champ
+correctif optimal est alors celui qui minise la fonction:<br/>
+<img SRC="../../images/energy.jpg" ALT=""/><br/>
+Le champ optimal réalise un compromis entre le critère de qualité (l'entropie S(FcO)),
+la régularité du champ (R(Fc), une somme d'écarts quadratique entre voisins),
+et une distance à l'image initiale (M(FcO) qui écarte la solution triviale correspondant
+à une image intrinsèque constante). Les constantes K pondèrent
+l'importance de ces trois termes. Cette fonction est minimisée par recuit simulé.
+La procédure de minimisation inclus en outre une approche multigrille qui permet
+de relacher la contrainte de régularité sur le champ. Il nous parait en effet probable
+que le champ correctif idéal contienne de fortes variations locales correspondant aux discontinuités du
+T1 des tissus. Pour l'image ci-dessus, la solution trouvée est la suivante:<br/><br/>
+L'image intrinsèque:<br/>
+<img SRC="../../images/cares-axial.jpg" ALT=""/>
+<img SRC="../../images/cares-sag.jpg" ALT=""/>
+<img SRC="../../images/cares-coro.jpg" ALT=""/>
+<br/><br/>
+Le champ F:<br/>
+<img SRC="../../images/fares-axial.jpg" ALT=""/>
+<img SRC="../../images/fares-sag.jpg" ALT=""/>
+<img SRC="../../images/fares-coro.jpg" ALT=""/>
+<br/><br/>
+L'histogramme de l'image initiale O:<br/>
+<img SRC="../../images/ares-histo.jpg" ALT=""/>
+<br/><br/>
+L'histogramme de l'image restaurée I:<br/>
+<img SRC="../../images/cares-histo.jpg" ALT=""/>
+<br/><br/>
+Les principaux paramètres à modifier si vous rencontrez des problèmes
+avec vos images correspondent aux contraintes de régularité sur le
+champ:
+<ul>
+<li>Si le contraste gris/blanc de vos images est faible,
+augmentez l'importance de cette contrainte (field_rigidity);</li>
+<li>Si votre antenne conduit à une dérive très importante
+dans la direction z (l'axe de l'aimant), diminuez
+la contrainte dans cette direction (zdir_multiply-regul entre 0.1 et 1);</li>
+<li>Si vos intensités varient d'une coupe à la suivante, passez en mode 2D (dim_rigidity).</li>
+</ul>
+<br/><br/>
+Si vos images proviennent d'un imageur à haut champ, il est probable
+que le biais spatial soit très important. Dans ce cas il peut être
+nécessaire de diminuer la régularité du champ. Vous comprenez
+ainsi qu'une image avec un fort biais et un faible contraste peut
+s'avérer difficile à corriger... Cette procédure fonctionne
+néanmoins même lorsque le biais mélange complètement les pics
+gris et blanc de l'histogramme:<br/><br/>
+Exemple avec une image issue d'un imageur 3T:<br/>
+<img SRC="../../images/3T-a.jpg" ALT=""/>
+<img SRC="../../images/3T-s.jpg" ALT=""/>
+<img SRC="../../images/3T-histo.jpg" ALT=""/>
+<br/><br/>
+Le champ estimé:<br/>
+<img SRC="../../images/3T-af.jpg" ALT=""/>
+<img SRC="../../images/3T-sf.jpg" ALT=""/>
+<br/><br/>L'image restaurée:<br/>
+<img SRC="../../images/3T-ac.jpg" ALT=""/>
+<img SRC="../../images/3T-sc.jpg" ALT=""/>
+<img SRC="../../images/3Tc-histo.jpg" ALT=""/>
+
+
+<br/><br/>
+Pour plus d'information :<br/>
+<em>Entropy minimization for automatic correction
+of intensity non uniformity,</em> 
+J.-F. Mangin,
+MMBIA (Math. Methods in Biomed. Image Analysis),
+Hilton Head Island, South Carolina, IEEE Press
+162-169, 2000<br/><br/>
+Vous pouvez également essayer la commande ligne:<br/>
+VipBiasCorrection -help<br/></xhtml>
+    <d name="parameters" length="13">
+      <xhtml name="init_temperature">Température initiale</xhtml>
+      <xhtml name="field_rigidity">pondération de la contrainte de rigidité du champ</xhtml>
+      <xhtml name="ngrid">Nombre de niveaux de résolutions du champ</xhtml>
+      <xhtml name="increment">multiplicatif pour l'évolution du champ</xhtml>
+      <xhtml name="mri_corrected"><img SRC="../../images/III_nobias.jpg" ALT=""/><br/>
+l'image corrigée</xhtml>
+      <xhtml name="sampling">La taille en mm d'un bloc constant pendant l'optimisation</xhtml>
+      <xhtml name="mri"><img SRC="../../images/III_T1mri.jpg" ALT=""/><br/>
+une image quelconque (pas nécessairement T1)</xhtml>
+      <xhtml name="dim_rigidity">2D rend les coupes indépendantes</xhtml>
+      <xhtml name="zdir_multiply_regul">multiplicatif</xhtml>
+      <xhtml name="geometric">raison de la décroissance de température du recuit simulé</xhtml>
+      <xhtml name="nIncrement">nombre de transition (x2) pour l'échantilloneur de Gibbs</xhtml>
+      <xhtml name="init_amplitude">multiplicatif, initialisation du champ</xhtml>
+      <xhtml name="write_field">Ecriture du champ correctif</xhtml>
+    </d>
+  </d>
+  <d name="en" length="3">
+    <xhtml name="short"><img SRC="../../images/II_nobias.jpg" ALT=""/><br/>
+Correct for the spatial bias in usual MR images</xhtml>
+    <d name="parameters" length="14">
+      <xhtml name="init_temperature">Initial temperature for annealing</xhtml>
+      <xhtml name="field_rigidity">weight for the field rigidity constraint</xhtml>
+      <xhtml name="ngrid">Number of levels in the multigrid</xhtml>
+      <xhtml name="increment"/>
+      <xhtml name="mri_corrected"><img SRC="../../images/III_nobias.jpg" ALT=""/><br/>
+restored image</xhtml>
+      <xhtml name="sampling">Block size, in mm, during simulated annealing</xhtml>
+      <xhtml name="mri"><img SRC="../../images/III_T1mri.jpg" ALT=""/><br/>
+any image (not necessarily T1-weighted)</xhtml>
+      <xhtml name="dim_rigidity">2D leads to independent slices</xhtml>
+      <xhtml name="zdir_multiply_regul"/>
+      <xhtml name="coil"/>
+      <xhtml name="geometric">geometric decreasing of temperature</xhtml>
+      <xhtml name="nIncrement">Transition number (*2) for the Gibbs sampler</xhtml>
+      <xhtml name="init_amplitude"/>
+      <xhtml name="write_field"/>
+    </d>
+    <xhtml name="long">This procedure performs something like painting restoration.<br/><br/>
+
+You may think that a unequivocal correspondence exists between the grey
+level in one voxel of a T1-weighted MR scan, and some esoteric property of the underlying
+cube of tissue. You should not succumb to this temptation.
+Take some time to observe a standard anatomical scan with a rainbow
+colormap to have this revelation:<br/>
+<img SRC="../../images/ares-axial.jpg" ALT=""/>
+<img SRC="../../images/ares-sag.jpg" ALT=""/>
+<img SRC="../../images/ares-coro.jpg" ALT=""/>
+<br/>
+Some parts of the white matter are red, while some others are yellow or
+even green. All looks like as if the putative correspondence mentioned above
+was depending on the localization in the field of view. Usually, the center
+of the coil is lighter, but this is not a systematic observation and depends
+on the coil and scanner design. When one looks at a MR slice with a
+grey colormap, like in standard radiology, this default is not straightforward. 
+Human vision, indeed, is very effective at correcting for this kind of spatial variations.
+This capacity has some link with the fact that we usually perceive object's colors
+as uniform, whatever illumination related variations. Unfortunately,
+this sophisticated feature of human vision has prevented the MR physicists
+to find the motivation to overcome that acquisition problem.
+Artificial vision still being in its infancy, it is much more disturbed
+by these spatial intensity variations than radiologists. This procedure
+has to correct for the spatial bias before any segmentation
+process can be reliably trigered.<br/><br/>
+
+The physical phenomena underlying the spatial inhomogeneities unfortunately
+depends on the shape of the subject's head. Hence, a systematic correction
+from an initial fantom based evaluation is not possible. A bias estimation
+has to be done for each new subject. Our approach to drive the estimation
+is to maximize a measure of the image quality after restoration. This measure
+is the entropy of the intensity distribution. A low entropy corresponds to
+an image where each tissue class is represented by a thin peak in the histogram.
+The spatial bias field leads to a thickening of the peaks, which increases
+the entropy.<br/><br/>
+
+The simplest model standing for the origin of the observed intensities is the following:<br/>
+<img SRC="../../images/model_image.jpg" ALT=""/><br/>
+The intensity observed in voxel x is supposed to correspond to the product between
+an intensity I intrinsic to the tissue and a spatial bias F, plus a RMN related noise.
+Some considerations about the multiple origins of the bias usually lead to assume
+spatial regularity. To restore image O, we estimate the bias F, assuming that
+the correcting field Fc has to maximize the measure of quality of the intrinsic image.
+Hence the optimal correction field minimizes the function:<br/>
+<img SRC="../../images/energy.jpg" ALT=""/><br/>
+The optimal field provides a trade-off between the quality measure (the entropy S(FcO)),
+the regularity of the field (R(Fc), a sum of quadratic discrepancies between neighbors),
+and a distance to the initial image (M(FcO), which discards the trivial solution corresponding
+to a constant intrinsic image). The K constants weight the influence of the three terms.
+The function is minimized first using simulated annealing at the highest level
+of a multigrid representation, where the field is piecewise constant. 
+The field regularity is slightly relaxed when the grid resolution is increased.
+In our opinion, indeed, the ideal correcting field includes large variations
+at the level of T1 discontinuities. For the previous image,
+the resulting solution is the following:
+<br/><br/>
+The intrinsic image:<br/>
+<img SRC="../../images/cares-axial.jpg" ALT=""/>
+<img SRC="../../images/cares-sag.jpg" ALT=""/>
+<img SRC="../../images/cares-coro.jpg" ALT=""/>
+<br/><br/>
+The field F:<br/>
+<img SRC="../../images/fares-axial.jpg" ALT=""/>
+<img SRC="../../images/fares-sag.jpg" ALT=""/>
+<img SRC="../../images/fares-coro.jpg" ALT=""/>
+<br/><br/>
+The histogram of the initial image O:<br/>
+<img SRC="../../images/ares-histo.jpg" ALT=""/>
+<br/><br/>
+The histogram of the restored image I:<br/>
+<img SRC="../../images/cares-histo.jpg" ALT=""/>
+<br/><br/>
+The main parameters to be tuned if you get some problems
+with your images are related to the field regularity:
+<ul>
+<li>If the grey/white contrast of your images is weak, increase
+the field rigidity;
+</li>
+<li>If your coil leads to a high bias in the z direction (the magnet
+axes), lower the rigidity in that direction (zdir_multiply-regul between 0.1 and 1);</li>
+<li>If the intensities change from one slice to the neighboring ones, use
+the 2D mode (dim_rigidity).</li>
+</ul>
+<br/><br/>
+If your images stem from a high field magnet, the spatial bias
+may be especially high. In that case, you may have to lower the
+field rigidity. I guess you have understood now that a large
+bias with a low contrast may lead to some troubles... This procedure,
+however, can give correct results even when the grey and white peaks
+are completely mixed up:<br/><br/>
+An example with our ten years old 3T magnet:<br/>
+<img SRC="../../images/3T-a.jpg" ALT=""/>
+<img SRC="../../images/3T-s.jpg" ALT=""/>
+<img SRC="../../images/3T-histo.jpg" ALT=""/>
+<br/><br/>
+The estimated field:<br/>
+<img SRC="../../images/3T-af.jpg" ALT=""/>
+<img SRC="../../images/3T-sf.jpg" ALT=""/>
+<br/><br/>The restored image:<br/>
+<img SRC="../../images/3T-ac.jpg" ALT=""/>
+<img SRC="../../images/3T-sc.jpg" ALT=""/>
+<img SRC="../../images/3Tc-histo.jpg" ALT=""/>
+
+
+<br/><br/>
+For more information :<br/>
+<em><a href="/pdf/mangin-MMBIA00.pdf">Entropy minimization for automatic correction
+of intensity non uniformity</a>,</em> 
+J.-F. Mangin,
+MMBIA (Math. Methods in Biomed. Image Analysis),
+Hilton Head Island, South Carolina, IEEE Press
+162-169, 2000<br/><br/>
+You can also try the commanline:<br/>
+VipBiasCorrection -help<br/></xhtml>
+  </d>
+</minf>

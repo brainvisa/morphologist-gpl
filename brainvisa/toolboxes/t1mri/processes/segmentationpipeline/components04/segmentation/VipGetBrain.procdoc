@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+  <d name="fr" length="3">
+    <xhtml name="short"><img SRC="../../images/II_brain.jpg" ALT=""/>
+<br/>Crée un masque binaire du cerveau à partir d'une image IRM en T1 corrigée du biais spatial</xhtml>
+    <xhtml name="long">Le principe de base de cette routine est décrit dans
+<a HREF="AnaT1toBrainMask.html">Ana Brain Mask from T1 MRI</a>
+et dans <a HREF="AnaT1toBrainMaskCorrection.html">Correction Brain Mask from T1 MRI</a>.
+En outre elle est très bavarde pendant son exécution...<br/><br/>
+Il est possible ici d'accéder directement à certains paramètres pour tenter
+de résoudre une situation difficile. En cas d'échec, il reste de l'espoir...
+la commande ligne recèle une quantité de paramètres supplémentaires. Néanmoins,
+une alternative intéressante reste l'intervention manuelle... Dessin d'une
+"lésion" à préserver pendant le traitement, voire dessin d'une région à effacer...
+<br/><br/>
+Pour plus d'information :<br/>
+<em>Robust brain segmentation using histogram
+scale-space analysis and mathematical morphology,</em>
+J.-F. Mangin, O. Coulon, and V. Frouin
+MICCAI, MIT, LNCS-1496, Springer Verlag
+1230-1241, 1998
+<br/><br/>
+Vous pouvez également essayer la commande ligne :<br/>
+VipGetBrain -help</xhtml>
+    <d name="parameters" length="9">
+      <xhtml name="regularization">choix d'une régularization de la binarisation</xhtml>
+      <xhtml name="mri_corrected"><a HREF="VipBiasCorrection.html"><img SRC="../../images/III_nobias.jpg" ALT=""/></a>
+l'IRM T1 corrigée du biais</xhtml>
+      <xhtml name="Commissure_coordinates"/>
+      <xhtml name="erosion_size">taille de l'érosion engendrant la graine du cerveau</xhtml>
+      <xhtml name="first_slice">nombre de coupes à effacer au début de l'image</xhtml>
+      <xhtml name="histo_analysis"><a HREF="VipHistoAnalysis.html"><img SRC="../../images/III_hana.jpg" ALT=""/></a><br/>
+Statistiques sur les classes gris/blanc</xhtml>
+      <xhtml name="last_slice">nombre de coupes à effacer à la fin de l'image</xhtml>
+      <xhtml name="brain_mask"><img SRC="../../images/III_brain.jpg" ALT=""/>
+la segmentation du cerveau</xhtml>
+      <xhtml name="lesion_mask">masque binaire d'une lésion (optionnel)</xhtml>
+    </d>
+  </d>
+  <d name="en" length="3">
+    <xhtml name="short"><img SRC="../../images/II_brain.jpg" ALT=""/>
+<br/>Compute a binary mask of the brain from a bias corrected T1-weighted image
+</xhtml>
+    <d name="parameters" length="9">
+      <xhtml name="regularization">during binarization</xhtml>
+      <xhtml name="mri_corrected"><a HREF="VipBiasCorrection.html"><img SRC="../../images/III_nobias.jpg" ALT=""/></a></xhtml>
+      <xhtml name="first_slice">slices to erase at top</xhtml>
+      <xhtml name="brain_mask"><img SRC="../../images/III_brain.jpg" ALT=""/><br/>
+binary mask</xhtml>
+      <xhtml name="lesion_mask">binary mask (option)</xhtml>
+      <xhtml name="last_slice">slices to erase at bottom</xhtml>
+      <xhtml name="erosion_size">to get brain seed</xhtml>
+      <xhtml name="histo_analysis"><a HREF="VipHistoAnalysis.html"><img SRC="../../images/III_hana.jpg" ALT=""/></a><br/>
+Grey/white statistics</xhtml>
+      <xhtml name="Commissure_coordinates"/>
+    </d>
+    <xhtml name="long">The basic principles of this procedure are described in
+<a HREF="AnaT1toBrainMask.html">Ana Brain Mask from T1 MRI</a>
+and <a HREF="AnaT1toBrainMaskCorrection.html">Correction Brain Mask from T1 MRI</a>.
+Moreover, the log files are full of information...<br/><br/>
+In this low level access, you can tune some parameters to overcome
+difficult cases. If it is still a failure, your last hope
+is in using the commandline procedure, which gives access to much more parameters.
+An interesting alternative, however, is manual drawing, at least to
+clean up problematic areas... Semi-manual drawing may be especially
+wellcome when a lesion is disturbing the segmentation process.
+<br/><br/>
+For more information:<br/>
+<em><a href="/pdf/mangin-MICCAI98.pdf">Robust brain segmentation using histogram
+scale-space analysis and mathematical morphology</a>,</em>
+J.-F. Mangin, O. Coulon, and V. Frouin
+MICCAI, MIT, LNCS-1496, Springer Verlag
+1230-1241, 1998
+<br/><br/>
+You can also try the commandline<br/>
+VipGetBrain -help</xhtml>
+  </d>
+</minf>

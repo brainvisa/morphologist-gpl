@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+
+<xhtml name="en">
+  <h1>T1-weighted pipeline developed before 2004</h1>
+  
+  <p>
+You should find here most of the processes located directly under "anatomy" in the previous releases of brainVISA, except the processes of the category "morphometry" that remain at a higher level.
+  </p>
+
+</xhtml>
+
+<xhtml name="fr">
+  <h1>Analyse des images pondérées en T1 développée avant 2004</h1>
+  
+  <p>
+Vous devriez trouver ici tous les traitements situés précédemment directement sous "anatomy". Seuls les traitements de la catégorie "morphometry" sont restés au niveau supérieur.
+  </p>
+
+</xhtml>
+
+</minf>

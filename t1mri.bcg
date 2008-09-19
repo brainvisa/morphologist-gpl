@@ -1,0 +1,6 @@
+#-----------------------------------------------------------------------------
+class Component_t1mri( GenericMakerComponent ):
+  _name = 't1mri'
+
+  def dependencies( self ):
+    return [ 'aimsalgo', 'brainvisa' ]

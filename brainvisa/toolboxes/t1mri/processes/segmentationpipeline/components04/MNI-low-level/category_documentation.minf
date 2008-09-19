@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+
+<xhtml name="en">
+  <h1>MNI tools (McGill)</h1>
+  
+  <p>
+A beginning of encapsulation of some tools of the MNI, not ready at all...
+  </p>
+
+</xhtml>
+
+<xhtml name="fr">
+  <h1>Outils du MNI, McGill</h1>
+  
+  <p>
+Un début d'encapsulation des outils du MNI, loin d'être achevé...
+  </p>
+
+</xhtml>
+
+</minf>

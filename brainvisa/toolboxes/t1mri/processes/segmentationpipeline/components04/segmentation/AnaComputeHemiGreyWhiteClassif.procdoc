@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+  <d name="fr" length="3">
+    <xhtml name="short"><a HREF="VipBiasCorrection.html"><img SRC="../../images/II_nobias.jpg" ALT=""/></a>
+<a HREF="VipHistoAnalysis.html"><img SRC="../../images/II_hana.jpg" ALT=""/></a>
+<a HREF="AnaSplitBrainFromBrainMask.html"><img SRC="../../images/II_voronoi.jpg" ALT=""/></a>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_moulin3.jpg" ALT=""/>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_gw.jpg" ALT=""/>
+<br/>Classification gris/blanc pour la "Voxel Based Morphetry"</xhtml>
+    <d name="parameters" length="6">
+      <xhtml name="brain_voronoi"><a HREF="AnaSplitBrainFromBrainMask.html"><img SRC="../../images/III_voronoi.jpg" ALT=""/></a>
+hémisphères + cervelet</xhtml>
+      <xhtml name="mri_corrected"><a HREF="VipBiasCorrection.html"><img SRC="../../images/III_nobias.jpg" ALT=""/></a>
+</xhtml>
+      <xhtml name="Side"/>
+      <xhtml name="left_grey_white"><img SRC="../../images/III_gw.jpg" ALT=""/>
+</xhtml>
+      <xhtml name="right_grey_white">classification (gris=100,blanc=200)</xhtml>
+      <xhtml name="histo_analysis"><a HREF="VipHistoAnalysis.html"><img SRC="../../images/III_hana.jpg" ALT=""/></a>
+</xhtml>
+    </d>
+    <xhtml name="long">Cette brique propose une classification gris blanc de chacun
+des hémisphères cérébraux pour les personnes souhaitant tester
+l'influence des algorithmes de classification
+(SPM, outils du MNI, SHFJ...) sur le résultat final de la VBM...
+<br/><br/>
+L'approche que nous proposons traite séparément chacun des hémisphères,
+ce qui devrait permettre d'éviter des mélanges entre les faces médiales,
+ou entre les faces basses et le cervelet, au cours du lissage spatial
+préalable aux statistiques.<br/><br/>
+Une autre particularité de l'approche proposée : nous avons décidé
+d'écarter le cervelet de la classification dans la mesure où les
+problèmes de volume partiel sont à notre avis trop importants pour
+aboutir à un résultat correct (une classification floue pourrait
+résoudre ce problème à l'avenir). Quelqu'un souhaitant passer
+outre ce choix peut néanmoins obtenir la classification du cervelet,
+voire d'une région quelconque du cerveau, à partir de la commande
+ligne VipGreyWhiteClassification.
+<br/><br/>
+L'algorithme de classification s'appuie essentiellement sur
+le résultat de l'analyse d'histogramme fourni par 
+<a HREF="VipHistoAnalysis.html">Vip Histogram Analysis</a>.
+Le résultat n'est pas issu d'un seuil, mais inclut une "régularisation
+markovienne" : un voxel à l'intensité intermédiaire est attribué
+de manière préférentielle à la classe majoritaire dans les
+voxels qui l'entourent.<br/><br/>
+
+Exemple de résultat:<br/>
+<img SRC="../../images/Rgreywhite.jpg" ALT=""/>
+<img SRC="../../images/intensite.jpg" ALT=""/>
+<img SRC="../../images/Lgreywhite.jpg" ALT=""/><br/>
+
+<img SRC="../../images/R2greywhite.jpg" ALT=""/>
+<img SRC="../../images/intensite2.jpg" ALT=""/>
+<img SRC="../../images/L2greywhite.jpg" ALT=""/></xhtml>
+  </d>
+  <d name="en" length="3">
+    <xhtml name="short"><a HREF="VipBiasCorrection.html"><img SRC="../../images/II_nobias.jpg" ALT=""/></a>
+<a HREF="VipHistoAnalysis.html"><img SRC="../../images/II_hana.jpg" ALT=""/></a>
+<a HREF="AnaSplitBrainFromBrainMask.html"><img SRC="../../images/II_voronoi.jpg" ALT=""/></a>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_moulin3.jpg" ALT=""/>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_gw.jpg" ALT=""/>
+<br/>Grey/white classification for "Voxel Based Morphetry"</xhtml>
+    <d name="parameters" length="6">
+      <xhtml name="brain_voronoi"><a HREF="AnaSplitBrainFromBrainMask.html"><img SRC="../../images/III_voronoi.jpg" ALT=""/></a>
+hemispheres + cerebellum</xhtml>
+      <xhtml name="mri_corrected"><a HREF="VipBiasCorrection.html"><img SRC="../../images/III_nobias.jpg" ALT=""/></a></xhtml>
+      <xhtml name="Side"/>
+      <xhtml name="left_grey_white"><img SRC="../../images/III_gw.jpg" ALT=""/>
+</xhtml>
+      <xhtml name="right_grey_white">classification (grey=100,white=200)</xhtml>
+      <xhtml name="histo_analysis"><a HREF="VipHistoAnalysis.html"><img SRC="../../images/III_hana.jpg" ALT=""/></a>
+</xhtml>
+    </d>
+    <xhtml name="long">This procedure yields a grey/white classification of each
+hemisphere for people wishing to test the influence of classification
+algorithms (SPM, MNI's tools, SHFJ's tools...) on the final VBM result.
+<br/><br/>
+The proposed method deals with each hemisphere individually, in
+order to prevent mixing between the two internal faces or between
+low cortex faces and cerebellum, during the spatial smoothing
+performed before statistics.<br/><br/>
+
+Another feature of the proposed approach: we have decided to
+discard cerebellum because partial volume effects are in our opinion
+too important to reach a correct binary classification (a fuzzy classification
+might overcome this problem). Nevertheless, a classification of
+cerebellum or any other masked area can be obtained from
+the command line VipGreyWhiteClassification.
+<br/><br/>
+The classification algorithm relies mainly on the result of the histogram
+analysis yielded by <a HREF="VipHistoAnalysis.html">Vip Histogram Analysis</a>.
+The result does not stem from a threshold but from a "Markovian
+regularisation": a voxel with intermediate grey level is attributed
+to the majority class in the surrounding.<br/><br/>
+
+A result example:<br/>
+<img SRC="../../images/Rgreywhite.jpg" ALT=""/>
+<img SRC="../../images/intensite.jpg" ALT=""/>
+<img SRC="../../images/Lgreywhite.jpg" ALT=""/><br/>
+
+<img SRC="../../images/R2greywhite.jpg" ALT=""/>
+<img SRC="../../images/intensite2.jpg" ALT=""/>
+<img SRC="../../images/L2greywhite.jpg" ALT=""/></xhtml>
+  </d>
+</minf>

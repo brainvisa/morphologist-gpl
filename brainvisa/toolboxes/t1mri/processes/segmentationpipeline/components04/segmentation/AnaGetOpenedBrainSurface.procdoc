@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+  <d name="fr" length="3">
+    <xhtml name="short">Crée un maillage du cerveau complet</xhtml>
+    <d name="parameters" length="5">
+      <xhtml name="brain_mesh"/>
+      <xhtml name="mri_corrected"><a HREF="VipBiasCorrection.html"><img SRC="../../images/III_nobias.jpg" ALT=""/></a>
+</xhtml>
+      <xhtml name="brain_mask"><a HREF="AnaT1toBrainMask.html"><img SRC="../../images/III_brain.jpg" ALT=""/></a>
+</xhtml>
+      <xhtml name="histo_analysis"><a HREF="VipHistoAnalysis.html"><img SRC="../../images/III_hana.jpg" ALT=""/></a>
+</xhtml>
+      <xhtml name="cortex">Résultat intermédiaire </xhtml>
+    </d>
+    <xhtml name="long">Cette procédure peut être utilisée pour calculer un maillage
+de la surface du cerveau. L'objet maillé n'est pas directement
+le masque du cerveau. En fait, un prétraitement cherche à ouvrir
+les sillons avant de réaliser la triangulation, de manière à rendre
+la lecture de la surface corticale plus simple. Le maillage
+final associe les deux hémisphères et le cervelet, mais la
+qualité de la segmentation du cervelet peut parfois sérieusement
+laisser à désirer. En effet, la résolution des acquisitions
+IRM standard n'est pas suffisante pour gérer correctement
+les plis du cervelet. Plus particulièrement, les effets de
+volume partiel entre matières grises et blanches peuvent
+perturber les processus de segmentation mis en oeuvre.<br/><br/>
+
+Exemple de résultat:<br/>
+<img SRC="../../images/brainmesh.jpg" ALT=""/></xhtml>
+  </d>
+  <d name="en" length="3">
+    <xhtml name="short">Compute a mesh of the whole brain</xhtml>
+    <d name="parameters" length="5">
+      <xhtml name="brain_mesh"/>
+      <xhtml name="mri_corrected"/>
+      <xhtml name="brain_mask"/>
+      <xhtml name="histo_analysis"/>
+      <xhtml name="cortex"/>
+    </d>
+    <xhtml name="long">This treatment computes a mesh of the whole brain, after some opening of
+the sulci to improve visualization. The mesh includes the two hemispheres and the cerebellum.
+It should be noted that the cerebellum definition may be bad, because the whole
+segmentation is tuned for best result with the hemispheres. 
+A higher spatial resolution may be required for cerebellum shape analysis.
+.<br/><br/>
+
+Example:<br/>
+<img SRC="../../images/brainmesh.jpg" ALT=""/></xhtml>
+  </d>
+</minf>

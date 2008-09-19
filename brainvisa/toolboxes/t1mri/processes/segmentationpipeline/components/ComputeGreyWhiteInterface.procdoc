@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+  <d name="fr" length="3">
+    <xhtml name="short">Cette nouvelle détection de l'interface gris/blanc devrait à terme éviter les situations ou certains gyri sont érodés dans le pipeline 2004, mais elle est toujours en développement.</xhtml>
+    <d name="parameters" length="14">
+      <xhtml name="Compute_mesh"/>
+      <xhtml name="RGW_interface"/>
+      <xhtml name="white_ridges"/>
+      <xhtml name="mri_corrected"/>
+      <xhtml name="left_white_mesh"/>
+      <xhtml name="split_mask"/>
+      <xhtml name="rate"/>
+      <xhtml name="histo_analysis"/>
+      <xhtml name="iterations"/>
+      <xhtml name="LGW_interface"/>
+      <xhtml name="pressure"/>
+      <xhtml name="right_white_mesh"/>
+      <xhtml name="Side"/>
+      <xhtml name="Use_ridges"/>
+    </d>
+    <xhtml name="long"/>
+  </d>
+  <d name="en" length="3">
+    <xhtml name="short">This new detection of the spherical Grey/White interface is supposed to reduce some problems related to missing the highest part of some gyri. It is still in progress.</xhtml>
+    <d name="parameters" length="14">
+      <xhtml name="Compute_mesh"/>
+      <xhtml name="RGW_interface"/>
+      <xhtml name="white_ridges"/>
+      <xhtml name="mri_corrected"/>
+      <xhtml name="left_white_mesh"/>
+      <xhtml name="split_mask"/>
+      <xhtml name="rate"/>
+      <xhtml name="histo_analysis"/>
+      <xhtml name="iterations"/>
+      <xhtml name="LGW_interface"/>
+      <xhtml name="pressure"/>
+      <xhtml name="right_white_mesh"/>
+      <xhtml name="Side"/>
+      <xhtml name="Use_ridges"/>
+    </d>
+    <xhtml name="long"/>
+  </d>
+</minf>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+  <d name="fr" length="3">
+    <xhtml name="short">Ce nouvel algorithm est encore en procédure de test, mais son interface peut être utilisée pour déclencher la méthode du pipeline 2004 et ses variantes.</xhtml>
+    <d name="parameters" length="16">
+      <xhtml name="Use_ridges"/>
+      <xhtml name="visu"/>
+      <xhtml name="initial_erosion"/>
+      <xhtml name="white_ridges"/>
+      <xhtml name="mri_corrected"/>
+      <xhtml name="variant"/>
+      <xhtml name="Commissure_coordinates"/>
+      <xhtml name="mult_factor"/>
+      <xhtml name="split_mask"/>
+      <xhtml name="bary_factor"/>
+      <xhtml name="Use_template"/>
+      <xhtml name="readme"/>
+      <xhtml name="histo_analysis"/>
+      <xhtml name="voronoi_template"/>
+      <xhtml name="brain_mask"/>
+      <xhtml name="cc_min_size"/>
+    </d>
+    <xhtml name="long"/>
+  </d>
+  <d name="en" length="3">
+    <xhtml name="short">This new algorithm is still under testing process, but the interface can be used to trigger the 2004 pipeline method ans its variants.</xhtml>
+    <d name="parameters" length="16">
+      <xhtml name="Use_ridges"/>
+      <xhtml name="visu"/>
+      <xhtml name="initial_erosion"/>
+      <xhtml name="white_ridges"/>
+      <xhtml name="mri_corrected"/>
+      <xhtml name="variant"/>
+      <xhtml name="Commissure_coordinates"/>
+      <xhtml name="mult_factor"/>
+      <xhtml name="split_mask"/>
+      <xhtml name="bary_factor"/>
+      <xhtml name="Use_template"/>
+      <xhtml name="readme"/>
+      <xhtml name="histo_analysis"/>
+      <xhtml name="voronoi_template"/>
+      <xhtml name="brain_mask"/>
+      <xhtml name="cc_min_size"/>
+    </d>
+    <xhtml name="long"/>
+  </d>
+</minf>

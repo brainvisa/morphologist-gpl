@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+  <d name="fr" length="3">
+    <xhtml name="short"><img SRC="../../images/II_brain.jpg" ALT=""/><br/>
+Le masque du cerveau fusionné avec l'IRM corrigée du biais</xhtml>
+    <xhtml name="long"/>
+    <d name="parameters" length="2">
+      <xhtml name="mri_corrected"><img SRC="../../images/III_nobias.jpg" ALT=""/></xhtml>
+      <xhtml name="brain_mask"><img SRC="../../images/III_brain.jpg" ALT=""/></xhtml>
+    </d>
+  </d>
+</minf>

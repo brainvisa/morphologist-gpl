@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+  <d name="fr" length="3">
+    <xhtml name="short">Ajoute de nouveaux attributs dans les graphes (de sillons en particulier)</xhtml>
+    <d name="parameters" length="2">
+      <xhtml name="input_graph"/>
+      <xhtml name="output_graph"/>
+    </d>
+    <xhtml name="long">Les graphes de données issus, soit d'un pipeline de traitement d'images, soit du dessin manuel de régions d'intérêt, soit d'un autre procédé (graphes de clusters d'activation...) ne possèdent pas nécessairement de façon "native" tous les attributs descripteurs possibles dont d'autres outils d'analyse auront besoin pour fonctionner correctement.<br/>
+Ce traitement a pour but d'ajouter à un tel graphe de données des attributs nouveaux qui sont apportés par des extensions nouvelles, soit pour compléter un graphe "ancien" issu d'une version antérieure des outils de traitements de données, soit parce que le programme qui a produit ce graphe de données n'a pas utilisé ces nouvelles extensions. On peut voir cette étape comme une étape de "mise à jour" des données.<br/>
+Ces nouveaux attributs peuvent être utiles pour des traitements en aval, comme la reconnaissance automatique des sillons ou les statistiques morphométriques. Ils sont parfois optionnels mais leur absence peut amener à des résultats moins précis ou incomplets.<br/>
+A terme, cette brique effectuera de façon générique la mise à jour de tous les types de graphes reconnus par la librairie AIMS (graphes de sillons, de gyri, de clusters d'activation, de ROI...). Pour le moment ce n'est qu'une "première mouture" et elle n'est utile que pour les graphes de sillons corticaux, les autres ne sont pas modifiés.
+</xhtml>
+  </d>
+  <d name="en" length="3">
+    <xhtml name="short">Adds new attributes in graphs (especially cortical folds graphs)</xhtml>
+    <d name="parameters" length="2">
+      <xhtml name="input_graph"/>
+      <xhtml name="output_graph"/>
+    </d>
+    <xhtml name="long">Data graphs, either produced by an image processing pipeline, either hand drawn using a regions of interest editor, or coming from other tools (activation clusters graphs...) do not necessarily natively possess all possible descriptor attributes which will be needed by other analysis tools to work properly.<br/>
+This process aims to add to such a graph some new attributes brung by new extensions, either to complete an "old" graph produced by an older version of the processing tools, or because some graph generation tools do not use the new extensions. This step can be seen as an "data update" step.<br/>
+These new attributes can be useful for subsequent processings, like automatic cortical folds recognition or morphometric statistics. They are sometimes optional but their absence can lead to less acurate or incomplete results.<br/>
+In the future, this process will handle the update of all graph types recognized by the AIMS library in a generic way: graphs of cortical sulci, of gyri, of activation clusters, of ROI... Up to now this is only a first version and only cortical folds graphs can benefit from this step, others are just leaved unchanged.
+</xhtml>
+  </d>
+</minf>

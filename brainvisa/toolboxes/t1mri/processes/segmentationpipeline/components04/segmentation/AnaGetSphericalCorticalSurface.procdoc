@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+  <d name="fr" length="3">
+    <xhtml name="short"><a HREF="VipBiasCorrection.html"><img SRC="../../images/II_nobias.jpg" ALT=""/></a>
+<a HREF="VipHistoAnalysis.html"><img SRC="../../images/II_hana.jpg" ALT=""/></a>
+<a HREF="AnaSplitBrainFromBrainMask.html"><img SRC="../../images/II_voronoi.jpg" ALT=""/></a>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_moulin6.jpg" ALT=""/>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_cortex.jpg" ALT=""/>
+<img SRC="../../images/II_white.jpg" ALT=""/>
+<br/>Fournit un maillage sphérique de la surface corticale</xhtml>
+    <d name="parameters" length="10">
+      <xhtml name="brain_voronoi"><a HREF="AnaSplitBrainFromBrainMask.html"><img SRC="../../images/III_voronoi.jpg" ALT=""/></a></xhtml>
+      <xhtml name="mri_corrected"><a HREF="VipBiasCorrection.html"><img SRC="../../images/III_nobias.jpg" ALT=""/></a></xhtml>
+      <xhtml name="left_white_mesh"><img SRC="../../images/III_white.jpg" ALT=""/></xhtml>
+      <xhtml name="pressure">pression interne</xhtml>
+      <xhtml name="rate">fraction de déplacement</xhtml>
+      <xhtml name="oversampling">suréchantillonage</xhtml>
+      <xhtml name="iterations">nb déplacements vers barycentre
+des voisins</xhtml>
+      <xhtml name="right_white_mesh">maillage sphérique</xhtml>
+      <xhtml name="Side"/>
+      <xhtml name="histo_analysis"><a HREF="VipHistoAnalysis.html"><img SRC="../../images/III_hana.jpg" ALT=""/></a></xhtml>
+    </d>
+    <xhtml name="long">Cette moulinette fournit un maillage sphérique de la surface
+corticale pour chaque hémisphère.
+Il s'agit de la surface de la matière blanche (le fond du cortex).
+Cette surface peut être gonflée à des fins de visualisation.
+(cf <a HREF="AnaInflateCorticalSurface.html">Ana Inflate Cortical Surface</a>).
+<br/><br/>
+L'algorithme sous-jacent repose sur une série de transformations
+de morphologie mathématique déformant une boîte intialement
+parallélépipédique dans laquelle est enfermé l'hémisphère
+(cf <a HREF="AnaComputeCorticalFoldArg.html">Ana Compute Cortical Fold Arg</a>).
+<br/><br/>
+Exemple de résultat:<br/>
+<img SRC="../../images/spherical1.jpg" ALT=""/>
+<img SRC="../../images/spherical2.jpg" ALT=""/>
+<br/><br/>
+Du fait de la résolution spatiale des données, l'effet de volume partiel
+peut conduire à des erreurs dans les régions des poles frontaux,
+et temporaux, à cause de la finesse des gyri.En cas de problème, vous pouvez améliorer les résultats
+en suréchantillonant les données avant la détection de l'interface, au risque de créer de petites
+excroissances. Le paramètre de pression permet également d'influer sur la détection
+en s'opposant à la régularisation.
+
+<br/><br/>
+Les paramètres (iterations et ratio) correspondent à un lissage qui
+consiste à déplacer "iterations" fois chaque point du maillage
+initial de "ratio" fois la distance au barycentre des voisins de ce point
+sur le maillage vers ce barycentre. Ce lissage à tendance à lisser
+les sommets des gyri du fait de leur forte
+courbure. Vous pouvez réduite le nombre d'itérations si cela vous gêne...<br/><br/>
+
+Pour plus d'information :<br/>
+From 3D magnetic resonance images to structural representations of
+the cortex topography using topology preserving deformations.<br/>
+J.-F. Mangin, V. Frouin, I. Bloch, J. Regis, and J.Lopez-Krahe.<br/>
+Journal of Mathematical Imaging and Vision, 5(4):297--318,1995.
+<br/><br/></xhtml>
+  </d>
+  <d name="en" length="3">
+    <xhtml name="short"><a HREF="VipBiasCorrection.html"><img SRC="../../images/II_nobias.jpg" ALT=""/></a>
+<a HREF="VipHistoAnalysis.html"><img SRC="../../images/II_hana.jpg" ALT=""/></a>
+<a HREF="AnaSplitBrainFromBrainMask.html"><img SRC="../../images/II_voronoi.jpg" ALT=""/></a>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_moulin6.jpg" ALT=""/>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_cortex.jpg" ALT=""/>
+<img SRC="../../images/II_white.jpg" ALT=""/>
+<br/>Compute a spherical mesh of the cortical surface</xhtml>
+    <d name="parameters" length="10">
+      <xhtml name="brain_voronoi"><a HREF="AnaSplitBrainFromBrainMask.html"><img SRC="../../images/III_voronoi.jpg" ALT=""/></a></xhtml>
+      <xhtml name="mri_corrected"><a HREF="VipBiasCorrection.html"><img SRC="../../images/III_nobias.jpg" ALT=""/></a></xhtml>
+      <xhtml name="left_white_mesh"><img SRC="../../images/III_white.jpg" ALT=""/></xhtml>
+      <xhtml name="pressure">internal</xhtml>
+      <xhtml name="rate">percentage of full move</xhtml>
+      <xhtml name="oversampling">increase spatial resolution</xhtml>
+      <xhtml name="iterations">nb moves towards neighbor barycenter</xhtml>
+      <xhtml name="right_white_mesh"/>
+      <xhtml name="Side"/>
+      <xhtml name="histo_analysis"><a HREF="VipHistoAnalysis.html"><img SRC="../../images/III_hana.jpg" ALT=""/></a></xhtml>
+    </d>
+    <xhtml name="long">This treatment yields a spherical mesh of the cortical surface for
+each hemisphere. This mesh corresponds to the grey/white interface.
+This mesh can be inflated for visualization purpose:
+(cf <a HREF="AnaInflateCorticalSurface.html">Ana Inflate Cortical Surface</a>).
+<br/><br/>
+The underlying algorithm relies on a series of morphological transformations,
+warping a parallepipedic box in which the hemisphere is embedded.
+(cf <a HREF="AnaComputeCorticalFoldArg.html">Ana Compute Cortical Fold Arg</a>).
+<br/><br/>
+Example:<br/>
+<img SRC="../../images/spherical1.jpg" ALT=""/>
+<img SRC="../../images/spherical2.jpg" ALT=""/>
+<br/><br/>
+Because of spatial resolution, partial volume effect can lead to erosion of thin gyri,
+especially in frontal and temporal lobes. In such cases, you can improve the result
+via oversampling of the data, or increase pressure inside the surface. The risk is
+the creation of small objects growing out of the correct surface.
+
+<br/><br/>
+The parameters (iteration and ratio) control the smoothing of the mesh,
+which consists in moving each mesh node toward the barycenter of its neighbors
+(ratio tunes the amplitude of this motion). Too much smoothing may
+oversmooth thin gyri.
+<br/><br/>
+
+For more information :<br/>
+<a href="/pdf/mangin-JMIV95.pdf">From 3D magnetic resonance images to structural representations of
+the cortex topography using topology preserving deformations</a>.<br/>
+J.-F. Mangin, V. Frouin, I. Bloch, J. Regis, and J.Lopez-Krahe.<br/>
+Journal of Mathematical Imaging and Vision, 5(4):297--318,1995.
+<br/><br/></xhtml>
+  </d>
+</minf>

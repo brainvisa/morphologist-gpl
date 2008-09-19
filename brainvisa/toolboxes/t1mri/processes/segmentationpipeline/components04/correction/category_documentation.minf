@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+
+<xhtml name="en">
+  <h1>Correction process</h1>
+  
+  <p>
+You should find here two processes allowing you to trigger alternative algorithms for brain segmentation and brain split. These corrections are related to the two check points advised in the pipeline documentation.
+  </p>
+
+</xhtml>
+
+<xhtml name="fr">
+  <h1>Processus de correction</h1>
+  
+  <p>
+Vous devriez trouver ici les deux traitements permettant d'essayer des variantes des algorithmes de segmentation du cerveau et de séparation des hémisphères. Ces variantes permettent de corriger les problèmes éventuellement observés aux deux stades mentionnés dans la documentation du pipeline.
+  </p>
+
+</xhtml>
+
+</minf>

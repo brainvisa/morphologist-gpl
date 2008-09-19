@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+  <d name="fr" length="3">
+    <xhtml name="short"><a HREF="VipBiasCorrection.html"><img SRC="../../images/II_nobias.jpg" ALT=""/></a>
+<a HREF="VipHistoAnalysis.html"><img SRC="../../images/II_hana.jpg" ALT=""/></a>
+<a HREF="AnaSplitBrainFromBrainMask.html"><img SRC="../../images/II_voronoi.jpg" ALT=""/></a>
+<img SRC="../../images/II_cortex.jpg" ALT=""/>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_moulin5.jpg" ALT=""/>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_hemi.jpg" ALT=""/>
+<br/>Crée un maillage d'un ou deux hémisphères</xhtml>
+    <d name="parameters" length="8">
+      <xhtml name="right_hemi_cortex"/>
+      <xhtml name="left_hemi_mesh"><img SRC="../../images/III_hemi.jpg" ALT=""/></xhtml>
+      <xhtml name="brain_voronoi"><a HREF="AnaSplitBrainFromBrainMask.html"><img SRC="../../images/III_voronoi.jpg" ALT=""/></a></xhtml>
+      <xhtml name="mri_corrected"><a HREF="VipBiasCorrection.html"><img SRC="../../images/III_nobias.jpg" ALT=""/></a></xhtml>
+      <xhtml name="right_hemi_mesh"/>
+      <xhtml name="left_hemi_cortex"><a HREF="AnaComputeCorticalFoldArg.html#interface"><img SRC="../../images/III_cortex.jpg" ALT=""/></a>
+</xhtml>
+      <xhtml name="Side"/>
+      <xhtml name="histo_analysis"><a HREF="VipHistoAnalysis.html"><img SRC="../../images/III_hana.jpg" ALT=""/></a></xhtml>
+    </d>
+    <xhtml name="long">Cette procédure crée un maillage de chacun des hémisphères cérébraux.
+Elle inclue un prétraitement qui ouvre les sillons afin
+de faciliter la lecture de la surface corticale.<br/>
+ATTENTION, le maillage issu de cette procédure n'a
+pas de raison d'avoir une topologie sphérique.
+Il ne devrait donc pas être gonflé pour le déplisser.
+Un maillage sphérique de l'interface gris/blanc
+est fourni par une autre procédure.<br/><br/>
+
+Nous espérons fournir un maillage sphérique
+de l'interface gris/LCR dans un avenir proche...<br/><br/>
+
+Exemple de résultat:<br/>
+<img SRC="../../images/hemimesh.jpg" ALT=""/></xhtml>
+  </d>
+  <d name="en" length="3">
+    <xhtml name="short"><a HREF="VipBiasCorrection.html"><img SRC="../../images/II_nobias.jpg" ALT=""/></a>
+<a HREF="VipHistoAnalysis.html"><img SRC="../../images/II_hana.jpg" ALT=""/></a>
+<a HREF="AnaSplitBrainFromBrainMask.html"><img SRC="../../images/II_voronoi.jpg" ALT=""/></a>
+<img SRC="../../images/II_cortex.jpg" ALT=""/>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_moulin5.jpg" ALT=""/>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_hemi.jpg" ALT=""/>
+<br/>Compute a mesh of one or two hemispheres</xhtml>
+    <d name="parameters" length="8">
+      <xhtml name="right_hemi_cortex"/>
+      <xhtml name="left_hemi_mesh"><img SRC="../../images/III_hemi.jpg" ALT=""/></xhtml>
+      <xhtml name="brain_voronoi"><a HREF="AnaSplitBrainFromBrainMask.html"><img SRC="../../images/III_voronoi.jpg" ALT=""/></a></xhtml>
+      <xhtml name="mri_corrected"><a HREF="VipBiasCorrection.html"><img SRC="../../images/III_nobias.jpg" ALT=""/></a></xhtml>
+      <xhtml name="right_hemi_mesh"/>
+      <xhtml name="left_hemi_cortex"><a HREF="AnaComputeCorticalFoldArg.html#interface"><img SRC="../../images/III_cortex.jpg" ALT=""/></a>
+</xhtml>
+      <xhtml name="Side"/>
+      <xhtml name="histo_analysis"><a HREF="VipHistoAnalysis.html"><img SRC="../../images/III_hana.jpg" ALT=""/></a></xhtml>
+    </d>
+    <xhtml name="long">Cette procédure crée un maillage de chacun des hémisphères cérébraux.
+Elle inclue un prétraitement qui ouvre les sillons afin
+de faciliter la lecture de la surface corticale.<br/>
+ATTENTION, le maillage issu de cette procédure n'a
+pas de raison d'avoir une topologie sphérique.
+Il ne devrait donc pas être gonflé pour le déplisser.
+Un maillage sphérique de l'interface gris/blanc
+est fourni par une autre procédure.<br/><br/>
+
+Nous espérons fournir un maillage sphérique
+de l'interface gris/LCR dans un avenir proche...<br/><br/>
+
+Exemple de résultat:<br/>
+<img SRC="../../images/hemimesh.jpg" ALT=""/></xhtml>
+  </d>
+</minf>

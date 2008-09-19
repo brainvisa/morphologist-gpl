@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+
+<xhtml name="en">
+  <h1>A few subpipelines</h1>
+  
+  <p>
+You should find here mainly subparts of the main pipeline, that are usually used with the validation flags to split the full process in several steps, allowing some checking operations (see the pipeline documentation).
+  </p>
+
+</xhtml>
+
+<xhtml name="fr">
+  <h1>Quelques sous-pipelines</h1>
+  
+  <p>
+Vous devriez trouver ici les principales parties du pipeline général. Elles sont généralement utilisées une à une afin de procéder à quelques vérifications à certains stades des traitements (cf la documentation du pipeline).
+  </p>
+
+</xhtml>
+
+</minf>

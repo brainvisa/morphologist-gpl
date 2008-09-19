@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+  <d name="fr" length="3">
+    <xhtml name="short">Gonflement de l'interface WM/GM</xhtml>
+    <xhtml name="long">Cette moulinette permet de "gonfler" la surface interface entre matière grise et matière blanche, essentiellement pour des raisons de visualisation. 
+
+On peut sauver une partie de la séquence de visualisation si on le désire. La séquence contient alors t=0, t=10, t=20, t=40, t=80, etc..., t=last_iteration.
+Une texture contenant la courbure moyenne de la surface originale est également calculée et écrite dans 'meanCurvature.tex' pour pouvoir localiser les sillons sur la surface gonflée.
+Vous pouvez fusionner cette texture avec une texture fonctionnelle dans Anatomist afin de créer une texture 2D.
+La texture fonctionnelle peut être calculée en fusionnant la surface corticale initiale et le volume 3D de la SPM
+(vous avez d'ailleurs la possibilité de régler divers paramètres controlant cette fusion).
+<br/><img SRC="../../images/beforeInflate.jpg" ALT=""/><br/>
+Fig 1: Avant
+<br/><img SRC="../../images/afterInflate.jpg" ALT=""/><br/>
+Fig 2: Après
+
+</xhtml>
+    <d name="parameters" length="8">
+      <xhtml name="spring_force">Poids de la force "ressort" qui préserve l'intégrité du maillage et évite les distorsions de distance sur la surface.</xhtml>
+      <xhtml name="smoothing_force">Poids de la force de lissage (la plus importante).</xhtml>
+      <xhtml name="save_sequence">Veut-on sauver la séquence de gonflement ou seulement le résultat final.</xhtml>
+      <xhtml name="normal_force">Poids de la force de gonflement selon la normale à la surface.</xhtml>
+      <xhtml name="input_mesh">.tri ou .mesh contenant la surface à gonfler</xhtml>
+      <xhtml name="iterations">Nombre d'itérations nécessaires</xhtml>
+      <xhtml name="curvature_texture">Texture contenant la courbure moyenne de la surface "input_mesh".
+Le chemin/nom doit être rentré à la main (pour l'instant).
+</xhtml>
+      <xhtml name="output_mesh">résultat du gonflement dans un .mesh</xhtml>
+    </d>
+  </d>
+  <d name="en" length="3">
+    <xhtml name="short">Inflation of the grey/white interface</xhtml>
+    <d name="parameters" length="8">
+      <xhtml name="spring_force"/>
+      <xhtml name="smoothing_force"/>
+      <xhtml name="save_sequence"/>
+      <xhtml name="normal_force"/>
+      <xhtml name="input_mesh"/>
+      <xhtml name="iterations"/>
+      <xhtml name="curvature_texture"/>
+      <xhtml name="output_mesh"/>
+    </d>
+    <xhtml name="long">This treatment inflates the cortical surface for visualization purpose.
+
+You can save a sampling of the inflating for visualization. The series includes  t=0, t=10, t=20, t=40, t=80, etc..., t=last_iteration.
+A texture including mean curvature of the original mesh is also provided in  'meanCurvature.tex' in order to
+highlight sulci. You can mix (fusion)  this texture with a functional texture using 2D textures in Anatomist (the functional
+texture is created via fusion between the original surface and a volumic SPM, according to various
+parameters)
+
+
+<br/><img SRC="../../images/beforeInflate.jpg" ALT=""/><br/>
+Fig 1: Before
+<br/><img SRC="../../images/afterInflate.jpg" ALT=""/><br/>
+Fig 2: After</xhtml>
+  </d>
+</minf>

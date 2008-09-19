@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+
+<xhtml name="en">
+  <h1>2005-2007 T1-weighted pipeline</h1>
+  
+  <p>
+This is where the new 2007 pipeline is.
+  </p>
+  <p>
+The development of this new pipeline aimed first at improving the robustness of the older (2004) one, second at adding some features like providing a spherical mesh of the external interface of the cortex. Up to now, we mainly focused on robustness. We gathered 100 scans from all over the world, usually chosen for their poor quality in terms of contrast, signal to noise and spatial inhomogeneities. The challenge is to get good results for most of them. This means each time we modify something (tuning parameters or changing algorithms), the pipeline is iteratively triggered from the beginning for the 100 scans and the results are visually checked.
+  </p>
+
+</xhtml>
+
+<xhtml name="fr">
+  <h1>Analyse des images pondérées en T1 développée en 2005-2007</h1>
+  
+  <p>
+C'est ici que se trouve le nouveau pipeline 2007.
+  </p>
+  <p>
+Le développement de ce nouveau pipeline visait à augmenter la robustesse du précédent (2004) mais aussi à apporter de nouvelles fonctionnalités, comme un maillage sphérique de l'interface externe du cortex. Jusqu'à présent, nous nous sommes surtout concentrés sur la robustesse. Notre manière de procéder a consisté à réunir une centaine d'examens provenant d'un peu partout dans le monde. Ces examens ont surtout été sélectionnés pour leur faible qualité en termes de contraste, signal sur bruit et inhomogénéités spatiales. Chaque fois que nous procédons à un changement (ajustement de paramètre ou nouvel algorithme), nous relançons le pipeline sur l'ensemble des données et nous vérifions les résultats visuellement.
+  </p>
+
+</xhtml>
+
+</minf>

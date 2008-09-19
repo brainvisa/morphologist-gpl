@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+  <d name="fr" length="3">
+    <xhtml name="short"><img SRC="../../images/II_brain.jpg" ALT=""/><br/>
+Validation de <a HREF="VipGetBrain.html">Vip Get Brain</a></xhtml>
+    <d name="parameters" length="4">
+      <xhtml name="readme"/>
+      <xhtml name="mri_corrected"><img SRC="../../images/III_nobias.jpg" ALT=""/>Le résultat de la correction de biais</xhtml>
+      <xhtml name="brain_mask"><img SRC="../../images/III_brain.jpg" ALT=""/>
+Le résultat de la segmentation</xhtml>
+      <xhtml name="validation">validation de la segmentation</xhtml>
+    </d>
+    <xhtml name="long">Cet outil fusionne la segmentation avec l'IRM corrigée du biais de manière
+à simplifier la vérification du résultat. La visualisation obtenue est la suivante:<br/>
+<img SRC="../../images/fusion.jpg" ALT=""/>
+<img SRC="../../images/fusionCor.jpg" ALT=""/>
+<img SRC="../../images/fusionSag.jpg" ALT=""/><br/>
+
+Si tout vous semble correct, vous pouvez l'indiquer à brainvisa 
+en mettant validation à Lock (+ execute). Cette commande crée le fichier
+brain_dionysos.lock. S'il existe, la segmentation ne sera plus jamais effectuée,
+même par la procédure 
+<a HREF="AnaT1toBrainMaskCorrection.html">Correction Brain Mask from T1 MRI</a>
+<br/><br/></xhtml>
+  </d>
+  <d name="en" length="3">
+    <xhtml name="short"><img SRC="../../images/II_brain.jpg" ALT=""/><br/>
+Validation of <a HREF="VipGetBrain.html">Vip Get Brain</a></xhtml>
+    <d name="parameters" length="4">
+      <xhtml name="readme"/>
+      <xhtml name="mri_corrected"><img SRC="../../images/III_nobias.jpg" ALT=""/></xhtml>
+      <xhtml name="brain_mask"><img SRC="../../images/III_brain.jpg" ALT=""/></xhtml>
+      <xhtml name="validation"/>
+    </d>
+    <xhtml name="long">Cet outil fusionne la segmentation avec l'IRM corrigée du biais de manière
+à simplifier la vérification du résultat. La visualisation obtenue est la suivante:<br/>
+<img SRC="../../images/fusion.jpg" ALT=""/>
+<img SRC="../../images/fusionCor.jpg" ALT=""/>
+<img SRC="../../images/fusionSag.jpg" ALT=""/><br/>
+
+Si tout vous semble correct, vous pouvez l'indiquer à brainvisa 
+en mettant validation à Lock (+ execute). Cette commande crée le fichier
+brain_dionysos.lock. S'il existe, la segmentation ne sera plus jamais effectuée,
+même par la procédure 
+<a HREF="AnaT1toBrainMaskCorrection.html">Correction Brain Mask from T1 MRI</a>
+<br/><br/></xhtml>
+  </d>
+</minf>

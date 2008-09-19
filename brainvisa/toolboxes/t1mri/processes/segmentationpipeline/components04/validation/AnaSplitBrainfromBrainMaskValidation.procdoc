@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+  <d name="fr" length="3">
+    <xhtml name="short"><img SRC="../../images/II_voronoi.jpg" ALT=""/><br/>
+Validation de <a HREF="VipSplitBrain.html">Vip Split Brain</a></xhtml>
+    <d name="parameters" length="4">
+      <xhtml name="readme"/>
+      <xhtml name="brain_voronoi"><img SRC="../../images/III_voronoi.jpg" ALT=""/>
+La segmentation (3 couleurs)</xhtml>
+      <xhtml name="mri_corrected"><img SRC="../../images/III_nobias.jpg" ALT=""/>
+Le résultat de la correction de biais</xhtml>
+      <xhtml name="validation">validation de la segmentation</xhtml>
+    </d>
+    <xhtml name="long">Cet outil fusionne la segmentation avec l'IRM corrigée du biais de manière
+à simplifier la vérification du résultat. La visualisation obtenue est la suivante:<br/>
+<img SRC="../../images/voronoiA1.jpg" ALT=""/>
+<img SRC="../../images/voronoiA2.jpg" ALT=""/>
+<img SRC="../../images/voronoiC.jpg" ALT=""/>
+<img SRC="../../images/voronoiS.jpg" ALT=""/><br/>
+Si tout vous semble correct, vous pouvez l'indiquer à brainvisa 
+en mettant validation à Yes (+ execute). Cette commande crée le fichier
+voronoi.loc. S'il existe, la segmentation ne sera plus jamais effectuée,
+même par la procédure 
+<a HREF="AnaSplitBrainFromBrainMaskCorrection.html">Correction Split Brain from Brain Mask</a>
+<br/><br/></xhtml>
+  </d>
+  <d name="en" length="3">
+    <xhtml name="short"><img SRC="../../images/II_voronoi.jpg" ALT=""/><br/>
+Validation of <a HREF="VipSplitBrain.html">Vip Split Brain</a></xhtml>
+    <d name="parameters" length="4">
+      <xhtml name="readme"/>
+      <xhtml name="brain_voronoi"><img SRC="../../images/III_voronoi.jpg" ALT=""/></xhtml>
+      <xhtml name="mri_corrected"><img SRC="../../images/III_nobias.jpg" ALT=""/></xhtml>
+      <xhtml name="validation"/>
+    </d>
+    <xhtml name="long">Cet outil fusionne la segmentation avec l'IRM corrigée du biais de manière
+à simplifier la vérification du résultat. La visualisation obtenue est la suivante:<br/>
+<img SRC="../../images/voronoiA1.jpg" ALT=""/>
+<img SRC="../../images/voronoiA2.jpg" ALT=""/>
+<img SRC="../../images/voronoiC.jpg" ALT=""/>
+<img SRC="../../images/voronoiS.jpg" ALT=""/><br/>
+Si tout vous semble correct, vous pouvez l'indiquer à brainvisa 
+en mettant validation à Yes (+ execute). Cette commande crée le fichier
+voronoi.loc. S'il existe, la segmentation ne sera plus jamais effectuée,
+même par la procédure 
+<a HREF="AnaSplitBrainFromBrainMaskCorrection.html">Correction Split Brain from Brain Mask</a>
+<br/><br/></xhtml>
+  </d>
+</minf>
