@@ -1,4 +1,4 @@
-PROJECT(T1MRI)
+PROJECT(T1MRI-GPL)
 
 IF(COMMAND cmake_policy)
   cmake_policy(VERSION 2.4)
