@@ -3,4 +3,7 @@ class Component_t1mriGPL( GenericMakerComponent ):
   _name = 't1mri-gpl'
 
   def dependencies( self ):
-    return [ 'aimsalgo', 'brainvisa' ]
+    return [ 't1mri', 'brainvisa' ]
+
+  def libraries( self ):
+    return []
