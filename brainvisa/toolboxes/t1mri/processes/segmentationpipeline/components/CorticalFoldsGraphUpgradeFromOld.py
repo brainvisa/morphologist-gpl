@@ -45,8 +45,8 @@ signature = Signature(
                              requiredAttributes = \
                              { 'graph_version' : '3.0' } ),
   'skeleton', ReadDiskItem( 'Cortex Skeleton', shfjGlobals.aimsVolumeFormats ),
-  'graph', WriteDiskItem( 'Cortical folds graph', 'Graph',
-                          requiredAttributes = { 'graph_version' : '3.1' } ),
+  'graph_version', OpenChoice( '3.1', '3.2' ),
+  'graph', WriteDiskItem( 'Cortical folds graph', 'Graph' ),
   'commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
                                           'Commissure coordinates'),
   'Talairach_transform',
@@ -58,8 +58,15 @@ signature = Signature(
 
 # Default values
 def initialization( self ):
+  def linkGraphVersion( self, proc ):
+    p = WriteDiskItem( 'Cortical folds graph', 'Graph' )
+    return p.findValue( self.old_graph,
+                        requiredAttributes = {
+                          'graph_version' : self.graph_version } )
+
   self.linkParameters( 'skeleton', 'old_graph' )
-  self.linkParameters( 'graph', 'old_graph' )
+  self.linkParameters( 'graph', ( 'old_graph', 'graph_version' ),
+    linkGraphVersion )
   self.compute_fold_meshes = "Yes"
   self.linkParameters( 'commissure_coordinates', 'old_graph' )
   self.linkParameters( 'Talairach_transform', 'old_graph' )
@@ -79,7 +86,8 @@ def initialization( self ):
 def execution( self, context ):
   attp = [ 'AimsFoldArgAtt', '-i', self.skeleton.fullPath(), '-g',
            self.old_graph.fullPath(), '-o', self.graph.fullPath(),
-           '-m', self.Talairach_transform ]
+           '-m', self.Talairach_transform, '--graphversion',
+           self.graph_version ]
   if self.compute_fold_meshes == "No":
     attp.append( '-n' )
   if self.commissure_coordinates:

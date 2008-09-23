@@ -46,9 +46,8 @@ signature = Signature(
   'hemi_cortex', ReadDiskItem( 'CSF+GREY Mask', 'GIS Image' ),
   'skeleton', WriteDiskItem( 'Cortex Skeleton', 'GIS image' ),
   'roots', WriteDiskItem( 'Cortex Catchment Bassins', 'GIS image' ),
-  'graph', WriteDiskItem( 'Cortical folds graph', 'Graph',
-                          requiredAttributes = { 'labelled' : 'No',
-                                                 'graph_version' : '3.1' } ),
+  'graph_version', OpenChoice( '3.1', '3.2' ),
+  'graph', WriteDiskItem( 'Cortical folds graph', 'Graph' ),
   'commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
                                           'Commissure coordinates'),
   'Talairach_transform',
@@ -65,10 +64,17 @@ def initialization( self ):
     return p.findValue( self.mri_corrected,
                         requiredAttributes = { 'side' : self.side.lower() } )
 
+  def linkGraphVersion( self, proc ):
+    p = WriteDiskItem( 'Cortical folds graph', 'Graph' )
+    return p.findValue( self.hemi_cortex,
+                        requiredAttributes = { 'labelled' : 'No',
+                        'graph_version' : self.graph_version } )
+
   self.linkParameters( 'split_mask', 'mri_corrected' )
   self.linkParameters( 'hemi_cortex', ( 'mri_corrected', 'side' ), linkSide )
   self.linkParameters( 'skeleton', 'hemi_cortex' )
-  self.linkParameters( 'graph', 'hemi_cortex' )
+  self.linkParameters( 'graph', ( 'hemi_cortex', 'graph_version' ),
+    linkGraphVersion )
   self.linkParameters( 'roots', 'hemi_cortex' )
   self.linkParameters( 'commissure_coordinates', 'mri_corrected' )
   self.linkParameters( 'Talairach_transform', 'mri_corrected' )
@@ -115,7 +121,8 @@ def execution( self, context ):
 
   attp = [ 'AimsFoldArgAtt', '-i', self.skeleton.fullPath(), '-g',
            graph + '.arg', '-o', self.graph.fullPath(),
-           '-m', self.Talairach_transform ]
+           '-m', self.Talairach_transform, '--graphversion',
+           self.graph_version ]
   if self.compute_fold_meshes == "No":
     attp.append( '-n' )
   if self.commissure_coordinates:
