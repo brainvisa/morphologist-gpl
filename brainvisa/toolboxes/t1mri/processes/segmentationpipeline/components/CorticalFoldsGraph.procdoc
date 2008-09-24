@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<minf expander="minf_2.0">
+<d>
+  <d name="fr">
+    <xhtml name="short"/>
+    <d name="parameters">
+      <xhtml name="compute_fold_meshes"/>
+      <xhtml name="graph_version"/>
+      <xhtml name="skeleton"/>
+      <xhtml name="graph"/>
+      <xhtml name="mri_corrected"/>
+      <xhtml name="commissure_coordinates"/>
+      <xhtml name="split_mask"/>
+      <xhtml name="hemi_cortex"/>
+      <xhtml name="Talairach_transform"/>
+      <xhtml name="side"/>
+      <xhtml name="roots"/>
+    </d>
+    <xhtml name="long"/>
+  </d>
+  <d name="en">
+    <xhtml name="short">Builds a graph representation of the cortical folds</xhtml>
+    <d name="parameters">
+      <xhtml name="compute_fold_meshes"/>
+      <xhtml name="graph_version"/>
+      <xhtml name="skeleton"/>
+      <xhtml name="graph"/>
+      <xhtml name="mri_corrected"/>
+      <xhtml name="commissure_coordinates"/>
+      <xhtml name="split_mask"/>
+      <xhtml name="hemi_cortex"/>
+      <xhtml name="Talairach_transform"/>
+      <xhtml name="side"/>
+      <xhtml name="roots"/>
+    </d>
+    <xhtml name="long">The cortical folds graph is a structural representation of the sulci folds, composed of simple surfaces going inside the folds, and has relations describing neighbouring information between these surfaces.
+There are several versions of cortical folds graphs. This process allows to chose bewteen currently 3 variants:
+<ul>
+<li>The older 3.0 version is obtained when selecting the second sub-process: it uses the underlying <a href="bvprocess://AnaComputeCorticalFoldArg">2004 cortical folds graph</a> process.
+</li>
+<li>The 3.1 and newer versions are obtained by selecting the first sub-process: <a href="bvprocess://CorticalFoldsGraph">2005 version</a>. Inside this sub-process you will be able to chose between, currently, 2 newer versions of the graph (3.1 and 3.2)
+</li>
+</ul>
+For more explanations on the cortical folds graph structure and construction, see the documentation of the <a href="bvprocess://AnaComputeCorticalFoldArg">2004 cortical folds graph</a> process.<br/>
+The different versions of the graphs correspond to different set of descriptor attributes calculated on the folds elements and relations. Each correspond to specific types of recognition and morphometry models.<br/>
+As currently the newer 3.1 and 3.2 models are not completely ready for public release, the default is to still create 3.0 graphs. But some advanced users may still be interested in using the newer descriptors of 3.1 and newer variants.
+</xhtml>
+  </d>
+</d>
+</minf>

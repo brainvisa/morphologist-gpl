@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<minf expander="minf_2.0">
+<d>
+  <d name="fr">
+    <xhtml name="short"/>
+    <d name="parameters">
+      <xhtml name="right_graph"/>
+      <xhtml name="mri_corrected"/>
+      <xhtml name="commissure_coordinates"/>
+      <xhtml name="split_mask"/>
+      <xhtml name="Talairach_transform"/>
+      <xhtml name="left_graph"/>
+    </d>
+    <xhtml name="long"/>
+  </d>
+  <d name="en">
+    <xhtml name="short">Builds 3.1 and newer variants of cortical folds graphs</xhtml>
+    <d name="parameters">
+      <xhtml name="right_graph"/>
+      <xhtml name="mri_corrected"/>
+      <xhtml name="commissure_coordinates"/>
+      <xhtml name="split_mask"/>
+      <xhtml name="Talairach_transform"/>
+      <xhtml name="left_graph"/>
+    </d>
+    <xhtml name="long">This variant of the cortical folds graph construction process allows to build 3.1 and 3.2 versions of cortical folds graphs. Such graph versions correspond to different sets of sulci and relations descriptors, and match different versions of the recognition and morphometry models. Currently the available versions are:
+<ul>
+<li><b>3.1 folds graphs version:</b>
+  <ul>
+  <li>fixes one or two bugs in the 3.0 descriptors, but in a way that makes them not completely compatible with 3.0 models since those models have been trained with the bug...
+  </li>
+  <li>adds some new descriptors, among which cortical thickness measurements, grey and CSF volumes and surface areas measurements
+  </li>
+  </ul>
+</li>
+<li><b>3.2 folds graphs version:</b>
+  <ul>
+  <li>builds differently and more acutely the "cortical" relations, so has descriptors values which are not compatible with what have learned 3.1 and older models.
+  </li>
+  <li>will support some fold splitting procedures: fold nodes which are "too big" and which may span across several anatomical entities (sulci, or "sulcal roots") may be separated into smaller parts. Then the folds graph may be updated (relations and descriptors must be recalculated). The splitting procedures may be manual (user driven) or automatic, and are still under development, but are planed for a next release of the BrainVisa T1 MRI toolbox.
+  </li>
+  </ul>
+</li>
+</ul>
+It is possible to "upgrade" an older folds graph to a newer version, while keeping its labeling if it has labels. To do so, please use the <a href="bvprocess://CorticalFoldsGraphUpgradeFromOld">Upgrade Cortical Folds Graph</a> process.<br/>
+The older 3.0 graphs are build using an older process, which also provides some documentation on the graph construction: see the <a href="bvprocess://AnaComputeCorticalFoldArg">2004 cortical folds graph</a> process.</xhtml>
+  </d>
+</d>
+</minf>
