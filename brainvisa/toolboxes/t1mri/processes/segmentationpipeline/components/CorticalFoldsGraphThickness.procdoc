@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<minf expander="minf_2.0">
+<d>
+  <d name="fr">
+    <xhtml name="short"/>
+    <d name="parameters">
+      <xhtml name="GW_interface"/>
+      <xhtml name="graph"/>
+      <xhtml name="hemi_cortex"/>
+      <xhtml name="hemi_mesh"/>
+      <xhtml name="output_graph"/>
+      <xhtml name="white_mesh"/>
+    </d>
+    <xhtml name="long"/>
+  </d>
+  <d name="en">
+    <xhtml name="short">Calcluation of cortical thickness descriptors in a cortical folds graph</xhtml>
+    <d name="parameters">
+      <xhtml name="GW_interface"/>
+      <xhtml name="graph"/>
+      <xhtml name="hemi_cortex"/>
+      <xhtml name="hemi_mesh"/>
+      <xhtml name="output_graph"/>
+      <xhtml name="white_mesh"/>
+    </d>
+    <xhtml name="long">Cortical thickness descriptors are computed on the grey matter volume of each fold zone. Folds zones are the result of a Voronoi diagram, so are a parcellation of the whole cortex.<br/>
+Thickness is calculated using a distance map (using a fast marching algorithm) between both cortex interfaces (grey/CSF and grey/white), and averaged on each fold zone (we also keep a standard deviation descriptor). As we use a binary segmentation for the grey matter, we are not using very smart methods for this calculation: this is certainly not the best possible method for thickness calculation, but a kind of robustness is achieved via the averaging of all voxels on the mid-interface between the CSF and white matter...
+</xhtml>
+  </d>
+</d>
+</minf>

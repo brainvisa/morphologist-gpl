@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<minf expander="minf_2.0">
+<d>
+  <d name="fr">
+    <xhtml name="short"/>
+    <d name="parameters">
+      <xhtml name="compute_fold_meshes"/>
+      <xhtml name="graph_version"/>
+      <xhtml name="skeleton"/>
+      <xhtml name="graph"/>
+      <xhtml name="old_graph"/>
+      <xhtml name="commissure_coordinates"/>
+      <xhtml name="Talairach_transform"/>
+    </d>
+    <xhtml name="long"/>
+  </d>
+  <d name="en">
+    <xhtml name="short">Converts an older cortical folds graph (version 3.0 or 3.1) to a newer version (3.1 or 3.2)</xhtml>
+    <d name="parameters">
+      <xhtml name="compute_fold_meshes"/>
+      <xhtml name="graph_version"/>
+      <xhtml name="skeleton"/>
+      <xhtml name="graph"/>
+      <xhtml name="old_graph"/>
+      <xhtml name="commissure_coordinates"/>
+      <xhtml name="Talairach_transform"/>
+    </d>
+    <xhtml name="long">The "conversion" actually only recalculates the graph descriptors, and possibly rebuilds some relations. It keeps any existing labels or additional attributes.<br/>
+For a more complete documentation, see the <a href="bvprocess://CorticalFoldsGraphGeneral">graph construction process</a> which has the same output.</xhtml>
+  </d>
+</d>
+</minf>

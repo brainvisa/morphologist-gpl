@@ -298,14 +298,14 @@ def initialization( self ):
   eNode.CorticalFoldsGraph.removeLink( 'commissure_coordinates',
                                        'mri_corrected' )
   eNode.CorticalFoldsGraph.removeLink( 'Talairach_transform', 'mri_corrected' )
-  eNode.CorticalFoldsGraph.CorticalFoldsGraph05.LeftCorticalFoldsGraph05.clearLinksTo( \
+  eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_1.LeftCorticalFoldsGraph_3_1.clearLinksTo( \
     'hemi_cortex' )
-  eNode.CorticalFoldsGraph.CorticalFoldsGraph05.RightCorticalFoldsGraph05.clearLinksTo( \
+  eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.clearLinksTo( \
     'hemi_cortex' )
-  eNode.CorticalFoldsGraph.CorticalFoldsGraph04.clearLinksTo( 'histo_analysis' )
-  eNode.CorticalFoldsGraph.CorticalFoldsGraph04.clearLinksTo( \
+  eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_0.clearLinksTo( 'histo_analysis' )
+  eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_0.clearLinksTo( \
     'left_hemi_cortex' )
-  eNode.CorticalFoldsGraph.CorticalFoldsGraph04.clearLinksTo( \
+  eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_0.clearLinksTo( \
     'right_hemi_cortex' )
 
   eNode.addLink( 'CorticalFoldsGraph.mri_corrected',
@@ -328,32 +328,32 @@ def initialization( self ):
   eNode.addLink( 'TalairachTransformation.Talairach_transform', 
                  'CorticalFoldsGraph.Talairach_transform' )
 
-  eNode.addLink( 'CorticalFoldsGraph.CorticalFoldsGraph05.LeftCorticalFoldsGraph05.hemi_cortex',
+  eNode.addLink( 'CorticalFoldsGraph.CorticalFoldsGraph_3_1.LeftCorticalFoldsGraph_3_1.hemi_cortex',
                  'HemispheresMesh.left_hemi_cortex' )
   eNode.addLink( 'HemispheresMesh.left_hemi_cortex', 
-                 'CorticalFoldsGraph.CorticalFoldsGraph05.LeftCorticalFoldsGraph05.hemi_cortex' )
+                 'CorticalFoldsGraph.CorticalFoldsGraph_3_1.LeftCorticalFoldsGraph_3_1.hemi_cortex' )
 
-  eNode.addLink( 'CorticalFoldsGraph.CorticalFoldsGraph05.RightCorticalFoldsGraph05.hemi_cortex',
+  eNode.addLink( 'CorticalFoldsGraph.CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.hemi_cortex',
                  'HemispheresMesh.right_hemi_cortex' )
   eNode.addLink( 'HemispheresMesh.right_hemi_cortex', 
-                 'CorticalFoldsGraph.CorticalFoldsGraph05.RightCorticalFoldsGraph05.hemi_cortex' )
+                 'CorticalFoldsGraph.CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.hemi_cortex' )
 
-  eNode.addLink( 'CorticalFoldsGraph.CorticalFoldsGraph04.histo_analysis', 'HistoAnalysis.histo_analysis' )
-  eNode.addLink( 'HistoAnalysis.histo_analysis', 'CorticalFoldsGraph.CorticalFoldsGraph04.histo_analysis' )
+  eNode.addLink( 'CorticalFoldsGraph.CorticalFoldsGraph_3_0.histo_analysis', 'HistoAnalysis.histo_analysis' )
+  eNode.addLink( 'HistoAnalysis.histo_analysis', 'CorticalFoldsGraph.CorticalFoldsGraph_3_0.histo_analysis' )
   
   eNode.addLink( \
-    'CorticalFoldsGraph.CorticalFoldsGraph04.left_hemi_cortex',
+    'CorticalFoldsGraph.CorticalFoldsGraph_3_0.left_hemi_cortex',
     'HemispheresMesh.left_hemi_cortex' )
   eNode.addLink( \
     'HemispheresMesh.left_hemi_cortex', 
-    'CorticalFoldsGraph.CorticalFoldsGraph04.left_hemi_cortex' )
+    'CorticalFoldsGraph.CorticalFoldsGraph_3_0.left_hemi_cortex' )
 
   eNode.addLink( \
-    'CorticalFoldsGraph.CorticalFoldsGraph04.right_hemi_cortex',
+    'CorticalFoldsGraph.CorticalFoldsGraph_3_0.right_hemi_cortex',
     'HemispheresMesh.right_hemi_cortex' )
   eNode.addLink( \
     'HemispheresMesh.right_hemi_cortex', 
-    'CorticalFoldsGraph.CorticalFoldsGraph04.right_hemi_cortex' )
+    'CorticalFoldsGraph.CorticalFoldsGraph_3_0.right_hemi_cortex' )
 
 
   if reco:
@@ -368,8 +368,8 @@ def initialization( self ):
                   'SulciRecognition.RightSulciRecognition.data_graph' )
 
 
-    eNode.CorticalFoldsGraph.CorticalFoldsGraph05.LeftCorticalFoldsGraph05.side = 'Left'
-    eNode.CorticalFoldsGraph.CorticalFoldsGraph05.RightCorticalFoldsGraph05.side = 'Right'
+    eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_1.LeftCorticalFoldsGraph_3_1.side = 'Left'
+    eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.side = 'Right'
 
   self.setExecutionNode( eNode )
 

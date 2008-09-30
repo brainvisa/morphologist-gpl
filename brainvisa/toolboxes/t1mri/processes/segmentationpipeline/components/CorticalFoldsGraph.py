@@ -35,7 +35,7 @@
 from neuroProcesses import *
 import registration
 
-name = 'Compute Cortical Fold Graph'
+name = 'Cortical Fold Graph (3.1+)'
 userLevel = 2
 
 # Argument declaration

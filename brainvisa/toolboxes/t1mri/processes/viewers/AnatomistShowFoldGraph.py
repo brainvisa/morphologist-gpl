@@ -86,8 +86,9 @@ def execution( self, context ):
             anat = a.loadObject( self.mri_corrected )
             selfdestroy.append( anat )
     if self.hemi_mesh is not None:
-        mesh = a.loadObject( self.hemi_mesh )
+        mesh = a.loadObject( self.hemi_mesh, duplicate=True )
         selfdestroy.append( mesh )
+        mesh.setMaterial( a.Material(diffuse = [0.8, 0.8, 0.8, 0.5]) )
     win3 = a.createWindow( '3D' )
     graphRef=graph.referential
     win3.assignReferential( graphRef )

@@ -56,7 +56,7 @@ def execution( self, context ):
   a = anatomist.Anatomist()
   selfdestroy = []
 
-  mesh = a.loadObject( self.white_mesh )
+  mesh = a.loadObject( self.white_mesh, duplicate=True )
   selfdestroy.append( mesh )
   mesh.setMaterial( a.Material(diffuse = [0.3, 1, 0.6, 1] ) )
 

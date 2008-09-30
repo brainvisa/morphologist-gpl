@@ -54,7 +54,7 @@ def initialization( self ):
   
 def execution( self, context ):
   a = anatomist.Anatomist()
-  mesh = a.loadObject( self.hemi_mesh )
+  mesh = a.loadObject( self.hemi_mesh, duplicate=True )
   mesh.setMaterial( a.Material(diffuse = [0.9, 0.7, 0.0, 1]) )
   returned = [ mesh ]
   if self.mri_corrected is not None:

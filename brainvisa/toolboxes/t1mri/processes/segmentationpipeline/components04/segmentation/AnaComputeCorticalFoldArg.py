@@ -37,7 +37,7 @@ from brainvisa import shelltools
 import  os
 import registration
 
-name = 'Ana Compute Cortical Fold Arg'
+name = 'Cortical Fold Arg (3.0)'
 userLevel = 0
 
 # Argument declaration
