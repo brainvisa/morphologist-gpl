@@ -45,7 +45,8 @@ signature = Signature(
   'GW_interface', ReadDiskItem( 'Grey White Mask', 'GIS Image' ),
   'white_mesh', ReadDiskItem( 'Hemisphere White Mesh', 'MESH mesh' ),
   'hemi_mesh', ReadDiskItem( 'Hemisphere Mesh', 'MESH mesh' ),
-  'output_graph', WriteDiskItem ( 'Cortical folds graph', 'Graph')
+  'output_graph', WriteDiskItem ( 'Cortical folds graph', 'Graph'),
+  'output_mid_interface', WriteDiskItem ( '3D Volume', 'GIS Image'),
 )
 
 def initialization( self ):
@@ -54,9 +55,10 @@ def initialization( self ):
   self.linkParameters( 'white_mesh', 'hemi_cortex' )
   self.linkParameters( 'hemi_mesh', 'hemi_cortex' )
   self.linkParameters( 'output_graph', 'graph' )
+  self.linkParameters( 'output_mid_interface', 'graph' )
   
 
 def execution( self, context ):
   context.system( 'python', find_in_path( 'AimsFoldsGraphThickness.py' ),
     '-i', self.graph, '-c', self.hemi_cortex, '-g', self.GW_interface,
-    '-w', self.white_mesh, '-l', self.hemi_mesh, '-o', self.output_graph )
+    '-w', self.white_mesh, '-l', self.hemi_mesh, '-o', self.output_graph ,'-m', self.output_mid_interface )
