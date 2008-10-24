@@ -34,6 +34,7 @@
 
 from neuroProcesses import *
 from brainvisa import shelltools
+import registration
 
 name = '5 - Compute Grey white Interface'
 userLevel = 2
@@ -83,7 +84,7 @@ def execution( self, context ):
   context.system( "VipMask", "-i", self.mri_corrected.fullName(), "-m",
                   self.split_mask.fullName(), "-o", Rbraing.fullName(),
                   "-w", "t", "-l", "1" )
-  
+  tm=registration.getTransformationManager()
   if self.Side in ('Left','Both'):
        
       if os.path.exists(self.LGW_interface.fullName() + '.loc'):
@@ -98,6 +99,7 @@ def execution( self, context ):
           context.system( "VipHomotopicSnake", "-i", Lbraing.fullName(), "-h",
                         self.histo_analysis.fullName(), "-o", 
                         self.LGW_interface.fullName(), "-w", "t" )
+        tm.copyReferential(self.mri_corrected, self.LGW_interface)
       if self.Compute_mesh:
           if os.path.exists(self.left_white_mesh.fullName() + '.loc'):
             context.write( "Left Hemisphere White Mesh Locked")
@@ -114,6 +116,7 @@ def execution( self, context ):
             context.write( "Smoothing mesh..." )
             context.runProcess( 'meshSmooth', mesh=self.left_white_mesh,
                                 iterations=self.iterations,rate=self.rate )
+            tm.copyReferential(self.mri_corrected, self.left_white_mesh)
        
   if self.Side in ('Right','Both'):
        
@@ -129,6 +132,8 @@ def execution( self, context ):
           context.system( "VipHomotopicSnake", "-i", Rbraing.fullName(), "-h",
                         self.histo_analysis.fullName(), "-o", 
                         self.RGW_interface.fullName(), "-w", "t" )
+          tm.copyReferential(self.mri_corrected, self.LGW_interface)
+          
       if self.Compute_mesh:
         if os.path.exists(self.right_white_mesh.fullName() + '.loc'):
             context.write( "Right Hemisphere White Mesh Locked")
@@ -145,6 +150,8 @@ def execution( self, context ):
             context.write( "Smoothing mesh..." )
             context.runProcess( 'meshSmooth', mesh=self.right_white_mesh,
                                 iterations=self.iterations,rate=self.rate )
+            tm.copyReferential(self.mri_corrected, self.right_white_mesh)
+
          
   del Lbraing
   del Rbraing

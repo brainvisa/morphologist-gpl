@@ -33,6 +33,7 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from neuroProcesses import *
+import registration
 
 name = 'Ana Split Brain from Brain Mask'
 userLevel = 0
@@ -67,3 +68,6 @@ def execution( self, context ):
                         voronoi_template = self.voronoi_template,
                         Use_template = self.Use_template,
                         Commissure_coordinates = self.Commissure_coordinates )
+    # manage referentials
+    tm = registration.getTransformationManager()
+    tm.copyReferential(self.mri_corrected, self.brain_voronoi)

@@ -129,6 +129,8 @@ def execution( self, context ):
     attp += [ '--apc', self.commissure_coordinates ]
   context.system( *attp )
   trManager = registration.getTransformationManager()
+  trManager.copyReferential( self.mri_corrected, self.skeleton )
+  trManager.copyReferential( self.mri_corrected, self.roots )
   trManager.copyReferential( self.mri_corrected, self.graph )
 
   self.executionNode().CorticalFoldsGraphThickness.run( context )

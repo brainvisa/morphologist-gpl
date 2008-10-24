@@ -36,7 +36,7 @@
 # Brain segmentation process declaration
 #
 from neuroProcesses import *
-import shfjGlobals     
+import shfjGlobals, registration
 
 name = 'Vip Get Brain'
 userLevel = 1
@@ -99,3 +99,8 @@ def execution( self, context ):
                    '-First',self.first_slice,
                    '-Last', self.last_slice]
       apply( context.system, call_list+option_list )
+      
+      # manage referentials
+      tm = registration.getTransformationManager()
+      tm.copyReferential(self.mri_corrected, self.brain_mask)
+

@@ -68,7 +68,11 @@ segmentation_content = (
     "head_<subject>", SetType( "Head Mask" ),
     "<subject>_Lwhite_curv", SetType( 'White Curvature Texture' ), SetWeakAttr( 'side', 'left' ),
     "<subject>_Rwhite_curv", SetType( 'White Curvature Texture' ), SetWeakAttr( 'side', 'right' ),
-    
+    "Lgw_interface_<subject>", SetType( 'Grey White Mid-Interface Volume' ),
+    SetWeakAttr( 'side', 'left' ),
+    "Rgw_interface_<subject>", SetType( 'Grey White Mid-Interface Volume' ),
+    SetWeakAttr( 'side', 'right' ),
+
     'mesh',
     apply( SetContent, mesh_content),
 )

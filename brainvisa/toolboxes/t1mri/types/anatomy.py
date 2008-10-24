@@ -122,6 +122,7 @@ FileType( 'Probability Map', '3D Volume' )
 FileType( 'CSF Probability Map', 'Probability Map' )
 FileType( 'White matter Probability Map', 'Probability Map' )
 FileType( 'Grey matter Probability Map', 'Probability Map' )
+FileType( 'Grey White Mid-Interface Volume', '3D Volume' )
 
 #SPM 2 segmentation and bias correction
 FileType( 'SPM2 parameters', 'XML parameters', ['XML' , 'Matlab file', 'bz2 Matlab file' ])

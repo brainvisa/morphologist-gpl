@@ -36,7 +36,7 @@
 # VipBiasCorrection
 #
 from neuroProcesses import *
-import shfjGlobals     
+import shfjGlobals, registration
 
 name = 'Vip Bias Correction'
 userLevel = 1
@@ -133,3 +133,7 @@ def execution( self, context ):
         write = 'y'
         fieldname = self.mri_corrected.fullName() + 'Field '
         context.system('VipBiasCorrection', '-i', self.mri.fullName(), '-o', self.mri_corrected.fullName() , '-Fwrite', write, '-field',fieldname, '-Kregul', self.field_rigidity, '-Dimfield', dim, '-sampling',  self.sampling, '-Grid', self.ngrid, '-geometric', self.geometric, '-nIncrement',  self.nIncrement, '-Increment',self.increment, '-T', self.init_temperature, '-a', self.init_amplitude, '-Z', self.zdir_multiply_regul)
+      # copy referential of mri
+      tm = registration.getTransformationManager()
+      tm.copyReferential(self.mri, self.mri_corrected)
+

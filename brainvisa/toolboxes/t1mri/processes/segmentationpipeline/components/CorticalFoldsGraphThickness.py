@@ -34,6 +34,7 @@
 
 from neuroProcesses import *
 from soma.path import find_in_path
+import shfjGlobals
 
 name = 'Cortical Fold Graph Thickness and Volumes'
 userLevel = 2
@@ -46,7 +47,9 @@ signature = Signature(
   'white_mesh', ReadDiskItem( 'Hemisphere White Mesh', 'MESH mesh' ),
   'hemi_mesh', ReadDiskItem( 'Hemisphere Mesh', 'MESH mesh' ),
   'output_graph', WriteDiskItem ( 'Cortical folds graph', 'Graph'),
-  'output_mid_interface', WriteDiskItem ( '3D Volume', 'GIS Image'),
+  'write_mid_interface', Boolean(),
+  'output_mid_interface', WriteDiskItem ( 'Grey White Mid-Interface Volume',
+      shfjGlobals.aimsVolumeFormats[0] ),
 )
 
 def initialization( self ):
@@ -56,7 +59,9 @@ def initialization( self ):
   self.linkParameters( 'hemi_mesh', 'hemi_cortex' )
   self.linkParameters( 'output_graph', 'graph' )
   self.linkParameters( 'output_mid_interface', 'graph' )
-  
+  self.setOptional( 'output_mid_interface' )
+  self.write_mid_interface = False
+
 
 def execution( self, context ):
   context.system( 'python', find_in_path( 'AimsFoldsGraphThickness.py' ),

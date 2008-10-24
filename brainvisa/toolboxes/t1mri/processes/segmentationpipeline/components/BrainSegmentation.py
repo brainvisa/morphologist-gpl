@@ -32,7 +32,7 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
-import shfjGlobals
+import shfjGlobals, registration
 
 from neuroProcesses import *
 name = '3 - Compute Brain Mask'
@@ -105,6 +105,10 @@ def execution( self, context ):
         raise RuntimeError( _t_( 'Variant <em>%s</em> not implemented' ) % self.variant )
       result = []
       apply( context.system, constant_list+option_list+call_list )
+      
+      # manage referentials
+      tm = registration.getTransformationManager()
+      tm.copyReferential(self.mri_corrected, self.brain_mask)
 
       if self.visu == "Yes":
         result.append(context.runProcess('AnatomistShowBrainMask',self.brain_mask,self.mri_corrected))

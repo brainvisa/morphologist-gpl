@@ -93,3 +93,5 @@ def execution( self, context ):
                   self.head_mesh.fullPath() )
   trManager = registration.getTransformationManager()
   trManager.copyReferential( self.mri_corrected, self.head_mesh )
+  if self.keep_head_mask:
+    trManager.copyReferential( self.mri_corrected, self.head_mask )

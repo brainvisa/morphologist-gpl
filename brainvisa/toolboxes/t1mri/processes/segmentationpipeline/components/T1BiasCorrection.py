@@ -109,8 +109,11 @@ def execution( self, context ):
     else:
       context.system('VipT1BiasCorrection', '-i', self.mri.fullName(), '-o', self.mri_corrected.fullName() , '-Fwrite', self.write_field, '-field', self.field.fullName(), '-Wwrite', self.write_wridges, '-wridge', self.white_ridges.fullName(),'-Kregul', self.field_rigidity, '-sampling',  self.sampling, '-Grid', self.ngrid, '-ZregulTuning', self.zdir_multiply_regul, '-vp',self.variance_fraction,'-e',edge, '-eWrite', self.write_edges, '-ename', self.edges.fullName(), '-vWrite', self.write_variance, '-vname', self.variance.fullName(), '-mWrite',self.write_meancurvature, '-mname', self.meancurvature.fullName(), '-hWrite', self.write_hfiltered, '-hname', self.hfiltered.fullName(), '-Last', self.delete_last_n_slices  )
       tm = registration.getTransformationManager()
+      tm.copyReferential(self.mri, self.mri_corrected)
       if self.write_field:
         tm.copyReferential( self.mri, self.field )
+      if self.write_hfiltered:
+        tm.copyReferential( self.mri, self.hfiltered )
       if self.write_wridges:
         tm.copyReferential( self.mri, self.white_ridges )
       if self.write_variance:

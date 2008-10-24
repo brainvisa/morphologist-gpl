@@ -33,6 +33,7 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from neuroProcesses import *
+import registration
 
 name = 'Ana Compute Hemi Grey White Classification'
 userLevel = 0
@@ -57,7 +58,7 @@ def initialization( self ):
 #
 
 def execution( self, context ):
-
+  tm=registration.getTransformationManager()
   if self.Side in ('Left','Both'):
        
       if os.path.exists(self.left_grey_white.fullName() + '.loc'):
@@ -69,6 +70,7 @@ def execution( self, context ):
                         self.histo_analysis.fullName(), "-m",
                         self.brain_voronoi.fullName(), "-o",
                         self.left_grey_white.fullName(), "-l", "2", "-w", "t" )
+        tm.copyReferential(self.mri_corrected, self.left_grey_white)
   if self.Side in ('Right','Both'):
        
       if os.path.exists(self.right_grey_white.fullName() + '.loc'):
@@ -81,3 +83,4 @@ def execution( self, context ):
                         self.brain_voronoi.fullName(), "-o",
                         self.right_grey_white.fullName(), "-l", "1", "-w",
                         "t" )
+        tm.copyReferential(self.mri_corrected, self.right_grey_white)

@@ -107,4 +107,9 @@ def execution( self, context ):
                      '-ccsize', self.cc_min_size]
       result = []
       apply( context.system, call_list+option_list )
+      
+      # manage referentials
+      tm = registration.getTransformationManager()
+      tm.copyReferential(self.mri_corrected, self.brain_voronoi)
+      
       return result
