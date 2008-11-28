@@ -298,11 +298,16 @@ def initialization( self ):
   eNode.CorticalFoldsGraph.removeLink( 'commissure_coordinates',
                                        'mri_corrected' )
   eNode.CorticalFoldsGraph.removeLink( 'Talairach_transform', 'mri_corrected' )
-  eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_1.LeftCorticalFoldsGraph_3_1.clearLinksTo( \
-    'hemi_cortex' )
-  eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.clearLinksTo( \
-    'hemi_cortex' )
-  eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_0.clearLinksTo( 'histo_analysis' )
+  eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_1.LeftCorticalFoldsGraph_3_1.\
+    removeLink( 'hemi_cortex', 'mri_corrected' )
+  eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_1.LeftCorticalFoldsGraph_3_1.\
+    removeLink( 'hemi_cortex', 'side' )
+  eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.\
+    removeLink('hemi_cortex', 'mri_corrected' )
+  eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.\
+    removeLink( 'hemi_cortex', 'side' )
+  eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_0.clearLinksTo( \
+    'histo_analysis' )
   eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_0.clearLinksTo( \
     'left_hemi_cortex' )
   eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_0.clearLinksTo( \

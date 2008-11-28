@@ -45,7 +45,9 @@ userLevel = 1
 signature = Signature(
   'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected', 'GIS Image' ),
   'histo_analysis', WriteDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-  'visu', Boolean()
+  'visu', Boolean(),
+  'undersampling', Choice('2', '4', '8', '16', '32', 'auto')
+
 )
 
 
@@ -53,16 +55,18 @@ signature = Signature(
 def initialization( self ):
   self.linkParameters( 'histo_analysis', 'mri_corrected' )
   self.visu = 0
+  self.undersampling='auto'
+
 
 # VipHistoAnalysis
 #
 
 def execution( self, context ):
     if self.visu :
-      context.system( 'VipHistoAnalysis', '-i',  self.mri_corrected.fullName(), '-o',self.histo_analysis.fullName(), '-S', 'n', '-m', 'a', '-g', 's' )
+      context.system( 'VipHistoAnalysis', '-i',  self.mri_corrected.fullName(), '-o',self.histo_analysis.fullName(), '-S', 'n', '-m', 'a', '-u', self.undersampling, '-g', 's' )
     else:
       if os.path.exists(self.histo_analysis.fullName() + '.han.loc'):
         context.write(self.histo_analysis.fullName(), '.han has been locked')
         context.write('Remove',self.histo_analysis.fullName(),'.han.loc if you want to trigger automated analysis')
       else:
-        context.system( 'VipHistoAnalysis', '-i',  self.mri_corrected.fullName(), '-o',self.histo_analysis.fullName(), '-S', 'y', '-m', 'a')
+        context.system( 'VipHistoAnalysis', '-i',  self.mri_corrected.fullName(), '-o',self.histo_analysis.fullName(), '-S', 'y', '-m', 'a', '-u', self.undersampling)
