@@ -43,8 +43,9 @@ def validation():
   anatomist.validation()
 
 signature = Signature(
-  'brain_mask', ReadDiskItem( 'T1 Brain Mask', 'GIS image' ),
-  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected', 'GIS image' )
+  'brain_mask', ReadDiskItem( 'T1 Brain Mask', 'Anatomist volume formats' ),
+  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
+    'Anatomist volume formats' )
 )
 
 def initialization( self ):

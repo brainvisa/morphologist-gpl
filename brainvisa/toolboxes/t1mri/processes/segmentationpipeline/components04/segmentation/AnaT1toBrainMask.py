@@ -40,13 +40,16 @@ name = 'Ana Brain Mask from T1 MRI'
 userLevel = 0
 
 signature = Signature(
-  'T1mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.vipVolumeFormats ),   
+  'T1mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.vipVolumeFormats ),
   'Contrast',Choice('High grey/white contrast','Low grey/white contrast'),
   'Bias_type',Choice('Standard bias field','High bias in Z direction'),
-  'mri_corrected', WriteDiskItem( 'T1 MRI Bias Corrected', 'GIS image' ),
+  'mri_corrected', WriteDiskItem( 'T1 MRI Bias Corrected',
+    'Aims writable volume formats' ),
   'histo_analysis', WriteDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-  'brain_mask', WriteDiskItem( 'T1 Brain Mask', 'GIS Image' ),
-  'Commissure_coordinates', ReadDiskItem( 'Commissure coordinates','Commissure coordinates'),
+  'brain_mask', WriteDiskItem( 'T1 Brain Mask',
+    'Aims writable volume formats' ),
+  'Commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
+    'Commissure coordinates'),
   'lesion_mask', ReadDiskItem( '3D Volume', shfjGlobals.vipVolumeFormats),
   )
 

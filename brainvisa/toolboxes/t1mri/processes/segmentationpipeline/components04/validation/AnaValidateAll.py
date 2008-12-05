@@ -45,32 +45,47 @@ def validation():
     anatomist.validation()
 
 signature = Signature(
-  'T1mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.vipVolumeFormats ),   
+  'T1mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.vipVolumeFormats ),
 #  'validation_total', Choice("Visualise","Lock","Unlock","Delete","Compress","Uncompress","Itemwise"),
-  'validation_total', Choice("Visualise","Lock","Unlock","Delete","Itemwise"),
-  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected', 'GIS image' ),
+  'validation_total', Choice("Visualise","Lock","Unlock","Itemwise"),
+  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
+    'Aims readable volume formats' ),
 #  'validation_mri_corrected', Choice("Nothing","Visualise","Lock","Unlock","Delete","Compress","Uncompress"),
-  'validation_mri_corrected', Choice("Nothing","Visualise","Lock","Unlock","Delete"),
+  'validation_mri_corrected',
+  Choice("Nothing","Visualise","Lock","Unlock"),
   'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-  'validation_histo_analysis', Choice("Nothing","Visualise","Lock","Unlock","Delete"),
-  'brain_mask', ReadDiskItem( 'T1 Brain Mask', 'GIS Image' ),
+  'validation_histo_analysis',
+  Choice("Nothing","Visualise","Lock","Unlock"),
+  'brain_mask', ReadDiskItem( 'T1 Brain Mask',
+    'Aims readable volume formats' ),
 #  'validation_brain_mask', Choice("Nothing","Visualise","Lock","Unlock","Delete","Compress","Uncompress"),
-  'validation_brain_mask', Choice("Nothing","Visualise","Lock","Unlock","Delete"),
-  'brain_voronoi', ReadDiskItem( "Voronoi Diagram", 'GIS Image' ),
+  'validation_brain_mask',
+  Choice("Nothing","Visualise","Lock","Unlock"),
+  'brain_voronoi', ReadDiskItem( "Voronoi Diagram",
+    'Aims readable volume formats' ),
 #  'validation_brain_voronoi', Choice("Nothing","Visualise","Lock","Unlock","Delete","Compress","Uncompress"),
-  'validation_brain_voronoi', Choice("Nothing","Visualise","Lock","Unlock","Delete"),
+  'validation_brain_voronoi',
+  Choice("Nothing","Visualise","Lock","Unlock"),
 #  'left_hemi_cortex', ReadDiskItem( 'Left CSF+GREY Mask', 'GIS Image' ),
 #  'validation_left_hemi_cortex', Choice("Nothing","Visualise","Lock","Unlock","Delete","Compress","Uncompress"),
 #  'right_hemi_cortex', ReadDiskItem( 'Right CSF+GREY Mask', 'GIS Image' ),
 #  'validation_right_hemi_cortex', Choice("Nothing","Visualise","Lock","Unlock","Delete","Compress","Uncompress"),
-  'left_hemi_mesh', ReadDiskItem( 'Left Hemisphere Mesh', 'MESH mesh' ),
-  'validation_left_hemi_mesh', Choice("Nothing","Visualise","Lock","Unlock","Delete"),
-  'right_hemi_mesh', ReadDiskItem( 'Right Hemisphere Mesh', 'MESH mesh' ), 
-  'validation_right_hemi_mesh', Choice("Nothing","Visualise","Lock","Unlock","Delete"),
-  'left_white_mesh', ReadDiskItem( 'Left Hemisphere White Mesh', 'MESH mesh' ),
-  'validation_left_white_mesh', Choice("Nothing","Visualise","Lock","Unlock","Delete"),
-  'right_white_mesh', ReadDiskItem( 'Right Hemisphere White Mesh', 'MESH mesh' ), 
-  'validation_right_white_mesh', Choice("Nothing","Visualise","Lock","Unlock","Delete"),
+  'left_hemi_mesh', ReadDiskItem( 'Left Hemisphere Mesh',
+    'Aims mesh formats' ),
+  'validation_left_hemi_mesh',
+  Choice("Nothing","Visualise","Lock","Unlock"),
+  'right_hemi_mesh', ReadDiskItem( 'Right Hemisphere Mesh',
+    'Aims mesh formats' ),
+  'validation_right_hemi_mesh',
+  Choice("Nothing","Visualise","Lock","Unlock"),
+  'left_white_mesh', ReadDiskItem( 'Left Hemisphere White Mesh',
+    'Aims mesh formats' ),
+  'validation_left_white_mesh',
+  Choice("Nothing","Visualise","Lock","Unlock"),
+  'right_white_mesh', ReadDiskItem( 'Right Hemisphere White Mesh',
+    'Aims mesh formats' ),
+  'validation_right_white_mesh',
+  Choice("Nothing","Visualise","Lock","Unlock"),
   )
 
 def initialization( self ):
@@ -122,24 +137,24 @@ def execution( self, context ):
     result.append(context.runProcess( 'AnaHistoAnalysisValidation',
     				      histo_analysis=self.histo_analysis,
 				      mri_corrected=self.mri_corrected,
-                                      validation=self.validation_total))              
+                                      validation=self.validation_total))
   elif self.validation_histo_analysis!="Nothing":
     result.append(context.runProcess( 'AnaHistoAnalysisValidation',
         		              histo_analysis=self.histo_analysis,
                                       mri_corrected=self.mri_corrected,
                                       validation=self.validation_histo_analysis))
-                   
+
   if self.validation_total != "Itemwise":
     result.append(context.runProcess( 'AnaT1toBrainMaskValidation',
                                       mri_corrected=self.mri_corrected,
                                       brain_mask=self.brain_mask,
-                                      validation=self.validation_total))              
+                                      validation=self.validation_total))
   elif self.validation_brain_mask!="Nothing":
     result.append(context.runProcess( 'AnaT1toBrainMaskValidation',
                                       mri_corrected=self.mri_corrected,
                                       brain_mask=self.brain_mask,
                                       validation=self.validation_brain_mask))
-    
+
   if self.validation_total != "Itemwise":
     result.append(context.runProcess( 'AnaSplitBrainfromBrainMaskValidation',
                                       mri_corrected=self.mri_corrected,
@@ -150,7 +165,7 @@ def execution( self, context ):
                                       mri_corrected=self.mri_corrected,
                                       brain_voronoi=self.brain_voronoi,
                                       validation=self.validation_brain_voronoi))
-    
+
 
   if self.validation_total == "Visualise" or (self.validation_total == "Itemwise" and self.validation_left_hemi_mesh=="Visualise"):
     a=anatomist.Anatomist()

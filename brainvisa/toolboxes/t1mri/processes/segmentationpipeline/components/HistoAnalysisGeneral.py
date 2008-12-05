@@ -38,10 +38,13 @@ name = 'Histogram analysis'
 userLevel = 2
  
 signature = Signature(
-  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected', 'GIS Image' ),
+  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
+      'Aims readable volume formats' ),
   'histo_analysis', WriteDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-  'hfiltered', ReadDiskItem( "T1 MRI Filtered For Histo", 'GIS Image' ),
-  'white_ridges', ReadDiskItem( "T1 MRI White Matter Ridges", 'GIS Image' )
+  'hfiltered', ReadDiskItem( "T1 MRI Filtered For Histo",
+      'Aims readable volume formats' ),
+  'white_ridges', ReadDiskItem( "T1 MRI White Matter Ridges",
+      'Aims readable volume formats' )
 )
 
 

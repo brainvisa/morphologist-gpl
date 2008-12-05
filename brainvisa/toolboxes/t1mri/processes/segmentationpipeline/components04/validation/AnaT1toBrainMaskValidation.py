@@ -39,9 +39,10 @@ name = 'Validation_3 Brain Mask from T1 MRI'
 userLevel = 0
 
 signature = Signature(
-  'brain_mask', ReadDiskItem( 'T1 Brain Mask', 'GIS image' ),
-  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected', 'GIS image' ),
-  'validation', Choice("Visualise","Lock","Unlock","Delete"),
+  'brain_mask', ReadDiskItem( 'T1 Brain Mask', 'Aims readable volume formats' ),
+  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
+    'Aims readable volume formats' ),
+  'validation', Choice("Visualise","Lock","Unlock"),
 )
 
 def initialization( self ):
@@ -50,7 +51,8 @@ def initialization( self ):
 
 def execution( self, context ):
     if self.validation == "Visualise":
-      return(context.runProcess('AnatomistShowBrainMask', mri_corrected=self.mri_corrected,brain_mask=self.brain_mask))
+      return(context.runProcess('AnatomistShowBrainMask',
+        mri_corrected=self.mri_corrected,brain_mask=self.brain_mask))
     elif self.validation == "Lock":
       if os.path.exists(self.brain_mask.fullName() + '.loc'):
         context.write(self.brain_mask.fullName(),'has already been locked')
@@ -61,10 +63,10 @@ def execution( self, context ):
         os.unlink( self.brain_mask.fullName() + '.loc' )
       else:
         context.write(self.brain_mask.fullName(),'has not been locked')
-    elif self.validation == "Delete":
-        if os.path.exists(self.brain_mask.fullName() + '.loc'):
-            context.write("Sorry, I can not delete ",self.brain_mask.fullName(),', which has been locked')
-        elif os.path.exists(self.brain_mask.fullName() + '.ima') or os.path.exists(self.brain_mask.fullName() + '.ima.gz'):
-            shelltools.rm( self.brain_mask.fullName() + '.*' )
-        else:
-            context.write("Sorry ", self.brain_mask.fullName(),' does not exist on fdisk')
+    #elif self.validation == "Delete":
+        #if os.path.exists(self.brain_mask.fullName() + '.loc'):
+            #context.write("Sorry, I can not delete ",self.brain_mask.fullName(),', which has been locked')
+        #elif os.path.exists(self.brain_mask.fullName() + '.ima') or os.path.exists(self.brain_mask.fullName() + '.ima.gz'):
+            #shelltools.rm( self.brain_mask.fullName() + '.*' )
+        #else:
+            #context.write("Sorry ", self.brain_mask.fullName(),' does not exist on fdisk')

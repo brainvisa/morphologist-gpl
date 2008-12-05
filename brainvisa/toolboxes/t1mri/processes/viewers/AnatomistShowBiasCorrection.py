@@ -44,8 +44,9 @@ def validation():
   anatomist.validation()
 
 signature = Signature(
-  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected', 'GIS image' ),
-  'T1mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.vipVolumeFormats )
+  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
+    'Aims readable volume formats' ),
+  'T1mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.anatomistVolumeFormats )
 )
 
 def initialization( self ):

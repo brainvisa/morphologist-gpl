@@ -39,8 +39,10 @@ userLevel = 2
 
 
 signature = Signature(
-  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected', 'GIS Image'),
-  'split_mask', ReadDiskItem( 'Voronoi Diagram', 'GIS Image'),
+  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
+      'Aims readable volume formats' ),
+  'split_mask', ReadDiskItem( 'Voronoi Diagram',
+      'Aims readable volume formats' ),
   'left_graph', WriteDiskItem( 'Cortical folds graph', 'Graph',
                                requiredAttributes = { 'labelled' : 'No',
                                                       'side' : 'left',

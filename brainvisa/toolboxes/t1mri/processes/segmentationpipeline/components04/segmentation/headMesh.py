@@ -41,15 +41,17 @@ userLevel = 0
 
 # Argument declaration
 signature = Signature(
-  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected', 'GIS Image' ),
-  'head_mask', WriteDiskItem( 'Head Mask', 'GIS Image' ),
-  'head_mesh', WriteDiskItem( 'Head Mesh', 'MESH mesh' ),
+  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
+      'Aims readable volume formats' ),
+  'head_mask', WriteDiskItem( 'Head Mask',
+      'Aims writable volume formats' ),
+  'head_mesh', WriteDiskItem( 'Head Mesh', 'Aims mesh formats' ),
   'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
   'keep_head_mask', Boolean(), 
   'first_slice', Integer(),
   'threshold', Integer(),
   'closing', Float(),
-  'remove_mask', ReadDiskItem( '3D Volume', 'GIS Image' ),
+  'remove_mask', ReadDiskItem( '3D Volume', 'Aims readable volume formats' ),
 )
 
 # Default values
@@ -74,14 +76,14 @@ def execution( self, context ):
   else:
     mask = context.temporary( 'GIS image' )
   call_list = [ 'VipGetHead', 
-                '-i', self.mri_corrected.fullName(), 
-                '-o', mask.fullName(),
+                '-i', self.mri_corrected,
+                '-o', mask,
                 '-w', 't', '-r', 't' ]
   option_list = []
   if self.remove_mask is not None:
-      option_list += [ '-h', self.remove_mask.fullName() ]
+      option_list += [ '-h', self.remove_mask ]
   if self.histo_analysis is not None:
-      option_list += [ '-hn',self.histo_analysis.fullName() ]
+      option_list += [ '-hn',self.histo_analysis ]
   if self.first_slice is not None:
       option_list += [ '-n', self.first_slice ]
   if self.threshold is not None:

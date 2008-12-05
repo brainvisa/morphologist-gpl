@@ -39,11 +39,13 @@ name = '3 - Compute Brain Mask'
 userLevel = 2
 
 signature = Signature(
-  'mri_corrected', ReadDiskItem( "T1 MRI Bias Corrected", shfjGlobals.vipVolumeFormats ),   
-  'brain_mask', WriteDiskItem( 'T1 Brain Mask', 'GIS Image' ),
+  'mri_corrected', ReadDiskItem( "T1 MRI Bias Corrected",
+      shfjGlobals.vipVolumeFormats ),
+  'brain_mask', WriteDiskItem( 'T1 Brain Mask',
+      shfjGlobals.aimsWriteVolumeFormats ),
   'variant', Choice("2005 based on white ridge",
                     "Standard + (iterative erosion)",
-                    "Standard + (selected erosion)",                   
+                    "Standard + (selected erosion)",
                     "Standard + (iterative erosion) without regularisation",
                     "Robust + (iterative erosion)",
                     "Robust + (selected erosion)",
@@ -51,10 +53,12 @@ signature = Signature(
                     "Fast (selected erosion)"),
   'erosion_size', Choice("1","1.5","2","2.5","3","3.5","4"),
   'visu', Choice("No","Yes"),
-  'white_ridges', ReadDiskItem( "T1 MRI White Matter Ridges", 'GIS Image' ),
-  'Commissure_coordinates', ReadDiskItem( 'Commissure coordinates','Commissure coordinates'),
+  'white_ridges', ReadDiskItem( "T1 MRI White Matter Ridges",
+      shfjGlobals.aimsVolumeFormats ),
+  'Commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
+      'Commissure coordinates'),
   'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-  'lesion_mask', ReadDiskItem( '3D Volume', shfjGlobals.vipVolumeFormats),
+  'lesion_mask', ReadDiskItem( '3D Volume', shfjGlobals.vipVolumeFormats ),
   'first_slice', Integer(),
   'last_slice', Integer(),
 )
@@ -80,16 +84,16 @@ def execution( self, context ):
       context.write('Remove',self.brain_mask.fullName(),'.loc if you want to trigger a new segmentation')
   else:
       option_list = []
-      constant_list = ['VipGetBrain','-berosion',self.erosion_size,'-i',self.mri_corrected.fullName(),'-analyse', 'r', '-hname',  self.histo_analysis.fullName(),'-bname', self.brain_mask.fullName(),'-First',self.first_slice,'-Last', self.last_slice]
+      constant_list = ['VipGetBrain','-berosion',self.erosion_size,'-i',self.mri_corrected.fullPath(),'-analyse', 'r', '-hname',  self.histo_analysis.fullPath(),'-bname', self.brain_mask.fullPath(),'-First',self.first_slice,'-Last', self.last_slice]
       if self.Commissure_coordinates is not None:
-        option_list += ['-Points', self.Commissure_coordinates.fullName()]
+        option_list += ['-Points', self.Commissure_coordinates.fullPath()]
       if self.lesion_mask is not None:
-        option_list += ['-patho', self.lesion_mask.fullName()]
+        option_list += ['-patho', self.lesion_mask.fullPath()]
       if self.variant == "2005 based on white ridge":
-        call_list = ['-m', "5", '-Ridge',self.white_ridges.fullName()]
+        call_list = ['-m', "5", '-Ridge',self.white_ridges.fullPath()]
       elif self.variant == "Standard + (iterative erosion)":
         call_list = ['-m', "Standard"]
-      elif self.variant == "Standard + (selected erosion)":                   
+      elif self.variant == "Standard + (selected erosion)":
         call_list = ['-m', "standard"]
       elif self.variant == "Standard + (iterative erosion) without regularisation":
         call_list = ['-m', "Standard",'-niter', 0]
@@ -105,11 +109,12 @@ def execution( self, context ):
         raise RuntimeError( _t_( 'Variant <em>%s</em> not implemented' ) % self.variant )
       result = []
       apply( context.system, constant_list+option_list+call_list )
-      
+
       # manage referentials
       tm = registration.getTransformationManager()
       tm.copyReferential(self.mri_corrected, self.brain_mask)
 
       if self.visu == "Yes":
-        result.append(context.runProcess('AnatomistShowBrainMask',self.brain_mask,self.mri_corrected))
+        result.append(context.runProcess('AnatomistShowBrainMask',
+          self.brain_mask,self.mri_corrected))
       return result

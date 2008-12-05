@@ -38,17 +38,22 @@ name = 'Grey white Interface'
 userLevel = 2
 
 signature = Signature(
-  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected', 'GIS Image'),
+  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
+      'Aims readable volume formats' ),
   'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-  'split_mask', ReadDiskItem( "Voronoi Diagram", 'GIS Image' ),
-  'LGW_interface', WriteDiskItem( 'Left Grey White Mask', 'GIS Image' ),
-  'RGW_interface', WriteDiskItem( 'Right Grey White Mask', 'GIS Image' ),
+  'split_mask', ReadDiskItem( "Voronoi Diagram",
+      'Aims readable volume formats' ),
+  'LGW_interface', WriteDiskItem( 'Left Grey White Mask',
+      'Aims writable volume formats' ),
+  'RGW_interface', WriteDiskItem( 'Right Grey White Mask',
+      'Aims writable volume formats' ),
   'left_white_mesh', WriteDiskItem( 'Left Hemisphere White Mesh',
-                                    'MESH mesh' ),
+                                    'Aims mesh formats' ),
   'right_white_mesh', WriteDiskItem( 'Right Hemisphere White Mesh',
-                                     'MESH mesh' ),
+                                     'Aims mesh formats' ),
   'use_ridges', Boolean(),
-  'white_ridges', ReadDiskItem( "T1 MRI White Matter Ridges", 'GIS Image' ),
+  'white_ridges', ReadDiskItem( "T1 MRI White Matter Ridges",
+      'Aims readable volume formats' ),
  ) 
 
 def initialization( self ):

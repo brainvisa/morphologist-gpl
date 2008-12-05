@@ -39,12 +39,16 @@ name = 'Brain Mask Segmentation'
 userLevel = 2
 
 signature = Signature(
-  'mri_corrected', ReadDiskItem( "T1 MRI Bias Corrected", shfjGlobals.vipVolumeFormats ),   
-  'brain_mask', WriteDiskItem( 'T1 Brain Mask', 'GIS Image' ),
+  'mri_corrected', ReadDiskItem( "T1 MRI Bias Corrected",
+      shfjGlobals.vipVolumeFormats ),
+  'brain_mask', WriteDiskItem( 'T1 Brain Mask',
+      shfjGlobals.aimsWriteVolumeFormats ),
   'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-  'Commissure_coordinates', ReadDiskItem( 'Commissure coordinates','Commissure coordinates'),
-  'lesion_mask', ReadDiskItem( '3D Volume', shfjGlobals.vipVolumeFormats),
-  'white_ridges', ReadDiskItem( "T1 MRI White Matter Ridges", 'GIS Image' ),
+  'Commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
+      'Commissure coordinates'),
+  'lesion_mask', ReadDiskItem( '3D Volume', shfjGlobals.vipVolumeFormats ),
+  'white_ridges', ReadDiskItem( "T1 MRI White Matter Ridges",
+      shfjGlobals.aimsWriteVolumeFormats ),
 )
 
 def initialization( self ):

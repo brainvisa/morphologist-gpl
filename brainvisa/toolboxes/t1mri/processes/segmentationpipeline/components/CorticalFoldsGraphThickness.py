@@ -42,14 +42,16 @@ userLevel = 2
 
 signature = Signature(
   'graph', ReadDiskItem( 'Cortical folds graph', 'Graph'),
-  'hemi_cortex', ReadDiskItem( 'CSF+GREY Mask', 'GIS Image' ),
-  'GW_interface', ReadDiskItem( 'Grey White Mask', 'GIS Image' ),
-  'white_mesh', ReadDiskItem( 'Hemisphere White Mesh', 'MESH mesh' ),
-  'hemi_mesh', ReadDiskItem( 'Hemisphere Mesh', 'MESH mesh' ),
+  'hemi_cortex', ReadDiskItem( 'CSF+GREY Mask',
+      'Aims readable volume formats' ),
+  'GW_interface', ReadDiskItem( 'Grey White Mask',
+      'Aims readable volume formats' ),
+  'white_mesh', ReadDiskItem( 'Hemisphere White Mesh', 'Aims mesh formats' ),
+  'hemi_mesh', ReadDiskItem( 'Hemisphere Mesh', 'Aims mesh formats' ),
   'output_graph', WriteDiskItem ( 'Cortical folds graph', 'Graph'),
   'write_mid_interface', Boolean(),
   'output_mid_interface', WriteDiskItem ( 'Grey White Mid-Interface Volume',
-      shfjGlobals.aimsVolumeFormats[0] ),
+      'Aims writable volume formats' ),
 )
 
 def initialization( self ):
@@ -58,7 +60,7 @@ def initialization( self ):
   self.linkParameters( 'white_mesh', 'hemi_cortex' )
   self.linkParameters( 'hemi_mesh', 'hemi_cortex' )
   self.linkParameters( 'output_graph', 'graph' )
-  self.linkParameters( 'output_mid_interface', 'graph' )
+  self.linkParameters( 'output_mid_interface', 'hemi_cortex' )
   self.setOptional( 'output_mid_interface' )
   self.write_mid_interface = False
 

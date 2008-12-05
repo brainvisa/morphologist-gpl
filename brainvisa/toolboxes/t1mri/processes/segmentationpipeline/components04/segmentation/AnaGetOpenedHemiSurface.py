@@ -45,13 +45,19 @@ userLevel = 0
 # Argument declaration
 signature = Signature(
   'Side', Choice("Both","Left","Right"),
-  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected', 'GIS Image'),
+  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
+      'Aims readable volume formats' ),
   'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-  'brain_voronoi', ReadDiskItem( 'Voronoi Diagram', 'GIS Image' ),
-  'left_hemi_cortex', WriteDiskItem( 'Left CSF+GREY Mask', 'GIS Image' ),
-  'right_hemi_cortex', WriteDiskItem( 'Right CSF+GREY Mask', 'GIS Image' ),
-  'left_hemi_mesh', WriteDiskItem( 'Left Hemisphere Mesh', 'MESH mesh' ),
-  'right_hemi_mesh', WriteDiskItem( 'Right Hemisphere Mesh', 'MESH mesh' ),
+  'brain_voronoi', ReadDiskItem( 'Voronoi Diagram',
+      'Aims readable volume formats' ),
+  'left_hemi_cortex', WriteDiskItem( 'Left CSF+GREY Mask',
+      'Aims writable volume formats' ),
+  'right_hemi_cortex', WriteDiskItem( 'Right CSF+GREY Mask',
+      'Aims writable volume formats' ),
+  'left_hemi_mesh', WriteDiskItem( 'Left Hemisphere Mesh',
+      'Aims mesh formats' ),
+  'right_hemi_mesh', WriteDiskItem( 'Right Hemisphere Mesh',
+      'Aims mesh formats' ),
 ) 
 # Default values
 def initialization( self ):
@@ -72,28 +78,28 @@ def execution( self, context ):
     else:  
       context.write( "Masking Bias corrected image with left hemisphere mask...")
       braing = context.temporary( 'GIS Image' )
-      context.system( "VipMask", "-i", self.mri_corrected.fullName(), "-m",
-                      self.brain_voronoi.fullName(), "-o", 
-                      braing.fullName(), "-w", "t", "-l", "2" )
+      context.system( "VipMask", "-i", self.mri_corrected, "-m",
+                      self.brain_voronoi, "-o",
+                      braing, "-w", "t", "-l", "2" )
       
       if os.path.exists(self.left_hemi_cortex.fullName() + '.loc'):
         context.write( "Left grey/white locked")
       else:
         context.write( "Detecting left grey/white interface..." )
-        context.system( "VipHomotopicSnake", "-i", braing.fullName(), "-h", 
-                        self.histo_analysis.fullName(), "-o", 
-                        self.left_hemi_cortex.fullName(), "-w", "t" )
+        context.system( "VipHomotopicSnake", "-i", braing, "-h",
+                        self.histo_analysis, "-o",
+                        self.left_hemi_cortex, "-w", "t" )
       trManager.copyReferential( self.mri_corrected, self.left_hemi_cortex )
     
       context.write("Reconstructing left hemisphere surface...")
       white = context.temporary( 'GIS Image' )  
       context.system( "VipSingleThreshold", "-i", 
-                      self.left_hemi_cortex.fullName(), "-o", 
-                      white.fullName(), "-t", "0", "-c", "b", "-m", "eq",
+                      self.left_hemi_cortex, "-o",
+                      white, "-t", "0", "-c", "b", "-m", "eq",
                       "-w", "t" )
       openbrain = context.temporary( 'GIS Image' )  
-      context.system( "VipOpenFold", "-i", braing.fullName(), "-s", 
-                      white.fullName(), "-o", openbrain.fullName(), 
+      context.system( "VipOpenFold", "-i", braing, "-s",
+                      white, "-o", openbrain,
                       "-a", "i", "-w", "t", "-n", "5" )
       del braing
       del white
@@ -110,28 +116,28 @@ def execution( self, context ):
     else:  
       context.write( "Masking Bias corrected image with right hemisphere mask...")
       braing = context.temporary( 'GIS Image' )
-      context.system( "VipMask", "-i", self.mri_corrected.fullName(), "-m", 
-                      self.brain_voronoi.fullName(), "-o", 
-                      braing.fullName(), "-w", "t", "-l", "1" )
+      context.system( "VipMask", "-i", self.mri_corrected, "-m",
+                      self.brain_voronoi, "-o",
+                      braing, "-w", "t", "-l", "1" )
       
       if os.path.exists(self.right_hemi_cortex.fullName() + '.loc'):
         context.write( "Right grey/white interface locked")
       else:
         context.write( "Detecting right grey/white interface...")
-        context.system( "VipHomotopicSnake", "-i", braing.fullName(), "-h", 
-                        self.histo_analysis.fullName(), "-o", 
-                        self.right_hemi_cortex.fullName(), "-w", "t" )
+        context.system( "VipHomotopicSnake", "-i", braing, "-h",
+                        self.histo_analysis, "-o",
+                        self.right_hemi_cortex, "-w", "t" )
       trManager.copyReferential( self.mri_corrected, self.right_hemi_cortex )
 
       context.write("Reconstructing right hemisphere surface...")
       white = context.temporary( 'GIS Image' )  
       context.system( "VipSingleThreshold", "-i", 
-                      self.right_hemi_cortex.fullName(), "-o", 
-                      white.fullName(), "-t", "0", "-c", "b", "-m", "eq",
+                      self.right_hemi_cortex, "-o",
+                      white, "-t", "0", "-c", "b", "-m", "eq",
                       "-w", "t" )
       openbrain = context.temporary( 'GIS Image' )  
-      context.system( "VipOpenFold", "-i", braing.fullName(), "-s", 
-                      white.fullName(), "-o", openbrain.fullName(), 
+      context.system( "VipOpenFold", "-i", braing, "-s",
+                      white, "-o", openbrain,
                       "-a", "i", "-w", "t" )
       del braing
       del white

@@ -39,13 +39,18 @@ name = 'Ana Split Brain from Brain Mask'
 userLevel = 0
 
 signature = Signature(
-  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected', 'GIS Image'),
+  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
+      'Aims readable volume formats' ),
   'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-  'brain_mask', ReadDiskItem( 'T1 Brain Mask', 'GIS Image' ),
+  'brain_mask', ReadDiskItem( 'T1 Brain Mask',
+      'Aims readable volume formats' ),
   'Use_template', Boolean(), 
-  'voronoi_template', ReadDiskItem( 'Hemispheres Template', 'GIS Image' ),
-  'brain_voronoi', WriteDiskItem( "Voronoi Diagram", 'GIS Image' ),
-   'Commissure_coordinates', ReadDiskItem( 'Commissure coordinates','Commissure coordinates'),
+  'voronoi_template', ReadDiskItem( 'Hemispheres Template',
+      'Aims readable volume formats' ),
+  'brain_voronoi', WriteDiskItem( "Voronoi Diagram",
+      'Aims writable volume formats' ),
+   'Commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
+       'Commissure coordinates'),
 )
 
 

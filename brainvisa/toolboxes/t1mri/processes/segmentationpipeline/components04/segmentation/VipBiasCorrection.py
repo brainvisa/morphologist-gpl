@@ -42,8 +42,9 @@ name = 'Vip Bias Correction'
 userLevel = 1
 
 signature = Signature(
-  'mri', ReadDiskItem( "T1 MRI", shfjGlobals.vipVolumeFormats ),   
-  'mri_corrected', WriteDiskItem( "T1 MRI Bias Corrected", 'GIS Image' ),
+  'mri', ReadDiskItem( "T1 MRI", shfjGlobals.vipVolumeFormats ),
+  'mri_corrected', WriteDiskItem( "T1 MRI Bias Corrected",
+      shfjGlobals.aimsWriteVolumeFormats ),
   #'coil',Choice('volumic','surface'),
   'field_rigidity', Float(),
   'write_field', Choice('Yes','No'),
@@ -128,11 +129,11 @@ def execution( self, context ):
         dim = 3
       if self.write_field == 'No':
         write = 'n'
-        context.system('VipBiasCorrection', '-input', self.mri.fullName(), '-o', self.mri_corrected.fullName() , '-Fwrite', write, '-Kregul', self.field_rigidity, '-Dimfield', dim, '-sampling',  self.sampling, '-Grid', self.ngrid, '-geometric', self.geometric, '-nIncrement',  self.nIncrement, '-Increment',self.increment, '-Temperature', self.init_temperature, '-amplitude', self.init_amplitude, '-ZregulTuning', self.zdir_multiply_regul)
+        context.system('VipBiasCorrection', '-input', self.mri.fullPath(), '-o', self.mri_corrected.fullPath() , '-Fwrite', write, '-Kregul', self.field_rigidity, '-Dimfield', dim, '-sampling',  self.sampling, '-Grid', self.ngrid, '-geometric', self.geometric, '-nIncrement',  self.nIncrement, '-Increment',self.increment, '-Temperature', self.init_temperature, '-amplitude', self.init_amplitude, '-ZregulTuning', self.zdir_multiply_regul)
       else:
         write = 'y'
         fieldname = self.mri_corrected.fullName() + 'Field '
-        context.system('VipBiasCorrection', '-i', self.mri.fullName(), '-o', self.mri_corrected.fullName() , '-Fwrite', write, '-field',fieldname, '-Kregul', self.field_rigidity, '-Dimfield', dim, '-sampling',  self.sampling, '-Grid', self.ngrid, '-geometric', self.geometric, '-nIncrement',  self.nIncrement, '-Increment',self.increment, '-T', self.init_temperature, '-a', self.init_amplitude, '-Z', self.zdir_multiply_regul)
+        context.system('VipBiasCorrection', '-i', self.mri.fullPath(), '-o', self.mri_corrected.fullPath() , '-Fwrite', write, '-field',fieldname, '-Kregul', self.field_rigidity, '-Dimfield', dim, '-sampling',  self.sampling, '-Grid', self.ngrid, '-geometric', self.geometric, '-nIncrement',  self.nIncrement, '-Increment',self.increment, '-T', self.init_temperature, '-a', self.init_amplitude, '-Z', self.zdir_multiply_regul)
       # copy referential of mri
       tm = registration.getTransformationManager()
       tm.copyReferential(self.mri, self.mri_corrected)

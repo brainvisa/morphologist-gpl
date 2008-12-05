@@ -42,13 +42,18 @@ userLevel = 1
 
 # Argument declaration
 signature = Signature(
-  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected', 'GIS Image' ),
+  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
+      'Aims readable volume formats' ),
   'Use_template', Boolean(), 
-  'voronoi_template', ReadDiskItem( 'Hemispheres Template', 'GIS Image' ),
-  'brain_mask', ReadDiskItem( "T1 Brain Mask", 'GIS Image' ),
+  'voronoi_template', ReadDiskItem( 'Hemispheres Template',
+      'Aims readable volume formats' ),
+  'brain_mask', ReadDiskItem( "T1 Brain Mask",
+      'Aims readable volume formats' ),
   'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-  'brain_voronoi', WriteDiskItem( "Voronoi Diagram", 'GIS Image' ),
-  'Commissure_coordinates', ReadDiskItem( 'Commissure coordinates','Commissure coordinates'),
+  'brain_voronoi', WriteDiskItem( "Voronoi Diagram",
+      'Aims writable volume formats' ),
+  'Commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
+      'Commissure coordinates'),
   'white_algo', Choice('r','c','b','t'),
   'mult_factor', Float(),
   'bary_factor', Float(),
@@ -84,7 +89,7 @@ def execution( self, context ):
   else:
     option_list = []
     if self.Commissure_coordinates is not None:
-      option_list += ['-Points', self.Commissure_coordinates.fullName()]
+      option_list += ['-Points', self.Commissure_coordinates.fullPath()]
     if self.white_threshold is not None:
       option_list += ['-wthreshold', self.white_threshold]
       self.white_algo = 't'
@@ -93,13 +98,13 @@ def execution( self, context ):
     if self.white_algo == 'c' :
       option_list += ['-Coef', self.mult_factor]
     if self.Use_template:
-      option_list += ['-template', self.voronoi_template.fullName(),
+      option_list += ['-template', self.voronoi_template.fullPath(),
                       '-TemplateUse', 'y']
     call_list = ['VipSplitBrain',
-                 '-input',  self.mri_corrected.fullName(),
-                 '-brain', self.brain_mask.fullName(),
-                 '-analyse', 'r', '-hname', self.histo_analysis.fullName(),
-                 '-output', self.brain_voronoi.fullName(),
+                 '-input',  self.mri_corrected.fullPath(),
+                 '-brain', self.brain_mask.fullPath(),
+                 '-analyse', 'r', '-hname', self.histo_analysis.fullPath(),
+                 '-output', self.brain_voronoi.fullPath(),
                  '-erosion', self.initial_erosion,
                  '-ccsize', self.cc_min_size,
                  '-walgo',self.white_algo

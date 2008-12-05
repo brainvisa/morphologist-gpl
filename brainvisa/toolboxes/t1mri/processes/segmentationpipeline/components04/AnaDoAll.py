@@ -40,36 +40,52 @@ name = 'Ana Do A Lot of Things from T1 MRI'
 userLevel = 0
 
 signature = Signature(
-  'Processing_type', Choice("Do All","Cortical fold graph and all meshes", "Spherical Meshes Only","Grey/White Classification Only","Hemisphere Meshes Only","All meshes", "Compress Results Only","Uncompress Results Only","Delete Results Only"),
+  'Processing_type', Choice("Do All","Cortical fold graph and all meshes", "Spherical Meshes Only","Grey/White Classification Only","Hemisphere Meshes Only","All meshes"), #, "Compress Results Only","Uncompress Results Only","Delete Results Only"),
   'Side', Choice("Both","Left","Right"),
-  'T1mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.vipVolumeFormats ),  
+  'T1mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.vipVolumeFormats ),
   'Contrast',Choice('High grey/white contrast','Low grey/white contrast'),
   'Bias_type',Choice('Standard bias field','High bias in Z direction'),
   'Compress_results',Boolean(),
   'lesion_mask', ReadDiskItem( '3D Volume', shfjGlobals.vipVolumeFormats),
-  'mri_corrected', WriteDiskItem( 'T1 MRI Bias Corrected', 'GIS image' ),
+  'mri_corrected', WriteDiskItem( 'T1 MRI Bias Corrected',
+    'Aims writable volume formats' ),
   'histo_analysis', WriteDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-  'brain_mask', WriteDiskItem( 'T1 Brain Mask', 'GIS Image' ),
+  'brain_mask', WriteDiskItem( 'T1 Brain Mask',
+    'Aims writable volume formats' ),
   'Use_template', Boolean(), 
-  'voronoi_template', ReadDiskItem( 'Hemispheres Template', shfjGlobals.vipVolumeFormats ),
-  'brain_voronoi', WriteDiskItem( "Voronoi Diagram", 'GIS Image' ),
-   'Commissure_coordinates', ReadDiskItem( 'Commissure coordinates','Commissure coordinates'),
-  'left_grey_white', WriteDiskItem( 'Left Grey White Mask', 'GIS Image' ),
-  'right_grey_white', WriteDiskItem( 'Right Grey White Mask', 'GIS Image' ),
-  'left_hemi_cortex', WriteDiskItem( 'Left CSF+GREY Mask', 'GIS Image' ),
-  'right_hemi_cortex', WriteDiskItem( 'Right CSF+GREY Mask', 'GIS Image' ),
-  'left_hemi_mesh', WriteDiskItem( 'Left Hemisphere Mesh', 'MESH mesh' ),
-  'right_hemi_mesh', WriteDiskItem( 'Right Hemisphere Mesh', 'MESH mesh' ),
-  'left_white_mesh', WriteDiskItem( 'Left Hemisphere White Mesh', 'MESH mesh' ),
+  'voronoi_template', ReadDiskItem( 'Hemispheres Template',
+    shfjGlobals.vipVolumeFormats ),
+  'brain_voronoi', WriteDiskItem( "Voronoi Diagram",
+    'Aims writable volume formats' ),
+  'Commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
+    'Commissure coordinates'),
+  'left_grey_white', WriteDiskItem( 'Left Grey White Mask',
+    'Aims writable volume formats' ),
+  'right_grey_white', WriteDiskItem( 'Right Grey White Mask',
+    'Aims writable volume formats' ),
+  'left_hemi_cortex', WriteDiskItem( 'Left CSF+GREY Mask',
+    'Aims writable volume formats' ),
+  'right_hemi_cortex', WriteDiskItem( 'Right CSF+GREY Mask',
+    'Aims writable volume formats' ),
+  'left_hemi_mesh', WriteDiskItem( 'Left Hemisphere Mesh',
+    'Aims mesh formats' ),
+  'right_hemi_mesh', WriteDiskItem( 'Right Hemisphere Mesh',
+    'Aims mesh formats' ),
+  'left_white_mesh', WriteDiskItem( 'Left Hemisphere White Mesh',
+    'Aims mesh formats' ),
   'right_white_mesh', WriteDiskItem( 'Right Hemisphere White Mesh',
-                                     'MESH mesh' ),
+                                     'Aims mesh formats' ),
   'head_mesh', WriteDiskItem( 'Head Mesh', 'Mesh Mesh' ), 
   'iterations', Integer(), 
   'rate', Float(),
-  'Lskeleton', WriteDiskItem( 'Left Cortex Skeleton', 'GIS image' ),
-  'Rskeleton', WriteDiskItem( 'Right Cortex Skeleton', 'GIS Image' ),
-  'Lroots', WriteDiskItem( 'Left Cortex Catchment Bassins', 'GIS image' ),
-  'Rroots', WriteDiskItem( 'Right Cortex Catchment Bassins', 'GIS Image' ),
+  'Lskeleton', WriteDiskItem( 'Left Cortex Skeleton',
+    'Aims writable volume formats' ),
+  'Rskeleton', WriteDiskItem( 'Right Cortex Skeleton',
+    'Aims writable volume formats' ),
+  'Lroots', WriteDiskItem( 'Left Cortex Catchment Bassins',
+    'Aims writable volume formats'),
+  'Rroots', WriteDiskItem( 'Right Cortex Catchment Bassins',
+    'Aims writable volume formats' ),
   'Lgraph', WriteDiskItem( 'Left Cortical folds graph', 'Graph' ),
   'Rgraph', WriteDiskItem( 'Right Cortical folds graph', 'Graph' ),
   'compute_fold_meshes', Choice("Yes","No"),
@@ -118,14 +134,6 @@ def execution( self, context ):
     context.write('If you really do not want to do it, use the brainVISA processes of the class Segmentation...')
  else:
    if self.Processing_type in ("Do All", "Cortical fold graph and all meshes","Spherical Meshes Only","Hemisphere Meshes Only","All meshes","Grey/White Classification Only") :
-      if os.path.exists(self.mri_corrected.fullName() + '.ima.gz'):
-        if  os.path.exists(self.mri_corrected.fullName() + '.loc'):     
-          context.system("gunzip " + self.mri_corrected.fullName() + '.ima')
-          context.system("gunzip " + self.mri_corrected.fullName() + '.dim')
-      if os.path.exists(self.brain_mask.fullName() + '.ima.gz'):
-        if  os.path.exists(self.brain_mask.fullName() + '.loc'):     
-          context.system("gunzip " + self.brain_mask.fullName() + '.ima')
-          context.system("gunzip " + self.brain_mask.fullName() + '.dim')
       context.runProcess( 'AnaT1toBrainMask',
                       T1mri=self.T1mri,
                       Contrast=self.Contrast,
@@ -135,10 +143,6 @@ def execution( self, context ):
                       brain_mask = self.brain_mask,
                       Commissure_coordinates=self.Commissure_coordinates,
                       lesion_mask=self.lesion_mask)
-      if os.path.exists(self.brain_voronoi.fullName() + '.ima.gz'):
-        if  os.path.exists(self.brain_voronoi.fullName() + '.loc'):     
-          context.system("gunzip " + self.brain_voronoi.fullName() + '.ima')
-          context.system("gunzip " + self.brain_voronoi.fullName() + '.dim')
       context.runProcess( 'AnaSplitBrainFromBrainMask',
                       mri_corrected = self.mri_corrected,
                       histo_analysis=self.histo_analysis,
@@ -159,17 +163,6 @@ def execution( self, context ):
 
       if self.Processing_type in ("Do All", "Cortical fold graph and all meshes","Hemisphere Meshes Only","All meshes") :
 
-        if self.Side in ('Left','Both'):
-          if os.path.exists(self.left_hemi_cortex.fullName() + '.ima.gz'):
-            if  os.path.exists(self.left_hemi_cortex.fullName() + '.loc'):     
-              context.system("gunzip " + self.left_hemi_cortex.fullName() + '.ima')
-              context.system("gunzip " + self.left_hemi_cortex.fullName() + '.dim')
-        if self.Side in ('Right','Both'):
-          if os.path.exists(self.right_hemi_cortex.fullName() + '.ima.gz'):
-            if  os.path.exists(self.right_hemi_cortex.fullName() + '.loc'):     
-              context.system("gunzip " + self.right_hemi_cortex.fullName() + '.ima')
-              context.system("gunzip " + self.right_hemi_cortex.fullName() + '.dim')
-          
         context.runProcess( 'AnaGetOpenedHemiSurface',
                       mri_corrected = self.mri_corrected,
                       histo_analysis=self.histo_analysis,
@@ -230,101 +223,9 @@ def execution( self, context ):
         else:
           context.runProcess( 'graphToTalairach', read=self.Rgraph )
 
-   if self.Compress_results or self.Processing_type=="Compress Results Only":
-      if os.path.exists(self.mri_corrected.fullName() + '.ima'):
-        context.system("gzip --force " + self.mri_corrected.fullName() + '.ima')
-        context.system("gzip --force " + self.mri_corrected.fullName() + '.dim')
-      if os.path.exists(self.brain_mask.fullName() + '.ima'):
-        context.system("gzip --force " + self.brain_mask.fullName() + '.ima')
-        context.system("gzip --force " + self.brain_mask.fullName() + '.dim')
-      if os.path.exists(self.brain_voronoi.fullName() + '.ima'):
-        context.system("gzip --force " + self.brain_voronoi.fullName() + '.ima')
-        context.system("gzip --force " + self.brain_voronoi.fullName() + '.dim')
-
    if self.Side in ('Left','Both'):
      if os.path.exists(self.left_hemi_cortex.fullName() + '.loc'):
        os.unlink( self.left_hemi_cortex.fullName() + '.loc' )
-     if self.Compress_results or self.Processing_type=="Compress Results Only":
-          if os.path.exists(self.left_hemi_cortex.fullName() + '.ima'):
-            context.system("gzip --force " + self.left_hemi_cortex.fullName() + '.ima')
-            context.system("gzip --force " + self.left_hemi_cortex.fullName() + '.dim')
-          if os.path.exists(self.Lskeleton.fullName() + '.ima'):
-            context.system("gzip --force " + self.Lskeleton.fullName() + '.ima')
-            context.system("gzip --force " + self.Lskeleton.fullName() + '.dim')
-          if os.path.exists(self.Lroots.fullName() + '.ima'):
-            context.system("gzip --force " + self.Lroots.fullName() + '.ima')
-            context.system("gzip --force " + self.Lroots.fullName() + '.dim')
-          if os.path.exists(self.left_grey_white.fullName() + '.ima'):
-            context.system("gzip --force " + self.left_grey_white.fullName() + '.ima')
-            context.system("gzip --force " + self.left_grey_white.fullName() + '.dim')          
    if self.Side in ('Right','Both'):
      if os.path.exists(self.right_hemi_cortex.fullName() + '.loc'):
         os.unlink( self.right_hemi_cortex.fullName() + '.loc' )
-     if self.Compress_results or self.Processing_type=="Compress Results Only":
-          if os.path.exists(self.right_hemi_cortex.fullName() + '.ima'):
-            context.system("gzip --force " + self.right_hemi_cortex.fullName() + '.ima')
-            context.system("gzip --force " + self.right_hemi_cortex.fullName() + '.dim')
-          if os.path.exists(self.Rskeleton.fullName() + '.ima'):
-            context.system("gzip --force " + self.Rskeleton.fullName() + '.ima')
-            context.system("gzip --force " + self.Rskeleton.fullName() + '.dim')
-          if os.path.exists(self.Rroots.fullName() + '.ima'):
-            context.system("gzip --force " + self.Rroots.fullName() + '.ima')
-            context.system("gzip --force " + self.Rroots.fullName() + '.dim')
-          if os.path.exists(self.right_grey_white.fullName() + '.ima'):
-            context.system("gzip --force " + self.right_grey_white.fullName() + '.ima')
-            context.system("gzip --force " + self.right_grey_white.fullName() + '.dim')          
-
-   if self.Processing_type=="Uncompress Results Only":
-      if os.path.exists(self.mri_corrected.fullName() + '.ima.gz'):
-        context.system("gunzip --force " + self.mri_corrected.fullName() + '.ima')
-        context.system("gunzip --force " + self.mri_corrected.fullName() + '.dim')
-      if os.path.exists(self.brain_mask.fullName() + '.ima.gz'):
-        context.system("gunzip --force " + self.brain_mask.fullName() + '.ima')
-        context.system("gunzip --force " + self.brain_mask.fullName() + '.dim')
-      if os.path.exists(self.brain_voronoi.fullName() + '.ima.gz'):
-        context.system("gunzip --force " + self.brain_voronoi.fullName() + '.ima')
-        context.system("gunzip --force " + self.brain_voronoi.fullName() + '.dim')
-      if self.Side in ('Right','Both'):
-        context.system("gunzip --force " + self.brain_mask.parent.fullPath() + '/R*.dim.gz')
-        context.system("gunzip --force " + self.brain_mask.parent.fullPath() + '/R*.ima.gz')
-      if self.Side in ('Left','Both'):
-        context.system("gunzip --force " + self.brain_mask.parent.fullPath() + '/L*.dim.gz')
-        context.system("gunzip --force " + self.brain_mask.parent.fullPath() + '/L*.ima.gz')
-
-   if self.Processing_type=="Delete Results Only":
-     if os.path.exists(self.mri_corrected.fullName() + '.loc'):
-       context.write("Sorry, I can not delete ",self.mri_corrected.fullName(),', which has been locked')
-     elif os.path.exists(self.mri_corrected.fullName() + '.ima') or os.path.exists(self.mri_corrected.fullName() + '.ima.gz'):
-       shelltools.rm( self.mri_corrected.fullName() + '.*' )
-     else:
-       context.write("Sorry ", self.mri_corrected.fullName(),' does not exist on fdisk')
-     if os.path.exists(self.brain_mask.fullName() + '.loc'):
-       context.write("Sorry, I can not delete ",self.brain_mask.fullName(),', which has been locked')
-     elif os.path.exists(self.brain_mask.fullName() + '.ima') or os.path.exists(self.brain_mask.fullName() + '.ima.gz'):
-       shelltools.rm( self.brain_mask.fullName() + '.*' )
-     else:
-       context.write("Sorry ", self.brain_mask.fullName(),' does not exist on fdisk')
-     if os.path.exists(self.brain_voronoi.fullName() + '.loc'):
-       context.write("Sorry, I can not delete ",self.brain_voronoi.fullName(),', which has been locked')
-     elif os.path.exists(self.brain_voronoi.fullName() + '.ima') or os.path.exists(self.brain_voronoi.fullName() + '.ima.gz'):
-       shelltools.rm( self.brain_voronoi.fullName() + '.*' )
-     else:
-       context.write("Sorry ", self.brain_voronoi.fullName(),' does not exist on fdisk')
-     if self.Side in ('Right','Both'):
-       shelltools.rm( os.path.join( self.brain_mask.parent.fullPath(), 
-                                    'R*.dim' ) )
-       shelltools.rm( os.path.join( self.brain_mask.parent.fullPath(), 
-                                    'R*.ima' ) )
-       shelltools.rm( os.path.join( self.brain_mask.parent.fullPath(),
-                                    'R*.dim.gz' ) )
-       shelltools.rm( os.path.join( self.brain_mask.parent.fullPath(),
-                                    'R*.ima.gz' ) )
-     if self.Side in ('Left','Both'):
-       shelltools.rm( os.path.join( self.brain_mask.parent.fullPath(),
-                                    'L*.dim' ) )
-       shelltools.rm( os.path.join( self.brain_mask.parent.fullPath(),
-                                    'L*.ima' ) )
-       shelltools.rm( os.path.join( self.brain_mask.parent.fullPath(),
-                                    'L*.dim.gz' ) )
-       shelltools.rm( os.path.join( self.brain_mask.parent.fullPath(),
-                                    'L*.ima.gz' ) )

@@ -44,8 +44,10 @@ def validation():
   anatomist.validation()
 
 signature = Signature(
-  'white_mesh', ReadDiskItem( 'Hemisphere White Mesh', 'MESH mesh' ),
-  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected', 'GIS image' ),
+  'white_mesh', ReadDiskItem( 'Hemisphere White Mesh',
+    'Anatomist mesh formats' ),
+  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
+    'Anatomist volume formats' ),
 )
 
 def initialization( self ):

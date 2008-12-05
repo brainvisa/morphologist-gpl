@@ -47,7 +47,7 @@ signature = Signature(
     'Commissure_coordinates', ReadDiskItem( 'Commissure coordinates', 
                                             'Commissure coordinates' ),
     'show_MRI', Boolean(), 
-    'T1mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.vipVolumeFormats ),
+    'T1mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.anatomistVolumeFormats ),
     'anatomist_window', anatomist.AWindowChoice(), 
 )
 

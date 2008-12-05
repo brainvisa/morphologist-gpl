@@ -46,10 +46,11 @@ def validation():
 signature = Signature(
     'graph', ReadDiskItem( 'Cortical folds graph', 'Graph' ),
     'nomenclature', ReadDiskItem( 'Nomenclature', 'Hierarchy' ),
-    'hemi_mesh', ReadDiskItem( 'Hemisphere Mesh', 'MESH mesh' ),    
+    'hemi_mesh', ReadDiskItem( 'Hemisphere Mesh', 'Anatomist mesh formats' ),
     'load_MRI', Choice("Yes","No"),
     'two_windows', Choice("Yes","No"),
-    'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected', 'GIS image' )
+    'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
+      'Anatomist volume formats' )
     )
 
 def initialization( self ):

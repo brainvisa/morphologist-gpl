@@ -41,26 +41,32 @@ userLevel = 2
 
 signature = Signature(
   'mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.vipVolumeFormats ),
-  'mri_corrected', WriteDiskItem( "T1 MRI Bias Corrected", 'GIS Image' ),
+  'mri_corrected', WriteDiskItem( "T1 MRI Bias Corrected",
+      shfjGlobals.aimsWriteVolumeFormats ),
   'mode', Choice('write_minimal','write_all','delete_useless'),
   'write_field', Choice('yes','no'),
-  'field', WriteDiskItem( "T1 MRI Bias Field", 'GIS Image' ),
+  'field', WriteDiskItem( "T1 MRI Bias Field",
+      shfjGlobals.aimsWriteVolumeFormats ),
   'sampling', Float(),
   'field_rigidity', Float(),
   'zdir_multiply_regul',Float(),
   'ngrid', Integer(),
   'write_hfiltered', Choice('yes','no'),
-  'hfiltered', WriteDiskItem( "T1 MRI Filtered For Histo", 'GIS Image' ),
+  'hfiltered', WriteDiskItem( "T1 MRI Filtered For Histo",
+      shfjGlobals.aimsWriteVolumeFormats ),
   'write_wridges', Choice('yes','no','read'),
-  'white_ridges', WriteDiskItem( "T1 MRI White Matter Ridges", 'GIS Image' ),
+  'white_ridges', WriteDiskItem( "T1 MRI White Matter Ridges",
+      shfjGlobals.aimsWriteVolumeFormats ),
   'write_meancurvature', Choice('yes','no'),
-  'meancurvature', WriteDiskItem( "T1 MRI Mean Curvature", 'GIS Image' ),  
+  'meancurvature', WriteDiskItem( "T1 MRI Mean Curvature",
+      shfjGlobals.aimsWriteVolumeFormats ),
   'variance_fraction',Integer(),
   'write_variance', Choice('yes','no'),
-  'variance', WriteDiskItem( "T1 MRI Variance", 'GIS Image' ),
+  'variance', WriteDiskItem( "T1 MRI Variance",
+      shfjGlobals.aimsWriteVolumeFormats ),
   'edge_mask',Choice('yes','no'),
   'write_edges', Choice('yes','no'),
-  'edges', WriteDiskItem( "T1 MRI Edges", 'GIS Image' ),
+  'edges', WriteDiskItem( "T1 MRI Edges", shfjGlobals.aimsWriteVolumeFormats ),
   'delete_last_n_slices',Integer()
 )
 
@@ -107,7 +113,7 @@ def execution( self, context ):
       context.write(self.mri_corrected.fullName(), ' has been locked')
       context.write('Remove',self.mri_corrected.fullName(),'.loc if you want to trigger a new correction')
     else:
-      context.system('VipT1BiasCorrection', '-i', self.mri.fullName(), '-o', self.mri_corrected.fullName() , '-Fwrite', self.write_field, '-field', self.field.fullName(), '-Wwrite', self.write_wridges, '-wridge', self.white_ridges.fullName(),'-Kregul', self.field_rigidity, '-sampling',  self.sampling, '-Grid', self.ngrid, '-ZregulTuning', self.zdir_multiply_regul, '-vp',self.variance_fraction,'-e',edge, '-eWrite', self.write_edges, '-ename', self.edges.fullName(), '-vWrite', self.write_variance, '-vname', self.variance.fullName(), '-mWrite',self.write_meancurvature, '-mname', self.meancurvature.fullName(), '-hWrite', self.write_hfiltered, '-hname', self.hfiltered.fullName(), '-Last', self.delete_last_n_slices  )
+      context.system('VipT1BiasCorrection', '-i', self.mri.fullPath(), '-o', self.mri_corrected.fullPath() , '-Fwrite', self.write_field, '-field', self.field.fullPath(), '-Wwrite', self.write_wridges, '-wridge', self.white_ridges.fullPath(),'-Kregul', self.field_rigidity, '-sampling',  self.sampling, '-Grid', self.ngrid, '-ZregulTuning', self.zdir_multiply_regul, '-vp',self.variance_fraction,'-e',edge, '-eWrite', self.write_edges, '-ename', self.edges.fullPath(), '-vWrite', self.write_variance, '-vname', self.variance.fullPath(), '-mWrite',self.write_meancurvature, '-mname', self.meancurvature.fullPath(), '-hWrite', self.write_hfiltered, '-hname', self.hfiltered.fullPath(), '-Last', self.delete_last_n_slices  )
       tm = registration.getTransformationManager()
       tm.copyReferential(self.mri, self.mri_corrected)
       if self.write_field:

@@ -43,11 +43,15 @@ userLevel = 1
 
 # Argument declaration
 signature = Signature(
-  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected', 'GIS Image' ),
+  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
+      shfjGlobals.aimsVolumeFormats ),
   'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-  'mode', Choice("standard+iterative","standard","robust+iterative","robust","fast"),
-  'Commissure_coordinates', ReadDiskItem( 'Commissure coordinates','Commissure coordinates'),
-  'brain_mask', WriteDiskItem( "T1 Brain Mask", 'GIS Image' ),
+  'mode',
+    Choice("standard+iterative","standard","robust+iterative","robust","fast"),
+  'Commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
+      'Commissure coordinates'),
+  'brain_mask', WriteDiskItem( "T1 Brain Mask",
+      shfjGlobals.aimsWriteVolumeFormats ),
   'regularization', Boolean(),
   'erosion_size', Float(),
   'first_slice', Integer(),
@@ -75,9 +79,9 @@ def execution( self, context ):
     else:
       option_list = []
       if self.Commissure_coordinates is not None:
-        option_list += ['-Points', self.Commissure_coordinates.fullName()]
+        option_list += ['-Points', self.Commissure_coordinates.fullPath()]
       if self.lesion_mask is not None:
-        option_list += ['-patho', self.lesion_mask.fullName()]
+        option_list += ['-patho', self.lesion_mask.fullPath()]
       if self.regularization is not 1:
         option_list += ['-niter', 0]
       if self.mode=="standard+iterative":
@@ -92,14 +96,14 @@ def execution( self, context ):
         themode="fast"
       call_list = ['VipGetBrain',
                    '-m', themode,
-                   '-i',self.mri_corrected.fullName(),
-                   '-analyse', 'r', '-hname',  self.histo_analysis.fullName(),
-                   '-bname', self.brain_mask.fullName(),
+                   '-i',self.mri_corrected.fullPath(),
+                   '-analyse', 'r', '-hname',  self.histo_analysis.fullPath(),
+                   '-bname', self.brain_mask.fullPath(),
                    '-berosion',self.erosion_size,
                    '-First',self.first_slice,
                    '-Last', self.last_slice]
       apply( context.system, call_list+option_list )
-      
+
       # manage referentials
       tm = registration.getTransformationManager()
       tm.copyReferential(self.mri_corrected, self.brain_mask)

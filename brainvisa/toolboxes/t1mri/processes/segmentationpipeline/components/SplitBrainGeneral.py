@@ -37,16 +37,21 @@ name = 'Split Brain Mask'
 userLevel = 2
 
 signature = Signature(
-  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected', 'GIS Image'),
-  'split_mask', WriteDiskItem( "Voronoi Diagram", 'GIS Image' ),
+  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
+      'Aims readable volume formats' ),
+  'split_mask', WriteDiskItem( "Voronoi Diagram",
+      'Aims writable volume formats' ),
   'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-  'brain_mask', ReadDiskItem( 'T1 Brain Mask', 'GIS Image' ),
+  'brain_mask', ReadDiskItem( 'T1 Brain Mask',
+      'Aims readable volume formats' ),
   'use_template', Boolean(), 
-  'voronoi_template', ReadDiskItem( 'Hemispheres Template', 'GIS Image' ),
+  'voronoi_template', ReadDiskItem( 'Hemispheres Template',
+      'Aims readable volume formats' ),
   'commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
                                           'Commissure coordinates'), 
   'use_ridges', Boolean(),
-  'white_ridges', ReadDiskItem( "T1 MRI White Matter Ridges", 'GIS Image' ),
+  'white_ridges', ReadDiskItem( "T1 MRI White Matter Ridges",
+      'Aims readable volume formats' ),
 )
 
 

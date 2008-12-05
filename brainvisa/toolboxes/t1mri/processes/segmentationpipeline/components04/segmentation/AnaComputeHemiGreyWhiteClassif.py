@@ -40,12 +40,16 @@ userLevel = 0
 
 # Argument declaration
 signature = Signature(
-  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected', 'GIS Image'),
+  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
+      'Aims readable volume formats' ),
   'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-  'brain_voronoi', ReadDiskItem( 'Voronoi Diagram', 'GIS Image'),
+  'brain_voronoi', ReadDiskItem( 'Voronoi Diagram',
+      'Aims readable volume formats' ),
   'Side', Choice("Both","Left","Right"),
-  'left_grey_white', WriteDiskItem( 'Left Grey White Mask', 'GIS Image' ),
-  'right_grey_white', WriteDiskItem( 'Right Grey White Mask', 'GIS Image' ),
+  'left_grey_white', WriteDiskItem( 'Left Grey White Mask',
+      'Aims writable volume formats' ),
+  'right_grey_white', WriteDiskItem( 'Right Grey White Mask',
+      'Aims writable volume formats' ),
  ) 
 # Default values
 def initialization( self ):
@@ -66,10 +70,10 @@ def execution( self, context ):
       else:
         context.write( "Computing left hemisphere grey-white classification..." )
         context.system( "VipGreyWhiteClassif", "-i",
-                        self.mri_corrected.fullName(), "-h",
-                        self.histo_analysis.fullName(), "-m",
-                        self.brain_voronoi.fullName(), "-o",
-                        self.left_grey_white.fullName(), "-l", "2", "-w", "t" )
+                        self.mri_corrected, "-h",
+                        self.histo_analysis, "-m",
+                        self.brain_voronoi, "-o",
+                        self.left_grey_white, "-l", "2", "-w", "t" )
         tm.copyReferential(self.mri_corrected, self.left_grey_white)
   if self.Side in ('Right','Both'):
        
@@ -78,9 +82,9 @@ def execution( self, context ):
       else:
         context.write( "Computing right hemisphere grey-white classification..." )
         context.system( "VipGreyWhiteClassif", "-i",
-                        self.mri_corrected.fullName(), "-h",
-                        self.histo_analysis.fullName(), "-m",
-                        self.brain_voronoi.fullName(), "-o",
-                        self.right_grey_white.fullName(), "-l", "1", "-w",
+                        self.mri_corrected, "-h",
+                        self.histo_analysis, "-m",
+                        self.brain_voronoi, "-o",
+                        self.right_grey_white, "-l", "1", "-w",
                         "t" )
         tm.copyReferential(self.mri_corrected, self.right_grey_white)

@@ -38,22 +38,27 @@ name = '4 - Split Brain Mask'
 userLevel = 2
 
 signature = Signature(
-  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected', 'GIS Image'),
+  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
+      'Aims readable volume formats' ),
   'variant', Choice("regularized","GW Barycentre","WM Standard Deviation"),
-  'split_mask', WriteDiskItem( "Voronoi Diagram", 'GIS Image' ),
+  'split_mask', WriteDiskItem( "Voronoi Diagram",
+      'Aims writable volume formats' ),
   'bary_factor', Choice("0.9","0.8","0.7","0.6","0.5","0.4","0.3","0.2","0.1"),
   'mult_factor', Choice("0.5","1","1.5","2","2.5","3","3.5","4"),
   'initial_erosion', Float(),
   'cc_min_size', Integer(),
   'visu', Choice("No","Yes"),
   'Use_ridges', Boolean(),
-  'white_ridges', ReadDiskItem( "T1 MRI White Matter Ridges", 'GIS Image' ),
+  'white_ridges', ReadDiskItem( "T1 MRI White Matter Ridges",
+      'Aims readable volume formats' ),
   'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-  'brain_mask', ReadDiskItem( 'T1 Brain Mask', 'GIS Image' ),
+  'brain_mask', ReadDiskItem( 'T1 Brain Mask',
+      'Aims readable volume formats' ),
   'Use_template', Boolean(), 
-  'voronoi_template', ReadDiskItem( 'Hemispheres Template', 'GIS Image' ),
+  'voronoi_template', ReadDiskItem( 'Hemispheres Template',
+      'Aims readable volume formats' ),
   'Commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
-                                          'Commissure coordinates'), 
+                                          'Commissure coordinates'),
 )
 
 
@@ -85,7 +90,7 @@ def execution( self, context ):
     else:
       option_list = []
       if self.Commissure_coordinates is not None:
-        option_list += ['-Points', self.Commissure_coordinates.fullName()]
+        option_list += ['-Points', self.Commissure_coordinates.fullPath()]
       if self.variant=="regularized":
         option_list += ['-walgo','r']
       if self.variant=="GW Barycentre":
@@ -93,16 +98,16 @@ def execution( self, context ):
       elif self.variant=="WM Standard Deviation":
         option_list += ['-Coef', self.mult_factor,'-walgo','c']
       if self.Use_template:
-        option_list += ['-template', self.voronoi_template.fullName(),'-TemplateUse', 'y']
+        option_list += ['-template', self.voronoi_template.fullPath(),'-TemplateUse', 'y']
       else:
-        option_list += ['-TemplateUse', 'n']        
+        option_list += ['-TemplateUse', 'n']
       if self.Use_ridges:
-        option_list += ['-Ridge', self.white_ridges.fullName()]        
+        option_list += ['-Ridge', self.white_ridges.fullPath()]
       call_list = ['VipSplitBrain',
-                     '-input',  self.mri_corrected.fullName(),
-                     '-brain', self.brain_mask.fullName(),
-                     '-analyse', 'r', '-hname', self.histo_analysis.fullName(),
-                     '-output', self.split_mask.fullName(),
+                     '-input',  self.mri_corrected.fullPath(),
+                     '-brain', self.brain_mask.fullPath(),
+                     '-analyse', 'r', '-hname', self.histo_analysis.fullPath(),
+                     '-output', self.split_mask.fullPath(),
                      '-erosion', self.initial_erosion,
                      '-ccsize', self.cc_min_size]
       result = []
@@ -110,6 +115,6 @@ def execution( self, context ):
       
       # manage referentials
       tm = registration.getTransformationManager()
-      tm.copyReferential(self.mri_corrected, self.brain_voronoi)
+      tm.copyReferential(self.mri_corrected, self.split_mask)
       
       return result

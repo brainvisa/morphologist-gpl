@@ -34,18 +34,21 @@
 
 
 from neuroProcesses import *
-import shfjGlobals     
+import shfjGlobals
 
 name = 'T1 Bias Correction'
 userLevel = 2
 
 signature = Signature(
   'mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.vipVolumeFormats ),
-  'mri_corrected', WriteDiskItem( "T1 MRI Bias Corrected", 'GIS Image' ),
+  'mri_corrected', WriteDiskItem( "T1 MRI Bias Corrected",
+      shfjGlobals.aimsWriteVolumeFormats ),
   'write_hfiltered', Choice('yes','no'),
-  'hfiltered', WriteDiskItem( "T1 MRI Filtered For Histo", 'GIS Image' ),
+  'hfiltered', WriteDiskItem( "T1 MRI Filtered For Histo",
+      shfjGlobals.aimsWriteVolumeFormats ),
   'write_wridges', Choice('yes','no','read'),
-  'white_ridges', WriteDiskItem( "T1 MRI White Matter Ridges", 'GIS Image' ),
+  'white_ridges', WriteDiskItem( "T1 MRI White Matter Ridges",
+      shfjGlobals.aimsWriteVolumeFormats ),
 )
 
 

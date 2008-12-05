@@ -41,10 +41,11 @@ name = 'Validation_1 Bias Correction from T1 MRI'
 userLevel = 0
 
 signature = Signature(
-  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected', 'GIS image' ),
-  'T1mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.vipVolumeFormats ),   
+  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
+    'Aims readable volume formats' ),
+  'T1mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.vipVolumeFormats ),
 #  'validation', Choice("Visualise","Lock","Unlock","Delete","Compress","Uncompress"),
-  'validation', Choice("Visualise","Lock","Unlock","Delete"),
+  'validation', Choice("Visualise","Lock","Unlock"),
 )
 
 def initialization( self ):
@@ -65,25 +66,29 @@ def execution( self, context ):
         else:
             context.write(self.mri_corrected.fullName(),'has not been locked')
     elif self.validation == "Delete":
-        if os.path.exists(self.mri_corrected.fullName() + '.loc'):
-            context.write("Sorry, I can not delete ",self.mri_corrected.fullName(),', which has been locked')
-        elif os.path.exists(self.mri_corrected.fullName() + '.ima') or os.path.exists(self.mri_corrected.fullName() + '.ima.gz'):
-            shelltools.rm( self.mri_corrected.fullName() + '.*' )
-        else:
-            context.write("Sorry ", self.mri_corrected.fullName(),' does not exist on fdisk')
+        context.write( 'sorry, delete mode is obsolete' )
+        #if os.path.exists(self.mri_corrected.fullName() + '.loc'):
+            #context.write("Sorry, I can not delete ",self.mri_corrected.fullName(),', which has been locked')
+        #elif os.path.exists(self.mri_corrected.fullPath()) or os.path.exists(self.mri_corrected.fullPath() + '.gz'):
+            #shelltools.rm( self.mri_corrected.fullName() + '.*' )
+        #else:
+            #context.write("Sorry ", self.mri_corrected.fullPath(),
+            #' does not exist on fdisk')
     elif self.validation == "Compress":
-        if os.path.exists(self.mri_corrected.fullName() + '.ima'):
-            context.system("gzip --force " + self.mri_corrected.fullName() + '.ima')
-            context.system("gzip --force " + self.mri_corrected.fullName() + '.dim')
-        elif os.path.exists(self.mri_corrected.fullName() + '.ima.gz'):
-            context.write("Sorry ", self.mri_corrected.fullName(),' is already compressed')
-        else:
-            context.write("Sorry ", self.mri_corrected.fullName(),' does not exist on disk')
+        context.write( 'sorry, compress mode is obsolete' )
+        #if os.path.exists(self.mri_corrected.fullPath()):
+            #context.system("gzip --force " + self.mri_corrected.fullPath())
+            #context.system("gzip --force " + self.mri_corrected.fullName() + '.dim')
+        #elif os.path.exists(self.mri_corrected.fullName() + '.ima.gz'):
+            #context.write("Sorry ", self.mri_corrected.fullName(),' is already compressed')
+        #else:
+            #context.write("Sorry ", self.mri_corrected.fullName(),' does not exist on disk')
     elif self.validation == "Uncompress":
-        if  os.path.exists(self.mri_corrected.fullName() + '.ima.gz'):     
-            context.system("gunzip " + self.mri_corrected.fullName() + '.ima')
-            context.system("gunzip " + self.mri_corrected.fullName() + '.dim')
-        elif os.path.exists(self.mri_corrected.fullName() + '.ima'):
-            context.write("Sorry ", self.mri_corrected.fullName(),' is already uncompressed')
-        else:
-            context.write("Sorry ", self.mri_corrected.fullName(),' does not exist on disk')
+        context.write( 'sorry, uncompress mode is obsolete' )
+        #if  os.path.exists(self.mri_corrected.fullName() + '.ima.gz'):
+            #context.system("gunzip " + self.mri_corrected.fullName() + '.ima')
+            #context.system("gunzip " + self.mri_corrected.fullName() + '.dim')
+        #elif os.path.exists(self.mri_corrected.fullName() + '.ima'):
+            #context.write("Sorry ", self.mri_corrected.fullName(),' is already uncompressed')
+        #else:
+            #context.write("Sorry ", self.mri_corrected.fullName(),' does not exist on disk')

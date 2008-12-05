@@ -41,11 +41,16 @@ userLevel = 2
 # Argument declaration
 signature = Signature(
   'side', Choice( 'Left', 'Right' ), 
-  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected', 'GIS Image'),
-  'split_mask', ReadDiskItem( 'Voronoi Diagram', 'GIS Image'),
-  'hemi_cortex', ReadDiskItem( 'CSF+GREY Mask', 'GIS Image' ),
-  'skeleton', WriteDiskItem( 'Cortex Skeleton', 'GIS image' ),
-  'roots', WriteDiskItem( 'Cortex Catchment Bassins', 'GIS image' ),
+  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
+      'Aims readable volume formats' ),
+  'split_mask', ReadDiskItem( 'Voronoi Diagram',
+      'Aims readable volume formats' ),
+  'hemi_cortex', ReadDiskItem( 'CSF+GREY Mask',
+      'Aims readable volume formats' ),
+  'skeleton', WriteDiskItem( 'Cortex Skeleton',
+      'Aims writable volume formats' ),
+  'roots', WriteDiskItem( 'Cortex Catchment Bassins',
+      'Aims writable volume formats' ),
   'graph_version', OpenChoice( '3.1', '3.2' ),
   'graph', WriteDiskItem( 'Cortical folds graph', 'Graph' ),
   'commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
@@ -104,20 +109,20 @@ def execution( self, context ):
     masklabel = '2'
   else:
     masklabel = '1'
-  context.system( 'VipMask', '-i', self.mri_corrected.fullName(), "-m",
-                  self.split_mask.fullName(), "-o", braing.fullName(),
+  context.system( 'VipMask', '-i', self.mri_corrected, "-m",
+                  self.split_mask, "-o", braing,
                   "-w", "t", "-l", masklabel )
 
   context.write("Computing skeleton and buried gyrus watershed...")
-  context.system( "VipSkeleton", "-i", self.hemi_cortex.fullName(),
-                  "-so", self.skeleton.fullName(), "-vo",
-                  self.roots.fullName(), "-g", braing.fullName(), "-w", "t" )
+  context.system( "VipSkeleton", "-i", self.hemi_cortex,
+                  "-so", self.skeleton, "-vo",
+                  self.roots, "-g", braing, "-w", "t" )
 
   context.write("Building Attributed Relational Graph...")
   graphd = context.temporary( 'Directory' )
   graph = os.path.join( graphd.fullPath(), 'foldgraph' )
-  context.system( "VipFoldArg", "-i", self.skeleton.fullName(), "-v",
-                  self.roots.fullName(), "-o", graph, "-w", "g" )
+  context.system( "VipFoldArg", "-i", self.skeleton, "-v",
+                  self.roots, "-o", graph, "-w", "g" )
 
   attp = [ 'AimsFoldArgAtt', '-i', self.skeleton.fullPath(), '-g',
            graph + '.arg', '-o', self.graph.fullPath(),

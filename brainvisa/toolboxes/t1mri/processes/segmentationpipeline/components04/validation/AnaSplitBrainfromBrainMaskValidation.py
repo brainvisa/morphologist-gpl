@@ -39,9 +39,11 @@ name = 'Validation_4 Split Brain from Brain Mask'
 userLevel = 0
 
 signature = Signature(
-  'brain_voronoi', ReadDiskItem( 'Voronoi Diagram', 'GIS image' ),
-  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected', 'GIS image' ),
-  'validation', Choice("Visualise","Lock","Unlock","Delete"),
+  'brain_voronoi', ReadDiskItem( 'Voronoi Diagram',
+    'Aims readable volume formats' ),
+  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
+    'Aims readable volume formats' ),
+  'validation', Choice("Visualise","Lock","Unlock"),
 )
 
 def initialization( self ):
@@ -50,7 +52,8 @@ def initialization( self ):
 
 def execution( self, context ):
     if self.validation == "Visualise":
-      return(context.runProcess('AnatomistShowSplitBrain', mri_corrected=self.mri_corrected,brain_voronoi=self.brain_voronoi))
+      return(context.runProcess('AnatomistShowSplitBrain',
+        mri_corrected=self.mri_corrected,brain_voronoi=self.brain_voronoi))
     elif self.validation == "Lock":
       if os.path.exists(self.brain_voronoi.fullName() + '.loc'):
         context.write(self.brain_voronoi.fullName(),'has already been locked')
@@ -62,10 +65,10 @@ def execution( self, context ):
         os.unlink( self.brain_voronoi.fullName() + '.loc' )
       else:
         context.write(self.brain_voronoi.fullName(),'has not been locked')
-    elif self.validation == "Delete":
-        if os.path.exists(self.brain_voronoi.fullName() + '.loc'):
-            context.write("Sorry, I can not delete ",self.brain_voronoi.fullName(),', which has been locked')
-        elif os.path.exists(self.brain_voronoi.fullName() + '.ima') or os.path.exists(self.brain_voronoi.fullName() + '.ima.gz'):
-            shelltools.rm( self.brain_voronoi.fullName() + '.*' )
-        else:
-            context.write("Sorry ", self.brain_voronoi.fullName(),' does not exist on fdisk')
+    #elif self.validation == "Delete":
+        #if os.path.exists(self.brain_voronoi.fullName() + '.loc'):
+            #context.write("Sorry, I can not delete ",self.brain_voronoi.fullName(),', which has been locked')
+        #elif os.path.exists(self.brain_voronoi.fullName() + '.ima') or os.path.exists(self.brain_voronoi.fullName() + '.ima.gz'):
+            #shelltools.rm( self.brain_voronoi.fullName() + '.*' )
+        #else:
+            #context.write("Sorry ", self.brain_voronoi.fullName(),' does not exist on fdisk')

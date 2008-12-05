@@ -46,7 +46,7 @@ def validation():
 signature = Signature(
   'curvature_texture', ReadDiskItem( 'White Curvature Texture', 'Texture' ),
   'Triangulation', ReadDiskItem( 'Hemisphere White Mesh', \
-    shfjGlobals.aimsMeshFormats ),
+    shfjGlobals.anatomistMeshFormats ),
 )
 
 def initialization( self ):

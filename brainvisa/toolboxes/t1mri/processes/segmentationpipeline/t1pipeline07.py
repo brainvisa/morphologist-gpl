@@ -40,7 +40,8 @@ userLevel = 0
 
 signature = Signature(
   'mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.vipVolumeFormats ),
-  'mri_corrected', WriteDiskItem( "T1 MRI Bias Corrected", 'GIS Image' ),
+  'mri_corrected', WriteDiskItem( "T1 MRI Bias Corrected",
+      'Aims writable volume formats' ),
   'Normalised',Choice('No','MNI from SPM','MNI from Mritotal',
       'Marseille from SPM'),
   'Anterior_Commissure', Point3D(),

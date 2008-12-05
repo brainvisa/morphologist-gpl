@@ -38,7 +38,8 @@ name = 'Talairach Transformation'
 userLevel = 2
 
 signature = Signature(
-  'split_mask', ReadDiskItem( "Voronoi Diagram", 'GIS Image' ),
+  'split_mask', ReadDiskItem( "Voronoi Diagram",
+      'Aims readable volume formats' ),
   'Commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
                                           'Commissure coordinates'), 
   'Talairach_transform',

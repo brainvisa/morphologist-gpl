@@ -39,11 +39,15 @@ name = 'CSF Classif'
 userLevel = 0
 
 signature = Signature(
-  'left_grey_white', ReadDiskItem( 'Left Grey White Mask', 'GIS Image' ),
-  'right_grey_white', ReadDiskItem( 'Right Grey White Mask', 'GIS Image' ),
-  'left_csf', WriteDiskItem( 'Left CSF Mask', 'GIS Image' ),
-  'right_csf', WriteDiskItem( 'Right CSF Mask', 'GIS Image' ),
-  'brain_voronoi', WriteDiskItem( "Voronoi Diagram", 'GIS Image' ),
+  'left_grey_white', ReadDiskItem( 'Left Grey White Mask',
+    'Aims readable volume formats' ),
+  'right_grey_white', ReadDiskItem( 'Right Grey White Mask',
+    'Aims readable volume formats' ),
+  'left_csf', WriteDiskItem( 'Left CSF Mask', 'Aims writable volume formats' ),
+  'right_csf', WriteDiskItem( 'Right CSF Mask',
+    'Aims writable volume formats' ),
+  'brain_voronoi', WriteDiskItem( "Voronoi Diagram",
+    'Aims writable volume formats' ),
 
 )
 

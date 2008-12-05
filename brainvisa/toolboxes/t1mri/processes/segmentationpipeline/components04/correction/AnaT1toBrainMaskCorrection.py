@@ -39,8 +39,9 @@ name = 'Correction Brain Mask from T1 MRI'
 userLevel = 0
 
 signature = Signature(
-  'mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.vipVolumeFormats ),   
-  'brain_mask', WriteDiskItem( 'T1 Brain Mask', 'GIS Image' ),
+  'mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.vipVolumeFormats ),
+  'brain_mask', WriteDiskItem( 'T1 Brain Mask',
+    'Aims writable volume formats' ),
   'variant', Choice("Standard + (iterative erosion from 2mm)",
                     "Standard + (iterative erosion from 1.5mm)",
                     "Standard + (fixed 1.5mm erosion)",
@@ -66,10 +67,13 @@ signature = Signature(
                     "Fast (3.5mm erosion)",
                     "Fast (4mm erosion)",
                     "Nothing"),
-  'help', Choice("Nothing","Mask visualization","Histogram analysis visualization"),
-  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected', 'GIS image' ),
+  'help', Choice("Nothing","Mask visualization",
+    "Histogram analysis visualization"),
+  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
+    'Aims readable volume formats' ),
   'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-  'Commissure_coordinates', ReadDiskItem( 'Commissure coordinates','Commissure coordinates'),
+  'Commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
+    'Commissure coordinates'),
   'lesion_mask', ReadDiskItem( '3D Volume', shfjGlobals.vipVolumeFormats),
   'first_slice', Integer(),
   'last_slice', Integer(),

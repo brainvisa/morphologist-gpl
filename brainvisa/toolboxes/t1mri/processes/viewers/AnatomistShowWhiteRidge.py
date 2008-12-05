@@ -43,8 +43,9 @@ def validation():
     anatomist.validation()
 
 signature = Signature(
-  'ridge', ReadDiskItem( 'T1 MRI White Matter Ridges', 'GIS image' ),
-  'mri', ReadDiskItem( 'Raw T1 MRI', 'GIS image' ),
+  'ridge', ReadDiskItem( 'T1 MRI White Matter Ridges',
+    'Anatomist volume formats' ),
+  'mri', ReadDiskItem( 'Raw T1 MRI', 'Anatomist volume formats' ),
 )
 
 def initialization( self ):

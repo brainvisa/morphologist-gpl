@@ -42,11 +42,15 @@ userLevel = 0
 # Argument declaration
 signature = Signature(
   'Side', Choice("Both","Left","Right"),
-  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected', 'GIS Image'),
+  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
+      'Aims readable volume formats' ),
   'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-  'brain_voronoi', ReadDiskItem( 'Voronoi Diagram', 'GIS Image' ),
-  'left_white_mesh', WriteDiskItem( 'Left Hemisphere White Mesh', 'MESH mesh' ),
-  'right_white_mesh', WriteDiskItem( 'Right Hemisphere White Mesh', 'MESH mesh' ),
+  'brain_voronoi', ReadDiskItem( 'Voronoi Diagram',
+      'Aims readable volume formats' ),
+  'left_white_mesh', WriteDiskItem( 'Left Hemisphere White Mesh',
+      'Aims mesh formats' ),
+  'right_white_mesh', WriteDiskItem( 'Right Hemisphere White Mesh',
+      'Aims mesh formats' ),
   'oversampling', Choice("none","best resolution in each direction","1.0x1.0x1.0mm","0.9x0.9x0.9mm","0.8x0.8x0.8mm","0.7x0.7x0.7mm","0.6x0.6x0.6mm","0.5x0.5x0.5mm"),
   'pressure', Choice("0","25","50","75","100","125","150"),
   'iterations', Integer(), 
@@ -107,17 +111,17 @@ def execution( self, context ):
      newdimz = int((dimz+1)*voxz/newvox)      
      context.write( "Computing oversampled MR image to improve cortical " \
                     "surface definition (cubic spline)")      
-     context.system("VipSplineResamp", "-i", self.mri_corrected.fullName(), 
+     context.system("VipSplineResamp", "-i", self.mri_corrected,
                     "-ord", "3", "-dx", str(newdimx), "-dy", str(newdimy), 
                     "-dz", str(newdimz), "-sx", str(newvox), "-sy", 
                     str(newvox), "-sz", str(newvox), "-did", "-o", 
-                    over_nobias.fullName())
+                    over_nobias)
      context.write( "Computing oversampled voronoi diagram (nearest neighbor)")      
-     context.system("VipSplineResamp", "-i", self.brain_voronoi.fullName(), 
+     context.system("VipSplineResamp", "-i", self.brain_voronoi,
                     "-ord", "0", "-dx", str(newdimx), "-dy", str(newdimy), 
                     "-dz", str(newdimz), "-sx", str(newvox), "-sy", 
                     str(newvox), "-sz", str(newvox), "-did", "-o", 
-                    over_voronoi.fullName())
+                    over_voronoi)
   trManager = registration.getTransformationManager()
   if self.Side in ('Left','Both'):
     if os.path.exists(self.left_white_mesh.fullName() + '.loc'):
@@ -125,22 +129,22 @@ def execution( self, context ):
     else:  
       context.write( "Masking Bias corrected image with left hemisphere mask...")
       braing = context.temporary( 'GIS Image' )
-      context.system( "VipMask", "-i", over_nobias.fullName(), "-m", 
-                      over_voronoi.fullName(), "-o", braing.fullName(), 
+      context.system( "VipMask", "-i", over_nobias, "-m",
+                      over_voronoi, "-o", braing,
                       "-w", "t", "-l", "2" )
       
       hemi_cortex = context.temporary( 'GIS Image' )  
       context.write( "Detecting left grey/white interface..." )
-      context.system( "VipHomotopicSnake", "-i", braing.fullName(), "-h", 
-                      self.histo_analysis.fullName(), "-o", 
-                      hemi_cortex.fullName(), "-w", "t", "-p", 
+      context.system( "VipHomotopicSnake", "-i", braing, "-h",
+                      self.histo_analysis, "-o",
+                      hemi_cortex, "-w", "t", "-p",
                       self.pressure )
       del braing
 
       context.write("Reconstructing left hemisphere white surface...")
       white = context.temporary( 'GIS Image' )  
-      context.system( "VipSingleThreshold", "-i", hemi_cortex.fullName(), 
-                      "-o", white.fullName(), "-t", "0", "-c", "b", "-m",
+      context.system( "VipSingleThreshold", "-i", hemi_cortex,
+                      "-o", white, "-t", "0", "-c", "b", "-m",
                       "ne", "-w", "t" )
       del hemi_cortex
       
@@ -160,22 +164,22 @@ def execution( self, context ):
     else:  
       context.write( "Masking Bias corrected image with right hemisphere mask...")
       braing = context.temporary( 'GIS Image' )
-      context.system( "VipMask", "-i", over_nobias.fullName(), "-m", 
-                      over_voronoi.fullName(), "-o", braing.fullName(), 
+      context.system( "VipMask", "-i", over_nobias, "-m",
+                      over_voronoi, "-o", braing,
                       "-w", "t", "-l", "1" )
       
       hemi_cortex = context.temporary( 'GIS Image' )  
       context.write( "Detecting right grey/white interface..." )
-      context.system( "VipHomotopicSnake", "-i", braing.fullName(), "-h", 
-                      self.histo_analysis.fullName(), "-o", 
-                      hemi_cortex.fullName(), "-w", "t", "-p",
+      context.system( "VipHomotopicSnake", "-i", braing, "-h",
+                      self.histo_analysis, "-o",
+                      hemi_cortex, "-w", "t", "-p",
                       self.pressure )
       del braing
 
       context.write("Reconstructing right hemisphere white surface...")
       white = context.temporary( 'GIS Image' )  
-      context.system( "VipSingleThreshold", "-i", hemi_cortex.fullName(), 
-                      "-o", white.fullName(), "-t", "0", "-c", "b", "-m",
+      context.system( "VipSingleThreshold", "-i", hemi_cortex,
+                      "-o", white, "-t", "0", "-c", "b", "-m",
                       "ne", "-w", "t" )
       del hemi_cortex
 

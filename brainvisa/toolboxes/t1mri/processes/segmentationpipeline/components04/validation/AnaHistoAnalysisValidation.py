@@ -42,7 +42,8 @@ userLevel = 0
 
 signature = Signature(
   'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected', 'GIS image' ),
+  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
+    'Aims readable volume formats' ),
   'validation', Choice("Visualise","Lock","Unlock"),
 )
 
@@ -52,7 +53,8 @@ def initialization( self ):
 
 def execution( self, context ):
     if self.validation == "Visualise":
-      context.system( 'VipHistoAnalysis', '-i',  self.mri_corrected.fullName(), '-o',self.histo_analysis.fullName(), '-S', 'n', '-m', 'a', '-g', 's' )
+      context.system( 'VipHistoAnalysis', '-i',  self.mri_corrected,
+        '-o',self.histo_analysis, '-S', 'n', '-m', 'a', '-g', 's' )
     elif self.validation == "Lock":
       if os.path.exists(self.histo_analysis.fullName() + '.han.loc'):
         context.write(self.histo_analysis.fullName(),'has already been locked')
