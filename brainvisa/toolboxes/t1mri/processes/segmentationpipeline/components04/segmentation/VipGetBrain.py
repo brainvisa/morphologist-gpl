@@ -54,6 +54,7 @@ signature = Signature(
       shfjGlobals.aimsWriteVolumeFormats ),
   'regularization', Boolean(),
   'erosion_size', Float(),
+  'layer', Choice("0","1","2","3","4","5"),
   'first_slice', Integer(),
   'last_slice', Integer(),
   'lesion_mask', ReadDiskItem( '3D Volume', shfjGlobals.vipVolumeFormats),
@@ -71,6 +72,8 @@ def initialization( self ):
   self.first_slice = 1
   self.last_slice = 3
   self.setOptional('lesion_mask')
+  self.layer = "0"
+
 
 def execution( self, context ):
     if os.path.exists(self.brain_mask.fullName() + '.loc'):
@@ -101,7 +104,8 @@ def execution( self, context ):
                    '-bname', self.brain_mask.fullPath(),
                    '-berosion',self.erosion_size,
                    '-First',self.first_slice,
-                   '-Last', self.last_slice]
+                   '-Last', self.last_slice,
+		   '-layer', self.layer]
       apply( context.system, call_list+option_list )
 
       # manage referentials

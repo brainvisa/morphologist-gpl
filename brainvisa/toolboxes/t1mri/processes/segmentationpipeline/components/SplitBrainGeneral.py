@@ -66,10 +66,10 @@ def initialization( self ):
 
   eNode = SelectionExecutionNode( self.name, parameterized = self )
   eNode.addChild( 'SplitBrain05', 
-                  ProcessExecutionNode( 'SplitBrain', selected = 0 ) )
+                  ProcessExecutionNode( 'SplitBrain', selected = 1 ) )
   eNode.addChild( 'SplitBrain04', 
                   ProcessExecutionNode( 'AnaSplitBrainFromBrainMask',
-                                        selected = 1 ) )
+                                        selected = 0 ) )
 
   # break internal links
   

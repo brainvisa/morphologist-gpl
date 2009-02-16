@@ -1,4 +1,4 @@
-# Copyright CEA and IFR 49 (2000-2005)
+# Copyright CEA and IFR 49 (2000-2008)
 #
 #  This software and supporting documentation were developed by
 #      CEA/DSV/SHFJ and IFR 49
@@ -33,28 +33,26 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from neuroProcesses import *
+import shfjGlobals
+from brainvisa import anatomist
 
-name = '2 - Histogram analysis'
-userLevel = 2
- 
+name = 'Anatomist Show White Mesh Depth'
+roles = ('viewer',)
+userLevel = 0
+
+def validation():
+  anatomist.validation()
+
 signature = Signature(
-  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected', 'Aims readable volume formats' ),
-  'histo_analysis', WriteDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-  'hfiltered', ReadDiskItem( "T1 MRI Filtered For Histo", 'Aims readable volume formats' ),
-  'white_ridges', ReadDiskItem( "T1 MRI White Matter Ridges",   'Aims readable volume formats' ),
-  'undersampling', Choice('2', '4', '8', '16', '32', 'auto')
+  'depth_texture', ReadDiskItem( 'White Depth Texture', 'Texture' ),
+  'Triangulation', ReadDiskItem( 'Hemisphere White Mesh', \
+    shfjGlobals.anatomistMeshFormats ),
 )
 
 def initialization( self ):
-  self.linkParameters( 'histo_analysis', 'mri_corrected' )
-  self.linkParameters( 'hfiltered', 'mri_corrected' )
-  self.linkParameters( 'white_ridges', 'mri_corrected' )
-  self.undersampling='auto'
-
+  self.linkParameters('Triangulation','depth_texture' )
 
 def execution( self, context ):
-  if os.path.exists(self.histo_analysis.fullName() + '.han.loc'):
-    context.write(self.histo_analysis.fullName(), '.han has been locked')
-    context.write('Remove',self.histo_analysis.fullName(),'.han.loc if you want to trigger automated analysis')
-  else:
-    context.system( 'VipHistoAnalysis', '-i',  self.mri_corrected.fullPath(), '-o',self.histo_analysis.fullPath(), '-Save', 'y', '-mode', 'a', '-u', self.undersampling, '-Mask', self.hfiltered.fullPath(), '-Ridge', self.white_ridges.fullPath())
+  a = anatomist.Anatomist()
+  return a.viewTextureOnMesh( self.Triangulation, self.depth_texture,
+    a.getPalette('Purple-Red + Stripes'))

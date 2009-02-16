@@ -33,28 +33,22 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from neuroProcesses import *
+import os
+from brainvisa import anatomist
 
-name = '2 - Histogram analysis'
-userLevel = 2
- 
+name = 'White Mesh Curvature Map'
+userLevel = 0
+
 signature = Signature(
-  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected', 'Aims readable volume formats' ),
-  'histo_analysis', WriteDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-  'hfiltered', ReadDiskItem( "T1 MRI Filtered For Histo", 'Aims readable volume formats' ),
-  'white_ridges', ReadDiskItem( "T1 MRI White Matter Ridges",   'Aims readable volume formats' ),
-  'undersampling', Choice('2', '4', '8', '16', '32', 'auto')
-)
+  "white_mesh", ReadDiskItem( "Hemisphere White Mesh", "Aims mesh formats" ),
+  "curvature_texture", WriteDiskItem( "White Curvature Texture", "Texture" ),
+  "curvature_method", Choice( ( 'Finite Elements', 'fem' ), ( 'Boix', 'boix' ),
+      ( 'Barycenter', 'barycenter' ), ( 'Boix Gaussian', 'boixgaussian' ) ),
+    )
 
-def initialization( self ):
-  self.linkParameters( 'histo_analysis', 'mri_corrected' )
-  self.linkParameters( 'hfiltered', 'mri_corrected' )
-  self.linkParameters( 'white_ridges', 'mri_corrected' )
-  self.undersampling='auto'
-
+def initialization(self):
+  self.linkParameters( "curvature_texture", "white_mesh" )
 
 def execution( self, context ):
-  if os.path.exists(self.histo_analysis.fullName() + '.han.loc'):
-    context.write(self.histo_analysis.fullName(), '.han has been locked')
-    context.write('Remove',self.histo_analysis.fullName(),'.han.loc if you want to trigger automated analysis')
-  else:
-    context.system( 'VipHistoAnalysis', '-i',  self.mri_corrected.fullPath(), '-o',self.histo_analysis.fullPath(), '-Save', 'y', '-mode', 'a', '-u', self.undersampling, '-Mask', self.hfiltered.fullPath(), '-Ridge', self.white_ridges.fullPath())
+  context.system( 'AimsMeshCurvature', '-i', self.white_mesh, '-o',
+    self.curvature_texture, '-m', self.curvature_method )

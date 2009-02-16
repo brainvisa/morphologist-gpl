@@ -93,12 +93,12 @@ def initialization( self ):
                                         optional = 1 ) )
 
 
-  reco = getProcess( 'recognition' )
+  reco = getProcess( 'recognitionGeneral' )
   if reco:
     # these recognition processes are part of the sulci toolbox and are
     # not necessarily present.
-    eNode2 = ProcessExecutionNode( 'recognition', optional = 1 )
-    eNode3 = ProcessExecutionNode( 'recognition', optional = 1 )
+    eNode2 = ProcessExecutionNode( 'recognitionGeneral', optional = 1 )
+    eNode3 = ProcessExecutionNode( 'recognitionGeneral', optional = 1 )
     eNode1 = ParallelExecutionNode( 'SulciRecognition', optional = 1, selected=0  )
     eNode1.addChild( 'LeftSulciRecognition', eNode2 )
     eNode1.addChild( 'RightSulciRecognition', eNode3 )

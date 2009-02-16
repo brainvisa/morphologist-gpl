@@ -71,7 +71,7 @@ def initialization( self ):
   self.Use_ridges = "True"
   self.setOptional('white_ridges')
   self.visu = "No"
-  self.variant = "regularized"
+  self.variant = "GW Barycentre"
   self.voronoi_template = self.signature[ 'voronoi_template' ].findValue( {} )
   self.Use_template = "True"
   self.setOptional('voronoi_template')

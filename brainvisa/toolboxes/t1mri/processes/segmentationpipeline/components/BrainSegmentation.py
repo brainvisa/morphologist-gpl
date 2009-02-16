@@ -59,6 +59,7 @@ signature = Signature(
       'Commissure coordinates'),
   'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
   'lesion_mask', ReadDiskItem( '3D Volume', shfjGlobals.vipVolumeFormats ),
+  'layer', Choice("0","1","2","3","4","5"),
   'first_slice', Integer(),
   'last_slice', Integer(),
 )
@@ -75,8 +76,9 @@ def initialization( self ):
   self.setOptional('lesion_mask')
   self.setOptional('Commissure_coordinates')
   self.linkParameters( 'Commissure_coordinates', 'mri_corrected' )
-  self.variant = "2005 based on white ridge"
+  self.variant = "Standard + (iterative erosion)"
   self.visu = "No"
+  self.layer = "0"
   
 def execution( self, context ):
   if os.path.exists(self.brain_mask.fullName() + '.loc'):
@@ -84,7 +86,7 @@ def execution( self, context ):
       context.write('Remove',self.brain_mask.fullName(),'.loc if you want to trigger a new segmentation')
   else:
       option_list = []
-      constant_list = ['VipGetBrain','-berosion',self.erosion_size,'-i',self.mri_corrected.fullPath(),'-analyse', 'r', '-hname',  self.histo_analysis.fullPath(),'-bname', self.brain_mask.fullPath(),'-First',self.first_slice,'-Last', self.last_slice]
+      constant_list = ['VipGetBrain','-berosion',self.erosion_size,'-i',self.mri_corrected.fullPath(),'-analyse', 'r', '-hname',  self.histo_analysis.fullPath(),'-bname', self.brain_mask.fullPath(),'-First',self.first_slice,'-Last', self.last_slice, '-layer', self.layer]
       if self.Commissure_coordinates is not None:
         option_list += ['-Points', self.Commissure_coordinates.fullPath()]
       if self.lesion_mask is not None:
