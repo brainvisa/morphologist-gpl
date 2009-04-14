@@ -36,6 +36,7 @@ from neuroProcesses import *
 import shfjGlobals, math
 import registration
 from brainvisa import anatomist
+from brainvisa import quaternion
 
 name = 'Prepare Subject for Anatomical Pipeline'
 userLevel = 0
@@ -117,106 +118,148 @@ def execution( self, context ):
       raise RuntimeError( _t_( 'In non-normalized mode, the 3 points AC, PC '
         'and IP are mandatory (in mm)' ) )
 
+    def vecproduct( v1, v2 ):
+      return ( v1[1] * v2[2] - v1[2] * v2[1],
+          v1[2] * v2[0] - v1[0] * v2[2],
+          v1[0] * v2[1] - v1[1] * v2[0] )
+    def dot( v1, v2 ):
+      return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]
+    def norm( v ):
+      return math.sqrt( v[0] * v[0] + v[1] * v[1] + v[2] * v[2] )
+    def normalize( v ):
+      n = 1. / norm(v)
+      return ( v[0] * n, v[1] * n, v[2] * n )
+    def vecscale( v, scl ):
+      return ( v[0] * scl, v[1] * scl, v[2] * scl )
+
     # determine image orientation
-    v1 = ( pc[0] - ac[0], pc[1] - ac[1], pc[2] - ac[2] )
-    v2 = ( ip[0] - ac[0], ip[1] - ac[1], ip[2] - ac[2] )
-    n = [ v1[1] * v2[2] - v1[2] * v2[1],
-          v1[2] * v2[2] - v1[0] * v2[2],
-          v1[0] * v2[1] - v1[1] * v2[0] ]
-    dn = 1. / math.sqrt( n[0] * n[0] + n[1] * n[1] + n[2] * n[2] )
-    n[0] *= dn
-    n[1] *= dn
-    n[2] *= dn
-    # context.write( 'AC:', ac )
-    # context.write( 'PC:', pc )
-    # context.write( 'IP:', ip )
-    # context.write( 'LH:', lh )
-    # context.write( 'AC-IP vector:', v2 )
-    v2 = [ n[1] * v1[2] - n[2] * v1[1],
-           n[2] * v1[2] - n[0] * v1[2],
-           n[0] * v1[1] - n[1] * v1[0] ]
-    # context.write( 'AC-PC vector:', v1 )
-    # context.write( 'corrected AC-IP vector:', v2 )
-    context.write( 'IH plane normal:', n )
+    v1 = normalize( ( pc[0] - ac[0], pc[1] - ac[1], pc[2] - ac[2] ) )
+    v2 = normalize( ( ac[0] - ip[0], ac[1] - ip[1], ac[2] - ip[2] ) )
+    v3 = normalize( vecproduct( v1, v2 ) )
+    v2 = normalize( vecproduct( v3, v1 ) )
 
-    flip = [ 1, 0, 0,  0, 1, 0,  0, 0, 1, 0, 0, 0 ]
-
-    m = max( map( abs, n ) )
-    a = max( map( abs, v1 ) )
-    if m == abs( n[0] ) and a == abs( v1[1] ):
-      context.write( _t_( 'image is axial' ) )
-      if ac[1] > pc[1]:
-        context.write( _t_( 'front/rear are inverted' ) )
-        flip[4] = -1
-      else: context.write( _t_( 'front is on the expected side' ) )
-      if ac[2] < ip[2]:
-        context.write( _t_( 'image is upside down' ) )
-        flip[8] = -1
-      else: context.write( 'upside on the top. OK' )
-      if lh is not None and len( lh ) == 3 and lh != ( 0, 0, 0 ) \
-             and lh[0] < ac[0]:
-        context.write( 'image is in neurological mode' )
-        flip[0] = -1
-    elif m == abs( n[0] ) and a == abs( v1[2] ):
-      context.write( _t_( 'image is coronal' ) )
-      flip[4] = 0
-      flip[5] = 1
-      flip[7] = 1
-      flip[8] = 0
-      if ac[2] > pc[2]:
-        context.write( _t_( 'z axis should be flipped' ) )
-        flip[5] = -1
-      if ip[1] > ac[1]:
-        context.write( _t_( 'y axis should be flipped' ) )
-        flip[7] = -1
-      if lh is not None and len( lh ) == 3 and lh != ( 0, 0, 0 ) \
-             and lh[0] < ac[0]:
-        context.write( _t_( 'x axis should be flipped' ) )
-        flip[0] = -1
-    elif m == abs( n[2] ) and a == abs( v1[0] ):
-      context.write( _t_( 'image is sagittal' ) )
-      flip[0] = 0
-      flip[2] = -1
-      flip[3] = 1
-      flip[4] = 0
-      flip[7] = 1
-      flip[8] = 0
-      if ac[0] > pc[0]:
-        context.write( _t_( 'x axis should be flipped' ) )
-        flip[3] = -1
-      if ip[1] > ac[1]:
-        context.write( _t_( 'y axis should be flipped' ) )
-        flip[7] = -1
-      if lh is not None and len( lh ) == 3 and lh != ( 0, 0, 0 ) \
-             and lh[2] > ac[2]:
-        context.write( _t_( 'z axis should be flipped' ) )
-        flip[2] = 1
+    # determine rotation between y axis and v1
+    y = ( 0, 1, 0 )
+    n = vecproduct( y, v1 )
+    cosal = dot( y, v1 )
+    if norm( n ) < 1e-5:
+      if cosal > 0:
+        r1 = quaternion.Quaternion( ( 0, 0, 0, 1 ) )
+      else:
+        r1 = quaternion.Quaternion( ( 0, 0, 1, 0 ) ) # flip z
     else:
-      context.write( _t_( 'Unusual orientation, not taken into account ' \
-                          'today' ) )
+      n = normalize( n )
+      t = vecproduct( y, n )
+      alpha = math.acos( cosal )
+      if dot( t, v1 ) < 0:
+        alpha = -alpha
+      r1 = quaternion.Quaternion()
+      r1.fromAxis( n, alpha )
 
-    id = max( map( lambda x,y: abs( x - y ),
-                   flip[:9], ( 1, 0, 0,  0, 1, 0,  0, 0, 1 ) ) )
-    if id > 1e-5 and not self.allow_flip_initial_MRI:
+    # apply r1 to ( v1, v2, v3 )
+    v1_1 = r1.transform( v1 )
+    v2_1 = r1.transform( v2 )
+    v3_1 = r1.transform( v3 )
+    # now v1_1 should be aligned on y
+
+    # determine rotation between z axis and v2
+    z = ( 0, 0, 1 )
+    p = dot( z, v2_1 )
+    alpha = math.acos( p )
+    q = dot( normalize( vecproduct( z, v2_1 ) ), y )
+    if q >= 0:
+      alpha = -alpha
+    context.write( vecproduct( z, v2_1 ) )
+    context.write( math.asin( norm( vecproduct( z, v2_1 ) ) ) )
+    r2 = quaternion.Quaternion()
+    r2.fromAxis( y, alpha )
+
+    # apply r2 to ( v1, v2, v3 )
+    v1_2 = r2.transform( v1_1 )
+    v2_2 = r2.transform( v2_1 )
+    v3_2 = r2.transform( v3_1 )
+
+    r3 = r2.compose( r1 )
+    trans = r3.rotationMatrix()
+
+    # check x inversion
+    if lh is None:
+      context.warning( _t_( 'Left hemisphere point not specified - X axis " \
+        "flip will not be checked' ) )
+    else:
+      x = ( 1, 0, 0 )
+      lvec = r3.transform( ( lh[0] - ac[0], lh[1] - ac[2], lh[2] - ac[2] ) )
+      if dot( x, lvec ) < 0:
+        context.write( _t_( 'X is flipped' ) )
+        trans[0] *= -1
+        trans[1] *= -1
+        trans[2] *= -1
+        trans[3] *= -1
+    #context.write( 'trans:', trans )
+
+    # build binary flip matrix
+    flipmat = [ 0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 1 ]
+    dims = atts[ 'volume_dimension' ][:3]
+    dims2 = ( dims[0] * vs[0], dims[1] * vs[1], dims[2] * vs[2] )
+    imax = 0
+    for i in range(1,3):
+      if abs( trans[i] ) > abs( trans[imax] ):
+        imax = i
+    if trans[imax] >= 0:
+      flipmat[imax] = 1
+    else:
+      flipmat[imax] = -1
+      flipmat[3] = dims2[imax]
+    imax = 4
+    for i in range(5,7):
+      if abs( trans[i] ) > abs( trans[imax] ):
+        imax = i
+    if trans[imax] >= 0:
+      flipmat[imax] = 1
+    else:
+      flipmat[imax] = -1
+      flipmat[7] = dims2[imax%4]
+    imax = 8
+    for i in range(9,11):
+      if abs( trans[i] ) > abs( trans[imax] ):
+        imax = i
+    if trans[imax] >= 0:
+      flipmat[imax] = 1
+    else:
+      flipmat[imax] = -1
+      flipmat[11] = dims2[imax%4]
+    context.write( 'flip matrix:', flipmat )
+    needsflip = False
+    if flipmat != [ 1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1 ]:
+      context.warning( _t_( 'Flip needed, with matrix:' ) )
+      context.write( '[', flipmat[0:4] )
+      context.write( ' ', flipmat[4:8] )
+      context.write( ' ', flipmat[8:12] )
+      context.write( ' ', flipmat[12:16], ']' )
+      needsflip = True
+
+    if needsflip and not self.allow_flip_initial_MRI:
       context.write( '<b>Image needs to be flipped</b>, but you did not ' \
                      'allow it, so it won\'t change. Expect problems in ' \
                      'hemispheres separation, and sulci recognition will ' \
                      'not work anyway.' )
-    if id > 1e-5 and self.allow_flip_initial_MRI:
+    if needsflip and self.allow_flip_initial_MRI:
       def matrixMult( m, p ):
-        return [ m[0] * p[0] + m[1] * p[1] + m[2] * p[2] + m[9],
-                 m[3] * p[0] + m[4] * p[1] + m[5] * p[2] + m[10],
-                 m[6] * p[0] + m[7] * p[1] + m[8] * p[2] + m[11] ]
+        return [ m[0] * p[0] + m[1] * p[1] + m[2] * p[2] + m[3],
+                 m[4] * p[0] + m[5] * p[1] + m[6] * p[2] + m[7],
+                 m[8] * p[0] + m[9] * p[1] + m[10] * p[2] + m[11] ]
 
-      vs2 = map( abs, matrixMult( flip, vs ) )
+      fliprot = flipmat[:3] + [ 0 ] + flipmat[4:7] + [0] + flipmat[8:11] \
+        + [0, 0, 0, 0, 1 ]
+      vs2 = map( abs, matrixMult( fliprot, vs ) )
       dims = atts[ 'volume_dimension' ][:3]
       dims2 = ( dims[0] * vs[0], dims[1] * vs[1], dims[2] * vs[2] )
-      dims3 = matrixMult( flip, dims2 )
+      dims3 = matrixMult( fliprot, dims2 )
       dims4 = map( lambda x,y: int( round( abs( x ) / y ) ), dims3, vs2 )
 
-      flip[9] = -min( 0, dims3[0] )
-      flip[10] = -min( 0, dims3[1] )
-      flip[11] = -min( 0, dims3[2] )
+      #flip[9] = -min( 0, dims3[0] )
+      #flip[10] = -min( 0, dims3[1] )
+      #flip[11] = -min( 0, dims3[2] )
 
       context.write( '<b><font color="#c00000">WARNING:</font> Flipping and ' \
                      're-writing source image</b>' )
@@ -224,27 +267,28 @@ def execution( self, context ):
       context.write( 'voxel size final:', vs2 )
       context.write( 'dims orig :', dims )
       context.write( 'dims final:', dims4 )
-      context.write( 'transformation:', flip )
+      context.write( 'transformation:', flipmat )
 
       mfile = context.temporary( 'Transformation matrix' )
       mf = open( mfile.fullPath(), 'w' )
-      mf.write( string.join( map( str, flip[9:12] ) ) + '\n' )
-      mf.write( string.join( map( str, flip[:3] ) ) + '\n' )
-      mf.write( string.join( map( str, flip[3:6] ) ) + '\n' )
-      mf.write( string.join( map( str, flip[6:9] ) ) + '\n' )
+      mf.write( string.join( map( str, flipmat[3:12:4] ) ) + '\n' )
+      mf.write( string.join( map( str, flipmat[:3] ) ) + '\n' )
+      mf.write( string.join( map( str, flipmat[4:7] ) ) + '\n' )
+      mf.write( string.join( map( str, flipmat[8:11] ) ) + '\n' )
       mf.close()
       context.log( 'Transformation',
-                   html = 'transformation: R = ' + str( flip[:9] ) \
-                   + ', T = ' + str( flip[9:] ) )
+                   html = 'transformation: R = ' + str( flipmat[:3] \
+                   + flipmat[4:7] + flipmat[8:11] ) \
+                   + ', T = ' + str( flipmat[3:12:4] ) )
 
       context.system( 'AimsResample', '-i', self.T1mri.fullPath(),
                       '-o', self.T1mri.fullPath(), '-m', mfile.fullPath(),
                       '--sx', vs2[0], '--sy', vs2[1], '--sz', vs2[2],
                       '--dx', dims4[0], '--dy', dims4[1], '--dz', dims4[2] )
 
-      acmm = matrixMult( flip, ac )
-      pcmm = matrixMult( flip, pc )
-      ipmm = matrixMult( flip, ip )
+      acmm = matrixMult( flipmat, ac )
+      pcmm = matrixMult( flipmat, pc )
+      ipmm = matrixMult( flipmat, ip )
       context.write( 'new AC:', acmm )
       context.write( 'new PC:', pcmm )
       context.write( 'new IP:', ipmm )
