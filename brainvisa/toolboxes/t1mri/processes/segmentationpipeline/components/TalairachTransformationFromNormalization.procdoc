@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<minf expander="minf_2.0">
+<d>
+  <d name="fr">
+    <xhtml name="short"/>
+    <d name="parameters">
+      <xhtml name="normalized_referential"/>
+      <xhtml name="normalization_transformation"/>
+      <xhtml name="t1mri"/>
+      <xhtml name="Commissure_coordinates"/>
+      <xhtml name="Talairach_transform"/>
+      <xhtml name="source_referential"/>
+    </d>
+    <xhtml name="long"/>
+  </d>
+  <d name="en">
+    <xhtml name="short">Compute the subject T1 MRI to Talairach-AC/PC transformation, using a normalization matrix.
+</xhtml>
+    <d name="parameters">
+      <xhtml name="normalized_referential">This is the destination referential of the input normalization matrix</xhtml>
+      <xhtml name="normalization_transformation">Input normalization matrix (subject T1 to a common space, the MNI template typically)</xhtml>
+      <xhtml name="t1mri">Raw T1 MRI, needed only if writing the commissure coordinates file.</xhtml>
+      <xhtml name="Commissure_coordinates">If this parameter is filled, the commissure coordinates file of the corresponding subject T1 will be written to match the normalization information.</xhtml>
+      <xhtml name="Talairach_transform">Output transformation, going from the subject T1 space to the Talairach-AC/PC space</xhtml>
+      <xhtml name="source_referential">Normally, the referential of the subject T1 MRI image</xhtml>
+    </d>
+    <xhtml name="long"><p>Compute the subject T1 MRI to Talairach-AC/PC transformation, using a normalization matrix.
+The classical T1 pipeline in BrainVISA generates it only from a manual determination of AC and PC positions (see <a href="bvprocess://preparesubject">Prepare Subject</a>), and from the brain bounding box, which is far from perfect in the cortex (see the <a href="bvprocess://TalairachTransformation">Talairach Transformation</a> process).
+</p>
+<p>Using this alternative, normalization information may replace the manual AC/PC procedure, and should be more accurate.
+Normalization matrices, as their name states it, are affine transformations: elastic deformation information cannot be used. But an affine part in a non-linear normalization might be OK, like the affine part of SPM normalization.
+</p>
+<p>SPM *_sn.mat normalization matrices may be converted using the <a href="bvprocess://SPMsn3dToAims">SPM normalization to AIMS converter</a> process, then given as input to this one.
+</p>
+<p>The input normalization matrix is going from the subject space (its T1 image) to a common referential. The common referential should be known within BrainVISA so that BrainVISA knows how to go from this common referential to the Talairach AC/PC space. It will generally be the MNI template referential, but could be any referential with a known transformation to Talairach-AC/PC.
+</p>
+<p><br/></p>
+<p>Optionally, AC/PC information may be retreived from the normalized space, and the commissure coordinates file (normally written by the <a href="bvprocess://preparesubject">Prepare Subject</a> process) may be written (or replaced) with the new information.
+</p>
+<p><br/></p>
+<p>
+If this process is run after a full <a href="bvprocess://t1pipeline07">T1 pipeline</a> has already run, some information within the cortical folds graphs should be updated and recalculates. So users should run the <a href="bvprocess://CorticalFoldsGraphUpgradeFromOld">Cortical Folds Graph Upgrade</a> process. <a href="bvprocess://morphometry">Morphometric measurements</a> may change also since they are not measured in the same space anymore.
+</p>
+</xhtml>
+  </d>
+</d>
+</minf>
