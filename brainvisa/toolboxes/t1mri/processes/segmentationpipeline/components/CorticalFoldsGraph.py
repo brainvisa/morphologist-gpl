@@ -58,7 +58,8 @@ signature = Signature(
   'Talairach_transform',
   ReadDiskItem( 'Transform Raw T1 MRI to Talairach-AC/PC-Anatomist',
                 'Transformation matrix' ), 
-  'compute_fold_meshes', Choice("Yes","No")
+  'compute_fold_meshes', Boolean(),
+  'allow_multithreading', Boolean(),
  )
 
 
@@ -83,7 +84,7 @@ def initialization( self ):
   self.linkParameters( 'roots', 'hemi_cortex' )
   self.linkParameters( 'commissure_coordinates', 'mri_corrected' )
   self.linkParameters( 'Talairach_transform', 'mri_corrected' )
-  self.compute_fold_meshes = "Yes"
+  self.compute_fold_meshes = True
   self.setOptional( 'commissure_coordinates' )
 
   eNode = SerialExecutionNode( self.name, parameterized = self )
@@ -128,10 +129,12 @@ def execution( self, context ):
            graph + '.arg', '-o', self.graph.fullPath(),
            '-m', self.Talairach_transform, '--graphversion',
            self.graph_version ]
-  if self.compute_fold_meshes == "No":
+  if not self.compute_fold_meshes:
     attp.append( '-n' )
   if self.commissure_coordinates:
     attp += [ '--apc', self.commissure_coordinates ]
+  if not self.allow_multithreading:
+    attp += [ '--threads', '1' ]
   context.system( *attp )
   trManager = registration.getTransformationManager()
   trManager.copyReferential( self.mri_corrected, self.skeleton )

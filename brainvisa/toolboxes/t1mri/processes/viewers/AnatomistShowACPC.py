@@ -197,7 +197,7 @@ def execution( self, context ):
         ## there is a transformation to Talairach space
         ## in Tal. space, (0,0,0) is AC
         #w.moveLinkedCursor( [ 0, 0, 0 ] )
-    a.waitEndProcessing()
+    a.sync()
     #a.getInfo()
 
     return selfdestroy

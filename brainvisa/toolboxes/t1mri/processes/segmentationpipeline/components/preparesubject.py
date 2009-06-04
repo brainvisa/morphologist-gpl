@@ -108,7 +108,7 @@ def execution( self, context ):
   if self.Normalised == 'No':
     atts = shfjGlobals.aimsVolumeAttributes( self.T1mri )
     vs = atts[ 'voxel_size' ]
-    context.write( 'voxel size: ', vs )
+    #context.write( 'voxel size: ', vs )
     ac = self.Anterior_Commissure
     pc = self.Posterior_Commissure
     ip = self.Interhemispheric_Point
@@ -169,8 +169,6 @@ def execution( self, context ):
     q = dot( normalize( vecproduct( z, v2_1 ) ), y )
     if q >= 0:
       alpha = -alpha
-    context.write( vecproduct( z, v2_1 ) )
-    context.write( math.asin( norm( vecproduct( z, v2_1 ) ) ) )
     r2 = quaternion.Quaternion()
     r2.fromAxis( y, alpha )
 
@@ -179,16 +177,16 @@ def execution( self, context ):
     v2_2 = r2.transform( v2_1 )
     v3_2 = r2.transform( v3_1 )
 
-    r3 = r2.compose( r1 )
+    r3 = r1.compose( r2 )
     trans = r3.rotationMatrix()
 
     # check x inversion
     if lh is None:
-      context.warning( _t_( 'Left hemisphere point not specified - X axis " \
-        "flip will not be checked' ) )
+      context.warning( _t_( 'Left hemisphere point not specified - X axis ' \
+        'flip will not be checked' ) )
     else:
       x = ( 1, 0, 0 )
-      lvec = r3.transform( ( lh[0] - ac[0], lh[1] - ac[2], lh[2] - ac[2] ) )
+      lvec = r3.transformInverse( ( lh[0] - ac[0], lh[1] - ac[2], lh[2] - ac[2] ) )
       if dot( x, lvec ) < 0:
         context.write( _t_( 'X is flipped' ) )
         trans[0] *= -1
@@ -228,7 +226,7 @@ def execution( self, context ):
     else:
       flipmat[imax] = -1
       flipmat[11] = dims2[imax%4]
-    context.write( 'flip matrix:', flipmat )
+    #context.write( 'flip matrix:', flipmat )
     needsflip = False
     if flipmat != [ 1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1 ]:
       context.warning( _t_( 'Flip needed, with matrix:' ) )
@@ -237,6 +235,8 @@ def execution( self, context ):
       context.write( ' ', flipmat[8:12] )
       context.write( ' ', flipmat[12:16], ']' )
       needsflip = True
+    else:
+      context.write( '<font color="#00c000">OK, the image seems to be in the correct orientation.</font>' )
 
     if needsflip and not self.allow_flip_initial_MRI:
       context.write( '<b>Image needs to be flipped</b>, but you did not ' \

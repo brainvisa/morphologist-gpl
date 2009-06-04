@@ -41,9 +41,7 @@ userLevel = 2
 
 # Argument declaration
 signature = Signature(
-  'old_graph', ReadDiskItem( 'Cortical folds graph', 'Graph',
-                             requiredAttributes = \
-                             { 'graph_version' : '3.0' } ),
+  'old_graph', ReadDiskItem( 'Cortical folds graph', 'Graph' ),
   'skeleton', ReadDiskItem( 'Cortex Skeleton', shfjGlobals.aimsVolumeFormats ),
   'graph_version', OpenChoice( '3.1', '3.2' ),
   'graph', WriteDiskItem( 'Cortical folds graph', 'Graph' ),
@@ -52,7 +50,8 @@ signature = Signature(
   'Talairach_transform',
   ReadDiskItem( 'Transform Raw T1 MRI to Talairach-AC/PC-Anatomist',
                 'Transformation matrix' ), 
-  'compute_fold_meshes', Choice("Yes","No")
+  'compute_fold_meshes', Boolean(),
+  'allow_multithreading', Boolean(),
  )
 
 
@@ -67,7 +66,7 @@ def initialization( self ):
   self.linkParameters( 'skeleton', 'old_graph' )
   self.linkParameters( 'graph', ( 'old_graph', 'graph_version' ),
     linkGraphVersion )
-  self.compute_fold_meshes = "Yes"
+  self.compute_fold_meshes = True
   self.linkParameters( 'commissure_coordinates', 'old_graph' )
   self.linkParameters( 'Talairach_transform', 'old_graph' )
   self.setOptional( 'commissure_coordinates' )
@@ -88,10 +87,12 @@ def execution( self, context ):
            self.old_graph.fullPath(), '-o', self.graph.fullPath(),
            '-m', self.Talairach_transform, '--graphversion',
            self.graph_version ]
-  if self.compute_fold_meshes == "No":
+  if not self.compute_fold_meshes:
     attp.append( '-n' )
   if self.commissure_coordinates:
     attp += [ '--apc', self.commissure_coordinates ]
+  if not self.allow_multithreading:
+    attp += [ '--threads', '1' ]
   context.system( *attp )
   trManager = registration.getTransformationManager()
   trManager.copyReferential( self.old_graph, self.graph )
