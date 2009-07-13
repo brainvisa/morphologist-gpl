@@ -72,15 +72,20 @@ def execution( self, context ):
         selfdestroy += ( hie, br )
     l = self.graph.get( 'automatically_labelled' )
     context.write( 'automatically_labelled:', l )
+    nomenclatureprop = 'default'
     if l and l == 'Yes':
-        a.setGraphParams( label_attribute='label', use_nomenclature=1 )
+        nomenclatureprop = 'label'
+        #a.setGraphParams( label_attribute='label', use_nomenclature=1 )
     else:
         l = self.graph.get( 'manually_labelled' )
         context.write( 'manually_labelled:', l )
         if l and l == 'Yes':
-            a.setGraphParams( label_attribute='name', use_nomenclature=1 )
-    context.write( 'loadObject:', self.graph )
+            nomenclatureprop = 'name'
+            #a.setGraphParams( label_attribute='name', use_nomenclature=1 )
     graph = a.loadObject( self.graph )
+    context.write( 'nomenclature_property:', nomenclatureprop )
+    a.execute( 'GraphDisplayProperties', objects=[graph],
+      nomenclature_property=nomenclatureprop )
     selfdestroy.append( graph )
     if self.load_MRI == "Yes":
         if self.mri_corrected is not None:
@@ -94,7 +99,7 @@ def execution( self, context ):
     graphRef=graph.referential
     win3.assignReferential( graphRef )
     selfdestroy.append( win3 )
-    win3.addObjects( [graph] )
+    win3.addObjects( [graph], add_graph_nodes=True )
     if self.hemi_mesh is not None:
         win3.addObjects( [mesh] )
         if self.two_windows == "Yes":
@@ -109,10 +114,10 @@ def execution( self, context ):
     if self.load_MRI == "Yes":
         if self.mri_corrected is not None:
             win2.addObjects( [anat] )
-    if self.nomenclature is not None:
-        wg= a.getDefaultWindowsGroup()
-        # to see the graph elements, we have to select them. After that they remain visible even if they are deselected
-        wg.setSelectionByNomenclature( hie, ["unknown", "brain"] )
-        wg.toggleSelectionByNomenclature(hie, ["unknown", "brain"])
+    #if self.nomenclature is not None:
+        #wg= a.getDefaultWindowsGroup()
+        ## to see the graph elements, we have to select them. After that they remain visible even if they are deselected
+        #wg.setSelectionByNomenclature( hie, ["unknown", "brain"] )
+        #wg.toggleSelectionByNomenclature(hie, ["unknown", "brain"])
     return selfdestroy
 
