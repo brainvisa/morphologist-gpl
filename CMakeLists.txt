@@ -1,10 +1,10 @@
-PROJECT(T1MRI-GPL)
+cmake_minimum_required( VERSION 2.6 )
+find_package( brainvisa-cmake REQUIRED )
+BRAINVISA_PROJECT()
 
-IF(COMMAND cmake_policy)
-  cmake_policy(VERSION 2.4)
-  cmake_policy(SET CMP0002 NEW)
-  cmake_policy(SET CMP0003 NEW)
-#  cmake_policy(SET CMP0005 OLD)
-ENDIF(COMMAND cmake_policy)
+BRAINVISA_COPY_DIRECTORY( ${CMAKE_CURRENT_SOURCE_DIR}/brainvisa
+brainvisa
+${PROJECT_NAME} )
 
-ADD_SUBDIRECTORY(brainvisa)
+BRAINVISA_CREATE_CMAKE_CONFIG_FILES()
+
