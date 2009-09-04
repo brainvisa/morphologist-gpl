@@ -40,7 +40,7 @@
   <p>Referentials and transformations for the data are stored in <i>database/protocol/subject/</i><b>registration</b>.</p>
   
   <h3>Example :</h3> 
-  <img src="../../images/database_t1_example.png" />
+  <img src="bvimage://database_t1_example.png" />
   
 </xhtml>
 
@@ -83,7 +83,7 @@
   <p>Referentials and transformations for the data are stored in <i>database/protocol/subject/</i><b>registration</b>.</p>
   
   <h3>Example :</h3> 
-  <img src="../../images/database_t1_example.png" />
+  <img src="bvimage://images/database_t1_example.png" />
 
 </xhtml>
 
