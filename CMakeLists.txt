@@ -3,8 +3,8 @@ find_package( brainvisa-cmake REQUIRED )
 BRAINVISA_PROJECT()
 
 BRAINVISA_COPY_DIRECTORY( ${CMAKE_CURRENT_SOURCE_DIR}/brainvisa
-brainvisa
-${PROJECT_NAME} )
+  brainvisa
+  ${PROJECT_NAME} )
 
 BRAINVISA_CREATE_CMAKE_CONFIG_FILES()
 
