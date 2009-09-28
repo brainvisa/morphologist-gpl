@@ -5,3 +5,5 @@ if( @PROJECT_NAME_UPPER@_INCLUDE_DIRS )
   include_directories( ${@PROJECT_NAME_UPPER@_INCLUDE_DIRS} )
 endif()
 
+include( "${AIMS-FREE_USE_FILE}" )
+
