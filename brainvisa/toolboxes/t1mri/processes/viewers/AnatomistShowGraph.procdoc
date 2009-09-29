@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+  <d name="fr" length="3">
+    <xhtml name="short">Afficheur de graphes générique. Ce traitement est dérivé en plusieurs traitements plus spécialisés:
+ <ul>
+  <li><a href="bvprocess://AnatomistShowFoldGraph"><_t_>Anatomist Show Fold Graph</_t_></a></li>
+  <li><a href="bvprocess://AnatomistShowROI"><_t_>Anatomist Show ROI</_t_></a></li>
+  <li><a href="bvprocess://AnatomistShowNucleusGraph"><_t_>Anatomist Show Nucleus Graph</_t_></a></li>
+  <li><a href="bvprocess://AnatomistShowGyrusGraph"><_t_>Anatomist Show Gyrus Graph</_t_></a></li>
+</ul></xhtml>
+    <d name="parameters" length="6">
+      <xhtml name="head_mesh"/>
+      <xhtml name="graph"/>
+      <xhtml name="functional"/>
+      <xhtml name="nomenclature"/>
+      <xhtml name="anatomy"/>
+      <xhtml name="meshes"/>
+    </d>
+    <xhtml name="long"/>
+  </d>
+  <d name="en" length="3">
+    <xhtml name="short">Generic graph viewer. This process is derived into several more specialized processes: 
+<ul>
+  <li><a href="bvprocess://AnatomistShowFoldGraph">Show Fold Graph</a></li>
+  <li><a href="bvprocess://AnatomistShowROI">Show ROI</a></li>
+  <li><a href="bvprocess://AnatomistShowNucleusGraph">Show Nucleus Graph</a></li>
+  <li><a href="bvprocess://AnatomistShowGyrusGraph">Show Gyrus Graph</a></li>
+</ul></xhtml>
+    <xhtml name="long"/>
+    <d name="parameters" length="6">
+      <xhtml name="head_mesh"/>
+      <xhtml name="graph"/>
+      <xhtml name="nomenclature"/>
+      <xhtml name="functional"/>
+      <xhtml name="anatomy"/>
+      <xhtml name="meshes"/>
+    </d>
+  </d>
+</minf>

@@ -149,7 +149,6 @@ FileType( 'AutoLabelled Cortical folds graph',
           'Labelled Cortical folds graph' )
 FileType( 'Left Base Cortical folds graph', 'Base Cortical folds graph' )
 FileType( 'Right Base Cortical folds graph', 'Base Cortical folds graph' )
-FileType( 'Roi graph', 'Data graph' )
 FileType( 'Primal Sketch', 'Data graph' )
 FileType( 'Grey Level Blob Graph', 'Data graph' )
 FileType( 'Gyri Graph', 'Data graph' )

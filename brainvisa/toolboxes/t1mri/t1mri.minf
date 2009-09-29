@@ -1,29 +1,24 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <minf expander="brainvisa-tree_2.0">
-<l length="3">
+<l length="5">
   <f type="ProcessTree">
     <s name="name">t1mri</s>
-    <true name="editable"/>
     <l length="1" name="content">
       <f type="ProcessTree.Branch">
         <l length="3" name="content">
           <f type="ProcessTree.Leaf">
-            <true name="editable"/>
             <s name="id">ImportT1MRI</s>
             <none name="name"/>
           </f>
           <f type="ProcessTree.Leaf">
-            <true name="editable"/>
             <s name="id">ImportBruker_rawT1MRI</s>
             <none name="name"/>
           </f>
           <f type="ProcessTree.Leaf">
-            <true name="editable"/>
             <s name="id">ImportBruker_reconstructedT1MRI</s>
             <none name="name"/>
           </f>
         </l>
-        <true name="editable"/>
         <s name="name">import</s>
         <s name="id">data management/import</s>
       </f>
@@ -33,10 +28,8 @@
   </f>
   <f type="ProcessTree">
     <s name="name">morphometry</s>
-    <true name="editable"/>
     <l length="1" name="content">
       <f type="ProcessTree.Leaf">
-        <true name="editable"/>
         <s name="id">brainvolumes</s>
         <none name="name"/>
       </f>
@@ -45,68 +38,63 @@
     <s name="id">morphometry</s>
   </f>
   <f type="ProcessTree">
-    <true name="editable"/>
     <s name="name">viewers</s>
     <s name="id">viewers</s>
     <l length="12" name="content">
       <f type="ProcessTree.Leaf">
-        <true name="editable"/>
         <s name="id">AnatomistShowWhiteMeshCurvature</s>
         <none name="name"/>
       </f>
       <f type="ProcessTree.Leaf">
-        <true name="editable"/>
         <s name="id">AnatomistShowFoldGraph</s>
         <none name="name"/>
       </f>
       <f type="ProcessTree.Leaf">
-        <true name="editable"/>
         <s name="id">AnatomistShowGreyWhiteClassif</s>
         <none name="name"/>
       </f>
       <f type="ProcessTree.Leaf">
-        <true name="editable"/>
         <s name="id">AnatomistShowHemisphereWithMRI</s>
         <none name="name"/>
       </f>
       <f type="ProcessTree.Leaf">
-        <true name="editable"/>
         <s name="id">AnatomistShowBiasCorrection</s>
         <none name="name"/>
       </f>
       <f type="ProcessTree.Leaf">
-        <true name="editable"/>
         <s name="id">AnatomistShowBrainMask</s>
         <none name="name"/>
       </f>
       <f type="ProcessTree.Leaf">
-        <true name="editable"/>
         <s name="id">AnatomistShowACPC</s>
         <none name="name"/>
       </f>
       <f type="ProcessTree.Leaf">
-        <true name="editable"/>
         <s name="id">AnatomistShowInflatedWhiteMesh</s>
         <none name="name"/>
       </f>
       <f type="ProcessTree.Leaf">
-        <true name="editable"/>
         <s name="id">AnatomistShowWhiteMatterWithMRI</s>
         <none name="name"/>
       </f>
       <f type="ProcessTree.Leaf">
-        <true name="editable"/>
         <s name="id">AnatomistShowGreyWhiteSnake</s>
         <none name="name"/>
       </f>
       <f type="ProcessTree.Leaf">
-        <true name="editable"/>
         <s name="id">AnatomistShowSplitBrain</s>
         <none name="name"/>
       </f>
       <f type="ProcessTree.Leaf">
-        <true name="editable"/>
         <s name="id">BrainvisaShowHistoAnalysis</s>
+        <none name="name"/>
+      </f>
+      <f type="ProcessTree.Leaf">
+        <s name="id">AnatomistShowNucleusGraph</s>
+        <none name="name"/>
+      </f>
+      <f type="ProcessTree.Leaf">
+        <s name="id">AnatomistShowSuperimposedGraphs</s>
         <none name="name"/>
       </f>
     </l>
@@ -114,15 +102,41 @@
   <f type="ProcessTree">
     <l length="1" name="content">
       <f type="ProcessTree.Leaf">
-        <true name="editable"/>
         <s name="id">AnaCSF_GreyMaskEditor</s>
         <none name="name"/>
       </f>
     </l>
-    <true name="editable"/>
     <s name="name">editors</s>
     <s name="id">editors</s>
   </f>
+
+  <f type="ProcessTree">
+    <s name="name">tools</s>
+    <s name="id">tools</s>
+    <l length="2" name="content">
+      <f type="ProcessTree.Leaf">
+        <s name="id">LocalizeCoordTalairach</s>
+        <none name="name"/>
+      </f>
+
+      <f type="ProcessTree.Branch">
+        <l length="1" name="content">
+          <f type="ProcessTree.Leaf">
+            <s name="id">graphToTalairach</s>
+            <none name="name"/>
+          </f>
+          <f type="ProcessTree.Leaf">
+            <s name="id">ViewInHippocampicReferential</s>
+            <none name="name"/>
+          </f>
+        </l>
+        <s name="name">registration</s>
+        <s name="id">tools/registration</s>
+      </f>
+
+    </l>
+  </f>
+
 </l>
 <s>all processes</s>
 </minf>
