@@ -65,25 +65,25 @@ def execution( self, context ):
   else:
     context.write( "Computing whole brain surface...")
     braing = context.temporary( 'GIS Image' )
-    context.system( "VipMask", "-i", self.mri_corrected.fullName(), 
-                    "-m", self.brain_mask.fullName(), "-o", 
-                    braing.fullName(), "-w", "t" )
-    if os.path.exists(self.cortex.fullName() + '.loc'):
+    context.system( "VipMask", "-i", self.mri_corrected.fullPath(),
+                    "-m", self.brain_mask.fullPath(), "-o",
+                    braing.fullPath(), "-w", "t" )
+    if os.path.exists(self.cortex.fullPath() + '.loc'):
       context.write( "grey/white interface detection locked")
     else:
       context.write( "Detecting Grey/White Interface..." )
-      context.system( "VipHomotopicSnake", "-i", braing.fullName(), "-h", 
-                      self.histo_analysis.fullName(), "-o", 
-                      self.cortex.fullName(), "-w", "t" )
+      context.system( "VipHomotopicSnake", "-i", braing.fullPath(), "-h",
+                      self.histo_analysis.fullPath(), "-o",
+                      self.cortex.fullPath(), "-w", "t" )
 
       context.write("Reconstructing brain surface...")
       white = context.temporary( 'GIS Image' )  
-      context.system( "VipSingleThreshold", "-i", self.cortex.fullName(), 
-                      "-o", white.fullName(), "-t", "0", "-c", "b", "-m",
+      context.system( "VipSingleThreshold", "-i", self.cortex.fullPath(),
+                      "-o", white.fullPath(), "-t", "0", "-c", "b", "-m",
                       "eq", "-w", "t" )
       openbrain = context.temporary( 'GIS Image' )  
-      context.system( "VipOpenFold", "-i", braing.fullName(), "-s", 
-                      white.fullName(), "-o", openbrain.fullName(), 
+      context.system( "VipOpenFold", "-i", braing.fullPath(), "-s",
+                      white.fullPath(), "-o", openbrain.fullPath(),
                       "-a", "i", "-w", "t" )
       del white
       del braing

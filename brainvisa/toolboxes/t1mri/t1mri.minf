@@ -40,7 +40,7 @@
   <f type="ProcessTree">
     <s name="name">viewers</s>
     <s name="id">viewers</s>
-    <l length="12" name="content">
+    <l length="16" name="content">
       <f type="ProcessTree.Leaf">
         <s name="id">AnatomistShowWhiteMeshCurvature</s>
         <none name="name"/>
@@ -95,6 +95,14 @@
       </f>
       <f type="ProcessTree.Leaf">
         <s name="id">AnatomistShowSuperimposedGraphs</s>
+        <none name="name"/>
+      </f>
+      <f type="ProcessTree.Leaf">
+        <s name="id">AnatomistShowGraph</s>
+        <none name="name"/>
+      </f>
+      <f type="ProcessTree.Leaf">
+        <s name="id">Anatomist3DActivations</s>
         <none name="name"/>
       </f>
     </l>

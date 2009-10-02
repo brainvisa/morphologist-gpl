@@ -56,8 +56,8 @@ signature = Signature(
 
 # Default values
 def initialization( self ):
-  self.linkParameters( 'head_mask', 'mri_corrected' )
-  self.linkParameters( 'head_mesh', 'mri_corrected' )
+  self.linkParameters( 'head_mask', 'histo_analysis' )
+  self.linkParameters( 'head_mesh', 'head_mask' )
   self.linkParameters( 'histo_analysis', 'mri_corrected' )
   self.setOptional('first_slice')
   self.setOptional('threshold')

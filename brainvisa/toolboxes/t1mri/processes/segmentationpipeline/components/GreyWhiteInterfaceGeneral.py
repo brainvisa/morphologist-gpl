@@ -166,12 +166,12 @@ def initialization( self ):
   # self links
 
   eNode.addLink( 'histo_analysis', 'mri_corrected' )
-  eNode.addLink( 'split_mask', 'mri_corrected' )
+  eNode.addLink( 'split_mask', 'histo_analysis' )
   eNode.addLink( 'white_ridges', 'mri_corrected' )
-  eNode.addLink( 'LGW_interface', 'mri_corrected' )
-  eNode.addLink( 'RGW_interface', 'mri_corrected' )
-  eNode.addLink( 'left_white_mesh', 'mri_corrected' )
-  eNode.addLink( 'right_white_mesh', 'mri_corrected' )
+  eNode.addLink( 'LGW_interface', 'split_mask' )
+  eNode.addLink( 'RGW_interface', 'LGW_interface' )
+  eNode.addLink( 'left_white_mesh', 'LGW_interface' )
+  eNode.addLink( 'right_white_mesh', 'RGW_interface' )
 
   self.setExecutionNode( eNode )
 

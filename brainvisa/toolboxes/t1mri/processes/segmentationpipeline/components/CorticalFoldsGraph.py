@@ -77,13 +77,13 @@ def initialization( self ):
                         'graph_version' : self.graph_version } )
 
   self.linkParameters( 'split_mask', 'mri_corrected' )
-  self.linkParameters( 'hemi_cortex', ( 'mri_corrected', 'side' ), linkSide )
+  self.linkParameters( 'hemi_cortex', ( 'split_mask', 'side' ), linkSide )
   self.linkParameters( 'skeleton', 'hemi_cortex' )
-  self.linkParameters( 'graph', ( 'hemi_cortex', 'graph_version' ),
+  self.linkParameters( 'graph', ( 'skeleton', 'graph_version' ),
     linkGraphVersion )
-  self.linkParameters( 'roots', 'hemi_cortex' )
+  self.linkParameters( 'roots', 'skeleton' )
   self.linkParameters( 'commissure_coordinates', 'mri_corrected' )
-  self.linkParameters( 'Talairach_transform', 'mri_corrected' )
+  self.linkParameters( 'Talairach_transform', 'split_mask' )
   self.compute_fold_meshes = True
   self.setOptional( 'commissure_coordinates' )
 

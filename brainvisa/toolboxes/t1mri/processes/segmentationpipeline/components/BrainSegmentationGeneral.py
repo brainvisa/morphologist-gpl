@@ -111,7 +111,7 @@ def initialization( self ):
 
   # self links
 
-  eNode.addLink( 'brain_mask', 'mri_corrected' )
+  eNode.addLink( 'brain_mask', 'histo_analysis' )
   eNode.addLink( 'histo_analysis', 'mri_corrected' )
   eNode.addLink( 'Commissure_coordinates', 'mri_corrected' )
   # eNode.addLink( 'lesion_mask', 'mri_corrected' )

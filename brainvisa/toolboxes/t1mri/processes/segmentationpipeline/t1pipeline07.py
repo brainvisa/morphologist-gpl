@@ -184,7 +184,7 @@ def initialization( self ):
 
 
   eNode.SplitBrain.removeLink( 'histo_analysis', 'mri_corrected' )
-  eNode.SplitBrain.removeLink( 'brain_mask', 'mri_corrected' )
+  eNode.SplitBrain.removeLink( 'brain_mask', 'histo_analysis' )
   eNode.SplitBrain.removeLink( 'commissure_coordinates', 'mri_corrected' )
   eNode.SplitBrain.removeLink( 'white_ridges', 'mri_corrected' )
 
@@ -234,7 +234,7 @@ def initialization( self ):
 
 
   eNode.GreyWhiteInterface.removeLink( 'histo_analysis', 'mri_corrected' )
-  eNode.GreyWhiteInterface.removeLink( 'split_mask', 'mri_corrected' )
+  eNode.GreyWhiteInterface.removeLink( 'split_mask', 'histo_analysis' )
   eNode.GreyWhiteInterface.removeLink( 'white_ridges', 'mri_corrected' )
 
   eNode.addLink( 'GreyWhiteInterface.mri_corrected',
@@ -264,7 +264,7 @@ def initialization( self ):
 
 
   eNode.HemispheresMesh.removeLink( 'histo_analysis', 'mri_corrected' )
-  eNode.HemispheresMesh.removeLink( 'brain_voronoi', 'mri_corrected' )
+  eNode.HemispheresMesh.removeLink( 'brain_voronoi', 'histo_analysis' )
 
   eNode.addLink( 'HemispheresMesh.mri_corrected',
                  'BiasCorrection.mri_corrected' )
@@ -298,13 +298,13 @@ def initialization( self ):
   eNode.CorticalFoldsGraph.removeLink( 'split_mask', 'mri_corrected' )
   eNode.CorticalFoldsGraph.removeLink( 'commissure_coordinates',
                                        'mri_corrected' )
-  eNode.CorticalFoldsGraph.removeLink( 'Talairach_transform', 'mri_corrected' )
+  eNode.CorticalFoldsGraph.removeLink( 'Talairach_transform', 'split_mask' )
   eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_1.LeftCorticalFoldsGraph_3_1.\
-    removeLink( 'hemi_cortex', 'mri_corrected' )
+    removeLink( 'hemi_cortex', 'split_mask' )
   eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_1.LeftCorticalFoldsGraph_3_1.\
     removeLink( 'hemi_cortex', 'side' )
   eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.\
-    removeLink('hemi_cortex', 'mri_corrected' )
+    removeLink('hemi_cortex', 'split_mask' )
   eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.\
     removeLink( 'hemi_cortex', 'side' )
   eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_0.clearLinksTo( \
@@ -316,32 +316,32 @@ def initialization( self ):
 
   eNode.addLink( 'CorticalFoldsGraph.mri_corrected',
                  'BiasCorrection.mri_corrected' )
-  eNode.addLink( 'BiasCorrection.mri_corrected', 
+  eNode.addLink( 'BiasCorrection.mri_corrected',
                  'CorticalFoldsGraph.mri_corrected' )
 
   eNode.addLink( 'CorticalFoldsGraph.split_mask',
                  'SplitBrain.split_mask' )
-  eNode.addLink( 'SplitBrain.split_mask', 
+  eNode.addLink( 'SplitBrain.split_mask',
                  'CorticalFoldsGraph.split_mask' )
 
   eNode.addLink( 'CorticalFoldsGraph.commissure_coordinates',
                  'PrepareSubject.Commissure_coordinates' )
-  eNode.addLink( 'PrepareSubject.Commissure_coordinates', 
+  eNode.addLink( 'PrepareSubject.Commissure_coordinates',
                  'CorticalFoldsGraph.commissure_coordinates' )
 
   eNode.addLink( 'CorticalFoldsGraph.Talairach_transform',
                  'TalairachTransformation.Talairach_transform' )
-  eNode.addLink( 'TalairachTransformation.Talairach_transform', 
+  eNode.addLink( 'TalairachTransformation.Talairach_transform',
                  'CorticalFoldsGraph.Talairach_transform' )
 
   eNode.addLink( 'CorticalFoldsGraph.CorticalFoldsGraph_3_1.LeftCorticalFoldsGraph_3_1.hemi_cortex',
                  'HemispheresMesh.left_hemi_cortex' )
-  eNode.addLink( 'HemispheresMesh.left_hemi_cortex', 
+  eNode.addLink( 'HemispheresMesh.left_hemi_cortex',
                  'CorticalFoldsGraph.CorticalFoldsGraph_3_1.LeftCorticalFoldsGraph_3_1.hemi_cortex' )
 
   eNode.addLink( 'CorticalFoldsGraph.CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.hemi_cortex',
                  'HemispheresMesh.right_hemi_cortex' )
-  eNode.addLink( 'HemispheresMesh.right_hemi_cortex', 
+  eNode.addLink( 'HemispheresMesh.right_hemi_cortex',
                  'CorticalFoldsGraph.CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.hemi_cortex' )
 
   eNode.addLink( 'CorticalFoldsGraph.CorticalFoldsGraph_3_0.histo_analysis', 'HistoAnalysis.histo_analysis' )
@@ -351,14 +351,14 @@ def initialization( self ):
     'CorticalFoldsGraph.CorticalFoldsGraph_3_0.left_hemi_cortex',
     'HemispheresMesh.left_hemi_cortex' )
   eNode.addLink( \
-    'HemispheresMesh.left_hemi_cortex', 
+    'HemispheresMesh.left_hemi_cortex',
     'CorticalFoldsGraph.CorticalFoldsGraph_3_0.left_hemi_cortex' )
 
   eNode.addLink( \
     'CorticalFoldsGraph.CorticalFoldsGraph_3_0.right_hemi_cortex',
     'HemispheresMesh.right_hemi_cortex' )
   eNode.addLink( \
-    'HemispheresMesh.right_hemi_cortex', 
+    'HemispheresMesh.right_hemi_cortex',
     'CorticalFoldsGraph.CorticalFoldsGraph_3_0.right_hemi_cortex' )
 
 

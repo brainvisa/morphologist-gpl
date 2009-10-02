@@ -62,11 +62,11 @@ signature = Signature(
 # Default values
 def initialization( self ):
   self.linkParameters( 'histo_analysis', 'mri_corrected' )
-  self.linkParameters( 'left_hemi_mesh', 'mri_corrected' )
-  self.linkParameters( 'right_hemi_mesh', 'mri_corrected' )
-  self.linkParameters( 'left_hemi_cortex', 'mri_corrected' )
-  self.linkParameters( 'right_hemi_cortex', 'mri_corrected' )
-  self.linkParameters( 'brain_voronoi', 'mri_corrected' )
+  self.linkParameters( 'brain_voronoi', 'histo_analysis' )
+  self.linkParameters( 'left_hemi_cortex', 'brain_voronoi' )
+  self.linkParameters( 'right_hemi_cortex', 'left_hemi_cortex' )
+  self.linkParameters( 'left_hemi_mesh', 'left_hemi_cortex' )
+  self.linkParameters( 'right_hemi_mesh', 'right_hemi_cortex' )
   self.Side = "Both"
 
 

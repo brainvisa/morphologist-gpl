@@ -71,15 +71,15 @@ signature = Signature(
 # Default values
 def initialization( self ):
   self.linkParameters( 'histo_analysis', 'mri_corrected' )
-  self.linkParameters( 'Lgraph', 'mri_corrected' )
-  self.linkParameters( 'Rgraph', 'mri_corrected' )
-  self.linkParameters( 'Lskeleton', 'mri_corrected' )
-  self.linkParameters( 'Rskeleton', 'mri_corrected' )
-  self.linkParameters( 'Lroots', 'mri_corrected' )
-  self.linkParameters( 'Rroots', 'mri_corrected' )
-  self.linkParameters( 'left_hemi_cortex', 'mri_corrected' )
-  self.linkParameters( 'right_hemi_cortex', 'mri_corrected' )
-  self.linkParameters( 'brain_voronoi', 'mri_corrected' )
+  self.linkParameters( 'brain_voronoi', 'histo_analysis' )
+  self.linkParameters( 'left_hemi_cortex', 'brain_voronoi' )
+  self.linkParameters( 'right_hemi_cortex', 'left_hemi_cortex' )
+  self.linkParameters( 'Lgraph', 'Lroots' )
+  self.linkParameters( 'Rgraph', 'Rroots' )
+  self.linkParameters( 'Lskeleton', 'left_hemi_cortex' )
+  self.linkParameters( 'Rskeleton', 'right_hemi_cortex' )
+  self.linkParameters( 'Lroots', 'Lskeleton' )
+  self.linkParameters( 'Rroots', 'Rskeleton' )
   self.linkParameters( 'Commissure_coordinates', 'mri_corrected' )
   self.Side = "Both"
   self.compute_fold_meshes = "Yes"

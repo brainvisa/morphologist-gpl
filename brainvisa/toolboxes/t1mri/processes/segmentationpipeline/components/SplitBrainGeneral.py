@@ -133,10 +133,10 @@ def initialization( self ):
 
   # self links
 
-  eNode.addLink( 'split_mask', 'mri_corrected' )
+  eNode.addLink( 'split_mask', 'brain_mask' )
   eNode.addLink( 'white_ridges', 'mri_corrected' )
   eNode.addLink( 'histo_analysis', 'mri_corrected' )
-  eNode.addLink( 'brain_mask', 'mri_corrected' )
+  eNode.addLink( 'brain_mask', 'histo_analysis' )
   eNode.addLink( 'commissure_coordinates', 'mri_corrected' )
 
   self.setExecutionNode( eNode )

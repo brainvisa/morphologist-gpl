@@ -248,7 +248,7 @@ def initialization( self ):
 
   eNode.addLink( 'split_mask', 'mri_corrected' )
   eNode.addLink( 'commissure_coordinates', 'mri_corrected' )
-  eNode.addLink( 'Talairach_transform', 'mri_corrected' )
+  eNode.addLink( 'Talairach_transform', 'split_mask' )
 
   self.setExecutionNode( eNode )
 
