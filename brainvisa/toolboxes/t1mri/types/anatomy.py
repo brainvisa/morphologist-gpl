@@ -1,14 +1,16 @@
-#  This software and supporting documentation are distributed by
-#      Institut Federatif de Recherche 49
-#      CEA/NeuroSpin, Batiment 145,
-#      91191 Gif-sur-Yvette cedex
+# Copyright CEA and IFR 49 (2000-2005)
+#
+#  This software and supporting documentation were developed by
+#      CEA/DSV/SHFJ and IFR 49
+#      4 place du General Leclerc
+#      91401 Orsay cedex
 #      France
 #
 # This software is governed by the CeCILL license version 2 under
 # French law and abiding by the rules of distribution of free software.
-# You can  use, modify and/or redistribute the software under the 
+# You can  use, modify and/or redistribute the software under the
 # terms of the CeCILL license version 2 as circulated by CEA, CNRS
-# and INRIA at the following URL "http://www.cecill.info". 
+# and INRIA at the following URL "http://www.cecill.info".
 #
 # As a counterpart to the access to the source code and  rights to copy,
 # modify and redistribute granted by the license, users are provided only
@@ -23,8 +25,8 @@
 # therefore means  that it is reserved for developers  and  experienced
 # professionals having in-depth computer knowledge. Users are therefore
 # encouraged to load and test the software's suitability as regards their
-# requirements in conditions enabling the security of their systems and/or 
-# data to be ensured and,  more generally, to use and operate it in the 
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
 # same conditions as regards security.
 #
 # The fact that you are presently reading this means that you have had
@@ -91,6 +93,7 @@ FileType( 'Left Hemisphere White Spherical Mesh', 'Left Hemisphere White Mesh' )
 FileType( 'Right Hemisphere White Spherical Mesh', 'Right Hemisphere White Mesh' )
 FileType( 'Inflated Hemisphere White Mesh', 'Hemisphere White Mesh' )
 FileType( 'Median Mesh', 'Hemisphere Mesh' )
+FileType( 'Conformal White Mesh', 'Inflated Hemisphere White Mesh')
 FileType( 'Head Mask', 'Label Volume' )
 FileType( 'Head Mesh', 'Mesh' )
 FileType( 'Skull Mesh', 'Mesh' )
@@ -113,7 +116,8 @@ FileType( 'Depth Texture', 'Texture' )
 FileType( 'White Curvature Texture', 'Curvature Texture' )
 FileType( 'White Depth Texture', 'Depth Texture' )
 FileType( 'Blob White Curvature Texture', 'Label Texture' )
-FileType( 'Scale Space White Curvature Texture', 'Texture' )
+FileType( 'Scale Space Texture', 'Texture')
+FileType( 'Scale Space White Curvature Texture', 'Scale Space Texture' )
 FileType( 'MRI Ext Edge Image',    '3D Volume' )
 FileType( 'Central Nuclei Template', '4D Volume' )
 FileType( 'Deep Nuclei Mask',  'Label Volume' )
