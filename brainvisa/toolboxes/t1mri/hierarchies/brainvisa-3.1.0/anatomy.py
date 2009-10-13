@@ -1,21 +1,23 @@
-#  This software and supporting documentation are distributed by
-#      Institut Federatif de Recherche 49
-#      CEA/NeuroSpin, Batiment 145,
-#      91191 Gif-sur-Yvette cedex
+# Copyright CEA and IFR 49 (2000-2005)
+#
+#  This software and supporting documentation were developed by
+#      CEA/DSV/SHFJ and IFR 49
+#      4 place du General Leclerc
+#      91401 Orsay cedex
 #      France
 #
-# This software is governed by the CeCILL license version 2 under
+# This software is governed by the CeCILL license version 2 under 
 # French law and abiding by the rules of distribution of free software.
 # You can  use, modify and/or redistribute the software under the 
 # terms of the CeCILL license version 2 as circulated by CEA, CNRS
 # and INRIA at the following URL "http://www.cecill.info". 
-#
+# 
 # As a counterpart to the access to the source code and  rights to copy,
 # modify and redistribute granted by the license, users are provided only
 # with a limited warranty  and the software's author,  the holder of the
 # economic rights,  and the successive licensors  have only  limited
-# liability.
-#
+# liability. 
+# 
 # In this respect, the user's attention is drawn to the risks associated
 # with loading,  using,  modifying and/or developing or reproducing the
 # software by the user in light of its specific status of free software,
@@ -25,8 +27,8 @@
 # encouraged to load and test the software's suitability as regards their
 # requirements in conditions enabling the security of their systems and/or 
 # data to be ensured and,  more generally, to use and operate it in the 
-# same conditions as regards security.
-#
+# same conditions as regards security. 
+# 
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
@@ -43,7 +45,8 @@ mesh_content = (
     "<subject>_Rwhite_inflated", SetType( 'Inflated Hemisphere White Mesh' ), SetWeakAttr( 'side', 'right' ),
     "<subject>_head", SetType( 'Head Mesh' ), SetWeakAttr( 'side', 'both' ), 
     "<subject>_Lmedian", SetType( 'Median Mesh' ), SetWeakAttr( 'side', 'left' ),
-    "<subject>_Rmedian", SetType( 'Median Mesh' ), SetWeakAttr( 'side', 'right' ),
+    "<subject>_Rmedian", SetType( 'Median Mesh' ), SetWeakAttr( 'side', 'right' ), "<subject>_Lconformal", SetType( 'Conformal White Mesh' ), SetWeakAttr( 'side', 'left' ),
+    "<subject>_Rconformal", SetType( 'Conformal White Mesh' ), SetWeakAttr( 'side', 'right' ),
     "cortex_<subject>_mni", SetType( 'MNI Cortex Mesh' ), SetWeakAttr( 'side', 'both' ), ## utilise en lecture seulement
     "*", SetType( 'Mesh'),
 )
