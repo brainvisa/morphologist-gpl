@@ -42,7 +42,8 @@ def validation():
   anatomist.validation()
 
 signature = Signature(
-  'curvature_texture', ReadDiskItem( 'White Curvature Texture', 'Texture' ),
+  'curvature_texture', ReadDiskItem( 'White Curvature Texture',
+    'Anatomist texture formats' ),
   'Triangulation', ReadDiskItem( 'Hemisphere White Mesh', \
     shfjGlobals.anatomistMeshFormats ),
 )

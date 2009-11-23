@@ -41,35 +41,37 @@ userLevel = 0
 
 # Argument declaration
 signature = Signature(
-	'input_mesh',ReadDiskItem( 'Hemisphere White Mesh' , ['TRI mesh', 'MESH mesh']),
-	'output_mesh',WriteDiskItem( 'Inflated Hemisphere White Mesh', 'MESH mesh'),
-	'curvature_texture',WriteDiskItem( 'White Curvature Texture', 'Texture'),
-	'iterations', Integer(),
-	'normal_force', Float(),
-	'spring_force', Float(),
-	'smoothing_force', Float(),
-	'save_sequence', Boolean(),
-	)
+  'input_mesh',ReadDiskItem( 'Hemisphere White Mesh' , 'Aims mesh formats' ),
+  'output_mesh',WriteDiskItem( 'Inflated Hemisphere White Mesh',
+    'Aims mesh formats' ),
+  'curvature_texture',WriteDiskItem( 'White Curvature Texture',
+    'Aims texture formats' ),
+  'iterations', Integer(),
+  'normal_force', Float(),
+  'spring_force', Float(),
+  'smoothing_force', Float(),
+  'save_sequence', Boolean(),
+)
 
 
 # Default values
 def initialization( self ):
-	self.linkParameters( 'output_mesh', 'input_mesh' )
-	self.linkParameters( 'curvature_texture', 'input_mesh' )
-	self.iterations = 500
-	self.normal_force = 0.01
-	self.spring_force = 0.01
-	self.smoothing_force = 0.5
-	self.save_sequence = 0
+  self.linkParameters( 'output_mesh', 'input_mesh' )
+  self.linkParameters( 'curvature_texture', 'input_mesh' )
+  self.iterations = 500
+  self.normal_force = 0.01
+  self.spring_force = 0.01
+  self.smoothing_force = 0.5
+  self.save_sequence = 0
 
 # AimsInflate process
 #
 
 def execution( self, context ):
-	if os.path.exists(self.output_mesh.fullName() + '.loc'):
-		context.write( "Inflated cortical surface locked")
-	else:
-		if self.save_sequence:
-			context.system( 'AimsInflate', '-i',  self.input_mesh.fullName(), '-o', self.output_mesh.fullName(), '-t', self.iterations, '-Kn', self.normal_force, '-Ksp', self.spring_force, '-Ksm', self.smoothing_force, '-c', self.curvature_texture.fullName(), '-S')
-		else:
-			context.system( 'AimsInflate', '-i',  self.input_mesh.fullName(), '-o', self.output_mesh.fullName(), '-t', self.iterations, '-Kn', self.normal_force, '-Ksp', self.spring_force, '-Ksm', self.smoothing_force,'-c', self.curvature_texture.fullName())
+  if os.path.exists(self.output_mesh.fullName() + '.loc'):
+    context.write( "Inflated cortical surface locked")
+  else:
+    if self.save_sequence:
+      context.system( 'AimsInflate', '-i',  self.input_mesh.fullPath(), '-o', self.output_mesh.fullPath(), '-t', self.iterations, '-Kn', self.normal_force, '-Ksp', self.spring_force, '-Ksm', self.smoothing_force, '-c', self.curvature_texture.fullPath(), '-S')
+    else:
+      context.system( 'AimsInflate', '-i',  self.input_mesh.fullPath(), '-o', self.output_mesh.fullPath(), '-t', self.iterations, '-Kn', self.normal_force, '-Ksp', self.spring_force, '-Ksm', self.smoothing_force,'-c', self.curvature_texture.fullPath())

@@ -42,8 +42,10 @@ def validation():
   anatomist.validation()
 
 signature = Signature(
-  'inflated_mesh', ReadDiskItem( 'Inflated Hemisphere White Mesh', shfjGlobals.aimsMeshFormats ),
-  'curvature_texture', ReadDiskItem( 'White Curvature Texture', 'Texture' ),
+  'inflated_mesh', ReadDiskItem( 'Inflated Hemisphere White Mesh',
+    'Anatomist mesh formats' ),
+  'curvature_texture', ReadDiskItem( 'White Curvature Texture',
+    'Anatomist texture formats' ),
 )
 
 def initialization( self ):
