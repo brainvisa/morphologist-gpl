@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <minf expander="brainvisa-tree_2.0">
-<l length="5">
+<l length="6">
   <f type="ProcessTree">
     <s name="name">t1mri</s>
     <l length="1" name="content">
@@ -20,12 +20,39 @@
           </f>
         </l>
         <s name="name">import</s>
-        <s name="id">data management/import</s>
+        <s name="id">t1mri/import</s>
       </f>
     </l>
     <true name="user"/>
     <s name="id">t1mri</s>
   </f>
+  <f type="ProcessTree">
+    <s name="name">Data Management</s>
+    <true name="editable"/>
+    <l length="1" name="content">
+      <f type="ProcessTree.Branch">
+        <l length="1" name="content">
+          <f type="ProcessTree.Branch">
+            <l length="1" name="content">
+              <f type="ProcessTree.Leaf">
+                <true name="editable"/>
+                <s name="id">importBrainMask</s>
+              </f>
+            </l>
+            <true name="editable"/>
+            <s name="name">T1 MRI</s>
+            <s name="id">data management/import/t1mri</s>
+          </f>
+        </l>
+        <true name="editable"/>
+        <s name="name">import</s>
+        <s name="id">data management/import</s>
+      </f>
+    </l>
+    <true name="user"/>
+    <s name="id">-1226807668</s>
+  </f>
+
   <f type="ProcessTree">
     <s name="name">morphometry</s>
     <l length="1" name="content">
