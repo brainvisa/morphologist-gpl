@@ -41,4 +41,10 @@ signature = Signature(
 )
 
 def execution( self, context ):
-  context.system( 'VipHistoAnalysis', '-i', self.histo_analysis.fullName(), '-S', 'n', '-m', 'a', '-g', 's' )
+  renderopt = '--matplotlib'
+  try:
+    import matplotlib
+  except:
+    # matplotlib unavailable: use gnuplot (and assume it is here...)
+    renderopt = '-g'
+  context.system( 'VipHistoAnalysis', '-i', self.histo_analysis.fullName(), '-S', 'n', '-m', 'a', renderopt, 's' )
