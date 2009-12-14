@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<minf expander="minf_2.0">
+<d>
+  <d name="fr">
+    <xhtml name="short"/>
+    <d name="parameters">
+      <xhtml name="T1mri"/>
+      <xhtml name="Commissure_coordinates"/>
+    </d>
+    <xhtml name="long"/>
+  </d>
+  <d name="en">
+    <xhtml name="short">A switch process which allows to use either the standard manual AC/PC PrepareSubject, or a normalization process as the T1 pipeline first step</xhtml>
+    <d name="parameters">
+      <xhtml name="T1mri"/>
+      <xhtml name="Commissure_coordinates"/>
+    </d>
+    <xhtml name="long"><p>This process aims at writing the commissure coordinates file, containing AC, PC and IH points, either using the <a href="preparesubject.html">classical, manual way</a>, or by normalizing the input volume and using normalization information to set AC,PC and IH points.
+</p>
+<p>Note that the normalization will not override the input volume: all following T1 segmentation will still be performed in the native subject space, but normalization information will be used for inter-subject links.
+</p>
+<p>Note also that when normalization is used, this process also replaces the T1 pipeline <a href="TalairachTransformation.html">Talairach Transformation</a> process, because normalization allows to get the full Talairach transformation, without the need of brain segmentation, and in a more robust way.
+</p>
+<p>For now, only FSL normalization is taken into account. SPM normalization will follow soon...
+</p>
+</xhtml>
+  </d>
+</d>
+</minf>

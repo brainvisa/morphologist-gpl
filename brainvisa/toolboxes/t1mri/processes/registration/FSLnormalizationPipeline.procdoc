@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<minf expander="minf_2.0">
+<d>
+  <d name="fr">
+    <xhtml name="short"/>
+    <d name="parameters">
+      <xhtml name="t1mri"/>
+      <xhtml name="alignment"/>
+      <xhtml name="set_transformation_in_source_volume"/>
+      <xhtml name="transformation"/>
+      <xhtml name="template"/>
+    </d>
+    <xhtml name="long"/>
+  </d>
+  <d name="en">
+    <xhtml name="short">Anatomical normalization using FSL and conversion of the normalization information into BrainVisa/Aims compatible information</xhtml>
+    <d name="parameters">
+      <xhtml name="t1mri"/>
+      <xhtml name="alignment"/>
+      <xhtml name="set_transformation_in_source_volume"/>
+      <xhtml name="transformation"/>
+      <xhtml name="template"/>
+    </d>
+    <xhtml name="long">This process chains the FSL anatomical normalization process, and the conversion of FSL normalization matrix into BrainVisa transformations framework.</xhtml>
+  </d>
+</d>
+</minf>
