@@ -44,15 +44,15 @@ signature = Signature(
   'Commissure_coordinates', WriteDiskItem( 'Commissure coordinates','Commissure coordinates'),
   )
 
-def validation():
-  ps = getProcess( 'preparesubject' )
-  np = getProcess( 'FSLnormalizationPipeline' )
-  if not ps and not np:
-    raise ValidationError( 'Neither PrepareSubject nor FSLnormalizationPipeline processes are available' )
-
 def initialization( self ):
-  ps = getProcess( 'preparesubject' )
-  np = getProcess( 'FSLnormalizationPipeline' )
+  try:
+    ps = getProcess( 'preparesubject' )
+  except:
+    ps = None
+  try:
+    np = getProcess( 'FSLnormalizationPipeline' )
+  except:
+    np = None
 
   eNode = SelectionExecutionNode( self.name, parameterized=self )
 
