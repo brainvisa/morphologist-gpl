@@ -96,10 +96,10 @@ def initialization( self ):
 
   # self links
 
-  eNode.addLink( 'histo_analysis', 'mri_corrected' )
-  eNode.addLink( 'hfiltered', 'mri_corrected' )
-  eNode.addLink( 'white_ridges', 'mri_corrected' )
-
+  self.linkParameters( 'histo_analysis', 'mri_corrected' )
+  self.linkParameters( 'hfiltered', 'mri_corrected' )
+  self.linkParameters( 'white_ridges', 'mri_corrected' )
+  
   # callback to handle 2005-specific parameters
 
   eNode.HistoAnalysis05._selectionChange.add( self.selected )

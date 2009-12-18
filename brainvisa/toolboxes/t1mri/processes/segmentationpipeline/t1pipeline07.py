@@ -31,7 +31,7 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from neuroProcesses import *
-import shfjGlobals     
+import shfjGlobals
 
 name = 'T1 Pipeline 2007'
 userLevel = 0
@@ -40,6 +40,7 @@ signature = Signature(
   'mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.vipVolumeFormats ),
   'mri_corrected', WriteDiskItem( "T1 MRI Bias Corrected",
       'Aims writable volume formats' ),
+  'perform_normalization', Boolean(),
   'Normalised',Choice('No','MNI from SPM','MNI from Mritotal',
       'Marseille from SPM'),
   'Anterior_Commissure', Point3D(),
@@ -49,11 +50,44 @@ signature = Signature(
   )
 
 
+class changeTalairach:
+  def __init__( self, proc ):
+    self.proc = proc
+  def __call__( self, node ):
+    if node.isSelected():
+      self.proc.executionNode().TalairachTransformation.setSelected( True )
+      self.proc.perform_normalization = False
+    else:
+      self.proc.executionNode().TalairachTransformation.setSelected( False )
+      self.proc.perform_normalization = True
+
+
 def initialization( self ):
+  def changeNormalize( self, proc ):
+    eNode = self.executionNode()
+    if len( list( eNode.PrepareSubject.executionNode().children() ) ) > 1:
+      s = eNode.PrepareSubject.StandardACPC.isSelected()
+      if s == self.perform_normalization:
+        y = list(eNode.PrepareSubject.executionNode().children())
+        y[0].setSelected( not self.perform_normalization )
+        y[1].setSelected( self.perform_normalization )
+        ul = self.userLevel
+        if s:
+          ul = 3
+        # the following userlevel stuff doesn't work
+        self.signature[ 'Normalised' ].userLevel = ul
+        self.signature[ 'Anterior_Commissure' ].userLevel = ul
+        self.signature[ 'Posterior_Commissure' ].userLevel = ul
+        self.signature[ 'Interhemispheric_Point' ].userLevel = ul
+        self.signature[ 'Left_Hemisphere_Point' ].userLevel = ul
+        # enabling this produces widgets deletion problems
+        #self.changeSignature( self.signature )
+    return self.Normalised
+
   eNode = SerialExecutionNode( self.name, parameterized=self )
 
   eNode.addChild( 'PrepareSubject',
-                  ProcessExecutionNode( 'preparesubject', optional = 1 ) )
+                  ProcessExecutionNode( 'acpcOrNormalization', optional = 1 ) )
 
 
   eNode.addChild( 'BiasCorrection',
@@ -107,22 +141,24 @@ def initialization( self ):
   eNode.addLink( 'PrepareSubject.T1mri', 'mri' )
   eNode.addLink( 'mri', 'PrepareSubject.T1mri' )
 
-  eNode.addLink( 'PrepareSubject.Normalised', 'Normalised' )
-  eNode.addLink( 'Normalised', 'PrepareSubject.Normalised' )
-  eNode.addLink( 'PrepareSubject.Anterior_Commissure', 'Anterior_Commissure' )
-  eNode.addLink( 'Anterior_Commissure', 'PrepareSubject.Anterior_Commissure' )
-  eNode.addLink( 'PrepareSubject.Posterior_Commissure',
+  eNode.addLink( 'PrepareSubject.StandardACPC.Normalised', 'Normalised' )
+  eNode.addLink( 'Normalised', 'PrepareSubject.StandardACPC.Normalised' )
+  eNode.addLink( 'PrepareSubject.StandardACPC.Anterior_Commissure',
+    'Anterior_Commissure' )
+  eNode.addLink( 'Anterior_Commissure',
+    'PrepareSubject.StandardACPC.Anterior_Commissure' )
+  eNode.addLink( 'PrepareSubject.StandardACPC.Posterior_Commissure',
     'Posterior_Commissure' )
   eNode.addLink( 'Posterior_Commissure',
-    'PrepareSubject.Posterior_Commissure' )
-  eNode.addLink( 'PrepareSubject.Interhemispheric_Point',
+    'PrepareSubject.StandardACPC.Posterior_Commissure' )
+  eNode.addLink( 'PrepareSubject.StandardACPC.Interhemispheric_Point',
     'Interhemispheric_Point' )
   eNode.addLink( 'Interhemispheric_Point',
-    'PrepareSubject.Interhemispheric_Point' )
-  eNode.addLink( 'PrepareSubject.Left_Hemisphere_Point',
+    'PrepareSubject.StandardACPC.Interhemispheric_Point' )
+  eNode.addLink( 'PrepareSubject.StandardACPC.Left_Hemisphere_Point',
     'Left_Hemisphere_Point' )
   eNode.addLink( 'Left_Hemisphere_Point',
-    'PrepareSubject.Left_Hemisphere_Point' )
+    'PrepareSubject.StandardACPC.Left_Hemisphere_Point' )
   self.setOptional( 'Normalised' )
   self.setOptional( 'Anterior_Commissure' )
   self.setOptional( 'Posterior_Commissure' )
@@ -375,5 +411,20 @@ def initialization( self ):
     eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_1.LeftCorticalFoldsGraph_3_1.side = 'Left'
     eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.side = 'Right'
 
+  if len( list( eNode.PrepareSubject.executionNode().children() ) ) == 1:
+    self.perform_normalization = False
+    self.signature[ 'perform_normalization' ].userLevel = 3
+  if not eNode.PrepareSubject.StandardACPC.isSelected():
+    eNode.TalairachTransformation.setSelected( False )
+    self.perform_normalization = True
+  else:
+    self.perform_normalization = False
+  x = changeTalairach( self )
+  eNode.PrepareSubject.StandardACPC._selectionChange.add( x )
+  self.linkParameters( 'Normalised', 'perform_normalization', changeNormalize )
+
   self.setExecutionNode( eNode )
 
+  # just for now, still stick with AC/PC for test and compatibility
+  self.perform_normalization = False
+  changeNormalize( self, self )

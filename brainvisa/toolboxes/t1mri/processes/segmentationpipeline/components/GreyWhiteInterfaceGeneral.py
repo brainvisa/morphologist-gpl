@@ -31,7 +31,6 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from neuroProcesses import *
-
 name = 'Grey white Interface'
 userLevel = 2
 
@@ -163,13 +162,13 @@ def initialization( self ):
 
   # self links
 
-  eNode.addLink( 'histo_analysis', 'mri_corrected' )
-  eNode.addLink( 'split_mask', 'histo_analysis' )
-  eNode.addLink( 'white_ridges', 'mri_corrected' )
-  eNode.addLink( 'LGW_interface', 'split_mask' )
-  eNode.addLink( 'RGW_interface', 'LGW_interface' )
-  eNode.addLink( 'left_white_mesh', 'LGW_interface' )
-  eNode.addLink( 'right_white_mesh', 'RGW_interface' )
-
+  self.linkParameters( 'histo_analysis', 'mri_corrected' )
+  self.linkParameters( 'split_mask', 'histo_analysis' )
+  self.linkParameters( 'white_ridges', 'mri_corrected' )
+  self.linkParameters( 'LGW_interface', 'split_mask' )
+  self.linkParameters( 'RGW_interface', 'LGW_interface' )
+  self.linkParameters( 'left_white_mesh', 'LGW_interface' )
+  self.linkParameters( 'right_white_mesh', 'RGW_interface' )
+  
   self.setExecutionNode( eNode )
 

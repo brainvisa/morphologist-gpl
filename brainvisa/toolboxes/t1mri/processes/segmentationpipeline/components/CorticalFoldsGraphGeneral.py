@@ -243,11 +243,10 @@ def initialization( self ):
                  'CorticalFoldsGraph_3_0.Commissure_coordinates' )
                  
   # self links
-
-  eNode.addLink( 'split_mask', 'mri_corrected' )
-  eNode.addLink( 'commissure_coordinates', 'mri_corrected' )
-  eNode.addLink( 'Talairach_transform', 'split_mask' )
-
+  self.linkParameters( 'split_mask', 'mri_corrected' )
+  self.linkParameters( 'commissure_coordinates', 'mri_corrected' )
+  self.linkParameters( 'Talairach_transform', 'split_mask' )
+  
   self.setExecutionNode( eNode )
 
   x = switch_3_1( self )
