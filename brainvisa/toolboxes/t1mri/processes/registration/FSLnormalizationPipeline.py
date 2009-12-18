@@ -58,10 +58,8 @@ signature = Signature(
   'transformation',
     WriteDiskItem( 'Transform Raw T1 MRI to Talairach-MNI template-SPM',
       'Transformation matrix' ),
-  #'registered_volume', ReadDiskItem( 'Raw T1 MRI',
-    #shfjGlobals.aimsVolumeFormats,
-    #requiredAttributes={ 'normalized' : 'yes', 'normalization' : 'FSL' } ),
-  'template', ReadDiskItem( "fMRI Template",
+  # cannot use the type 'fMRI Template' here...
+  'template', ReadDiskItem( "3D Volume",
     ['NIFTI-1 image', 'gz compressed NIFTI-1 image'] ),
   'alignment', Choice('Already Virtualy Aligned',
     'Not Aligned but Same Orientation', 'Incorrectly Oriented'),
@@ -71,6 +69,9 @@ signature = Signature(
 
 
 def initialization( self ):
+  # hack: put back the correct type now that we are sure the fmri toolbox is OK
+  self.signature[ 'template' ] = ReadDiskItem( "fMRI Template",
+  ['NIFTI-1 image', 'gz compressed NIFTI-1 image'] )
   eNode = SerialExecutionNode( self.name, parameterized=self )
 
   eNode.addChild( 'NormlalizeFSL',
