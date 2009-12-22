@@ -60,7 +60,7 @@ anatomy_content = (
     "nobias_<subject>_*", SetType( 'T1 MRI Bias Corrected' ),
     "nnobias_<subject>_*", SetType( 'T1 MRI Bias Corrected' ),
     "nobias_<subject>_*", SetType( 'Histo Analysis' ),
-    "<subject>_sn", SetType("SPM Transformation Parameters"),
+    "<subject>_sn", SetType("SPM2 normalization matrix"),
 #    "*", SetType('Subject General Info'),
 #    "subject_info_<subject>*", SetType('Subject General Info'),
 )

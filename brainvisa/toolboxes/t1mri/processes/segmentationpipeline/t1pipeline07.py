@@ -341,13 +341,13 @@ def initialization( self ):
     removeLink('hemi_cortex', 'split_mask' )
   eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.\
     removeLink( 'hemi_cortex', 'side' )
-  eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_0.clearLinksTo( \
-    'histo_analysis' )
-  eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_0.clearLinksTo( \
-    'left_hemi_cortex' )
-  eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_0.clearLinksTo( \
-    'right_hemi_cortex' )
-
+  eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_1.LeftCorticalFoldsGraph_3_1.CorticalFoldsGraphThickness.clearLinksTo('GW_interface')
+  eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_1.LeftCorticalFoldsGraph_3_1.CorticalFoldsGraphThickness.clearLinksTo('white_mesh')
+  eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_1.LeftCorticalFoldsGraph_3_1.CorticalFoldsGraphThickness.clearLinksTo('hemi_mesh')
+  eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.CorticalFoldsGraphThickness.clearLinksTo('GW_interface')
+  eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.CorticalFoldsGraphThickness.clearLinksTo('white_mesh')
+  eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.CorticalFoldsGraphThickness.clearLinksTo('hemi_mesh')
+  
   eNode.addLink( 'CorticalFoldsGraph.mri_corrected',
                  'BiasCorrection.mri_corrected' )
   eNode.addLink( 'BiasCorrection.mri_corrected',
@@ -377,6 +377,21 @@ def initialization( self ):
                  'HemispheresMesh.right_hemi_cortex' )
   eNode.addLink( 'HemispheresMesh.right_hemi_cortex',
                  'CorticalFoldsGraph.CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.hemi_cortex' )
+  
+  eNode.addLink( 'CorticalFoldsGraph.CorticalFoldsGraph_3_1.LeftCorticalFoldsGraph_3_1.CorticalFoldsGraphThickness.GW_interface', 'GreyWhiteInterface.LGW_interface' )
+  eNode.addLink( 'CorticalFoldsGraph.CorticalFoldsGraph_3_1.LeftCorticalFoldsGraph_3_1.CorticalFoldsGraphThickness.white_mesh', 'GreyWhiteInterface.left_white_mesh' )
+  eNode.addLink( 'CorticalFoldsGraph.CorticalFoldsGraph_3_1.LeftCorticalFoldsGraph_3_1.CorticalFoldsGraphThickness.hemi_mesh', 'HemispheresMesh.left_hemi_mesh' )
+  eNode.addLink( 'CorticalFoldsGraph.CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.CorticalFoldsGraphThickness.GW_interface', 'GreyWhiteInterface.RGW_interface')
+  eNode.addLink( 'CorticalFoldsGraph.CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.CorticalFoldsGraphThickness.white_mesh', 'GreyWhiteInterface.right_white_mesh' )
+  eNode.addLink( 'CorticalFoldsGraph.CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.CorticalFoldsGraphThickness.hemi_mesh', 'HemispheresMesh.right_hemi_mesh' )
+
+
+  eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_0.clearLinksTo( \
+    'histo_analysis' )
+  eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_0.clearLinksTo( \
+    'left_hemi_cortex' )
+  eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_0.clearLinksTo( \
+    'right_hemi_cortex' )
 
   eNode.addLink( 'CorticalFoldsGraph.CorticalFoldsGraph_3_0.histo_analysis', 'HistoAnalysis.histo_analysis' )
   eNode.addLink( 'HistoAnalysis.histo_analysis', 'CorticalFoldsGraph.CorticalFoldsGraph_3_0.histo_analysis' )

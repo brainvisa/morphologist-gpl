@@ -46,7 +46,7 @@ def validation():
   p = getProcess( 'Normalization_FSL' )
   if not p:
     raise ValidationError( 'Normalization_FSL process is not available - either the fMRI toolbox is not installed, or FSL is not installed and in the PATH' )
-  # the previous test seems not to be gooe enough...
+  # the previous test seems not to be good enough...
   try:
     di = ReadDiskItem( 'fMRI Template', ['NIFTI-1 image', 'gz compressed NIFTI-1 image'] )
   except ValueError:

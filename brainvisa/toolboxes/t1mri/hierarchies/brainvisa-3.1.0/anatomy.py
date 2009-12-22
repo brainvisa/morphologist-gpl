@@ -87,7 +87,7 @@ t1mri_content = (
       "<subject>", SetType( 'Raw T1 MRI' ), SetPriorityOffset( +1 ), SetWeakAttr("normalized", "no"), 
       "<subject>", SetType('Commissure coordinates'),
       "normalized_{normalization}_<subject>", SetType( 'Raw T1 MRI' ), SetWeakAttr("normalized", "yes"),
-      "<subject>_sn", SetType("SPM Transformation Parameters"),
+      "<subject>_sn", SetType("SPM2 normalization matrix"),
       "<subject>_fsl", SetType("FSL Transformation"),
       #      "r<subject>", SetType( 'Registered Raw T1 MRI with fMRI' ), SetWeakAttr( 'fMRI_register', 'Yes' ),
       #    "wr<subject>", SetType( 'Registered Raw T1 MRI with fMRI' ), SetWeakAttr( 'fMRI_register', 'Yes' ),

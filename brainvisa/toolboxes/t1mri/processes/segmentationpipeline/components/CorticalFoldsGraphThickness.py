@@ -45,7 +45,7 @@ signature = Signature(
   'GW_interface', ReadDiskItem( 'Grey White Mask',
       'Aims readable volume formats' ),
   'white_mesh', ReadDiskItem( 'Hemisphere White Mesh', 'Aims mesh formats' ),
-  'hemi_mesh', ReadDiskItem( 'Hemisphere Mesh', 'Aims mesh formats' ),
+  'hemi_mesh', ReadDiskItem( 'Hemisphere Mesh', 'Aims mesh formats'),
   'output_graph', WriteDiskItem ( 'Cortical folds graph', 'Graph'),
   'write_mid_interface', Boolean(),
   'output_mid_interface', WriteDiskItem ( 'Grey White Mid-Interface Volume',
@@ -56,7 +56,7 @@ def initialization( self ):
   self.linkParameters( 'hemi_cortex', 'graph' )
   self.linkParameters( 'GW_interface', 'hemi_cortex' )
   self.linkParameters( 'white_mesh', 'hemi_cortex' )
-  self.linkParameters( 'hemi_mesh', 'hemi_cortex' )
+  self.linkParameters( 'hemi_mesh', 'white_mesh' )
   self.linkParameters( 'output_graph', 'graph' )
   self.linkParameters( 'output_mid_interface', 'hemi_cortex' )
   self.setOptional( 'output_mid_interface' )

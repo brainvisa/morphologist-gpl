@@ -135,7 +135,8 @@ FileType( 'SPM bias correction', 'Any Type', 'Matlab file' )
 FileType( 'SPM segmentation parameters', 'SPM2 parameters', 'XML' )
 
 #SPM 5 transformation parameters
-FileType( 'SPM Transformation Parameters', 'Any Type', 'Matlab file' )
+# defined in axon/registration
+#FileType( 'SPM Transformation Parameters', 'Any Type', 'Matlab file' )
 
 #----------------- Graphs -------------------------
 
