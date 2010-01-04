@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -50,7 +51,8 @@ def initialization( self ):
   except:
     ps = None
   try:
-    np = getProcess( 'FSLnormalizationPipeline' )
+    np = getProcess( 'normalizationPipeline' )
+    np.validationDelayed()
   except:
     np = None
 
@@ -73,14 +75,14 @@ def initialization( self ):
 
   if np:
     eNode1 = SerialExecutionNode( 'Normalization', selected=1 )
-    eNode1.addChild( 'NormalizeFSL',
-      ProcessExecutionNode( 'FSLnormalizationPipeline' ) )
+    eNode1.addChild( 'Normalization',
+      ProcessExecutionNode( 'normalizationPipeline' ) )
     eNode1.addChild( 'TalairachFromNormalization',
       ProcessExecutionNode( 'TalairachTransformationFromNormalization' ) )
     eNode.addChild( 'Normalization', eNode1 )
 
-    eNode.addLink( 'Normalization.NormalizeFSL.t1mri', 'T1mri' )
-    eNode.addLink( 'T1mri', 'Normalization.NormalizeFSL.t1mri' )
+    eNode.addLink( 'Normalization.Normalization.t1mri', 'T1mri' )
+    eNode.addLink( 'T1mri', 'Normalization.Normalization.t1mri' )
 
     if ps:
       eNode1.TalairachFromNormalization.removeLink( 'Commissure_coordinates',
@@ -90,8 +92,8 @@ def initialization( self ):
     eNode.addLink( 'T1mri', 'Normalization.TalairachFromNormalization.t1mri' )
     eNode.addLink( \
       'Normalization.TalairachFromNormalization.normalization_transformation',
-      'Normalization.NormalizeFSL.transformation' )
-    eNode.addLink( 'Normalization.NormalizeFSL.transformation',
+      'Normalization.Normalization.transformation' )
+    eNode.addLink( 'Normalization.Normalization.transformation',
       'Normalization.TalairachFromNormalization.normalization_transformation' )
     eNode.addLink( \
       'Normalization.TalairachFromNormalization.Commissure_coordinates',
