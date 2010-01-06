@@ -49,7 +49,7 @@ loaded yet. But this validationDelayed method can be used later.
   except:
     fsl = None
   try:
-    spm = getProcess( 'FSLnormalizationPipeline' )
+    spm = getProcess( 'SPMnormalizationPipeline' )
   except:
     spm = None
   if not fsl and not spm:
