@@ -64,11 +64,29 @@ signature = Signature(
   'alignment', Choice('Already Virtualy Aligned',
     'Not Aligned but Same Orientation', 'Incorrectly Oriented'),
   'set_transformation_in_source_volume', Boolean(),
-  # 'removeSource', Boolean(),
+  'allow_flip_initial_MRI', Boolean(), 
 )
 
 
+class changeAllowFlip:
+  def __init__( self, proc ):
+    self.proc = proc
+  def __call__( self, node ):
+    if node.isSelected():
+      if not self.proc.allow_flip_initial_MRI:
+        self.proc.allow_flip_initial_MRI = True
+    else:
+      if self.proc.allow_flip_initial_MRI:
+        self.proc.allow_flip_initial_MRI = False
+
+def allowFlip( self, allow ):
+  eNode = self.executionNode()
+  s = eNode.ReorientAnatomy.isSelected()
+  if s != self.allow_flip_initial_MRI:
+    eNode.ReorientAnatomy.setSelected( self.allow_flip_initial_MRI )
+
 def initialization( self ):
+
   # hack: put back the correct type now that we are sure the fmri toolbox is OK
   self.signature[ 'template' ] = ReadDiskItem( "fMRI Template",
   ['NIFTI-1 image', 'gz compressed NIFTI-1 image'] )
@@ -78,6 +96,9 @@ def initialization( self ):
                   ProcessExecutionNode( 'Normalization_FSL' ) )
   eNode.addChild( 'ConvertFSLnormalizationToAIMS',
                   ProcessExecutionNode( 'FSLnormalizationToAims' ) )
+  eNode.addChild( 'ReorientAnatomy',
+                  ProcessExecutionNode( 'reorientAnatomy', optional=True,
+                  selected=False ) )
 
   # fix transformation_matrix type
   eNode.NormlalizeFSL.signature[ 'transformation_matrix' ] = \
@@ -117,8 +138,24 @@ def initialization( self ):
   eNode.addLink( 'ConvertFSLnormalizationToAIMS.read',
     'NormlalizeFSL.transformation_matrix' )
 
+  eNode.ReorientAnatomy.removeLink( 'transformation', 't1mri' )
+  eNode.addLink( 't1mri', 'ReorientAnatomy.t1mri' )
+  eNode.addLink( 'ReorientAnatomy.t1mri', 't1mri' )
+  eNode.addLink( 'transformation', 'ReorientAnatomy.transformation' )
+  eNode.addLink( 'ReorientAnatomy.transformation', 'transformation' )
+  eNode.addLink( 'allow_flip_initial_MRI',
+    'ReorientAnatomy.allow_flip_initial_MRI' )
+  eNode.addLink( 'ReorientAnatomy.allow_flip_initial_MRI',
+    'allow_flip_initial_MRI' )
+
   # this seems not to work automatically
   self.alignment = 'Not Aligned but Same Orientation'
   self.template = self.signature[ 'template' ].findValue( {} )
 
   self.setExecutionNode( eNode )
+
+  self.allow_flip_initial_MRI = False
+  self.addLink( None, 'allow_flip_initial_MRI',
+    self.allowFlip )
+  x = changeAllowFlip( self )
+  eNode.ReorientAnatomy._selectionChange.add( x )

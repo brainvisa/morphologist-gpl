@@ -63,9 +63,26 @@ signature = Signature(
   'template', ReadDiskItem( "3D Volume",
     ['NIFTI-1 image', 'gz compressed NIFTI-1 image', 'MINC image'] ),
   #'set_transformation_in_source_volume', Boolean(),
-  # 'removeSource', Boolean(),
+  'allow_flip_initial_MRI', Boolean(), 
 )
 
+
+class changeAllowFlip:
+  def __init__( self, proc ):
+    self.proc = proc
+  def __call__( self, node ):
+    if node.isSelected():
+      if not self.proc.allow_flip_initial_MRI:
+        self.proc.allow_flip_initial_MRI = True
+    else:
+      if self.proc.allow_flip_initial_MRI:
+        self.proc.allow_flip_initial_MRI = False
+
+def allowFlip( self, allow ):
+  eNode = self.executionNode()
+  s = eNode.ReorientAnatomy.isSelected()
+  if s != self.allow_flip_initial_MRI:
+    eNode.ReorientAnatomy.setSelected( self.allow_flip_initial_MRI )
 
 def initialization( self ):
   def linkToAnat( t1mri ):
@@ -93,6 +110,9 @@ def initialization( self ):
                   ProcessExecutionNode( 'Normalization' ) )
   eNode.addChild( 'ConvertSPMnormalizationToAIMS',
                   ProcessExecutionNode( 'SPMsn3dToAims' ) )
+  eNode.addChild( 'ReorientAnatomy',
+                  ProcessExecutionNode( 'reorientAnatomy', optional=True,
+                  selected=False ) )
 
   # fix transformation_matrix type
   eNode.ConvertSPMnormalizationToAIMS.signature[ 'write' ] = \
@@ -127,4 +147,21 @@ def initialization( self ):
   self.template = self.signature[ 'template' ].findValue( \
     { 'databasename' : 'spm', 'skull_stripped' : 'no' } )
 
+  eNode.ReorientAnatomy.removeLink( 'transformation', 't1mri' )
+  eNode.addLink( 't1mri', 'ReorientAnatomy.t1mri' )
+  eNode.addLink( 'ReorientAnatomy.t1mri', 't1mri' )
+  eNode.addLink( 'transformation', 'ReorientAnatomy.transformation' )
+  eNode.addLink( 'ReorientAnatomy.transformation', 'transformation' )
+  eNode.addLink( 'allow_flip_initial_MRI',
+    'ReorientAnatomy.allow_flip_initial_MRI' )
+  eNode.addLink( 'ReorientAnatomy.allow_flip_initial_MRI',
+    'allow_flip_initial_MRI' )
+
   self.setExecutionNode( eNode )
+
+  self.allow_flip_initial_MRI = False
+  self.addLink( None, 'allow_flip_initial_MRI',
+    self.allowFlip )
+  x = changeAllowFlip( self )
+  eNode.ReorientAnatomy._selectionChange.add( x )
+

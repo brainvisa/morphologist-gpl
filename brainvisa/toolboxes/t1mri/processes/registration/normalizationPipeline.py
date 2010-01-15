@@ -60,6 +60,7 @@ signature = Signature(
   'transformation',
     WriteDiskItem( 'Transform Raw T1 MRI to Talairach-MNI template-SPM',
       'Transformation matrix' ),
+  'allow_flip_initial_MRI', Boolean(),
   )
 
 def initialization( self ):
@@ -72,6 +73,8 @@ def initialization( self ):
   except:
     spm = None
 
+  self.allow_flip_initial_MRI = False
+
   eNode = SelectionExecutionNode( self.name, parameterized=self )
 
   if fsl:
@@ -83,6 +86,10 @@ def initialization( self ):
     eNode.addLink( 't1mri', 'NormalizeFSL.t1mri' )
     eNode.addLink( 'NormalizeFSL.transformation', 'transformation' )
     eNode.addLink( 'transformation', 'NormalizeFSL.transformation' )
+    eNode.addLink( 'NormalizeFSL.allow_flip_initial_MRI',
+      'allow_flip_initial_MRI' )
+    eNode.addLink( 'allow_flip_initial_MRI',
+      'NormalizeFSL.allow_flip_initial_MRI' )
 
   if spm:
     eNode.addChild( 'NormalizeSPM',
@@ -93,6 +100,10 @@ def initialization( self ):
     if not fsl: # TODO: fix links in sub-processes
       eNode.addLink( 'NormalizeSPM.transformation', 'transformation' )
       eNode.addLink( 'transformation', 'NormalizeSPM.transformation' )
+    eNode.addLink( 'NormalizeSPM.allow_flip_initial_MRI',
+      'allow_flip_initial_MRI' )
+    eNode.addLink( 'allow_flip_initial_MRI',
+      'NormalizeSPM.allow_flip_initial_MRI' )
 
   self.setExecutionNode( eNode )
 

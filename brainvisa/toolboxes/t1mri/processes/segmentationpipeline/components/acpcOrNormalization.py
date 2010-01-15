@@ -42,7 +42,9 @@ userLevel = 0
 
 signature = Signature(
   'T1mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.aimsVolumeFormats ),
-  'Commissure_coordinates', WriteDiskItem( 'Commissure coordinates','Commissure coordinates'),
+  'Commissure_coordinates', WriteDiskItem( 'Commissure coordinates',
+    'Commissure coordinates'),
+  'allow_flip_initial_MRI', Boolean(),
   )
 
 def initialization( self ):
@@ -55,6 +57,8 @@ def initialization( self ):
     np.validationDelayed()
   except:
     np = None
+
+  self.allow_flip_initial_MRI = False
 
   eNode = SelectionExecutionNode( self.name, parameterized=self )
 
@@ -72,6 +76,10 @@ def initialization( self ):
       'Commissure_coordinates' )
     eNode.addLink( 'Commissure_coordinates',
       'StandardACPC.Commissure_coordinates' )
+    eNode.addLink( 'StandardACPC.allow_flip_initial_MRI',
+      'allow_flip_initial_MRI' )
+    eNode.addLink( 'allow_flip_initial_MRI',
+      'StandardACPC.allow_flip_initial_MRI' )
 
   if np:
     eNode1 = SerialExecutionNode( 'Normalization', selected=1 )
@@ -83,6 +91,10 @@ def initialization( self ):
 
     eNode.addLink( 'Normalization.Normalization.t1mri', 'T1mri' )
     eNode.addLink( 'T1mri', 'Normalization.Normalization.t1mri' )
+    eNode.addLink( 'Normalization.Normalization.allow_flip_initial_MRI',
+      'allow_flip_initial_MRI' )
+    eNode.addLink( 'allow_flip_initial_MRI',
+      'Normalization.Normalization.allow_flip_initial_MRI' )
 
     if ps:
       eNode1.TalairachFromNormalization.removeLink( 'Commissure_coordinates',
