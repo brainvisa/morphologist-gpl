@@ -40,7 +40,10 @@ from neuroProcesses import *
 import shfjGlobals
 from brainvisa import anatomist
 import numpy, os
-from PIL import Image
+try:
+  from PIL import Image
+except:
+  pass
 
 name = 'Anatomist Show Fold Graph 4 views'
 #roles = ('viewer',)
@@ -48,6 +51,11 @@ userLevel = 0
 
 def validation():
     anatomist.validation()
+    try:
+        from PIL import Image
+    except:
+        raise ValidationError( 'PIL module not available' )
+
 
 signature = Signature(
     'right_graph', ReadDiskItem( 'Cortical folds graph', 'Graph and Data',

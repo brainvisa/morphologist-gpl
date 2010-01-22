@@ -61,6 +61,14 @@ class changeTalairach:
       self.proc.executionNode().TalairachTransformation.setSelected( False )
       self.proc.perform_normalization = True
 
+class changeUseridges:
+  def __init__( self, proc ):
+    self.proc = proc
+  def __call__( self, node ):
+    self.proc.executionNode().GreyWhiteInterface.use_ridges = node.isSelected()
+    self.proc.executionNode().SplitBrain.SplitBrain05.Use_ridges \
+      = node.isSelected()
+
 
 def initialization( self ):
   def changeNormalize( self, proc ):
@@ -286,10 +294,10 @@ def initialization( self ):
   eNode.addLink( 'SplitBrain.split_mask',
                  'GreyWhiteInterface.split_mask' )
 
-##  eNode.addLink( 'SplitBrain.use_ridges',
-##                 'BiasCorrection.write_wridges' )
-##  eNode.addLink( 'BiasCorrection.write_wridges',
-##                 'SplitBrain.use_ridges' )
+  #eNode.addLink( 'GreyWhiteInterface.use_ridges',
+                  #'BiasCorrection.write_wridges' )
+  #eNode.addLink( 'BiasCorrection.write_wridges',
+                  #'GreyWhiteInterface.use_ridges' )
 
   eNode.addLink( 'GreyWhiteInterface.white_ridges',
                  'BiasCorrection.white_ridges' )
@@ -297,23 +305,29 @@ def initialization( self ):
                  'GreyWhiteInterface.white_ridges' )
 
 
-  eNode.HemispheresMesh.removeLink( 'histo_analysis', 'mri_corrected' )
-  eNode.HemispheresMesh.removeLink( 'brain_voronoi', 'histo_analysis' )
+  eNode.HemispheresMesh.removeLink( 'brain_voronoi', 'mri_corrected' )
+  eNode.HemispheresMesh.removeLink( 'left_hemi_cortex', 'brain_voronoi' )
+  eNode.HemispheresMesh.removeLink( 'right_hemi_cortex', 'left_hemi_cortex' )
 
   eNode.addLink( 'HemispheresMesh.mri_corrected',
                  'BiasCorrection.mri_corrected' )
   eNode.addLink( 'BiasCorrection.mri_corrected',
                  'HemispheresMesh.mri_corrected' )
 
-  eNode.addLink( 'HemispheresMesh.histo_analysis',
-                 'HistoAnalysis.histo_analysis' )
-  eNode.addLink( 'HistoAnalysis.histo_analysis',
-                 'HemispheresMesh.histo_analysis' )
-
   eNode.addLink( 'HemispheresMesh.brain_voronoi',
                  'SplitBrain.split_mask' )
   eNode.addLink( 'SplitBrain.split_mask',
                  'HemispheresMesh.brain_voronoi' )
+
+  eNode.addLink( 'HemispheresMesh.left_hemi_cortex',
+                 'GreyWhiteInterface.left_hemi_cortex' )
+  eNode.addLink( 'GreyWhiteInterface.left_hemi_cortex',
+                 'HemispheresMesh.left_hemi_cortex' )
+
+  eNode.addLink( 'HemispheresMesh.right_hemi_cortex',
+                 'GreyWhiteInterface.right_hemi_cortex' )
+  eNode.addLink( 'GreyWhiteInterface.right_hemi_cortex',
+                 'HemispheresMesh.right_hemi_cortex' )
 
 
   eNode.HeadMesh.removeLink( 'histo_analysis', 'mri_corrected' )
@@ -437,6 +451,8 @@ def initialization( self ):
   x = changeTalairach( self )
   eNode.PrepareSubject.StandardACPC._selectionChange.add( x )
   self.linkParameters( 'Normalised', 'perform_normalization', changeNormalize )
+  x = changeUseridges( self )
+  eNode.BiasCorrection.BiasCorrection05._selectionChange.add( x )
 
   self.setExecutionNode( eNode )
 

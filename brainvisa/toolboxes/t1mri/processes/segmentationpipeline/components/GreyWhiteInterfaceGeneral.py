@@ -44,6 +44,10 @@ signature = Signature(
       'Aims writable volume formats' ),
   'RGW_interface', WriteDiskItem( 'Right Grey White Mask',
       'Aims writable volume formats' ),
+  'left_hemi_cortex', WriteDiskItem( 'Left CSF+GREY Mask',
+      'Aims writable volume formats' ),
+  'right_hemi_cortex', WriteDiskItem( 'Right CSF+GREY Mask',
+      'Aims writable volume formats' ),
   'left_white_mesh', WriteDiskItem( 'Left Hemisphere White Mesh',
                                     'Aims mesh formats' ),
   'right_white_mesh', WriteDiskItem( 'Right Hemisphere White Mesh',
@@ -59,116 +63,122 @@ def initialization( self ):
 
   # create nodes
 
-  eNode = SelectionExecutionNode( self.name, parameterized = self )
-  eNode.addChild( 'GreyWhiteInterface05', 
-                  ProcessExecutionNode( 'ComputeGreyWhiteInterface',
-                                        selected = 0 ) )
-  eNode1 = SerialExecutionNode( 'GreyWhiteInterface04', selected = 1 )
-  eNode1.addChild( 'GreyWhiteInterface',
-                   ProcessExecutionNode( 'AnaComputeHemiGreyWhiteClassif',
-                                         optional = 1 ) )
+  eNode = SerialExecutionNode( self.name, parameterized = self )
+  eNode.addChild( 'GreyWhiteInterface',
+    ProcessExecutionNode( 'AnaComputeHemiGreyWhiteClassif', optional = 1,
+    selected=1 ) )
+  eNode.addChild( 'cortex_image',
+    ProcessExecutionNode( 'cortex', optional = 1, selected=1 ) )
+
+  eNode1 = SelectionExecutionNode( 'Grey/White Mesh', optional=1, selected=1 )
+  eNode1.addChild( 'GreyWhiteInterface05', 
+                   ProcessExecutionNode( 'ComputeGreyWhiteInterface',
+                                         selected = 0 ) )
   eNode1.addChild( 'GreyWhiteMesh',
                    ProcessExecutionNode( 'AnaGetSphericalCorticalSurface',
-                                         optional = 1 ) )
-  eNode.addChild( 'GreyWhiteInterface04', eNode1 )
+                                         selected = 1 ) )
+  eNode.addChild( 'GreyWhiteMesh', eNode1 )
 
   # break internal links
-  
-  eNode.GreyWhiteInterface05.clearLinksTo( 'histo_analysis' )
-  eNode.GreyWhiteInterface05.clearLinksTo( 'split_mask' )
-  eNode.GreyWhiteInterface05.clearLinksTo( 'white_ridges' )
-  eNode.GreyWhiteInterface05.clearLinksTo( 'LGW_interface' )
-  eNode.GreyWhiteInterface05.clearLinksTo( 'RGW_interface' )
-  eNode.GreyWhiteInterface05.clearLinksTo( 'left_white_mesh' )
-  eNode.GreyWhiteInterface05.clearLinksTo( 'right_white_mesh' )
 
-  eNode.GreyWhiteInterface04.GreyWhiteInterface.clearLinksTo( \
-      'histo_analysis' )
-  eNode.GreyWhiteInterface04.GreyWhiteInterface.clearLinksTo( \
-      'brain_voronoi' )
-  eNode.GreyWhiteInterface04.GreyWhiteInterface.clearLinksTo( \
-      'left_grey_white' )
-  eNode.GreyWhiteInterface04.GreyWhiteInterface.clearLinksTo( \
-      'right_grey_white' )
-  eNode.GreyWhiteInterface04.GreyWhiteMesh.clearLinksTo( 'histo_analysis' )
-  eNode.GreyWhiteInterface04.GreyWhiteMesh.clearLinksTo( 'brain_voronoi' )
-  eNode.GreyWhiteInterface04.GreyWhiteMesh.clearLinksTo( 'left_white_mesh' )
-  eNode.GreyWhiteInterface04.GreyWhiteMesh.clearLinksTo( 'right_white_mesh' )
+  eNode.cortex_image.clearLinksTo( 'histo_analysis' )
+  eNode.cortex_image.clearLinksTo( 'split_mask' )
+  eNode.cortex_image.clearLinksTo( 'white_ridges' )
+  eNode.cortex_image.clearLinksTo( 'left_hemi_cortex' )
+  eNode.cortex_image.clearLinksTo( 'right_hemi_cortex' )
+  eNode.GreyWhiteMesh.GreyWhiteInterface05.clearLinksTo( 'left_white_mesh' )
+  eNode.GreyWhiteMesh.GreyWhiteInterface05.clearLinksTo( 'right_white_mesh' )
 
-  # links for 2005 version
+  eNode.GreyWhiteInterface.clearLinksTo( 'histo_analysis' )
+  eNode.GreyWhiteInterface.clearLinksTo( 'brain_voronoi' )
+  eNode.GreyWhiteInterface.clearLinksTo( 'left_grey_white' )
+  eNode.GreyWhiteInterface.clearLinksTo( 'right_grey_white' )
+  eNode.GreyWhiteMesh.GreyWhiteMesh.clearLinksTo( 'histo_analysis' )
+  eNode.GreyWhiteMesh.GreyWhiteMesh.clearLinksTo( 'brain_voronoi' )
+  eNode.GreyWhiteMesh.GreyWhiteMesh.clearLinksTo( 'left_white_mesh' )
+  eNode.GreyWhiteMesh.GreyWhiteMesh.clearLinksTo( 'right_white_mesh' )
 
-  eNode.addLink( 'GreyWhiteInterface05.mri_corrected', 'mri_corrected' )
-  eNode.addLink( 'mri_corrected', 'GreyWhiteInterface05.mri_corrected' )
-  eNode.addLink( 'GreyWhiteInterface05.histo_analysis', 'histo_analysis' )
-  eNode.addLink( 'histo_analysis', 'GreyWhiteInterface05.histo_analysis' )
-  eNode.addLink( 'GreyWhiteInterface05.split_mask', 'split_mask' )
-  eNode.addLink( 'split_mask', 'GreyWhiteInterface05.split_mask' )
-  eNode.addLink( 'GreyWhiteInterface05.LGW_interface', 'LGW_interface' )
-  eNode.addLink( 'LGW_interface', 'GreyWhiteInterface05.LGW_interface' )
-  eNode.addLink( 'GreyWhiteInterface05.RGW_interface', 'RGW_interface' )
-  eNode.addLink( 'RGW_interface', 'GreyWhiteInterface05.RGW_interface' )
-  eNode.addLink( 'GreyWhiteInterface05.left_white_mesh', 'left_white_mesh' )
-  eNode.addLink( 'left_white_mesh', 'GreyWhiteInterface05.left_white_mesh' )
-  eNode.addLink( 'GreyWhiteInterface05.right_white_mesh', 'right_white_mesh' )
-  eNode.addLink( 'right_white_mesh', 'GreyWhiteInterface05.right_white_mesh' )
-  eNode.addLink( 'GreyWhiteInterface05.Use_ridges', 'use_ridges' )
-  eNode.addLink( 'use_ridges', 'GreyWhiteInterface05.Use_ridges' )
-  eNode.addLink( 'GreyWhiteInterface05.white_ridges', 'white_ridges' )
-  eNode.addLink( 'white_ridges', 'GreyWhiteInterface05.white_ridges' )
+  ## links
 
-  # links for 2004 version
+  eNode.addLink( 'GreyWhiteInterface.mri_corrected', 'mri_corrected' )
+  eNode.addLink( 'mri_corrected', 'GreyWhiteInterface.mri_corrected' )
+  eNode.addLink( 'GreyWhiteInterface.histo_analysis', 'histo_analysis' )
+  eNode.addLink( 'histo_analysis', 'GreyWhiteInterface.histo_analysis' )
+  eNode.addLink( 'GreyWhiteInterface.brain_voronoi', 'split_mask' )
+  eNode.addLink( 'split_mask', 'GreyWhiteInterface.brain_voronoi' )
+  eNode.addLink( 'GreyWhiteInterface.left_grey_white', 'LGW_interface' )
+  eNode.addLink( 'LGW_interface', 'GreyWhiteInterface.left_grey_white' )
+  eNode.addLink( 'GreyWhiteInterface.right_grey_white', 'RGW_interface' )
+  eNode.addLink( 'RGW_interface', 'GreyWhiteInterface.right_grey_white' )
 
-  eNode.addLink( 'GreyWhiteInterface04.GreyWhiteInterface.mri_corrected',
+  eNode.addLink( 'cortex_image.mri_corrected', 'mri_corrected' )
+  eNode.addLink( 'mri_corrected', 'cortex_image.mri_corrected' )
+  eNode.addLink( 'cortex_image.histo_analysis', 'histo_analysis' )
+  eNode.addLink( 'histo_analysis', 'cortex_image.histo_analysis' )
+  eNode.addLink( 'cortex_image.split_mask', 'split_mask' )
+  eNode.addLink( 'split_mask', 'cortex_image.split_mask' )
+  eNode.addLink( 'cortex_image.use_ridges', 'use_ridges' )
+  eNode.addLink( 'use_ridges', 'cortex_image.use_ridges' )
+  eNode.addLink( 'cortex_image.white_ridges', 'white_ridges' )
+  eNode.addLink( 'white_ridges', 'cortex_image.white_ridges' )
+  eNode.addLink( 'cortex_image.left_hemi_cortex', 'left_hemi_cortex' )
+  eNode.addLink( 'left_hemi_cortex', 'cortex_image.left_hemi_cortex' )
+  eNode.addLink( 'cortex_image.right_hemi_cortex', 'right_hemi_cortex' )
+  eNode.addLink( 'right_hemi_cortex', 'cortex_image.right_hemi_cortex' )
+
+  ## links for 2005 version
+
+  eNode.addLink( 'GreyWhiteMesh.GreyWhiteInterface05.left_hemi_cortex',
+    'left_hemi_cortex' )
+  eNode.addLink( 'left_hemi_cortex',
+    'GreyWhiteMesh.GreyWhiteInterface05.left_hemi_cortex' )
+  eNode.addLink( 'GreyWhiteMesh.GreyWhiteInterface05.right_hemi_cortex',
+    'right_hemi_cortex' )
+  eNode.addLink( 'right_hemi_cortex',
+    'GreyWhiteMesh.GreyWhiteInterface05.right_hemi_cortex' )
+  eNode.addLink( 'GreyWhiteMesh.GreyWhiteInterface05.left_white_mesh',
+    'left_white_mesh' )
+  eNode.addLink( 'left_white_mesh',
+    'GreyWhiteMesh.GreyWhiteInterface05.left_white_mesh' )
+  eNode.addLink( 'GreyWhiteMesh.GreyWhiteInterface05.right_white_mesh',
+    'right_white_mesh' )
+  eNode.addLink( 'right_white_mesh',
+    'GreyWhiteMesh.GreyWhiteInterface05.right_white_mesh' )
+
+  ## links for 2004 version
+
+  eNode.addLink( 'GreyWhiteMesh.GreyWhiteMesh.mri_corrected',
                  'mri_corrected' )
   eNode.addLink( 'mri_corrected',
-                 'GreyWhiteInterface04.GreyWhiteInterface.mri_corrected' )
-  eNode.addLink( 'GreyWhiteInterface04.GreyWhiteInterface.histo_analysis',
+                 'GreyWhiteMesh.GreyWhiteMesh.mri_corrected' )
+  eNode.addLink( 'GreyWhiteMesh.GreyWhiteMesh.histo_analysis',
                  'histo_analysis' )
   eNode.addLink( 'histo_analysis',
-                 'GreyWhiteInterface04.GreyWhiteInterface.histo_analysis' )
-  eNode.addLink( 'GreyWhiteInterface04.GreyWhiteInterface.brain_voronoi',
+                 'GreyWhiteMesh.GreyWhiteMesh.histo_analysis' )
+  eNode.addLink( 'GreyWhiteMesh.GreyWhiteMesh.brain_voronoi',
                  'split_mask' )
   eNode.addLink( 'split_mask',
-                 'GreyWhiteInterface04.GreyWhiteInterface.brain_voronoi' )
-  eNode.addLink( 'GreyWhiteInterface04.GreyWhiteInterface.left_grey_white',
-                 'LGW_interface' )
-  eNode.addLink( 'LGW_interface',
-                 'GreyWhiteInterface04.GreyWhiteInterface.left_grey_white' )
-  eNode.addLink( 'GreyWhiteInterface04.GreyWhiteInterface.right_grey_white',
-                 'RGW_interface' )
-  eNode.addLink( 'RGW_interface',
-                 'GreyWhiteInterface04.GreyWhiteInterface.right_grey_white' )
-
-  eNode.addLink( 'GreyWhiteInterface04.GreyWhiteMesh.mri_corrected',
-                 'mri_corrected' )
-  eNode.addLink( 'mri_corrected',
-                 'GreyWhiteInterface04.GreyWhiteMesh.mri_corrected' )
-  eNode.addLink( 'GreyWhiteInterface04.GreyWhiteMesh.histo_analysis',
-                 'histo_analysis' )
-  eNode.addLink( 'histo_analysis',
-                 'GreyWhiteInterface04.GreyWhiteMesh.histo_analysis' )
-  eNode.addLink( 'GreyWhiteInterface04.GreyWhiteMesh.brain_voronoi',
-                 'split_mask' )
-  eNode.addLink( 'split_mask',
-                 'GreyWhiteInterface04.GreyWhiteMesh.brain_voronoi' )
-  eNode.addLink( 'GreyWhiteInterface04.GreyWhiteMesh.left_white_mesh',
+                 'GreyWhiteMesh.GreyWhiteMesh.brain_voronoi' )
+  eNode.addLink( 'GreyWhiteMesh.GreyWhiteMesh.left_white_mesh',
                  'left_white_mesh' )
   eNode.addLink( 'left_white_mesh',
-                 'GreyWhiteInterface04.GreyWhiteMesh.left_white_mesh' )
-  eNode.addLink( 'GreyWhiteInterface04.GreyWhiteMesh.right_white_mesh',
+                 'GreyWhiteMesh.GreyWhiteMesh.left_white_mesh' )
+  eNode.addLink( 'GreyWhiteMesh.GreyWhiteMesh.right_white_mesh',
                  'right_white_mesh' )
   eNode.addLink( 'right_white_mesh',
-                 'GreyWhiteInterface04.GreyWhiteMesh.right_white_mesh' )
+                 'GreyWhiteMesh.GreyWhiteMesh.right_white_mesh' )
 
-  # self links
+  ## self links
 
   self.linkParameters( 'histo_analysis', 'mri_corrected' )
   self.linkParameters( 'split_mask', 'histo_analysis' )
   self.linkParameters( 'white_ridges', 'mri_corrected' )
   self.linkParameters( 'LGW_interface', 'split_mask' )
   self.linkParameters( 'RGW_interface', 'LGW_interface' )
-  self.linkParameters( 'left_white_mesh', 'LGW_interface' )
-  self.linkParameters( 'right_white_mesh', 'RGW_interface' )
+  self.linkParameters( 'left_hemi_cortex', 'LGW_interface' )
+  self.linkParameters( 'right_hemi_cortex', 'RGW_interface' )
+  self.linkParameters( 'left_white_mesh', 'left_hemi_cortex' )
+  self.linkParameters( 'right_white_mesh', 'right_hemi_cortex' )
   
   self.setExecutionNode( eNode )
 

@@ -34,131 +34,70 @@ from neuroProcesses import *
 from brainvisa import shelltools
 import registration
 
-name = '5 - Compute Grey white Interface'
+name = '5 - Compute Grey white Interface Mesh'
 userLevel = 2
 
 # Argument declaration
 signature = Signature(
   'Side', Choice("Both","Left","Right"),
-  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
-      'Aims readable volume formats' ),
-  'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-  'split_mask', ReadDiskItem( "Voronoi Diagram",
-      'Aims readable volume formats' ),
-  'Use_ridges', Boolean(),
-  'white_ridges', ReadDiskItem( "T1 MRI White Matter Ridges",
-      'Aims readable volume formats' ),
-  'LGW_interface', WriteDiskItem( 'Left Grey White Mask',
+  'left_hemi_cortex', ReadDiskItem( 'Left CSF+GREY Mask',
       'Aims writable volume formats' ),
-  'RGW_interface', WriteDiskItem( 'Right Grey White Mask',
+  'right_hemi_cortex', ReadDiskItem( 'Right CSF+GREY Mask',
       'Aims writable volume formats' ),
-  'Compute_mesh', Boolean(),
   'left_white_mesh', WriteDiskItem( 'Left Hemisphere White Mesh',
       'Aims mesh formats' ),
   'right_white_mesh', WriteDiskItem( 'Right Hemisphere White Mesh',
       'Aims mesh formats' ),
-  'pressure', Choice("0","25","50","75","100","125","150"),
-  'iterations', Integer(), 
+  'iterations', Integer(),
   'rate', Float(),
  ) 
 # Default values
 def initialization( self ):
-  self.linkParameters( 'histo_analysis', 'mri_corrected' )
-  self.linkParameters( 'LGW_interface', 'mri_corrected' )
-  self.linkParameters( 'RGW_interface', 'mri_corrected' )
-  self.linkParameters( 'split_mask', 'mri_corrected' )
-  self.linkParameters( 'white_ridges', 'mri_corrected' )
-  self.linkParameters( 'left_white_mesh', 'mri_corrected' )
-  self.linkParameters( 'right_white_mesh', 'mri_corrected' )
-  self.Use_ridges = "True"
-  self.setOptional('white_ridges')
+  self.linkParameters( 'right_hemi_cortex', 'left_hemi_cortex' )
+  self.linkParameters( 'left_white_mesh', 'left_hemi_cortex' )
+  self.linkParameters( 'right_white_mesh', 'right_hemi_cortex' )
   self.Side = "Both"
-  self.compute_mesh = "True"
-  self.pressure = "0"
   self.iterations = 10
   self.rate = 0.2
 #
 
 def execution( self, context ):
-  context.write( "Masking Bias corrected image with hemisphere masks...")
-  Lbraing = context.temporary( 'GIS Image' )
-  context.system( 'VipMask', '-i', self.mri_corrected, "-m",
-                  self.split_mask, "-o", Lbraing, "-w",
-                  "t", "-l", "2" )
-  Rbraing = context.temporary( 'GIS Image' )
-  context.system( "VipMask", "-i", self.mri_corrected, "-m",
-                  self.split_mask, "-o", Rbraing,
-                  "-w", "t", "-l", "1" )
   tm=registration.getTransformationManager()
   if self.Side in ('Left','Both'):
 
-      if os.path.exists(self.LGW_interface.fullName() + '.loc'):
-        context.write( "Left grey/white locked")
-      else:
-        context.write( "Detecting left grey/white interface..." )
-        if self.Use_ridges:
-          context.system( "VipHomotopicSnake", "-i", Lbraing, "-h",
-                        self.histo_analysis, "-o",
-                        self.LGW_interface, "-R",  self.white_ridges,
-                        "-w", "t" )
-        else:
-          context.system( "VipHomotopicSnake", "-i", Lbraing, "-h",
-                        self.histo_analysis, "-o",
-                        self.LGW_interface, "-w", "t" )
-        tm.copyReferential(self.mri_corrected, self.LGW_interface)
-      if self.Compute_mesh:
-          if os.path.exists(self.left_white_mesh.fullName() + '.loc'):
-            context.write( "Left Hemisphere White Mesh Locked")
-          else:
-            context.write("Reconstructing left hemisphere white surface...")
-            white = context.temporary( 'GIS Image' )  
-            context.system( "VipSingleThreshold", "-i", self.LGW_interface, 
-                      "-o", white, "-t", "0", "-c", "b", "-m",
-                      "ne", "-w", "t" )
-            context.system( "AimsMeshWhite", "-i", white, "-o",
-                      self.left_white_mesh )
-            del white
+    if os.path.exists(self.left_white_mesh.fullName() + '.loc'):
+      context.write( "Left Hemisphere White Mesh Locked")
+    else:
+      context.write("Reconstructing left hemisphere white surface...")
+      white = context.temporary( 'GIS Image' )
+      context.system( "VipSingleThreshold", "-i", self.left_hemi_cortex,
+                "-o", white, "-t", "0", "-c", "b", "-m",
+                "ne", "-w", "t" )
+      context.system( "AimsMeshWhite", "-i", white, "-o",
+                self.left_white_mesh )
+      del white
 
-            context.write( "Smoothing mesh..." )
-            context.runProcess( 'meshSmooth', mesh=self.left_white_mesh,
-                                iterations=self.iterations,rate=self.rate )
-            tm.copyReferential(self.mri_corrected, self.left_white_mesh)
+      context.write( "Smoothing mesh..." )
+      context.runProcess( 'meshSmooth', mesh=self.left_white_mesh,
+                          iterations=self.iterations,rate=self.rate )
+      tm.copyReferential(self.left_hemi_cortex, self.left_white_mesh)
 
   if self.Side in ('Right','Both'):
 
-      if os.path.exists(self.RGW_interface.fullName() + '.loc'):
-        context.write( "Right grey/white locked")
-      else:
-        context.write( "Detecting right grey/white interface..." )
-        if self.Use_ridges:
-          context.system( "VipHomotopicSnake", "-i", Rbraing, "-h",
-                        self.histo_analysis, "-o",
-                        self.RGW_interface, "-R",  self.white_ridges,
-                        "-w", "t" )
-        else:
-          context.system( "VipHomotopicSnake", "-i", Rbraing, "-h",
-                        self.histo_analysis, "-o",
-                        self.RGW_interface, "-w", "t" )
-          tm.copyReferential(self.mri_corrected, self.LGW_interface)
+    if os.path.exists(self.right_white_mesh.fullName() + '.loc'):
+      context.write( "Right Hemisphere White Mesh Locked")
+    else:
+      context.write("Reconstructing right hemisphere white surface...")
+      white = context.temporary( 'GIS Image' )
+      context.system( "VipSingleThreshold", "-i", self.right_hemi_cortex,
+                "-o", white, "-t", "0", "-c", "b", "-m",
+                "ne", "-w", "t" )
+      context.system( "AimsMeshWhite", "-i", white, "-o",
+                self.right_white_mesh )
+      del white
 
-      if self.Compute_mesh:
-        if os.path.exists(self.right_white_mesh.fullName() + '.loc'):
-            context.write( "Right Hemisphere White Mesh Locked")
-        else:
-            context.write("Reconstructing right hemisphere white surface...")
-            white = context.temporary( 'GIS Image' )  
-            context.system( "VipSingleThreshold", "-i", self.RGW_interface, 
-                      "-o", white, "-t", "0", "-c", "b", "-m",
-                      "ne", "-w", "t" )
-            context.system( "AimsMeshWhite", "-i", white, "-o", 
-                      self.right_white_mesh )
-            del white
+      context.write( "Smoothing mesh..." )
+      context.runProcess( 'meshSmooth', mesh=self.right_white_mesh,
+                          iterations=self.iterations,rate=self.rate )
+      tm.copyReferential(self.left_hemi_cortex, self.right_white_mesh)
 
-            context.write( "Smoothing mesh..." )
-            context.runProcess( 'meshSmooth', mesh=self.right_white_mesh,
-                                iterations=self.iterations,rate=self.rate )
-            tm.copyReferential(self.mri_corrected, self.right_white_mesh)
-
-
-  del Lbraing
-  del Rbraing
