@@ -70,10 +70,12 @@ def initialization( self ):
   self.brain_transparency = 0.5
 
 
-class UpdateActivation3D( QHBox ):
+class UpdateActivation3D( QWidget ):
   def __init__( self, values, context, parent ):
-    QHBox.__init__( self, parent )
+    QWidget.__init__( self, parent )
+    layout = QHBoxLayout( self )
     btn = QPushButton( 'Update', self )
+    layout.addWidget( btn )
     btn.setSizePolicy( QSizePolicy( QSizePolicy.Fixed, QSizePolicy.Fixed ) )
     self._context = context
     self._values = values

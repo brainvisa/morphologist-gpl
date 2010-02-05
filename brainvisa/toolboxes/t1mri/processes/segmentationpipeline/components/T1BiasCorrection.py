@@ -40,7 +40,7 @@ userLevel = 2
 signature = Signature(
   'mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.vipVolumeFormats ),
   'mri_corrected', WriteDiskItem( "T1 MRI Bias Corrected",
-      shfjGlobals.aimsWriteVolumeFormats ),
+      'Aims writable volume formats' ),
   'mode', Choice('write_minimal','write_all','delete_useless'),
   'write_field', Choice('yes','no'),
   'field', WriteDiskItem( "T1 MRI Bias Field",
