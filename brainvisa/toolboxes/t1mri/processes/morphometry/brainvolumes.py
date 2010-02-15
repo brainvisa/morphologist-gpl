@@ -41,21 +41,33 @@ signature = Signature(
 #  'right_grey_white', ReadDiskItem( 'Right Grey White Mask', 'GIS Image' ),
 #  'left_csf', WriteDiskItem( 'Left CSF Mask', 'GIS Image' ),
 #  'right_csf', WriteDiskItem( 'Right CSF Mask', 'GIS Image' ),
-   'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected', 'GIS Image'),
-   'LGW_interface', ReadDiskItem( 'Left Grey White Mask', 'GIS Image' ),
-   'RGW_interface', ReadDiskItem( 'Right Grey White Mask', 'GIS Image' ),
-   'LCSF_interface', WriteDiskItem( 'Left CSF Mask', 'GIS Image' ),
-   'RCSF_interface', WriteDiskItem( 'Right CSF Mask', 'GIS Image' ),
-   'output_prefix', String(),
+   'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
+       'AIMS readable volume formats'),
+   'LGW_interface', ReadDiskItem( 'Left Grey White Mask',
+       'AIMS readable volume formats' ),
+   'RGW_interface', ReadDiskItem( 'Right Grey White Mask',
+       'AIMS readable volume formats' ),
+   'LCSF_interface', WriteDiskItem( 'Left CSF Mask',
+       'AIMS writable volume formats' ),
+   'RCSF_interface', WriteDiskItem( 'Right CSF Mask',
+       'AIMS writable volume formats' ),
+   'volumes', WriteDiskItem( 'Data Table', 'Text Data Table' ),
 )
 
 def initialization( self ):
-   self.linkParameters( 'LGW_interface', 'mri_corrected' )
-   self.linkParameters( 'RGW_interface', 'mri_corrected' )
-   self.linkParameters( 'LCSF_interface', 'mri_corrected' )
-   self.linkParameters( 'RCSF_interface', 'mri_corrected' )
+  def linkvol( self, proc ):
+    if self.mri_corrected is not None:
+      subject = self.mri_corrected.get('subject')
+      return os.path.join( neuroConfig.temporaryDirectory,
+        'volumes_' + subject + '.dat' )
+    return None
+  self.linkParameters( 'LGW_interface', 'mri_corrected' )
+  self.linkParameters( 'RGW_interface', 'mri_corrected' )
+  self.linkParameters( 'LCSF_interface', 'mri_corrected' )
+  self.linkParameters( 'RCSF_interface', 'mri_corrected' )
+  self.linkParameters( 'volumes', 'mri_corrected', linkvol )
+  self.setOptional( 'volumes' )
 
-    
 
 def execution( self, context ):
     def massCenter( context, image ):
@@ -74,17 +86,14 @@ def execution( self, context ):
         o = r.search( output )
         return float( o.group(1) )
 
-    im1 = context.temporary( 'GIS image' )
+    im1 = context.temporary( 'NIFTI-1 image' )
     lres = {}
     rres = {}
     white = im1.fullPath()
 
     subject = self.LGW_interface.get('subject')
 
-    self.volumes= self.output_prefix + subject + '.dat'
-    context.write('Volumes file :' , self.volumes)
 
-    
     # white
     context.system( 'AimsThreshold', '-i', self.LGW_interface.fullPath(),
                     '-o', white, '-m', 'eq', '-t', '200' )
@@ -132,8 +141,7 @@ def execution( self, context ):
     context.write( 'Right CSF volume: ', rres[ 'LCR' ], '\n' )
 
     if self.volumes is not None:
-        f = open( self.volumes, 'w' )
-        #f = open( self.volumes, 'w' )
+        f = open( self.volumes.fullPath(), 'w' )
         res = { 'left' : lres, 'right' : rres }
         f.write( 'subject\tside\tmatter\tvolume\n' )
         rk = res.keys()
