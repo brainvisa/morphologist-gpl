@@ -55,7 +55,7 @@ def validation():
 
 class APCReader:
   def __init__( self, key ):
-    self._key = key + 'mm:'
+    self._key = key
     
   def __call__( self, values, process ):
     acp = None
@@ -64,12 +64,22 @@ class APCReader:
     #elif values.T1mri:
     #  acp = ReadDiskItem( 'Commissure coordinates','Commissure coordinates')\
     #    .findValue( values.T1mri )
+    result = None
+    key_mm = self._key + 'mm'
     if acp is not None and acp.isReadable():
       f = open( acp.fullPath() )
       for l in f.readlines():
-        if l[ :len(self._key) ] == self._key:
-          return map( float, string.split( l[ len(self._key)+1: ] ) )
-
+        l = l.split( ':', 1 )
+        if len(l) == 2 and l[0] == key_mm:
+          return [ float(i) for i in l[1].split() ]
+        if len(l) == 2 and l[0] == self._key and values.T1mri is not None:
+          vs = values.T1mri.get( 'voxel_size' )
+          if vs:
+            pos = l[1].split()
+            if len( pos ) == 3:
+              result = [ float(i) * j for i,j in zip( pos, vs ) ]
+    return result
+   
 def initialization( self ):
   def linknorm( values, process ):
     if values.T1mri and values.T1mri.get( 'normalized' ) == 'yes':
