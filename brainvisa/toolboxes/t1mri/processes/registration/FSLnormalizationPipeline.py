@@ -48,7 +48,7 @@ def validation():
     raise ValidationError( 'Normalization_FSL process is not available - either the fMRI toolbox is not installed, or FSL is not installed and in the PATH' )
   # the previous test seems not to be good enough...
   try:
-    di = ReadDiskItem( 'fMRI Template', ['NIFTI-1 image', 'gz compressed NIFTI-1 image'] )
+    di = ReadDiskItem( 'anatomical Template', ['NIFTI-1 image', 'gz compressed NIFTI-1 image'] )
   except ValueError:
     raise ValidationError( 'fMRI toolbox not present' )
 
@@ -58,8 +58,7 @@ signature = Signature(
   'transformation',
     WriteDiskItem( 'Transform Raw T1 MRI to Talairach-MNI template-SPM',
       'Transformation matrix' ),
-  # cannot use the type 'fMRI Template' here...
-  'template', ReadDiskItem( "3D Volume",
+  'template', ReadDiskItem( "anatomical Template",
     ['NIFTI-1 image', 'gz compressed NIFTI-1 image'] ),
   'alignment', Choice('Already Virtualy Aligned',
     'Not Aligned but Same Orientation', 'Incorrectly Oriented'),
@@ -86,10 +85,6 @@ def allowFlip( self, allow ):
     eNode.ReorientAnatomy.setSelected( self.allow_flip_initial_MRI )
 
 def initialization( self ):
-
-  # hack: put back the correct type now that we are sure the fmri toolbox is OK
-  self.signature[ 'template' ] = ReadDiskItem( "fMRI Template",
-  ['NIFTI-1 image', 'gz compressed NIFTI-1 image'] )
   eNode = SerialExecutionNode( self.name, parameterized=self )
 
   eNode.addChild( 'NormlalizeFSL',
@@ -118,7 +113,7 @@ def initialization( self ):
   eNode.ConvertFSLnormalizationToAIMS.removeLink( 'source_volume', 'read' )
   # fix registered_volume type
   eNode.ConvertFSLnormalizationToAIMS.signature[ 'registered_volume' ] = \
-    ReadDiskItem( "fMRI Template",
+    ReadDiskItem( "anatomical Template",
       ['NIFTI-1 image', 'gz compressed NIFTI-1 image'] )
 
   eNode.addLink( \

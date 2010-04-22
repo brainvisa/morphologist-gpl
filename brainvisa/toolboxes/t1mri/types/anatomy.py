@@ -167,7 +167,9 @@ FileType( 'Transform Raw T1 MRI to Talairach-AC/PC-Anatomist', 'Transformation m
 FileType( 'Transform Raw T1 MRI to Talairach-MNI template-SPM', 'Transformation matrix' )
 FileType( 'Transform Raw T1 MRI to Raw T1 MRI', 'Transformation matrix' )
 
-
+#--------------- Templates ------------------------
+FileType( 'anatomical Template', '3D Volume')
+FileType( 'anatomical Mask Template', '3D Volume')
 
 #----------- Obsololete registration ----------------------
 

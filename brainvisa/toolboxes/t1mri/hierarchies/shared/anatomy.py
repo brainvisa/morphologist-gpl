@@ -35,3 +35,13 @@ include( 'base' )
 insert( 'hemitemplate',
   "closed*", SetType( "Hemispheres Template" ), 
 )
+
+insert('',
+       'anatomical_templates', SetContent(
+    'MNI152_T1_1mm_brain', SetType('anatomical Template'), SetWeakAttr('Size', '1 mm'),
+    'MNI152_T1_2mm_brain', SetType('anatomical Template'), SetWeakAttr('Size', '2 mm'),
+    'MNI152_T1_1mm_brain_mask', SetType('anatomical Mask Template'), SetWeakAttr('Size', '1 mm'),
+    'MNI152_T1_2mm_brain_mask', SetType('anatomical Mask Template'), SetWeakAttr('Size', '2 mm'),
+    'MNI152_T1_3mm_brain_mask', SetType('anatomical Mask Template'), SetWeakAttr('Size', '3 mm'),
+    )
+)

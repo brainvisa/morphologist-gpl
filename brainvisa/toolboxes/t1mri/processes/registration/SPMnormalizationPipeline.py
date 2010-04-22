@@ -50,7 +50,7 @@ def validation():
     raise ValidationError( 'SPM Normalization process is not available - either the fMRI toolbox is not installed, or Matlab / SPM is not installed and in the PATH' )
   # the previous test seems not to be good enough...
   try:
-    di = ReadDiskItem( 'fMRI Template', ['NIFTI-1 image', 'gz compressed NIFTI-1 image', 'MINC image'] )
+    di = ReadDiskItem( 'anatomical Template', ['NIFTI-1 image', 'gz compressed NIFTI-1 image', 'MINC image'] )
   except ValueError:
     raise ValidationError( 'fMRI toolbox not present' )
 
@@ -59,8 +59,7 @@ signature = Signature(
   'transformation',
     WriteDiskItem( 'Transform Raw T1 MRI to Talairach-MNI template-SPM',
       'Transformation matrix' ),
-  # cannot use the type 'fMRI Template' here...
-  'template', ReadDiskItem( "3D Volume",
+  'template', ReadDiskItem( 'anatomical Template',
     ['NIFTI-1 image', 'gz compressed NIFTI-1 image', 'MINC image'] ),
   #'set_transformation_in_source_volume', Boolean(),
   'allow_flip_initial_MRI', Boolean(), 
@@ -101,9 +100,6 @@ def initialization( self ):
     if not trans:
       return None
     return trans[0]
-  # hack: put back the correct type now that we are sure the fmri toolbox is OK
-  self.signature[ 'template' ] = ReadDiskItem( "fMRI Template",
-  ['NIFTI-1 image', 'gz compressed NIFTI-1 image'] )
   eNode = SerialExecutionNode( self.name, parameterized=self )
 
   eNode.addChild( 'NormlalizeSPM',
