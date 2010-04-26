@@ -106,6 +106,7 @@ def execution( self, context ):
   for mf in _mniToACPC:
     m = aims.read( mf.fullPath() )
     mniToACPC *= m
+  mniToACPC = mniToACPC.inverse()
   t1toACPC = mniToACPC * t1toMni
   aims.write( t1toACPC, self.Talairach_transform.fullPath() )
   acpcReferential = trManager.referential(
