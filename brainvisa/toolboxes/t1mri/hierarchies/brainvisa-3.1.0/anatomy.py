@@ -33,6 +33,7 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 include( 'base' )
+import registration
 include( 'registration' )
 
 mesh_content = (
@@ -92,13 +93,15 @@ t1mri_content = (
       #      "r<subject>", SetType( 'Registered Raw T1 MRI with fMRI' ), SetWeakAttr( 'fMRI_register', 'Yes' ),
       #    "wr<subject>", SetType( 'Registered Raw T1 MRI with fMRI' ), SetWeakAttr( 'fMRI_register', 'Yes' ),
       'registration', SetContent(
+        'RawT1-<subject>_<acquisition>_TO_unknown_atlas_WITH_bal', SetType("baladin Transformation"),
         'RawT1-<subject>_<acquisition>', SetType( 'Referential of Raw T1 MRI' ),
         'RawT1-<subject>_<acquisition>_TO_Talairach-ACPC', SetType( 'Transform Raw T1 MRI to Talairach-AC/PC-Anatomist' ),
-        'RawT1-<subject>_<acquisition>_TO_Talairach-MNI', SetType( 'Transform Raw T1 MRI to Talairach-MNI template-SPM' ),
+        'RawT1-<subject>_<acquisition>_TO_Talairach-MNI', SetType( 'Transform Raw T1 MRI to Talairach-MNI template-SPM'), SetWeakAttr('destination_referential', str(registration.talairachMNIReferentialId)),
       ),
       "{analysis}", SetDefaultAttributeValue( 'analysis', default_analysis ), SetNonMandatoryKeyAttribute( 'analysis' ),
         SetContent( # processing results in analysis
           "nobias_<subject>", SetType( 'T1 MRI Bias Corrected' ),
+          "basis_fornobias_<subject>", SetType( 'T1 MRI Basis for Bias Computation' ),
           "biasfield_<subject>", SetType( 'T1 MRI Bias Field' ),
           "whiteridge_<subject>", SetType( 'T1 MRI White Matter Ridges' ),
           "variance_<subject>", SetType( 'T1 MRI Variance' ),

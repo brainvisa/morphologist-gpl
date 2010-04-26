@@ -52,7 +52,11 @@ loaded yet. But this validationDelayed method can be used later.
     spm = getProcess( 'SPMnormalizationPipeline' )
   except:
     spm = None
-  if not fsl and not spm:
+  try:
+    bal = getProcess( 'BaladinNormalizationPipeline' )
+  except:
+    bal = None
+  if not fsl and not spm and not bal:
     raise ValidationError( 'No normalization process could be found working' )
 
 signature = Signature(
@@ -72,6 +76,10 @@ def initialization( self ):
     spm = getProcess( 'SPMnormalizationPipeline' )
   except:
     spm = None
+  try:
+    bal = getProcess( 'BaladinNormalizationPipeline' )
+  except:
+    bal = None
 
   self.allow_flip_initial_MRI = False
 
@@ -104,6 +112,22 @@ def initialization( self ):
       'allow_flip_initial_MRI' )
     eNode.addLink( 'allow_flip_initial_MRI',
       'NormalizeSPM.allow_flip_initial_MRI' )
+
+  if bal:
+    eNode.addChild( 'NormalizeBaladin',
+      ProcessExecutionNode( 'BaladinNormalizationPipeline',
+        selected=(bal is None) ) )
+
+    eNode.addLink( 'NormalizeBaladin.t1mri', 't1mri' )
+    eNode.addLink( 't1mri', 'NormalizeBaladin.t1mri' )
+    eNode.addLink( 'NormalizeBaladin.transformation', 'transformation' )
+    eNode.addLink( 'transformation', 'NormalizeBaladin.transformation' )
+    eNode.addLink( 'NormalizeBaladin.allow_flip_initial_MRI',
+      'allow_flip_initial_MRI' )
+    eNode.addLink( 'allow_flip_initial_MRI',
+      'NormalizeBaladin.allow_flip_initial_MRI' )
+
+
 
   self.setExecutionNode( eNode )
 
