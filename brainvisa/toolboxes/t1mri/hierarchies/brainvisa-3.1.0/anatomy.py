@@ -101,7 +101,7 @@ t1mri_content = (
       "{analysis}", SetDefaultAttributeValue( 'analysis', default_analysis ), SetNonMandatoryKeyAttribute( 'analysis' ),
         SetContent( # processing results in analysis
           "nobias_<subject>", SetType( 'T1 MRI Bias Corrected' ),
-          "basis_fornobias_<subject>", SetType( 'T1 MRI Basis for Bias Computation' ),
+#          "basis_fornobias_<subject>", SetType( 'T1 MRI Basis for Bias Computation' ),
           "biasfield_<subject>", SetType( 'T1 MRI Bias Field' ),
           "whiteridge_<subject>", SetType( 'T1 MRI White Matter Ridges' ),
           "variance_<subject>", SetType( 'T1 MRI Variance' ),
