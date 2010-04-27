@@ -66,7 +66,6 @@ def initialization( self ):
 def execution( self, context ):
 	anat = self.anatomy_data.fullPath()
 	template = self.anatomical_template.fullPath()
-	#template = '/home/nfssrv/perrot/MNI152_T1_1mm.ima'
 	transformation = self.transformation_matrix.fullPath()
 	normanat = self.normalized_anatomy_data.fullPath()
 
@@ -80,28 +79,14 @@ def execution( self, context ):
 	# Baladin registration with some tuned values to work on a template.
 	context.system( 'baladin', '-ref', template_dim, '-flo', anat_dim,
 		'-res', normanat2, '-result-real-matrix', transformation,
-		'-transformation', 'affine', '-pyramid-levels' ,'4',
-		'-pyramid-finest-level', '1', '-max-iterations', '10' )
+		'-result-matrix', '/dev/null', '-transformation', 'affine',
+		'-pyramid-levels' ,'4', '-pyramid-finest-level', '1',
+		'-max-iterations', '10', '-command-line', '/dev/null')
 
 	if self.normalized_anatomy_data.format != 'GIS Image':
 		context.system( 'AimsFileConvert', '-i', normanat2,
 							'-o', normanat)
 
-	# FIXME : ca sert a quoi ?
-	# get image orientations in current formats
-#	srcatts = shfjGlobals.aimsVolumeAttributes( self.anatomy_data )
-#	srcs2m = srcatts.get( 'storage_to_memory', None )
-#	if srcs2m:
-#		self.transformation_matrix.setMinf(\
-#			'source_storage_to_memory', srcs2m )
-#	dstatts = shfjGlobals.aimsVolumeAttributes( self.anatomical_template )
-#	dsts2m = dstatts.get( 'storage_to_memory', None )
-#	if dsts2m:
-#		self.transformation_matrix.setMinf(\
-#			'destination_storage_to_memory', dsts2m )
-#	self.transformation_matrix.saveMinf()
-
-	# FIXME :
 	tm = registration.getTransformationManager()
 	tm.copyReferential(self.anatomical_template,
 			self.normalized_anatomy_data)
