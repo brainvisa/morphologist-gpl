@@ -133,16 +133,11 @@ def initialization( self ):
                                         optional = 1 ) )
 
 
-  reco = getProcess( 'recognitionGeneral' )
+  reco = getProcess('recognitionGeneral')
   if reco:
-    # these recognition processes are part of the sulci toolbox and are
-    # not necessarily present.
-    eNode2 = ProcessExecutionNode( 'recognitionGeneral', optional = 1 )
-    eNode3 = ProcessExecutionNode( 'recognitionGeneral', optional = 1 )
-    eNode1 = ParallelExecutionNode( 'SulciRecognition', optional = 1, selected=0  )
-    eNode1.addChild( 'LeftSulciRecognition', eNode2 )
-    eNode1.addChild( 'RightSulciRecognition', eNode3 )
-    eNode.addChild( 'SulciRecognition', eNode1 )
+    eNode.addChild('SulciRecognition',
+          ProcessExecutionNode('Sulci Recognition (both hemispheres)',
+						optional=1, selected=0))
 
   # links
 
@@ -427,15 +422,13 @@ def initialization( self ):
 
   if reco:
     eNode.addLink( 'SulciRecognition.LeftSulciRecognition.data_graph',
-                  'CorticalFoldsGraph.left_graph' )
+        'CorticalFoldsGraph.left_graph' )
     eNode.addLink( 'CorticalFoldsGraph.left_graph',
-                  'SulciRecognition.LeftSulciRecognition.data_graph' )
-  
+        'SulciRecognition.LeftSulciRecognition.data_graph' )
     eNode.addLink( 'SulciRecognition.RightSulciRecognition.data_graph',
-                  'CorticalFoldsGraph.right_graph' )
+        'CorticalFoldsGraph.right_graph' )
     eNode.addLink( 'CorticalFoldsGraph.right_graph',
-                  'SulciRecognition.RightSulciRecognition.data_graph' )
-
+        'SulciRecognition.RightSulciRecognition.data_graph' )
 
     eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_1.LeftCorticalFoldsGraph_3_1.side = 'Left'
     eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.side = 'Right'
