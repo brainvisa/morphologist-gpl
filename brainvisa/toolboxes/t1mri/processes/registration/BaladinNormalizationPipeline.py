@@ -79,6 +79,8 @@ def allowFlip( self, allow ):
     eNode.ReorientAnatomy.setSelected( self.allow_flip_initial_MRI )
 
 def initialization( self ):
+  self.linkParameters( 'transformation', 't1mri' )
+
   eNode = SerialExecutionNode( self.name, parameterized=self )
 
   eNode.addChild( 'NormalizeBaladin',
@@ -89,9 +91,6 @@ def initialization( self ):
                   ProcessExecutionNode( 'reorientAnatomy', optional=True,
                   selected=False ) )
 
-  # fix transformation_matrix type
-#  eNode.NormalizeBaladin.signature[ 'transformation_matrix' ] = \
-#    WriteDiskItem( 'Baladin transformation', 'Matlab file' )
   eNode.addLink( 'NormalizeBaladin.anatomy_data', 't1mri' )
   eNode.addLink( 't1mri', 'NormalizeBaladin.anatomy_data' )
   eNode.addLink( 'NormalizeBaladin.anatomical_template', 'template' )
