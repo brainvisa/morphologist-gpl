@@ -69,7 +69,7 @@ def initialization( self ):
     if proc.t1mri:
       import sys
       return ReadDiskItem( 'Referential of Raw T1 MRI', \
-			'Referential' ).findValue(self.t1mri, _debug=sys.stdout )
+			'Referential' ).findValue(self.t1mri )
     return None
   def linkNormRef( proc, param ):
     trManager = registration.getTransformationManager()
