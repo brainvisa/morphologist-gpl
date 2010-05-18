@@ -54,7 +54,25 @@ signature = Signature(
 
 # Default values
 def initialization( self ):
-  self.linkParameters( 'head_mask', 'histo_analysis' )
+  def linkMask( self, proc ):
+    p = self.signature[ 'head_mask' ]
+    if not self.histo_analysis:
+      if self.mri_corrected:
+        return p.findValue( self.mri_corrected )
+      return None
+    reqatt = {}
+    if self.mri_corrected:
+      format = self.mri_corrected.format
+      if format:
+        reqatt[ '_format' ] = set( [ format.name ] )
+    if reqatt:
+      x = p.findValue( self.histo_analysis, requiredAttributes=reqatt )
+    else:
+      x = p.findValue( self.histo_analysis )
+    return x
+
+  self.linkParameters( 'head_mask', ( 'histo_analysis', 'mri_corrected' ),
+    linkMask )
   self.linkParameters( 'head_mesh', 'head_mask' )
   self.linkParameters( 'histo_analysis', 'mri_corrected' )
   self.setOptional('first_slice')

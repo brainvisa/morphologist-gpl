@@ -50,6 +50,23 @@ signature = Signature(
 )
 
 def initialization( self ):
+  def linkMask( self, proc ):
+    p = self.signature[ 'brain_mask' ]
+    if not self.histo_analysis:
+      if self.mri_corrected:
+        return p.findValue( self.mri_corrected )
+      return None
+    reqatt = {}
+    if self.mri_corrected:
+      format = self.mri_corrected.format
+      if format:
+        reqatt[ '_format' ] = set( [ format.name ] )
+    if reqatt:
+      x = p.findValue( self.histo_analysis, requiredAttributes=reqatt )
+    else:
+      x = p.findValue( self.histo_analysis )
+    return x
+
   self.setOptional('white_ridges')
   self.setOptional('lesion_mask')
   self.setOptional('Commissure_coordinates')
@@ -109,7 +126,8 @@ def initialization( self ):
 
   # self links
 
-  self.linkParameters( 'brain_mask', 'histo_analysis' )
+  self.linkParameters( 'brain_mask', ( 'histo_analysis', 'mri_corrected' ),
+    linkMask )
   self.linkParameters( 'histo_analysis', 'mri_corrected' )
   self.linkParameters( 'Commissure_coordinates', 'mri_corrected' )
   self.linkParameters( 'white_ridges', 'mri_corrected' )
