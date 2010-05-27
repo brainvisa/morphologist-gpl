@@ -49,9 +49,7 @@ def validation():
 
 signature=Signature(
   'input', ReadDiskItem( 'Raw T1 MRI', 'Aims readable volume formats' ),
-  'output', WriteDiskItem( 'Brain Mask', 'Aims writable volume formats',
-    exactType = 1
-  ),
+  'output', WriteDiskItem( 'T1 Brain Mask', 'Aims writable volume formats', exactType=1),
   'copy_referential_of', ReadDiskItem( 'Raw T1 MRI',
     'Aims readable volume formats' ),
   'background_value', OpenChoice( 'minimum value' ),
@@ -79,7 +77,7 @@ def execution( self, context ):
     arr2 = numpy.array( vol2, copy=False )
   else:
     vol2 = vol
-    arr2 = arr
+    arr2 = numpy.array( vol, copy=False )
   arr = numpy.array( vol, copy=False )
   # set all values except background to 255
   arr2[ arr != bg ] = 255
