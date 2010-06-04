@@ -4,7 +4,7 @@ import shfjGlobals
 import qt, os
 from neuroProcesses import getProcessInstance
 
-name = 'Run Multiple Iterations'
+name = 'Ana Multiple Iterations'
 userLevel = 3
 
 
@@ -29,12 +29,17 @@ signature = Signature(
   )
 
 def getSelectedProcess( self ):
+    
+    if self.signature.has_key('values'):
+        self.__setattr__('values', None)
     selected_process = self.process
-    if selected_process is None:
-        selected_process = self.signature['process'].values[0][1]
+    #if selected_process is None:
+        #selected_process = self.signature['process'].values[0][1]
     print 'selected_process', selected_process, self.signature['process'].values[0][0]
     process = getProcessInstance(selected_process)
     return selected_process, process
+
+
 
 def updateParameters(self, data):
     print 'UPDATEPARAMETERS'
@@ -50,6 +55,7 @@ def updateParameters(self, data):
 
     # A REGLER
     #self.updateOtherParameters( data)
+    self.parameter = self.signature['parameter'].values[0][0]
     print 'END_UPDATEPARAMETERS'
     return self.process
     
@@ -61,8 +67,8 @@ def updateOtherParameters(self, data):
     
     iterable_parameters = self.signature['parameter'].values
     selected_parameter = self.parameter
-    if selected_parameter is None:
-        selected_parameter = iterable_parameters[0][1]
+    #if selected_parameter is None:
+        #selected_parameter = iterable_parameters[0][1]
     print "selected_parameter", selected_parameter
 
     signature = Signature( *paramSignature )
@@ -144,6 +150,7 @@ def initialization( self ):
     
     print 'INITIALIZATION'
     self.signature['process'].setChoices(*getProcessesList(processesList) )
+    self.process = self.signature['process'].values[0][0]
     self.addLink("process", "process", self.updateParameters)
     self.addLink(None, "parameter", self.updateOtherParameters)
     print 'END_INITIALIZATION'
@@ -151,63 +158,59 @@ def initialization( self ):
 
 def execution( self, context ):
     print 'EXECUTION'
+    
     selected_process, process = self.getSelectedProcess()
-    print selected_process
+    print "selected_process", selected_process
     keys = process.signature.keys()
     print "values", self.values
     print "writeitems", self.writeitems
+
     output_list = {}
     for value in self.values:
         output_list[value] = {}
         for each in self.writeitems:
-            
-            print "formats", process.signature[each].formats
+
             favorite_formats = ['GIS image']
             found = 0
             for format in favorite_formats:
                 if format in process.signature[each].formats :
                     output_list[value][each] = context.temporary( format )
+                    print 'output', value, each, output_list[value][each], 'format', format
                     found = 1
                     break
             if found == 0:
-                output_list[value][each] = context.temporary( process.signature[each].formats[0] )            
-            print output_list[value][each]
+                output_list[value][each] = context.temporary( process.signature[each].formats[0] )
+                print 'output', value, each, output_list[value][each], 'format', process.signature[each].formats[0]
     context.write(output_list)
     context.write(self.process)
     context.write(self.parameter)
 
-    
-
-    print "keys", keys
-    print "others", self.others
-    print "param", self.parameter
+    print 'keys', keys
+    print 'others', self.others
+    print 'selected_parameter', self.parameter
     processes = []
+
+    # UPDATING THE PARAMETERS WITH PROPER VALUES
+    print 'filling in parameters'
+    nom_du_process = process.name
     for value in self.values:
-        selected_process, process = self.getSelectedProcess()        
-        process.setValue(self.parameter, value)        
+        print 'value', value
+        processes.append(self.getSelectedProcess()[1])
+
+        processes[-1].name = "%s (%s=%s)"%(nom_du_process,self.parameter,str(value))
+        processes[-1].setValue(self.parameter, value)
         for other in self.others:
-            print self.__getattribute__(other)
             if self.__getattribute__(other) != None :
-                process.setValue( other, self.__getattribute__(other) )
+                print other, self.__getattribute__(other)
+                processes[-1].setValue( other, self.__getattribute__(other) )
         for each in self.writeitems:
-            process.setValue( each, output_list[value][each] )
-        processes.append(process)
-        
-        #for key in self.others:
-            #context.write(key)
-            #context.write(self.__getattribute__(key))
-            #process.setValue(key, self.__getattribute__(key))
-        #for each in self.writeitems:
-            #context.write(each)
-            #context.write(output_list[value][each])
-            #process.setValue(each, output_list[value][each])
-    
-        #context.write("Parameter %s fixed to %i"%(self.parameter, value))
-        #context.write(output_list[value])
-        #context.runProcess(process)
-    
-    iterationProcess = IterationProcess("test", processes)
-    showProcess(iterationProcess)
+            processes[-1].setValue( each, output_list[value][each] )
+
+    print 'end filling in parameters'
+    print processes
+    iterationProcess = IterationProcess(_t_('iteration'), processes)
+    print 'showProcess'
+    mainThreadActions().push( showProcess, iterationProcess )
 
     #while 1:
         #selected_output = self.writeitems[0]
