@@ -29,20 +29,20 @@ signature = Signature(
   )
 
 def getSelectedProcess( self ):
-    
-    if self.signature.has_key('values'):
-        self.__setattr__('values', None)
     selected_process = self.process
-    #if selected_process is None:
-        #selected_process = self.signature['process'].values[0][1]
     print 'selected_process', selected_process, self.signature['process'].values[0][0]
     process = getProcessInstance(selected_process)
     return selected_process, process
 
-
+def getSelectedProcessAndParameter( self ):
+    selected_process, process = self.getSelectedProcess()
+    name = self.parameter
+    type = process.signature[self.parameter].__class__.__name__
+    return type, name
 
 def updateParameters(self, data):
-    print 'UPDATEPARAMETERS'
+    #print 'UPDATEPARAMETERS'
+
     selected_process, process = self.getSelectedProcess()
     keys = process.signature.keys()
     filtered_keys = []
@@ -53,15 +53,15 @@ def updateParameters(self, data):
 
     self.signature['parameter'].setChoices(*filtered_keys)
 
-    # A REGLER
-    #self.updateOtherParameters( data)
     self.parameter = self.signature['parameter'].values[0][0]
-    print 'END_UPDATEPARAMETERS'
+    #print 'END_UPDATEPARAMETERS'
     return self.process
     
 
 def updateOtherParameters(self, data):
-    print 'UPDATEOTHERPARAMETERS'
+    #print 'UPDATEOTHERPARAMETERS'
+    if self.signature.has_key('values'):
+        self.__setattr__('values', None)
     paramSignature  =  [ 'process', Choice(*getProcessesList( processesList ) ),
         'parameter', Choice( )]
     
@@ -94,7 +94,7 @@ def updateOtherParameters(self, data):
                 others.append(each)
         elif class_key in [WriteDiskItem]:
             writeitems.append(each)
-            print 'writediskitem', each
+            #print 'writediskitem', each
 
     # OTHERS CONTIENT LES AUTRES PARAMETRES A SPECIFIER
     # WRITEITEMS CONTIENT LES WRITEDISKITEMS DU TRAITEMENT QU'IL FAUDRA DECLINER
@@ -124,12 +124,12 @@ def updateOtherParameters(self, data):
             assert(False)
 
     #CREATION DE LA NOUVELLE SIGNATURE
-    print 'paramSignature', paramSignature
+    #print 'paramSignature', paramSignature
     signature = Signature( *paramSignature )
-    print "others", others
+    #print "others", others
     self.others = others
     self.writeitems = writeitems
-    print "iterable_parameters", iterable_parameters
+    #print "iterable_parameters", iterable_parameters
     signature['parameter'] = Choice(*iterable_parameters)
     
 
@@ -139,31 +139,31 @@ def updateOtherParameters(self, data):
         else:
             signature['values'] = ListOf(class_param.__new__(class_param) )
     new_iterable_parameters = self.signature['parameter'].values
-    print "new_iterable_parameters", new_iterable_parameters
-    print "newsig", signature['parameter'].values
+    #print "new_iterable_parameters", new_iterable_parameters
+    #print "newsig", signature['parameter'].values
     
     self.changeSignature( signature )
-    print 'END_UPDATEOTHERPARAMETERS'
+    #print 'END_UPDATEOTHERPARAMETERS'
     
 
 def initialization( self ):
     
-    print 'INITIALIZATION'
+    #print 'INITIALIZATION'
     self.signature['process'].setChoices(*getProcessesList(processesList) )
     self.process = self.signature['process'].values[0][0]
     self.addLink("process", "process", self.updateParameters)
     self.addLink(None, "parameter", self.updateOtherParameters)
-    print 'END_INITIALIZATION'
+    #print 'END_INITIALIZATION'
     
 
 def execution( self, context ):
     print 'EXECUTION'
     
     selected_process, process = self.getSelectedProcess()
-    print "selected_process", selected_process
+    #print "selected_process", selected_process
     keys = process.signature.keys()
-    print "values", self.values
-    print "writeitems", self.writeitems
+    #print "values", self.values
+    #print "writeitems", self.writeitems
 
     output_list = {}
     for value in self.values:
@@ -185,16 +185,16 @@ def execution( self, context ):
     context.write(self.process)
     context.write(self.parameter)
 
-    print 'keys', keys
-    print 'others', self.others
-    print 'selected_parameter', self.parameter
+    #print 'keys', keys
+    #print 'others', self.others
+    #print 'selected_parameter', self.parameter
     processes = []
 
     # UPDATING THE PARAMETERS WITH PROPER VALUES
-    print 'filling in parameters'
+    #print 'filling in parameters'
     nom_du_process = process.name
     for value in self.values:
-        print 'value', value
+        #print 'value', value
         processes.append(self.getSelectedProcess()[1])
 
         processes[-1].name = "%s (%s=%s)"%(nom_du_process,self.parameter,str(value))
@@ -206,10 +206,10 @@ def execution( self, context ):
         for each in self.writeitems:
             processes[-1].setValue( each, output_list[value][each] )
 
-    print 'end filling in parameters'
+    #print 'end filling in parameters'
     print processes
     iterationProcess = IterationProcess(_t_('iteration'), processes)
-    print 'showProcess'
+    #print 'showProcess'
     mainThreadActions().push( showProcess, iterationProcess )
 
     #while 1:
