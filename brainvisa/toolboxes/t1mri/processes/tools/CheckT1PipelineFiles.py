@@ -1,11 +1,11 @@
 from neuroProcesses import *
-import shfjGlobals     
-import qt
+import shfjGlobals
 import numpy as np
 from neuroHierarchy import databases
 from soma import aims
-from brainvisa.wip.anacheck import neurostats as ns
-from brainvisa.wip.anacheck.CheckPipeline import DatabaseEnquirer
+# Yann: I cannot find anacheck module in t1mri sources. I added a comment because it raises an error when brainvisa starts.
+#from brainvisa.wip.anacheck import neurostats as ns
+#from brainvisa.wip.anacheck.CheckPipeline import DatabaseEnquirer
 
 
 types = {}
@@ -79,7 +79,7 @@ def computeVolumesAndCreateCSV(self, MRI, stats_file, files_report_path):
         'LW' : 'Left Hemisphere White Mesh', 'RW': 'Right Hemisphere White Mesh',
         'LH' : 'Left Hemisphere Mesh', 'RH' : 'Right Hemisphere Mesh'}
     #symbols = [ "RAW", "BIAS", "HIS", "MASK", "VORO", "LCG", "RCG", "LGW", "RGW",
-        "LW", "RW", "LH", "RH", "HEAD"]
+        #"LW", "RW", "LH", "RH", "HEAD"]
 
 
     files_infos = []

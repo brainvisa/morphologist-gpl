@@ -1,7 +1,6 @@
 from neuroProcesses import *
 from neuroProcessesGUI import *
-import shfjGlobals     
-import qt, os
+import shfjGlobals
 from neuroProcesses import getProcessInstance
 
 name = 'Ana Multiple Iterations'
