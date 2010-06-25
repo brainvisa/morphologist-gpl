@@ -67,7 +67,9 @@ def execution( self, context ):
     closedwhite )
   a = anatomist.Anatomist()
   # mask the white mesh with the eroded mask
-  fusion = context.runProcess( 'fusion3Dmesh', closedwhite, self.hemi_cortex,
+  #fusion = context.runProcess( 'fusion3Dmesh', closedwhite, self.hemi_cortex,
+  #  hulltex, 0 )
+  fusion = context.runProcess( 'fusion3Dmesh', closedwhite, self.white_mesh,
     hulltex, 0 )
   # wait for synchronous completion from Anatomist
   a = anatomist.Anatomist()
