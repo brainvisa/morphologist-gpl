@@ -138,6 +138,9 @@ FileType( 'SPM segmentation parameters', 'SPM2 parameters', 'XML' )
 # defined in axon/registration
 #FileType( 'SPM Transformation Parameters', 'Any Type', 'Matlab file' )
 
+FileType( 'Lesion Mask', '3D Volume' )
+FileType( 'Lesion distance map', '3D Volume' )
+
 #----------------- Graphs -------------------------
 
 FileType( 'Cortical folds graph', 'Data graph' )
