@@ -161,6 +161,7 @@ graph_content = (
     "R<subject>AutoWorst", SetType( 'Parallel Labelled Cortical folds graph' ), SetWeakAttr( 'side', 'right', 'labelled', 'Yes', 'manually_labelled', 'No', 'automatically_labelled', 'Yes', 'warped_to_vishnu', 'No', 'parallel_recognition', 'Worst'),
     "<subject>_Rwhite_primal",SetType( 'Primal Sketch' ),SetWeakAttr( 'side', 'right' ),
     "<subject>_Lwhite_primal",SetType( 'Primal Sketch' ),SetWeakAttr( 'side', 'left' ),
+
     "<subject>_Rwhite_GLB",SetType( 'Grey Level Blob Graph' ),SetWeakAttr( 'side', 'right' ),
     "<subject>_Lwhite_GLB",SetType( 'Grey Level Blob Graph' ),SetWeakAttr( 'side', 'left' ),
     "<subject>_Rgyri",SetType( 'Gyri Graph' ),SetWeakAttr( 'side', 'right' ),
