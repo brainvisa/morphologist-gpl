@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Copyright CEA and IFR 49 (2000-2005)
 #
 #  This software and supporting documentation were developed by
@@ -122,6 +123,10 @@ t1mri_content = (
             "{graph_version}", SetDefaultAttributeValue( 'graph_version', default_graph_version ), SetContent(
             "L<subject>", SetType( 'Left Cortical folds graph' ), SetWeakAttr( 'side', 'left', 'labelled', 'No', 'manually_labelled', 'No', 'automatically_labelled', 'No',  ),
             "R<subject>", SetType( 'Right Cortical folds graph' ), SetWeakAttr( 'side', 'right',  'labelled', 'No' ),
+            "Lsulcivoronoi_<subject>", SetType( 'Sulci Voronoi' ),
+              SetWeakAttr( 'side', 'left' ),
+            "Rsulcivoronoi_<subject>", SetType( 'Sulci Voronoi' ),
+              SetWeakAttr( 'side', 'right' ),
             )
          ),
 

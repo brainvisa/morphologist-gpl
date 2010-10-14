@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Copyright CEA and IFR 49 (2000-2005)
 #
 #  This software and supporting documentation were developed by
@@ -141,8 +142,9 @@ FileType( 'SPM segmentation parameters', 'SPM2 parameters', 'XML' )
 # defined in axon/registration
 #FileType( 'SPM Transformation Parameters', 'Any Type', 'Matlab file' )
 
-FileType( 'Lesion Mask', '3D Volume' )
+FileType( 'Lesion Mask', 'Label Volume' )
 FileType( 'Lesion distance map', '3D Volume' )
+FileType( 'Sulci Voronoi', 'Label Volume' )
 
 #----------------- Graphs -------------------------
 

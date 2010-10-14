@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -6,9 +7,9 @@
 #
 # This software is governed by the CeCILL license version 2 under
 # French law and abiding by the rules of distribution of free software.
-# You can  use, modify and/or redistribute the software under the 
+# You can  use, modify and/or redistribute the software under the
 # terms of the CeCILL license version 2 as circulated by CEA, CNRS
-# and INRIA at the following URL "http://www.cecill.info". 
+# and INRIA at the following URL "http://www.cecill.info".
 #
 # As a counterpart to the access to the source code and  rights to copy,
 # modify and redistribute granted by the license, users are provided only
@@ -23,8 +24,8 @@
 # therefore means  that it is reserved for developers  and  experienced
 # professionals having in-depth computer knowledge. Users are therefore
 # encouraged to load and test the software's suitability as regards their
-# requirements in conditions enabling the security of their systems and/or 
-# data to be ensured and,  more generally, to use and operate it in the 
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
 # same conditions as regards security.
 #
 # The fact that you are presently reading this means that you have had
@@ -37,8 +38,8 @@ include( 'registration' )
 anatomy_content = (
 #    "<subject>_TO_talairach", SetType( 'Transformation matrix' ),# SetWeakAttr( 'from', '%<subject>', 'to', 'Talairach' ),
 #    'talairach_TO_<subject>', SetType( 'Transformation matrix' ),# SetWeakAttr( 'from', 'Talairach', 'to', '%<subject>' ),
-#    '<subject>_TO_spm_template', SetType( 'Transformation matrix' ),# SetWeakAttr( 'from', '%<subject>', 'to', 'spm_template' ), 
-#    "spm_template_TO_<subject>", SetType( 'Transformation matrix' ),# SetWeakAttr( 'from', 'spm_template', 'to', '%<subject>' ), 
+#    '<subject>_TO_spm_template', SetType( 'Transformation matrix' ),# SetWeakAttr( 'from', '%<subject>', 'to', 'spm_template' ),
+#    "spm_template_TO_<subject>", SetType( 'Transformation matrix' ),# SetWeakAttr( 'from', 'spm_template', 'to', '%<subject>' ),
     "<subject>", SetType( 'Raw T1 MRI' ), SetWeakAttr( 'spm_normalized', 'no' ), SetWeakAttr( 'fMRI_register', 'No' ), SetPriorityOffset( +1 ),
     "r<subject>", SetType( 'Registered Raw T1 MRI with fMRI' ), SetWeakAttr( 'fMRI_register', 'Yes' ),
     "<subject>_t2", SetType( 'T2 MRI' ),
@@ -71,7 +72,7 @@ segment_content = (
     "LSulci_<subject>", SetType( 'Left Sulci Volume' ), SetWeakAttr( 'side', 'left'),
     "RSulci_<subject>", SetType( 'Right Sulci Volume' ), SetWeakAttr( 'side', 'right'),
     "LBottom_<subject>", SetType( 'Left Bottom Volume' ), SetWeakAttr( 'side', 'left'),
-    "RBottom_<subject>", SetType( 'Right Bottom Volume' ), SetWeakAttr( 'side', 'right'),  
+    "RBottom_<subject>", SetType( 'Right Bottom Volume' ), SetWeakAttr( 'side', 'right'),
     "LHullJunction_<subject>", SetType( 'Left Hull Junction Volume' ), SetWeakAttr( 'side', 'left'),
     "LSimpleSurface_<subject>", SetType( 'Right Simple Surface Volume' ), SetWeakAttr( 'side', 'left'),
     "RHullJunction_<subject>", SetType( 'Left Hull Junction Volume' ), SetWeakAttr( 'side', 'right'),
@@ -81,7 +82,7 @@ segment_content = (
     "unflip_<subject>",SetType( 'Display BIC drawing' ), SetWeakAttr( 'side', 'both' ),
     "FCMunflip_<subject>",SetType( 'Anatomist BIC drawing' ), SetWeakAttr( 'side', 'both' ),
     "brain_<subject>", SetType( 'T1 Brain Mask' ), SetWeakAttr( 'side', 'both' ),
-    "brain_<subject>_*", SetType( 'T1 Brain Mask' ),SetWeakAttr( 'side', 'both' ), 
+    "brain_<subject>_*", SetType( 'T1 Brain Mask' ),SetWeakAttr( 'side', 'both' ),
     "Rgrey_white_<subject>", SetType( 'Right Grey White Mask' ), SetWeakAttr( 'side', 'right' ),
     "Rgrey_white_<subject>_*", SetType( 'Right Grey White Mask' ), SetWeakAttr( 'side', 'right' ),
     "Lgrey_white_<subject>", SetType( 'Left Grey White Mask' ), SetWeakAttr( 'side', 'left' ),
@@ -106,7 +107,7 @@ segment_content = (
     "Lroots_<subject>_*", SetType( 'Left Cortex Catchment Bassins' ), SetWeakAttr( 'side', 'left' ),
     "Rroots_<subject>", SetType( 'Right Cortex Catchment Bassins' ), SetWeakAttr( 'side', 'right' ),
     "Rroots_<subject>_*", SetType( 'Right Cortex Catchment Bassins' ), SetWeakAttr( 'side', 'right' ),
-    "voronoi_<subject>", SetType( 'Voronoi Diagram' ), SetWeakAttr( 'side', 'both' ),  
+    "voronoi_<subject>", SetType( 'Voronoi Diagram' ), SetWeakAttr( 'side', 'both' ),
     "voronoi_<subject>_*", SetType( 'Voronoi Diagram' ), SetWeakAttr( 'side', 'both' ),
     "<subject>_Lwhite_curv", SetType( 'White Curvature Texture' ), SetWeakAttr( 'side', 'left' ),
     "<subject>_Rwhite_curv", SetType( 'White Curvature Texture' ), SetWeakAttr( 'side', 'right' ),
@@ -120,7 +121,7 @@ segment_content = (
     "<subject>_Rwhite_gyri", SetType( 'Gyri White Volume' ), SetWeakAttr( 'side', 'right' ),
     "<subject>_Lsulci_patch", SetType( 'Sulci White Volume Patch' ), SetWeakAttr( 'side', 'left' ),
     "<subject>_Rsulci_patch", SetType( 'Sulci White Volume Patch' ), SetWeakAttr( 'side', 'right' ),
-    "head_<subject>", SetType( "Head Mask" ), 
+    "head_<subject>", SetType( "Head Mask" ),
 )
 
 
@@ -173,6 +174,10 @@ graph_content = (
     "<subject>_left_sulci_to_texture",SetType( 'Sulci To White Texture Translation' ),SetWeakAttr( 'side', 'left' ),
     "<subject>_right_sulci_to_texture",SetType( 'Sulci To White Texture Translation' ),SetWeakAttr( 'side', 'right' ),
     "<subject>_boundingbox_points",SetType('Bounding Box Points'),
+    "Lsulcivoronoi_<subject>", SetType( 'Sulci Voronoi' ),
+      SetWeakAttr( 'side', 'left' ),
+    "Rsulcivoronoi_<subject>", SetType( 'Sulci Voronoi' ),
+      SetWeakAttr( 'side', 'right' ),
     '{sulci_recognition_session}', SetContent(
       "L<subject>Auto_<sulci_recognition_session>", SetType( 'Labelled Cortical folds graph' ),
         SetWeakAttr( 'side', 'left', 'labelled', 'Yes', 'manually_labelled', 'No', 'automatically_labelled', 'Yes', 'warped_to_vishnu', 'No',
@@ -192,7 +197,7 @@ deepnuclei_content = (
 
 
 insert( '{protocol}/{subject}',
-  'anatomy', SetWeakAttr( 'acquisition', '' ), 
+  'anatomy', SetWeakAttr( 'acquisition', '' ),
     apply( SetContent, anatomy_content + ( '{acquisition}', apply( SetContent, anatomy_content ), ) ),
   'segment', SetWeakAttr( 'acquisition', '' ),
     apply( SetContent, segment_content + ( '{acquisition}', apply( SetContent, segment_content ), ) ),

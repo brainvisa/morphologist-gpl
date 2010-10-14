@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -6,9 +7,9 @@
 #
 # This software is governed by the CeCILL license version 2 under
 # French law and abiding by the rules of distribution of free software.
-# You can  use, modify and/or redistribute the software under the 
+# You can  use, modify and/or redistribute the software under the
 # terms of the CeCILL license version 2 as circulated by CEA, CNRS
-# and INRIA at the following URL "http://www.cecill.info". 
+# and INRIA at the following URL "http://www.cecill.info".
 #
 # As a counterpart to the access to the source code and  rights to copy,
 # modify and redistribute granted by the license, users are provided only
@@ -23,8 +24,8 @@
 # therefore means  that it is reserved for developers  and  experienced
 # professionals having in-depth computer knowledge. Users are therefore
 # encouraged to load and test the software's suitability as regards their
-# requirements in conditions enabling the security of their systems and/or 
-# data to be ensured and,  more generally, to use and operate it in the 
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
 # same conditions as regards security.
 #
 # The fact that you are presently reading this means that you have had
@@ -47,7 +48,7 @@ signature = Signature(
                                           'Commissure coordinates'),
   'Talairach_transform',
   ReadDiskItem( 'Transform Raw T1 MRI to Talairach-AC/PC-Anatomist',
-                'Transformation matrix' ), 
+                'Transformation matrix' ),
   'compute_fold_meshes', Boolean(),
   'allow_multithreading', Boolean(),
  )
@@ -70,14 +71,28 @@ def initialization( self ):
   self.setOptional( 'commissure_coordinates' )
 
   eNode = SerialExecutionNode( self.name, parameterized = self )
+  eNode.addChild( 'SulciVoronoi',
+                   ProcessExecutionNode( 'SulciVoronoi', optional = 1 ) )
   eNode.addChild( 'CorticalFoldsGraphThickness',
                    ProcessExecutionNode( 'CorticalFoldsGraphThickness',
                    optional = 1 ) )
+  eNode.CorticalFoldsGraphThickness.clearLinksTo( 'hemi_cortex' )
   eNode.CorticalFoldsGraphThickness.clearLinksTo( 'output_graph' )
+  eNode.CorticalFoldsGraphThickness.clearLinksTo( 'sulci_voronoi' )
+  eNode.addLink( 'SulciVoronoi.graph', 'graph' )
+  eNode.addLink( 'graph', 'SulciVoronoi.graph' )
+  eNode.addLink( 'SulciVoronoi.hemi_cortex',
+    'CorticalFoldsGraphThickness.hemi_cortex' )
+  eNode.addLink( 'CorticalFoldsGraphThickness.hemi_cortex',
+    'SulciVoronoi.hemi_cortex' )
   eNode.addLink( 'CorticalFoldsGraphThickness.graph', 'graph' )
   eNode.addLink( 'graph', 'CorticalFoldsGraphThickness.graph' )
   eNode.addLink( 'CorticalFoldsGraphThickness.output_graph', 'graph' )
   eNode.addLink( 'graph', 'CorticalFoldsGraphThickness.output_graph' )
+  eNode.addLink( 'SulciVoronoi.sulci_voronoi',
+    'CorticalFoldsGraphThickness.sulci_voronoi' )
+  eNode.addLink( 'CorticalFoldsGraphThickness.sulci_voronoi',
+    'SulciVoronoi.sulci_voronoi' )
   self.setExecutionNode( eNode )
 
 def execution( self, context ):

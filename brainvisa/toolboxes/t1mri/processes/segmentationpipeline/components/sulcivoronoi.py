@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -35,44 +36,24 @@ from neuroProcesses import *
 from soma.path import find_in_path
 import shfjGlobals
 
-name = 'Cortical Fold Graph Thickness and Volumes'
-userLevel = 2
+name = 'Sulci Voronoi'
+userLevel = 0
 
 
 signature = Signature(
   'graph', ReadDiskItem( 'Cortical folds graph', 'Graph'),
   'hemi_cortex', ReadDiskItem( 'CSF+GREY Mask',
       'Aims readable volume formats' ),
-  'GW_interface', ReadDiskItem( 'Grey White Mask',
-      'Aims readable volume formats' ),
-  'white_mesh', ReadDiskItem( 'Hemisphere White Mesh', 'Aims mesh formats' ),
-  'hemi_mesh', ReadDiskItem( 'Hemisphere Mesh', 'Aims mesh formats'),
-  'output_graph', WriteDiskItem ( 'Cortical folds graph', 'Graph'),
-  'write_mid_interface', Boolean(),
-  'output_mid_interface', WriteDiskItem ( 'Grey White Mid-Interface Volume',
+  'sulci_voronoi', WriteDiskItem ( 'Sulci Voronoi',
       'Aims writable volume formats' ),
-  'sulci_voronoi', ReadDiskItem ( 'Sulci Voronoi',
-    'Aims writable volume formats' ),
 )
+
 
 def initialization( self ):
   self.linkParameters( 'hemi_cortex', 'graph' )
-  self.linkParameters( 'GW_interface', 'hemi_cortex' )
-  self.linkParameters( 'white_mesh', 'hemi_cortex' )
-  self.linkParameters( 'hemi_mesh', 'white_mesh' )
-  self.linkParameters( 'output_graph', 'graph' )
-  self.linkParameters( 'output_mid_interface', 'hemi_cortex' )
-  self.setOptional( 'output_mid_interface' )
   self.linkParameters( 'sulci_voronoi', 'graph' )
-  self.write_mid_interface = False
-  self.setOptional( 'sulci_voronoi' )
 
 
 def execution( self, context ):
-  cmd = [ 'python', find_in_path( 'AimsFoldsGraphThickness.py' ),
-    '-i', self.graph, '-c', self.hemi_cortex, '-g', self.GW_interface,
-    '-w', self.white_mesh, '-l', self.hemi_mesh, '-o', self.output_graph,
-    '-m', self.output_mid_interface ]
-  if self.sulci_voronoi is not None:
-    cmd += [ '-v', self.sulci_voronoi ]
-  context.system( *cmd )
+  context.system( 'python', find_in_path( 'AimsSulciVoronoi.py' ),
+    '-f', self.graph, '-g', self.hemi_cortex, '-o', self.sulci_voronoi )
