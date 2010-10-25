@@ -11,6 +11,10 @@
             <none name="name"/>
           </f>
           <f type="ProcessTree.Leaf">
+            <s name="id">ImportT1MRI_Dicom</s>
+            <none name="name"/>
+          </f>
+          <f type="ProcessTree.Leaf">
             <s name="id">ImportBruker_rawT1MRI</s>
             <none name="name"/>
           </f>
