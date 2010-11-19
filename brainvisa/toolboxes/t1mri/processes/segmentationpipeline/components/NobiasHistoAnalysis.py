@@ -40,14 +40,14 @@ signature = Signature(
   'histo_analysis', WriteDiskItem( 'Histo Analysis', 'Histo Analysis' ),
   'hfiltered', ReadDiskItem( "T1 MRI Filtered For Histo", 'Aims readable volume formats' ),
   'white_ridges', ReadDiskItem( "T1 MRI White Matter Ridges",   'Aims readable volume formats' ),
-  'undersampling', Choice('2', '4', '8', '16', '32', 'auto')
+  'undersampling', Choice('2', '4', '8', '16', '32', 'auto', 'iteration' )
 )
 
 def initialization( self ):
   self.linkParameters( 'histo_analysis', 'mri_corrected' )
   self.linkParameters( 'hfiltered', 'mri_corrected' )
   self.linkParameters( 'white_ridges', 'mri_corrected' )
-  self.undersampling='auto'
+  self.undersampling='iteration'
 
 
 def execution( self, context ):
@@ -55,4 +55,8 @@ def execution( self, context ):
     context.write(self.histo_analysis.fullName(), '.han has been locked')
     context.write('Remove',self.histo_analysis.fullName(),'.han.loc if you want to trigger automated analysis')
   else:
-    context.system( 'VipHistoAnalysis', '-i',  self.mri_corrected.fullPath(), '-o',self.histo_analysis.fullPath(), '-Save', 'y', '-mode', 'a', '-u', self.undersampling, '-Mask', self.hfiltered.fullPath(), '-Ridge', self.white_ridges.fullPath())
+    if self.undersampling == 'iteration':
+      context.system( 'VipHistoAnalysis', '-i', self.mri_corrected.fullPath(), '-o', self.histo_analysis.fullPath(), '-S', 'y', '-m', 'i', 
+        '-Mask', self.hfiltered.fullPath(), '-Ridge', self.white_ridges.fullPath() )
+    else:
+      context.system( 'VipHistoAnalysis', '-i',  self.mri_corrected.fullPath(), '-o',self.histo_analysis.fullPath(), '-Save', 'y', '-mode', 'a', '-u', self.undersampling, '-Mask', self.hfiltered.fullPath(), '-Ridge', self.white_ridges.fullPath())

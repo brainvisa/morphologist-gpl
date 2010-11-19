@@ -48,18 +48,22 @@ signature = Signature(
                     "Robust + (iterative erosion)",
                     "Robust + (selected erosion)",
                     "Robust + (iterative erosion) without regularisation",
-                    "Fast (selected erosion)"),
-  'erosion_size', Choice("1","1.5","2","2.5","3","3.5","4"),
+                    "Fast (selected erosion)",
+                    "2010" ),
+  'erosion_size', OpenChoice( 1, 1.5, 1.8, 2, 2.5, 3, 3.5 ,4 ),
   'visu', Choice("No","Yes"),
   'white_ridges', ReadDiskItem( "T1 MRI White Matter Ridges",
       shfjGlobals.aimsVolumeFormats ),
   'Commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
       'Commissure coordinates'),
+  'variance', ReadDiskItem( "T1 MRI Variance", shfjGlobals.aimsVolumeFormats ),
+  'edges', ReadDiskItem( "T1 MRI Edges", shfjGlobals.aimsVolumeFormats ),
   'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
   'lesion_mask', ReadDiskItem( 'Lesion Mask', shfjGlobals.vipVolumeFormats ),
   'layer', Choice("0","1","2","3","4","5"),
   'first_slice', Integer(),
   'last_slice', Integer(),
+  'variance_threshold', Integer(),
 )
 
 def initialization( self ):
@@ -67,17 +71,20 @@ def initialization( self ):
   self.linkParameters( 'histo_analysis', 'mri_corrected' )
   self.linkParameters( 'brain_mask', 'mri_corrected' )
   self.linkParameters( 'white_ridges', 'mri_corrected' )
-  self.erosion_size = 2
+  self.linkParameters( 'variance', 'mri_corrected' )
+  self.linkParameters( 'edges', 'mri_corrected' )
+  self.erosion_size = 1.8
   self.first_slice = 0
   self.last_slice = 0
   self.setOptional('white_ridges')
   self.setOptional('lesion_mask')
   self.setOptional('Commissure_coordinates')
   self.linkParameters( 'Commissure_coordinates', 'mri_corrected' )
-  self.variant = "Standard + (iterative erosion)"
+  self.variant = "2010"
   self.visu = "No"
   self.layer = "0"
-
+  self.variance_threshold = 14
+ 
 def execution( self, context ):
   if os.path.exists(self.brain_mask.fullName() + '.loc'):
       context.write(self.brain_mask.fullName(), ' has been locked')
@@ -105,6 +112,9 @@ def execution( self, context ):
         call_list = ['-m', "Robust",'-niter', 0]
       elif self.variant == "Fast (selected erosion)":
         call_list = ['-m', "fast"]
+      elif self.variant == "2010":
+        call_list = [ '-m', "V" ]
+        constant_list += [ '-vthreshold', self.variance_threshold, '-Variancename', self.variance.fullPath(), '-Edgesname', self.edges.fullPath() ]
       else:
         raise RuntimeError( _t_( 'Variant <em>%s</em> not implemented' ) % self.variant )
       result = []

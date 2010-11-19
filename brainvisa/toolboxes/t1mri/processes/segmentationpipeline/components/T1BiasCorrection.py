@@ -84,9 +84,9 @@ def initialization( self ):
   self.write_wridges = 'yes'
   self.write_field = 'no'
   self.write_hfiltered = 'yes'
-  self.write_variance = 'no'
+  self.write_variance = 'yes'
   self.write_meancurvature = 'no'
-  self.write_edges = 'no'
+  self.write_edges = 'yes'
   self.field_rigidity = 20
   self.sampling = 16 
   self.ngrid = 2
