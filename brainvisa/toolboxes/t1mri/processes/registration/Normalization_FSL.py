@@ -34,23 +34,37 @@ from neuroProcesses import *
 import shfjGlobals
 import registration
 import os
-try:
-  from neurospy.bvfunc import FSL_pre_processing
-  nipyok=1
-except:
-  nipyok=0
-
+import commands
 
 def validation():
   import distutils.spawn
   if not distutils.spawn.find_executable( 'flirt' ):
     raise ValidationError(_t_('FSL flirt commandline could not be found'))
-  if not nipyok:
-    raise ValidationError(_t_('FSL_pre_processing could not be loaded'))
-  return 0
 
-name = 'Step 3 : Anatomy Normalization (using FSL)'
+name = 'Anatomy Normalization (using FSL)'
 userLevel = 0
+
+# copied from fmri python/neurospy/bvfunc/FSL_pre_processing.py
+def NormalizeAnat(anat, templatet1, normAnat, norm_matrix, searcht1="NASO"):
+    """
+    Form the normalization of anatomical images using FSL
+    """
+    if searcht1 == "AVA":
+        s1 = "-searchrx -0 0 -searchry -0 0 -searchrz -0 0"
+    elif (searcht1 == "NASO"):
+        s1 = "-searchrx -90 90 -searchry -90 90 -searchrz -90 90"
+    elif (searcht1 == "IO"):
+        s1 = "-searchrx -180 180 -searchry -180 180 -searchrz -180 180"
+    else:
+        s1 = ""
+    if normAnat is not None:
+      s1 += " -out '%s'" % normAnat
+    print "T1 MRI on Template\n"
+    print commands.getoutput("flirt -in '%s' -ref '%s' -omat '%s' \
+    -bins 1024 -cost corratio %s -dof 12" \
+                             % (anat, templatet1, norm_matrix, s1) )
+    print "Finished"
+
 
 signature = Signature(
   'anatomy_data', ReadDiskItem( "Raw T1 MRI", ['NIFTI-1 image', 'gz compressed NIFTI-1 image']),
@@ -85,7 +99,7 @@ def execution( self, context ):
     s1 = 'NASO'
   elif self.Alignment == 'Incorrectly Oriented':
     s1 = 'IO'
-  FSL_pre_processing.NormalizeAnat(anat, template, normanat, snmat, s1)
+  NormalizeAnat(anat, template, normanat, snmat, s1)
   # get image orientations in current formats
   srcatts = shfjGlobals.aimsVolumeAttributes( self.anatomy_data )
   srcs2m = srcatts.get( 'storage_to_memory', None )
