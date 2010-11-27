@@ -43,7 +43,7 @@ def validation():
     if not distutils.spawn.find_executable( 'matlab' ):
         raise ValidationError( 'matlab is not found' )
 
-name = 'Step 4 : Anatomy Normalization (using SPM)'
+name = 'Anatomy Normalization (using SPM)'
 userLevel = 0
 
 signature = Signature(

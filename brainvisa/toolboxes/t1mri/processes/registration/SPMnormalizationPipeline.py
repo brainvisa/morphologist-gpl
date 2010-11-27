@@ -45,9 +45,9 @@ def validation():
     from soma import aims
   except:
     raise ValidationError( 'aims module not here' )
-  p = getProcess( 'Normalization' )
+  p = getProcess( 'Normalization_SPM' )
   if not p:
-    raise ValidationError( 'SPM Normalization process is not available - either the fMRI toolbox is not installed, or Matlab / SPM is not installed and in the PATH' )
+    raise ValidationError( 'SPM Normalization process is not available, Matlab / SPM is not installed and in the PATH' )
   # the previous test seems not to be good enough...
   try:
     di = ReadDiskItem( 'anatomical Template', ['NIFTI-1 image', 'gz compressed NIFTI-1 image', 'MINC image'] )
@@ -103,7 +103,7 @@ def initialization( self ):
   eNode = SerialExecutionNode( self.name, parameterized=self )
 
   eNode.addChild( 'NormlalizeSPM',
-                  ProcessExecutionNode( 'Normalization' ) )
+                  ProcessExecutionNode( 'Normalization_SPM' ) )
   eNode.addChild( 'ConvertSPMnormalizationToAIMS',
                   ProcessExecutionNode( 'SPMsn3dToAims' ) )
   eNode.addChild( 'ReorientAnatomy',
