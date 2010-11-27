@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<minf expander="minf_2.0">
+<d>
+  <d name="en">
+    <xhtml name="short">Normalization of the  the anatomical image.</xhtml>
+    <d name="parameters">
+      <xhtml name="transformation_matrix">The resulting transformation matrix</xhtml>
+      <xhtml name="Alignment">The type of alignment between the anatomical image and the template</xhtml>
+      <xhtml name="anatomical_template">The anatomical reference template (choose from our database)</xhtml>
+      <xhtml name="anatomy_data">The anatomical data to normalise</xhtml>
+      <xhtml name="normalized_anatomy_data">The resulting normalised image</xhtml>
+    </d>
+    <xhtml name="long"/>
+  </d>
+</d>
+</minf>
