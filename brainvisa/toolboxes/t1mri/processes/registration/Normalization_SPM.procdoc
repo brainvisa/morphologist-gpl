@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<minf expander="minf_2.0">
+<d>
+  <d name="en">
+    <xhtml name="short">BE CAREFUL : This process can not be iterated. It is constructed to launch the correction for all images successively.</xhtml>
+    <d name="parameters">
+      <xhtml name="anatomy_data">The anatomical data to normalize</xhtml>
+      <xhtml name="transformations_informations">The resulting transformation writen by SPM 5</xhtml>
+      <xhtml name="job_file">The Matlab file containing the SPM5 job that will be launched</xhtml>
+      <xhtml name="voxel_size">The size of each voxel of the volume</xhtml>
+      <xhtml name="nbiteration">The number of iteration for the normalization </xhtml>
+      <xhtml name="cutoff_option">The type of transformation (Inf = rigid transformation)</xhtml>
+      <xhtml name="anatomical_template">The template on which the normalisation will be done. If there is no specified template, the T1 MRI template of SPM5 is chosen.</xhtml>
+    </d>
+    <xhtml name="long"/>
+  </d>
+</d>
+</minf>
