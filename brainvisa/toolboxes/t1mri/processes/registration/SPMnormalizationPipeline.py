@@ -36,7 +36,7 @@ import registration
 import types
 
 name = 'SPM Normalization Pipeline'
-userLevel=0
+userLevel=1
 
 def validation():
   if not distutils.spawn.find_executable( 'matlab' ):

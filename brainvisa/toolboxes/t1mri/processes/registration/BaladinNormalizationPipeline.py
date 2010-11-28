@@ -36,7 +36,7 @@ import registration
 import types
 
 name = 'Baladin Normalization Pipeline'
-userLevel=0
+userLevel=1
 
 def validation():
 	import distutils.spawn

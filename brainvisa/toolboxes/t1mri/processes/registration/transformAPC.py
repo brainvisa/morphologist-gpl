@@ -34,7 +34,7 @@ from neuroProcesses import *
 import shfjGlobals
 
 name = 'Transform a commissures AC-PC coordinates'
-userLevel = 0
+userLevel = 1
 
 def validation():
   try:

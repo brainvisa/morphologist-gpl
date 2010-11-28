@@ -36,7 +36,7 @@ import registration
 import types
 
 name = 'FSL Normalization Pipeline'
-userLevel=0
+userLevel=1
 
 def validation():
   try:

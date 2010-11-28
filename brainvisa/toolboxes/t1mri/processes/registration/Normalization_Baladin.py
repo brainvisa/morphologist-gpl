@@ -43,7 +43,7 @@ def validation():
 					"could not be found in PATH"))
 
 name = 'Anatomy Normalization (using Baladin)'
-userLevel = 0
+userLevel = 2
 
 # Baladin does not accept all image format -> conversion to .ima
 signature = Signature(
