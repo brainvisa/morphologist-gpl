@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -218,6 +219,19 @@ def initialization( self ):
                  'BiasCorrection.white_ridges' )
   eNode.addLink( 'BiasCorrection.white_ridges',
                  'BrainSegmentation.white_ridges' )
+
+  eNode.BrainSegmentation.BrainSegmentation05.removeLink( 'variance',
+    'mri_corrected' )
+  eNode.BrainSegmentation.BrainSegmentation05.removeLink( 'edges',
+    'mri_corrected' )
+  eNode.addLink( 'BrainSegmentation.BrainSegmentation05.variance',
+                 'BiasCorrection.BiasCorrection05.variance' )
+  eNode.addLink( 'BiasCorrection.BiasCorrection05.variance',
+                 'BrainSegmentation.BrainSegmentation05.variance' )
+  eNode.addLink( 'BrainSegmentation.BrainSegmentation05.edges',
+                 'BiasCorrection.BiasCorrection05.edges' )
+  eNode.addLink( 'BiasCorrection.BiasCorrection05.edges',
+                 'BrainSegmentation.BrainSegmentation05.edges' )
 
 
   eNode.SplitBrain.removeLink( 'histo_analysis', 'mri_corrected' )
