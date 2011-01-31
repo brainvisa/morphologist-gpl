@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<minf expander="minf_2.0">
+<d>
+  <d name="fr">
+    <xhtml name="short"><img SRC="../../images/II_T1mri.jpg" ALT="" border="0"/>
+<img SRC="../../images/II_arrow.jpg" ALT="" border="0"/>
+<img SRC="../../images/II_pipeline.jpg" ALT="" border="0"/>
+<img SRC="../../images/II_arrow.jpg" ALT="" border="0"/>
+<a HREF="AnaComputeHemiGreyWhiteClassif.html"><img SRC="../../images/II_gw.jpg" ALT="" border="0"/></a>
+<a HREF="AnaGetOpenedHemiSurface.html"><img SRC="../../images/II_hemi.jpg" ALT="" border="0"/></a>
+<a HREF="AnaGetSphericalCorticalSurface.html"><img SRC="../../images/II_white.jpg" ALT="" border="0"/></a>
+<a HREF="AnaComputeCorticalFoldArg.html"><img SRC="../../images/II_sulci.jpg" ALT="" border="0"/></a>
+<br/>
+Permet de déclencher une chaîne d'analyse d'images qui extrait divers objets d'une IRM T1 anatomique</xhtml>
+    <xhtml name="long">Cette moulinette est sensé permettre de générer :
+<ul>
+<li>soit l'ensemble des résultats issus des routines
+de segmentation de NeuroSpin ;</li>
+<li>soit un sous-ensemble ciblé sur une application :
+ <ol>
+   <li>Des maillages sphériques du cortex (gonflement, Cortical Surface Mapping, "primal sketch"
+ de la courbure moyenne, problème inverse MEG/EEG...) ;</li>
+   <li>Des maillages des hémisphères (visualisation, mapping d'activations...) ;</li>
+   <li>Des graphes de sillons (morphométrie structurelle, contraintes pour la normalisation spatiale,
+ planning neurochirurgical...).</li>
+ </ol>
+</li>
+</ul>
+Pour pouvoir lancer cette moulinette, il est impératif de remplir les paramères d'orientation de l'image, dans la première étape (ou d'utiliser indépendamment la brique <a href="preparesubject.html">Prepare Subject for Anatomical Pipeline</a>).<br/>
+<br/>
+Ce pipeline traite normalement les deux hémisphères, mais vous pouvez changer les paramètres pour qu'un seul hémisphère soit traité. 
+Il enchaîne les traitements suivants (sauf si leur résultat a déjà été validé ou qu'ils ne sont pas cochés dans l'interface graphique du pipeline):
+<ol>
+<li>Le repérage de l'orientation de l'image et sa réorientation si nécessaire (<a href="preparesubject.html">Prepare Subject for Anatomical Pipeline</a>);</li>
+<li>La création d'un masque du cerveau (<a href="BrainSegmentationGeneral.html">Brain Mask Segmentation</a>) ;</li>
+<li>La création d'un masque de chaque hémisphère 
+(<a href="SplitBrainGeneral.html">Split Brain Mask</a>).</li>
+<li>Une classification gris/blanc de chaque hémisphère pour la "Voxel Based Morphometry" 
+(<a href="GreyWhiteInterfaceGeneral.html">Grey White Interface</a>) et le maillage sphérique des hémisphères corticaux (<a href="AnaGetSphericalCorticalSurface.html">Ana Get Spherical Cortical Surface</a>);</li>
+<li>Le maillage de l'interface externe du cortex d'un ou des deux hémisphères
+(<a href="AnaGetOpenedHemiSurface.html">Ana Get Opened Hemi Surface</a>) ;</li>
+<li>La création du graphe des plissements corticaux pour un ou deux hémisphères 
+(<a href="CorticalFoldsGraphGeneral.html">Cortical Fold Graph</a>);</li>
+<li>Eventuellement, l'identification automatique des sillions corticaux (<a href="recognition.html">Automatic Recognition</a>), situé dans la toolbox "morphométrie".</li>
+</ol>
+<br/>
+Un certain nombre de ces briques proposent un choix entre une ancienne version de l'algorithme et une nouvelle mouture (pas toujours au point, attention!). Les réglages par défaut correspondent à l'alternative que nous considérons comme la plus robuste ou la plus performante, mais un choix différent peut avoir de meilleurs résultats sur certaines images.
+<br/>
+Avec un peu d'expérience, il est possible de jongler de manière itérative
+avec les moulinettes complètes et les briques qui les composent. Si pour des raisons de temps, vous n'avez fait tourner
+qu'une partie des traitements. Vous pouvez en demander plus sans recalculer
+les premiers traitements en "lockant" certains résultats avec les briques
+de validation.
+<br/><br/>
+<hr/>
+Les différentes "moulinettes" en service sont les suivantes (il existe par ailleurs d'autres chaînes
+de traitements n'ayant pas l'IRM brute comme point de départ):<br/>
+
+<img SRC="../../images/III_T1mri.jpg" ALT=""/>
+<img SRC="../../images/III_arrow.jpg" ALT=""/>
+<img SRC="../../images/III_mill.jpg" ALT=""/>
+<img SRC="../../images/III_arrow.jpg" ALT=""/>
+<img SRC="../../images/III_nobias.jpg" ALT=""/>
+<img SRC="../../images/III_hana.jpg" ALT=""/>
+<img SRC="../../images/III_brain.jpg" ALT=""/>
+<img SRC="../../images/III_voronoi.jpg" ALT=""/>
+<img SRC="../../images/III_gw.jpg" ALT=""/>
+<img SRC="../../images/III_cortex.jpg" ALT=""/>
+<img SRC="../../images/III_hemi.jpg" ALT=""/>
+<img SRC="../../images/III_white.jpg" ALT=""/>
+<img SRC="../../images/III_sulci.jpg" ALT=""/>
+
+<hr/>
+<h1>Pour une utilisation efficace du pipeline:</h1>
+Si vous avez un grand nombre de cerveaux à traiter, nous vous conseillons la stratégie suivante:
+<ol>
+<li>Séléctionnez quelques cerveaux représentatifs pour régler les paramètres de manière à optimiser les résultats.
+Plusieurs niveaux de réglage peuvent être essayés:
+ <ol>
+   <li>Le choix du contraste gris/blanc et du type de biais spatial.</li>
+   <li>Les voies alternatives pour obtenir les masques du cerveau et des hémisphères.<br/>
+        <a href="AnaT1toBrainMaskCorrection.html">Ana Brain Mask from T1 MRI Correction</a><br/>
+        <a href="AnaSplitBrainFromBrainMaskCorrection.html">Ana Split Brain from Brain Mask Correction</a>
+       </li>
+   <li>Les divers paramètres des outils bas niveaux du SHFJ situés dans <a href="categories/t1mri/segmentationpipeline/components/category_documentation.html">components</a> et <a href="categories/t1mri/segmentationpipeline/components04/category_documentation.html">components04</a>.</li>
+   <li>Les nombreux paramètres des commandes lignes de la librairie Vip (VipQuelquechose).</li>
+ </ol>
+Si vous n'êtes pas malchanceux, vous devriez obtenir un résultat acceptable en n'utilisant que les deux premiers niveaux.
+Dans le cas contraire, le mieux est de dériver votre propre script brainVISA en combinant les briques
+existantes, les commandes de Vip et vos propres outils. C'est ce qui a été réalisé sur
+le site de Marseille à cause du biais important de leur scanner 3T: <a href="http://marspack.free.fr/">http://marspack.free.fr/</a>.
+<br/>
+<li>
+Après la phase de réglage préalable, nous suggérons de traiter les données en trois étapes:
+ <ol>
+  <li><em>Des images brutes au masque du cerveau:</em> Cette étape est généralement réalisée avec le traitement <a href="AnaT1toBrainMask.html">Ana Brain Mask from T1 MRI</a>, qui peut être itérer sur l'ensemble de vos cerveaux.
+Il vous reste alors à verifier les résultats un à un, et à déclencher la brique
+de correction lorsque c'est nécessaire: <a href="AnaT1toBrainMaskCorrection.html">Ana Brain Mask from T1 MRI Correction</a>
+(vous pouvez également réaliser certaines corrections en dessinant dans Anatomist: <a href="AnaLabelVolumeEditor.html"> Label volume editor</a>.).
+  </li>
+  <li><em>Du masque du cerveau au masque des hémisphères:</em> Cette étape est en général réalisée avec le traitement <a href="AnaSplitBrainFromBrainMask.html">Ana Split Brain from Brain Mask</a>,
+qui peut être itéré sur l'ensemble de vos cerveaux. Vérifiez ensuite le résultat et réalisez les corrections nécessaires avec
+ <a href="AnaSplitBrainFromBrainMaskCorrection.html">Ana Split Brain from Brain Mask Correction</a> (vous pouvez également réaliser certaines corrections en dessinant dans Anatomist: <a href="AnaLabelVolumeEditor.html">Label volume editor</a>;
+vous pouvez d'ailleurs utiliser un racourci vers ce traitement sous forme d'icone.).
+  </li>
+  <li><em>Le reste des traitements (maillages, graphes...):</em> Vous devez d'abord verrouiller les résultats des deux étapes précédentes pour éviter qu'ils ne soient écrasés par le pipeline général. Utilisez: <a href="AnaValidateAll.html">Ana Validate All</a>.
+Pous pouvez ensuite itérer le pipeline avant d'aller dormir.
+  </li>
+ </ol>
+</li>
+</li>
+</ol>
+<br/>
+<img SRC="../../images/III_T1mri.jpg" ALT=""/>
+<img SRC="../../images/III_arrow.jpg" ALT=""/>
+<img SRC="../../images/III_nobias.jpg" ALT=""/>
+<img SRC="../../images/III_hana.jpg" ALT=""/>
+<img SRC="../../images/III_brain.jpg" ALT=""/>
+<img SRC="../../images/checkpoint.png" ALT=""/>
+<img SRC="../../images/III_voronoi.jpg" ALT=""/>
+<img SRC="../../images/checkpoint.png" ALT=""/>
+<img SRC="../../images/III_gw.jpg" ALT=""/>
+<img SRC="../../images/III_cortex.jpg" ALT=""/>
+<img SRC="../../images/III_hemi.jpg" ALT=""/>
+<img SRC="../../images/III_white.jpg" ALT=""/>
+<img SRC="../../images/III_sulci.jpg" ALT=""/>
+</xhtml>
+    <d name="parameters">
+      <xhtml name="mri_corrected"><a HREF="VipBiasCorrection.html"><img SRC="../../images/III_nobias.jpg" ALT="" border="0"/></a></xhtml>
+      <xhtml name="mri"><img SRC="../../images/III_T1mri.jpg" ALT="" border="0"/></xhtml>
+    </d>
+  </d>
+  <d name="en">
+    <xhtml name="short"><img SRC="../../images/II_T1mri.jpg" ALT="" border="0"/>
+<img SRC="../../images/II_arrow.jpg" ALT="" border="0"/>
+<img SRC="../../images/II_pipeline.jpg" ALT="" border="0"/>
+<img SRC="../../images/II_arrow.jpg" ALT="" border="0"/>
+<a HREF="AnaComputeHemiGreyWhiteClassif.html"><img SRC="../../images/II_gw.jpg" ALT="" border="0"/></a>
+<a HREF="AnaGetOpenedHemiSurface.html"><img SRC="../../images/II_hemi.jpg" ALT="" border="0"/></a>
+<a HREF="AnaGetSphericalCorticalSurface.html"><img SRC="../../images/II_white.jpg" ALT="" border="0"/></a>
+<a HREF="AnaComputeCorticalFoldArg.html"><img SRC="../../images/II_sulci.jpg" ALT="" border="0"/></a>
+<br/>
+Trigger all segmentation tools for T1-weighted data</xhtml>
+    <d name="parameters">
+      <xhtml name="Interhemispheric_Point"/>
+      <xhtml name="Normalised"/>
+      <xhtml name="mri_corrected"><a HREF="VipBiasCorrection.html"><img SRC="../../images/III_nobias.jpg" ALT="" border="0"/></a>
+</xhtml>
+      <xhtml name="perform_normalization"/>
+      <xhtml name="mri"><img SRC="../../images/III_T1mri.jpg" ALT="" border="0"/></xhtml>
+      <xhtml name="Left_Hemisphere_Point"/>
+      <xhtml name="Posterior_Commissure"/>
+      <xhtml name="Anterior_Commissure"/>
+    </d>
+    <xhtml name="long">This pipeline allows to compute:
+<ul>
+<li>either all of what can be done;</li>
+<li>or a subset oriented towards a specific application:
+ <ol>
+   <li>Spherical meshes of the cortex (inflation, Cortical Surface Mapping, "primal sketch"
+ of mean curvature, MEG/EEG inverse problem...) </li>
+   <li>Hemisphere meshes (visualisation, mapping of activations...) </li>
+   <li>Cortical fold graphs (structural morphometry, constraints for spatial normalisation,
+ surgical planing...).</li>
+ </ol>
+</li>
+</ul>
+Before running a pipeline, you have to fill in image orientation parameters in the first step, or independently use
+use the <a href="bvprocess://preparesubject">Prepare Subject for Anatomical Pipeline</a> process. <b>Be careful that the default recognition method in BrainVISA 4.1 has changed</b> to SPAM recognition with global+local registration, if the corresponding models have been installed.<br/>
+<br/>
+A pipeline normally deals with both hemispheres, but can be askes to process only one. Processing steps are executed in the following order (except when some results have already been validated/locked or unchecked in the graphical interface): 
+<ol>
+<li>Ensure image orientation and reorient it if needed (<a href="bvprocess://preparesubject">Prepare Subject for Anatomical Pipeline</a>)</li>
+<li>Computation of a brain mask (<a href="bvprocess://BrainSegmentationGeneral">Brain Mask Segmentation</a>);</li>
+<li>Computation of a mask for each hemisphere (<a href="bvprocess://SplitBrainGeneral">Split Brain Mask</a>).</li>
+<li>A grey/white classification of each hemisphere to perform "Voxel Based Morphometry" (<a href="bvprocess://GreyWhiteInterfaceGeneral">Grey White Interface</a>) and spherical triangulation of cortical hemispheres (<a href="bvprocess://AnaGetSphericalCorticalSurface">Ana Get Spherical Cortical Surface</a>);</li>
+<li>Triangulation of the external interface of the cortex of one or two hemispheres
+(<a href="bvprocess://AnaGetOpenedHemiSurface">Ana Get Opened Hemi Surface</a>);</li>
+<li>Computation of a graph representing the cortical fold topography
+(<a href="bvprocess://CorticalFoldsGraphGeneral">Cortical Fold Graph</a>);</li>
+<li>Possibly, automatic identification of the cortical sulci (<a href="bvprocess://recognitionGeneralBoth">Automatic Sulci Recognition</a>), located in the "sulci" toolbox.</li>
+</ol>
+<br/>
+A number of these steps allow to choose between an older version of the algorithm and a new one (not always completely ready, be careful!). The default settings correspond to the alternative we consider to be the most robust or the most performant, but a different choice may achieve better results on some images.
+<br/>
+With some practice, you may play iteratively with the pipelines.
+For instance, if you have trigerred a "sub-pipeline" only, you may
+ask for more without having to recompute the whole stuff. For
+that purpose, lock the first results using <em>Brainvisa</em> validation tools.
+
+<br/><br/>
+<hr/>
+The different active pipelines are the following (you may find other ones elsewhere when the input
+is not the raw T1-weighted MR scan):<br/>
+
+<img SRC="../../images/III_T1mri.jpg" ALT=""/>
+<img SRC="../../images/III_arrow.jpg" ALT=""/>
+<img SRC="../../images/III_mill.jpg" ALT=""/>
+<img SRC="../../images/III_arrow.jpg" ALT=""/>
+<img SRC="../../images/III_nobias.jpg" ALT=""/>
+<img SRC="../../images/III_hana.jpg" ALT=""/>
+<img SRC="../../images/III_brain.jpg" ALT=""/>
+<img SRC="../../images/III_voronoi.jpg" ALT=""/>
+<img SRC="../../images/III_gw.jpg" ALT=""/>
+<img SRC="../../images/III_cortex.jpg" ALT=""/>
+<img SRC="../../images/III_hemi.jpg" ALT=""/>
+<img SRC="../../images/III_white.jpg" ALT=""/>
+<img SRC="../../images/III_sulci.jpg" ALT=""/>
+
+<hr/>
+<h1>Efficient use of the pipeline:</h1>
+If you want to process a large population of brains, we advise the following strategy:
+<ol>
+<li>Select a few representative brains, and tune the parameters in order
+to achieve acceptable results. Several levels of tuning can be tried:
+ <ol>
+   <li>The two choices on grey/white contrast and bias field types.</li>
+   <li>The alternative computations of the brain mask and voronoi diagrams (hemispheres).<br/>
+        <a href="bvprocess://AnaT1toBrainMaskCorrection">Ana Brain Mask from T1 MRI Correction</a><br/>
+        <a href="bvprocess://AnaSplitBrainFromBrainMaskCorrection">Ana Split Brain from Brain Mask Correction</a>
+       </li>
+   <li>The various parameters of the low level tools in <a href="bvcategory://t1mri/segmentationpipeline/components">components</a> and <a href="bvcategory://t1mri/segmentationpipeline/components04">components04</a>.</li>
+   <li>The numerous parameters of the commanlines of Vip library (VipSomething).</li>
+ </ol>
+If you are not unlucky, you should find a good solution with the two highest levels only, otherwise
+it may be interesting to derive your own pipeline using SHFJ low-level bricks, Vip library and maybe
+your own local tools. This is what is done for example in Marseille fMRI site because
+of the 3T large bias field: <a href="http://marspack.free.fr/">http://marspack.free.fr/</a>.
+<br/>
+<li>
+After the tuning stage, we suggest to perform the processing in three stages:
+ <ol>
+  <li><em>From raw MR data to the brain mask:</em> This is usually performed by the treatment <a href="bvprocess://AnaT1toBrainMask">Ana Brain Mask from T1 MRI</a>,
+which can be iterated on all your brains. Then check the results one by one and trigger some of the alternatives of 
+<a href="bvprocess://AnaT1toBrainMaskCorrection">Ana Brain Mask from T1 MRI Correction</a>
+ for the brains which require some corrections (you could even perform some manual corrections with Anatomist drawing's capacities: <a href="bvprocess://AnaLabelVolumeEditor"> Label volume editor</a>).
+  </li>
+  <li><em>From the brain mask to the hemisphere mask:</em> This is usually performed by the treatment <a href="bvprocess://AnaSplitBrainFromBrainMask">Ana Split Brain from Brain Mask</a>,
+which can be iterated on all your brains. Then check the results one by one and trigger some of the alternatives of <a href="bvprocess://AnaSplitBrainFromBrainMaskCorrection">Ana Split Brain from Brain Mask Correction</a> for the brains which require some corrections (you could even perform some manual corrections with Anatomist drawing's capacities: <a href="bvprocess://AnaLabelVolumeEditor">Label volume editor</a>; you can use a shortcut
+to this treatment through a dedicated icon in brainVISA interface).
+  </li>
+  <li><em>Any further processing (meshes, graphs, etc.):</em> You have first to lock the results of the two previous stages, for them not to be superseded by the general pipeline treatment. Use: <a href="bvprocess://AnaValidateAll">Ana Validate All</a>.
+Then you can iterate the pipeline you like and go to sleep.
+  </li>
+ </ol>
+</li>
+</li>
+</ol>
+<br/>
+<img SRC="../../images/III_T1mri.jpg" ALT=""/>
+<img SRC="../../images/III_arrow.jpg" ALT=""/>
+<img SRC="../../images/III_nobias.jpg" ALT=""/>
+<img SRC="../../images/III_hana.jpg" ALT=""/>
+<img SRC="../../images/III_brain.jpg" ALT=""/>
+<img SRC="../../images/checkpoint.png" ALT=""/>
+<img SRC="../../images/III_voronoi.jpg" ALT=""/>
+<img SRC="../../images/checkpoint.png" ALT=""/>
+<img SRC="../../images/III_gw.jpg" ALT=""/>
+<img SRC="../../images/III_cortex.jpg" ALT=""/>
+<img SRC="../../images/III_hemi.jpg" ALT=""/>
+<img SRC="../../images/III_white.jpg" ALT=""/>
+<img SRC="../../images/III_sulci.jpg" ALT=""/>
+</xhtml>
+  </d>
+</d>
+</minf>
