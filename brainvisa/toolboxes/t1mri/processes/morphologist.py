@@ -439,14 +439,16 @@ def initialization( self ):
 
 
   if reco:
-    eNode.addLink( 'SulciRecognition.LeftSulciRecognition.data_graph',
+    eNode.removeLink( 'SulciRecognition.right_data_graph',
+        'SulciRecognition.left_data_graph' )
+    eNode.addLink( 'SulciRecognition.left_data_graph',
         'CorticalFoldsGraph.left_graph' )
     eNode.addLink( 'CorticalFoldsGraph.left_graph',
-        'SulciRecognition.LeftSulciRecognition.data_graph' )
-    eNode.addLink( 'SulciRecognition.RightSulciRecognition.data_graph',
+        'SulciRecognition.left_data_graph' )
+    eNode.addLink( 'SulciRecognition.right_data_graph',
         'CorticalFoldsGraph.right_graph' )
     eNode.addLink( 'CorticalFoldsGraph.right_graph',
-        'SulciRecognition.RightSulciRecognition.data_graph' )
+        'SulciRecognition.right_data_graph' )
 
     eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_1.LeftCorticalFoldsGraph_3_1.side = 'Left'
     eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.side = 'Right'
