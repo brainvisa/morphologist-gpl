@@ -433,6 +433,10 @@ def initialization( self ):
     'HemispheresMesh.right_hemi_cortex',
     'CorticalFoldsGraph.CorticalFoldsGraph_3_0.right_hemi_cortex' )
 
+  # set new variants (2010-2011) as default
+  eNode.HistoAnalysis.HistoAnalysis05.setSelected( True )
+  eNode.BrainSegmentation.BrainSegmentation05.setSelected( True )
+
 
   if reco:
     eNode.addLink( 'SulciRecognition.LeftSulciRecognition.data_graph',
