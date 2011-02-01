@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -31,6 +32,7 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from neuroProcesses import *
+from soma.wip.application.api import Application
 
 name = 'Edit Histo analysis'
 roles = ('editor',)
@@ -41,7 +43,8 @@ signature = Signature(
 )
 
 def execution( self, context ):
-  cmd = [ textEditor ]
+  ap = Application()
+  cmd = [ ap.configuration.brainvisa.textEditor ]
   if textEditor == 'nedit':
     cmd += [ '-geometry', '50x5' ]
   if textEditor in ( 'xemacs', 'emacs' ):
