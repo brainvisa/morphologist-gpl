@@ -446,6 +446,8 @@ def initialization( self ):
     eNode.addLink( 'CorticalFoldsGraph.right_graph',
         'SulciRecognition.right_data_graph' )
 
+    eNode.SulciRecognition.model = 'ANN, older 2000-2001 labels'
+
     eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_1.LeftCorticalFoldsGraph_3_1.side = 'Left'
     eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.side = 'Right'
 

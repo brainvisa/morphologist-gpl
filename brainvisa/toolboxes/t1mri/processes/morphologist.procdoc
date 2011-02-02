@@ -12,7 +12,41 @@
 <a HREF="AnaComputeCorticalFoldArg.html"><img SRC="../../images/II_sulci.jpg" ALT="" border="0"/></a>
 <br/>
 Permet de déclencher une chaîne d'analyse d'images qui extrait divers objets d'une IRM T1 anatomique</xhtml>
-    <xhtml name="long">Cette moulinette est sensé permettre de générer :
+    <d name="parameters">
+      <xhtml name="Interhemispheric_Point"/>
+      <xhtml name="Normalised"/>
+      <xhtml name="mri_corrected"><a HREF="VipBiasCorrection.html"><img SRC="../../images/III_nobias.jpg" ALT="" border="0"/></a></xhtml>
+      <xhtml name="perform_normalization"/>
+      <xhtml name="mri"><img SRC="../../images/III_T1mri.jpg" ALT="" border="0"/></xhtml>
+      <xhtml name="Left_Hemisphere_Point"/>
+      <xhtml name="Posterior_Commissure"/>
+      <xhtml name="Anterior_Commissure"/>
+    </d>
+    <xhtml name="long"><head>
+<style>
+  #warning {
+      background-color: #F6F6F6;
+      border: thin solid;
+      border-color: #E4E4E4;
+      padding: 1mm;
+  }
+</style>
+</head>
+
+<p>
+Ce pipeline se nomme désormais "<b>Morphologist</b>", et est le principal point d'entrée de la toolbox "IRM T1", qui se nommera elle-même Morphologist dans un proche futur. C'est l'évolution de l'ancien "Pipeline T1".
+</p>
+
+<p>
+Les anciennes versions du pipeline sont toujours accessibles et devraient en principe fonctionner comme avant, et se trouvent dans le répertoire <a href="categories/t1mri/segmentationpipeline/category_documentation.html">"Pipeline de segmentation / Anciens pipelines"</a>.
+</p>
+
+<p id="warning"><b><font color="#b00000">Nouveautés:</font></b><br/>
+Dans BrainVisa 4.1, les premières étapes du pipeline (correction du biais, analyse de l'histogramme, segmentation du cerveau, séparation des hémisphères) ont subi des améliorations notables, qui les rendent plus robustes.
+</p>
+
+<p>
+Cette moulinette est sensé permettre de générer :
 <ul>
 <li>soit l'ensemble des résultats issus des routines
 de segmentation de NeuroSpin ;</li>
@@ -26,8 +60,12 @@ de segmentation de NeuroSpin ;</li>
  </ol>
 </li>
 </ul>
-Pour pouvoir lancer cette moulinette, il est impératif de remplir les paramères d'orientation de l'image, dans la première étape (ou d'utiliser indépendamment la brique <a href="preparesubject.html">Prepare Subject for Anatomical Pipeline</a>).<br/>
-<br/>
+</p>
+
+<p>
+Pour pouvoir lancer cette moulinette, il est impératif de remplir les paramères d'orientation de l'image, dans la première étape (ou d'utiliser indépendamment la brique <a href="preparesubject.html">Prepare Subject for Anatomical Pipeline</a>).
+</p>
+<p>
 Ce pipeline traite normalement les deux hémisphères, mais vous pouvez changer les paramètres pour qu'un seul hémisphère soit traité. 
 Il enchaîne les traitements suivants (sauf si leur résultat a déjà été validé ou qu'ils ne sont pas cochés dans l'interface graphique du pipeline):
 <ol>
@@ -43,15 +81,15 @@ Il enchaîne les traitements suivants (sauf si leur résultat a déjà été val
 (<a href="CorticalFoldsGraphGeneral.html">Cortical Fold Graph</a>);</li>
 <li>Eventuellement, l'identification automatique des sillions corticaux (<a href="recognition.html">Automatic Recognition</a>), situé dans la toolbox "morphométrie".</li>
 </ol>
-<br/>
+</p>
+<p>
 Un certain nombre de ces briques proposent un choix entre une ancienne version de l'algorithme et une nouvelle mouture (pas toujours au point, attention!). Les réglages par défaut correspondent à l'alternative que nous considérons comme la plus robuste ou la plus performante, mais un choix différent peut avoir de meilleurs résultats sur certaines images.
-<br/>
+</p>
+<p>
 Avec un peu d'expérience, il est possible de jongler de manière itérative
-avec les moulinettes complètes et les briques qui les composent. Si pour des raisons de temps, vous n'avez fait tourner
-qu'une partie des traitements. Vous pouvez en demander plus sans recalculer
-les premiers traitements en "lockant" certains résultats avec les briques
-de validation.
-<br/><br/>
+avec les moulinettes complètes et les briques qui les composent. Si pour des raisons de temps, vous n'avez fait tourner qu'une partie des traitements. Vous pouvez en demander plus sans recalculer
+les premiers traitements en "lockant" certains résultats avec les briques de validation.
+</p>
 <hr/>
 Les différentes "moulinettes" en service sont les suivantes (il existe par ailleurs d'autres chaînes
 de traitements n'ayant pas l'IRM brute comme point de départ):<br/>
@@ -72,6 +110,7 @@ de traitements n'ayant pas l'IRM brute comme point de départ):<br/>
 
 <hr/>
 <h1>Pour une utilisation efficace du pipeline:</h1>
+<p>
 Si vous avez un grand nombre de cerveaux à traiter, nous vous conseillons la stratégie suivante:
 <ol>
 <li>Séléctionnez quelques cerveaux représentatifs pour régler les paramètres de manière à optimiser les résultats.
@@ -124,11 +163,8 @@ Pous pouvez ensuite itérer le pipeline avant d'aller dormir.
 <img SRC="../../images/III_hemi.jpg" ALT=""/>
 <img SRC="../../images/III_white.jpg" ALT=""/>
 <img SRC="../../images/III_sulci.jpg" ALT=""/>
+</p>
 </xhtml>
-    <d name="parameters">
-      <xhtml name="mri_corrected"><a HREF="VipBiasCorrection.html"><img SRC="../../images/III_nobias.jpg" ALT="" border="0"/></a></xhtml>
-      <xhtml name="mri"><img SRC="../../images/III_T1mri.jpg" ALT="" border="0"/></xhtml>
-    </d>
   </d>
   <d name="en">
     <xhtml name="short"><img SRC="../../images/II_T1mri.jpg" ALT="" border="0"/>
@@ -141,18 +177,30 @@ Pous pouvez ensuite itérer le pipeline avant d'aller dormir.
 <a HREF="AnaComputeCorticalFoldArg.html"><img SRC="../../images/II_sulci.jpg" ALT="" border="0"/></a>
 <br/>
 Trigger all segmentation tools for T1-weighted data</xhtml>
-    <d name="parameters">
-      <xhtml name="Interhemispheric_Point"/>
-      <xhtml name="Normalised"/>
-      <xhtml name="mri_corrected"><a HREF="VipBiasCorrection.html"><img SRC="../../images/III_nobias.jpg" ALT="" border="0"/></a>
-</xhtml>
-      <xhtml name="perform_normalization"/>
-      <xhtml name="mri"><img SRC="../../images/III_T1mri.jpg" ALT="" border="0"/></xhtml>
-      <xhtml name="Left_Hemisphere_Point"/>
-      <xhtml name="Posterior_Commissure"/>
-      <xhtml name="Anterior_Commissure"/>
-    </d>
-    <xhtml name="long">This pipeline allows to compute:
+    <xhtml name="long"><head>
+<style>
+  #warning {
+      background-color: #F6F6F6;
+      border: thin solid;
+      border-color: #E4E4E4;
+      padding: 1mm;
+  }
+</style>
+</head>
+
+<p>
+This pipeline is now named "<b>Morphologist</b>", and is the main entry point of the "T1 MRI" toolbox, whill should be soon also renamed Morphologist. It is the evolution of the older "T1 Pipeline 2007".
+</p>
+
+<p>
+Older versions of the pipeline are still available, and should normally work as they used to. They can be found in the sub-directory <a href="categories/t1mri/segmentationpipeline/older_pipelines/category_documentation.html">"segmentation Pipeline / Older pipelines"</a>.
+</p>
+
+<p id="warning"><b><font color="#b00000">News:</font></b><br/>
+In BrainVisa 4.1, the first steps of the pipeline (bias correction, histogram analysis, brain segmentation, hemispheres separation) have undergone significant improvements, making them more robust.
+</p>
+
+This pipeline allows to compute:
 <ul>
 <li>either all of what can be done;</li>
 <li>or a subset oriented towards a specific application:
@@ -261,6 +309,17 @@ Then you can iterate the pipeline you like and go to sleep.
 <img SRC="../../images/III_white.jpg" ALT=""/>
 <img SRC="../../images/III_sulci.jpg" ALT=""/>
 </xhtml>
+    <d name="parameters">
+      <xhtml name="Interhemispheric_Point"/>
+      <xhtml name="Normalised"/>
+      <xhtml name="mri_corrected"><a HREF="VipBiasCorrection.html"><img SRC="../../images/III_nobias.jpg" ALT="" border="0"/></a>
+</xhtml>
+      <xhtml name="perform_normalization"/>
+      <xhtml name="mri"><img SRC="../../images/III_T1mri.jpg" ALT="" border="0"/></xhtml>
+      <xhtml name="Left_Hemisphere_Point"/>
+      <xhtml name="Posterior_Commissure"/>
+      <xhtml name="Anterior_Commissure"/>
+    </d>
   </d>
 </d>
 </minf>

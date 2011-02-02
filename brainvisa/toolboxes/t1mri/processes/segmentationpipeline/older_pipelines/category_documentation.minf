@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+
+<xhtml name="en">
+  <h1>Older Morphologist T1-weighted pipelines</h1>
+
+  <p>
+This is where older versions of the main Morphologist T1 pipeline are.
+  </p>
+
+</xhtml>
+
+<xhtml name="fr">
+  <h1>Anciennes versions des pipelines Morphologist d'analyse des images pondérées en T1</h1>
+
+  <p>
+C'est ici que se trouvent les anciennes versions du pipeline principal Morphologist T1.
+  </p>
+
+</xhtml>
+
+</minf>
