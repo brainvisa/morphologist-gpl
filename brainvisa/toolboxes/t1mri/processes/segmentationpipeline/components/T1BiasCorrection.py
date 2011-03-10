@@ -42,7 +42,7 @@ signature = Signature(
   'mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.vipVolumeFormats ),
   'mri_corrected', WriteDiskItem( "T1 MRI Bias Corrected",
       'Aims writable volume formats' ),
-  'mode', Choice('write_minimal','write_all','delete_useless'),
+  'mode', Choice('write_minimal','write_all','delete_useless','write_minimal without correction'),
   'write_field', Choice('yes','no'),
   'field', WriteDiskItem( "T1 MRI Bias Field",
       shfjGlobals.aimsWriteVolumeFormats ),
@@ -66,7 +66,9 @@ signature = Signature(
   'edge_mask',Choice('yes','no'),
   'write_edges', Choice('yes','no'),
   'edges', WriteDiskItem( "T1 MRI Edges", shfjGlobals.aimsWriteVolumeFormats ),
-  'delete_last_n_slices',Integer()
+  'Commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
+      'Commissure coordinates'),
+  'delete_last_n_slices', OpenChoice("auto", "0", "10", "20", "30"),
 )
 
 # Default values
@@ -94,6 +96,8 @@ def initialization( self ):
   self.variance_fraction = 75
   self.edge_mask = 'yes'
   self.delete_last_n_slices = '0'
+  self.setOptional('Commissure_coordinates')
+  self.linkParameters( 'Commissure_coordinates', 'mri_corrected' )
 
 def execution( self, context ):
   if self.mode == 'write_all':
@@ -107,26 +111,33 @@ def execution( self, context ):
     edge = '3'
   else:
     edge = 'n'
-  if self.mode in ("write_minimal","write_all"):
+  if self.mode in ("write_minimal","write_all","write_minimal without correction"):
     if os.path.exists(self.mri_corrected.fullName() + '.loc'):
       context.write(self.mri_corrected.fullName(), ' has been locked')
       context.write('Remove',self.mri_corrected.fullName(),'.loc if you want to trigger a new correction')
     else:
-      context.system('VipT1BiasCorrection', '-i', self.mri.fullPath(), '-o', self.mri_corrected.fullPath() , '-Fwrite', self.write_field, '-field', self.field.fullPath(), '-Wwrite', self.write_wridges, '-wridge', self.white_ridges.fullPath(),'-Kregul', self.field_rigidity, '-sampling',  self.sampling, '-Grid', self.ngrid, '-ZregulTuning', self.zdir_multiply_regul, '-vp',self.variance_fraction,'-e',edge, '-eWrite', self.write_edges, '-ename', self.edges.fullPath(), '-vWrite', self.write_variance, '-vname', self.variance.fullPath(), '-mWrite',self.write_meancurvature, '-mname', self.meancurvature.fullPath(), '-hWrite', self.write_hfiltered, '-hname', self.hfiltered.fullPath(), '-Last', self.delete_last_n_slices  )
-      tm = registration.getTransformationManager()
-      tm.copyReferential(self.mri, self.mri_corrected)
-      if self.write_field:
-        tm.copyReferential( self.mri, self.field )
-      if self.write_hfiltered:
-        tm.copyReferential( self.mri, self.hfiltered )
-      if self.write_wridges:
-        tm.copyReferential( self.mri, self.white_ridges )
-      if self.write_variance:
-        tm.copyReferential( self.mri, self.variance )
-      if self.write_meancurvature:
-        tm.copyReferential( self.mri, self.meancurvature )
-      if self.write_edges:
-        tm.copyReferential( self.mri, self.edges )
+        option_list = []
+        constant_list = ['VipT1BiasCorrection', '-i', self.mri.fullPath(), '-o', self.mri_corrected.fullPath() , '-Fwrite', self.write_field, '-field', self.field.fullPath(), '-Wwrite', self.write_wridges, '-wridge', self.white_ridges.fullPath(),'-Kregul', self.field_rigidity, '-sampling',  self.sampling, '-Grid', self.ngrid, '-ZregulTuning', self.zdir_multiply_regul, '-vp',self.variance_fraction,'-e',edge, '-eWrite', self.write_edges, '-ename', self.edges.fullPath(), '-vWrite', self.write_variance, '-vname', self.variance.fullPath(), '-mWrite',self.write_meancurvature, '-mname', self.meancurvature.fullPath(), '-hWrite', self.write_hfiltered, '-hname', self.hfiltered.fullPath(), '-Last', self.delete_last_n_slices]
+        if self.Commissure_coordinates is not None:
+          option_list += ['-Points', self.Commissure_coordinates.fullPath()]
+        if self.mode == "write_minimal without correction":
+          option_list += ['-Dcorrect', "n"]
+        apply( context.system, constant_list+option_list )
+        
+        tm = registration.getTransformationManager()
+        tm.copyReferential(self.mri, self.mri_corrected)
+        if self.write_field:
+          tm.copyReferential( self.mri, self.field )
+        if self.write_hfiltered:
+          tm.copyReferential( self.mri, self.hfiltered )
+        if self.write_wridges:
+          tm.copyReferential( self.mri, self.white_ridges )
+        if self.write_variance:
+          tm.copyReferential( self.mri, self.variance )
+        if self.write_meancurvature:
+          tm.copyReferential( self.mri, self.meancurvature )
+        if self.write_edges:
+          tm.copyReferential( self.mri, self.edges )
   elif  self.mode == 'delete_useless':
     if os.path.exists(self.field.fullName() + '.ima') or os.path.exists(self.field.fullName() + '.ima.gz'):
       shelltools.rm( self.field.fullName() + '.*' )
