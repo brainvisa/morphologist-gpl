@@ -100,7 +100,7 @@ def initialization( self ):
       eNode1.TalairachFromNormalization.removeLink( 'Commissure_coordinates',
         'Talairach_transform' )
     eNode1.TalairachFromNormalization.removeLink( 't1mri', 'Commissure_coordinates' )
-    
+
     eNode.addLink( 'Normalization.TalairachFromNormalization.t1mri', 'T1mri' )
     eNode.addLink( 'T1mri', 'Normalization.TalairachFromNormalization.t1mri' )
     eNode.addLink( \

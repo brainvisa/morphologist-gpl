@@ -75,7 +75,10 @@ def initialization( self ):
   def changeNormalize( self, proc ):
     eNode = self.executionNode()
     if len( list( eNode.PrepareSubject.executionNode().children() ) ) > 1:
-      s = eNode.PrepareSubject.StandardACPC.isSelected()
+      if hasattr( eNode.PrepareSubject, 'StandardACPC' ):
+        s = eNode.PrepareSubject.StandardACPC.isSelected()
+      else:
+        s = False
       if s == self.perform_normalization:
         y = list(eNode.PrepareSubject.executionNode().children())
         y[0].setSelected( not self.perform_normalization )
@@ -145,24 +148,25 @@ def initialization( self ):
   eNode.addLink( 'PrepareSubject.T1mri', 'mri' )
   eNode.addLink( 'mri', 'PrepareSubject.T1mri' )
 
-  eNode.addLink( 'PrepareSubject.StandardACPC.Normalised', 'Normalised' )
-  eNode.addLink( 'Normalised', 'PrepareSubject.StandardACPC.Normalised' )
-  eNode.addLink( 'PrepareSubject.StandardACPC.Anterior_Commissure',
-    'Anterior_Commissure' )
-  eNode.addLink( 'Anterior_Commissure',
-    'PrepareSubject.StandardACPC.Anterior_Commissure' )
-  eNode.addLink( 'PrepareSubject.StandardACPC.Posterior_Commissure',
-    'Posterior_Commissure' )
-  eNode.addLink( 'Posterior_Commissure',
-    'PrepareSubject.StandardACPC.Posterior_Commissure' )
-  eNode.addLink( 'PrepareSubject.StandardACPC.Interhemispheric_Point',
-    'Interhemispheric_Point' )
-  eNode.addLink( 'Interhemispheric_Point',
-    'PrepareSubject.StandardACPC.Interhemispheric_Point' )
-  eNode.addLink( 'PrepareSubject.StandardACPC.Left_Hemisphere_Point',
-    'Left_Hemisphere_Point' )
-  eNode.addLink( 'Left_Hemisphere_Point',
-    'PrepareSubject.StandardACPC.Left_Hemisphere_Point' )
+  if hasattr( eNode.PrepareSubject, 'StandardACPC' ):
+    eNode.addLink( 'PrepareSubject.StandardACPC.Normalised', 'Normalised' )
+    eNode.addLink( 'Normalised', 'PrepareSubject.StandardACPC.Normalised' )
+    eNode.addLink( 'PrepareSubject.StandardACPC.Anterior_Commissure',
+      'Anterior_Commissure' )
+    eNode.addLink( 'Anterior_Commissure',
+      'PrepareSubject.StandardACPC.Anterior_Commissure' )
+    eNode.addLink( 'PrepareSubject.StandardACPC.Posterior_Commissure',
+      'Posterior_Commissure' )
+    eNode.addLink( 'Posterior_Commissure',
+      'PrepareSubject.StandardACPC.Posterior_Commissure' )
+    eNode.addLink( 'PrepareSubject.StandardACPC.Interhemispheric_Point',
+      'Interhemispheric_Point' )
+    eNode.addLink( 'Interhemispheric_Point',
+      'PrepareSubject.StandardACPC.Interhemispheric_Point' )
+    eNode.addLink( 'PrepareSubject.StandardACPC.Left_Hemisphere_Point',
+      'Left_Hemisphere_Point' )
+    eNode.addLink( 'Left_Hemisphere_Point',
+      'PrepareSubject.StandardACPC.Left_Hemisphere_Point' )
   self.setOptional( 'Normalised' )
   self.setOptional( 'Anterior_Commissure' )
   self.setOptional( 'Posterior_Commissure' )
@@ -454,13 +458,15 @@ def initialization( self ):
   if len( list( eNode.PrepareSubject.executionNode().children() ) ) == 1:
     self.perform_normalization = False
     self.signature[ 'perform_normalization' ].userLevel = 3
-  if not eNode.PrepareSubject.StandardACPC.isSelected():
+  if not hasattr( eNode.PrepareSubject, 'StandardACPC' ) \
+    or not eNode.PrepareSubject.StandardACPC.isSelected():
     eNode.TalairachTransformation.setSelected( False )
     self.perform_normalization = True
   else:
     self.perform_normalization = False
   x = changeTalairach( self )
-  eNode.PrepareSubject.StandardACPC._selectionChange.add( x )
+  if hasattr( eNode.PrepareSubject, 'StandardACPC' ):
+    eNode.PrepareSubject.StandardACPC._selectionChange.add( x )
   self.linkParameters( 'Normalised', 'perform_normalization', changeNormalize )
   x = changeUseridges( self )
   eNode.BiasCorrection.BiasCorrection05._selectionChange.add( x )
