@@ -70,6 +70,13 @@ class changeUseridges:
     self.proc.executionNode().SplitBrain.SplitBrain05.Use_ridges \
       = node.isSelected()
 
+class linkCheckModels:
+  def __init__( self, proc ):
+    self.proc = proc
+  def __call__( self, node ):
+    eNode = self.proc.executionNode()
+    eNode.CheckSPAMmodels.setSelected( eNode.SulciRecognition.isSelected() )
+
 
 def initialization( self ):
   def changeNormalize( self, proc ):
@@ -96,7 +103,13 @@ def initialization( self ):
         #self.changeSignature( self.signature )
     return self.Normalised
 
+
   eNode = SerialExecutionNode( self.name, parameterized=self )
+
+  reco = getProcess('recognitionGeneral')
+  if reco:
+    eNode.addChild( 'CheckSPAMmodels',
+      ProcessExecutionNode( 'check_spam_models', optional=1, selected=0 ) )
 
   eNode.addChild( 'PrepareSubject',
                   ProcessExecutionNode( 'acpcOrNormalization', optional = 1 ) )
@@ -137,10 +150,9 @@ def initialization( self ):
                                         optional = 1 ) )
 
 
-  reco = getProcess('recognitionGeneral')
   if reco:
     eNode.addChild( 'SulciRecognition',
-      ProcessExecutionNode('Sulci Recognition (both hemispheres)',
+      ProcessExecutionNode( 'Sulci Recognition (both hemispheres)',
         optional=1, selected=0 ) )
 
   # links
@@ -456,6 +468,7 @@ def initialization( self ):
 
     eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_1.LeftCorticalFoldsGraph_3_1.side = 'Left'
     eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.side = 'Right'
+    eNode.SulciRecognition._selectionChange.add( linkCheckModels( self ) )
 
   if len( list( eNode.PrepareSubject.executionNode().children() ) ) == 1:
     self.perform_normalization = False
