@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -100,7 +101,7 @@ def execution( self, context ):
       if os.path.exists(self.right_hemi_cortex.fullName() + '.loc'):
         context.write( "Right cortex locked" )
       else:
-        context.write( "Detecting right corrtex interface..." )
+        context.write( "Detecting right cortex interface..." )
         if self.use_ridges:
           context.system( "VipHomotopicSnake", "-i", Rbraing, "-h",
                         self.histo_analysis, "-o",
@@ -111,5 +112,5 @@ def execution( self, context ):
                         self.histo_analysis, "-o",
                         self.right_hemi_cortex, "-w", "t",
                         "-p", self.pressure )
-          tm.copyReferential(self.mri_corrected, self.right_hemi_cortex)
+        tm.copyReferential(self.mri_corrected, self.right_hemi_cortex)
 
