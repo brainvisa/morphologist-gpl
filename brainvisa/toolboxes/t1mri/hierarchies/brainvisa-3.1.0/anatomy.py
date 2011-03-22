@@ -114,6 +114,7 @@ t1mri_content = (
           "edges_<subject>", SetType( 'T1 MRI Edges' ),
           "mean_curvature_<subject>", SetType( 'T1 MRI Mean Curvature' ),
           "hfiltered_<subject>", SetType( 'T1 MRI Filtered For Histo' ),
+          "nobias_<subject>", SetType( 'Histogram' ),
           "nobias_<subject>", SetType( 'Histo Analysis' ),
 
           'segmentation',
