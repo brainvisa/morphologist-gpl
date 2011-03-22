@@ -124,7 +124,7 @@ def execution( self, context ):
     w2 = a.createWindow("3D", block=block, no_decoration=True)
     w3 = a.createWindow("3D", block=block, no_decoration=True)
     w4 = a.createWindow("3D", block=block, no_decoration=True)
-    
+	
     selfdestroy = []
     if self.nomenclature is not None:
         ( hie, br ) = context.runProcess( 'AnatomistShowNomenclature',
@@ -155,7 +155,9 @@ def execution( self, context ):
       nomenclature_property=nomenclatureprop )
     selfdestroy.append( right_graph )
     selfdestroy.append( left_graph )
-    
+	
+    cr = a.centralRef
+	
     if self.right_hemi_mesh is not None:
         right_mesh = a.loadObject( self.right_hemi_mesh, duplicate=True )
         selfdestroy.append( right_mesh )
@@ -165,13 +167,10 @@ def execution( self, context ):
         selfdestroy.append( left_mesh )
         left_mesh.setMaterial( a.Material(diffuse = [0.8, 0.8, 0.8, 1]) )
     
-    right_graphRef=right_graph.referential
-    left_graphRef=left_graph.referential
-    
-    w1.assignReferential( right_graphRef )
-    w2.assignReferential( left_graphRef )
-    w3.assignReferential( right_graphRef )
-    w4.assignReferential( left_graphRef )
+    w1.assignReferential( cr )
+    w2.assignReferential( cr )
+    w3.assignReferential( cr )
+    w4.assignReferential( cr )
     selfdestroy.append( w1 )
     selfdestroy.append( w2 )
     selfdestroy.append( w3 )
@@ -216,7 +215,7 @@ def execution( self, context ):
     # w1
     w_tempR = a.createWindow("3D", no_decoration=True, geometry = [self.snapshot_size, self.snapshot_size])
     w_tempR.showToolbox(0)
-    w_tempR.assignReferential( right_graphRef )
+    w_tempR.assignReferential( cr )
     w_tempR.addObjects( [right_graph], add_graph_nodes=True )
     if self.right_hemi_mesh is not None:
         w_tempR.addObjects( [right_mesh] )
@@ -240,7 +239,7 @@ def execution( self, context ):
     # w2
     w_tempL = a.createWindow("3D", no_decoration=True, geometry = [self.snapshot_size, self.snapshot_size])
     w_tempL.showToolbox(0)
-    w_tempL.assignReferential( left_graphRef )
+    w_tempL.assignReferential( cr )
     w_tempL.addObjects( [left_graph], add_graph_nodes=True )
     if self.left_hemi_mesh is not None:
         w_tempL.addObjects( [left_mesh] )
