@@ -32,7 +32,7 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 ###################################################
-# Created by A. Moreno - 2009-11-24               #
+# Created by A. Moreno - March 2011               #
 # using original file "AnatomistShowFoldGraph.py" #
 ###################################################
 
@@ -45,7 +45,7 @@ try:
 except:
   pass
 
-name = 'Anatomist Show Fold Graph 4 views'
+name = 'Anatomist Show Fold Graph 2 views - general'
 #roles = ('viewer',)
 userLevel = 0
 
@@ -64,12 +64,16 @@ signature = Signature(
     'nomenclature', ReadDiskItem( 'Nomenclature', 'Hierarchy' ),
     'right_hemi_mesh', ReadDiskItem( 'Right Hemisphere Mesh', 'Anatomist mesh formats' ),
     'left_hemi_mesh', ReadDiskItem( 'Left Hemisphere Mesh', 'Anatomist mesh formats' ), 
+    'view_quaternionR', String(),
+    'view_quaternionL', String(),
+    'observer_positionR', String(),
+    'observer_positionL', String(),
+    'mesh_transparency', Number(),
+    'zoom', Number(),
     'snapshot_size', Integer(),
     'output_image', WriteDiskItem( '2D Image', 'Aims image formats' ),
     'output_image_1', WriteDiskItem( '2D Image', 'Aims image formats' ),
     'output_image_2', WriteDiskItem( '2D Image', 'Aims image formats' ),
-    'output_image_3', WriteDiskItem( '2D Image', 'Aims image formats' ),
-    'output_image_4', WriteDiskItem( '2D Image', 'Aims image formats' ),
     )
 
 def initialization( self ):
@@ -80,9 +84,9 @@ def initialization( self ):
     def linkImage0( self, proc ):
       if self.right_graph is not None:
         subject = self.right_graph.get('subject')
-        return os.path.join( neuroConfig.temporaryDirectory, 'snapshot4views_' + subject + '.png' )
+        return os.path.join( neuroConfig.temporaryDirectory, 'snapshot2views_' + subject + '.png' )
       else:
-        return os.path.join( neuroConfig.temporaryDirectory, 'snapshot4views.png' )
+        return os.path.join( neuroConfig.temporaryDirectory, 'snapshot2views.png' )
     def linkImage( self, proc, n ):
       if self.output_image is not None:
         return self.output_image.fullName() + '_' + n \
@@ -95,16 +99,18 @@ def initialization( self ):
     self.linkParameters( 'right_hemi_mesh', 'right_graph' )
     self.linkParameters( 'left_hemi_mesh', 'left_graph' )
     self.nomenclature = self.signature[ 'nomenclature' ].findValue( {} )
+    self.view_quaternionR = '[0.66, -0.68, -0.3, 0.0]'
+    self.view_quaternionL = '[0.66, 0.68, 0.3, 0.0]'
+    self.observer_positionR = '[-35, 61.5, -20]'
+    self.observer_positionL = '[35, 61.5, -20]'
+    self.mesh_transparency = 0.6
+    self.zoom = 2.2
     self.snapshot_size = 400
     self.linkParameters( 'output_image', 'right_graph', linkImage0 )
     self.linkParameters( 'output_image_1', 'output_image',
       lambda self, proc: linkImage( self, proc, '1' ) )
     self.linkParameters( 'output_image_2', 'output_image',
       lambda self, proc: linkImage( self, proc, '2' ) )
-    self.linkParameters( 'output_image_3', 'output_image',
-      lambda self, proc: linkImage( self, proc, '3' ) )
-    self.linkParameters( 'output_image_4', 'output_image',
-      lambda self, proc: linkImage( self, proc, '4' ) )
 
 def execution( self, context ):
     
@@ -113,18 +119,14 @@ def execution( self, context ):
     context.write('Output file :' , self.output)
     snapshot1 = self.output_image_1.fullPath()
     snapshot2 = self.output_image_2.fullPath()
-    snapshot3 = self.output_image_3.fullPath()
-    snapshot4 = self.output_image_4.fullPath()
-    
+	
     a = anatomist.Anatomist()
-    
-    # view an object in a 4 views block
+	
+    # view an object in a 2 views block
     block = a.createWindowsBlock(2) # 2 columns
     w1 = a.createWindow("3D", block=block, no_decoration=True)
     w2 = a.createWindow("3D", block=block, no_decoration=True)
-    w3 = a.createWindow("3D", block=block, no_decoration=True)
-    w4 = a.createWindow("3D", block=block, no_decoration=True)
-	
+    
     selfdestroy = []
     if self.nomenclature is not None:
         ( hie, br ) = context.runProcess( 'AnatomistShowNomenclature',
@@ -156,104 +158,104 @@ def execution( self, context ):
     selfdestroy.append( right_graph )
     selfdestroy.append( left_graph )
 	
+    # Apply built-in referential to right and left graphs
+    right_graph.applyBuiltinReferential()
+    left_graph.applyBuiltinReferential()
+
     cr = a.centralRef
 	
     if self.right_hemi_mesh is not None:
         right_mesh = a.loadObject( self.right_hemi_mesh, duplicate=True )
         selfdestroy.append( right_mesh )
-        right_mesh.setMaterial( a.Material(diffuse = [0.8, 0.8, 0.8, 1]) )
+        right_mesh.setMaterial( a.Material(diffuse = [0.8, 0.8, 0.8, self.mesh_transparency]) )
+        # Apply built-in referential to right mesh
+        right_mesh.applyBuiltinReferential()
     if self.left_hemi_mesh is not None:
         left_mesh = a.loadObject( self.left_hemi_mesh, duplicate=True )
         selfdestroy.append( left_mesh )
-        left_mesh.setMaterial( a.Material(diffuse = [0.8, 0.8, 0.8, 1]) )
+        left_mesh.setMaterial( a.Material(diffuse = [0.8, 0.8, 0.8, self.mesh_transparency]) )
+        # Apply built-in referential to left mesh
+        left_mesh.applyBuiltinReferential()
     
     w1.assignReferential( cr )
     w2.assignReferential( cr )
-    w3.assignReferential( cr )
-    w4.assignReferential( cr )
     selfdestroy.append( w1 )
     selfdestroy.append( w2 )
-    selfdestroy.append( w3 )
-    selfdestroy.append( w4 )
     w1.addObjects( [right_graph], add_graph_nodes=True )
     w2.addObjects( [left_graph], add_graph_nodes=True )
-    w3.addObjects( [right_graph], add_graph_nodes=True )
-    w4.addObjects( [left_graph], add_graph_nodes=True )
 
     if self.right_hemi_mesh is not None:
         w1.addObjects( [right_mesh] )
-        w3.addObjects( [right_mesh] )
     if self.left_hemi_mesh is not None:
         w2.addObjects( [left_mesh] )
-        w4.addObjects( [left_mesh] )
     
     # hide toolbar/menu
     w1.showToolbox(0)
     w2.showToolbox(0)
-    w3.showToolbox(0)
-    w4.showToolbox(0)
 
-    # This was not working because of an Anatomist plugin (VTK?)
-    # Dominique has desactivated it for version 3.2
-    # This will be corrected for version 3.2.1
-    a.camera([w1], view_quaternion=[1, 0, 0, 0]) # Right hemisphere
-    a.camera([w2], view_quaternion=[1, 0, 0, 0]) # Left hemisphere
-    a.camera([w3], view_quaternion=[0.5, -0.5, -0.5, 0.5]) # Right hemisphere
-    a.camera([w4], view_quaternion=[0.5, 0.5, 0.5, 0.5]) # Left hemisphere
+    view_quaternionR = eval(self.view_quaternionR)
+    view_quaternionL = eval(self.view_quaternionL)
+    observer_positionR = eval(self.observer_positionR)
+    observer_positionL = eval(self.observer_positionL)
+    applied_zoomR = self.zoom
+    applied_zoomL = applied_zoomR
+ 
+    a.camera([w1], view_quaternion=view_quaternionR,observer_position=observer_positionR, zoom=applied_zoomR) # Right hemisphere
+    a.camera([w2], view_quaternion=view_quaternionL,observer_position=observer_positionL, zoom=applied_zoomL) # Left hemisphere
+    # Help about quaternions:
+    # http://brainvisa.info/doc/anatomist/ana_training/en/html/ch08s03.html
+    # http://fr.wikipedia.org/wiki/Quaternion
+    # http://code.google.com/p/coloradocollegegame/wiki/Quaternions
     # Important:
     # view_quaternion=[w, x, y, z]
     # Values found with the help of command "getInfos":
-    # quat=w1.getInfos()['view_quaternion']    
-    
-    a.execute("WindowConfig", windows=[w1,w2,w3,w4], cursor_visibility=0 )
-    
+    # quat=w1.getInfos()['view_quaternion']
+    #'ObjectInfo'
+    #{ 0 : { 'boundingbox_max' : [ 1, 1, 1 ], 
+    # 'boundingbox_min' : [ 0, 0, 0 ], 
+    # 'geometry' : [ 1248, 0, 424, 459 ], 
+    # 'group' : 0, 
+    # 'observer_position' : [ 0, 0, 0 ], 
+    # 'position' : [ 0, 0, 0, 0 ], 
+    # 'referential' : 1, 
+    # 'slice_quaternion' : [ 0, 0, 0, 1 ], 
+    # 'type' : 'AWindow', 
+    # 'view_quaternion' : [ 0.707107, 0, 0, 0.707107 ], 
+    # 'view_size' : [ 384, 384 ], 
+    # 'windowType' : '3D', 
+    # 'zoom' : 1 } }
+
+    a.execute("WindowConfig", windows=[w1,w2], cursor_visibility=0 )
+
     # making snapshots of the images
     # Problem with "raise" (recognized as a python command)
     # Solution: we pass all the parameters of "WindowConfig" as a dictionary
     
     # RIGHT HEMISPHERE
     # w1
-    w_tempR = a.createWindow("3D", no_decoration=True, geometry = [self.snapshot_size, self.snapshot_size])
+    w_tempR = a.createWindow("3D", no_decoration=True, geometry = [0, 0, self.snapshot_size, self.snapshot_size]) # [positionX, positionY, sizeX, sizeY]
     w_tempR.showToolbox(0)
     w_tempR.assignReferential( cr )
     w_tempR.addObjects( [right_graph], add_graph_nodes=True )
     if self.right_hemi_mesh is not None:
         w_tempR.addObjects( [right_mesh] )
-    a.camera([w_tempR], view_quaternion=[1, 0, 0, 0], zoom=0.9) # Right hemisphere
+    a.camera([w_tempR], view_quaternion=view_quaternionR, observer_position=observer_positionR, zoom=applied_zoomR) # Right hemisphere
     a.execute("WindowConfig", **{ 'windows': [w_tempR], 'cursor_visibility': 0, 'raise': 0, 'snapshot': snapshot1 } )
     my_objects = w_tempR.getInfos()['objects']
     w_tempR.removeObjects( my_objects )
     #
-    # w3
-    w_tempR.addObjects( [right_graph], add_graph_nodes=True )
-    if self.right_hemi_mesh is not None:
-        w_tempR.addObjects( [right_mesh] )
-    a.camera([w_tempR], view_quaternion=[0.5, -0.5, -0.5, 0.5], zoom=0.9) # Right hemisphere
-    a.execute("WindowConfig", **{ 'windows': [w_tempR], 'cursor_visibility': 0, 'raise': 0, 'snapshot': snapshot3 } )
-    my_objects = w_tempR.getInfos()['objects']
-    w_tempR.removeObjects( my_objects )
-    #
     a.closeWindows(w_tempR)
-    
+
     # LEFT HEMISPHERE
     # w2
-    w_tempL = a.createWindow("3D", no_decoration=True, geometry = [self.snapshot_size, self.snapshot_size])
+    w_tempL = a.createWindow("3D", no_decoration=True, geometry = [0, 0, self.snapshot_size, self.snapshot_size]) # [positionX, positionY, sizeX, sizeY]
     w_tempL.showToolbox(0)
     w_tempL.assignReferential( cr )
     w_tempL.addObjects( [left_graph], add_graph_nodes=True )
     if self.left_hemi_mesh is not None:
         w_tempL.addObjects( [left_mesh] )
-    a.camera([w_tempL], view_quaternion=[1, 0, 0, 0], zoom=0.9) # Left hemisphere
+    a.camera([w_tempL], view_quaternion=view_quaternionL, observer_position=observer_positionL, zoom=applied_zoomL) # Left hemisphere
     a.execute("WindowConfig", **{ 'windows': [w_tempL], 'cursor_visibility': 0, 'raise': 0, 'snapshot': snapshot2 } )
-    my_objects = w_tempL.getInfos()['objects']
-    w_tempL.removeObjects( my_objects )
-    #
-    # w4
-    w_tempL.addObjects( [left_graph], add_graph_nodes=True )
-    if self.left_hemi_mesh is not None:
-        w_tempL.addObjects( [left_mesh] )
-    a.camera([w_tempL], view_quaternion=[0.5, 0.5, 0.5, 0.5], zoom=0.9) # Left hemisphere
-    a.execute("WindowConfig", **{ 'windows': [w_tempL], 'cursor_visibility': 0, 'raise': 0, 'snapshot': snapshot4 } )
     my_objects = w_tempL.getInfos()['objects']
     w_tempL.removeObjects( my_objects )
     #
@@ -261,9 +263,9 @@ def execution( self, context ):
 
     # Creation of the mosaic image
     time.sleep(1) # wait 1 sec
-    mosaic( [snapshot1, snapshot3, snapshot2, snapshot4], self.output )
+    mosaic( [snapshot1, snapshot2], self.output )
 
-    self._dontdestroy = [block, w1, w2, w3, w4]
+    self._dontdestroy = [block, w1, w2]
     
     return selfdestroy
 
@@ -326,7 +328,8 @@ def mosaic(images, output):
     '''
     number = 1 # number of pages
     ratio = 1 # ratio of the size page (4./3, for example)
-    
+    border = 10
+
     # shape
     global_n = len(images)
     page_n = (global_n / number)
@@ -347,7 +350,8 @@ def mosaic(images, output):
         if number != 1:
             ind = output.rfind('.')
             output = output[:ind] + ('_%d' % i) + output[ind:]
-        cmd = "convert " + args + " -mosaic %s" % output
+        #cmd = "convert " + args + " -mosaic %s" % output
+        cmd = "convert " + args + " -border %s" % border + " -mosaic %s" % output
         print "cmd = ", cmd
         os.system(cmd)
         offset += page_n

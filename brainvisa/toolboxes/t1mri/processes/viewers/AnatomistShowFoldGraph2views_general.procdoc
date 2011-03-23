@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<minf expander="minf_2.0">
+<d>
+  <d name="fr">
+    <xhtml name="short">Visualiseur de 2 vues (hémisphère droit et hémisphère gauche) des maillages du cerveau avec les sillons</xhtml>
+    <d name="parameters">
+      <xhtml name="output_image_2">Image de sortie contenant la vue de l'hémisphère gauche (répertoire de sortie par défaut : /tmp/)</xhtml>
+      <xhtml name="right_graph">Graph des sillons de l'hémisphère droit</xhtml>
+      <xhtml name="output_image">Image de sortie contenant les 2 vues (répertoire de sortie par défaut : /tmp/)</xhtml>
+      <xhtml name="left_hemi_mesh">Maillage de l'hémisphère gauche du cerveau</xhtml>
+      <xhtml name="observer_positionR">Les paramètres de la vu d'observation pour le maillage de l'hémisphère droit</xhtml>
+      <xhtml name="nomenclature">Fichier de la nomenclature/hiérarchie des sillons</xhtml>
+      <xhtml name="view_quaternionL">Les paramètres de rotation en quaternions pour le maillage de l'hémisphère gauche</xhtml>
+      <xhtml name="mesh_transparency">Transparence des maillages</xhtml>
+      <xhtml name="view_quaternionR">Les paramètres de rotation en quaternions pour le maillage de l'hémisphère droit</xhtml>
+      <xhtml name="right_hemi_mesh">Maillage de l'hémisphère droit du cerveau</xhtml>
+      <xhtml name="observer_positionL">Les paramètres de la vu d'observation pour le maillage de l'hémisphère gauche</xhtml>
+      <xhtml name="output_image_1">Image de sortie contenant la vue de l'hémisphère droit (répertoire de sortie par défaut : /tmp/)</xhtml>
+      <xhtml name="left_graph">Graph des sillons de l'hémisphère gauche</xhtml>
+      <xhtml name="snapshot_size">Taille de la capture d'écran (pixels par côté -la fenêtre est carrée-)</xhtml>
+      <xhtml name="zoom">Zoom des vues</xhtml>
+    </d>
+    <xhtml name="long">Cet afficheur visualise 2 vues des hémisphères droit et gauche respectivement et enregistre des captures d'écran automatiquement.
+
+Si l'on travaille sur une base de données, il suffit de remplir le champ "right_graph", le reste est rempli automatiquement.
+
+A la fin de l'exécution du traitement deux fenêtre restent ouvertes : le "browser" de la hiérarchie (sulcal_root_colors.hie) et le bloc des 2 vues (hémisphère droit et hémisphère gauche).
+
+Pour plus d'information sur la rotation avec les quaternions :
+http://brainvisa.info/doc/anatomist/ana_training/en/html/ch08s03.html
+http://fr.wikipedia.org/wiki/Quaternion
+http://code.google.com/p/coloradocollegegame/wiki/Quaternions
+</xhtml>
+  </d>
+  <d name="en">
+    <xhtml name="short">Viewer of 2 views (right and left hemispheres) of the brain meshes with their sulci</xhtml>
+    <d name="parameters">
+      <xhtml name="output_image_2">Output image containing the left hemisphere view (default output directory: /tmp/)</xhtml>
+      <xhtml name="right_graph">Right hemisphere sulci graph</xhtml>
+      <xhtml name="output_image">Output image containing the 2 views (default output directory: /tmp/)</xhtml>
+      <xhtml name="left_hemi_mesh">Left hemisphere mesh</xhtml>
+      <xhtml name="observer_positionR">Parameters of the observer position for the right hemisphere mesh</xhtml>
+      <xhtml name="nomenclature">Sulci nomenclature/hierarchy file</xhtml>
+      <xhtml name="view_quaternionL">Parameters of quaternion rotation for the left hemisphere mesh</xhtml>
+      <xhtml name="mesh_transparency">Meshes transparency</xhtml>
+      <xhtml name="view_quaternionR">Parameters of quaternion rotation for the right hemisphere mesh</xhtml>
+      <xhtml name="right_hemi_mesh">Right hemisphere mesh</xhtml>
+      <xhtml name="observer_positionL">Parameters of the observer position for the left hemisphere mesh</xhtml>
+      <xhtml name="output_image_1">Output image containing the right hemisphere view (default output directory: /tmp/)</xhtml>
+      <xhtml name="left_graph">Left hemisphere sulci graph</xhtml>
+      <xhtml name="snapshot_size">Snapshot size (pixels per side -the window is a square-)</xhtml>
+      <xhtml name="zoom">Zoom of the views</xhtml>
+    </d>
+    <xhtml name="long">This viewer displays 2 views of right and left hemispheres respectively and saves the snapshots automatically.
+
+If working on a database, only field "right_graph" has to be filled.
+
+At the end of the processing two windows will remain open: the hierarchy (sulcal_root_colors.hie) browser and the 2 views block (right and left hemispheres).
+
+For more information about rotation using quaternions:
+http://brainvisa.info/doc/anatomist/ana_training/en/html/ch08s03.html
+http://fr.wikipedia.org/wiki/Quaternion
+http://code.google.com/p/coloradocollegegame/wiki/Quaternions
+</xhtml>
+  </d>
+</d>
+</minf>
