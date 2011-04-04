@@ -33,7 +33,7 @@
 from neuroProcesses import *
 import registration
 
-name = 'Ana Get Spherical Hemi Surface'
+name = 'Get Spherical Hemi Surface'
 userLevel = 2
 
 # Argument declaration
@@ -79,7 +79,7 @@ def execution( self, context ):
         context.write("Computing skeleton...")
         skeleton = context.temporary( 'GIS Image' )
         roots = context.temporary( 'GIS Image' )
-        context.system( "VipSkeleton", "-i", self.left_hemi_cortex, "-so", skeleton, "-ro", roots, "-g", braing, "-w", "t" )
+        context.system( "VipSkeleton", "-i", self.left_hemi_cortex, "-so", skeleton, "-vo", roots, "-g", braing, "-w", "t" )
         
         context.write("Reconstructing left hemisphere surface...")
         hemi = context.temporary( 'GIS Image' )
@@ -111,7 +111,7 @@ def execution( self, context ):
         context.write("Computing skeleton...")
         skeleton = context.temporary( 'GIS Image' )
         roots = context.temporary( 'GIS Image' )
-        context.system( "VipSkeleton", "-i", self.right_hemi_cortex, "-so", skeleton,  "-ro", roots, "-g", braing, "-w", "t" )
+        context.system( "VipSkeleton", "-i", self.right_hemi_cortex, "-so", skeleton,  "-vo", roots, "-g", braing, "-w", "t" )
         
         context.write("Reconstructing right hemisphere surface...")
         hemi = context.temporary( 'GIS Image' )
