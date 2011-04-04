@@ -113,8 +113,8 @@ def execution( self, context ):
       elif self.variant == "Fast (selected erosion)":
         call_list = ['-m', "fast"]
       elif self.variant == "2010":
-        call_list = [ '-m', "V" ]
-        constant_list += [ '-vthreshold', self.variance_threshold, '-Variancename', self.variance.fullPath(), '-Edgesname', self.edges.fullPath() ]
+        call_list = [ '-m', "V"]
+        constant_list += [ '-vthreshold', self.variance_threshold, '-Variancename', self.variance.fullPath(), '-Edgesname', self.edges.fullPath(), '-Ridge', self.white_ridges.fullPath()]
       else:
         raise RuntimeError( _t_( 'Variant <em>%s</em> not implemented' ) % self.variant )
       result = []

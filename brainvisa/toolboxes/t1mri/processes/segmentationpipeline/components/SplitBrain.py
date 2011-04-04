@@ -38,6 +38,7 @@ userLevel = 2
 signature = Signature(
   'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
       'Aims readable volume formats' ),
+  'mode', Choice("Voronoi", "Watershed (2011)"),
   'variant', Choice("regularized","GW Barycentre","WM Standard Deviation"),
   'split_mask', WriteDiskItem( "Voronoi Diagram",
       'Aims writable volume formats' ),
@@ -69,12 +70,13 @@ def initialization( self ):
   self.Use_ridges = "True"
   self.setOptional('white_ridges')
   self.visu = "No"
+  self.mode = "Watershed (2011)"
   self.variant = "GW Barycentre"
   self.voronoi_template = self.signature[ 'voronoi_template' ].findValue( {} )
   self.Use_template = "True"
   self.setOptional('voronoi_template')
   self.setOptional('Commissure_coordinates')
-  self.bary_factor = "0.5"
+  self.bary_factor = "0.6"
   self.setOptional('bary_factor')
   self.initial_erosion = 2
   self.cc_min_size = 500
@@ -106,6 +108,7 @@ def execution( self, context ):
                      '-brain', self.brain_mask.fullPath(),
                      '-analyse', 'r', '-hname', self.histo_analysis.fullPath(),
                      '-output', self.split_mask.fullPath(),
+                     '-mode', self.mode,
                      '-erosion', self.initial_erosion,
                      '-ccsize', self.cc_min_size]
       result = []

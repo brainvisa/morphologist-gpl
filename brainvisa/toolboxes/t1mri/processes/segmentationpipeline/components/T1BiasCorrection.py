@@ -49,6 +49,7 @@ signature = Signature(
   'sampling', Float(),
   'field_rigidity', Float(),
   'zdir_multiply_regul',Float(),
+  'wridges_weight',Float(),
   'ngrid', Integer(),
   'write_hfiltered', Choice('yes','no'),
   'hfiltered', WriteDiskItem( "T1 MRI Filtered For Histo",
@@ -90,6 +91,7 @@ def initialization( self ):
   self.write_meancurvature = 'no'
   self.write_edges = 'yes'
   self.field_rigidity = 20
+  self.wridges_weight = 20.
   self.sampling = 16 
   self.ngrid = 2
   self.zdir_multiply_regul = 0.5
@@ -117,7 +119,7 @@ def execution( self, context ):
       context.write('Remove',self.mri_corrected.fullName(),'.loc if you want to trigger a new correction')
     else:
         option_list = []
-        constant_list = ['VipT1BiasCorrection', '-i', self.mri.fullPath(), '-o', self.mri_corrected.fullPath() , '-Fwrite', self.write_field, '-field', self.field.fullPath(), '-Wwrite', self.write_wridges, '-wridge', self.white_ridges.fullPath(),'-Kregul', self.field_rigidity, '-sampling',  self.sampling, '-Grid', self.ngrid, '-ZregulTuning', self.zdir_multiply_regul, '-vp',self.variance_fraction,'-e',edge, '-eWrite', self.write_edges, '-ename', self.edges.fullPath(), '-vWrite', self.write_variance, '-vname', self.variance.fullPath(), '-mWrite',self.write_meancurvature, '-mname', self.meancurvature.fullPath(), '-hWrite', self.write_hfiltered, '-hname', self.hfiltered.fullPath(), '-Last', self.delete_last_n_slices]
+        constant_list = ['VipT1BiasCorrection', '-i', self.mri.fullPath(), '-o', self.mri_corrected.fullPath() , '-Fwrite', self.write_field, '-field', self.field.fullPath(), '-Wwrite', self.write_wridges, '-wridge', self.white_ridges.fullPath(),'-Kregul', self.field_rigidity, '-sampling',  self.sampling, '-Kcrest', self.wridges_weight, '-Grid', self.ngrid, '-ZregulTuning', self.zdir_multiply_regul, '-vp',self.variance_fraction,'-e',edge, '-eWrite', self.write_edges, '-ename', self.edges.fullPath(), '-vWrite', self.write_variance, '-vname', self.variance.fullPath(), '-mWrite',self.write_meancurvature, '-mname', self.meancurvature.fullPath(), '-hWrite', self.write_hfiltered, '-hname', self.hfiltered.fullPath(), '-Last', self.delete_last_n_slices]
         if self.Commissure_coordinates is not None:
           option_list += ['-Points', self.Commissure_coordinates.fullPath()]
         if self.mode == "write_minimal without correction":
