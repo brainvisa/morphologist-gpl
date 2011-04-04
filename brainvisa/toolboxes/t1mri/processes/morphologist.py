@@ -139,7 +139,7 @@ def initialization( self ):
                                          optional = 1 ) )
 
   eNode.addChild( 'HemispheresMesh',
-                  ProcessExecutionNode( 'AnaGetOpenedHemiSurface',
+                  ProcessExecutionNode( 'GetHemiSurfaceGeneral',
                                         optional = 1 ) )
 
   eNode.addChild( 'HeadMesh', ProcessExecutionNode( 'headMesh',
