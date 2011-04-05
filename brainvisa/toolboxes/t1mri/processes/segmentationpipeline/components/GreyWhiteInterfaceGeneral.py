@@ -73,10 +73,10 @@ def initialization( self ):
   eNode1 = SelectionExecutionNode( 'Grey/White Mesh', optional=1, selected=1 )
   eNode1.addChild( 'GreyWhiteInterface05', 
                    ProcessExecutionNode( 'ComputeGreyWhiteInterface',
-                                         selected = 0 ) )
+                                         selected = 1 ) )
   eNode1.addChild( 'GreyWhiteMesh',
                    ProcessExecutionNode( 'AnaGetSphericalCorticalSurface',
-                                         selected = 1 ) )
+                                         selected = 0 ) )
   eNode.addChild( 'GreyWhiteMesh', eNode1 )
 
   # break internal links
