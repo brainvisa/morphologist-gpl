@@ -97,7 +97,7 @@ def initialization( self ):
   self.zdir_multiply_regul = 0.5
   self.variance_fraction = 75
   self.edge_mask = 'yes'
-  self.delete_last_n_slices = '0'
+  self.delete_last_n_slices = 'auto'
   self.setOptional('Commissure_coordinates')
   self.linkParameters( 'Commissure_coordinates', 'mri_corrected' )
 
