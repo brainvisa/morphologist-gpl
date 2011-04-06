@@ -471,6 +471,13 @@ def initialization( self ):
   x = changeUseridges( self )
   eNode.BiasCorrection.BiasCorrection05._selectionChange.add( x )
 
+  # set 2007 settings in sub-processes
+  eNode.GreyWhiteInterface.GreyWhiteMesh.GreyWhiteInterface05.setSelected( False )
+  eNode.GreyWhiteInterface.GreyWhiteMesh.GreyWhiteMesh.setSelected( True )
+  eNode.BiasCorrection.BiasCorrection05.delete_last_n_slices = 0
+  eNode.SplitBrain.SplitBrain05.mode = 'Voronoi'
+  eNode.SplitBrain.SplitBrain05.bary_factor = 0.5
+
   self.setExecutionNode( eNode )
 
   # just for now, still stick with AC/PC for test and compatibility
