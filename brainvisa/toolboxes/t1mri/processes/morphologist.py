@@ -331,8 +331,8 @@ def initialization( self ):
 
 
   eNode.HemispheresMesh.removeLink( 'brain_voronoi', 'mri_corrected' )
-  eNode.HemispheresMesh.removeLink( 'left_hemi_cortex', 'brain_voronoi' )
-  eNode.HemispheresMesh.removeLink( 'right_hemi_cortex', 'left_hemi_cortex' )
+  eNode.HemispheresMesh.removeLink( 'left_hemi_cortex', 'mri_corrected' )
+  eNode.HemispheresMesh.removeLink( 'right_hemi_cortex', 'mri_corrected' )
 
   eNode.addLink( 'HemispheresMesh.mri_corrected',
                  'BiasCorrection.mri_corrected' )
