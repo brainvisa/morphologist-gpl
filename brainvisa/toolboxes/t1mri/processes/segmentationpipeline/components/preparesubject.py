@@ -135,8 +135,12 @@ def execution( self, context ):
     def norm( v ):
       return math.sqrt( v[0] * v[0] + v[1] * v[1] + v[2] * v[2] )
     def normalize( v ):
-      n = 1. / norm(v)
-      return ( v[0] * n, v[1] * n, v[2] * n )
+      nrm = norm(v)
+      if nrm == 0.:
+        return v
+      else:
+        n = 1. / norm(v)
+        return ( v[0] * n, v[1] * n, v[2] * n )
     def vecscale( v, scl ):
       return ( v[0] * scl, v[1] * scl, v[2] * scl )
 
@@ -173,6 +177,10 @@ def execution( self, context ):
     # determine rotation between z axis and v2
     z = ( 0, 0, 1 )
     p = dot( z, v2_1 )
+    if p > 1.:
+      p = 1.
+    elif p < -1.:
+      p = -1.
     alpha = math.acos( p )
     q = dot( normalize( vecproduct( z, v2_1 ) ), y )
     if q >= 0:
