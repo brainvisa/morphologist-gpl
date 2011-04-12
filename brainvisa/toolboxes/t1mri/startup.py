@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -34,6 +35,11 @@ import os, re
 import neuroConfig
 import neuroHierarchy
 import distutils.spawn
+from soma.wip.application.api import Application
+import neuroProcesses
+import subprocess
+
+configuration = Application().configuration
 
 # if FSL is present: setup a database for FSL templates
 fsldir = os.getenv( 'FSLDIR' )
@@ -61,68 +67,47 @@ del fsldir
 
 # if Matlab and SPM are found: setup a database for SPM templates
 
-spm = 'spm5.m'
 spmscript = None
-for p in neuroConfig.matlabPath:
-  if os.path.exists( os.path.join( p, spm ) ):
-    spmscript = os.path.join( p, spm )
-    break
-if not spmscript:
-  for p in neuroConfig.matlabPath:
-    if os.path.exists( os.path.join( p, 'spm.m' ) ):
-      spmscript = os.path.join( p, 'spm.m' )
-      break
-if not spmscript:
-  mexe = distutils.spawn.find_executable( neuroConfig.matlabExecutable )
-  #if not mexe:
-    #print 'matlab executable not found'
-  if mexe:
-    #print mexe
-    mexe2 = None
-    mre = re.compile( '^\s*MATLAB\s*=\s*(.*)$' )
-    for l in open( mexe ).xreadlines():
-      x = mre.match( l )
-      if x:
-        mexe2 = x.group(1)
-        if os.path.exists(mexe2):
-          break
-        else:
-          mexe2=None
-    if mexe2 is None:
-      mexe2 = mexe
-    mexe2 = os.path.realpath( mexe2 )
-    #print mexe2
-    del mexe, mre
-    mdir = os.path.dirname( mexe2 )
-    if os.path.basename( mdir ) == 'bin':
-      mdir = os.path.dirname( mdir )
-    #print 'matlab dir:', mdir
-    del mexe2
-    mtoolbox = os.path.join( mdir, 'toolbox', 'local' )
-    #print mtoolbox
-    spmscript = os.path.join( mtoolbox, spm )
-    #print spmscript
-    if not os.path.exists( spmscript ):
-      spmscript = os.path.join( mtoolbox, 'spm.m' )
-      if not os.path.exists( spmscript ):
-        #print 'spm script not found'
-        spmscript=None
-    del mtoolbox, mdir
-    if spmscript:
-      spmscript = os.path.realpath( spmscript )
-      #print 'spm script:', spmscript
-      pre = re.compile( '^\s*.*path\s*\(\s*\'([^\']*)\'' )
-      spmdir = None
-      for l in open( spmscript ).xreadlines():
-        x = pre.match( l )
-        if x:
-          #print l, x.groups()
-          spmdir = x.group(1)
-      del pre
-      if spmdir is None:
-        spmdir = os.path.dirname( spmscript )
-      #print 'SPM dir:', spmdir
-if spmscript:
+spmdir = None
+
+if configuration.SPM.spm5_path == '' and configuration.SPM.check_spm_path:
+  mexe = distutils.spawn.find_executable( \
+    configuration.matlab.executable )
+  c = neuroProcesses.defaultContext()
+  mscfile = c.temporary( 'Matlab Script' )
+  spmf = c.temporary( 'Text File' )
+  mscfn = mscfile.fullPath()
+  mscript = '''a = which( 'spm5' );
+if ~isempty( a )
+  spm5;
+end
+spmpath = which( 'spm' );
+f = fopen( ''' + "'" + spmf.fullPath() + "'" + ''', 'w' );
+fprintf( f, '%s\\n', spmpath );
+exit;
+'''
+  open( mscfn, 'w' ).write( mscript )
+  print mscfn
+  pd = os.getcwd()
+  os.chdir( os.path.dirname( mscfn ) )
+  cmd = [ mexe ] + configuration.matlab.options.split() \
+    + [ '-r', os.path.basename( mscfile.fullName() ) ]
+  # print 'running matlab command:', cmd
+  try:
+    subprocess.check_call( cmd )
+    spmscript = open( spmf.fullPath() ).read().strip()
+    spmpath = os.path.dirname( spmscript )
+    configuration.SPM.spm5_path = spmpath
+    configuration.save( neuroConfig.userOptionFile )
+    del spmscript
+  except Exception, e:
+    print 'could not run Matlab script:', e
+  os.chdir( pd )
+  del mexe, mscfn, mscript, spmf, mscfile, c, cmd, pd
+
+if configuration.SPM.spm5_path:
+  spmdir = configuration.SPM.spm5_path
+  # print 'SPM dir:', spmdir
   spmtemplates = os.path.join( spmdir, 'templates' )
   #print 'spmtemplates:', spmtemplates
   dbs = neuroConfig.DatabaseSettings( spmtemplates )
@@ -139,7 +124,5 @@ if spmscript:
   neuroHierarchy.databases.add( db )
   db.clear()
   db.update( context=defaultContext() )
-  del dbs, db, spmtemplates
+  del dbs, db, spmtemplates, spmdir
 
-del spmscript
-del spm
