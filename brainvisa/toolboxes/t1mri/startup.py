@@ -38,11 +38,29 @@ import distutils.spawn
 from soma.wip.application.api import Application
 import neuroProcesses
 import subprocess
+import glob
 
 configuration = Application().configuration
 
 # if FSL is present: setup a database for FSL templates
 fsldir = os.getenv( 'FSLDIR' )
+if not fsldir and distutils.spawn.find_executable( 'fslview' ):
+  # probably a system-wide linux installation like on Ubuntu
+  if os.path.isdir( '/usr/share/fsl/data' ):
+    fsldir = '/usr/share/fsl'
+    if not configuration.FSL.fsl_commands_prefix \
+      and not distutils.spawn.find_executable( 'flirt' ):
+        versions = [ v for v in os.listdir( os.path.join( fsldir ) ) \
+          if v != 'data' ]
+        versionsi = [ v.split( '.' ) for v in versions ]
+        try:
+          versionsi = [ int( v[0] ) * 0x100 + int( v[1] ) for v in versionsi ]
+          version = versionsi.index( max( versionsi ) )
+          fsl_prefix = 'fsl' + versions[ version ] + '-'
+          if distutils.spawn.find_executable( fsl_prefix + 'flirt' ):
+            configuration.FSL.fsl_commands_prefix = fsl_prefix
+        except:
+          print 'could not read FSL versions'
 if fsldir and os.path.exists( fsldir ):
   fslshare = os.path.join( fsldir, 'data' )
   if os.path.exists( fslshare ):

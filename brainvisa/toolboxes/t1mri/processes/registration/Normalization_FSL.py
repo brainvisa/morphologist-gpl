@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -35,34 +36,42 @@ import shfjGlobals
 import registration
 import os
 import commands
+from soma.wip.application.api import Application
 
 def validation():
+  configuration = Application().configuration
   import distutils.spawn
-  if not distutils.spawn.find_executable( 'flirt' ):
+  if not distutils.spawn.find_executable( \
+    configuration.FSL.fsl_commands_prefix + 'flirt' ):
     raise ValidationError(_t_('FSL flirt commandline could not be found'))
 
 name = 'Anatomy Normalization (using FSL)'
 userLevel = 0
 
 # copied from fmri python/neurospy/bvfunc/FSL_pre_processing.py
-def NormalizeAnat(anat, templatet1, normAnat, norm_matrix, searcht1="NASO"):
+def NormalizeAnat(context, anat, templatet1, normAnat, norm_matrix,
+  searcht1="NASO"):
     """
     Form the normalization of anatomical images using FSL
     """
     if searcht1 == "AVA":
-        s1 = "-searchrx -0 0 -searchry -0 0 -searchrz -0 0"
+        s1 = [ "-searchrx", '-0', '0', '-searchry', '-0', '0', '-searchrz',
+          '-0', "0" ]
     elif (searcht1 == "NASO"):
-        s1 = "-searchrx -90 90 -searchry -90 90 -searchrz -90 90"
+        s1 = [ "-searchrx", -90, 90, '-searchry', -90, 90, '-searchrz',
+          -90, 90 ]
     elif (searcht1 == "IO"):
-        s1 = "-searchrx -180 180 -searchry -180 180 -searchrz -180 180"
+        s1 = [ "-searchrx", -180, 180, '-searchry', -180, 180, '-searchrz',
+          -180, 180 ]
     else:
-        s1 = ""
+        s1 = []
     if normAnat is not None:
-      s1 += " -out '%s'" % normAnat
-    print "T1 MRI on Template\n"
-    print commands.getoutput("flirt -in '%s' -ref '%s' -omat '%s' \
-    -bins 1024 -cost corratio %s -dof 12" \
-                             % (anat, templatet1, norm_matrix, s1) )
+      s1 += [ '-out', normAnat ]
+    configuration = Application().configuration
+    cmd = [ configuration.FSL.fsl_commands_prefix + 'flirt',
+      '-in', anat, '-ref', templatet1, '-omat', norm_matrix, '-bins', 1024,
+      '-cost', 'corratio' ] +  s1 + [ '-dof', 12 ]
+    context.system( *cmd )
     print "Finished"
 
 
@@ -99,7 +108,7 @@ def execution( self, context ):
     s1 = 'NASO'
   elif self.Alignment == 'Incorrectly Oriented':
     s1 = 'IO'
-  NormalizeAnat(anat, template, normanat, snmat, s1)
+  NormalizeAnat(context, anat, template, normanat, snmat, s1)
   # get image orientations in current formats
   srcatts = shfjGlobals.aimsVolumeAttributes( self.anatomy_data )
   srcs2m = srcatts.get( 'storage_to_memory', None )
