@@ -34,7 +34,7 @@
 from neuroProcesses import *
 import registration
 
-name = 'Cortical Fold Graph (3.1+)'
+name = 'Graph Structure (3.1)'
 userLevel = 2
 
 # Argument declaration
@@ -57,13 +57,14 @@ signature = Signature(
   'Talairach_transform',
   ReadDiskItem( 'Transform Raw T1 MRI to Talairach-AC/PC-Anatomist',
                 'Transformation matrix' ),
+  'compute_fold_meshes', Boolean(),
+  'allow_multithreading', Boolean(),
  )
 
 
-# Default values
 def initialization( self ):
   def linkSide( self, proc ):
-    p = ReadDiskItem( 'CSF+GREY Mask', 'GIS image' )
+    p = ReadDiskItem( 'CSF+GREY Mask', 'aims readable volume formats' )
     return p.findValue( self.mri_corrected,
                         requiredAttributes = { 'side' : self.side.lower() } )
 
@@ -81,61 +82,46 @@ def initialization( self ):
   self.linkParameters( 'roots', 'skeleton' )
   self.linkParameters( 'commissure_coordinates', 'mri_corrected' )
   self.linkParameters( 'Talairach_transform', 'split_mask' )
+  self.compute_fold_meshes = True
   self.setOptional( 'commissure_coordinates' )
+  self.allow_multithreading = True
 
-  eNode = SerialExecutionNode( self.name, parameterized = self )
-  eNode.addChild( 'GraphStructure',
-                   ProcessExecutionNode( 'graphstructure_3_1', optional = 1 ) )
-  eNode.addChild( 'SulciVoronoi',
-                   ProcessExecutionNode( 'SulciVoronoi', optional = 1 ) )
-  eNode.addChild( 'CorticalFoldsGraphThickness',
-                   ProcessExecutionNode( 'CorticalFoldsGraphThickness',
-                   optional = 1 ) )
-  #self.clearLinksTo( eNode.parseParameterString( 'CorticalFoldsGraphThickness.hemi_cortex' ) )
-  #self.clearLinksTo( eNode.parseParameterString( 'CorticalFoldsGraphThickness.output_graph' ) )
-  eNode.GraphStructure.clearLinksTo( 'hemi_cortex' )
-  eNode.GraphStructure.clearLinksTo( 'split_mask' )
-  eNode.GraphStructure.clearLinksTo( 'graph' )
-  eNode.SulciVoronoi.clearLinksTo( 'hemi_cortex' )
-  eNode.CorticalFoldsGraphThickness.clearLinksTo( 'hemi_cortex' )
-  eNode.CorticalFoldsGraphThickness.clearLinksTo( 'output_graph' )
-  eNode.CorticalFoldsGraphThickness.clearLinksTo( 'sulci_voronoi' )
-  eNode.addLink( 'GraphStructure.side', 'side' )
-  eNode.addLink( 'side', 'GraphStructure.side' )
-  eNode.addLink( 'GraphStructure.mri_corrected', 'mri_corrected' )
-  eNode.addLink( 'mri_corrected', 'GraphStructure.mri_corrected' )
-  eNode.addLink( 'GraphStructure.split_mask', 'split_mask' )
-  eNode.addLink( 'split_mask', 'GraphStructure.split_mask' )
-  eNode.addLink( 'GraphStructure.hemi_cortex', 'hemi_cortex' )
-  eNode.addLink( 'hemi_cortex', 'GraphStructure.hemi_cortex' )
-  eNode.addLink( 'GraphStructure.skeleton', 'skeleton' )
-  eNode.addLink( 'skeleton', 'GraphStructure.skeleton' )
-  eNode.addLink( 'GraphStructure.roots', 'roots' )
-  eNode.addLink( 'roots', 'GraphStructure.roots' )
-  eNode.addLink( 'GraphStructure.graph_version', 'graph_version' )
-  eNode.addLink( 'graph_version', 'GraphStructure.graph_version' )
-  eNode.addLink( 'GraphStructure.graph', 'graph' )
-  eNode.addLink( 'graph', 'GraphStructure.graph' )
-  eNode.addLink( 'GraphStructure.commissure_coordinates',
-    'commissure_coordinates' )
-  eNode.addLink( 'commissure_coordinates',
-    'GraphStructure.commissure_coordinates' )
-  eNode.addLink( 'GraphStructure.Talairach_transform', 'Talairach_transform' )
-  eNode.addLink( 'Talairach_transform', 'GraphStructure.Talairach_transform' )
 
-  eNode.addLink( 'SulciVoronoi.graph', 'graph' )
-  eNode.addLink( 'graph', 'GraphStructure.graph' )
-  eNode.addLink( 'SulciVoronoi.hemi_cortex', 'hemi_cortex' )
-  eNode.addLink( 'hemi_cortex', 'SulciVoronoi.hemi_cortex' )
-  eNode.addLink( 'CorticalFoldsGraphThickness.graph', 'graph' )
-  eNode.addLink( 'graph', 'CorticalFoldsGraphThickness.graph' )
-  eNode.addLink( 'CorticalFoldsGraphThickness.hemi_cortex', 'hemi_cortex' )
-  eNode.addLink( 'hemi_cortex', 'CorticalFoldsGraphThickness.hemi_cortex' )
-  eNode.addLink( 'CorticalFoldsGraphThickness.output_graph', 'graph' )
-  eNode.addLink( 'graph', 'CorticalFoldsGraphThickness.output_graph' )
-  eNode.addLink( 'SulciVoronoi.sulci_voronoi',
-    'CorticalFoldsGraphThickness.sulci_voronoi' )
-  eNode.addLink( 'CorticalFoldsGraphThickness.sulci_voronoi',
-    'SulciVoronoi.sulci_voronoi' )
-  self.setExecutionNode( eNode )
+def execution( self, context ):
+  context.write( "Masking Bias corrected image with hemisphere masks...")
+  braing = context.temporary( 'NIFTI-1 Image' )
+  if self.side == 'Left':
+    masklabel = '2'
+  else:
+    masklabel = '1'
+  context.system( 'VipMask', '-i', self.mri_corrected, "-m",
+                  self.split_mask, "-o", braing,
+                  "-w", "t", "-l", masklabel )
+
+  context.write("Computing skeleton and buried gyrus watershed...")
+  context.system( "VipSkeleton", "-i", self.hemi_cortex,
+                  "-so", self.skeleton, "-vo",
+                  self.roots, "-g", braing, "-w", "t" )
+
+  context.write("Building Attributed Relational Graph...")
+  graphd = context.temporary( 'Directory' )
+  graph = os.path.join( graphd.fullPath(), 'foldgraph' )
+  context.system( "VipFoldArg", "-i", self.skeleton, "-v",
+                  self.roots, "-o", graph, "-w", "g" )
+
+  attp = [ 'AimsFoldArgAtt', '-i', self.skeleton.fullPath(), '-g',
+           graph + '.arg', '-o', self.graph.fullPath(),
+           '-m', self.Talairach_transform, '--graphversion',
+           self.graph_version ]
+  if not self.compute_fold_meshes:
+    attp.append( '-n' )
+  if self.commissure_coordinates:
+    attp += [ '--apc', self.commissure_coordinates ]
+  if not self.allow_multithreading:
+    attp += [ '--threads', '1' ]
+  context.system( *attp )
+  trManager = registration.getTransformationManager()
+  trManager.copyReferential( self.mri_corrected, self.skeleton )
+  trManager.copyReferential( self.mri_corrected, self.roots )
+  trManager.copyReferential( self.mri_corrected, self.graph )
 
