@@ -91,37 +91,40 @@ spmdir = None
 if configuration.SPM.spm5_path == '' and configuration.SPM.check_spm_path:
   mexe = distutils.spawn.find_executable( \
     configuration.matlab.executable )
-  c = neuroProcesses.defaultContext()
-  mscfile = c.temporary( 'Matlab Script' )
-  spmf = c.temporary( 'Text File' )
-  mscfn = mscfile.fullPath()
-  mscript = '''a = which( 'spm5' );
-if ~isempty( a )
-  spm5;
-end
-spmpath = which( 'spm' );
-f = fopen( ''' + "'" + spmf.fullPath() + "'" + ''', 'w' );
-fprintf( f, '%s\\n', spmpath );
-exit;
-'''
-  open( mscfn, 'w' ).write( mscript )
-  print mscfn
-  pd = os.getcwd()
-  os.chdir( os.path.dirname( mscfn ) )
-  cmd = [ mexe ] + configuration.matlab.options.split() \
-    + [ '-r', os.path.basename( mscfile.fullName() ) ]
-  # print 'running matlab command:', cmd
-  try:
-    subprocess.check_call( cmd )
-    spmscript = open( spmf.fullPath() ).read().strip()
-    spmpath = os.path.dirname( spmscript )
-    configuration.SPM.spm5_path = spmpath
-    configuration.save( neuroConfig.userOptionFile )
-    del spmscript
-  except Exception, e:
-    print 'could not run Matlab script:', e
-  os.chdir( pd )
-  del mexe, mscfn, mscript, spmf, mscfile, c, cmd, pd
+  if mexe :
+    c = neuroProcesses.defaultContext()
+    mscfile = c.temporary( 'Matlab Script' )
+    spmf = c.temporary( 'Text File' )
+    mscfn = mscfile.fullPath()
+    mscript = '''a = which( 'spm5' );
+  if ~isempty( a )
+    spm5;
+  end
+  spmpath = which( 'spm' );
+  f = fopen( ''' + "'" + spmf.fullPath() + "'" + ''', 'w' );
+  fprintf( f, '%s\\n', spmpath );
+  exit;
+  '''
+    open( mscfn, 'w' ).write( mscript )
+    print mscfn
+    pd = os.getcwd()
+    os.chdir( os.path.dirname( mscfn ) )
+    cmd = [ mexe ] + configuration.matlab.options.split() \
+      + [ '-r', os.path.basename( mscfile.fullName() ) ]
+    # print 'running matlab command:', cmd
+    try:
+      subprocess.check_call( cmd )
+      spmscript = open( spmf.fullPath() ).read().strip()
+      spmpath = os.path.dirname( spmscript )
+      configuration.SPM.spm5_path = spmpath
+      configuration.save( neuroConfig.userOptionFile )
+      del spmscript
+    except Exception, e:
+      print 'could not run Matlab script:', e
+    os.chdir( pd )
+    del mscfn, mscript, spmf, mscfile, c, cmd, pd
+  
+  del mexe
 
 if configuration.SPM.spm5_path:
   spmdir = configuration.SPM.spm5_path

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -79,7 +80,7 @@ def execution( self, context ):
   rot = numpy.array( r.rotation().volume(), copy=False )[:,:,0,0]
   # snap/binarize
   for c in range(3):
-    i = numpy.argmax( numpy.abs( rot[:,c] ) )
+    i = int( round( numpy.argmax( numpy.abs( rot[:,c] ) ) ) )
     R.rotation().setValue( numpy.sign( rot[i,c] ), i, c )
   if R.isIdentity():
     context.write( '<font color="#00c000">OK, the image seems to be in the ' \
