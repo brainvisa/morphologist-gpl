@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -39,6 +40,14 @@ import distutils.spawn
 import os
 #import registration
 
+from soma.wip.application.api import Application
+import subprocess
+
+configuration = Application().configuration
+
+
+
+
 def validation():
     if not distutils.spawn.find_executable( 'matlab' ):
         raise ValidationError( 'matlab is not found' )
@@ -79,6 +88,8 @@ def initialization( self ):
 def execution( self, context ):
     matfileDI = context.temporary( 'Matlab script' )
     mat_file = file( matfileDI.fullPath(), 'w')
+    if configuration.SPM.spm5_path:
+      mat_file.write( "addPath( '" + configuration.SPM.spm5_path + "')\n" )
     mat_file.write("if exist('spm5')==2\n  spm5;\n")
     mat_file.write("elseif exist('spm')==2\n  spm;\n")
     mat_file.write("else disp('error : spm cannot be loaded');end\n")
@@ -108,11 +119,21 @@ def execution( self, context ):
     else:
         job_file = self.job_file
     mat_file.write("save('%s','jobs')\n" % job_file.fullPath())
-    mat_file.write("load '%s'\n" % job_file.fullPath())
+    mat_file.write("load ('%s')\n" % job_file.fullPath())
     mat_file.write("spm_jobman('run',jobs)\n")
     mat_file.write("exit\n")
     mat_file.close()
-    context.write(commands.getoutput('cat %s | matlab -nodesktop' % matfileDI.fullPath()))
+    
+    mexe = distutils.spawn.find_executable( configuration.matlab.executable )
+    pd = os.getcwd()
+    #context.write(matfileDI.fullPath())
+    #print matfileDI.fullPath()
+    os.chdir( os.path.dirname(matfileDI.fullPath() ))
+    cmd = [ mexe ] + configuration.matlab.options.split() + [ '-r', os.path.basename( matfileDI.fullName() ) ]
+    context.write( 'running matlab command:', cmd )
+    context.system( *cmd )
+    os.chdir( pd )
+    
     # place output at correct location
     outfile = anat_paths[0][:anat_paths[0].rfind('.')] + '_sn.mat'
     if self.transformations_informations[i].fullPath() != outfile:
