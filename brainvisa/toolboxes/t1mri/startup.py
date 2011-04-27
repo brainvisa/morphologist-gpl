@@ -95,13 +95,19 @@ if configuration.SPM.spm5_path == '' and configuration.SPM.check_spm_path:
   mscfile = c.temporary( 'Matlab Script' )
   spmf = c.temporary( 'Text File' )
   mscfn = mscfile.fullPath()
-  mscript = '''a = which( 'spm5' );
-if ~isempty( a )
-  spm5;
+  mscript = '''try
+  a = which( 'spm5' );
+  if ~isempty( a )
+    try
+      spm5;
+    catch me
+    end
+  end
+  spmpath = which( 'spm' );
+  f = fopen( ''' + "'" + spmf.fullPath() + "'" + ''', 'w' );
+  fprintf( f, '%s\\n', spmpath );
+catch me
 end
-spmpath = which( 'spm' );
-f = fopen( ''' + "'" + spmf.fullPath() + "'" + ''', 'w' );
-fprintf( f, '%s\\n', spmpath );
 exit;
 '''
   open( mscfn, 'w' ).write( mscript )
