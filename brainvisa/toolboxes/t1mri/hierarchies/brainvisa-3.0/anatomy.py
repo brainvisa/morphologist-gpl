@@ -135,6 +135,8 @@ mesh_content = (
     "<subject>_Rwhite_S", SetType( 'Right Hemisphere White Spherical Mesh' ), SetWeakAttr( 'side', 'right' ), SetPriorityOffset( +1 ),
     "<subject>_Lwhite_inflated", SetType( 'Inflated Hemisphere White Mesh' ), SetWeakAttr( 'side', 'left' ),
     "<subject>_Rwhite_inflated", SetType( 'Inflated Hemisphere White Mesh' ), SetWeakAttr( 'side', 'right' ),
+    "<subject>_Lwhite_fine", SetType( 'Left Fine Hemisphere White Mesh' ), SetWeakAttr( 'side', 'left' ),
+    "<subject>_Rwhite_fine", SetType( 'Right Fine Hemisphere White Mesh' ), SetWeakAttr( 'side', 'right' ),
     "<subject>_Lmedian", SetType( 'Median Mesh' ), SetWeakAttr( 'side', 'left' ),
     "<subject>_Rmedian", SetType( 'Median Mesh' ), SetWeakAttr( 'side', 'right' ),
     "<subject>_head", SetType( 'Head Mesh' ), SetWeakAttr( 'side', 'both' ),
