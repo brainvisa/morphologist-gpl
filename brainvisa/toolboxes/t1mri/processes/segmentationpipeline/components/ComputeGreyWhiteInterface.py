@@ -48,6 +48,11 @@ signature = Signature(
       'Aims mesh formats' ),
   'right_white_mesh', WriteDiskItem( 'Right Hemisphere White Mesh',
       'Aims mesh formats' ),
+  'left_white_mesh_fine', WriteDiskItem( 'Left Fine Hemisphere White Mesh',
+      'Aims mesh formats' ),
+  'right_white_mesh_fine', WriteDiskItem( 'Right Fine Hemisphere White Mesh',
+      'Aims mesh formats' ),
+
   'iterations', Integer(),
   'rate', Float(),
  ) 
@@ -56,6 +61,8 @@ def initialization( self ):
   self.linkParameters( 'right_hemi_cortex', 'left_hemi_cortex' )
   self.linkParameters( 'left_white_mesh', 'left_hemi_cortex' )
   self.linkParameters( 'right_white_mesh', 'right_hemi_cortex' )
+  self.linkParameters( 'left_white_mesh_fine', 'left_hemi_cortex' )
+  self.linkParameters( 'right_white_mesh_fine', 'right_hemi_cortex' )
   self.Side = "Both"
   self.iterations = 10
   self.rate = 0.2
@@ -75,12 +82,19 @@ def execution( self, context ):
                 "ne", "-w", "t" )
       context.system( "AimsMeshWhite", "-i", white, "-o",
                 self.left_white_mesh )
+      context.system( "AimsMeshWhite", "-i", white, "-o",
+                self.left_white_mesh_fine,
+                "--deciMaxClearance",  "1",
+                "--deciMaxError", "1")
       del white
 
       context.write( "Smoothing mesh..." )
       context.runProcess( 'meshSmooth', mesh=self.left_white_mesh,
                           iterations=self.iterations,rate=self.rate )
+      context.runProcess( 'meshSmooth', mesh=self.left_white_mesh_fine,
+                          iterations=20,rate=self.rate )
       tm.copyReferential(self.left_hemi_cortex, self.left_white_mesh)
+      tm.copyReferential(self.left_hemi_cortex, self.left_white_mesh_fine)
 
   if self.Side in ('Right','Both'):
 
@@ -94,10 +108,17 @@ def execution( self, context ):
                 "ne", "-w", "t" )
       context.system( "AimsMeshWhite", "-i", white, "-o",
                 self.right_white_mesh )
+      context.system( "AimsMeshWhite", "-i", white, "-o",
+                self.right_white_mesh_fine,
+                "--deciMaxClearance",  "1",
+                "--deciMaxError", "1")
       del white
 
       context.write( "Smoothing mesh..." )
       context.runProcess( 'meshSmooth', mesh=self.right_white_mesh,
                           iterations=self.iterations,rate=self.rate )
+      context.runProcess( 'meshSmooth', mesh=self.right_white_mesh_fine,
+                          iterations=20,rate=self.rate )
       tm.copyReferential(self.left_hemi_cortex, self.right_white_mesh)
+      tm.copyReferential(self.left_hemi_cortex, self.right_white_mesh_fine)
 

@@ -52,6 +52,10 @@ signature = Signature(
                                     'Aims mesh formats' ),
   'right_white_mesh', WriteDiskItem( 'Right Hemisphere White Mesh',
                                      'Aims mesh formats' ),
+  'left_white_mesh_fine', WriteDiskItem( 'Left Fine Hemisphere White Mesh',
+                                    'Aims mesh formats' ),
+  'right_white_mesh_fine', WriteDiskItem( 'Right Fine Hemisphere White Mesh',
+                                     'Aims mesh formats' ),
   'use_ridges', Boolean(),
   'white_ridges', ReadDiskItem( "T1 MRI White Matter Ridges",
       'Aims readable volume formats' ),
@@ -88,7 +92,9 @@ def initialization( self ):
   eNode.cortex_image.clearLinksTo( 'right_hemi_cortex' )
   eNode.GreyWhiteMesh.GreyWhiteInterface05.clearLinksTo( 'left_white_mesh' )
   eNode.GreyWhiteMesh.GreyWhiteInterface05.clearLinksTo( 'right_white_mesh' )
-
+  eNode.GreyWhiteMesh.GreyWhiteInterface05.clearLinksTo( 'left_white_mesh_fine' )
+  eNode.GreyWhiteMesh.GreyWhiteInterface05.clearLinksTo( 'right_white_mesh_fine' )
+  
   eNode.GreyWhiteInterface.clearLinksTo( 'histo_analysis' )
   eNode.GreyWhiteInterface.clearLinksTo( 'brain_voronoi' )
   eNode.GreyWhiteInterface.clearLinksTo( 'left_grey_white' )
@@ -97,6 +103,8 @@ def initialization( self ):
   eNode.GreyWhiteMesh.GreyWhiteMesh.clearLinksTo( 'brain_voronoi' )
   eNode.GreyWhiteMesh.GreyWhiteMesh.clearLinksTo( 'left_white_mesh' )
   eNode.GreyWhiteMesh.GreyWhiteMesh.clearLinksTo( 'right_white_mesh' )
+  eNode.GreyWhiteMesh.GreyWhiteMesh.clearLinksTo( 'left_white_mesh_fine' )
+  eNode.GreyWhiteMesh.GreyWhiteMesh.clearLinksTo( 'right_white_mesh_fine' )
 
   ## links
 
@@ -144,6 +152,14 @@ def initialization( self ):
     'right_white_mesh' )
   eNode.addLink( 'right_white_mesh',
     'GreyWhiteMesh.GreyWhiteInterface05.right_white_mesh' )
+  eNode.addLink( 'GreyWhiteMesh.GreyWhiteInterface05.left_white_mesh_fine',
+    'left_white_mesh_fine' )
+  eNode.addLink( 'left_white_mesh_fine',
+    'GreyWhiteMesh.GreyWhiteInterface05.left_white_mesh_fine' )
+  eNode.addLink( 'GreyWhiteMesh.GreyWhiteInterface05.right_white_mesh_fine',
+    'right_white_mesh_fine' )
+  eNode.addLink( 'right_white_mesh_fine',
+    'GreyWhiteMesh.GreyWhiteInterface05.right_white_mesh_fine' )
 
   ## links for 2004 version
 
@@ -167,7 +183,15 @@ def initialization( self ):
                  'right_white_mesh' )
   eNode.addLink( 'right_white_mesh',
                  'GreyWhiteMesh.GreyWhiteMesh.right_white_mesh' )
-
+  eNode.addLink( 'GreyWhiteMesh.GreyWhiteMesh.left_white_mesh_fine',
+                 'left_white_mesh_fine' )
+  eNode.addLink( 'left_white_mesh_fine',
+                 'GreyWhiteMesh.GreyWhiteMesh.left_white_mesh_fine' )
+  eNode.addLink( 'GreyWhiteMesh.GreyWhiteMesh.right_white_mesh_fine',
+                 'right_white_mesh_fine' )
+  eNode.addLink( 'right_white_mesh_fine',
+                 'GreyWhiteMesh.GreyWhiteMesh.right_white_mesh_fine' )
+                 
   ## self links
 
   self.linkParameters( 'histo_analysis', 'mri_corrected' )
@@ -179,6 +203,8 @@ def initialization( self ):
   self.linkParameters( 'right_hemi_cortex', 'RGW_interface' )
   self.linkParameters( 'left_white_mesh', 'left_hemi_cortex' )
   self.linkParameters( 'right_white_mesh', 'right_hemi_cortex' )
-  
+  self.linkParameters( 'left_white_mesh_fine', 'left_hemi_cortex' )
+  self.linkParameters( 'right_white_mesh_fine', 'right_hemi_cortex' )
+
   self.setExecutionNode( eNode )
 

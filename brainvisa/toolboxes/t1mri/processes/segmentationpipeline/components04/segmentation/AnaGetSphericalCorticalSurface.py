@@ -49,6 +49,11 @@ signature = Signature(
       'Aims mesh formats' ),
   'right_white_mesh', WriteDiskItem( 'Right Hemisphere White Mesh',
       'Aims mesh formats' ),
+  'left_white_mesh_fine', WriteDiskItem( 'Left Fine Hemisphere White Mesh',
+      'Aims mesh formats' ),
+  'right_white_mesh_fine', WriteDiskItem( 'Right Fine Hemisphere White Mesh',
+      'Aims mesh formats' ),
+      
   'oversampling', Choice("none","best resolution in each direction","1.0x1.0x1.0mm","0.9x0.9x0.9mm","0.8x0.8x0.8mm","0.7x0.7x0.7mm","0.6x0.6x0.6mm","0.5x0.5x0.5mm"),
   'pressure', Choice("0","25","50","75","100","125","150"),
   'iterations', Integer(), 
@@ -59,6 +64,8 @@ def initialization( self ):
   self.linkParameters( 'histo_analysis', 'mri_corrected' )
   self.linkParameters( 'left_white_mesh', 'mri_corrected' )
   self.linkParameters( 'right_white_mesh', 'mri_corrected' )
+  self.linkParameters( 'left_white_mesh_fine', 'mri_corrected' )
+  self.linkParameters( 'right_white_mesh_fine', 'mri_corrected' )
   self.linkParameters( 'brain_voronoi', 'mri_corrected' )
   self.Side = "Both"
   self.oversampling = "best resolution in each direction"
@@ -149,12 +156,19 @@ def execution( self, context ):
       context.write( "Triangulation and Decimation..." )
       context.system( "AimsMeshWhite", "-i", white.fullPath(), "-o", 
                       self.left_white_mesh.fullPath() )
+      context.system( "AimsMeshWhite", "-i", white.fullPath(), "-o", 
+                      self.left_white_mesh_fine.fullPath(), 
+                      "--deciMaxClearance",  "1",
+                      "--deciMaxError", "1")
       del white
       
       context.write( "Smoothing mesh..." )
       context.runProcess( 'meshSmooth', mesh=self.left_white_mesh,
                           iterations=self.iterations,rate=self.rate )
+      context.runProcess( 'meshSmooth', mesh=self.left_white_mesh_fine,
+                          iterations=20,rate=self.rate )
       trManager.copyReferential( self.mri_corrected, self.left_white_mesh )
+      trManager.copyReferential( self.mri_corrected, self.left_white_mesh_fine )
 
   if self.Side in ('Right','Both'):
     if os.path.exists(self.right_white_mesh.fullName() + '.loc'):
@@ -184,11 +198,19 @@ def execution( self, context ):
       context.write( "Triangulation and Decimation..." )
       context.system( "AimsMeshWhite", "-i", white.fullPath(), "-o", 
                       self.right_white_mesh.fullPath() )
+      context.system( "AimsMeshWhite", "-i", white.fullPath(), "-o", 
+                      self.right_white_mesh_fine.fullPath(), 
+                      "--deciMaxClearance",  "1",
+                      "--deciMaxError", "1")
       del white
       
       context.write( "Smoothing mesh..." )
       context.runProcess( 'meshSmooth', mesh=self.right_white_mesh,
                           iterations=self.iterations,rate=self.rate )
+      context.runProcess( 'meshSmooth', mesh=self.right_white_mesh_fine,
+                          iterations=20,rate=self.rate )
       trManager.copyReferential( self.mri_corrected, self.right_white_mesh )
+      trManager.copyReferential( self.mri_corrected, self.right_white_mesh_fine )
+
   del over_nobias
   del over_voronoi
