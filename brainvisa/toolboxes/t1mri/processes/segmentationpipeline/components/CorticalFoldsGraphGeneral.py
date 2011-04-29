@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -152,19 +153,19 @@ def initialization( self ):
 
   # break internal links
 
-  eNode.CorticalFoldsGraph_3_1.LeftCorticalFoldsGraph_3_1.clearLinksTo( \
-      'split_mask' )
-  eNode.CorticalFoldsGraph_3_1.LeftCorticalFoldsGraph_3_1.clearLinksTo( \
-      'commissure_coordinates' )
-  eNode.CorticalFoldsGraph_3_1.LeftCorticalFoldsGraph_3_1.clearLinksTo( \
-      'Talairach_transform' )
+  eNode.CorticalFoldsGraph_3_1.LeftCorticalFoldsGraph_3_1.removeLink( \
+      'split_mask', 'mri_corrected' )
+  eNode.CorticalFoldsGraph_3_1.LeftCorticalFoldsGraph_3_1.removeLink( \
+      'commissure_coordinates', 'mri_corrected' )
+  eNode.CorticalFoldsGraph_3_1.LeftCorticalFoldsGraph_3_1.removeLink( \
+      'Talairach_transform', 'split_mask' )
 
-  eNode.CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.clearLinksTo( \
-      'split_mask' )
-  eNode.CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.clearLinksTo( \
-      'commissure_coordinates' )
-  eNode.CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.clearLinksTo( \
-      'Talairach_transform' )
+  eNode.CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.removeLink( \
+      'split_mask', 'mri_corrected' )
+  eNode.CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.removeLink( \
+      'commissure_coordinates', 'mri_corrected' )
+  eNode.CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.removeLink( \
+      'Talairach_transform', 'split_mask' )
 
   eNode.CorticalFoldsGraph_3_0.clearLinksTo( 'brain_voronoi' )
   eNode.CorticalFoldsGraph_3_0.clearLinksTo( 'Commissure_coordinates' )
