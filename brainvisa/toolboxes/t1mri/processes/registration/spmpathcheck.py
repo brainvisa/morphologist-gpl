@@ -42,7 +42,7 @@ def validation():
     raise ValidationError( 'matlab is not found' )
 
 name = 'SPM path check'
-userLevel = 0
+userLevel = 2
 
 signature = Signature(
   'perform_check', Choice( ( 'check it', True ),
