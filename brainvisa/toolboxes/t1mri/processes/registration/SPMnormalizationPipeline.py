@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -39,8 +40,6 @@ name = 'SPM Normalization Pipeline'
 userLevel=1
 
 def validation():
-  if not distutils.spawn.find_executable( 'matlab' ):
-    raise ValidationError( 'matlab is not found' )
   try:
     from soma import aims
   except:

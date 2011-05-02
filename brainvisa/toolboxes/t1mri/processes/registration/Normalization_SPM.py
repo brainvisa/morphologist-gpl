@@ -49,7 +49,8 @@ configuration = Application().configuration
 
 
 def validation():
-    if not distutils.spawn.find_executable( 'matlab' ):
+    if not distutils.spawn.find_executable( \
+        configuration.matlab.executable ):
         raise ValidationError( 'matlab is not found' )
 
 name = 'Anatomy Normalization (using SPM)'
@@ -67,6 +68,7 @@ signature = Signature(
 )
 
 def initialization( self ):
+    configuration.SPM.spm5_path # trigger the spmpathcheck process if needed
     self.linkParameters("transformations_informations", "anatomy_data" )
     self.linkParameters("normalized_anatomy_data", "anatomy_data" )
     self.voxel_size = "[1 1 1]"
@@ -88,6 +90,7 @@ def initialization( self ):
 def execution( self, context ):
     matfileDI = context.temporary( 'Matlab script' )
     mat_file = file( matfileDI.fullPath(), 'w')
+    context.write( 'spm5_path:', configuration.SPM.spm5_path )
     if configuration.SPM.spm5_path:
       mat_file.write( "addPath( '" + configuration.SPM.spm5_path + "')\n" )
     mat_file.write("if exist('spm5')==2\n  spm5;\n")
