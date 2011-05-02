@@ -52,6 +52,7 @@ signature = Signature(
 
 def initialization( self ):
   configuration = Application().configuration
+  configuration.SPM._spmpath_checked = True # avoid opening this several times
   self.perform_check = configuration.SPM.check_spm_path
 
 def inlineGUI( self, values, pview, parent, externalRunButton=False ):
@@ -117,7 +118,7 @@ exit;
   context.write( 'options saved' )
   del spmscript
   os.chdir( pd )
-  del mexe, mscfn, mscript, spmf, mscfile, c, cmd, pd
+  del mexe, mscfn, mscript, spmf, mscfile, cmd, pd
 
   if configuration.SPM.spm5_path:
     context.write( 'setting up SPM templates database' )
