@@ -63,7 +63,6 @@ signature = Signature(
   'layer', Choice("0","1","2","3","4","5"),
   'first_slice', Integer(),
   'last_slice', Integer(),
-  'variance_threshold', Integer(),
 )
 
 def initialization( self ):
@@ -83,7 +82,6 @@ def initialization( self ):
   self.variant = "2010"
   self.visu = "No"
   self.layer = "0"
-  self.variance_threshold = 14
  
 def execution( self, context ):
   if os.path.exists(self.brain_mask.fullName() + '.loc'):
@@ -114,7 +112,7 @@ def execution( self, context ):
         call_list = ['-m', "fast"]
       elif self.variant == "2010":
         call_list = [ '-m', "V"]
-        constant_list += [ '-vthreshold', self.variance_threshold, '-Variancename', self.variance.fullPath(), '-Edgesname', self.edges.fullPath(), '-Ridge', self.white_ridges.fullPath()]
+        constant_list += [ '-Variancename', self.variance.fullPath(), '-Edgesname', self.edges.fullPath(), '-Ridge', self.white_ridges.fullPath()]
       else:
         raise RuntimeError( _t_( 'Variant <em>%s</em> not implemented' ) % self.variant )
       result = []
