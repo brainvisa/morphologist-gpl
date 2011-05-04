@@ -38,16 +38,24 @@ userLevel = 2
 signature = Signature(
   'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected', 'Aims readable volume formats' ),
   'histo_analysis', WriteDiskItem( 'Histo Analysis', 'Histo Analysis' ),
+  #'histo', WriteDiskItem( 'Histogram', 'Histogram' ),
+  'use_hfiltered', Choice('yes','no'),
   'hfiltered', ReadDiskItem( "T1 MRI Filtered For Histo", 'Aims readable volume formats' ),
+  'use_wridges', Choice('yes','no'),
   'white_ridges', ReadDiskItem( "T1 MRI White Matter Ridges",   'Aims readable volume formats' ),
   'undersampling', Choice('2', '4', '8', '16', '32', 'auto', 'iteration' )
 )
 
 def initialization( self ):
   self.linkParameters( 'histo_analysis', 'mri_corrected' )
+  #self.linkParameters( 'histo', 'mri_corrected' )
   self.linkParameters( 'hfiltered', 'mri_corrected' )
   self.linkParameters( 'white_ridges', 'mri_corrected' )
-  self.undersampling='iteration'
+  self.setOptional( 'hfiltered' )
+  self.setOptional( 'white_ridges' )
+  self.use_hfiltered =  'yes'
+  self.use_wridges = 'yes'
+  self.undersampling = 'iteration'
 
 
 def execution( self, context ):
@@ -55,8 +63,15 @@ def execution( self, context ):
     context.write(self.histo_analysis.fullName(), '.han has been locked')
     context.write('Remove',self.histo_analysis.fullName(),'.han.loc if you want to trigger automated analysis')
   else:
+    option_list = []
+    constant_list = ['VipHistoAnalysis', '-i', self.mri_corrected.fullPath(), '-o', self.histo_analysis.fullPath(), '-Save', 'y']
+    if self.use_hfiltered == 'yes' and self.hfiltered is not None:
+        option_list += ['-Mask', self.hfiltered.fullPath()]
+    if self.use_wridges == 'yes' and self.white_ridges is not None:
+        option_list += ['-Ridge', self.white_ridges.fullPath()]
     if self.undersampling == 'iteration':
-      context.system( 'VipHistoAnalysis', '-i', self.mri_corrected.fullPath(), '-o', self.histo_analysis.fullPath(), '-S', 'y', '-m', 'i', 
-        '-Mask', self.hfiltered.fullPath(), '-Ridge', self.white_ridges.fullPath() )
+        option_list += ['-mode', 'i']
     else:
-      context.system( 'VipHistoAnalysis', '-i',  self.mri_corrected.fullPath(), '-o',self.histo_analysis.fullPath(), '-Save', 'y', '-mode', 'a', '-u', self.undersampling, '-Mask', self.hfiltered.fullPath(), '-Ridge', self.white_ridges.fullPath())
+        option_list += ['-mode', 'a', '-u', self.undersampling]
+    apply( context.system, constant_list+option_list )
+    
