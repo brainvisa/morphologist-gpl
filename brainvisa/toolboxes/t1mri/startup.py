@@ -156,13 +156,17 @@ def checkSPMpath( conf ):
     conf._spmpath_checked = True
     if neuroConfig.gui and conf.check_spm_path and not conf._spm5_path:
       from neuroProcessesGUI import mainThreadActions
-      mainThreadActions().call( showProcess, 'spmpathcheck' )
+      try :
+        neuroProcesses.getProcess('spmpathcheck')
+        mainThreadActions().call( showProcess, 'spmpathcheck' )
+      except : 
+        pass
   return conf._spm5_path
 
 
 configuration.SPM._spmpath_checked = False
 configuration.SPM.__class__.spm5_path = property( checkSPMpath,
-  configuration.SPM.__class__._set_spm5_path )
+configuration.SPM.__class__._set_spm5_path )
 
 
 
