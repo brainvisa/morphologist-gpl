@@ -73,16 +73,6 @@ def initialization( self ):
                         requiredAttributes = { 'labelled' : 'No',
                         'graph_version' : self.graph_version } )
 
-  self.linkParameters( 'split_mask', 'mri_corrected' )
-  self.linkParameters( 'hemi_cortex', ( 'split_mask', 'side' ), linkSide )
-  self.linkParameters( 'skeleton', 'hemi_cortex' )
-  self.linkParameters( 'graph', ( 'skeleton', 'graph_version' ),
-    linkGraphVersion )
-  self.linkParameters( 'roots', 'skeleton' )
-  self.linkParameters( 'commissure_coordinates', 'mri_corrected' )
-  self.linkParameters( 'Talairach_transform', 'split_mask' )
-  self.setOptional( 'commissure_coordinates' )
-
   eNode = SerialExecutionNode( self.name, parameterized = self )
   eNode.addChild( 'GraphStructure',
                    ProcessExecutionNode( 'graphstructure_3_1', optional = 1 ) )
@@ -93,6 +83,7 @@ def initialization( self ):
                    optional = 1 ) )
   #self.clearLinksTo( eNode.parseParameterString( 'CorticalFoldsGraphThickness.hemi_cortex' ) )
   #self.clearLinksTo( eNode.parseParameterString( 'CorticalFoldsGraphThickness.output_graph' ) )
+  eNode.GraphStructure.clearLinksTo( 'Talairach_transform' )
   eNode.GraphStructure.clearLinksTo( 'hemi_cortex' )
   eNode.GraphStructure.clearLinksTo( 'split_mask' )
   eNode.GraphStructure.clearLinksTo( 'graph' )
@@ -138,4 +129,14 @@ def initialization( self ):
   eNode.addLink( 'CorticalFoldsGraphThickness.sulci_voronoi',
     'SulciVoronoi.sulci_voronoi' )
   self.setExecutionNode( eNode )
+
+  self.linkParameters( 'split_mask', 'mri_corrected' )
+  self.linkParameters( 'hemi_cortex', ( 'split_mask', 'side' ), linkSide )
+  self.linkParameters( 'skeleton', 'hemi_cortex' )
+  self.linkParameters( 'graph', ( 'skeleton', 'graph_version' ),
+    linkGraphVersion )
+  self.linkParameters( 'roots', 'skeleton' )
+  self.linkParameters( 'commissure_coordinates', 'mri_corrected' )
+  self.linkParameters( 'Talairach_transform', 'split_mask' )
+  self.setOptional( 'commissure_coordinates' )
 
