@@ -110,4 +110,5 @@ def execution( self, context ):
   trManager = registration.getTransformationManager()
   trManager.copyReferential( self.old_graph, self.graph )
 
+  self.executionNode().SulciVoronoi.run( context )
   self.executionNode().CorticalFoldsGraphThickness.run( context )
