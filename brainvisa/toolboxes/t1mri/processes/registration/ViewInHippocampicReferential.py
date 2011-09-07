@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -113,7 +114,7 @@ def execution( self, context ):
       if l[ :len('IHmm') ] == 'IHmm':
         self.ihmm = map( float, string.split( l[ len('ACmm')+1: ] ) )
     
-  context.system( '/volatile/devel/aimsalgo-main-linux-debug/bin/AimsHippocampicReferential', '--ac', self.acmm[0], self.acmm[1], self.acmm[2], 
+  context.system( 'AimsHippocampicReferential', '--ac', self.acmm[0], self.acmm[1], self.acmm[2],
                   '--pc', self.pcmm[0], self.pcmm[1], self.pcmm[2], 
                   '--ih', self.ihmm[0], self.ihmm[1], self.ihmm[2], 
                   '-o', self.Transformation_to_hippocamic_ref.fullPath(), 
