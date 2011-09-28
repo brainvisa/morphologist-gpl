@@ -146,9 +146,24 @@ def execution( self, context ):
 
     # determine image orientation
     v1 = normalize( ( pc[0] - ac[0], pc[1] - ac[1], pc[2] - ac[2] ) )
-    v2 = normalize( ( ac[0] - ip[0], ac[1] - ip[1], ac[2] - ip[2] ) )
-    v3 = normalize( vecproduct( v1, v2 ) )
+    ia = ( ac[0] - ip[0], ac[1] - ip[1], ac[2] - ip[2] )
+    v2u = normalize( ia )
+    v3 = normalize( vecproduct( v1, v2u ) )
     v2 = normalize( vecproduct( v3, v1 ) )
+
+    # sanity check
+    ipdot = dot( v1, ia )
+    ipdist = norm( ( -ia[0] + ipdot * v1[0], -ia[1] + ipdot * v1[1],
+      -ia[2] + ipdot * v1[2] ) )
+    if ipdist == 0:
+      raise ValueError( _t_( 'AC, PC and IP are aligned, the interhemispheric'\
+        'plane orientation cannot be determined. Please chose IP upper in ' \
+        'the brain.') )
+    if ipdist < 30.:
+      context.warning( _t_( 'IP is close to the AC-PC axis. This may be ' \
+        'an error, and in any case leads to a poor precision on the ' \
+        'determination of the interhemispheric plane. You should better ' \
+        'chose IP upper in the brain.' ) )
 
     # determine rotation between y axis and v1
     y = ( 0, 1, 0 )
