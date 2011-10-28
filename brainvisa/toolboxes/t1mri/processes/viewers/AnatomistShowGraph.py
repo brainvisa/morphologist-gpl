@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -90,7 +91,7 @@ def execution( self, context ):
         obj.append( hd )
         hd.setMaterial( a.Material(diffuse = [1, 0.85, 0.5, 0.5]) )
     win3 = a.createWindow( '3D' )
-    win3.addObjects( obj )
+    win3.addObjects( obj, add_graph_nodes=True )
     selfdestroy.append( win3 )
 
     return selfdestroy + obj

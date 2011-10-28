@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -41,7 +42,7 @@ def validation():
   anatomist.validation()
 
 signature = Signature(
-  'brain_mask', ReadDiskItem( 'T1 Brain Mask', 'Anatomist volume formats' ),
+  'brain_mask', ReadDiskItem( 'Brain Mask', 'Anatomist volume formats' ),
   'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
     'Anatomist volume formats' )
 )
