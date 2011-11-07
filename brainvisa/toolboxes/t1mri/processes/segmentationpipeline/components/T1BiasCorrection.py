@@ -56,7 +56,7 @@ signature = Signature(
       shfjGlobals.aimsWriteVolumeFormats ),
   'write_wridges', Choice('yes','no','read'),
   'white_ridges', WriteDiskItem( "T1 MRI White Matter Ridges",
-      shfjGlobals.aimsWriteVolumeFormats ),
+      shfjGlobals.aimsWriteVolumeFormats, exactType=1  ),
   'write_meancurvature', Choice('yes','no'),
   'meancurvature', WriteDiskItem( "T1 MRI Mean Curvature",
       shfjGlobals.aimsWriteVolumeFormats ),
