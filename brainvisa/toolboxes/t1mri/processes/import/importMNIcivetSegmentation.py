@@ -37,6 +37,7 @@ import shfjGlobals
 from soma import aims
 import numpy
 import glob
+import threading
 
 name = 'Import MNI CIVET Segmentation'
 roles = ('importer',)
@@ -162,6 +163,16 @@ def initialization( self ):
   self.linkParameters( 'output_right_grey_white', 'output_left_grey_white' )
   self.linkParameters( 'output_left_cortex', 'output_brain_mask' )
   self.linkParameters( 'output_right_cortex', 'output_left_grey_white' )
+
+
+def delInMainThread( lock, thing ):
+  # wait for the lock to be released in the process thread
+  lock.acquire()
+  lock.release()
+  # now the process thread should have removed its reference on thing:
+  # we can safely delete it fom here, in the main thread.
+  del thing # probably useless
+
 
 def execution( self, context ):
   pi, p = context.getProgressInfo( self )
@@ -531,7 +542,20 @@ def execution( self, context ):
     pv = mainThreadActions().call( ProcessView, t1pipeline )
     r = context.ask( 'run the pipeline, then click here', 'OK' )
     mainThreadActions().call( pv.close )
+    # the following ensures pv is deleted in the main thread, and not
+    # in the current non-GUI thread. The principle is the following:
+    # - acquire a lock
+    # - pass the pv object to something in the main thread
+    # - the main thread waits on the lock while holding a reference on pv
+    # - we delete pv in the process thread
+    # - the lock is releasd from the pv thread
+    # - now the main thread can go on, and del / release the ref on pv: it
+    #   is the last ref on pv, so it is actually deleted there.
+    lock = threading.Lock()
+    lock.acquire()
+    mainThreadActions().call( delInMainThread, lock, pv )
     del pv
+    lock.release()
   elif self.use_t1pipeline == 1:
     context.runProcess( t1pipeline )
   else:
