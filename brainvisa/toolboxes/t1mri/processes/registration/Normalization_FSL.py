@@ -50,7 +50,7 @@ userLevel = 0
 
 # copied from fmri python/neurospy/bvfunc/FSL_pre_processing.py
 def NormalizeAnat(context, anat, templatet1, normAnat, norm_matrix,
-  searcht1="NASO"):
+  searcht1="NASO", cost='corratio', searchcost='corratio'):
     """
     Form the normalization of anatomical images using FSL
     """
@@ -70,7 +70,7 @@ def NormalizeAnat(context, anat, templatet1, normAnat, norm_matrix,
     configuration = Application().configuration
     cmd = [ configuration.FSL.fsl_commands_prefix + 'flirt',
       '-in', anat, '-ref', templatet1, '-omat', norm_matrix, '-bins', 1024,
-      '-cost', 'corratio' ] +  s1 + [ '-dof', 12 ]
+      '-cost', cost, '-searchcost', searchcost ] +  s1 + [ '-dof', 12 ]
     context.system( *cmd )
     print "Finished"
 
@@ -81,6 +81,12 @@ signature = Signature(
   'Alignment', Choice('Already Virtualy Aligned', 'Not Aligned but Same Orientation', 'Incorrectly Oriented'),
   'transformation_matrix', WriteDiskItem("FSL Transformation", 'Matlab file'),
   'normalized_anatomy_data', WriteDiskItem( "Raw T1 MRI", ['gz compressed NIFTI-1 image']),
+  'cost_function', Choice( ( 'Correlation ration', 'corratio' ),
+    ( 'Mutual information', 'mutualinfo' ),
+    'normcorr', 'normmi', ( 'Least square', 'leastsq' ), 'labeldiff' ),
+  'search_cost_function', Choice( ( 'Correlation ration', 'corratio' ),
+    ( 'Mutual information', 'mutualinfo' ),
+    'normcorr', 'normmi', ( 'Least square', 'leastsq' ), 'labeldiff' ),
 )
 
 def initialization( self ):
@@ -96,6 +102,9 @@ def initialization( self ):
   self.anatomical_template = self.signature[ 'anatomical_template' ].findValue(
     { 'database' : os.path.join( os.getenv( 'FSLDIR', 'data' ) ),
       'skull_stripped' : 'no' } )
+  self.cost_function = 'corratio'
+  self.search_cost_function = 'corratio'
+  self.linkParameters("search_cost_function", "cost_function")
 
 def execution( self, context ):
   anat = self.anatomy_data.fullPath()
@@ -108,7 +117,8 @@ def execution( self, context ):
     s1 = 'NASO'
   elif self.Alignment == 'Incorrectly Oriented':
     s1 = 'IO'
-  NormalizeAnat(context, anat, template, normanat, snmat, s1)
+  NormalizeAnat(context, anat, template, normanat, snmat, s1,
+    cost=self.cost_function, searchcost=self.search_cost_function)
   # get image orientations in current formats
   srcatts = shfjGlobals.aimsVolumeAttributes( self.anatomy_data )
   srcs2m = srcatts.get( 'storage_to_memory', None )
