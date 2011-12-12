@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -44,6 +45,8 @@ def validation():
 signature = Signature(
     'graph', ReadDiskItem( 'Cortical folds graph', 'Graph' ),
     'nomenclature', ReadDiskItem( 'Nomenclature', 'Hierarchy' ),
+    'white_mesh', ReadDiskItem( 'Hemisphere White Mesh',
+      'Anatomist mesh formats' ),
     'hemi_mesh', ReadDiskItem( 'Hemisphere Mesh', 'Anatomist mesh formats' ),
     'load_MRI', Choice("Yes","No"),
     'two_windows', Choice("Yes","No"),
@@ -54,9 +57,11 @@ signature = Signature(
 def initialization( self ):
     self.setOptional( 'nomenclature' )
     self.setOptional( 'mri_corrected' )
+    self.setOptional( 'white_mesh' )
     self.setOptional( 'hemi_mesh' )
     self.load_MRI = "No"
     self.two_windows = "No"
+    self.linkParameters( 'white_mesh', 'graph' )
     self.linkParameters( 'hemi_mesh', 'graph' )
     self.linkParameters( 'mri_corrected', 'graph' )
     self.nomenclature = self.signature[ 'nomenclature' ].findValue( {} )
@@ -89,7 +94,11 @@ def execution( self, context ):
         if self.mri_corrected is not None:
             anat = a.loadObject( self.mri_corrected )
             selfdestroy.append( anat )
-    if self.hemi_mesh is not None:
+    if self.white_mesh is not None:
+        mesh = a.loadObject( self.white_mesh, duplicate=True )
+        selfdestroy.append( mesh )
+        mesh.setMaterial( a.Material(diffuse = [0.8, 0.8, 0.8, 1.]) )
+    elif self.hemi_mesh is not None:
         mesh = a.loadObject( self.hemi_mesh, duplicate=True )
         selfdestroy.append( mesh )
         mesh.setMaterial( a.Material(diffuse = [0.8, 0.8, 0.8, 0.5]) )
