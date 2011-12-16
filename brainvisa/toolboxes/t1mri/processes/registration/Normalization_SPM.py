@@ -49,11 +49,11 @@ configuration = Application().configuration
 
 
 def validation():
-    if ( not configuration.SPM.spm8_standalone_command \
-        or not configuration.SPM.spm8_standalone_mcr_path ) \
-        or not distutils.spawn.find_executable( \
-            configuration.matlab.executable ):
-            raise ValidationError( 'SPM or matlab is not found' )
+    if( ( not configuration.SPM.spm8_standalone_command \
+          or not configuration.SPM.spm8_standalone_mcr_path ) ) \
+        and not distutils.spawn.find_executable( \
+          configuration.matlab.executable ):
+        raise ValidationError( 'SPM or matlab is not found' )
 
 name = 'Anatomy Normalization (using SPM)'
 userLevel = 0
