@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -87,6 +88,9 @@ def allowFlip( self, allow ):
 def initialization( self ):
   eNode = SerialExecutionNode( self.name, parameterized=self )
 
+  eNode.addChild( 'InitializeTransformation',
+                  ProcessExecutionNode( 'resetInternalImageTransformation',
+                    optional=True, selected=False ) )
   eNode.addChild( 'NormlalizeFSL',
                   ProcessExecutionNode( 'Normalization_FSL' ) )
   eNode.addChild( 'ConvertFSLnormalizationToAIMS',
@@ -98,8 +102,9 @@ def initialization( self ):
   # fix transformation_matrix type
   eNode.NormlalizeFSL.signature[ 'transformation_matrix' ] = \
     WriteDiskItem( 'FSL transformation', 'Matlab file' )
-  eNode.addLink( 'NormlalizeFSL.anatomy_data', 't1mri' )
-  eNode.addLink( 't1mri', 'NormlalizeFSL.anatomy_data' )
+  eNode.addDoubleLink( 'InitializeTransformation.input_image', 't1mri' )
+  eNode.addDoubleLink( 'NormlalizeFSL.anatomy_data',
+    'InitializeTransformation.output_image' )
   eNode.addLink( 'NormlalizeFSL.anatomical_template', 'template' )
   eNode.addLink( 'template', 'NormlalizeFSL.anatomical_template' )
   eNode.addLink( 'NormlalizeFSL.Alignment', 'alignment' )

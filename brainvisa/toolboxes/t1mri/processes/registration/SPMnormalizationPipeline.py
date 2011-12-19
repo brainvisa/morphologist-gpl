@@ -101,6 +101,9 @@ def initialization( self ):
     return trans[0]
   eNode = SerialExecutionNode( self.name, parameterized=self )
 
+  eNode.addChild( 'InitializeTransformation',
+                  ProcessExecutionNode( 'resetInternalImageTransformation',
+                    optional=True, selected=False ) )
   eNode.addChild( 'NormlalizeSPM',
                   ProcessExecutionNode( 'Normalization_SPM' ) )
   eNode.addChild( 'ConvertSPMnormalizationToAIMS',
@@ -113,8 +116,11 @@ def initialization( self ):
   eNode.ConvertSPMnormalizationToAIMS.signature[ 'write' ] = \
     WriteDiskItem( 'Transform Raw T1 MRI to Talairach-MNI template-SPM',
       'Transformation matrix' )
-  eNode.addLink( 'NormlalizeSPM.anatomy_data', 't1mri', linkToAnat )
-  eNode.addLink( 't1mri', 'NormlalizeSPM.anatomy_data', linkToT1 )
+  eNode.addDoubleLink( 'InitializeTransformation.input_image', 't1mri' )
+  eNode.addLink( 'NormlalizeSPM.anatomy_data',
+    'InitializeTransformation.output_image', linkToAnat )
+  eNode.addLink( 'InitializeTransformation.output_image',
+    'NormlalizeSPM.anatomy_data', linkToT1 )
   eNode.addLink( 'NormlalizeSPM.anatomical_template', 'template' )
   eNode.addLink( 'template', 'NormlalizeSPM.anatomical_template' )
 

@@ -135,12 +135,16 @@ matlabbatch{%d}.spm.spatial.normalise.estwrite.roptions.prefix = 'w';
         os.chdir( pd )
 
     else:
-        # SPM5 variant
-        context.write( _t_( 'Using SPM5 with Matlab' ) )
+        # Matlab-based SPM5-style variant
+        if os.path.isdir( configuration.SPM.spm8_path ):
+            context.write( _t_( 'Using SPM8 with Matlab (experimental)' ) )
+        else:
+            context.write( _t_( 'Using SPM5 with Matlab' ) )
         if configuration.SPM.spm5_path:
             mat_file.write( "addPath( '" + configuration.SPM.spm5_path \
                 + "')\n" )
-        mat_file.write("if exist('spm5')==2\n  spm5;\n")
+        mat_file.write("if exist('spm8')==2\n  spm8;\n")
+        mat_file.write("elseif exist('spm5')==2\n  spm5;\n")
         mat_file.write("elseif exist('spm')==2\n  spm;\n")
         mat_file.write("else disp('error : spm cannot be loaded');end\n")
         mat_file.write('jobs{1}.spatial{1}.normalise{1}.estwrite.roptions.vox = %s\n' % self.voxel_size)
