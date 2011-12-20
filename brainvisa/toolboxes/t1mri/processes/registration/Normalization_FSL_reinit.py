@@ -7,9 +7,9 @@
 #
 # This software is governed by the CeCILL license version 2 under
 # French law and abiding by the rules of distribution of free software.
-# You can  use, modify and/or redistribute the software under the 
+# You can  use, modify and/or redistribute the software under the
 # terms of the CeCILL license version 2 as circulated by CEA, CNRS
-# and INRIA at the following URL "http://www.cecill.info". 
+# and INRIA at the following URL "http://www.cecill.info".
 #
 # As a counterpart to the access to the source code and  rights to copy,
 # modify and redistribute granted by the license, users are provided only
@@ -24,8 +24,8 @@
 # therefore means  that it is reserved for developers  and  experienced
 # professionals having in-depth computer knowledge. Users are therefore
 # encouraged to load and test the software's suitability as regards their
-# requirements in conditions enabling the security of their systems and/or 
-# data to be ensured and,  more generally, to use and operate it in the 
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
 # same conditions as regards security.
 #
 # The fact that you are presently reading this means that you have had
@@ -45,35 +45,8 @@ def validation():
     configuration.FSL.fsl_commands_prefix + 'flirt' ):
     raise ValidationError(_t_('FSL flirt commandline could not be found'))
 
-name = 'Anatomy Normalization (using FSL)'
-userLevel = 2
-
-# copied from fmri python/neurospy/bvfunc/FSL_pre_processing.py
-def NormalizeAnat(context, anat, templatet1, normAnat, norm_matrix,
-  searcht1="NASO", cost='corratio', searchcost='corratio'):
-    """
-    Form the normalization of anatomical images using FSL
-    """
-    if searcht1 == "AVA":
-        s1 = [ "-searchrx", '-0', '0', '-searchry', '-0', '0', '-searchrz',
-          '-0', "0" ]
-    elif (searcht1 == "NASO"):
-        s1 = [ "-searchrx", -90, 90, '-searchry', -90, 90, '-searchrz',
-          -90, 90 ]
-    elif (searcht1 == "IO"):
-        s1 = [ "-searchrx", -180, 180, '-searchry', -180, 180, '-searchrz',
-          -180, 180 ]
-    else:
-        s1 = []
-    if normAnat is not None:
-      s1 += [ '-out', normAnat ]
-    configuration = Application().configuration
-    cmd = [ configuration.FSL.fsl_commands_prefix + 'flirt',
-      '-in', anat, '-ref', templatet1, '-omat', norm_matrix, '-bins', 1024,
-      '-cost', cost, '-searchcost', searchcost ] +  s1 + [ '-dof', 12 ]
-    context.system( *cmd )
-    print "Finished"
-
+name = 'Anatomy Normalization (using FSL) with Re-initialization'
+userLevel = 0
 
 signature = Signature(
   'anatomy_data', ReadDiskItem( "Raw T1 MRI", ['NIFTI-1 image', 'gz compressed NIFTI-1 image']),
@@ -87,6 +60,8 @@ signature = Signature(
   'search_cost_function', Choice( ( 'Correlation ration', 'corratio' ),
     ( 'Mutual information', 'mutualinfo' ),
     'normcorr', 'normmi', ( 'Least square', 'leastsq' ), 'labeldiff' ),
+  'allow_retry_initialization', Boolean(),
+  'init_translation_origin', Choice( ( 'Center of the image', 0 ), ( 'Gravity center', 1 ) ),
 )
 
 def initialization( self ):
@@ -105,30 +80,38 @@ def initialization( self ):
   self.cost_function = 'corratio'
   self.search_cost_function = 'corratio'
   self.linkParameters("search_cost_function", "cost_function")
+  self.allow_retry_initialization = False
 
 def execution( self, context ):
-  anat = self.anatomy_data.fullPath()
-  template = self.anatomical_template.fullPath()
-  snmat = self.transformation_matrix.fullPath()
-  normanat = self.normalized_anatomy_data.fullPath()
-  if self.Alignment == 'Already Virtualy Aligned':
-    s1 = 'AVA'
-  elif self.Alignment == 'Not Aligned but Same Orientation':
-    s1 = 'NASO'
-  elif self.Alignment == 'Incorrectly Oriented':
-    s1 = 'IO'
-  NormalizeAnat(context, anat, template, normanat, snmat, s1,
-    cost=self.cost_function, searchcost=self.search_cost_function)
-  # get image orientations in current formats
-  srcatts = shfjGlobals.aimsVolumeAttributes( self.anatomy_data )
-  srcs2m = srcatts.get( 'storage_to_memory', None )
-  if srcs2m:
-    self.transformation_matrix.setMinf( 'source_storage_to_memory', srcs2m )
-  dstatts = shfjGlobals.aimsVolumeAttributes( self.anatomical_template )
-  dsts2m = dstatts.get( 'storage_to_memory', None )
-  if dsts2m:
-    self.transformation_matrix.setMinf( 'destination_storage_to_memory',
-    dsts2m )
-  self.transformation_matrix.saveMinf()
-  tm = registration.getTransformationManager()
-  tm.copyReferential( self.anatomical_template, self.normalized_anatomy_data )
+    context.write( _t_( 'Trying 1st pass of normalization...' ) )
+    if os.path.exists( self.transformation_matrix.fullPath() ):
+        os.unlink( self.transformation_matrix.fullPath() )
+    failed = False
+    normproc = { 'anatomy_data' : self.anatomy_data,
+        'anatomical_template' : self.anatomical_template,
+        'Alignment' : self.Alignment,
+        'transformation_matrix' : self.transformation_matrix,
+        'normalized_anatomy_data' : self.normalized_anatomy_data,
+        'cost_function' : self.cost_function,
+        'search_cost_function' : self.search_cost_function,
+    }
+    try:
+        context.runProcess( 'Normalization_FSL', **normproc )
+        if not os.path.exists( self.transformation_matrix.fullPath() ):
+            failed = True
+    except:
+        failed = True
+        if not self.allow_retry_initialization:
+            raise
+    if failed:
+        context.write( _t_( '1st pass failed, changing internal transformation initialization' ) )
+        if not self.allow_retry_initialization:
+            raise RuntimeError( 'Normalization failed' )
+        context.runProcess( 'resetInternalImageTransformation',
+            input_image=self.anatomy_data, output_image=self.anatomy_data,
+            origin=self.init_translation_origin )
+        context.write( _t_( 'Retrying normalization after changing initialization...' ) )
+        context.runProcess( 'Normalization_FSL', **normproc )
+
+
+

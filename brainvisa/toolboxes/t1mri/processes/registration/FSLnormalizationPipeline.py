@@ -65,6 +65,7 @@ signature = Signature(
     'Not Aligned but Same Orientation', 'Incorrectly Oriented'),
   'set_transformation_in_source_volume', Boolean(),
   'allow_flip_initial_MRI', Boolean(), 
+  'allow_retry_initialization', Boolean(),
 )
 
 
@@ -88,11 +89,8 @@ def allowFlip( self, allow ):
 def initialization( self ):
   eNode = SerialExecutionNode( self.name, parameterized=self )
 
-  eNode.addChild( 'InitializeTransformation',
-                  ProcessExecutionNode( 'resetInternalImageTransformation',
-                    optional=True, selected=False ) )
   eNode.addChild( 'NormlalizeFSL',
-                  ProcessExecutionNode( 'Normalization_FSL' ) )
+                  ProcessExecutionNode( 'Normalization_FSL_reinit' ) )
   eNode.addChild( 'ConvertFSLnormalizationToAIMS',
                   ProcessExecutionNode( 'FSLnormalizationToAims' ) )
   eNode.addChild( 'ReorientAnatomy',
@@ -102,9 +100,9 @@ def initialization( self ):
   # fix transformation_matrix type
   eNode.NormlalizeFSL.signature[ 'transformation_matrix' ] = \
     WriteDiskItem( 'FSL transformation', 'Matlab file' )
-  eNode.addDoubleLink( 'InitializeTransformation.input_image', 't1mri' )
-  eNode.addDoubleLink( 'NormlalizeFSL.anatomy_data',
-    'InitializeTransformation.output_image' )
+  eNode.addDoubleLink( 'NormlalizeFSL.anatomy_data', 't1mri' )
+  eNode.addDoubleLink( 'NormlalizeFSL.allow_retry_initialization',
+    'allow_retry_initialization' )
   eNode.addLink( 'NormlalizeFSL.anatomical_template', 'template' )
   eNode.addLink( 'template', 'NormlalizeFSL.anatomical_template' )
   eNode.addLink( 'NormlalizeFSL.Alignment', 'alignment' )
@@ -159,3 +157,4 @@ def initialization( self ):
     self.allowFlip )
   x = changeAllowFlip( self )
   eNode.ReorientAnatomy._selectionChange.add( x )
+  self.allow_retry_initialization = True

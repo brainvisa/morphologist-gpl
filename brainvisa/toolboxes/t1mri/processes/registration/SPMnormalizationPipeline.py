@@ -61,7 +61,8 @@ signature = Signature(
   'template', ReadDiskItem( 'anatomical Template',
     ['NIFTI-1 image', 'gz compressed NIFTI-1 image', 'MINC image'] ),
   #'set_transformation_in_source_volume', Boolean(),
-  'allow_flip_initial_MRI', Boolean(), 
+  'allow_flip_initial_MRI', Boolean(),
+  'allow_retry_initialization', Boolean(),
 )
 
 
@@ -101,11 +102,8 @@ def initialization( self ):
     return trans[0]
   eNode = SerialExecutionNode( self.name, parameterized=self )
 
-  eNode.addChild( 'InitializeTransformation',
-                  ProcessExecutionNode( 'resetInternalImageTransformation',
-                    optional=True, selected=False ) )
   eNode.addChild( 'NormlalizeSPM',
-                  ProcessExecutionNode( 'Normalization_SPM' ) )
+                  ProcessExecutionNode( 'Normalization_SPM_reinit' ) )
   eNode.addChild( 'ConvertSPMnormalizationToAIMS',
                   ProcessExecutionNode( 'SPMsn3dToAims' ) )
   eNode.addChild( 'ReorientAnatomy',
@@ -116,11 +114,9 @@ def initialization( self ):
   eNode.ConvertSPMnormalizationToAIMS.signature[ 'write' ] = \
     WriteDiskItem( 'Transform Raw T1 MRI to Talairach-MNI template-SPM',
       'Transformation matrix' )
-  eNode.addDoubleLink( 'InitializeTransformation.input_image', 't1mri' )
-  eNode.addLink( 'NormlalizeSPM.anatomy_data',
-    'InitializeTransformation.output_image', linkToAnat )
-  eNode.addLink( 'InitializeTransformation.output_image',
-    'NormlalizeSPM.anatomy_data', linkToT1 )
+  eNode.addDoubleLink( 'NormlalizeSPM.anatomy_data', 't1mri' )
+  eNode.addDoubleLink( 'NormlalizeSPM.allow_retry_initialization',
+    'allow_retry_initialization' )
   eNode.addLink( 'NormlalizeSPM.anatomical_template', 'template' )
   eNode.addLink( 'template', 'NormlalizeSPM.anatomical_template' )
 
@@ -134,16 +130,14 @@ def initialization( self ):
   eNode.addLink( 'transformation', 'ConvertSPMnormalizationToAIMS.write' )
   eNode.addLink( 'ConvertSPMnormalizationToAIMS.write', 'transformation' )
 
-  eNode.addLink( 'NormlalizeSPM.transformations_informations',
-    'ConvertSPMnormalizationToAIMS.read', linkToTrans )
-  eNode.addLink( 'ConvertSPMnormalizationToAIMS.read',
-    'NormlalizeSPM.transformations_informations', linkToRead )
+  eNode.addDoubleLink( 'NormlalizeSPM.transformations_informations',
+    'ConvertSPMnormalizationToAIMS.read' )
 
   # force conversion to take exactly the same formats as the normalization
   # as input, because it uses the storage_to_memory matrix, which is
   # format-dependent
   eNode.ConvertSPMnormalizationToAIMS.signature[ 'source_volume' ].formats \
-    = eNode.NormlalizeSPM.signature[ 'anatomy_data' ].contentType.formats
+    = eNode.NormlalizeSPM.signature[ 'anatomy_data' ].formats
   # this seems not to work automatically
   self.template = self.signature[ 'template' ].findValue( \
     { 'databasename' : 'spm', 'skull_stripped' : 'no' } )
@@ -165,4 +159,5 @@ def initialization( self ):
     self.allowFlip )
   x = changeAllowFlip( self )
   eNode.ReorientAnatomy._selectionChange.add( x )
+  self.allow_retry_initialization = True
 

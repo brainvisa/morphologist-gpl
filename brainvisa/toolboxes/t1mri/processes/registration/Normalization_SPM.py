@@ -56,7 +56,7 @@ def validation():
         raise ValidationError( 'SPM or matlab is not found' )
 
 name = 'Anatomy Normalization (using SPM)'
-userLevel = 0
+userLevel = 2
 
 signature = Signature(
     'anatomy_data', ListOf(ReadDiskItem( "Raw T1 MRI", ['NIFTI-1 image', 'SPM image' ])),
