@@ -66,9 +66,9 @@ if fsldir and os.path.exists( fsldir ):
   if os.path.exists( fslshare ):
     if fslshare not in [ x.directory for x in neuroConfig.dataPath ]:
       dbs = neuroConfig.DatabaseSettings( fslshare )
-      fsldb = os.path.join( neuroConfig.homeBrainVISADir, 'fsl' )
-      if not os.path.exists( fsldb ):
-        os.mkdir( fsldb )
+      #fsldb = os.path.join( neuroConfig.homeBrainVISADir, 'fsl' )
+      #if not os.path.exists( fsldb ):
+        #os.mkdir( fsldb )
       dbs.expert_settings.ontology = 'fsl'
       dbs.expert_settings.sqliteFileName = ''
       dbs.builtin = True
@@ -79,7 +79,7 @@ if fsldir and os.path.exists( fsldir ):
       neuroHierarchy.databases.add( db )
       db.clear()
       db.update( context=defaultContext() )
-      del dbs, db, fsldb
+      del dbs, db #, fsldb
   del fslshare
 del fsldir
 
@@ -88,68 +88,30 @@ del fsldir
 spmscript = None
 spmdir = None
 
-#if configuration.SPM.spm5_path == '' and configuration.SPM.check_spm_path \
-  #and neuroConfig.gui:
-    #showProcess( 'spmpathcheck' )
-  #mexe = distutils.spawn.find_executable( \
-    #configuration.matlab.executable )
-  #c = neuroProcesses.defaultContext()
-  #mscfile = c.temporary( 'Matlab Script' )
-  #spmf = c.temporary( 'Text File' )
-  #mscfn = mscfile.fullPath()
-  #mscript = '''try
-  #a = which( 'spm5' );
-  #if ~isempty( a )
-    #try
-      #spm5;
-    #catch me
-    #end
-  #end
-  #spmpath = which( 'spm' );
-  #f = fopen( ''' + "'" + spmf.fullPath() + "'" + ''', 'w' );
-  #fprintf( f, '%s\\n', spmpath );
-#catch me
-#end
-#exit;
-#'''
-  #open( mscfn, 'w' ).write( mscript )
-  #pd = os.getcwd()
-  #os.chdir( os.path.dirname( mscfn ) )
-  #cmd = [ mexe ] + configuration.matlab.options.split() \
-    #+ [ '-r', os.path.basename( mscfile.fullName() ) ]
-  ## print 'running matlab command:', cmd
-  #try:
-    #subprocess.check_call( cmd )
-    #spmscript = open( spmf.fullPath() ).read().strip()
-    #spmpath = os.path.dirname( spmscript )
-    #configuration.SPM.spm5_path = spmpath
-    #configuration.save( neuroConfig.userOptionFile )
-    #del spmscript
-  #except Exception, e:
-    ##print 'could not run Matlab script:', e
-    #print 'Warning : could not run Matlab script'
-  #os.chdir( pd )
-  #del mexe, mscfn, mscript, spmf, mscfile, c, cmd, pd
-
-if configuration.SPM.spm5_path:
+if configuration.SPM.spm8_path:
+  spmdir = configuration.SPM.spm8_path
+elif configuration.SPM.spm5_path:
   spmdir = configuration.SPM.spm5_path
+if spmdir is not None:
   # print 'SPM dir:', spmdir
   spmtemplates = os.path.join( spmdir, 'templates' )
   #print 'spmtemplates:', spmtemplates
-  dbs = neuroConfig.DatabaseSettings( spmtemplates )
-  spmdb = os.path.join( neuroConfig.homeBrainVISADir, 'spm' )
-  if not os.path.exists( spmdb ):
-    os.mkdir( spmdb )
-  dbs.expert_settings.ontology = 'spm'
-  dbs.expert_settings.sqliteFileName = ''
-  dbs.builtin = True
-  neuroConfig.dataPath.insert( 1, dbs )
-  db = neuroHierarchy.SQLDatabase( dbs.expert_settings.sqliteFileName, spmtemplates, 'spm' )
-  db.uuid = getattr( dbs.expert_settings, 'uuid', 'a91fd1bf-48cf-4759-896e-afea136c0549')
-  neuroHierarchy.databases.add( db )
-  db.clear()
-  db.update( context=defaultContext() )
-  del dbs, db, spmtemplates, spmdir
+  if not neuroHierarchy.databases.hasDatabase( spmtemplates ):
+    dbs = neuroConfig.DatabaseSettings( spmtemplates )
+    #spmdb = os.path.join( neuroConfig.homeBrainVISADir, 'spm' )
+    #if not os.path.exists( spmdb ):
+      #os.mkdir( spmdb )
+    dbs.expert_settings.ontology = 'spm'
+    dbs.expert_settings.sqliteFileName = ''
+    dbs.builtin = True
+    neuroConfig.dataPath.insert( 1, dbs )
+    db = neuroHierarchy.SQLDatabase( dbs.expert_settings.sqliteFileName, spmtemplates, 'spm' )
+    db.uuid = getattr( dbs.expert_settings, 'uuid', 'a91fd1bf-48cf-4759-896e-afea136c0549')
+    neuroHierarchy.databases.add( db )
+    db.clear()
+    db.update( context=defaultContext() )
+    del dbs, db
+  del spmtemplates, spmdir
 
 def checkSPMpath( conf ):
   if not conf._spmpath_checked:
