@@ -70,10 +70,10 @@ if fsldir and os.path.exists( fsldir ):
       #if not os.path.exists( fsldb ):
         #os.mkdir( fsldb )
       dbs.expert_settings.ontology = 'fsl'
-      dbs.expert_settings.sqliteFileName = ''
+      dbs.expert_settings.sqliteFileName = ':temporary:'
       dbs.builtin = True
       neuroConfig.dataPath.insert( 1, dbs )
-      db = neuroHierarchy.SQLDatabase( None,
+      db = neuroHierarchy.SQLDatabase( dbs.expert_settings.sqliteFileName,
         fslshare, 'fsl' )
       db.uuid = getattr( dbs.expert_settings, 'uuid', 'a69ed62b-4895-4245-b42a-d211e1c6faa4' )
       neuroHierarchy.databases.add( db )
@@ -102,7 +102,7 @@ if spmdir is not None:
     #if not os.path.exists( spmdb ):
       #os.mkdir( spmdb )
     dbs.expert_settings.ontology = 'spm'
-    dbs.expert_settings.sqliteFileName = ''
+    dbs.expert_settings.sqliteFileName = ':temporary:'
     dbs.builtin = True
     neuroConfig.dataPath.insert( 1, dbs )
     db = neuroHierarchy.SQLDatabase( dbs.expert_settings.sqliteFileName, spmtemplates, 'spm' )
