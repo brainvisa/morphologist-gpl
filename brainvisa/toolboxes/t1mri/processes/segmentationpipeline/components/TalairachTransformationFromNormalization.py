@@ -54,6 +54,7 @@ signature = Signature(
   't1mri', ReadDiskItem( 'Raw T1 MRI', 'Aims Readable Volume Formats' ),
   'source_referential', ReadDiskItem( 'Referential', 'Referential' ),
   'normalized_referential', ReadDiskItem( 'Referential', 'Referential' ),
+  'transform_chain_ACPC_to_Normalized', ListOf( ReadDiskItem( 'Transformation', 'Transformation matrix' ) ),
 )
 
 
@@ -79,6 +80,16 @@ def initialization( self ):
       if s:
         return trManager.referential( s )
     return trManager.referential( registration.talairachMNIReferentialId )
+  def linkACPC_to_norm( proc, param ):
+    trManager = registration.getTransformationManager()
+    if proc.normalized_referential:
+      _mniToACPCpaths = trManager.findPaths( \
+        registration.talairachACPCReferentialId,
+        self.normalized_referential.uuid() )
+      for x in _mniToACPCpaths:
+        return x
+      else:
+        return []
   self.linkParameters( 'Talairach_transform',
     'normalization_transformation' )
   self.linkParameters( 'Commissure_coordinates', 'Talairach_transform' )
@@ -89,22 +100,18 @@ def initialization( self ):
     't1mri' ], linkRef )
   self.linkParameters( 'normalized_referential',
     'normalization_transformation', linkNormRef )
+  self.linkParameters( 'transform_chain_ACPC_to_Normalized',
+    'normalized_referential', linkACPC_to_norm )
 
 def execution( self, context ):
   from soma import aims
   t1toMni = aims.read( self.normalization_transformation.fullPath() )
   trManager = registration.getTransformationManager()
-  _mniToACPCpaths = trManager.findPaths( \
-    registration.talairachACPCReferentialId,
-    self.normalized_referential.uuid() )
-  for x in _mniToACPCpaths:
-    _mniToACPC = x
-    break
-  else:
+  if not self.transform_chain_ACPC_to_Normalized:
     raise RuntimeError( 'No transformation found between AC/PC and the ' \
       'normalized' )
   mniToACPC = aims.Motion()
-  for mf in _mniToACPC:
+  for mf in self.transform_chain_ACPC_to_Normalized:
     m = aims.read( mf.fullPath() )
     mniToACPC *= m
   mniToACPC = mniToACPC.inverse()
