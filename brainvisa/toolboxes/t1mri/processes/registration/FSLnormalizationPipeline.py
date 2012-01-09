@@ -44,14 +44,16 @@ def validation():
     from soma import aims
   except:
     raise ValidationError( 'aims module not here' )
-  p = getProcess( 'Normalization_FSL' )
-  if not p:
-    raise ValidationError( 'Normalization_FSL process is not available - either the fMRI toolbox is not installed, or FSL is not installed and in the PATH' )
+  configuration = Application().configuration
+  import distutils.spawn
+  if not distutils.spawn.find_executable( \
+    configuration.FSL.fsl_commands_prefix + 'flirt' ):
+    raise ValidationError(_t_('FSL flirt commandline could not be found'))
   # the previous test seems not to be good enough...
   try:
     di = ReadDiskItem( 'anatomical Template', ['NIFTI-1 image', 'gz compressed NIFTI-1 image'] )
   except ValueError:
-    raise ValidationError( 'fMRI toolbox not present' )
+    raise ValidationError( 'FSL templates could not be found.' )
 
 signature = Signature(
   't1mri', ReadDiskItem( 'Raw T1 MRI',

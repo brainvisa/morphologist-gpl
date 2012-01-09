@@ -44,9 +44,12 @@ def validation():
     from soma import aims
   except:
     raise ValidationError( 'aims module not here' )
-  p = getProcess( 'Normalization_SPM' )
-  if not p:
-    raise ValidationError( 'SPM Normalization process is not available, Matlab / SPM is not installed and in the PATH' )
+  configuration = Application().configuration
+  if( ( not configuration.SPM.spm8_standalone_command \
+      or not configuration.SPM.spm8_standalone_mcr_path ) ) \
+    and not distutils.spawn.find_executable( \
+      configuration.matlab.executable ):
+    raise ValidationError( 'SPM or matlab is not found' )
   # the previous test seems not to be good enough...
   try:
     di = ReadDiskItem( 'anatomical Template', ['NIFTI-1 image', 'gz compressed NIFTI-1 image', 'MINC image'] )
