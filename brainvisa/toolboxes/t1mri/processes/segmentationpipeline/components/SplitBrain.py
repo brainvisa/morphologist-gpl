@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -56,7 +57,7 @@ signature = Signature(
   'Use_template', Boolean(), 
   'voronoi_template', ReadDiskItem( 'Hemispheres Template',
       'Aims readable volume formats' ),
-  'Commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
+  'commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
                                           'Commissure coordinates'),
 )
 
@@ -65,7 +66,7 @@ def initialization( self ):
   self.linkParameters( 'histo_analysis', 'mri_corrected' )
   self.linkParameters( 'brain_mask', 'mri_corrected' )
   self.linkParameters( 'split_mask', 'mri_corrected' )
-  self.linkParameters( 'Commissure_coordinates', 'mri_corrected' )
+  self.linkParameters( 'commissure_coordinates', 'mri_corrected' )
   self.linkParameters( 'white_ridges', 'mri_corrected' )
   self.Use_ridges = "True"
   self.setOptional('white_ridges')
@@ -75,7 +76,7 @@ def initialization( self ):
   self.voronoi_template = self.signature[ 'voronoi_template' ].findValue( {} )
   self.Use_template = "True"
   self.setOptional('voronoi_template')
-  self.setOptional('Commissure_coordinates')
+  self.setOptional('commissure_coordinates')
   self.bary_factor = "0.6"
   self.setOptional('bary_factor')
   self.initial_erosion = 2
@@ -89,8 +90,8 @@ def execution( self, context ):
       context.write('Remove',self.split_mask.fullName(),'.loc if you want to trigger a new segmentation')
     else:
       option_list = []
-      if self.Commissure_coordinates is not None:
-        option_list += ['-Points', self.Commissure_coordinates.fullPath()]
+      if self.commissure_coordinates is not None:
+        option_list += ['-Points', self.commissure_coordinates.fullPath()]
       if self.variant=="regularized":
         option_list += ['-walgo','r']
       if self.variant=="GW Barycentre":
