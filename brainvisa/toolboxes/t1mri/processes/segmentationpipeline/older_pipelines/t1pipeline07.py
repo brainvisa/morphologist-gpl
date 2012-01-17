@@ -413,29 +413,43 @@ def initialization( self ):
   eNode.addLink( 'CorticalFoldsGraph.CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.CorticalFoldsGraphThickness.hemi_mesh', 'HemispheresMesh.right_hemi_mesh' )
 
 
-  eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_0.clearLinksTo( \
-    'histo_analysis' )
-  eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_0.clearLinksTo( \
-    'left_hemi_cortex' )
-  eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_0.clearLinksTo( \
-    'right_hemi_cortex' )
+  #eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_0.clearLinksTo( \
+    #'histo_analysis' )
+  #eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_0.clearLinksTo( \
+    #'left_hemi_cortex' )
+  #eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_0.clearLinksTo( \
+    #'right_hemi_cortex' )
+  eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_0.LeftCorticalFoldsGraph_3_0.\
+    removeLink( 'hemi_cortex', 'split_mask' )
+  eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_0.LeftCorticalFoldsGraph_3_0.\
+    removeLink( 'hemi_cortex', 'side' )
+  eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_0.RightCorticalFoldsGraph_3_0.\
+    removeLink('hemi_cortex', 'split_mask' )
+  eNode.CorticalFoldsGraph.CorticalFoldsGraph_3_0.RightCorticalFoldsGraph_3_0.\
+    removeLink( 'hemi_cortex', 'side' )
 
-  eNode.addLink( 'CorticalFoldsGraph.CorticalFoldsGraph_3_0.histo_analysis', 'HistoAnalysis.histo_analysis' )
-  eNode.addLink( 'HistoAnalysis.histo_analysis', 'CorticalFoldsGraph.CorticalFoldsGraph_3_0.histo_analysis' )
+  #eNode.addLink( 'CorticalFoldsGraph.CorticalFoldsGraph_3_0.histo_analysis', 'HistoAnalysis.histo_analysis' )
+  #eNode.addLink( 'HistoAnalysis.histo_analysis', 'CorticalFoldsGraph.CorticalFoldsGraph_3_0.histo_analysis' )
   
-  eNode.addLink( \
-    'CorticalFoldsGraph.CorticalFoldsGraph_3_0.left_hemi_cortex',
+  #eNode.addLink( \
+    #'CorticalFoldsGraph.CorticalFoldsGraph_3_0.left_hemi_cortex',
+    #'HemispheresMesh.left_hemi_cortex' )
+  #eNode.addLink( \
+    #'HemispheresMesh.left_hemi_cortex',
+    #'CorticalFoldsGraph.CorticalFoldsGraph_3_0.left_hemi_cortex' )
+  eNode.addDoubleLink( \
+    'CorticalFoldsGraph.CorticalFoldsGraph_3_0.LeftCorticalFoldsGraph_3_0.hemi_cortex',
     'HemispheresMesh.left_hemi_cortex' )
-  eNode.addLink( \
-    'HemispheresMesh.left_hemi_cortex',
-    'CorticalFoldsGraph.CorticalFoldsGraph_3_0.left_hemi_cortex' )
 
-  eNode.addLink( \
-    'CorticalFoldsGraph.CorticalFoldsGraph_3_0.right_hemi_cortex',
+  #eNode.addLink( \
+    #'CorticalFoldsGraph.CorticalFoldsGraph_3_0.right_hemi_cortex',
+    #'HemispheresMesh.right_hemi_cortex' )
+  #eNode.addLink( \
+    #'HemispheresMesh.right_hemi_cortex',
+    #'CorticalFoldsGraph.CorticalFoldsGraph_3_0.right_hemi_cortex' )
+  eNode.addDoubleLink( \
+    'CorticalFoldsGraph.CorticalFoldsGraph_3_0.RightCorticalFoldsGraph_3_0.hemi_cortex',
     'HemispheresMesh.right_hemi_cortex' )
-  eNode.addLink( \
-    'HemispheresMesh.right_hemi_cortex',
-    'CorticalFoldsGraph.CorticalFoldsGraph_3_0.right_hemi_cortex' )
 
 
   if reco:
