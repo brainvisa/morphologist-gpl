@@ -71,7 +71,7 @@ def execution( self, context ):
                         self.mri_corrected, "-h",
                         self.histo_analysis, "-m",
                         self.brain_voronoi, "-o",
-                        self.left_grey_white, "-l", "2", "-w", "t" )
+                        self.left_grey_white, "-l", "2", "-w", "t", "-a", "R")
         tm.copyReferential(self.mri_corrected, self.left_grey_white)
   if self.Side in ('Right','Both'):
        
@@ -84,5 +84,5 @@ def execution( self, context ):
                         self.histo_analysis, "-m",
                         self.brain_voronoi, "-o",
                         self.right_grey_white, "-l", "1", "-w",
-                        "t" )
+                        "t", "-a", "R")
         tm.copyReferential(self.mri_corrected, self.right_grey_white)
