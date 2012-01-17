@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -83,7 +84,7 @@ def execution( self, context ):
         
         context.write("Reconstructing left hemisphere surface...")
         hemi = context.temporary( 'GIS Image' )
-        context.system( "VipHomotopic", "-i", braing, "-S", skeleton, "-C", self.left_hemi_cortex, "-o", hemi )
+        context.system( "VipHomotopic", "-i", braing, "-S", skeleton, "-C", self.left_hemi_cortex, "-o", hemi, "-m", "H" )
         
         del braing
         del skeleton
@@ -92,7 +93,7 @@ def execution( self, context ):
         context.system( "VipSingleThreshold", "-i", hemi, "-o", hemi, "-t", "0", "-c", "b", "-m", "ne", "-w", "t" )
         
         context.write( "Triangulation and Decimation..." )
-        context.system( "AimsMeshWhite", "-i", hemi.fullPath(), "-o", self.left_hemi_mesh.fullPath() )
+        context.system( "AimsMeshWhite", "-i", hemi.fullPath(), "-o", self.left_hemi_mesh.fullPath(), "--deciMaxClearance",  "3", "--deciMaxError", "10" )
         
         del hemi
         
@@ -115,7 +116,7 @@ def execution( self, context ):
         
         context.write("Reconstructing right hemisphere surface...")
         hemi = context.temporary( 'GIS Image' )
-        context.system( "VipHomotopic", "-i", braing, "-S", skeleton, "-C", self.right_hemi_cortex, "-o", hemi )
+        context.system( "VipHomotopic", "-i", braing, "-S", skeleton, "-C", self.right_hemi_cortex, "-o", hemi, "-m", "H"  )
         
         del braing
         del skeleton
@@ -124,7 +125,7 @@ def execution( self, context ):
         context.system( "VipSingleThreshold", "-i", hemi, "-o", hemi, "-t", "0", "-c", "b", "-m", "ne", "-w", "t" )
         
         context.write( "Triangulation and Decimation..." )
-        context.system( "AimsMeshWhite", "-i", hemi.fullPath(), "-o", self.right_hemi_mesh.fullPath() )
+        context.system( "AimsMeshWhite", "-i", hemi.fullPath(), "-o", self.right_hemi_mesh.fullPath(), "--deciMaxClearance",  "3", "--deciMaxError", "10" )
         
         del hemi
         
