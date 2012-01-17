@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -78,7 +79,7 @@ def initialization( self ):
   eNode.SplitBrain05.clearLinksTo( 'brain_mask' )
   eNode.SplitBrain05.clearLinksTo( 'Use_template' )
   eNode.SplitBrain05.clearLinksTo( 'voronoi_template' )
-  eNode.SplitBrain05.clearLinksTo( 'Commissure_coordinates' )
+  eNode.SplitBrain05.clearLinksTo( 'commissure_coordinates' )
 
   eNode.SplitBrain04.clearLinksTo( 'histo_analysis' )
   eNode.SplitBrain04.clearLinksTo( 'brain_mask' )
@@ -105,10 +106,10 @@ def initialization( self ):
   eNode.addLink( 'use_template', 'SplitBrain05.Use_template' )
   eNode.addLink( 'SplitBrain05.voronoi_template', 'voronoi_template' )
   eNode.addLink( 'voronoi_template', 'SplitBrain05.voronoi_template' )
-  eNode.addLink( 'SplitBrain05.Commissure_coordinates',
+  eNode.addLink( 'SplitBrain05.commissure_coordinates',
                  'commissure_coordinates' )
   eNode.addLink( 'commissure_coordinates',
-                 'SplitBrain05.Commissure_coordinates' )
+                 'SplitBrain05.commissure_coordinates' )
 
   # links for 2004 version
 
