@@ -45,12 +45,10 @@ signature = Signature(
   'left_graph', WriteDiskItem( 'Cortical folds graph', 'Graph',
                                requiredAttributes = { 'labelled' : 'No',
                                                       'side' : 'left',
-                                                      #'graph_version' : '3.0'
                                                       } ),
   'right_graph', WriteDiskItem( 'Cortical folds graph', 'Graph',
                                 requiredAttributes = { 'labelled' : 'No',
                                                        'side' : 'right',
-                                                      #'graph_version' : '3.0'
                                                        } ),
   'commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
                                           'Commissure coordinates'),
@@ -69,27 +67,27 @@ class switch_3_0:
         { 'labelled' : 'No', 'side' : 'left' }
       self.proc.signature['right_graph'].requiredAttributes = \
         { 'labelled' : 'No', 'side' : 'right' }
-      self.proc.executionNode().addLink( 'CorticalFoldsGraph_3_0.Lgraph',
-        'left_graph' )
-      self.proc.executionNode().addLink( 'left_graph',
-        'CorticalFoldsGraph_3_0.Lgraph' )
-      self.proc.executionNode().addLink( 'CorticalFoldsGraph_3_0.Rgraph',
-        'right_graph' )
-      self.proc.executionNode().addLink( 'right_graph',
-        'CorticalFoldsGraph_3_0.Rgraph' )
-      self.proc.executionNode().CorticalFoldsGraph_3_0._parameterHasChanged(
-        'Lgraph', self.proc.executionNode().CorticalFoldsGraph_3_0.Lgraph )
-      self.proc.executionNode().CorticalFoldsGraph_3_0._parameterHasChanged(
-        'Rgraph', self.proc.executionNode().CorticalFoldsGraph_3_0.Rgraph )
+      self.proc.executionNode().addDoubleLink( 'left_graph',
+        'CorticalFoldsGraph_3_0.LeftCorticalFoldsGraph_3_0.graph' )
+      self.proc.executionNode().addDoubleLink( 'right_graph',
+        'CorticalFoldsGraph_3_0.RightCorticalFoldsGraph_3_0.graph' )
+      self.proc.executionNode().CorticalFoldsGraph_3_0.\
+        LeftCorticalFoldsGraph_3_0._parameterHasChanged( 'graph',
+          self.proc.executionNode().CorticalFoldsGraph_3_0.\
+            LeftCorticalFoldsGraph_3_0.graph )
+      self.proc.executionNode().CorticalFoldsGraph_3_0.\
+        RightCorticalFoldsGraph_3_0._parameterHasChanged( 'graph',
+          self.proc.executionNode().CorticalFoldsGraph_3_0.\
+            RightCorticalFoldsGraph_3_0.graph )
     else:
-      self.proc.executionNode().removeLink( 'CorticalFoldsGraph_3_0.Lgraph',
-        'left_graph' )
+      self.proc.executionNode().removeLink(
+        'CorticalFoldsGraph_3_0.LeftCorticalFoldsGraph_3_0.graph', 'left_graph' )
       self.proc.executionNode().removeLink( 'left_graph',
-        'CorticalFoldsGraph_3_0.Lgraph' )
-      self.proc.executionNode().removeLink( 'CorticalFoldsGraph_3_0.Rgraph',
-                            'right_graph' )
+        'CorticalFoldsGraph_3_0.LeftCorticalFoldsGraph_3_0.graph' )
+      self.proc.executionNode().removeLink(
+        'CorticalFoldsGraph_3_0.RightCorticalFoldsGraph_3_0.graph', 'right_graph' )
       self.proc.executionNode().removeLink( 'right_graph',
-                            'CorticalFoldsGraph_3_0.Rgraph' )
+        'CorticalFoldsGraph_3_0.RightCorticalFoldsGraph_3_0.graph' )
 
 class switch_3_1:
   def __init__( self, proc ):
@@ -140,16 +138,26 @@ def initialization( self ):
                    ProcessExecutionNode( 'CorticalFoldsGraph', optional = 1 ) )
   eNode.addChild( 'CorticalFoldsGraph_3_1', eNode1 )
 
-  eNode.addChild( 'CorticalFoldsGraph_3_0',
-                  ProcessExecutionNode( 'AnaComputeCorticalFoldArg',
-                  selected=1 ) )
+  eNode1 = ParallelExecutionNode( 'CorticalFoldsGraph_3_0', selected=1 )
+  eNode1.addChild( 'LeftCorticalFoldsGraph_3_0',
+                   ProcessExecutionNode( 'graphstructure_3_0', optional=1 ) )
+  eNode1.addChild( 'RightCorticalFoldsGraph_3_0',
+                   ProcessExecutionNode( 'graphstructure_3_0', optional=1 ) )
+  eNode.addChild( 'CorticalFoldsGraph_3_0', eNode1 )
 
   eNode.CorticalFoldsGraph_3_1.LeftCorticalFoldsGraph_3_1.signature[ \
       'side' ].userLevel = 3
-  eNode.CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.side = 'Left'
+  eNode.CorticalFoldsGraph_3_1.LeftCorticalFoldsGraph_3_1.side = 'Left'
   eNode.CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.signature[ \
       'side' ].userLevel = 3
   eNode.CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.side = 'Right'
+
+  eNode.CorticalFoldsGraph_3_0.LeftCorticalFoldsGraph_3_0.signature[ \
+      'side' ].userLevel = 3
+  eNode.CorticalFoldsGraph_3_0.LeftCorticalFoldsGraph_3_0.side = 'Left'
+  eNode.CorticalFoldsGraph_3_0.RightCorticalFoldsGraph_3_0.signature[ \
+      'side' ].userLevel = 3
+  eNode.CorticalFoldsGraph_3_0.RightCorticalFoldsGraph_3_0.side = 'Right'
 
   # break internal links
 
@@ -167,8 +175,15 @@ def initialization( self ):
   eNode.CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.removeLink( \
       'Talairach_transform', 'split_mask' )
 
-  eNode.CorticalFoldsGraph_3_0.clearLinksTo( 'brain_voronoi' )
-  eNode.CorticalFoldsGraph_3_0.clearLinksTo( 'Commissure_coordinates' )
+  eNode.CorticalFoldsGraph_3_0.LeftCorticalFoldsGraph_3_0.removeLink( \
+      'split_mask', 'mri_corrected' )
+  eNode.CorticalFoldsGraph_3_0.LeftCorticalFoldsGraph_3_0.removeLink( \
+      'commissure_coordinates', 'mri_corrected' )
+
+  eNode.CorticalFoldsGraph_3_0.RightCorticalFoldsGraph_3_0.removeLink( \
+      'split_mask', 'mri_corrected' )
+  eNode.CorticalFoldsGraph_3_0.RightCorticalFoldsGraph_3_0.removeLink( \
+      'commissure_coordinates', 'mri_corrected' )
 
   # links for 3.1 version
 
@@ -226,32 +241,35 @@ def initialization( self ):
       'CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.Talairach_transform' )
 
 
-  eNode.addLink( 'CorticalFoldsGraph_3_0.mri_corrected', 'mri_corrected' )
-  eNode.addLink( 'mri_corrected', 'CorticalFoldsGraph_3_0.mri_corrected' )
+  eNode.addDoubleLink( 'CorticalFoldsGraph_3_0.LeftCorticalFoldsGraph_3_0.mri_corrected',
+                       'mri_corrected' )
+  eNode.addDoubleLink( 'CorticalFoldsGraph_3_0.LeftCorticalFoldsGraph_3_0.split_mask',
+                       'split_mask' )
+  eNode.addDoubleLink( \
+    'CorticalFoldsGraph_3_0.LeftCorticalFoldsGraph_3_0.commissure_coordinates',
+    'commissure_coordinates' )
+  eNode.addDoubleLink(  'CorticalFoldsGraph_3_0.LeftCorticalFoldsGraph_3_0.graph',
+    'left_graph' )
 
-  eNode.addLink( 'CorticalFoldsGraph_3_0.brain_voronoi', 'split_mask' )
-  eNode.addLink( 'split_mask', 'CorticalFoldsGraph_3_0.brain_voronoi' )
+  eNode.addDoubleLink( 'CorticalFoldsGraph_3_0.RightCorticalFoldsGraph_3_0.mri_corrected',
+                       'mri_corrected' )
+  eNode.addDoubleLink( 'CorticalFoldsGraph_3_0.RightCorticalFoldsGraph_3_0.split_mask',
+                       'split_mask' )
+  eNode.addDoubleLink( \
+    'CorticalFoldsGraph_3_0.RightCorticalFoldsGraph_3_0.commissure_coordinates',
+    'commissure_coordinates' )
+  eNode.addDoubleLink(  'CorticalFoldsGraph_3_0.RightCorticalFoldsGraph_3_0.graph',
+    'right_graph' )
 
-  eNode.addLink( 'CorticalFoldsGraph_3_0.Lgraph', 'left_graph' )
-  eNode.addLink( 'left_graph', 'CorticalFoldsGraph_3_0.Lgraph' )
 
-  eNode.addLink( 'CorticalFoldsGraph_3_0.Rgraph', 'right_graph' )
-  eNode.addLink( 'right_graph', 'CorticalFoldsGraph_3_0.Rgraph' )
-
-  eNode.addLink( 'CorticalFoldsGraph_3_0.Commissure_coordinates',
-                 'commissure_coordinates' )
-  eNode.addLink( 'commissure_coordinates',
-                 'CorticalFoldsGraph_3_0.Commissure_coordinates' )
-                 
   # self links
   self.linkParameters( 'split_mask', 'mri_corrected' )
   self.linkParameters( 'commissure_coordinates', 'mri_corrected' )
   self.linkParameters( 'Talairach_transform', 'split_mask' )
-  
+
   self.setExecutionNode( eNode )
 
   x = switch_3_1( self )
   eNode.CorticalFoldsGraph_3_1._selectionChange.add( x )
   x = switch_3_0( self )
   eNode.CorticalFoldsGraph_3_0._selectionChange.add( x )
-
