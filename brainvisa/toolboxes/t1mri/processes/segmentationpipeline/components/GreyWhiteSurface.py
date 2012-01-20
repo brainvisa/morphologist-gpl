@@ -84,25 +84,18 @@ def execution( self, context ):
         else:
             context.write("Reconstructing left hemisphere white surface...")
             white = context.temporary( 'GIS Image' )
-            white_mesh = context.temporary( 'MESH mesh' )
             context.system( "VipSingleThreshold", "-i", self.left_hemi_cortex,
                     "-o", white, "-t", "0", "-c", "b", "-m",
                     "ne", "-w", "t" )
-            context.system( "AimsMesh", "-i", white, "-o",
-                    white_mesh )
             
-            white_mesh_ext_name = white_mesh.fullPath()[:-5] + '_255_1.mesh'
-            white_mesh_ext = aims.read(white_mesh_ext_name)
-            poly = white_mesh_ext.polygon()
+            context.system( "AimsMeshBrain", "-i", white, "-o", self.left_white_mesh )
+            white_mesh = aims.read( self.left_white_mesh.fullPath() )
+            poly = white_mesh.polygon()
             poly.assign( [ aims.AimsVector_U32_3( [ x[2], x[1], x[0] ] ) for x in poly ] )
-            normal = white_mesh_ext.normal()
+            normal = white_mesh.normal()
             normal.assign( [ -x for x in normal ] )
-            aims.write( white_mesh_ext, self.left_white_mesh.fullPath() )
-            
-            context.write( "Smoothing mesh..." )
-            for i in range(3):
-                context.runProcess( 'meshSmooth', mesh=self.left_white_mesh,
-                                    iterations=10,rate=0.2 )
+            aims.write( white_mesh, self.left_white_mesh.fullPath() )
+            context.system( "meshCleaner", "-i", self.left_white_mesh, "-o", self.left_white_mesh, "-maxCurv", "0.5" )
             
             tm.copyReferential(self.left_grey_white, self.left_white_mesh)
             
@@ -126,25 +119,18 @@ def execution( self, context ):
         else:
             context.write("Reconstructing right hemisphere white surface...")
             white = context.temporary( 'GIS Image' )
-            white_mesh = context.temporary( 'MESH mesh' )
             context.system( "VipSingleThreshold", "-i", self.right_hemi_cortex,
                     "-o", white, "-t", "0", "-c", "b", "-m",
                     "ne", "-w", "t" )
-            context.system( "AimsMesh", "-i", white, "-o",
-                    white_mesh )
             
-            white_mesh_ext_name = white_mesh.fullPath()[:-5] + '_255_1.mesh'
-            white_mesh_ext = aims.read(white_mesh_ext_name)
-            poly = white_mesh_ext.polygon()
+            context.system( "AimsMeshBrain", "-i", white, "-o", self.right_white_mesh )
+            white_mesh = aims.read( self.right_white_mesh.fullPath() )
+            poly = white_mesh.polygon()
             poly.assign( [ aims.AimsVector_U32_3( [ x[2], x[1], x[0] ] ) for x in poly ] )
-            normal = white_mesh_ext.normal()
+            normal = white_mesh.normal()
             normal.assign( [ -x for x in normal ] )
-            aims.write( white_mesh_ext, self.right_white_mesh.fullPath() )
-            
-            context.write( "Smoothing mesh..." )
-            for i in range(3):
-                context.runProcess( 'meshSmooth', mesh=self.right_white_mesh,
-                                    iterations=10,rate=0.2 )
+            aims.write( white_mesh, self.right_white_mesh.fullPath() )
+            context.system( "meshCleaner", "-i", self.right_white_mesh, "-o", self.right_white_mesh, "-maxCurv", "0.5" )
             
             tm.copyReferential(self.right_grey_white, self.right_white_mesh)
             
