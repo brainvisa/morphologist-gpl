@@ -84,22 +84,26 @@ def execution( self, context ):
         
         context.write("Reconstructing left hemisphere surface...")
         hemi = context.temporary( 'GIS Image' )
-        context.system( "VipHomotopic", "-i", braing, "-S", skeleton, "-C", self.left_hemi_cortex, "-o", hemi, "-m", "H" )
-        
-        del braing
-        del skeleton
-        del roots
+        #hemi_mesh = context.temporary( 'MESH mesh' )
+        context.system( "VipHomotopic", "-i", braing, "-S", skeleton, "-C", self.left_hemi_cortex, "-o", hemi, "-m", "H", "-w", "t" )
         
         context.system( "VipSingleThreshold", "-i", hemi, "-o", hemi, "-t", "0", "-c", "b", "-m", "ne", "-w", "t" )
         
-        context.write( "Triangulation and Decimation..." )
-        context.system( "AimsMeshWhite", "-i", hemi.fullPath(), "-o", self.left_hemi_mesh.fullPath(), "--deciMaxClearance",  "3", "--deciMaxError", "10" )
+        context.system( "AimsMeshBrain", "-i", hemi.fullPath(), "-o", self.left_hemi_mesh)
+        hemi_mesh = aims.read( self.left_hemi_mesh.fullPath() )
+        poly = hemi_mesh.polygon()
+        poly.assign( [ aims.AimsVector_U32_3( [ x[2], x[1], x[0] ] ) for x in poly ] )
+        normal = hemi_mesh.normal()
+        normal.assign( [ -x for x in normal ] )
+        aims.write( hemi_mesh, self.left_hemi_mesh.fullPath() )
+        context.system( "meshCleaner", "-i", self.left_hemi_mesh, "-o", self.left_hemi_mesh, "-maxCurv", "0.5" )
+        
+        trManager.copyReferential( self.mri_corrected, self.left_hemi_mesh )
         
         del hemi
-        
-        context.write( "Smoothing mesh..." )
-        context.runProcess( 'meshSmooth', mesh=self.left_hemi_mesh, iterations=self.iterations, rate=self.rate )
-        trManager.copyReferential( self.mri_corrected, self.left_hemi_mesh )
+        del braing
+        del skeleton
+        del roots
 
   if self.Side in ('Right','Both'):
     if os.path.exists(self.right_hemi_mesh.fullName() + '.loc'):
@@ -116,20 +120,21 @@ def execution( self, context ):
         
         context.write("Reconstructing right hemisphere surface...")
         hemi = context.temporary( 'GIS Image' )
-        context.system( "VipHomotopic", "-i", braing, "-S", skeleton, "-C", self.right_hemi_cortex, "-o", hemi, "-m", "H"  )
+        #hemi_mesh = context.temporary( 'MESH mesh' )
+        context.system( "VipHomotopic", "-i", braing, "-S", skeleton, "-C", self.right_hemi_cortex, "-o", hemi, "-m", "H", "-w", "t" )
+        
+        context.system( "VipSingleThreshold", "-i", hemi, "-o", hemi, "-t", "0", "-c", "b", "-m", "ne", "-w", "t" )
+        
+        context.system( "AimsMeshBrain", "-i", hemi.fullPath(), "-o", self.right_hemi_mesh)
+        hemi_mesh = aims.read( self.right_hemi_mesh.fullPath() )
+        poly = hemi_mesh.polygon()
+        poly.assign( [ aims.AimsVector_U32_3( [ x[2], x[1], x[0] ] ) for x in poly ] )
+        normal = hemi_mesh.normal()
+        normal.assign( [ -x for x in normal ] )
+        aims.write( hemi_mesh, self.right_hemi_mesh.fullPath() )
+        context.system( "meshCleaner", "-i", self.right_hemi_mesh.fullPath(), "-o", self.right_hemi_mesh.fullPath(), "-maxCurv", "0.5" )
         
         del braing
         del skeleton
         del roots
-        
-        context.system( "VipSingleThreshold", "-i", hemi, "-o", hemi, "-t", "0", "-c", "b", "-m", "ne", "-w", "t" )
-        
-        context.write( "Triangulation and Decimation..." )
-        context.system( "AimsMeshWhite", "-i", hemi.fullPath(), "-o", self.right_hemi_mesh.fullPath(), "--deciMaxClearance",  "3", "--deciMaxError", "10" )
-        
         del hemi
-        
-        context.write( "Smoothing mesh..." )
-        context.runProcess( 'meshSmooth', mesh=self.right_hemi_mesh, iterations=self.iterations, rate=self.rate )
-        trManager.copyReferential( self.mri_corrected, self.right_hemi_mesh )
-        
