@@ -70,10 +70,6 @@ signature = Signature(
       'Aims writable volume formats' ),
   'output_right_grey_white', WriteDiskItem( 'Right Grey White Mask',
       'Aims writable volume formats' ),
-  'output_left_cortex', WriteDiskItem( 'Left CSF+Grey Mask',
-      'Aims writable volume formats' ),
-  'output_right_cortex', WriteDiskItem( 'Right CSF+Grey Mask',
-      'Aims writable volume formats' ),
   'use_t1pipeline', Choice( ( 'graphically', 0 ), ( 'in batch', 1 ),
       ( 'don\'t use it', 2 ) )
 )
@@ -145,7 +141,7 @@ def initialization( self ):
     'input_brain_mask', 'input_grey_white', 'input_T1_to_MNI_transformation' )
   self.setOptional( 'output_brain_mask', 'output_left_grey_white',
     'output_right_grey_white', 'output_T1_to_Talairach_transformation',
-    'output_ACPC', 'output_left_cortex', 'output_right_cortex' )
+    'output_ACPC' )
 
   self.linkParameters( 'input_bias_corrected', 'input_raw_t1_mri' )
   self.linkParameters( 'input_grey_white', 'input_raw_t1_mri', linkigw )
@@ -161,8 +157,6 @@ def initialization( self ):
   self.linkParameters( 'output_brain_mask', 'output_bias_corrected' )
   self.linkParameters( 'output_left_grey_white', 'output_brain_mask' )
   self.linkParameters( 'output_right_grey_white', 'output_left_grey_white' )
-  self.linkParameters( 'output_left_cortex', 'output_brain_mask' )
-  self.linkParameters( 'output_right_cortex', 'output_left_grey_white' )
 
 
 def delInMainThread( lock, thing ):
@@ -179,7 +173,7 @@ def execution( self, context ):
   pi.children = [ None ] * 3
   context.progress()
 
-  nsteps = 10
+  nsteps = 8
   mridone = False
   nobiasdone = False
   maskdone = False
@@ -342,13 +336,14 @@ def execution( self, context ):
     enode.BiasCorrection._process.write_wridges = 'no'
     enode.BiasCorrection._process.hfiltered = None
     enode.BiasCorrection._process.white_ridges = None
-    enode.HistoAnalysis.HistoAnalysis04.setSelected( True )
+    enode.HistoAnalysis.use_hfiltered = False
+    enode.HistoAnalysis.use_wridges = False
     enode.SplitBrain._process.use_ridges = False
-    # enode.SplitBrain.SplitBrain04.Use_ridges = False
   if maskdone:
     enode.BrainSegmentation.setSelected( False )
   enode.TalairachTransformation.setSelected( False )
-  enode.GreyWhiteInterface.setSelected( False )
+  enode.GreyWhiteClassification.setSelected( False )
+  enode.GreyWhiteSurface.setSelected( False )
   enode.HemispheresMesh.setSelected( False )
   enode.HeadMesh.setSelected( False )
   enode.CorticalFoldsGraph.setSelected( False )
@@ -410,113 +405,6 @@ def execution( self, context ):
         _t_( 'G/W segmentation not written: no possible source' ) + '</font>' )
   context.progress( 7, nsteps, self )
 
-  if self.output_left_cortex is not None \
-    or self.output_right_cortex is not None:
-    context.write( _t_( 'importing grey/white cortex segmentation...' ) )
-    if self.input_grey_white:
-      gw = context.temporary( 'NIFTI-1 image' )
-      #context.system( 'AimsThreshold', '-i', gw, '-o', gw, '-m', 'eq',
-        #'-t', 0, '--bg', 11 ) # just because AimsReplaceLevel doesn't work
-        # on value 0
-      context.system( 'AimsFileConvert', '-i', self.input_grey_white,
-        '-o', gw, '-t', 'S16' )
-      mask = context.temporary( 'NIFTI-1 image' )
-      if self.output_left_cortex is not None:
-        context.system( 'AimsThreshold',
-          '-i', enode.SplitBrain._process.split_mask, '-o', mask, '-t', 3,
-          '-m', 'eq' )
-        context.runProcess( 'cortex', Side='Left',
-          mri_corrected=self.output_bias_corrected,
-          histo_analysis=enode.HistoAnalysis.histo_analysis,
-          split_mask=enode.SplitBrain.split_mask,
-          use_ridges=True,
-          white_ridges=mask,
-          left_hemi_cortex=self.output_left_cortex,
-          right_hemi_cortex=self.output_right_cortex,
-          pressure=0 )
-
-        #context.system( 'AimsThreshold',
-          #'-i', enode.SplitBrain._process.split_mask, '-o', mask, '-t', 2,
-          #'-m', 'eq' )
-        #context.system( 'AimsMask', '-i', gw,
-          #'-o', self.output_left_cortex, '-m', mask )
-        ## replacelevel must be done after masking since masking sets the
-        ## value 0 to the masked portions
-        #context.system( 'AimsReplaceLevel', '-i', self.output_left_cortex,
-          #'-o', self.output_left_cortex,
-          #'-g', 0, '-n', 11, '-g', 1, '-n', 255, '-g', 2, '-n', 255,
-          #'-g', 3, '-n', 0 )
-        ## fill a grey layer outside the brain (corpus callosum etc)
-        #vol = aims.read( self.output_left_cortex.fullPath() )
-        #da = numpy.array( vol, copy=False )
-        #z = numpy.where( da == 0 ) # white matter
-        #x = numpy.where( da[ (z[0]-1, z[1], z[2], z[3]) ] == 11 )
-        #da[ z[0][x], z[1][x], z[2][x], z[3][x] ] = 255 # replace by GM
-        #x = numpy.where( da[ (z[0]+1, z[1], z[2], z[3]) ] == 11 )
-        #da[ z[0][x], z[1][x], z[2][x], z[3][x] ] = 255
-        #x = numpy.where( da[ (z[0], z[1]-1, z[2], z[3]) ] == 11 )
-        #da[ z[0][x], z[1][x], z[2][x], z[3][x] ] = 255
-        #x = numpy.where( da[ (z[0], z[1]+1, z[2], z[3]) ] == 11 )
-        #da[ z[0][x], z[1][x], z[2][x], z[3][x] ] = 255
-        #x = numpy.where( da[ (z[0], z[1], z[2]-1, z[3]) ] == 11 )
-        #da[ z[0][x], z[1][x], z[2][x], z[3][x] ] = 255
-        #x = numpy.where( da[ (z[0], z[1], z[2]+1, z[3]) ] == 11 )
-        #da[ z[0][x], z[1][x], z[2][x], z[3][x] ] = 255
-        #aims.write( vol, self.output_left_cortex.fullPath() )
-
-        trManager.copyReferential( self.output_brain_mask,
-          self.output_left_cortex )
-        context.progress( 8, nsteps, self )
-      if self.output_right_cortex is not None:
-        context.system( 'AimsThreshold',
-          '-i', enode.SplitBrain._process.split_mask, '-o', mask, '-t', 3,
-          '-m', 'eq' )
-        context.runProcess( 'cortex', Side='Right',
-          mri_corrected=self.output_bias_corrected,
-          histo_analysis=enode.HistoAnalysis.histo_analysis,
-          split_mask=enode.SplitBrain.split_mask,
-          use_ridges=True,
-          white_ridges=mask,
-          left_hemi_cortex=self.output_left_cortex,
-          right_hemi_cortex=self.output_right_cortex,
-          pressure=0 )
-
-        #context.system( 'AimsThreshold',
-          #'-i', enode.SplitBrain._process.split_mask, '-o', mask, '-t', 1,
-          #'-m', 'eq' )
-        #context.system( 'AimsMask', '-i', gw,
-          #'-o', self.output_right_cortex, '-m', mask )
-        ## replacelevel must be done after masking since masking sets the
-        ## value 0 to the masked portions
-        #context.system( 'AimsReplaceLevel', '-i', self.output_right_cortex,
-          #'-o', self.output_right_cortex,
-          #'-g', 0, '-n', 11, '-g', 1, '-n', 255, '-g', 2, '-n', 255,
-          #'-g', 3, '-n', 0 )
-        ## fill a grey layer outside the brain (corpus callosum etc)
-        #vol = aims.read( self.output_right_cortex.fullPath() )
-        #da = numpy.array( vol, copy=False )
-        #z = numpy.where( da == 0 ) # white matter
-        #x = numpy.where( da[ (z[0]-1, z[1], z[2], z[3]) ] == 11 )
-        #da[ z[0][x], z[1][x], z[2][x], z[3][x] ] = 255 # replace by GM
-        #x = numpy.where( da[ (z[0]+1, z[1], z[2], z[3]) ] == 11 )
-        #da[ z[0][x], z[1][x], z[2][x], z[3][x] ] = 255
-        #x = numpy.where( da[ (z[0], z[1]-1, z[2], z[3]) ] == 11 )
-        #da[ z[0][x], z[1][x], z[2][x], z[3][x] ] = 255
-        #x = numpy.where( da[ (z[0], z[1]+1, z[2], z[3]) ] == 11 )
-        #da[ z[0][x], z[1][x], z[2][x], z[3][x] ] = 255
-        #x = numpy.where( da[ (z[0], z[1], z[2]-1, z[3]) ] == 11 )
-        #da[ z[0][x], z[1][x], z[2][x], z[3][x] ] = 255
-        #x = numpy.where( da[ (z[0], z[1], z[2]+1, z[3]) ] == 11 )
-        #da[ z[0][x], z[1][x], z[2][x], z[3][x] ] = 255
-        #aims.write( vol, self.output_right_cortex.fullPath() )
-
-        trManager.copyReferential( self.output_brain_mask,
-          self.output_right_cortex )
-    else:
-      context.write( '<font color="#a0a060">' + \
-        _t_( 'G/W cortex not written: no possible source' ) + '</font>' )
-  context.progress( 9, nsteps, self )
-
   context.write( _t_( 'Now run the last part of the regular T1 pipeline.' ) )
   enode.PrepareSubject.setSelected( False )
   enode.BiasCorrection.setSelected( False )
@@ -524,20 +412,15 @@ def execution( self, context ):
   enode.BrainSegmentation.setSelected( False )
   enode.SplitBrain.setSelected( False )
   enode.TalairachTransformation.setSelected( False )
-  enode.GreyWhiteInterface.setSelected( True )
-  enode.GreyWhiteInterface.GreyWhiteInterface.setSelected( False )
-  enode.GreyWhiteInterface.cortex_image.setSelected( False )
+  enode.GreyWhiteClassification.setSelected( False )
+  enode.GreyWhiteSurface.setSelected( False )
   enode.HemispheresMesh.setSelected( True )
   enode.HeadMesh.setSelected( True )
   enode.CorticalFoldsGraph.setSelected( True )
-  # we _must_ build 3.1 graphs because 3.0 overwrite cortex images.
+  # we build 3.1 graphs by default.
   enode.CorticalFoldsGraph.CorticalFoldsGraph_3_1.setSelected( True )
-  # uncommenting the following will avoid rebuilding the cortex images,
-  # but making graphs with the imported cortex images do fail...
-  # so let's rebuild them...
-  # enode.CorticalFoldsGraph.CorticalFoldsGraph_3_1.setSelected( True )
   context.write( _t_( 'Running a second pass of the missing T1 pipeline ' \
-    'steps to recover meshes and sulci graphs.' ) )
+    'steps to recover cortex, meshes and sulci graphs.' ) )
   if self.use_t1pipeline == 0:
     pv = mainThreadActions().call( ProcessView, t1pipeline )
     r = context.ask( 'run the pipeline, then click here', 'OK' )
@@ -563,5 +446,5 @@ def execution( self, context ):
       + _t_( 'Pipeline not run since the "use_t1pipeline" parameter ' \
         'prevents it' ) + '</font>')
   context.write( 'OK')
-  context.progress( 10, nsteps, self )
+  context.progress( 8, nsteps, self )
 
