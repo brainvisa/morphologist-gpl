@@ -238,6 +238,7 @@ def execution( self, context ):
             source_referential=trManager.referential( self.output_raw_t1_mri ),
             # normalized_referential=mniDI, # why doesn't this work ??
             )
+          self.output_T1_to_Talairach_transformation.lockData()
   else:
     context.write( '<font color="#a0a060">' + \
       _t_( 'Raw T1 MRI not written.' ) + '</font>' )
@@ -301,6 +302,7 @@ def execution( self, context ):
           Commissure_coordinates=self.output_ACPC,
           T1mri=self.output_raw_t1_mri, output_coordinates=self.output_ACPC,
           transformation=trm, destination_volume=self.output_brain_mask )
+        self.output_ACPC.lockData()
         if nobiasdone:
           context.write( _t_(
             'Resampling bias corrected volume to the mask space...' ) )
@@ -322,6 +324,13 @@ def execution( self, context ):
       trManager.copyReferential( self.output_raw_t1_mri,
         self.output_brain_mask )
   context.progress( 5, nsteps, self )
+
+  if mridone:
+    self.output_raw_t1_mri.lockData()
+  if nobiasdone:
+    self.output_bias_corrected.lockData()
+  if maskdone:
+    self.output_brain_mask.lockData()
 
   t1pipeline = getProcessInstance( 'morphologist' )
   t1pipeline.mri = self.output_raw_t1_mri
@@ -347,6 +356,7 @@ def execution( self, context ):
   enode.HemispheresMesh.setSelected( False )
   enode.HeadMesh.setSelected( False )
   enode.CorticalFoldsGraph.setSelected( False )
+
   context.write( _t_( 'Running a first pass of the missing T1 pipeline ' \
     'steps to recover bias correction, histogram analysis, brain split.' ) )
   if self.use_t1pipeline == 0:
@@ -392,6 +402,7 @@ def execution( self, context ):
           '-o', self.output_right_grey_white, '-m', mask )
         trManager.copyReferential( self.output_brain_mask,
           self.output_right_grey_white )
+        self.output_right_grey_white.lockData()
       if self.output_left_grey_white is not None:
         context.system( 'AimsThreshold',
           '-i', enode.SplitBrain._process.split_mask, '-o', mask, '-t', 2,
@@ -400,6 +411,7 @@ def execution( self, context ):
           '-o', self.output_left_grey_white, '-m', mask )
         trManager.copyReferential( self.output_brain_mask,
           self.output_left_grey_white )
+        self.output_left_grey_white.lockData()
     else:
       context.write( '<font color="#a0a060">' + \
         _t_( 'G/W segmentation not written: no possible source' ) + '</font>' )
@@ -446,5 +458,12 @@ def execution( self, context ):
       + _t_( 'Pipeline not run since the "use_t1pipeline" parameter ' \
         'prevents it' ) + '</font>')
   context.write( 'OK')
+  self.output_T1_to_Talairach_transformation.unlockData()
+  self.output_ACPC.unlockData()
+  self.output_raw_t1_mri.unlockData()
+  self.output_bias_corrected.unlockData()
+  self.output_brain_mask.unlockData()
+  self.output_left_grey_white.unlockData()
+  self.output_right_grey_white.unlockData()
   context.progress( 8, nsteps, self )
 
