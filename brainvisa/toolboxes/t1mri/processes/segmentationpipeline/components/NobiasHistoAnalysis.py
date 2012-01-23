@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -39,9 +40,9 @@ signature = Signature(
   'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected', 'Aims readable volume formats' ),
   'histo_analysis', WriteDiskItem( 'Histo Analysis', 'Histo Analysis' ),
   #'histo', WriteDiskItem( 'Histogram', 'Histogram' ),
-  'use_hfiltered', Choice('yes','no'),
+  'use_hfiltered', Boolean(),
   'hfiltered', ReadDiskItem( "T1 MRI Filtered For Histo", 'Aims readable volume formats' ),
-  'use_wridges', Choice('yes','no'),
+  'use_wridges', Boolean(),
   'white_ridges', ReadDiskItem( "T1 MRI White Matter Ridges",   'Aims readable volume formats' ),
   'undersampling', Choice('2', '4', '8', '16', '32', 'auto', 'iteration' )
 )
@@ -53,8 +54,8 @@ def initialization( self ):
   self.linkParameters( 'white_ridges', 'mri_corrected' )
   self.setOptional( 'hfiltered' )
   self.setOptional( 'white_ridges' )
-  self.use_hfiltered =  'yes'
-  self.use_wridges = 'yes'
+  self.use_hfiltered =  True
+  self.use_wridges = True
   self.undersampling = 'iteration'
 
 
@@ -65,9 +66,9 @@ def execution( self, context ):
   else:
     option_list = []
     constant_list = ['VipHistoAnalysis', '-i', self.mri_corrected.fullPath(), '-o', self.histo_analysis.fullPath(), '-Save', 'y']
-    if self.use_hfiltered == 'yes' and self.hfiltered is not None:
+    if self.use_hfiltered and self.hfiltered is not None:
         option_list += ['-Mask', self.hfiltered.fullPath()]
-    if self.use_wridges == 'yes' and self.white_ridges is not None:
+    if self.use_wridges and self.white_ridges is not None:
         option_list += ['-Ridge', self.white_ridges.fullPath()]
     if self.undersampling == 'iteration':
         option_list += ['-mode', 'i']

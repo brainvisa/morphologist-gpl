@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -38,7 +39,19 @@ roles=("viewer", )
 
 signature = Signature(
   'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
+  'use_hfiltered', Boolean(),
+  'hfiltered', ReadDiskItem( "T1 MRI Filtered For Histo", 'Aims readable volume formats' ),
+  'use_wridges', Boolean(),
+  'white_ridges', ReadDiskItem( "T1 MRI White Matter Ridges",   'Aims readable volume formats' )
 )
+
+def initialization( self ):
+  self.linkParameters( 'hfiltered', 'histo_analysis' )
+  self.linkParameters( 'white_ridges', 'histo_analysis' )
+  self.setOptional('hfiltered')
+  self.setOptional('white_ridges')
+  self.use_hfiltered = True
+  self.use_wridges = True
 
 def execution( self, context ):
   renderopt = '--matplotlib'
@@ -47,4 +60,16 @@ def execution( self, context ):
   except:
     # matplotlib unavailable: use gnuplot (and assume it is here...)
     renderopt = '-g'
-  context.system( 'VipHistoAnalysis', '-i', self.histo_analysis.fullName(), '-S', 'n', '-m', 'a', renderopt, 's' )
+  
+  f = open( self.histo_analysis.fullPath(), "r" )
+  lines = f.readlines()
+  undersampling = (lines[10].split())[1]
+  f.close()
+  
+  option_list = []
+  constant_list = ['VipHistoAnalysis', '-i', self.histo_analysis.fullName(), '-S', 'n', '-m', 'a', '-u', undersampling, renderopt, 's']
+  if self.use_hfiltered and self.hfiltered is not None:
+        option_list += ['-Mask', self.hfiltered.fullPath()]
+  if self.use_wridges and self.white_ridges is not None:
+        option_list += ['-Ridge', self.white_ridges.fullPath()]
+  apply( context.system, constant_list + option_list )
