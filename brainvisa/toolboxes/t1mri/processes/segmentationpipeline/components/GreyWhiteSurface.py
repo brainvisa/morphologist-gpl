@@ -88,7 +88,7 @@ def execution( self, context ):
                     "-o", white, "-t", "0", "-c", "b", "-m",
                     "ne", "-w", "t" )
             
-            context.system( "AimsMeshBrain", "-i", white, "-o", self.left_white_mesh )
+            context.system( "AimsMeshBrain", "-i", white, "-o", self.left_white_mesh, '--internalinterface' )
             white_mesh = aims.read( self.left_white_mesh.fullPath() )
             poly = white_mesh.polygon()
             poly.assign( [ aims.AimsVector_U32_3( [ x[2], x[1], x[0] ] ) for x in poly ] )
@@ -123,7 +123,7 @@ def execution( self, context ):
                     "-o", white, "-t", "0", "-c", "b", "-m",
                     "ne", "-w", "t" )
             
-            context.system( "AimsMeshBrain", "-i", white, "-o", self.right_white_mesh )
+            context.system( "AimsMeshBrain", "-i", white, "-o", self.right_white_mesh, '--internalinterface' )
             white_mesh = aims.read( self.right_white_mesh.fullPath() )
             poly = white_mesh.polygon()
             poly.assign( [ aims.AimsVector_U32_3( [ x[2], x[1], x[0] ] ) for x in poly ] )

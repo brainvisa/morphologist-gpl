@@ -88,7 +88,7 @@ def execution( self, context ):
         
         context.system( "VipSingleThreshold", "-i", hemi, "-o", hemi, "-t", "0", "-c", "b", "-m", "ne", "-w", "t" )
         
-        context.system( "AimsMeshBrain", "-i", hemi.fullPath(), "-o", self.left_hemi_mesh)
+        context.system( "AimsMeshBrain", "-i", hemi.fullPath(), "-o", self.left_hemi_mesh, '--internalinterface' )
         hemi_mesh = aims.read( self.left_hemi_mesh.fullPath() )
         poly = hemi_mesh.polygon()
         poly.assign( [ aims.AimsVector_U32_3( [ x[2], x[1], x[0] ] ) for x in poly ] )
@@ -123,7 +123,7 @@ def execution( self, context ):
         
         context.system( "VipSingleThreshold", "-i", hemi, "-o", hemi, "-t", "0", "-c", "b", "-m", "ne", "-w", "t" )
         
-        context.system( "AimsMeshBrain", "-i", hemi.fullPath(), "-o", self.right_hemi_mesh)
+        context.system( "AimsMeshBrain", "-i", hemi.fullPath(), "-o", self.right_hemi_mesh, '--internalinterface' )
         hemi_mesh = aims.read( self.right_hemi_mesh.fullPath() )
         poly = hemi_mesh.polygon()
         poly.assign( [ aims.AimsVector_U32_3( [ x[2], x[1], x[0] ] ) for x in poly ] )
@@ -131,7 +131,9 @@ def execution( self, context ):
         normal.assign( [ -x for x in normal ] )
         aims.write( hemi_mesh, self.right_hemi_mesh.fullPath() )
         context.system( "meshCleaner", "-i", self.right_hemi_mesh.fullPath(), "-o", self.right_hemi_mesh.fullPath(), "-maxCurv", "0.5" )
-        
+
+        trManager.copyReferential( self.mri_corrected, self.right_hemi_mesh )
+
         del braing
         del skeleton
         del roots
