@@ -183,154 +183,154 @@ def execution( self, context ):
   mniReferential = trManager.referential(
     registration.talairachMNIReferentialId )
 
-  #if self.input_raw_t1_mri is None and self.input_bias_corrected is not None:
-    #context.write( _t_( 'Taking bias corrected as raw T1 MRI.' ) )
-    #self.input_raw_t1_mri = self.input_bias_corrected
+  if self.input_raw_t1_mri is None and self.input_bias_corrected is not None:
+    context.write( _t_( 'Taking bias corrected as raw T1 MRI.' ) )
+    self.input_raw_t1_mri = self.input_bias_corrected
 
-  #if self.output_raw_t1_mri is not None:
-    #context.write( _t_( 'importing raw T1 MRI...' ) )
-    #if self.input_raw_t1_mri is not None:
-      #context.runProcess( 'ImportT1MRI', input=self.input_raw_t1_mri,
-        #output=self.output_raw_t1_mri )
-      #mridone = True
-    #else:
-      #context.warning( _t_( 'output raw T1 MRI could not be written: ' \
-        #'no possible source' ) )
-    #context.progress( 1, nsteps, self )
-    #if mridone:
-      #context.write( '<font color="#60ff60">' \
-        #+ _t_( 'Raw T1 MRI inserted.' ) + '</font>' )
-      #if self.input_T1_to_MNI_transformation is not None:
-        ## import / convert transformation to MNI space
-        #context.write( _t_( 'import transformation' ) )
-        #m = []
-        #i = 0
-        #rl = False
-        #for l in open( self.input_T1_to_MNI_transformation.fullPath() \
-          #).xreadlines():
-          #if l.startswith( 'Linear_Transform =' ):
-            #rl = True
-          #elif rl:
-            #if l.endswith( ';\n' ):
-              #l = l[:-2]
-            #m.append( [ float(x) for x in l.split() ] )
-            #i += 1
-            #if i == 3:
-              #break
-        #t12mni = aims.AffineTransformation3d( numpy.array( m \
-          #+ [[ 0., 0., 0., 1. ]] ) )
-        #t1aims2t1 = aims.AffineTransformation3d( \
-          #shfjGlobals.aimsVolumeAttributes( self.output_raw_t1_mri ) \
-          #[ 'transformations' ][-1] )
-        #t1aims2mni = t12mni * t1aims2t1
-        #acpcDI = neuroHierarchy.databases.getDiskItemFromUuid(
-          #registration.talairachACPCReferentialId )
-        #mniDI = neuroHierarchy.databases.getDiskItemFromUuid(
-          #mniReferential.uuid() )
-        #if self.output_T1_to_Talairach_transformation is not None:
-          #trm = context.temporary( 'Transformation matrix' )
-          #aims.write( t1aims2mni, trm.fullPath() )
-          #context.runProcess( 'TalairachTransformationFromNormalization',
-            #normalization_transformation=trm,
-            #Talairach_transform=self.output_T1_to_Talairach_transformation,
-            #Commissure_coordinates=self.output_ACPC,
-            #t1mri=self.output_raw_t1_mri,
-            #source_referential=trManager.referential( self.output_raw_t1_mri ),
-            ## normalized_referential=mniDI, # why doesn't this work ??
-            #)
-          #self.output_T1_to_Talairach_transformation.lockData()
-  #else:
-    #context.write( '<font color="#a0a060">' + \
-      #_t_( 'Raw T1 MRI not written.' ) + '</font>' )
-  #context.progress( 2, nsteps, self )
+  if self.output_raw_t1_mri is not None:
+    context.write( _t_( 'importing raw T1 MRI...' ) )
+    if self.input_raw_t1_mri is not None:
+      context.runProcess( 'ImportT1MRI', input=self.input_raw_t1_mri,
+        output=self.output_raw_t1_mri )
+      mridone = True
+    else:
+      context.warning( _t_( 'output raw T1 MRI could not be written: ' \
+        'no possible source' ) )
+    context.progress( 1, nsteps, self )
+    if mridone:
+      context.write( '<font color="#60ff60">' \
+        + _t_( 'Raw T1 MRI inserted.' ) + '</font>' )
+      if self.input_T1_to_MNI_transformation is not None:
+        # import / convert transformation to MNI space
+        context.write( _t_( 'import transformation' ) )
+        m = []
+        i = 0
+        rl = False
+        for l in open( self.input_T1_to_MNI_transformation.fullPath() \
+          ).xreadlines():
+          if l.startswith( 'Linear_Transform =' ):
+            rl = True
+          elif rl:
+            if l.endswith( ';\n' ):
+              l = l[:-2]
+            m.append( [ float(x) for x in l.split() ] )
+            i += 1
+            if i == 3:
+              break
+        t12mni = aims.AffineTransformation3d( numpy.array( m \
+          + [[ 0., 0., 0., 1. ]] ) )
+        t1aims2t1 = aims.AffineTransformation3d( \
+          shfjGlobals.aimsVolumeAttributes( self.output_raw_t1_mri ) \
+          [ 'transformations' ][-1] )
+        t1aims2mni = t12mni * t1aims2t1
+        acpcDI = neuroHierarchy.databases.getDiskItemFromUuid(
+          registration.talairachACPCReferentialId )
+        mniDI = neuroHierarchy.databases.getDiskItemFromUuid(
+          mniReferential.uuid() )
+        if self.output_T1_to_Talairach_transformation is not None:
+          trm = context.temporary( 'Transformation matrix' )
+          aims.write( t1aims2mni, trm.fullPath() )
+          context.runProcess( 'TalairachTransformationFromNormalization',
+            normalization_transformation=trm,
+            Talairach_transform=self.output_T1_to_Talairach_transformation,
+            Commissure_coordinates=self.output_ACPC,
+            t1mri=self.output_raw_t1_mri,
+            source_referential=trManager.referential( self.output_raw_t1_mri ),
+            # normalized_referential=mniDI, # why doesn't this work ??
+            )
+          self.output_T1_to_Talairach_transformation.lockData()
+  else:
+    context.write( '<font color="#a0a060">' + \
+      _t_( 'Raw T1 MRI not written.' ) + '</font>' )
+  context.progress( 2, nsteps, self )
 
-  #if self.output_bias_corrected is not None:
-    #context.write( 'importing bias corrected MRI...' )
-    #if self.input_bias_corrected is not None:
-      #context.system( 'AimsFileConvert',
-        #'-i', self.input_bias_corrected,
-        #'-o', self.output_bias_corrected, '-t', 'S16',
-        #'-r', '--omin', 0, '--omax', 4095 )
-      #nobiasdone = True
-      #trManager.copyReferential( self.output_raw_t1_mri,
-        #self.output_bias_corrected )
-      #context.write( '<font color="#60ff60">' \
-        #+ _t_( 'Bias corrected MRI inserted.' ) + '</font>' )
-    #else:
-      #context.warning( _t_( 'output_bias_corrected could not be written: no ' \
-        #'possible source' ) )
-  #else:
-    #context.write( '<font color="#a0a060">' + \
-      #_t_( 'Bias corrected MRI not written.' ) + '</font>' )
-  #context.progress( 3, nsteps, self )
+  if self.output_bias_corrected is not None:
+    context.write( 'importing bias corrected MRI...' )
+    if self.input_bias_corrected is not None:
+      context.system( 'AimsFileConvert',
+        '-i', self.input_bias_corrected,
+        '-o', self.output_bias_corrected, '-t', 'S16',
+        '-r', '--omin', 0, '--omax', 4095 )
+      nobiasdone = True
+      trManager.copyReferential( self.output_raw_t1_mri,
+        self.output_bias_corrected )
+      context.write( '<font color="#60ff60">' \
+        + _t_( 'Bias corrected MRI inserted.' ) + '</font>' )
+    else:
+      context.warning( _t_( 'output_bias_corrected could not be written: no ' \
+        'possible source' ) )
+  else:
+    context.write( '<font color="#a0a060">' + \
+      _t_( 'Bias corrected MRI not written.' ) + '</font>' )
+  context.progress( 3, nsteps, self )
 
-  #if self.output_brain_mask:
-    #context.write( _t_( 'importing brain mask...' ) )
-    #if self.input_brain_mask is not None:
-      #context.system( 'AimsFileConvert', '-o', self.output_brain_mask,
-        #'-i', self.input_brain_mask, '-t', 'S16' )
-      #context.system( 'cartoLinearComb.py', '-o', self.output_brain_mask,
-        #'-f', 'I1*255', '-i', self.output_brain_mask )
-      #maskdone = True
-    #elif self.input_grey_white is not None:
-      ## no brain mask. Use with the cortex segmentation
-      #context.write( 'importing mask from G/W segmentation...' )
-      #context.system( 'AimsFileConvert', '-o', self.output_brain_mask,
-        #'-i', self.input_grey_white, '-t', 'S16' )
-      #context.system( 'AimsThreshold', '-i', self.output_brain_mask,
-        #'-o', self.output_brain_mask, '-t', 1, '-b' )
-      #maskdone = True
-    #else:
-      #context.write( '<font color="#a0a060">' + \
-        #_t_( 'Brain mask not written: no possible source' ) + '</font>' )
-    #context.progress( 4, nsteps, self )
+  if self.output_brain_mask:
+    context.write( _t_( 'importing brain mask...' ) )
+    if self.input_brain_mask is not None:
+      context.system( 'AimsFileConvert', '-o', self.output_brain_mask,
+        '-i', self.input_brain_mask, '-t', 'S16' )
+      context.system( 'cartoLinearComb.py', '-o', self.output_brain_mask,
+        '-f', 'I1*255', '-i', self.output_brain_mask )
+      maskdone = True
+    elif self.input_grey_white is not None:
+      # no brain mask. Use with the cortex segmentation
+      context.write( 'importing mask from G/W segmentation...' )
+      context.system( 'AimsFileConvert', '-o', self.output_brain_mask,
+        '-i', self.input_grey_white, '-t', 'S16' )
+      context.system( 'AimsThreshold', '-i', self.output_brain_mask,
+        '-o', self.output_brain_mask, '-t', 1, '-b' )
+      maskdone = True
+    else:
+      context.write( '<font color="#a0a060">' + \
+        _t_( 'Brain mask not written: no possible source' ) + '</font>' )
+    context.progress( 4, nsteps, self )
 
-    #if maskdone and False:
-      ## the mask is normalized, and has info to get to MNI space
-      #mref = trManager.referential( self.output_raw_t1_mri )
-      #tr = aims.AffineTransformation3d( shfjGlobals.aimsVolumeAttributes(
-        #self.output_brain_mask )[ 'transformations' ][-1] )
-      #context.write( '<font color="#60ff60">' \
-        #+ _t_( 'Brain mask inserted.' ) + '</font>' )
-      #if t1aims2mni and ( self.output_bias_corrected is not None \
-        #or self.output_raw_t1_mri is not None ):
-        ## resample raw T1 and bias corrected image
-        #t12mask = tr.inverse() * t1aims2mni
-        #trm = context.temporary( 'Transformation Matrix' )
-        #aims.write( t12mask, trm.fullPath() )
-        #context.runProcess( 'transformAPC',
-          #Commissure_coordinates=self.output_ACPC,
-          #T1mri=self.output_raw_t1_mri, output_coordinates=self.output_ACPC,
-          #transformation=trm, destination_volume=self.output_brain_mask )
-        #self.output_ACPC.lockData()
-        #if nobiasdone:
-          #context.write( _t_(
-            #'Resampling bias corrected volume to the mask space...' ) )
-          #context.system( 'AimsResample', '-i', self.output_bias_corrected,
-            #'-o', self.output_bias_corrected, '-m', trm,
-            #'-r', self.output_brain_mask )
-        #if mridone:
-          #context.write( _t_(
-            #'Resampling raw T1 volume to the mask space...' ) )
-          #context.system( 'AimsResample', '-i', self.output_raw_t1_mri,
-            #'-o', self.output_raw_t1_mri, '-m', trm,
-            #'-r', self.output_brain_mask )
-        ## update the T1 -> ACPC transform
-        #t12acpc = aims.read( \
-          #self.output_T1_to_Talairach_transformation.fullPath() ) \
-          #* t12mask.inverse()
-        #aims.write( t12acpc,
-          #self.output_T1_to_Talairach_transformation.fullPath() )
-      #trManager.copyReferential( self.output_raw_t1_mri,
-        #self.output_brain_mask )
-  #context.progress( 5, nsteps, self )
+    if maskdone and False:
+      # the mask is normalized, and has info to get to MNI space
+      mref = trManager.referential( self.output_raw_t1_mri )
+      tr = aims.AffineTransformation3d( shfjGlobals.aimsVolumeAttributes(
+        self.output_brain_mask )[ 'transformations' ][-1] )
+      context.write( '<font color="#60ff60">' \
+        + _t_( 'Brain mask inserted.' ) + '</font>' )
+      if t1aims2mni and ( self.output_bias_corrected is not None \
+        or self.output_raw_t1_mri is not None ):
+        # resample raw T1 and bias corrected image
+        t12mask = tr.inverse() * t1aims2mni
+        trm = context.temporary( 'Transformation Matrix' )
+        aims.write( t12mask, trm.fullPath() )
+        context.runProcess( 'transformAPC',
+          Commissure_coordinates=self.output_ACPC,
+          T1mri=self.output_raw_t1_mri, output_coordinates=self.output_ACPC,
+          transformation=trm, destination_volume=self.output_brain_mask )
+        self.output_ACPC.lockData()
+        if nobiasdone:
+          context.write( _t_(
+            'Resampling bias corrected volume to the mask space...' ) )
+          context.system( 'AimsResample', '-i', self.output_bias_corrected,
+            '-o', self.output_bias_corrected, '-m', trm,
+            '-r', self.output_brain_mask )
+        if mridone:
+          context.write( _t_(
+            'Resampling raw T1 volume to the mask space...' ) )
+          context.system( 'AimsResample', '-i', self.output_raw_t1_mri,
+            '-o', self.output_raw_t1_mri, '-m', trm,
+            '-r', self.output_brain_mask )
+        # update the T1 -> ACPC transform
+        t12acpc = aims.read( \
+          self.output_T1_to_Talairach_transformation.fullPath() ) \
+          * t12mask.inverse()
+        aims.write( t12acpc,
+          self.output_T1_to_Talairach_transformation.fullPath() )
+      trManager.copyReferential( self.output_raw_t1_mri,
+        self.output_brain_mask )
+  context.progress( 5, nsteps, self )
 
-  #if mridone:
-    #self.output_raw_t1_mri.lockData()
-  #if nobiasdone:
-    #self.output_bias_corrected.lockData()
-  #if maskdone:
-    #self.output_brain_mask.lockData()
+  if mridone:
+    self.output_raw_t1_mri.lockData()
+  if nobiasdone:
+    self.output_bias_corrected.lockData()
+  if maskdone:
+    self.output_brain_mask.lockData()
 
   t1pipeline = getProcessInstance( 'morphologist' )
   t1pipeline.mri = self.output_raw_t1_mri
@@ -341,13 +341,13 @@ def execution( self, context ):
   enode.PrepareSubject.setSelected( False )
   if nobiasdone:
     enode.BiasCorrection.setSelected( False )
-    enode.BiasCorrection._process.write_hfiltered = 'no'
-    enode.BiasCorrection._process.write_wridges = 'no'
-    enode.BiasCorrection._process.hfiltered = None
-    enode.BiasCorrection._process.white_ridges = None
+    enode.BiasCorrection.write_hfiltered = 'no'
+    enode.BiasCorrection.write_wridges = 'no'
+    enode.BiasCorrection.hfiltered = None
+    enode.BiasCorrection.white_ridges = None
     enode.HistoAnalysis.use_hfiltered = False
     enode.HistoAnalysis.use_wridges = False
-    enode.SplitBrain._process.use_ridges = False
+    enode.SplitBrain.Use_ridges = False
   if maskdone:
     enode.BrainSegmentation.setSelected( False )
   enode.TalairachTransformation.setSelected( False )
