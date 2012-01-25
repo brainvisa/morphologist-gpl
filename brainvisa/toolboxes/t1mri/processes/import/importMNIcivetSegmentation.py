@@ -285,7 +285,7 @@ def execution( self, context ):
         _t_( 'Brain mask not written: no possible source' ) + '</font>' )
     context.progress( 4, nsteps, self )
 
-    if maskdone and False:
+    if maskdone:
       # the mask is normalized, and has info to get to MNI space
       mref = trManager.referential( self.output_raw_t1_mri )
       tr = aims.AffineTransformation3d( shfjGlobals.aimsVolumeAttributes(
