@@ -63,36 +63,23 @@ def inlineGUI( self, values, pview, parent, externalRunButton=False ):
   lay.addWidget( neuroProcessesGUI.ProcessView.defaultInlineGUI( pview, vb,
     externalRunButton, None ) )
   lay.addWidget( QtGui.QLabel( \
-    _t_( 'The SPM5 path has not been setup in the configuration.\nCurrently, processes using SPM might not work,\nand the SPM database (normalization templates...) cannot be used.\nThis process can try to detect it and set it in the configuration.\nYou should re-open any process depending on SPM afterwards.\n\nIf this process fails for any reason, you can set the path manually in the Preferences.' ),
+    _t_( 'The SPM paths have not been setup in the configuration.\nCurrently, processes using SPM might not work,\nand the SPM database (normalization templates...) cannot be used.\nThis process can try to detect it and set it in the configuration.\nYou should re-open any process depending on SPM afterwards.\n\nIf this process fails for any reason, you can set the path manually in the Preferences.' ),
     vb ) )
   return vb
 
-def execution( self, context ):
+def checkSPMCommand( context, cmd ):
   configuration = Application().configuration
-
-  if self.perform_check == False:
-    configuration.SPM.check_spm_path = False
-
-  if not configuration.SPM.check_spm_path:
-    return None # don't check, do nothing.
-
-  if configuration.SPM.spm5_path is not None \
-    and configuration.SPM.spm5_path != "":
-      context.write( 'SPM path is already set.' )
-      return
-
   spmscript = None
-
   mexe = distutils.spawn.find_executable( \
     configuration.matlab.executable )
   mscfile = context.temporary( 'Matlab Script' )
   spmf = context.temporary( 'Text File' )
   mscfn = mscfile.fullPath()
   mscript = '''try
-  a = which( 'spm5' );
+  a = which( \'''' + cmd + '''\' );
   if ~isempty( a )
     try
-      spm5;
+      ''' + cmd + ''';
     catch me
     end
   end
@@ -110,17 +97,47 @@ exit;
     + [ '-r', os.path.basename( mscfile.fullName() ) ]
   # print 'running matlab command:', cmd
   context.system( *cmd )
+  os.chdir( pd )
   spmscript = open( spmf.fullPath() ).read().strip()
   spmpath = os.path.dirname( spmscript )
-  configuration.SPM.spm5_path = spmpath
-  context.write( 'found SPM path:', spmpath )
-  configuration.save( neuroConfig.userOptionFile )
-  context.write( 'options saved' )
-  del spmscript
-  os.chdir( pd )
-  del mexe, mscfn, mscript, spmf, mscfile, cmd, pd
+  return spmpath
 
-  if configuration.SPM.spm5_path:
+
+def execution( self, context ):
+  configuration = Application().configuration
+
+  if self.perform_check == False:
+    configuration.SPM.check_spm_path = False
+
+  if not configuration.SPM.check_spm_path:
+    return None # don't check, do nothing.
+
+  if ( configuration.SPM.spm5_path is not None \
+    and configuration.SPM.spm5_path != "" ) \
+    or ( configuration.SPM.spm8_path is not None \
+    and configuration.SPM.spm8_path != "" ):
+      context.write( 'SPM path is already set.' )
+      return
+
+  spm8path = self.checkSPMCommand( context, 'spm8' )
+  if spm8path:
+    configuration.SPM.spm8_path = spm8path
+    context.write( 'found SPM8 path:', spm8path )
+
+  spm5path = self.checkSPMCommand( context, 'spm5' )
+  if spm5path:
+    configuration.SPM.spm5_path = spm5path
+    context.write( 'found SPM5 path:', spm5path )
+  spmpath = None
+  if spm8path or spm5path:
+    configuration.save( neuroConfig.userOptionFile )
+    context.write( 'options saved' )
+    if spm8path:
+      spmpath = spm8path
+    else:
+      spmpath = spm5path
+
+  if spmpath:
     context.write( 'setting up SPM templates database' )
     spmtemplates = os.path.join( spmpath, 'templates' )
     dbs = neuroConfig.DatabaseSettings( spmtemplates )
@@ -132,8 +149,8 @@ exit;
     dbs.builtin = True
     neuroConfig.dataPath.insert( 1, dbs )
     db = neuroHierarchy.SQLDatabase( dbs.expert_settings.sqliteFileName, spmtemplates, 'spm' )
-    db.uuid = getattr( dbs.expert_settings, 'uuid', 'a91fd1bf-48cf-4759-896e-afea136c0549')
+    db.uuid = dbs.expert_settings.uuid
     neuroHierarchy.databases.add( db )
     db.clear()
     db.update( context=defaultContext() )
-
+    neuroHierarchy.update_soma_workflow_translations()
