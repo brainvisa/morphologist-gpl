@@ -71,14 +71,17 @@ if fsldir and os.path.exists( fsldir ):
         #os.mkdir( fsldb )
       dbs.expert_settings.ontology = 'fsl'
       dbs.expert_settings.sqliteFileName = ':temporary:'
+      dbs.expert_settings.uuid = 'a69ed62b-4895-4245-b42a-d211e1c6faa4'
       dbs.builtin = True
       neuroConfig.dataPath.insert( 1, dbs )
       db = neuroHierarchy.SQLDatabase( dbs.expert_settings.sqliteFileName,
         fslshare, 'fsl' )
-      db.uuid = 'a69ed62b-4895-4245-b42a-d211e1c6faa4'
+      db.uuid = dbs.expert_settings.uuid
       neuroHierarchy.databases.add( db )
       db.clear()
       db.update( context=defaultContext() )
+      neuroHierarchy.update_soma_workflow_translations()
+
       del dbs, db #, fsldb
   del fslshare
 del fsldir
@@ -103,13 +106,15 @@ if spmdir is not None:
       #os.mkdir( spmdb )
     dbs.expert_settings.ontology = 'spm'
     dbs.expert_settings.sqliteFileName = ':temporary:'
+    dbs.expert_settings.uuid = 'a91fd1bf-48cf-4759-896e-afea136c0549'
     dbs.builtin = True
     neuroConfig.dataPath.insert( 1, dbs )
     db = neuroHierarchy.SQLDatabase( dbs.expert_settings.sqliteFileName, spmtemplates, 'spm' )
-    db.uuid = 'a91fd1bf-48cf-4759-896e-afea136c0549'
+    db.uuid = dbs.expert_settings.uuid
     neuroHierarchy.databases.add( db )
     db.clear()
     db.update( context=defaultContext() )
+    neuroHierarchy.update_soma_workflow_translations()
     del dbs, db
   del spmtemplates, spmdir
 
