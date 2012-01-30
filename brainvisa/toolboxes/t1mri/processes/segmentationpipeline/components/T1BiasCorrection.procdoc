@@ -1,59 +1,75 @@
-<?xml version="1.0" encoding="iso-8859-1" ?>
-<minf version="1.0">
-  <d name="fr" length="3">
-    <xhtml name="short">Cette nouvelle correction de biais devrait �tre beaucoup plus robuste en cas de faible  contraste gris/blanc et/ou large amplitude du biais.</xhtml>
-    <d name="parameters" length="22">
+<?xml version="1.0" encoding="utf-8" ?>
+<minf expander="minf_2.0">
+<d>
+  <d name="fr">
+    <xhtml name="short"><img SRC="../../images/II_nobias.jpg" ALT=""/><br/>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_moulin1.jpg" ALT=""/>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_nobias.jpg" ALT=""/>
+<br/>Corrige le biais spatial d'une IRM</xhtml>
+    <d name="parameters">
       <xhtml name="edge_mask"/>
       <xhtml name="sampling"/>
       <xhtml name="zdir_multiply_regul"/>
+      <xhtml name="wridges_weight"/>
       <xhtml name="write_wridges"/>
       <xhtml name="field"/>
       <xhtml name="delete_last_n_slices"/>
       <xhtml name="mode"/>
-      <xhtml name="field_rigidity"/>
+      <xhtml name="field_rigidity">pondération de la contrainte de rigidité du champ</xhtml>
       <xhtml name="ngrid"/>
       <xhtml name="write_meancurvature"/>
       <xhtml name="variance_fraction"/>
+      <xhtml name="Commissure_coordinates"/>
       <xhtml name="hfiltered"/>
       <xhtml name="edges"/>
       <xhtml name="write_hfiltered"/>
       <xhtml name="meancurvature"/>
       <xhtml name="write_edges"/>
       <xhtml name="white_ridges"/>
-      <xhtml name="mri_corrected"/>
-      <xhtml name="mri"/>
+      <xhtml name="mri_corrected"><img SRC="../../images/II_nobias.jpg" ALT=""/></xhtml>
+      <xhtml name="mri"><img SRC="../../images/III_T1mri.jpg" ALT=""/></xhtml>
       <xhtml name="variance"/>
-      <xhtml name="write_field"/>
+      <xhtml name="write_field">Ecriture du champ correctif</xhtml>
       <xhtml name="write_variance"/>
     </d>
-    <xhtml name="long"/>
+    <xhtml name="long">Cette nouvelle correction de biais devrait être beaucoup plus robuste en cas de faible  contraste gris/blanc et/ou large amplitude du biais.</xhtml>
   </d>
-  <d name="en" length="3">
-    <xhtml name="short">This new bias correction is based on a method that should deal much better with low grey/white contrast and high bias magnitude.</xhtml>
-    <d name="parameters" length="22">
+  <d name="en">
+    <xhtml name="short"><img SRC="../../images/II_T1mri.jpg" ALT=""/>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_moulin1.jpg" ALT=""/>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_nobias.jpg" ALT=""/>
+<br/>Correct for the spatial bias in usual MR images</xhtml>
+    <d name="parameters">
       <xhtml name="edge_mask"/>
       <xhtml name="sampling"/>
       <xhtml name="zdir_multiply_regul"/>
+      <xhtml name="wridges_weight"/>
       <xhtml name="write_wridges"/>
       <xhtml name="field"/>
       <xhtml name="delete_last_n_slices"/>
       <xhtml name="mode"/>
-      <xhtml name="field_rigidity"/>
+      <xhtml name="field_rigidity">weight for the field rigidity constraint</xhtml>
       <xhtml name="ngrid"/>
       <xhtml name="write_meancurvature"/>
       <xhtml name="variance_fraction"/>
+      <xhtml name="Commissure_coordinates"/>
       <xhtml name="hfiltered"/>
       <xhtml name="edges"/>
       <xhtml name="write_hfiltered"/>
       <xhtml name="meancurvature"/>
       <xhtml name="write_edges"/>
       <xhtml name="white_ridges"/>
-      <xhtml name="mri_corrected"/>
-      <xhtml name="mri"/>
+      <xhtml name="mri_corrected"><img SRC="../../images/II_nobias.jpg" ALT=""/></xhtml>
+      <xhtml name="mri"><img SRC="../../images/III_T1mri.jpg" ALT=""/></xhtml>
       <xhtml name="variance"/>
       <xhtml name="write_field"/>
       <xhtml name="write_variance"/>
     </d>
-    <xhtml name="long"/>
+    <xhtml name="long">This new bias correction is based on a method that should deal much better with low grey/white contrast and high bias magnitude.</xhtml>
   </d>
+</d>
 </minf>
