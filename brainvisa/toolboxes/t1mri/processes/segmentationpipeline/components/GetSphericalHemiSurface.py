@@ -52,8 +52,6 @@ signature = Signature(
       'Aims mesh formats' ),
   'right_hemi_mesh', WriteDiskItem( 'Right Hemisphere Mesh',
       'Aims mesh formats' ),
-  'iterations', Integer(), 
-  'rate', Float(),
 ) 
 # Default values
 def initialization( self ):
@@ -63,8 +61,6 @@ def initialization( self ):
   self.linkParameters( 'left_hemi_mesh', 'left_hemi_cortex' )
   self.linkParameters( 'right_hemi_mesh', 'right_hemi_cortex' )
   self.Side = "Both"
-  self.iterations = 10
-  self.rate = 0.2
 #
 
 def execution( self, context ):
