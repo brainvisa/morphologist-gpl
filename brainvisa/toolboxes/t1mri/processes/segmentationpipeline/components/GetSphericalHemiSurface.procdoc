@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<minf expander="minf_2.0">
+<d>
+  <d name="fr">
+    <xhtml name="short"><a HREF="T1BiasCorrection.html"><img SRC="../../images/II_nobias.jpg" ALT=""/></a>
+<a HREF="SplitBrain.html"><img SRC="../../images/II_voronoi.jpg" ALT=""/></a>
+<a HREF="GreyWhiteSurface.html"><img SRC="../../images/II_cortex.jpg" ALT=""/></a>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_moulin5.jpg" ALT=""/>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_hemi.jpg" ALT=""/>
+<br/>Crée un maillage d'un ou deux hémisphères</xhtml>
+    <d name="parameters">
+      <xhtml name="right_hemi_cortex"/>
+      <xhtml name="left_hemi_mesh"><img SRC="../../images/III_hemi.jpg" ALT=""/></xhtml>
+      <xhtml name="brain_voronoi"><a HREF="SplitBrain.html"><img SRC="../../images/III_voronoi.jpg" ALT=""/></a></xhtml>
+      <xhtml name="mri_corrected"><a HREF="T1BiasCorrection.html"><img SRC="../../images/III_nobias.jpg" ALT=""/></a></xhtml>
+      <xhtml name="right_hemi_mesh"/>
+      <xhtml name="left_hemi_cortex"><a HREF="GreyWhiteSurface.html#interface"><img SRC="../../images/III_cortex.jpg" ALT=""/></a></xhtml>
+      <xhtml name="Side">Gauche, Droit, ou les Deux Hémisphères</xhtml>
+    </d>
+    <xhtml name="long">Cette procédure crée un maillage de chacun des hémisphères cérébraux.
+Elle inclue un prétraitement qui ouvre les sillons afin
+de faciliter la lecture de la surface corticale.<br/>
+Le maillage de cette nouvelle version est sphérique, ce qui autorise le gonflement pour le déplisser.</xhtml>
+  </d>
+  <d name="en">
+    <xhtml name="short"><a HREF="T1BiasCorrection.html"><img SRC="../../images/II_nobias.jpg" ALT=""/></a>
+<a HREF="SplitBrain.html"><img SRC="../../images/II_voronoi.jpg" ALT=""/></a>
+<a HREF="GreyWhiteSurface.html"><img SRC="../../images/II_cortex.jpg" ALT=""/></a>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_moulin5.jpg" ALT=""/>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_hemi.jpg" ALT=""/>
+<br/>Compute a mesh of one or two hemispheres</xhtml>
+    <d name="parameters">
+      <xhtml name="right_hemi_cortex"/>
+      <xhtml name="left_hemi_mesh"><img SRC="../../images/III_hemi.jpg" ALT=""/></xhtml>
+      <xhtml name="brain_voronoi"><a HREF="SplitBrain.html"><img SRC="../../images/III_voronoi.jpg" ALT=""/></a></xhtml>
+      <xhtml name="mri_corrected"><a HREF="T1BiasCorrection.html"><img SRC="../../images/III_nobias.jpg" ALT=""/></a></xhtml>
+      <xhtml name="right_hemi_mesh"/>
+      <xhtml name="left_hemi_cortex"><a HREF="GreyWhiteSurface.html#interface"><img SRC="../../images/III_cortex.jpg" ALT=""/></a></xhtml>
+      <xhtml name="Side">Left, Right or Both Hemispheres</xhtml>
+    </d>
+    <xhtml name="long">This process create a mesh of each cerebral hemisphere. It include a pretreatment, which open the sulcus.
+<br/>
+This new version yields a spherical mesh, which allows the inflation of the mesh as the grey/white mesh.</xhtml>
+  </d>
+</d>
+</minf>
