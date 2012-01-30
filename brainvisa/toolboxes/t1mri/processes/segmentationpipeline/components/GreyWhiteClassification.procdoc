@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<minf expander="minf_2.0">
+<d>
+  <d name="fr">
+    <xhtml name="short"><a HREF="T1BiasCorrection.html"><img SRC="../../images/II_nobias.jpg" ALT=""/></a>
+<a HREF="NobiasHistoAnalysis.html"><img SRC="../../images/II_hana.jpg" ALT=""/></a>
+<a HREF="SplitBrain.html"><img SRC="../../images/II_voronoi.jpg" ALT=""/></a>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_moulin3.jpg" ALT=""/>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_gw.jpg" ALT=""/>
+<br/>Classification Gris/Blanc</xhtml>
+    <d name="parameters">
+      <xhtml name="right_grey_white"/>
+      <xhtml name="mri_corrected"><a HREF="T1BiasCorrection.html"><img SRC="../../images/III_nobias.jpg" ALT=""/></a></xhtml>
+      <xhtml name="Commissure_coordinates"/>
+      <xhtml name="split_mask"><a HREF="SplitBrain.html"><img SRC="../../images/III_voronoi.jpg" ALT=""/></a></xhtml>
+      <xhtml name="edges"/>
+      <xhtml name="left_grey_white"><img SRC="../../images/III_gw.jpg" ALT=""/>
+classification (grey=100,white=200)</xhtml>
+      <xhtml name="Side">Gauche, Droit, ou les Deux Hémisphères</xhtml>
+      <xhtml name="histo_analysis"><a HREF="T1BiasCorrection.html"><img SRC="../../images/III_nobias.jpg" ALT=""/></a></xhtml>
+    </d>
+    <xhtml name="long">Cette brique propose une classification gris blanc de chacun
+des hémisphères cérébraux pour les personnes souhaitant tester
+l'influence des algorithmes de classification
+(SPM, outils du MNI, SHFJ...) sur le résultat final de la VBM...
+<br/><br/>
+L'approche que nous proposons traite séparément chacun des hémisphères,
+ce qui devrait permettre d'éviter des mélanges entre les faces médiales,
+ou entre les faces basses et le cervelet, au cours du lissage spatial
+préalable aux statistiques.<br/><br/>
+Une autre particularité de l'approche proposée : nous avons décidé
+d'écarter le cervelet de la classification dans la mesure où les
+problèmes de volume partiel sont à notre avis trop importants pour
+aboutir à un résultat correct (une classification floue pourrait
+résoudre ce problème à l'avenir).</xhtml>
+  </d>
+  <d name="en">
+    <xhtml name="short"><a HREF="T1BiasCorrection.html"><img SRC="../../images/II_nobias.jpg" ALT=""/></a>
+<a HREF="NobiasHistoAnalysis.html"><img SRC="../../images/II_hana.jpg" ALT=""/></a>
+<a HREF="SplitBrain.html"><img SRC="../../images/II_voronoi.jpg" ALT=""/></a>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_moulin3.jpg" ALT=""/>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_gw.jpg" ALT=""/>
+<br/>Grey/White classification</xhtml>
+    <d name="parameters">
+      <xhtml name="right_grey_white">classification (grey=100,white=200)</xhtml>
+      <xhtml name="mri_corrected"><a HREF="T1BiasCorrection.html"><img SRC="../../images/III_nobias.jpg" ALT=""/></a></xhtml>
+      <xhtml name="Commissure_coordinates"/>
+      <xhtml name="split_mask"><a HREF="SplitBrain.html"><img SRC="../../images/III_voronoi.jpg" ALT=""/></a></xhtml>
+      <xhtml name="edges"/>
+      <xhtml name="left_grey_white"><img SRC="../../images/III_gw.jpg" ALT=""/>
+classification (grey=100,white=200)</xhtml>
+      <xhtml name="Side">Left, Right or Both Hemispheres</xhtml>
+      <xhtml name="histo_analysis"><a HREF="NobiasHistoAnalysis.html"><img SRC="../../images/III_hana.jpg" ALT=""/></a></xhtml>
+    </d>
+    <xhtml name="long">This procedure yields a grey/white classification of each
+hemisphere for people wishing to test the influence of classification
+algorithms (SPM, MNI's tools, SHFJ's tools...) on the final VBM result.
+<br/><br/>
+The proposed method deals with each hemisphere individually, in
+order to prevent mixing between the two internal faces or between
+low cortex faces and cerebellum, during the spatial smoothing
+performed before statistics.<br/><br/>
+
+Another feature of the proposed approach: we have decided to
+discard cerebellum because partial volume effects are in our opinion
+too important to reach a correct binary classification (a fuzzy classification
+might overcome this problem).</xhtml>
+  </d>
+</d>
+</minf>
