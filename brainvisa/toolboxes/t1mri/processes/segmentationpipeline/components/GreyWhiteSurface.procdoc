@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<minf expander="minf_2.0">
+<d>
+  <d name="fr">
+    <xhtml name="short"><a HREF="GreyWhiteClassification.html"><img SRC="../../images/II_gw.jpg" ALT=""/></a>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_cortex.jpg" ALT=""/>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_white.jpg" ALT=""/>
+<br/>Crée un maillage spérique de la surface corticale</xhtml>
+    <d name="parameters">
+      <xhtml name="right_hemi_cortex"/>
+      <xhtml name="right_grey_white"/>
+      <xhtml name="left_white_mesh"/>
+      <xhtml name="left_hemi_cortex"/>
+      <xhtml name="left_grey_white"/>
+      <xhtml name="right_white_mesh"/>
+      <xhtml name="Side">Gauche, droit ou les deux hémisphères</xhtml>
+    </d>
+    <xhtml name="long">Cette moulinette fournit un maillage sphérique de la surface
+corticale pour chaque hémisphère.
+Il s'agit de la surface de la matière blanche (le fond du cortex).
+Cette surface peut être gonflée à des fins de visualisation.
+(cf <a HREF="AnaInflateCorticalSurface.html">Ana Inflate Cortical Surface</a>).</xhtml>
+  </d>
+  <d name="en">
+    <xhtml name="short"><a HREF="GreyWhiteClassification.html"><img SRC="../../images/II_gw.jpg" ALT=""/></a>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_cortex.jpg" ALT=""/>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_white.jpg" ALT=""/>
+<br/>Compute a spherical mesh of the cortical surface</xhtml>
+    <d name="parameters">
+      <xhtml name="right_hemi_cortex"/>
+      <xhtml name="right_grey_white">classification (grey=100,white=200)</xhtml>
+      <xhtml name="left_white_mesh"><img SRC="../../images/III_white.jpg" ALT=""/></xhtml>
+      <xhtml name="left_hemi_cortex"><img SRC="../../images/II_cortex.jpg" ALT=""/></xhtml>
+      <xhtml name="left_grey_white"><img SRC="../../images/III_gw.jpg" ALT=""/>
+classification (grey=100,white=200)</xhtml>
+      <xhtml name="right_white_mesh"/>
+      <xhtml name="Side">Left, Right or Both Hemispheres</xhtml>
+    </d>
+    <xhtml name="long">This treatment yields a spherical mesh of the cortical surface for
+each hemisphere. This mesh corresponds to the grey/white interface.
+This mesh can be inflated for visualization purpose:
+(cf <a HREF="AnaInflateCorticalSurface.html">Ana Inflate Cortical Surface</a>).</xhtml>
+  </d>
+</d>
+</minf>
