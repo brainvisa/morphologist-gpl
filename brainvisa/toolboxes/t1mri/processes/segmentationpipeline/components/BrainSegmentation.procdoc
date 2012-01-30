@@ -1,39 +1,57 @@
-<?xml version="1.0" encoding="iso-8859-1" ?>
-<minf version="1.0">
-  <d name="fr" length="3">
-    <xhtml name="short">Ce nouvel algorithme n'est vraiment pas terminé. Vous pourrez par exemple observer qu'il ne gère pas correctement les noyaux caudés. Mais vous pouvez éventuellement utiliser son interface pour déclencher le traitement standard du pipeline 2004 ou ses variantes du mode de correction.</xhtml>
-    <d name="parameters" length="12">
-      <xhtml name="first_slice"/>
+<?xml version="1.0" encoding="utf-8" ?>
+<minf expander="minf_2.0">
+<d>
+  <d name="fr">
+    <xhtml name="short"><a HREF="T1BiasCorrection.html"><img SRC="../../images/II_nobias.jpg" ALT=""/></a>
+<a HREF="NobiasHistoAnalysis.html"><img SRC="../../images/II_hana.jpg" ALT=""/></a>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_moulin1.jpg" ALT=""/>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/III_brain.jpg" ALT=""/>
+<br/>CrÃ©e un masque binaire d'un cerveau Ã  partir d'une IRM</xhtml>
+    <d name="parameters">
+      <xhtml name="layer"/>
       <xhtml name="visu"/>
       <xhtml name="white_ridges"/>
-      <xhtml name="mri_corrected"/>
+      <xhtml name="mri_corrected"><a HREF="T1BiasCorrection.html"><img SRC="../../images/II_nobias.jpg" ALT=""/></a></xhtml>
       <xhtml name="variant"/>
       <xhtml name="Commissure_coordinates"/>
       <xhtml name="erosion_size"/>
+      <xhtml name="edges"/>
       <xhtml name="lesion_mask"/>
-      <xhtml name="readme"/>
       <xhtml name="last_slice"/>
-      <xhtml name="brain_mask"/>
-      <xhtml name="histo_analysis"/>
+      <xhtml name="variance"/>
+      <xhtml name="first_slice"/>
+      <xhtml name="brain_mask"><img SRC="../../images/III_brain.jpg" ALT=""/></xhtml>
+      <xhtml name="histo_analysis"><a HREF="NobiasHistoAnalysis.html"><img SRC="../../images/III_hana.jpg" ALT=""/></a></xhtml>
     </d>
     <xhtml name="long"/>
   </d>
-  <d name="en" length="3">
-    <xhtml name="short">This new brain segmentation is really in progress. For instance, you may observe that caudate nuclei are sometimes only half segmented. However, this process can be used to trigger the standard algorithms and the variants located in the 2004 pipeline correction process.</xhtml>
-    <d name="parameters" length="12">
-      <xhtml name="first_slice"/>
+  <d name="en">
+    <xhtml name="short"><a HREF="T1BiasCorrection.html"><img SRC="../../images/II_nobias.jpg" ALT=""/></a>
+<a HREF="NobiasHistoAnalysis.html"><img SRC="../../images/II_hana.jpg" ALT=""/></a>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_moulin1.jpg" ALT=""/>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/III_brain.jpg" ALT=""/>
+<br/>Compute a binary mask of the brain from a raw MR scan</xhtml>
+    <d name="parameters">
+      <xhtml name="layer"/>
       <xhtml name="visu"/>
       <xhtml name="white_ridges"/>
-      <xhtml name="mri_corrected"/>
+      <xhtml name="mri_corrected"><a HREF="T1BiasCorrection.html"><img SRC="../../images/II_nobias.jpg" ALT=""/></a></xhtml>
       <xhtml name="variant"/>
       <xhtml name="Commissure_coordinates"/>
       <xhtml name="erosion_size"/>
+      <xhtml name="edges"/>
       <xhtml name="lesion_mask"/>
-      <xhtml name="readme"/>
       <xhtml name="last_slice"/>
-      <xhtml name="brain_mask"/>
-      <xhtml name="histo_analysis"/>
+      <xhtml name="variance"/>
+      <xhtml name="first_slice"/>
+      <xhtml name="brain_mask"><img SRC="../../images/III_brain.jpg" ALT=""/></xhtml>
+      <xhtml name="histo_analysis"><a HREF="NobiasHistoAnalysis.html"><img SRC="../../images/II_hana.jpg" ALT=""/></a></xhtml>
     </d>
     <xhtml name="long"/>
   </d>
+</d>
 </minf>
