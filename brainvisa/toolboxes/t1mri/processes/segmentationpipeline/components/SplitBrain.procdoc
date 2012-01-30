@@ -1,47 +1,79 @@
-<?xml version="1.0" encoding="iso-8859-1" ?>
-<minf version="1.0">
-  <d name="fr" length="3">
-    <xhtml name="short">Ce nouvel algorithm est encore en proc�dure de test, mais son interface peut �tre utilis�e pour d�clencher la m�thode du pipeline 2004 et ses variantes.</xhtml>
-    <d name="parameters" length="16">
+<?xml version="1.0" encoding="utf-8" ?>
+<minf expander="minf_2.0">
+<d>
+  <d name="fr">
+    <xhtml name="short"><a HREF="T1BiasCorrection.html"><img SRC="../../images/II_nobias.jpg" ALT=""/></a>
+<a HREF="NobiasHistoAnalysis.html"><img SRC="../../images/II_hana.jpg" ALT=""/></a>
+<a HREF="BrainSegmentation.html"><img SRC="../../images/II_brain.jpg" ALT=""/></a>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_moulin4.jpg" ALT=""/>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_voronoi.jpg" ALT=""/>
+<br/>Sépare le masque du cerveau en trois parties : les hémisphères cérébraux et le reste (cervelet/tronc)</xhtml>
+    <d name="parameters">
       <xhtml name="Use_ridges"/>
       <xhtml name="visu"/>
       <xhtml name="initial_erosion"/>
       <xhtml name="white_ridges"/>
-      <xhtml name="mri_corrected"/>
+      <xhtml name="mri_corrected"><a HREF="T1BiasCorrection.html"><img SRC="../../images/III_nobias.jpg" ALT=""/></a></xhtml>
       <xhtml name="variant"/>
-      <xhtml name="Commissure_coordinates"/>
+      <xhtml name="commissure_coordinates"/>
       <xhtml name="mult_factor"/>
-      <xhtml name="split_mask"/>
-      <xhtml name="bary_factor"/>
+      <xhtml name="split_mask"><img SRC="../../images/III_voronoi.jpg" ALT=""/><br/></xhtml>
+      <xhtml name="mode"/>
       <xhtml name="Use_template"/>
-      <xhtml name="readme"/>
-      <xhtml name="histo_analysis"/>
-      <xhtml name="voronoi_template"/>
-      <xhtml name="brain_mask"/>
+      <xhtml name="histo_analysis"><a HREF="NobiasHistoAnalysis.html"><img SRC="../../images/III_hana.jpg" ALT=""/></a></xhtml>
+      <xhtml name="voronoi_template">un cerveau déjà découpé en trois dans l'espace de Talairach</xhtml>
+      <xhtml name="brain_mask"><a HREF="BrainSegmentation.html"><img SRC="../../images/III_brain.jpg" ALT=""/></a></xhtml>
       <xhtml name="cc_min_size"/>
+      <xhtml name="bary_factor">entre 0 et 1.</xhtml>
     </d>
-    <xhtml name="long"/>
+    <xhtml name="long">Cette procédure vise à séparer les hémisphères et à éliminer le cervelet et une partie 
+du tronc cérébral de manière à accéder aux faces internes et basses du cortex.
+<br/>
+Une érosion est appliquée à un masque de la matière blanche afin
+de la casser au niveau du corps calleux et du tronc cérébral. On récupère
+alors 3 graines correspondant aux hémisphères et au cervelet. Ces graines
+sont alors amenées à croître, dans un premier temps au sein de la matière blanche,
+puis au sein de la matière grise, de manière à retrouver les formes des hémisphères.</xhtml>
   </d>
-  <d name="en" length="3">
-    <xhtml name="short">This new algorithm is still under testing process, but the interface can be used to trigger the 2004 pipeline method ans its variants.</xhtml>
-    <d name="parameters" length="16">
+  <d name="en">
+    <xhtml name="short"><a HREF="T1BiasCorrection.html"><img SRC="../../images/II_nobias.jpg" ALT=""/></a>
+<a HREF="NobiasHistoAnalysis.html"><img SRC="../../images/II_hana.jpg" ALT=""/></a>
+<a HREF="BrainSegmentation.html"><img SRC="../../images/II_brain.jpg" ALT=""/></a>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_moulin4.jpg" ALT=""/>
+<img SRC="../../images/II_arrow.jpg" ALT=""/>
+<img SRC="../../images/II_voronoi.jpg" ALT=""/>
+<br/>Split the brain into three parts (hemispheres + cerebellum) </xhtml>
+    <d name="parameters">
       <xhtml name="Use_ridges"/>
       <xhtml name="visu"/>
       <xhtml name="initial_erosion"/>
       <xhtml name="white_ridges"/>
-      <xhtml name="mri_corrected"/>
+      <xhtml name="mri_corrected"><a HREF="T1BiasCorrection.html"><img SRC="../../images/III_nobias.jpg" ALT=""/></a>
+</xhtml>
       <xhtml name="variant"/>
-      <xhtml name="Commissure_coordinates"/>
+      <xhtml name="commissure_coordinates"/>
       <xhtml name="mult_factor"/>
-      <xhtml name="split_mask"/>
-      <xhtml name="bary_factor"/>
+      <xhtml name="split_mask"><img SRC="../../images/III_voronoi.jpg" ALT=""/><br/></xhtml>
+      <xhtml name="mode"/>
       <xhtml name="Use_template"/>
-      <xhtml name="readme"/>
-      <xhtml name="histo_analysis"/>
-      <xhtml name="voronoi_template"/>
-      <xhtml name="brain_mask"/>
+      <xhtml name="histo_analysis"><a HREF="NobiasHistoAnalysis.html"><img SRC="../../images/III_hana.jpg" ALT=""/></a></xhtml>
+      <xhtml name="voronoi_template">a split brain mask in Talairach space</xhtml>
+      <xhtml name="brain_mask"><a HREF="BrainSegmentation.html"><img SRC="../../images/III_brain.jpg" ALT=""/></a></xhtml>
       <xhtml name="cc_min_size"/>
+      <xhtml name="bary_factor">between 0 and 1.</xhtml>
     </d>
-    <xhtml name="long"/>
+    <xhtml name="long">This procedure aims at splitting the two hemispheres and at removing the cerebellum
+and a part of brain stem in order to give access to the internal and low faces of the cortex.
+<br/>
+An erosion is applied to a mask of white matter in order to split it
+at the levels of corpus callosum and pons. This operation provides 3 seeds
+corresponding to the two hemispheres and cerebellum. Then, these seeds grow first
+inside white matter and finally throughout grey matter in order to recover
+the hemisphere shapes.<br/>
+</xhtml>
   </d>
+</d>
 </minf>
