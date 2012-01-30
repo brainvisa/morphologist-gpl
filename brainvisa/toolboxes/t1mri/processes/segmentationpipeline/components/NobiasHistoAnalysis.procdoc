@@ -1,24 +1,34 @@
-<?xml version="1.0" encoding="iso-8859-1" ?>
-<minf version="1.0">
-  <d name="fr" length="3">
-    <xhtml name="short">Cette nouvelle analyse de l'histogramme ne peut être utilisée qu'après la nouvelle correction de biais.
-Elle permet d'éviter certaines faiblesses de la précédente lorsque l'histogramme présente un grand pic de graisse.</xhtml>
-    <d name="parameters" length="4">
-      <xhtml name="hfiltered"/>
+<?xml version="1.0" encoding="utf-8" ?>
+<minf expander="minf_2.0">
+<d>
+  <d name="fr">
+    <xhtml name="short"><img SRC="../../images/II_hana.jpg" ALT=""/><br/>
+Extrait de l'histogramme d'une IRM T1 les moyennes et les Ã©carts types des matiÃ¨res grises et blanches</xhtml>
+    <d name="parameters">
+      <xhtml name="use_hfiltered"/>
+      <xhtml name="undersampling"/>
       <xhtml name="white_ridges"/>
-      <xhtml name="mri_corrected"/>
-      <xhtml name="histo_analysis"/>
-    </d>
-    <xhtml name="long"/>
-  </d>
-  <d name="en" length="3">
-    <xhtml name="short">This new histogram analysis can only be used after the new bias correction. It should deal better with large fat modes.</xhtml>
-    <d name="parameters" length="4">
+      <xhtml name="mri_corrected"><a HREF="T1BiasCorrection.html"><img SRC="../../images/III_nobias.jpg" ALT=""/></a></xhtml>
       <xhtml name="hfiltered"/>
-      <xhtml name="white_ridges"/>
-      <xhtml name="mri_corrected"/>
-      <xhtml name="histo_analysis"/>
+      <xhtml name="use_wridges"/>
+      <xhtml name="histo_analysis"><img SRC="../../images/III_hana.jpg" ALT=""/><br/></xhtml>
     </d>
-    <xhtml name="long"/>
+    <xhtml name="long">Cette nouvelle analyse de l'histogramme ne peut Ãªtre utilisÃ©e qu'aprÃ¨s la nouvelle correction de biais.
+Elle permet d'Ã©viter certaines faiblesses de la prÃ©cÃ©dente lorsque l'histogramme prÃ©sente un grand pic de graisse.</xhtml>
   </d>
+  <d name="en">
+    <xhtml name="short"><img SRC="../../images/II_hana.jpg" ALT=""/><br/>
+Analyse a T1-weighted histogram to estimate grey/white statistics </xhtml>
+    <d name="parameters">
+      <xhtml name="use_hfiltered"/>
+      <xhtml name="undersampling"/>
+      <xhtml name="white_ridges"/>
+      <xhtml name="mri_corrected"><a HREF="T1BiasCorrection.html"><img SRC="../../images/III_nobias.jpg" ALT=""/></a></xhtml>
+      <xhtml name="hfiltered"/>
+      <xhtml name="use_wridges"/>
+      <xhtml name="histo_analysis"><img SRC="../../images/III_hana.jpg" ALT=""/><br/></xhtml>
+    </d>
+    <xhtml name="long">This new histogram analysis can only be used after the new bias correction. It should deal better with large fat modes.</xhtml>
+  </d>
+</d>
 </minf>
