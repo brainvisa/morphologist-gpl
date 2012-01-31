@@ -63,7 +63,7 @@ def inlineGUI( self, values, pview, parent, externalRunButton=False ):
   lay.addWidget( neuroProcessesGUI.ProcessView.defaultInlineGUI( pview, vb,
     externalRunButton, None ) )
   lay.addWidget( QtGui.QLabel( \
-    _t_( 'The SPM paths have not been setup in the configuration.\nCurrently, processes using SPM might not work,\nand the SPM database (normalization templates...) cannot be used.\nThis process can try to detect it and set it in the configuration.\nYou should re-open any process depending on SPM afterwards.\n\nIf this process fails for any reason, you can set the path manually in the Preferences.' ),
+    _t_( 'The SPM paths have not been setup in the configuration.\nCurrently, processes using SPM might not work,\nand the SPM database (normalization templates...) cannot be used.\nThis process can try to detect it and set it in the configuration.\nYou should re-open any process depending on SPM afterwards.' ),
     vb ) )
   return vb
 
@@ -72,6 +72,9 @@ def checkSPMCommand( context, cmd ):
   spmscript = None
   mexe = distutils.spawn.find_executable( \
     configuration.matlab.executable )
+  if mexe == None:
+    context.write('The Matlab executable was not found.')
+    return
   mscfile = context.temporary( 'Matlab Script' )
   spmf = context.temporary( 'Text File' )
   mscfn = mscfile.fullPath()
@@ -95,8 +98,12 @@ exit;
   os.chdir( os.path.dirname( mscfn ) )
   cmd = [ mexe ] + configuration.matlab.options.split() \
     + [ '-r', os.path.basename( mscfile.fullName() ) ]
-  # print 'running matlab command:', cmd
-  context.system( *cmd )
+  context.write('Attempt to run the matlab command: ' + repr(cmd))
+  #print 'running matlab command: ', cmd
+  try:
+    context.system( *cmd )
+  except Exception, e:
+    return None
   os.chdir( pd )
   spmscript = open( spmf.fullPath() ).read().strip()
   spmpath = os.path.dirname( spmscript )
@@ -119,33 +126,63 @@ def execution( self, context ):
       context.write( 'SPM path is already set.' )
       return
 
+  smp8path_standalone_mcr_path = None
+  smp8path_standalone_command = None
+  context.write('Looking for spm8 standalone...')
+  # TBI
+  context.write('=> spm8 standalone was not found.')
+
+  context.write('Looking for spm8 with Matlab...')
   spm8path = self.checkSPMCommand( context, 'spm8' )
   if spm8path:
     configuration.SPM.spm8_path = spm8path
-    context.write( 'found SPM8 path:', spm8path )
+    context.write('=> spm8 was found: ', spm8path)
+  else:
+    context.write('=> spm8 was not found.')
 
+  context.write('Looking for spm5 ...')
   spm5path = self.checkSPMCommand( context, 'spm5' )
   if spm5path:
     configuration.SPM.spm5_path = spm5path
-    context.write( 'found SPM5 path:', spm5path )
+    context.write('=> smp5 was found: ', spm5path)
+  else:
+    context.write('=> spm5 was not found.')
+
   spmpath = None
-  if spm8path or spm5path:
+  if smp8path_standalone_command or spm8path or spm5path:
     configuration.save( neuroConfig.userOptionFile )
     context.write( 'options saved' )
-    if spm8path:
+    if smp8path_standalone_command:
+      # TBI
+      context.write('=> spm8 standalone is configured.')
+      spmpath = smp8path_standalone_mcr_path
+    elif spm8path:
+      context.write('=> spm8 is now configured.')
       spmpath = spm8path
     else:
+      context.write('=> spm5 is now configured.')
       spmpath = spm5path
+  else:
+    context.write("=> spm could not be found automatically, however "
+                  "the path can be set manually in the menu " "BrainVISA/Preferences/SPM.")
 
   if spmpath:
-    context.write( 'setting up SPM templates database' )
+    context.write( 'Setting up SPM templates database' )
     spmtemplates = os.path.join( spmpath, 'templates' )
+    # TBI for standalone
+    if neuroHierarchy.databases.hasDatabase( spmtemplates ):
+      pass
+      #TBI => erase the db ?
+
     dbs = neuroConfig.DatabaseSettings( spmtemplates )
+    # useful ?
     spmdb = os.path.join( neuroConfig.homeBrainVISADir, 'spm' )
     if not os.path.exists( spmdb ):
       os.mkdir( spmdb )
+    # end useful ?
     dbs.expert_settings.ontology = 'spm'
-    dbs.expert_settings.sqliteFileName = ":memory:"
+    dbs.expert_settings.sqliteFileName = ':temporary:'
+    dbs.expert_settings.uuid = 'a91fd1bf-48cf-4759-896e-afea136c0549'
     dbs.builtin = True
     neuroConfig.dataPath.insert( 1, dbs )
     db = neuroHierarchy.SQLDatabase( dbs.expert_settings.sqliteFileName, spmtemplates, 'spm' )
@@ -154,3 +191,4 @@ def execution( self, context ):
     db.clear()
     db.update( context=defaultContext() )
     neuroHierarchy.update_soma_workflow_translations()
+    # del dbs, db useful ?
