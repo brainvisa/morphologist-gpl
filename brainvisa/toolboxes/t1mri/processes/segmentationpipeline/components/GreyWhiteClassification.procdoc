@@ -11,15 +11,15 @@
 <img SRC="../../images/II_gw.jpg" ALT=""/>
 <br/>Classification Gris/Blanc</xhtml>
     <d name="parameters">
-      <xhtml name="right_grey_white"/>
+      <xhtml name="right_grey_white">classification (gris=100, blanc=200)</xhtml>
       <xhtml name="mri_corrected"><a HREF="T1BiasCorrection.html"><img SRC="../../images/III_nobias.jpg" ALT=""/></a></xhtml>
       <xhtml name="Commissure_coordinates"/>
       <xhtml name="split_mask"><a HREF="SplitBrain.html"><img SRC="../../images/III_voronoi.jpg" ALT=""/></a></xhtml>
       <xhtml name="edges"/>
       <xhtml name="left_grey_white"><img SRC="../../images/III_gw.jpg" ALT=""/>
-classification (grey=100,white=200)</xhtml>
+classification (gris=100, blanc=200)</xhtml>
       <xhtml name="Side">Gauche, Droit, ou les Deux Hémisphères</xhtml>
-      <xhtml name="histo_analysis"><a HREF="T1BiasCorrection.html"><img SRC="../../images/III_nobias.jpg" ALT=""/></a></xhtml>
+      <xhtml name="histo_analysis"><a HREF="NobiasHistoAnalysis.html"><img SRC="../../images/III_hana.jpg" ALT=""/></a></xhtml>
     </d>
     <xhtml name="long">Cette brique propose une classification gris blanc de chacun
 des hémisphères cérébraux pour les personnes souhaitant tester
@@ -46,13 +46,13 @@ résoudre ce problème à l'avenir).</xhtml>
 <img SRC="../../images/II_gw.jpg" ALT=""/>
 <br/>Grey/White classification</xhtml>
     <d name="parameters">
-      <xhtml name="right_grey_white">classification (grey=100,white=200)</xhtml>
+      <xhtml name="right_grey_white">classification (grey=100, white=200)</xhtml>
       <xhtml name="mri_corrected"><a HREF="T1BiasCorrection.html"><img SRC="../../images/III_nobias.jpg" ALT=""/></a></xhtml>
       <xhtml name="Commissure_coordinates"/>
       <xhtml name="split_mask"><a HREF="SplitBrain.html"><img SRC="../../images/III_voronoi.jpg" ALT=""/></a></xhtml>
       <xhtml name="edges"/>
       <xhtml name="left_grey_white"><img SRC="../../images/III_gw.jpg" ALT=""/>
-classification (grey=100,white=200)</xhtml>
+classification (grey=100, white=200)</xhtml>
       <xhtml name="Side">Left, Right or Both Hemispheres</xhtml>
       <xhtml name="histo_analysis"><a HREF="NobiasHistoAnalysis.html"><img SRC="../../images/III_hana.jpg" ALT=""/></a></xhtml>
     </d>
