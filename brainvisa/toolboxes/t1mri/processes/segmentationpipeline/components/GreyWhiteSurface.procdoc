@@ -10,10 +10,11 @@
 <br/>Crée un maillage spérique de la surface corticale</xhtml>
     <d name="parameters">
       <xhtml name="right_hemi_cortex"/>
-      <xhtml name="right_grey_white"/>
-      <xhtml name="left_white_mesh"/>
-      <xhtml name="left_hemi_cortex"/>
-      <xhtml name="left_grey_white"/>
+      <xhtml name="right_grey_white">classification (gris=100, blanc=200)</xhtml>
+      <xhtml name="left_white_mesh"><img SRC="../../images/III_white.jpg" ALT=""/></xhtml>
+      <xhtml name="left_hemi_cortex"><img SRC="../../images/III_cortex.jpg" ALT=""/></xhtml>
+      <xhtml name="left_grey_white"><a HREF="GreyWhiteClassification.html"><img SRC="../../images/III_gw.jpg" ALT=""/></a>
+classification (gris=100, blanc=200)</xhtml>
       <xhtml name="right_white_mesh"/>
       <xhtml name="Side">Gauche, droit ou les deux hémisphères</xhtml>
     </d>
@@ -32,11 +33,11 @@ Cette surface peut être gonflée à des fins de visualisation.
 <br/>Compute a spherical mesh of the cortical surface</xhtml>
     <d name="parameters">
       <xhtml name="right_hemi_cortex"/>
-      <xhtml name="right_grey_white">classification (grey=100,white=200)</xhtml>
+      <xhtml name="right_grey_white">classification (grey=100, white=200)</xhtml>
       <xhtml name="left_white_mesh"><img SRC="../../images/III_white.jpg" ALT=""/></xhtml>
-      <xhtml name="left_hemi_cortex"><img SRC="../../images/II_cortex.jpg" ALT=""/></xhtml>
-      <xhtml name="left_grey_white"><img SRC="../../images/III_gw.jpg" ALT=""/>
-classification (grey=100,white=200)</xhtml>
+      <xhtml name="left_hemi_cortex"><img SRC="../../images/III_cortex.jpg" ALT=""/></xhtml>
+      <xhtml name="left_grey_white"><a HREF="GreyWhiteClassification.html"><img SRC="../../images/III_gw.jpg" ALT=""/></a>
+classification (grey=100, white=200)</xhtml>
       <xhtml name="right_white_mesh"/>
       <xhtml name="Side">Left, Right or Both Hemispheres</xhtml>
     </d>
