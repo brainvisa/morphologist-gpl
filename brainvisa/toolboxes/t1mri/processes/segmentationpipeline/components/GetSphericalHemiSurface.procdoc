@@ -39,7 +39,7 @@ Le maillage de cette nouvelle version est sphérique, ce qui autorise le gonflem
       <xhtml name="brain_voronoi"><a HREF="SplitBrain.html"><img SRC="../../images/III_voronoi.jpg" ALT=""/></a></xhtml>
       <xhtml name="mri_corrected"><a HREF="T1BiasCorrection.html"><img SRC="../../images/III_nobias.jpg" ALT=""/></a></xhtml>
       <xhtml name="right_hemi_mesh"/>
-      <xhtml name="left_hemi_cortex"><a HREF="GreyWhiteSurface.html#interface"><img SRC="../../images/III_cortex.jpg" ALT=""/></a></xhtml>
+      <xhtml name="left_hemi_cortex"><a HREF="GreyWhiteSurface.html"><img SRC="../../images/III_cortex.jpg" ALT=""/></a></xhtml>
       <xhtml name="Side">Left, Right or Both Hemispheres</xhtml>
     </d>
     <xhtml name="long">This process create a mesh of each cerebral hemisphere. It include a pretreatment, which open the sulcus.
