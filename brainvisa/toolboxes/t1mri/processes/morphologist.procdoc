@@ -80,7 +80,6 @@ Il enchaîne les traitements suivants (sauf si leur résultat a déjà été val
 </p>
 <p>
 Un certain nombre de ces briques proposent un choix entre une ancienne version de l'algorithme et une nouvelle mouture. Les réglages par défaut correspondent à l'alternative que nous considérons comme la plus robuste ou la plus performante, mais un choix différent peut avoir de meilleurs résultats sur certaines images.
-<br/>
 Avec un peu d'expérience, il est possible de jongler de manière itérative avec les pipelines complet et les briques qui les composent. Si pour des raisons de temps, vous n'avez fait tourner qu'une partie des traitements. Vous pouvez en demander plus sans recalculer les premiers traitements en "lockant" certains résultats avec les briques de validation.
 </p>
 <br/><br/>
@@ -98,8 +97,8 @@ de traitements n'ayant pas l'IRM brute comme point de départ):</h4>
 <img SRC="../../images/III_voronoi.jpg" ALT=""/>
 <img SRC="../../images/III_gw.jpg" ALT=""/>
 <img SRC="../../images/III_cortex.jpg" ALT=""/>
-<img SRC="../../images/III_hemi.jpg" ALT=""/>
 <img SRC="../../images/III_white.jpg" ALT=""/>
+<img SRC="../../images/III_hemi.jpg" ALT=""/>
 <img SRC="../../images/III_sulci.jpg" ALT=""/>
 <hr/>
 </p>
@@ -122,11 +121,10 @@ existantes, les commandes de Vip et vos propres outils. C'est ce qui a été ré
 le site de Marseille à cause du biais important de leur scanner 3T: <a href="http://marspack.free.fr/">http://marspack.free.fr/</a>.
 </p>
 </li>
-<br/>
 <li>Après la phase de réglage préalable, nous suggérons de traiter les données en deux étapes :
  <ol>
-  <li><em>Des images brutes au masque du cerveau:</em> ça peut être itérer sur l'ensemble de vos cerveaux. Il vous reste alors à verifier les résultats un à un, et essayer quelques réglages décrits ci-dessus si certains résultats ne sont pas à la hauteur. (Vous pouvez également réaliser certaines corrections en dessinant dans Anatomist: <a href="AnaLabelVolumeEditor.html"> Label volume editor</a>.)</li>
-  <li><em>Le reste des traitements (maillages, graphes...):</em> Vous devez d'abord verrouiller les résultats des étapes précédentes pour éviter qu'ils ne soient écrasés par le pipeline général. Utilisez: <a href="AnaValidateAll.html">Ana Validate All</a>. Pous pouvez ensuite itérer le pipeline avant d'aller dormir.</li>
+  <li><em>Des images brutes au masque du cerveau :</em> Ceci peut être itérer sur l'ensemble de vos cerveaux. Il vous reste alors à verifier les résultats un à un, et essayer quelques réglages décrits ci-dessus si certains résultats ne sont pas à la hauteur. (Vous pouvez également réaliser certaines corrections en dessinant dans Anatomist: <a href="AnaLabelVolumeEditor.html">Editeur d'image de labels</a>.)</li>
+  <li><em>Le reste des traitements (maillages, graphes...) :</em> Vous devez d'abord verrouiller les résultats des étapes précédentes pour éviter qu'ils ne soient écrasés par le pipeline général. Utilisez : <a href="AnaValidateAll.html">Validation du pipeline</a>. Pous pouvez ensuite itérer le pipeline avant d'aller dormir.</li>
  </ol>
 </li>
 </ol>
@@ -252,8 +250,8 @@ is not the raw T1-weighted MR scan):</h4>
 <img SRC="../../images/III_voronoi.jpg" ALT=""/>
 <img SRC="../../images/III_gw.jpg" ALT=""/>
 <img SRC="../../images/III_cortex.jpg" ALT=""/>
-<img SRC="../../images/III_hemi.jpg" ALT=""/>
 <img SRC="../../images/III_white.jpg" ALT=""/>
+<img SRC="../../images/III_hemi.jpg" ALT=""/>
 <img SRC="../../images/III_sulci.jpg" ALT=""/>
 <hr/>
 </p>
@@ -277,14 +275,11 @@ your own local tools. This is what is done for example in Marseille fMRI site be
 of the 3T large bias field: <a href="http://marspack.free.fr/">http://marspack.free.fr/</a>.
 </p>
 </li>
-
-<br/>
-
 <li>After the tuning stage, we suggest to perform the processing in two stages :
  <ol>
    <li><em>From raw MR data to the brain mask :</em> It can be iterated on all your brains. Then check the results one by one and if still some data's results are not acceptable try some of the alternatives above.
-(For the very recalcitrant brains, you could perform some manual corrections with Anatomist drawing's capacities: <a href="AnaLabelVolumeEditor.html"> Label volume editor</a>.) </li>
-   <li><em>Any further processing (meshes, graphs, etc.) :</em> You have first to lock the results of the previous stages, for them not to be superseded by the general pipeline treatment. Use: <a href="AnaValidateAll.html">Ana Validate All</a>. Then you can iterate the pipeline you like and go to sleep. </li>
+(For the very recalcitrant brains, you could perform some manual corrections with Anatomist drawing's capacities : <a href="AnaLabelVolumeEditor.html"> Label volume editor</a>.) </li>
+   <li><em>Any further processing (meshes, graphs, etc.) :</em> You have first to lock the results of the previous stages, for them not to be superseded by the general pipeline treatment. Use : <a href="AnaValidateAll.html">Ana Validate All</a>. Then you can iterate the pipeline you like and go to sleep. </li>
  </ol>
 </li>
 </ol>
