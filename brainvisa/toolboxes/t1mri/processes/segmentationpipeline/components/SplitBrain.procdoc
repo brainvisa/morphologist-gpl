@@ -19,7 +19,7 @@
       <xhtml name="variant"/>
       <xhtml name="commissure_coordinates"/>
       <xhtml name="mult_factor"/>
-      <xhtml name="split_mask"><img SRC="../../images/III_voronoi.jpg" ALT=""/><br/></xhtml>
+      <xhtml name="split_mask"><img SRC="../../images/III_voronoi.jpg" ALT=""/></xhtml>
       <xhtml name="mode"/>
       <xhtml name="Use_template"/>
       <xhtml name="histo_analysis"><a HREF="NobiasHistoAnalysis.html"><img SRC="../../images/III_hana.jpg" ALT=""/></a></xhtml>
@@ -56,7 +56,7 @@ puis au sein de la matière grise, de manière à retrouver les formes des hémi
       <xhtml name="variant"/>
       <xhtml name="commissure_coordinates"/>
       <xhtml name="mult_factor"/>
-      <xhtml name="split_mask"><img SRC="../../images/III_voronoi.jpg" ALT=""/><br/></xhtml>
+      <xhtml name="split_mask"><img SRC="../../images/III_voronoi.jpg" ALT=""/></xhtml>
       <xhtml name="mode"/>
       <xhtml name="Use_template"/>
       <xhtml name="histo_analysis"><a HREF="NobiasHistoAnalysis.html"><img SRC="../../images/III_hana.jpg" ALT=""/></a></xhtml>
