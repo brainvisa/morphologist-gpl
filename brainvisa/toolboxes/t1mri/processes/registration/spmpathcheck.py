@@ -199,9 +199,10 @@ def execution( self, context ):
     
     # remove previous spm databases if any
     for old_spmpath in [old_spm8_standalone_path, old_spm5path, old_spm8path]:
-      old_spmtemplates = os.path.join( old_spmpath, 'templates' )
-      if neuroHierarchy.databases.hasDatabase( old_spmtemplates ):
-        neuroHierarchy.databases.remove( old_spmtemplates )
+      if old_spmpath:
+        old_spmtemplates = os.path.join( old_spmpath, 'templates' )
+        if neuroHierarchy.databases.hasDatabase( old_spmtemplates ):
+          neuroHierarchy.databases.remove( old_spmtemplates )
 
     dbs = neuroConfig.DatabaseSettings( spmtemplates )
     dbs.expert_settings.ontology = 'spm'
