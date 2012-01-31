@@ -34,6 +34,8 @@
 from neuroProcesses import *
 from soma.wip.application.api import Application
 import neuroConfig, neuroHierarchy
+import distutils.spawn
+import sys
 
 def validation():
   configuration = Application().configuration
@@ -119,20 +121,46 @@ def execution( self, context ):
   if not configuration.SPM.check_spm_path:
     return None # don't check, do nothing.
 
-  if ( configuration.SPM.spm5_path is not None \
-    and configuration.SPM.spm5_path != "" ) \
-    or ( configuration.SPM.spm8_path is not None \
-    and configuration.SPM.spm8_path != "" ):
-      context.write( 'SPM path is already set.' )
-      return
+  old_spm8_standalone_path=configuration.SPM.spm8_standalone_path
+  old_spm8path=configuration.SPM.spm8_path
+  old_spm5path=configuration.SPM.spm5_path
+  
+  spm8_standalone_mcr_path = None
+  spm8_standalone_command = None
+  spm8_standalone_path = None
+  context.write('\nLooking for spm8 standalone...')
+  if sys.platform == "win32":
+    spm8exe="spm8_w32.exe"
+  else:
+    spm8exe="run_spm8.sh"
+  
+  spm8_standalone_command = distutils.spawn.find_executable(spm8exe)
+  if spm8_standalone_command is not None:
+    spm8_standalone_command = os.path.realpath( spm8_standalone_command ) # to follow symlinks if needed
+    spm8_standalone = os.path.dirname(spm8_standalone_command)
+    # Search for the matlab compiler runtime path
+    if sys.platform != "win32": # no need of mcr on windows
+      spm8_standalone_mcr_path = os.path.join(spm8_standalone, 'mcr', 'v713')
+      if not os.path.exists(spm8_standalone_mcr_path):
+        if sys.patform == "darwin":
+          spm8_standalone_mcr_path = "/Applications/MATLAB/MATLAB_Compiler_Runtime/v713/"
+        else:
+          spm8_standalone_mcr_path = "/usr/local/MATLAB/MATLAB_Compiler_Runtime/v713/"
+        if not os.path.exists(spm8_standalone_mcr_path):
+          spm8_standalone_mcr_path = None
+    
+    spm8_standalone_path = os.path.join(spm8_standalone, 'spm8_mcr', 'spm8')
+    if not os.path.exists(spm8_standalone_path):
+      spm8_standalone_path=None
+  if (spm8_standalone_command and (spm8_standalone_mcr_path or (sys.platform == "win32")) and spm8_standalone_path):
+    configuration.SPM.spm8_standalone_command = spm8_standalone_command
+    configuration.SPM.spm8_standalone_mcr_path = spm8_standalone_mcr_path
+    configuration.SPM.spm8_standalone_path = spm8_standalone_path
+    context.write('=> spm8 standalone was found: ', spm8_standalone_command)
+  else:
+    context.write('=> spm8 standalone was not found.')
 
-  smp8path_standalone_mcr_path = None
-  smp8path_standalone_command = None
-  context.write('Looking for spm8 standalone...')
-  # TBI
-  context.write('=> spm8 standalone was not found.')
-
-  context.write('Looking for spm8 with Matlab...')
+  context.write('\nLooking for spm8 with Matlab...')
   spm8path = self.checkSPMCommand( context, 'spm8' )
   if spm8path:
     configuration.SPM.spm8_path = spm8path
@@ -140,22 +168,21 @@ def execution( self, context ):
   else:
     context.write('=> spm8 was not found.')
 
-  context.write('Looking for spm5 ...')
+  context.write('\nLooking for spm5 ...')
   spm5path = self.checkSPMCommand( context, 'spm5' )
   if spm5path:
     configuration.SPM.spm5_path = spm5path
-    context.write('=> smp5 was found: ', spm5path)
+    context.write('=> spm5 was found: ', spm5path)
   else:
     context.write('=> spm5 was not found.')
 
   spmpath = None
-  if smp8path_standalone_command or spm8path or spm5path:
+  if spm8_standalone_command or spm8path or spm5path:
     configuration.save( neuroConfig.userOptionFile )
-    context.write( 'options saved' )
-    if smp8path_standalone_command:
-      # TBI
+    context.write( '\noptions saved' )
+    if spm8_standalone_command:
       context.write('=> spm8 standalone is configured.')
-      spmpath = smp8path_standalone_mcr_path
+      spmpath = spm8_standalone_path
     elif spm8path:
       context.write('=> spm8 is now configured.')
       spmpath = spm8path
@@ -167,19 +194,16 @@ def execution( self, context ):
                   "the path can be set manually in the menu " "BrainVISA/Preferences/SPM.")
 
   if spmpath:
-    context.write( 'Setting up SPM templates database' )
+    context.write( '\nSetting up SPM templates database' )
     spmtemplates = os.path.join( spmpath, 'templates' )
-    # TBI for standalone
-    if neuroHierarchy.databases.hasDatabase( spmtemplates ):
-      pass
-      #TBI => erase the db ?
+    
+    # remove previous spm databases if any
+    for old_spmpath in [old_spm8_standalone_path, old_spm5path, old_spm8path]:
+      old_spmtemplates = os.path.join( old_spmpath, 'templates' )
+      if neuroHierarchy.databases.hasDatabase( old_spmtemplates ):
+        neuroHierarchy.databases.remove( old_spmtemplates )
 
     dbs = neuroConfig.DatabaseSettings( spmtemplates )
-    # useful ?
-    spmdb = os.path.join( neuroConfig.homeBrainVISADir, 'spm' )
-    if not os.path.exists( spmdb ):
-      os.mkdir( spmdb )
-    # end useful ?
     dbs.expert_settings.ontology = 'spm'
     dbs.expert_settings.sqliteFileName = ':temporary:'
     dbs.expert_settings.uuid = 'a91fd1bf-48cf-4759-896e-afea136c0549'
@@ -191,4 +215,3 @@ def execution( self, context ):
     db.clear()
     db.update( context=defaultContext() )
     neuroHierarchy.update_soma_workflow_translations()
-    # del dbs, db useful ?

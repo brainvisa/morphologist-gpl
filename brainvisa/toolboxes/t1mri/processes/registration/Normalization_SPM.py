@@ -37,7 +37,7 @@ from brainvisa import shelltools
 #from numpy import *
 import commands
 import distutils.spawn
-import os
+import os, sys
 #import registration
 
 from soma.wip.application.api import Application
@@ -50,7 +50,7 @@ configuration = Application().configuration
 
 def validation():
     if( ( not configuration.SPM.spm8_standalone_command \
-          or not configuration.SPM.spm8_standalone_mcr_path ) ) \
+          or not (configuration.SPM.spm8_standalone_mcr_path or (sys.platform == "win32")) ) ) \
         and not distutils.spawn.find_executable( \
           configuration.matlab.executable ):
         raise ValidationError( 'SPM or matlab is not found' )
@@ -93,7 +93,7 @@ def execution( self, context ):
     matfileDI = context.temporary( 'Matlab script' )
     mat_file = file( matfileDI.fullPath(), 'w')
     if configuration.SPM.spm8_standalone_command \
-        and configuration.SPM.spm8_standalone_mcr_path:
+        and (configuration.SPM.spm8_standalone_mcr_path or (sys.platform == "win32")):
         # SPM8 standalone variant
         context.write( _t_( \
           'Using SPM8 standalone version (compiled, Matlab not needed)' ) )

@@ -35,6 +35,7 @@ from neuroProcesses import *
 import shfjGlobals
 import registration
 import types
+import sys
 
 name = 'SPM Normalization Pipeline'
 userLevel=1
@@ -46,7 +47,7 @@ def validation():
     raise ValidationError( 'aims module not here' )
   configuration = Application().configuration
   if( ( not configuration.SPM.spm8_standalone_command \
-      or not configuration.SPM.spm8_standalone_mcr_path ) ) \
+      or not (configuration.SPM.spm8_standalone_mcr_path or (sys.platform == "win32")) ) ) \
     and not distutils.spawn.find_executable( \
       configuration.matlab.executable ):
     raise ValidationError( 'SPM or matlab is not found' )
