@@ -7,13 +7,13 @@
 <img SRC="../../images/II_arrow.jpg" ALT=""/>
 <img SRC="../../images/II_moulin1.jpg" ALT=""/>
 <img SRC="../../images/II_arrow.jpg" ALT=""/>
-<img SRC="../../images/III_brain.jpg" ALT=""/>
+<img SRC="../../images/II_brain.jpg" ALT=""/>
 <br/>Crée un masque binaire d'un cerveau à partir d'une IRM</xhtml>
     <d name="parameters">
       <xhtml name="layer"/>
       <xhtml name="visu"/>
       <xhtml name="white_ridges"/>
-      <xhtml name="mri_corrected"><a HREF="T1BiasCorrection.html"><img SRC="../../images/II_nobias.jpg" ALT=""/></a></xhtml>
+      <xhtml name="mri_corrected"><a HREF="T1BiasCorrection.html"><img SRC="../../images/III_nobias.jpg" ALT=""/></a></xhtml>
       <xhtml name="variant"/>
       <xhtml name="Commissure_coordinates"/>
       <xhtml name="erosion_size"/>
@@ -33,13 +33,13 @@
 <img SRC="../../images/II_arrow.jpg" ALT=""/>
 <img SRC="../../images/II_moulin1.jpg" ALT=""/>
 <img SRC="../../images/II_arrow.jpg" ALT=""/>
-<img SRC="../../images/III_brain.jpg" ALT=""/>
+<img SRC="../../images/II_brain.jpg" ALT=""/>
 <br/>Compute a binary mask of the brain from a raw MR scan</xhtml>
     <d name="parameters">
       <xhtml name="layer"/>
       <xhtml name="visu"/>
       <xhtml name="white_ridges"/>
-      <xhtml name="mri_corrected"><a HREF="T1BiasCorrection.html"><img SRC="../../images/II_nobias.jpg" ALT=""/></a></xhtml>
+      <xhtml name="mri_corrected"><a HREF="T1BiasCorrection.html"><img SRC="../../images/III_nobias.jpg" ALT=""/></a></xhtml>
       <xhtml name="variant"/>
       <xhtml name="Commissure_coordinates"/>
       <xhtml name="erosion_size"/>
@@ -49,7 +49,7 @@
       <xhtml name="variance"/>
       <xhtml name="first_slice"/>
       <xhtml name="brain_mask"><img SRC="../../images/III_brain.jpg" ALT=""/></xhtml>
-      <xhtml name="histo_analysis"><a HREF="NobiasHistoAnalysis.html"><img SRC="../../images/II_hana.jpg" ALT=""/></a></xhtml>
+      <xhtml name="histo_analysis"><a HREF="NobiasHistoAnalysis.html"><img SRC="../../images/III_hana.jpg" ALT=""/></a></xhtml>
     </d>
     <xhtml name="long"/>
   </d>
