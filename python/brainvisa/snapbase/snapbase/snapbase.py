@@ -150,6 +150,10 @@ class SnapBase():
                                            -0.66650600000000004,
                                            -0.66561400000000004,
                                            0.237873],
+			    'left bottom' : [-0.65499700000000005,
+			                     -0.65245200000000003,
+					     -0.26732800000000001,
+					     -0.2717],
                             'right bottom' : [0.653748,
                                              -0.65495999999999999,
                                              -0.26623000000000002,
@@ -355,7 +359,8 @@ class SnapBase():
 
         self.ref = a.createReferential()
         import os
-        nomenclature_path = os.path.expandvars('$BRAINVISA_SHARE/brainvisa-share-4.2/nomenclature/hierarchy/sulcal_root_colors.hie')
+	import neuroConfig
+	nomenclature_path = os.path.join(neuroConfig.getSharePath(), neuroConfig.brainvisa_share.config.share, 'nomenclature/hierarchy/sulcal_root_colors.hie')
         from soma import aims
         self.nomenclature = a.toAObject(aims.read(nomenclature_path))
 
@@ -431,10 +436,9 @@ class SnapBase():
                             boundingbox_max = [ 102.579, 91.6496, 53.2049 ],
                             boundingbox_min = [ -106.464, -79.7929, -36.3754 ], windows=[window] )
                         window.camera(view_quaternion = view_quaternion,
-                                      zoom = 0.818)
+                                      zoom = 0.718)
                         qt_app.processEvents()
                         w.refreshNow()
-
                         # Grabbing the snapshot
                         snapshot = get_snapshot(qgl)
 
@@ -467,7 +471,7 @@ class SnapBase():
                 self.__render_text(pixmap, '%s'%subject, font)
                 pixmap.save(outfile_path)
 
-            window.getInfos()
+            #window.getInfos()
             print ''
             print self.aobjects
             self.___remove_objects_from_viewer(w)
