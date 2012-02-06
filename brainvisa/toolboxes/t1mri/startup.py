@@ -31,7 +31,7 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
-import os, re
+import os, re, sys
 import neuroConfig
 import neuroHierarchy
 import distutils.spawn
@@ -123,7 +123,7 @@ if spmdir is not None:
 def checkSPMpath( conf ):
   if not conf._spmpath_checked:
     conf._spmpath_checked = True
-    if neuroConfig.gui and conf.check_spm_path and not conf._spm5_path:
+    if (neuroConfig.gui and conf.check_spm_path and not (conf._spm5_path or conf._spm8_path or (conf._spm8_standalone_command and  (conf._spm8_standalone_mcr_path or sys.platform == "win32")) ) ):
       from neuroProcessesGUI import mainThreadActions
       try :
         neuroProcesses.getProcess('spmpathcheck')
