@@ -44,14 +44,25 @@ signature = Signature(
   'graph', ReadDiskItem( 'Cortical folds graph', 'Graph'),
   'hemi_cortex', ReadDiskItem( 'CSF+GREY Mask',
       'Aims readable volume formats' ),
-  'sulci_voronoi', WriteDiskItem ( 'Sulci Voronoi',
+  'sulci_voronoi', WriteDiskItem( 'Sulci Voronoi',
       'Aims writable volume formats' ),
 )
 
 
 def initialization( self ):
+  def linkVoronoi( self, proc ):
+    # this function just to link the image format from hemi_cortex
+    format = None
+    if self.hemi_cortex is not None:
+      format = self.hemi_cortex.format
+    if format is None:
+      return self.signature['sulci_voronoi'].findValue( self.graph )
+    di = WriteDiskItem( 'Sulci Voronoi',
+      [ str( format ) ] + shfjGlobals.aimsWriteVolumeFormats )
+    return di.findValue( self.graph )
   self.linkParameters( 'hemi_cortex', 'graph' )
-  self.linkParameters( 'sulci_voronoi', 'graph' )
+  self.linkParameters( 'sulci_voronoi', ( 'graph', 'hemi_cortex' ),
+    linkVoronoi )
 
 
 def execution( self, context ):
