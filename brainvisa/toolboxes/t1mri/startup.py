@@ -120,22 +120,4 @@ if spmdir is not None:
     del dbs, db
   del spmtemplates, spmdir
 
-def checkSPMpath( conf ):
-  if not conf._spmpath_checked:
-    conf._spmpath_checked = True
-    if (neuroConfig.gui and conf.check_spm_path and not (conf._spm5_path or conf._spm8_path or (conf._spm8_standalone_command and  (conf._spm8_standalone_mcr_path or sys.platform == "win32")) ) ):
-      from neuroProcessesGUI import mainThreadActions
-      try :
-        neuroProcesses.getProcess('spmpathcheck')
-        mainThreadActions().call( showProcess, 'spmpathcheck' )
-      except : 
-        pass
-  return conf._spm5_path
-
-
-configuration.SPM._spmpath_checked = False
-configuration.SPM.__class__.spm5_path = property( checkSPMpath,
-configuration.SPM.__class__._set_spm5_path )
-
-
 

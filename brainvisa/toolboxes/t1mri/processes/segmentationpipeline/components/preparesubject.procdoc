@@ -1,66 +1,69 @@
-<?xml version="1.0" encoding="iso-8859-1" ?>
-<minf version="1.0">
-  <d name="fr" length="3">
-    <xhtml name="short">Spécification des commissures</xhtml>
-    <d name="parameters" length="8">
-      <xhtml name="Interhemispheric_Point">Un point du plan inter-hémisphérique (mm). Prenez-le assez loin de AC et PC de préférence (vers le haut du cerveau)</xhtml>
-      <xhtml name="Normalised">Une procedure de normalisation spatiale</xhtml>
-      <xhtml name="Commissure_coordinates">fichier ASCII (*.APC)</xhtml>
+<?xml version="1.0" encoding="utf-8" ?>
+<minf expander="minf_2.0">
+<d>
+  <d name="fr">
+    <xhtml name="short">SpÃ©cification des commissures</xhtml>
+    <d name="parameters">
+      <xhtml name="remove_older_MNI_normalization">Ce paramÃ¨tre contrÃ´le l'effacement d'informations plus anciennes de normalisation dans l'espace du MNI, pour Ã©viter des ambig&amp;uuml;itÃ©s entre des transformations contradictoires.</xhtml>
+      <xhtml name="Interhemispheric_Point">Un point du plan inter-hÃ©misphÃ©rique (mm). Prenez-le assez loin de AC et PC de prÃ©fÃ©rence (vers le haut du cerveau)</xhtml>
       <xhtml name="T1mri"><img SRC="../../images/III_T1mri.jpg" ALT=""/></xhtml>
-      <xhtml name="Left_Hemisphere_Point">N'importe quel point de l'hémisphère gauche (pas trop près du plan inter-hémisphérique)</xhtml>
-      <xhtml name="Anterior_Commissure">Position de la commissure antérieure (mm)</xhtml>
+      <xhtml name="older_MNI_normalization">Anciennes informations de normalisation vers l'espace du MNI. Elles seront juste effacÃ©es, si elles sont prÃ©sentes, et si remove_older_MNI_normalization est activÃ©.</xhtml>
+      <xhtml name="Commissure_coordinates">fichier ASCII (*.APC)</xhtml>
+      <xhtml name="Normalised">Une procedure de normalisation spatiale</xhtml>
+      <xhtml name="Left_Hemisphere_Point">N'importe quel point de l'hÃ©misphÃ¨re gauche (pas trop prÃ¨s du plan inter-hÃ©misphÃ©rique)</xhtml>
+      <xhtml name="allow_flip_initial_MRI">Autorise ou empÃªche la rÃ©Ã©criture de l'image d'entrÃ©e s'il est nÃ©cessaire de changer son orientation</xhtml>
       <xhtml name="Posterior_Commissure">PC (mm)</xhtml>
-      <xhtml name="allow_flip_initial_MRI">Autorise ou empêche la réécriture de l'image d'entrée s'il est nécessaire de changer son orientation</xhtml>
+      <xhtml name="Anterior_Commissure">Position de la commissure antÃ©rieure (mm)</xhtml>
     </d>
     <xhtml name="long"><p>Pour profiter de l'organisation fournie par <em>Brainvisa</em> lors de l'utilisation
-des routines de segmentation du SHFJ, il est préférable de
-s'appuyer sur cette brique qui permet de spécifier l'intersection des commissures avec le
-plan interhémisphérique, ainsi qu'un point supplémentaire de ce plan, de manière à permettre un passage
-dans le référentiel de Talairach. Ce référentiel permet
-aux routines d'analyse d'images diverses vérifications,
+des routines de segmentation du SHFJ, il est prÃ©fÃ©rable de
+s'appuyer sur cette brique qui permet de spÃ©cifier l'intersection des commissures avec le
+plan interhÃ©misphÃ©rique, ainsi qu'un point supplÃ©mentaire de ce plan, de maniÃ¨re Ã  permettre un passage
+dans le rÃ©fÃ©rentiel de Talairach. Ce rÃ©fÃ©rentiel permet
+aux routines d'analyse d'images diverses vÃ©rifications,
 ainsi qu'une initialisation fiable de certaines recherches.
-Si votre image a été normalisée avec SPM ou MRItotal (outil du MNI),
-spécifiez-le et vous échapperez à la corvée de sélection manuelle (mais
-vérifiez sur un exemple que tout se passe bien...)
+Si votre image a Ã©tÃ© normalisÃ©e avec SPM ou MRItotal (outil du MNI),
+spÃ©cifiez-le et vous Ã©chapperez Ã  la corvÃ©e de sÃ©lection manuelle (mais
+vÃ©rifiez sur un exemple que tout se passe bien...)
 </p>
 
 Pour utiliser cette brique sur un sujet, il faut avoir
-préalablement importé l'IRM T1 du sujet dans la "base de données" de BrainVISA: 
-ceci se fait à l'aide du <a href="ImportT1MRI.html">traitement d'importation d'IRM anatomique</a>.
+prÃ©alablement importÃ© l'IRM T1 du sujet dans la "base de donnÃ©es" de BrainVISA: 
+ceci se fait Ã  l'aide du <a href="ImportT1MRI.html">traitement d'importation d'IRM anatomique</a>.
 <br/>
 
-Pour vérifier que <em>Brainvisa</em> a bien intégré l'existence de ce nouveau
+Pour vÃ©rifier que <em>Brainvisa</em> a bien intÃ©grÃ© l'existence de ce nouveau
 sujet, ouvrez la brique "Prepare Subject for Anatomical Pipeline".<br/>
 <img SRC="../../images/prepare1.png" ALT=""/><br/><br/>
 
-<p>Cliquez sur la loupe pour accéder a la liste des sujets
+<p>Cliquez sur la loupe pour accÃ©der a la liste des sujets
 pris en compte par <em>Brainvisa</em>.<br/>
 <img SRC="../../images/prepare2.jpg" ALT=""/></p>
 
-Votre nouveau sujet doit apparaître dans la liste.
-Si votre base de donnéees contient beaucoup de sujets,
-vous pouvez procéder à divers tris à l'aide
-des boutons "protocole, voxel_size..." pour accéder
-plus facilement à celui qui vous intéresse.<br/>
-Tout se passe bien; sélectionnez votre sujet:<br/>
+Votre nouveau sujet doit apparaÃ®tre dans la liste.
+Si votre base de donnÃ©ees contient beaucoup de sujets,
+vous pouvez procÃ©der Ã  divers tris Ã  l'aide
+des boutons "protocole, voxel_size..." pour accÃ©der
+plus facilement Ã  celui qui vous intÃ©resse.<br/>
+Tout se passe bien; sÃ©lectionnez votre sujet:<br/>
 <img SRC="../../images/prepare3.jpg" ALT=""/><br/><br/>
 
 l'oeil de <em>Brainvisa</em> est maintenant activable, ce
-qui signifie qu'il est capable d'envoyer l'IRM à <em>Anatomist</em>.<br/>
+qui signifie qu'il est capable d'envoyer l'IRM Ã  <em>Anatomist</em>.<br/>
 <img SRC="../../images/prepare4.png" ALT=""/><br/>
 <br/>
 
-Cliquez sur l'oeil, pour le vérifier...<br/>
+Cliquez sur l'oeil, pour le vÃ©rifier...<br/>
 
-<p>Vous devez maintenant voir les fenêtres suivantes:<br/>
+<p>Vous devez maintenant voir les fenÃªtres suivantes:<br/>
 <img SRC="../../images/prepare6.jpg" ALT=""/>
 <img SRC="../../images/prepare5.jpg" ALT=""/></p>
 
-Il vous reste à spécifier la localisation des commissures.
-Si votre image a été normalisée à partir d'une procédure
-standard répertoriée par <em>Brainvisa</em> dans le choix
-"Normalised", sélectionnez la et exécutez la brique...<br/>
-Les procédures gérées pour l'instant sont:<br/>
+Il vous reste Ã  spÃ©cifier la localisation des commissures.
+Si votre image a Ã©tÃ© normalisÃ©e Ã  partir d'une procÃ©dure
+standard rÃ©pertoriÃ©e par <em>Brainvisa</em> dans le choix
+"Normalised", sÃ©lectionnez la et exÃ©cutez la brique...<br/>
+Les procÃ©dures gÃ©rÃ©es pour l'instant sont:<br/>
 <ol>
 <li>SHFJ from SPM: champ de vue minimal, resolution 1x1x1mm<br/>
 <img SRC="../../images/prepareNSHFJ.jpg" ALT=""/>
@@ -76,94 +79,96 @@ Les procédures gérées pour l'instant sont:<br/>
 </li></ol>
 
 Il vous faut comprendre que si vous n'avez pas
-rééchantilloné votre image avec une bonne
-résolution spatiale (autour d'1mm), les processus
-de segmentation donneront de mauvais résultats, même
-si vous spécifiez les commissures manuellement...
-En effet, la résolution des plis corticaux est souvent
-de l'ordre du millimètre. En outre, si votre image
-est dotée de coupes épaisses, vous risquez de rencontrer
-d'autres problèmes...<br/>
-<b>NB:</b> il n'est pas nécessaire d'avoir un accord parfait en
+rÃ©Ã©chantillonÃ© votre image avec une bonne
+rÃ©solution spatiale (autour d'1mm), les processus
+de segmentation donneront de mauvais rÃ©sultats, mÃªme
+si vous spÃ©cifiez les commissures manuellement...
+En effet, la rÃ©solution des plis corticaux est souvent
+de l'ordre du millimÃ¨tre. En outre, si votre image
+est dotÃ©e de coupes Ã©paisses, vous risquez de rencontrer
+d'autres problÃ¨mes...<br/>
+<b>NB:</b> il n'est pas nÃ©cessaire d'avoir un accord parfait en
 ce qui concerne la localisation des commissures.
-Les procédures de normalisation automatique ne prennent
-en effet pas spécifiquement en compte leur localisation...
-En cas de doute sur l'adéquation d'une de ces procédures à
-vos données, vous pouvez vérifier leur position à l'aide du visualiseur 
+Les procÃ©dures de normalisation automatique ne prennent
+en effet pas spÃ©cifiquement en compte leur localisation...
+En cas de doute sur l'adÃ©quation d'une de ces procÃ©dures Ã 
+vos donnÃ©es, vous pouvez vÃ©rifier leur position Ã  l'aide du visualiseur 
 AC/PC (oeil).<br/>
-Si tout vous semble convenable, vous pouvez itérer
+Si tout vous semble convenable, vous pouvez itÃ©rer
 le traitement sur l'ensemble des sujets de votre protocole.<br/><br/>
 
-<p>Si votre image n'est pas normalisée, Anatomist va vous aider à spécifier
-trois ou quatre points en "cliquant" sur l'image visualisée. 
+<p>Si votre image n'est pas normalisÃ©e, Anatomist va vous aider Ã  spÃ©cifier
+trois ou quatre points en "cliquant" sur l'image visualisÃ©e. 
 </p>
-<ul><li>Si le volume n'est pas déjà visible, cliquez une première fois sur l'icône d'édition associée au paramètre
-correspondant au point à entrer (AC, PC ou IP) (icône "anatomist"): l'image se charge et s'affiche dans Anatomist</li>
-  <li>Positionnez une vue d'anatomist de manière à voir le point en question (en bougeant le curseur 
+<ul><li>Si le volume n'est pas dÃ©jÃ  visible, cliquez une premiÃ¨re fois sur l'icÃ´ne d'Ã©dition associÃ©e au paramÃ¨tre
+correspondant au point Ã  entrer (AC, PC ou IP) (icÃ´ne "anatomist"): l'image se charge et s'affiche dans Anatomist</li>
+  <li>Positionnez une vue d'anatomist de maniÃ¨re Ã  voir le point en question (en bougeant le curseur 
   de coupe), et cliquez, sur la vue anatomist, pour amener le curseur sur le point voulu. </li>
-  <li>quand la position est bonne, cliquez l'icône du point 3D (dans BrainVisa) pour reporter les coordonnées d'anatomist 
+  <li>quand la position est bonne, cliquez l'icÃ´ne du point 3D (dans BrainVisa) pour reporter les coordonnÃ©es d'anatomist 
   vers BrainVISA.</li>
-  <li>Si vous n'êtes pas satisfait, vous pouvez réitérer l'opération en cliquant sur d'autres points: une nouvelle 
-  position remplace l'ancienne dans BrainVisa dès que l'on re-clique sur le bouton du paramètre BrainVISA.</li>
+  <li>Si vous n'Ãªtes pas satisfait, vous pouvez rÃ©itÃ©rer l'opÃ©ration en cliquant sur d'autres points: une nouvelle 
+  position remplace l'ancienne dans BrainVisa dÃ¨s que l'on re-clique sur le bouton du paramÃ¨tre BrainVISA.</li>
 </ul>
 <br/>
 
-Vous pouvez choisir les trois points en vous aidant d'une coupe sagittale si vous préférez:
+Vous pouvez choisir les trois points en vous aidant d'une coupe sagittale si vous prÃ©fÃ©rez:
 <ol>
-<li>L'intersection de la commissure antérieure avec le plan inter-hémisphérique;</li>
-<li>L'intersection de la commissure postérieure avec le plan inter-hémisphérique;</li>
-<li>Un point quelconque du plan inter-hémisphérique qui ne soit pas alligné avec les précédents.</li>
-<li>Optionnellement, un point quelconque de l'hémisphère gauche. Il n'est pas obligatoire de spécifier ce point, 
-il sert uniquement à détecter un éventuel problème d'orientation de l'image. Attention, les coupes axiales 
-et coronales d'Anatomist sont par défaut en convention radiologique (droite et gauche inversées).</li>
+<li>L'intersection de la commissure antÃ©rieure avec le plan inter-hÃ©misphÃ©rique;</li>
+<li>L'intersection de la commissure postÃ©rieure avec le plan inter-hÃ©misphÃ©rique;</li>
+<li>Un point quelconque du plan inter-hÃ©misphÃ©rique qui ne soit pas allignÃ© avec les prÃ©cÃ©dents.</li>
+<li>Optionnellement, un point quelconque de l'hÃ©misphÃ¨re gauche. Il n'est pas obligatoire de spÃ©cifier ce point, 
+il sert uniquement Ã  dÃ©tecter un Ã©ventuel problÃ¨me d'orientation de l'image. Attention, les coupes axiales 
+et coronales d'Anatomist sont par dÃ©faut en convention radiologique (droite et gauche inversÃ©es).</li>
 </ol><br/>
 
-NB: Si le réglage automatique de la palette de couleur ne vous
-convient pas, vous pouvez le modifier en sélectionnant votre
-image dans la fenêtre de controle d'<em>Anatomist</em>, et en allant
-chercher "palette" dans le menu "objet-spécifique".<br/><br/>
+NB: Si le rÃ©glage automatique de la palette de couleur ne vous
+convient pas, vous pouvez le modifier en sÃ©lectionnant votre
+image dans la fenÃªtre de controle d'<em>Anatomist</em>, et en allant
+chercher "palette" dans le menu "objet-spÃ©cifique".<br/><br/>
 
-Commissure antérieure:<br/>
+Commissure antÃ©rieure:<br/>
 <img SRC="../../images/prepareCA.jpg" ALT=""/><br/>
 <img SRC="../../images/prepareCAtext.jpg" ALT=""/><br/>
 <img SRC="../../images/prepareCAchamps.jpg" ALT=""/><br/><br/>
-Commissure postérieure:<br/>
+Commissure postÃ©rieure:<br/>
 <img SRC="../../images/prepareCP.jpg" ALT=""/><br/><br/>
-Point du plan interhémisphérique:<br/>
+Point du plan interhÃ©misphÃ©rique:<br/>
 <img SRC="../../images/preparePI.jpg" ALT=""/><br/><br/>
-Point de l'hémisphère gauche (à droite sur une coupe axiale affichée en convention radiologique):<br/>
+Point de l'hÃ©misphÃ¨re gauche (Ã  droite sur une coupe axiale affichÃ©e en convention radiologique):<br/>
 <img src="../../images/prepareLH.png" ALT=""/><br/><br/>
-Vous devez avoir maintenant spécifié les 12 coordonnées:<br/>
+Vous devez avoir maintenant spÃ©cifiÃ© les 12 coordonnÃ©es:<br/>
 <img SRC="../../images/prepareCACP.png" ALT=""/><br/><br/>
 
-<p>Un dernier paramètre, <tt>allow_flip_initial_MRI</tt>, précise si vous autorisez ou non 
-<em>BrainVisa</em> à réécrire l'image d'entrée s'il s'avère qu'elle a besoin d'être réorientée 
+<p>Un dernier paramÃ¨tre, <tt>allow_flip_initial_MRI</tt>, prÃ©cise si vous autorisez ou non 
+<em>BrainVisa</em> Ã  rÃ©Ã©crire l'image d'entrÃ©e s'il s'avÃ¨re qu'elle a besoin d'Ãªtre rÃ©orientÃ©e 
 avant de passer par la moulinette de segmentation. En effet nos outils supposent que les 
-images ont une orientation <b>axiale</b> et sont dans un repère <b>radiologique</b> et 
-<b>gauche</b>. Si ce n'est pas le cas, l'étape de séparation des hémisphères a de fortes chances 
-de rater, l'identification des sillons ne pourra pas aboutir à un résultat cohérent, et le lien avec un 
-repère commun (Talairach) sera faux.</p>
+images ont une orientation <b>axiale</b> et sont dans un repÃ¨re <b>radiologique</b> et 
+<b>gauche</b>. Si ce n'est pas le cas, l'Ã©tape de sÃ©paration des hÃ©misphÃ¨res a de fortes chances 
+de rater, l'identification des sillons ne pourra pas aboutir Ã  un rÃ©sultat cohÃ©rent, et le lien avec un 
+repÃ¨re commun (Talairach) sera faux.</p>
 
-Il vous reste à exécuter la brique...
-Elle doit créer un fichier texte anubis.APC qui contient les
-coordonnées mentionnées.<br/><br/>
+Il vous reste Ã  exÃ©cuter la brique...
+Elle doit crÃ©er un fichier texte anubis.APC qui contient les
+coordonnÃ©es mentionnÃ©es.<br/><br/>
 <b>NB:</b> Il est possible d'utiliser les outils de segmentation
-du SHFJ sans créer ce fichier, à vos risques et périls.
-En revanche, les pipelines généraux vous seront interdits par mesure de sécurité...
+du SHFJ sans crÃ©er ce fichier, Ã  vos risques et pÃ©rils.
+En revanche, les pipelines gÃ©nÃ©raux vous seront interdits par mesure de sÃ©curitÃ©...
 </xhtml>
   </d>
-  <d name="en" length="3">
+  <d name="en">
     <xhtml name="short">Selection of commissures</xhtml>
-    <d name="parameters" length="8">
+    <d name="parameters">
+      <xhtml name="remove_older_MNI_normalization">This parameters triggers the removal of older normalization information of the same data in the MNI space, to prevent ambiguities between contradictory transformations.</xhtml>
       <xhtml name="Interhemispheric_Point">A point of the inter-hemispheric plane (mm). Take it as far as possible from AC and PC (for instance in the upper part of the brain)</xhtml>
-      <xhtml name="Normalised">Spatial normalisation procedure</xhtml>
-      <xhtml name="Commissure_coordinates">ASCII file (*.APC)</xhtml>
       <xhtml name="T1mri"><img SRC="../../images/III_T1mri.jpg" ALT=""/>
 </xhtml>
+      <xhtml name="older_MNI_normalization">Older normalization information going to the MNI space. It will just be removed, if present, and if remove_older_MNI_normalization is set to True.</xhtml>
+      <xhtml name="Commissure_coordinates">ASCII file (*.APC)</xhtml>
+      <xhtml name="Normalised">Spatial normalisation procedure</xhtml>
       <xhtml name="Left_Hemisphere_Point">Any point of the left hemisphere (not too close to the inter-hemispheric plane)</xhtml>
-      <xhtml name="Anterior_Commissure">Position of the anterior commissure (mm)</xhtml>
-      <xhtml name="Posterior_Commissure">PC (mm)</xhtml>
       <xhtml name="allow_flip_initial_MRI">Allows or forbids re-writing the original image after flipping it if needed</xhtml>
+      <xhtml name="Posterior_Commissure">PC (mm)</xhtml>
+      <xhtml name="Anterior_Commissure">Position of the anterior commissure (mm)</xhtml>
     </d>
     <xhtml name="long"><p>To rely on the organisation provided by <em>Brainvisa</em> when using the
 segmentation softwares of SHFJ, you should trigger this preprocessing tool, which allows
@@ -302,4 +307,5 @@ for the sake of security, we do not allow you to trigger a pipeline
 as long as this file does not exist...
 </xhtml>
   </d>
+</d>
 </minf>

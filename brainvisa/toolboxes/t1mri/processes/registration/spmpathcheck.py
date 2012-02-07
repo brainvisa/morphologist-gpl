@@ -37,25 +37,16 @@ import neuroConfig, neuroHierarchy
 import distutils.spawn
 import sys
 
-def validation():
-  configuration = Application().configuration
-  if not distutils.spawn.find_executable( \
-    configuration.matlab.executable ):
-    raise ValidationError( 'matlab is not found' )
 
 name = 'SPM path check'
 userLevel = 2
 
 signature = Signature(
-  'perform_check', Choice( ( 'check it', True ),
-    ( 'don\'t ask again', False ) ),
 )
 
 
 def initialization( self ):
-  configuration = Application().configuration
-  configuration.SPM._spmpath_checked = True # avoid opening this several times
-  self.perform_check = configuration.SPM.check_spm_path
+  pass
 
 def inlineGUI( self, values, pview, parent, externalRunButton=False ):
   from PyQt4 import QtGui
@@ -114,12 +105,6 @@ exit;
 
 def execution( self, context ):
   configuration = Application().configuration
-
-  if self.perform_check == False:
-    configuration.SPM.check_spm_path = False
-
-  if not configuration.SPM.check_spm_path:
-    return None # don't check, do nothing.
 
   old_spm8_standalone_path=configuration.SPM.spm8_standalone_path
   old_spm8path=configuration.SPM.spm8_path

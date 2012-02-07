@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -47,7 +48,11 @@ signature = Signature(
   'Posterior_Commissure', Point3D(), 
   'Interhemispheric_Point', Point3D(),
   'Left_Hemisphere_Point', Point3D(),
-  'allow_flip_initial_MRI', Boolean(), 
+  'allow_flip_initial_MRI', Boolean(),
+  'remove_older_MNI_normalization', Boolean(),
+  'older_MNI_normalization',
+    ReadDiskItem( 'Transform Raw T1 MRI to Talairach-MNI template-SPM',
+      'Transformation matrix' ),
   )
 
 def validation():
@@ -56,7 +61,7 @@ def validation():
 class APCReader:
   def __init__( self, key ):
     self._key = key
-    
+
   def __call__( self, values, process ):
     acp = None
     if values.Commissure_coordinates is not None:
@@ -79,7 +84,7 @@ class APCReader:
             if len( pos ) == 3:
               result = [ float(i) * j for i,j in zip( pos, vs ) ]
     return result
-   
+
 def initialization( self ):
   def linknorm( values, process ):
     if values.T1mri and values.T1mri.get( 'normalized' ) == 'yes':
@@ -104,6 +109,8 @@ def initialization( self ):
   self.setOptional( 'Left_Hemisphere_Point' )
   self.allow_flip_initial_MRI = 0
   self.linkParameters( 'Normalised', 'T1mri', linknorm )
+  self.setOptional( 'older_MNI_normalization' )
+  self.linkParameters( 'older_MNI_normalization', 'T1mri' )
 
 def execution( self, context ):
   ac = []
@@ -415,6 +422,16 @@ def execution( self, context ):
     f.write( "PCmm: " + string.join( map( str, pc ) ) + '\n' )
     f.write( "IHmm: " + string.join( map( str, ip ) ) + '\n' )
   f.close()
+
+  # remove older MNI normalization
+  if self.remove_older_MNI_normalization \
+    and self.older_MNI_normalization is not None:
+    db = neuroHierarchy.databases.database( \
+      self.older_MNI_normalization.get("_database") )
+    for f in self.older_MNI_normalization.existingFiles():
+      os.unlink( f )
+    if db:
+      db.removeDiskItem( self.older_MNI_normalization )
 
   # manage referential
   tm = registration.getTransformationManager()
