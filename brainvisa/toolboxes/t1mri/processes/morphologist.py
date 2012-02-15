@@ -300,8 +300,15 @@ def initialization( self ):
   eNode.addDoubleLink( 'GreyWhiteClassification.Commissure_coordinates',
                        'PrepareSubject.Commissure_coordinates' )
 
-  eNode.GreyWhiteSurface.removeLink( 'right_grey_white', 'left_grey_white' )
 
+  eNode.GreyWhiteSurface.removeLink( 'histo_analysis', 'mri_corrected' )
+  eNode.GreyWhiteSurface.removeLink( 'left_grey_white', 'mri_corrected' )
+  eNode.GreyWhiteSurface.removeLink( 'right_grey_white', 'mri_corrected' )
+
+  eNode.addDoubleLink( 'GreyWhiteSurface.mri_corrected',
+                       'BiasCorrection.mri_corrected' )
+  eNode.addDoubleLink( 'GreyWhiteSurface.histo_analysis',
+                       'HistoAnalysis.histo_analysis' )
   eNode.addDoubleLink( 'GreyWhiteSurface.left_grey_white',
                        'GreyWhiteClassification.left_grey_white' )
   eNode.addDoubleLink( 'GreyWhiteSurface.right_grey_white',

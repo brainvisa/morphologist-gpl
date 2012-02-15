@@ -80,7 +80,7 @@ def execution( self, context ):
         
         context.write("Reconstructing left hemisphere surface...")
         hemi = context.temporary( 'GIS Image' )
-        context.system( "VipHomotopic", "-i", braing, "-S", skeleton, "-C", self.left_hemi_cortex, "-o", hemi, "-m", "H", "-w", "t" )
+        context.system( "VipHomotopic", "-i", braing, "-s", skeleton, "-co", self.left_hemi_cortex, "-o", hemi, "-m", "H", "-w", "t" )
         
         context.system( "VipSingleThreshold", "-i", hemi, "-o", hemi, "-t", "0", "-c", "b", "-m", "ne", "-w", "t" )
         
@@ -115,7 +115,7 @@ def execution( self, context ):
         
         context.write("Reconstructing right hemisphere surface...")
         hemi = context.temporary( 'GIS Image' )
-        context.system( "VipHomotopic", "-i", braing, "-S", skeleton, "-C", self.right_hemi_cortex, "-o", hemi, "-m", "H", "-w", "t" )
+        context.system( "VipHomotopic", "-i", braing, "-s", skeleton, "-co", self.right_hemi_cortex, "-o", hemi, "-m", "H", "-w", "t" )
         
         context.system( "VipSingleThreshold", "-i", hemi, "-o", hemi, "-t", "0", "-c", "b", "-m", "ne", "-w", "t" )
         

@@ -99,7 +99,7 @@ elif configuration.SPM.spm5_path:
   spmdir = configuration.SPM.spm5_path
 if spmdir is not None:
   # print 'SPM dir:', spmdir
-  spmtemplates = os.path.join( spmdir, 'templates' )
+  spmtemplates = spmdir #os.path.join( spmdir, 'templates' )
   #print 'spmtemplates:', spmtemplates
   if not neuroHierarchy.databases.hasDatabase( spmtemplates ):
     dbs = neuroConfig.DatabaseSettings( spmtemplates )

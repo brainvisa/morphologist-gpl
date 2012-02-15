@@ -143,6 +143,9 @@ def execution( self, context ):
     configuration.SPM.spm8_standalone_path = spm8_standalone_path
     context.write('=> spm8 standalone was found: ', spm8_standalone_command)
   else:
+    configuration.SPM.spm8_standalone_command = ""
+    configuration.SPM.spm8_standalone_mcr_path = ""
+    configuration.SPM.spm8_standalone_path = ""
     context.write('=> spm8 standalone was not found.')
 
   context.write('\nLooking for spm8 with Matlab...')
@@ -151,6 +154,7 @@ def execution( self, context ):
     configuration.SPM.spm8_path = spm8path
     context.write('=> spm8 was found: ', spm8path)
   else:
+    configuration.SPM.spm8_path = ""
     context.write('=> spm8 was not found.')
 
   context.write('\nLooking for spm5 ...')
@@ -159,6 +163,7 @@ def execution( self, context ):
     configuration.SPM.spm5_path = spm5path
     context.write('=> spm5 was found: ', spm5path)
   else:
+    configuration.SPM.spm5_path = spm5path
     context.write('=> spm5 was not found.')
 
   spmpath = None
@@ -180,14 +185,18 @@ def execution( self, context ):
 
   if spmpath:
     context.write( '\nSetting up SPM templates database' )
-    spmtemplates = os.path.join( spmpath, 'templates' )
+    spmtemplates = spmpath #os.path.join( spmpath, 'templates' )
     
     # remove previous spm databases if any
     for old_spmpath in [old_spm8_standalone_path, old_spm5path, old_spm8path]:
       if old_spmpath:
-        old_spmtemplates = os.path.join( old_spmpath, 'templates' )
+        old_spmtemplates = old_spmpath #os.path.join( old_spmpath, 'templates' )
         if neuroHierarchy.databases.hasDatabase( old_spmtemplates ):
           neuroHierarchy.databases.remove( old_spmtemplates )
+          for settings in neuroConfig.dataPath:
+            if settings.directory == old_spmtemplates:
+              neuroConfig.dataPath.remove(settings)
+              
 
     dbs = neuroConfig.DatabaseSettings( spmtemplates )
     dbs.expert_settings.ontology = 'spm'

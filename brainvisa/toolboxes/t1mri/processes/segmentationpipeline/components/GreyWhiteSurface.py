@@ -41,6 +41,9 @@ userLevel = 0
 # Argument declaration
 signature = Signature(
     'Side', Choice("Both","Left","Right"),
+    'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
+        'Aims readable volume formats' ),
+    'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
     'left_grey_white', ReadDiskItem( 'Left Grey White Mask',
         'Aims writable volume formats' ),
     'right_grey_white', ReadDiskItem( 'Right Grey White Mask',
@@ -56,11 +59,13 @@ signature = Signature(
 ) 
 # Default values
 def initialization( self ):
-    self.linkParameters( 'right_grey_white', 'left_grey_white' )
-    self.linkParameters( 'left_hemi_cortex', 'left_grey_white' )
-    self.linkParameters( 'right_hemi_cortex', 'right_grey_white' )
-    self.linkParameters( 'left_white_mesh', 'left_grey_white' )
-    self.linkParameters( 'right_white_mesh', 'right_grey_white' )
+    self.linkParameters( 'histo_analysis', 'mri_corrected' )
+    self.linkParameters( 'left_grey_white', 'mri_corrected' )
+    self.linkParameters( 'right_grey_white', 'mri_corrected' )
+    self.linkParameters( 'left_hemi_cortex', 'mri_corrected' )
+    self.linkParameters( 'right_hemi_cortex', 'mri_corrected' )
+    self.linkParameters( 'left_white_mesh', 'mri_corrected' )
+    self.linkParameters( 'right_white_mesh', 'mri_corrected' )
     self.Side = "Both"
 #
 #
@@ -74,7 +79,9 @@ def execution( self, context ):
         else:
             context.write( "Detecting left spherical cortex interface..." )
             context.system( "VipHomotopic", "-i",
-                            self.left_grey_white, "-o",
+                            self.mri_corrected, "-cl",
+                            self.left_grey_white, "-h",
+                            self.histo_analysis, "-o",
                             self.left_hemi_cortex,
                             "-m", "C", "-w", "t" )
             tm.copyReferential(self.left_grey_white, self.left_hemi_cortex)
@@ -109,7 +116,9 @@ def execution( self, context ):
         else:
             context.write( "Detecting right spherical cortex interface..." )
             context.system( "VipHomotopic", "-i",
-                            self.right_grey_white, "-o",
+                            self.mri_corrected, "-cl",
+                            self.right_grey_white, "-h",
+                            self.histo_analysis, "-o",
                             self.right_hemi_cortex,
                             "-m", "C", "-w", "t" )
             tm.copyReferential(self.right_grey_white, self.right_hemi_cortex)

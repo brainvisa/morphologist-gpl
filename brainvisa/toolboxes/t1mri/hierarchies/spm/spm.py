@@ -37,8 +37,9 @@
 
 hierarchy = (
 SetWeakAttr( 'database', '%f', 'databasename', 'spm' ), SetPriorityOffset( -10 ), SetContent(
+  'templates', SetContent(
   'T1', SetType( 'anatomical Template' ),
     SetWeakAttr( 'normalized', 'yes', 'skull_stripped', 'no', 'Size', '2 mm',
      'referential', '19bfee8e-51b1-4d9e-8721-990b9f88b12f', 'databasename', 'spm' ),
-) )
+) ) )
 
