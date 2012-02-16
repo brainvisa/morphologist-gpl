@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<minf expander="minf_2.0">
+<d>
+  <d name="fr">
+    <xhtml name="short">Collecte des chiffres utilisables en morphométrie pour décrire des régions d'intérêt, sur une série de graphes</xhtml>
+    <d name="parameters">
+      <xhtml name="output_filename_prefix"/>
+      <xhtml name="region">Sélection des noms de régions à traiter. Ce type de paramètre, "sélection" est un peu spécial: le fichier de sélection associé est optionnel (s'il n'est pas donné, la sélection ne sera pas sauvée pour un usage ultérieur). Les noms de régions sont choisis avec un éditeur qui s'ouvre quand on clique sur le bouton "..." et qui utilise le modèle et la nomenclature choisis. Si aucune sélection n'est faite (si on ne clique même pas sur "..." ), une sélection par défaut sera faite automatiquement et contiendra tous les noms valides trouvés à la fois dans le modèle et la nomenclature. C'est, la plupart du temps, ce que l'on veut.</xhtml>
+      <xhtml name="nomenclature"/>
+      <xhtml name="output_directory"/>
+      <xhtml name="run_dataMind">Lance l'interface du module de statistiques. Nécessite que le logiciel R soit installé.
+R peut être trouvé sur <a href="http://www.r-project.org/">http://www.r-project.org/</a></xhtml>
+      <xhtml name="region_type">Région: seulement la région sélectionnée
+Relations avec la région: modèles des relations liant cette région à d'autres
+Tous: région + relations</xhtml>
+      <xhtml name="model">Graphe modèle, de lui dépend la description en différentes mesures morphométriques</xhtml>
+      <xhtml name="data_graphs">Graphes de régions d'intétêt des différents sujets</xhtml>
+      <xhtml name="label_attribute"/>
+    </d>
+    <xhtml name="long">Le traitement ne fait pas réellement de statistiques, il donne des descripteurs sur des régions, en fonction d'un modèle. 
+Le traitement a été écrit au départ pour fonctionner sur des graphes de sillons et c'est toujours son usage principal, 
+mais il est aussi possible d'obtenir des chiffres sur des gyri et des ROIs. D'autres modèles pourront être ajoutés par la suite.
+<br/><br/>
+Les graphes d'entrée sont générés par les outils de segmentation automatique: 
+voir le traitement <a href="morphologist.html">Morphologist</a>
+<br/><br/>
+Les graphes des sujets doivent être au moins partiellement <b>étiquetés</b> de manière à pouvoir en extraire les ROIs voulues.
+Il est possible d'étiqueter automatiquement les graphes de sillons grâce au traitement de 
+<a href="recognitionGeneral.html">morphométrie / reconnaissance automatique</a> 
+(mais il est plus que recommandé de vérifier les identifications)
+<br/><br/>
+Le modèle contient la connaissance anatomique (liste des régions...) et connait les chiffres associés et la fa&amp;amp;amp;amp;amp;ccedil;on 
+de les calculer ("experts" virtuels de l'anatomie concernée).
+<br/><br/>
+Le choix des régions est guidé par une "nomenclature" qui permet de sélectionner des région de fa&amp;amp;amp;amp;amp;ccedil;on hiérarchique: par ex. par lobe ou par grand sillon. 
+Ce choix aboutit à une "sélection" de noms et s'effectue via le paramètre <b>region</b> du traitement. 
+L'éditeur permet de choisir une sélection à partir du modèle et de la nomenclature choisis.
+<br/><br/>
+Il est possible d'obtenir des chiffres sur les sillons, et/ou sur les relations avec un sillon. 
+Le traitement écrit un fichier par sillon et par relation (en fait un fichier par "expert" utilisé dans le modèle). 
+Dans chaque fichier, il y a une ligne de chiffres par sujet.
+
+<h4>Descripteurs et modèles</h4>
+<p>Chaque type de donnée (sillons, ROIs, gyri...) peut être analysé par un ou plusieurs <b>modèles</b>. Chaque modèle contient les méthodes de calcul des différents descripteurs morphométriques: un modèle peut donc fournir certaines mesures, et un autre modèle des mesures différentes.
+</p>
+<p>Comme chaque modèle contient ses propres descripteurs et leur signification, il n'est pas possible d'en fournir une docuentation commune. Il est possible d'accéder à la documentation individuelle d'un modèle en utilisant le visualiseur (l'icône "oeil") du paramètre "modèle".
+</p>
+</xhtml>
+  </d>
+  <d name="en">
+    <xhtml name="short">Gathers a number of morphometric figures about some regions of a set of subjects folds or ROI graphs</xhtml>
+    <d name="parameters">
+      <xhtml name="output_filename_prefix"/>
+      <xhtml name="region">Selection of names to process. This "selection" parameter type is a bit special: the associated selection file is optional (if omitted, the selection will not be saved for later usage). Region names are chosen using an editor that is opened using the "..." button. This editor uses the selected model and nomenclature. If no selection is done (if the user just doesn't use the "..." button), a default selection will be done and will contain all valid names found both in the model and the nomenclature. Most of the time, this is what we want.</xhtml>
+      <xhtml name="nomenclature"/>
+      <xhtml name="output_directory"/>
+      <xhtml name="run_dataMind">Starts the statistics module interface. Needs R installed.
+R can be found on <a href="http://www.r-project.org/">http://www.r-project.org/</a></xhtml>
+      <xhtml name="region_type">Region: only the selected region
+Relations with region: models of the relations linking this region with ohters
+All: region + relations</xhtml>
+      <xhtml name="model">Model graph which will provide its own set of morphometric descriptors</xhtml>
+      <xhtml name="data_graphs">Subjects ROI graphs (cortical folds, etc)</xhtml>
+      <xhtml name="label_attribute"/>
+    </d>
+    <xhtml name="long">This process does not actually make statistics, it only gives some descriptors on regions, according to a model. This process has been primarily written for cortical folds graphs and it is still its main usage, but it can also be used to obtain descriptotrs for gyri or ROIs. Other models could be added afterwards.
+<br/><br/>
+Imput graphs are generated by automatic segmentation tools: see the <a href="morphologist.html">Morphologist</a> process.
+<br/><br/>
+The subjects graphs must be at least partially <b>labelled</b> in order to extract the correct ROIs.
+It is possible to automatically label sulcus graphs using the 
+<a href="recognitionGeneral.html">morphometry / automatic recognition</a> process (but it is very strongly recommended to verify the identifications)
+<br/><br/>
+The model holds the anatomical knowledge (list of regions...) and knows the associated descriptors and how to calculate them (virtual "experts" of the related anatomy).
+<br/><br/>
+The choice of regions is guided by a "nomenclature" which allows to select regions in a hierarchical way: by lobe or by large sulcus for instance.
+The editor is not very convivial yet (it will be improved in the future): up to now you must type regions names by hand.
+<br/><br/>
+It is possible to obtain figures on sulci and/or on relations linking to a sulcus.
+The process writes a file for each sulcus or relation (more precisely a file for an "expert" of the model).
+In each file, there will be one line for each subject.
+
+<h4>Descriptors and models</h4>
+<p>Each data type (sulci, ROIs, gyri...) can me analyzed by one or several <b>models</b>. Each model embeds the different morphometry features descriptors calculation, so a model may provide some measurements, and another model different measurements.
+</p>
+<p>As each model holds its own descriptors and their meaning, it is not possible to provide a common documentation for them. So you may use the viewer process on the model parameter (the eye icon) to display documentation of the specific chosen model.
+</p>
+</xhtml>
+  </d>
+</d>
+</minf>
