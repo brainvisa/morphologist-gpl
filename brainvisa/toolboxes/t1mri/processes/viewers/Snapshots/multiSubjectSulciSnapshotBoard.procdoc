@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<minf expander="minf_2.0">
+<d>
+  <d name="fr">
+    <xhtml name="short">Creation of a multi-subject page (or pages) displaying sulci graphs in the same given orientation</xhtml>
+    <d name="parameters">
+      <xhtml name="labels_translation_map"/>
+      <xhtml name="rows"/>
+      <xhtml name="transformations">If transformations are not specified, they will be taken from the Talairach information inside the cortical graphs.</xhtml>
+      <xhtml name="page_size_ratio"/>
+      <xhtml name="sulci_name"/>
+      <xhtml name="output_image"/>
+      <xhtml name="nomenclature"/>
+      <xhtml name="snapshot_height"/>
+      <xhtml name="graphs"/>
+      <xhtml name="meshes"/>
+      <xhtml name="pages_number"/>
+      <xhtml name="snapshot_width"/>
+      <xhtml name="label_attribute"/>
+      <xhtml name="columns"/>
+      <xhtml name="orientation"/>
+    </d>
+    <xhtml name="long"><p>For each subject, an Anatomist 3D view is created showing its cortical sulci and optionally its grew/white mesh, and snapshot is saved from it.
+</p>
+<p>Then a multi-subject layout is performed to show all subjects side to side in the same orentation. It may be displayed in a single page, or on multiple pages according to the specified layout (rows x colomns on each page).
+</p>
+<p><br/></p>
+<p>This process calls several commands and needs some python modules installed: PIL (Python Imaging Library), ImageMagick's convert tool, Aims/PyAims, and of course Anatomist.
+</p>
+</xhtml>
+  </d>
+</d>
+</minf>
