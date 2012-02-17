@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<minf expander="minf_2.0">
+<d>
+  <d name="fr">
+    <xhtml name="short"/>
+    <d name="parameters">
+      <xhtml name="labels_translation_map"/>
+      <xhtml name="template_rel_model"/>
+      <xhtml name="learningbase_data_graphs"/>
+      <xhtml name="fallback_rel_model"/>
+      <xhtml name="model_graph"/>
+      <xhtml name="model_version"/>
+      <xhtml name="testbase_data_graphs"/>
+      <xhtml name="template_node_model"/>
+      <xhtml name="data_compatibility_version"/>
+      <xhtml name="template_domain_model"/>
+    </d>
+    <xhtml name="long"/>
+  </d>
+  <d name="en">
+    <xhtml name="short">Creation of the structure of a model graph</xhtml>
+    <d name="parameters">
+      <xhtml name="labels_translation_map"/>
+      <xhtml name="template_rel_model"/>
+      <xhtml name="learningbase_data_graphs"/>
+      <xhtml name="fallback_rel_model"/>
+      <xhtml name="model_graph"/>
+      <xhtml name="model_version"/>
+      <xhtml name="testbase_data_graphs"/>
+      <xhtml name="template_node_model"/>
+      <xhtml name="data_compatibility_version"/>
+      <xhtml name="template_domain_model"/>
+    </d>
+    <xhtml name="long">A model graph is used in the <a href="bvprocess://recognition">recognition process</a> and the <a href="bvprocess://morphometry">morphometry statistics process</a>. It is responsible for structuring labels allowed in a data (sulcal) graph, calculating descriptors, and assessing a labeling during recognition. For the latter task, the model must have been trained to learn a dataset.<br/>
+The current process builds the model graph structure, and the <a href="bvprocess://modelgraphlearn">model graph learning proccess</a> performs training.<br/>
+Otherwise ther is also a little <a href="bvprocess://sulcalmodel_pipepline">pipeline</a> which joins both.</xhtml>
+  </d>
+</d>
+</minf>
