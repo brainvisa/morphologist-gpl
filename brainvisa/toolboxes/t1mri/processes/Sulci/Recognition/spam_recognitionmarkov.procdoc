@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<minf expander="minf_2.0">
+<d>
+  <d name="fr">
+    <xhtml name="short"/>
+    <d name="parameters">
+      <xhtml name="labels_translation_map"/>
+      <xhtml name="initial_transformation"/>
+      <xhtml name="labels_priors"/>
+      <xhtml name="segments_relations_model"/>
+      <xhtml name="output_graph"/>
+      <xhtml name="data_graph"/>
+      <xhtml name="model"/>
+      <xhtml name="posterior_probabilities"/>
+      <xhtml name="global_transformation"/>
+    </d>
+    <xhtml name="long"/>
+  </d>
+  <d name="en">
+    <xhtml name="short">The SPAM sulci recognition is a newer alternative to the older <a href="recognition.html">recognition process</a>. Several variants of it are available under the <a href="spam_recognition.html">SPAM recognition</a> process. This one is the "Markovian" method, which should take place after a "global registration".</xhtml>
+    <d name="parameters">
+      <xhtml name="labels_translation_map"/>
+      <xhtml name="initial_transformation"/>
+      <xhtml name="labels_priors"/>
+      <xhtml name="segments_relations_model"/>
+      <xhtml name="output_graph"/>
+      <xhtml name="data_graph"/>
+      <xhtml name="model"/>
+      <xhtml name="posterior_probabilities"/>
+      <xhtml name="global_transformation"/>
+    </d>
+    <xhtml name="long"><p>SPAM recognition is based on a probabilistic model which provides for any 3D position the probability of presence of every sulcus. Several variants and additions may also be taken into account (conjoint registration, additional prior contstraints, mix with the older neural network-based recognition, etc.) in a bayesian probabilistic framework.
+</p>
+<p>
+The current version is a second step, and <b>must take place after a global registration step</b>.
+It performs "Markovian labeling", and optimizes the sulci, taking into account both the SPAM maps and distance information between neighbouring sulcal segments.
+</p>
+<p>Other methods can be accessed via the general process <a href="spam_recognition.html">SPAM recognition</a>.</p>
+<p>For a more precise description of the method, see:
+<ul>
+<li><a href="ftp://static.lnao.fr/lnao/static/papers/perrot_matthieu_media2011_preprint.pdf">M. Perrot, D. Rivière, and J.-F. Mangin. Cortical sulci recognition and spatial normalization. Medical Image Analysis, 15(4):529-550, 2011.</a>
+</li>
+<li><a href="ftp://static.lnao.fr/lnao/static/papers/Perrot-IPMI09.pdf">M. Perrot, D. Rivière, A. Tucholka, and J.-F. Mangin. Joint Bayesian Cortical Sulci Recognition and Spatial Normalization. In Proc. 21th IPMI, LNCS-5636, Williamsburg, VA, pages 176-187, July 2009.</a>.</li>
+</ul>
+</p>
+</xhtml>
+  </d>
+</d>
+</minf>
