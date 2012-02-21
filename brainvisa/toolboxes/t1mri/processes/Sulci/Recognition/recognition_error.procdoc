@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<minf version="1.0">
+<d name="fr" length="3">
+	<xhtml name="short"> Évaluation de l'erreur de reconnaissance. </xhtml>
+	<xhtml name="long">
+		La sortie de ce process est l'erreur de reconnaissance en
+pondérant chaque reconnaissance locale par la masse de l'élément (sillon ou
+relation) reconnu.
+	</xhtml>
+</d>
+<d name="en" length="3">
+	<xhtml name="short"> Recognition Error valuation</xhtml>
+	<xhtml name="long"> ...  </xhtml>
+</d>
+
+</minf>
