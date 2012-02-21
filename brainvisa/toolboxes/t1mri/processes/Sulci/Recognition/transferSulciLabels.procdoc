@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<minf expander="minf_2.0">
+<d>
+  <d name="fr">
+    <xhtml name="short">Copy labels from a labelled graph to another graph, which should be similar but does not need to have the same structure</xhtml>
+    <d name="parameters">
+      <xhtml name="unlabelled_graph"/>
+      <xhtml name="labelled_graph"/>
+      <xhtml name="label_attribute"/>
+      <xhtml name="output_labels_table"/>
+      <xhtml name="output_graph"/>
+    </d>
+    <xhtml name="long"><p>This process is typically used to transfer labels from a labelled cortical sulci graph to another one from the same subject but with a different segmentation and graph structure.
+</p>
+<p>The output graph labels result from a voronoi diagram, so each output graph node gets the label of the input graph most represented in its region. This generally ensures a good transfer even on different graph structures.
+</p>
+</xhtml>
+  </d>
+</d>
+</minf>
