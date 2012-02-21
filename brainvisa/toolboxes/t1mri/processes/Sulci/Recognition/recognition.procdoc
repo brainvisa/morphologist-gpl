@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<minf expander="minf_2.0">
+<d>
+  <d name="fr">
+    <xhtml name="short"><a HREF="AnaComputeCorticalFoldArg.html"><img SRC="../../images/II_sulci.jpg" ALT="" border="0"/></a>
+<img SRC="../../images/II_arrow.jpg" ALT="" border="0"/>
+<img SRC="../../images/II_moulin7.jpg" ALT="" border="0"/>
+<img SRC="../../images/II_arrow.jpg" ALT="" border="0"/>
+<img SRC="../../images/II_sulciLABEL.jpg" ALT="" border="0"/><br/>
+Reconnaissance automatique (étiquetage de graphe) à l'aide d'un modèle
+</xhtml>
+    <d name="parameters">
+      <xhtml name="stopRate"/>
+      <xhtml name="model_hint"/>
+      <xhtml name="niterBelowStopProp"/>
+      <xhtml name="rate"/>
+      <xhtml name="output_graph">Graphe de sortie (étiqueté)</xhtml>
+      <xhtml name="energy_plot_file"/>
+      <xhtml name="model">Graphe modèle (connaissance)</xhtml>
+      <xhtml name="data_graph"><a HREF="AnaComputeCorticalFoldArg.html"><img SRC="../../images/III_sulci.jpg" ALT="" border="0"/><br/></a>
+Données à étiqueter</xhtml>
+    </d>
+    <xhtml name="long"><p><b><font color="#b00000">Attention:</font> dans BrainVISA version 4.1 et suivantes, de nouveaux modèles de reconnaissance (2011) sont disponibles; ils suivent la même nomenclature et base d'apprentissage que les modèles SPAM, mais diffèrent légèrement des plus anciens (2000-2001). Les nouveaux modèles sont utilisés par défaut, mais les anciens sont toujours disponibles.</b>
+</p>
+<br/><br/>
+Cette brique donne automatiquement un nom à chaque pli élémentaire extrait
+par la brique <a HREF="AnaComputeCorticalFoldArg.html">Ana Compute Cortical Fold Arg</a>.
+La liste des noms utilisés (sillons standards, racines sulcales ou modèle dissident)
+est à choisir en fonction de l'application. Un exemple de résultat :<br/>
+<img SRC="../../images/recon1.jpg" ALT=""/><br/><br/>
+La méthode de reconnaissance repose sur une congrégation d'experts virtuels
+locaux, chaque expert étant responsable d'un détail anatomique. Ces experts ont été entrainés
+sur une base de cerveaux dont les sillons ont été préalablement étiquetés à la main par
+un spécialiste (si vous souhaitez obtenir une description anatomique qui
+vous est propre, ils vous suffit de réaliser votre propre étiquetage
+sur une base de cerveaux suffisamment conséquente, et une nouvelle
+congrégation d'experts pourra être entrainée...).<br/><br/>
+La reconnaissance des sillons repose sur la recherche de l'étiquetage qui correspond
+à un accord maximum au sein de l'assemblée d'experts. Ces experts sont de petits réseaux
+de neurones appelés perceptrons multicouches. Il en existe deux types.
+Le premier type correspond aux experts en charge de la forme
+d'un sillon, le second aux experts en charge de la forme formée
+par deux sillons voisins. De la sorte, la reconnaissance d'un sillon donné
+dépend de l'avis de plusieurs experts: celui en charge de sa forme propre + 
+ceux en charge de ses rapports avec le voisinage. Il s'agit d'une approche
+contextuelle qui peut conduire à un résultat correct même si certains experts
+se trompent. On peut noter certaines analogies avec les modèles
+biologiques de la vision: un expert peut-être vu comme une colonne corticale,
+l'assemblée des experts est dotée d'une organisation cortico-topique...<br/>
+<img SRC="../../images/recon2.jpg" ALT=""/><br/><br/>
+Les formes doivent être traduites avant
+d'être présentées à un expert. Cette traduction correspond à un codage fondé sur
+des paramètres morphométriques variés (taille, orientation, profondeur,
+nombre de composantes connexes...):<br/>
+<img SRC="../../images/recon4.jpg" ALT=""/><br/><br/>
+L'entrainement d'un expert consiste à lui présenter alternativement
+des exemples corrects et incorrects de la forme dont il est en charge.
+On lui apprend petit à petit à fournir la réponse adéquate (0 pour les bons
+exemples, 1 pour les mauvais). Il doit ensuite être capable de généraliser
+cette réponse à de nouvelles formes issues d'autres cerveaux. Une seconde
+base d'apprentissage de cerveaux également étiquetés manuellement sert
+à stopper le processus avant que l'expert ne commence à apprendre par
+coeur les exemples de la première base. C'est ce test d'arrêt qui
+permet une généralisation correcte:<br/><br/>
+<img SRC="../../images/recon4-bis.jpg" ALT=""/><br/><br/>
+Les courbes ci-dessus donnent quelques exemples de l'évolution
+de l'erreur moyenne de deux experts au cours de l'aprentissage.
+Lorsque la forme du sillon est suffisamment simple, comme
+dans le cas du sillon Central, l'aprentissage est rapide et
+la généralisation parfaite. Lorsque la forme est plus variable,
+comme dans le cas du sillon précentral intermédiaire. La
+généralisation ne fonctionne pas dans tous les cas, et on assiste
+au bout d'un moment à un début de suraprentissage qui nous
+conduit à stopper le processus. 
+<br/><br/> 
+A la fin de l'apprentissage,
+la fiabilité des experts est évaluée sur une la seconde base.
+Certains expert s'avèrent moins fiables que les autres, simplement parce que
+la forme dont ils sont en charge n'est pas suffisamment spécifique pour être
+reconnue. Le poid d'un expert durant la reconnaissance proprement dite
+est pondéré en fonction de cette fiabilité.<br/><br/>
+
+La recherche du consensus maximum au sein de la congrégation
+d'expert est difficile. Il s'agit de minimiser la somme pondérée
+des différents avis. Malheureusement, le paysage qui correspond
+à cette somme est doté de nombreux minimas locaux sans intérêt.
+Pour réussir à trouver un chemin menant à la vallée profonde
+qui contient la solution recherchée, nous utilisons une approche
+inspirée de la cristallographie.
+Le modèle sous-jacent à l'assemblée d'experts locaux
+est en effet inspiré de la physique des verres de spins.
+La minimisation est conduite à partir d'une technique appelée recuit simulé.
+Elle correspond à une réalité dans le monde des verres: pour obtenir
+des cristaux avec peu de défauts, il faut d'abord les chauffer puis les
+refroidir très lentement. C'est ce qui permet au verre de trouver
+un état d'énergie très faible, correspondant à l'absence de défauts.
+L'agitation liée à la température lui permet de franchir les petites
+barrières de potentiel qui entourent les minima locaux correspondant à des défauts.
+Au fur à mesure que la température baisse, il est de plus en plus
+difficile de sortir de ces cul-de-sac.<br/>
+Si on revient à l'idée d'un paysage de montagne, on peut imaginer
+un promeneur perdu dans le brouillard
+qui cherche à retourner à la station située dans la vallée la plus profonde.
+S'il se contente de descendre la pente où il se trouve, il va vite
+se retrouver bloqué au fond d'une combe. Dans la réalité, pendant un certain
+temps, il sortira des petits vallons en espérant en trouver un autre
+plus profond à coté donnant sur la station. Mais, petit à petit, la fatigue le gagnant,
+il ne sera plus capable de remonter les parois les plus abruptes.
+Il finira par se trouver bloqué au fond d'une vallée profonde.
+S'il a de la chance, il s'agira de la station...<br/><br/>
+L'évolution de l'énergie correspondant à notre modèle pendant le recuit
+simulé est la suivante:<br/><br/>
+<img SRC="../../images/recon5.jpg" ALT=""/><br/><br/>
+Pendant un certain temps, la température est élévée et
+l'étiquetage évolue de manière quasi-aléatoire. Puis apparait
+une transition correspondant pratiquement à l'identification des
+grands sillons. L'énergie chute rapidement.
+Enfin, une propagation plus lente aux sillons de moindre importance amène au fond de la vallée.
+Comme le montre l'analogie du promeneur, le recuit simulé est une approche
+stochastique qui peut parfois échouer. Il est donc prudent de
+réaliser plusieurs tirages et de choisir celui qui est arrivé le plus bas.
+Nous avons vérifié à de nombreuses reprises que cette heuristique maximisait
+l'adéquation avec une identification manuelle. Voici un exemple
+où 10 recuits différents ont été réalisés sur le même cerveau :<br/><br/>
+Accord avec l'expert humain en fonction de l'énergie finale :<br/>
+<img SRC="../../images/recon6.jpg" ALT=""/><br/><br/>
+En fait, comme on ne connait pas actuellement la solution idéale
+au problème de l'identification des sillons, il n'est guère possible
+d'espérer un accord parfait entre l'expert humain et notre système.
+Il n'est donc pas nécessaire de faire énormément de tirages pour obtenir
+une solution raisonnable à tous les coups...<br/><br/>
+Pour finir, il est intéressant, pour comprendre notre approche,
+de faire un parallèle avec la méthode concurrente qui consiste
+à déformer une image modèle dont les sillons ont été identifiés.
+Dans ce dernier cas, seules les intensités guident les déformations,
+ce qui conduit parfois à apparier des sillons différents. En fait,
+la méthode fondée sur des déformations
+est trop couteuse pour permettre une minimisation
+de type recuit simulé. On peut donc interpréter des erreurs
+d'appariement entre sillons comme un blocage dans une vallée
+pas suffisamment profonde. Notre approche qui travaille à un niveau
+plus élévé de représentation des formes permet de résoudre
+ces problèmes. Le modèle n'est plus une image mais
+une structure probabiliste de type graphe. Les déformations
+sont remplacées par un étiquetage, ce qui revient à apparier
+le graphe modèle avec le graphe représentant le nouveau cerveau.<br/><br/>
+
+<img SRC="../../images/recon3.jpg" ALT=""/><br/><br/>
+La notion de graphe aléatoire:<br/>
+<img SRC="../../images/recon1bis.jpg" ALT=""/><br/><br/>
+
+Pour plus d'information :<br/>
+<em>A Markovian random field based random graph modelling the human
+  cortical topography,</em>
+J.-F. Mangin, J. Régis, I. Bloch, V. Frouin, Y. Samson, and J. Lopez-Krahe
+ In CVRMed, Nice, LNCS-905, Springer-Verlag, pages 177--183,
+  1995.<br/><br/>
+<em> Automatic recognition of cortical sulci using a congregation of
+  neural networks.</em>
+D. Rivière, J.-F. Mangin, D. Papadopoulos, J.-M. Martinez, V. Frouin, and
+  J. Régis.
+ In MICCAI, Pittsburgh, LNCS-1935, Springer Verlag, pages 40-49, 2000 (to appear in Medical Image Analysis)
+<br/><br/>
+
+Pour une approche combinant reconnaissance des sillons et déformations non rigides développée
+avec le projet Epidaure de l'INRIA:<br/>
+<em> Multisubject non-rigid registration of brain MRI using intensity and
+  geometric features.</em>
+P. Cachier, J.-F. Mangin, X. Pennec, D. Rivière, D. Papadopoulos-Orfanos,
+  J. Régis, and N. Ayache.
+In MICCAI, Utrecht, The Netherlands, LNCS-2208, Springer Verlag, pages 734--742, 2002.
+</xhtml>
+  </d>
+  <d name="en">
+    <xhtml name="short"><a HREF="AnaComputeCorticalFoldArg.html"><img SRC="../../images/II_sulci.jpg" ALT="" border="0"/></a>
+<img SRC="../../images/II_arrow.jpg" ALT="" border="0"/>
+<img SRC="../../images/II_moulin7.jpg" ALT="" border="0"/>
+<img SRC="../../images/II_arrow.jpg" ALT="" border="0"/>
+<img SRC="../../images/II_sulciLABEL.jpg" ALT="" border="0"/><br/>
+Automatic recognition (graph labelling) using a model</xhtml>
+    <d name="parameters">
+      <xhtml name="stopRate"/>
+      <xhtml name="model_hint"/>
+      <xhtml name="niterBelowStopProp"/>
+      <xhtml name="rate"/>
+      <xhtml name="output_graph">Output graph (labelled)</xhtml>
+      <xhtml name="energy_plot_file"/>
+      <xhtml name="model">Model graph (knowledge)</xhtml>
+      <xhtml name="data_graph"><a HREF="AnaComputeCorticalFoldArg.html"><img SRC="../../images/III_sulci.jpg" ALT="" border="0"/></a><br/>
+Data to be labelled</xhtml>
+    </d>
+    <xhtml name="long"><p>
+<b><font color="#b00000">Warning:</font> in BrainVISA version 4.1 and later, new recognition models are available (2011 variants), which follow the same nomenclature and learning database as the SPAM models, but slightly differ from the older 2000-2001 models. the new models are used by default, but the older ones are still available.
+</b>
+</p>
+
+This procedure gives automatically a name to each elementary cortical fold provided by
+ <a HREF="AnaComputeCorticalFoldArg.html">Ana Compute Cortical Fold Arg</a>.
+Example of result :<br/>
+<img SRC="../../images/recon1.jpg" ALT=""/><br/><br/>
+The list of names used (standard nomenclature, sulcal roots, etc.) depends on the application.
+The sulcus recognition method relies on a congregation of virtual local experts,
+each expert being in charge of one given anatomical feature.
+These experts have been trained on a database of brains, whose sulci have been
+manually identified by our human anatomist. If you wish to obtain
+your own anatomical definitions, you may provide another database of labelled brains.
+Then, we will train another congregation which will mimic your labelling.
+<br/><br/>
+
+The sulcus recognition amounts to the search for the labelling which maximizes
+the consensus among the expert assembly. Each expert is a small artificial
+neural network called multilayer perceptron. Two families of such networks
+are used. One is in charge of the shapes of the sulci. The second one is in charge
+of the shapes made up by two neighboring sulci. Hence, the identification of one
+given sulcus depends on the opinion of several local experts: one in charge of the sulcus
+shape and a set of neigbor's experts in charge of the surrounding patterns.
+This contextual approach can lead to correct labelling even if some experts are wrong.
+Some analogy with biological models of vision could be discussed.
+One expert could be viewed as a cortical column, while the congregation has
+a "corticotopic" organization....<br/>
+<img SRC="../../images/recon2.jpg" ALT=""/><br/><br/>
+
+The sulcus patterns have to be traduced before being presented to neural networks.
+This traduction converts the pattern to a code made up of various morphometry-like parameters
+(size, orientation in Talairach space, depth, number of connected component, etc.).
+<img SRC="../../images/recon4.jpg" ALT=""/><br/><br/>
+The training of one given expert consists in presenting alternatively
+correct and non correct examples of the pattern that has to be learned.
+The network is supervised during this learning. Little by little, the network
+learns to provide a low answer (around zero) for correct examples,
+and a high answer (around 1) for non correct ones. To check if the network
+can generalize this knowledge, a second learning database is used.
+This checking is performed from time to time during the learning and
+leads to stop it when the network begins to learn the first database by heart.
+Otherwise, the network would lose generalization capacity.
+<img SRC="../../images/recon4-bis.jpg" ALT=""/><br/><br/>
+the charts above give a few examples of the evolution
+of the mean error during the learning. When the sulcus
+shape is simple like for central sulcus, the learning is fast and the generalization
+almost perfect. When the pattern to be learned is more variable, like for intermediate
+precentral sulcus, the generalization does not work for each example.
+In such cases, the networks in charge of the surrounding patterns will
+provide more knowledge to the system.
+<br/><br/> 
+At the end of the learning phase, the reliability of each expert is evaluated
+on the second base. Some turn out to be very bad, because they were
+given a job without solution. To deal with this situation,
+the contribution of a given expert to the global congregation
+is weighted by its reliability.<br/><br/>
+
+The search for the best consensus among the congregation is difficult.
+The weighted sum of the expert's opinions has to be minimized.
+Unfortunately, the landscape corresponding to this sum has a lot of
+local minima without interest. In order to find a way to the deep valley
+including the best solution, we used an idea stemming from the field
+of glass design.
+
+Sorry, some more translation to be done, I am
+going back home now:-)
+
+Le modèle sous-jacent à l'assemblée d'experts locaux
+est en effet inspiré de la physique des verres de spins.
+La minimisation est conduite à partir d'une technique appelée recuit simulé.
+Elle correspond à une réalité dans le monde des verres: pour obtenir
+des cristaux avec peu de défauts, il faut d'abord les chauffer puis les
+refroidir très lentement. C'est ce qui permet au verre de trouver
+un état d'énergie très faible, correspondant à l'absence de défauts.
+L'agitation liée à la température lui permet de franchir les petites
+barrières de potentiel qui entourent les minima locaux correspondant à des défauts.
+Au fur à mesure que la température baisse, il est de plus en plus
+difficile de sortir de ces cul-de-sac.<br/>
+Si on revient à l'idée d'un paysage de montagne, on peut imaginer
+un promeneur perdu dans le brouillard
+qui cherche à retourner à la station située dans la vallée la plus profonde.
+S'il se contente de descendre la pente où il se trouve, il va vite
+se retrouver bloqué au fond d'une combe. Dans la réalité, pendant un certain
+temps, il sortira des petits vallons en espérant en trouver un autre
+plus profond à coté donnant sur la station. Mais, petit à petit, la fatigue le gagnant,
+il ne sera plus capable de remonter les parois les plus abruptes.
+Il finira par se trouver bloqué au fond d'une vallée profonde.
+S'il a de la chance, il s'agira de la station...<br/><br/>
+L'évolution de l'énergie correspondant à notre modèle pendant le recuit
+simulé est la suivante:<br/><br/>
+<img SRC="../../images/recon5.jpg" ALT=""/><br/><br/>
+Pendant un certain temps, la température est élévée et
+l'étiquetage évolue de manière quasi-aléatoire. Puis apparait
+une transition correspondant pratiquement à l'identification des
+grands sillons. L'énergie chute rapidement.
+Enfin, une propagation plus lente aux sillons de moindre importance amène au fond de la vallée.
+Comme le montre l'analogie du promeneur, le recuit simulé est une approche
+stochastique qui peut parfois échouer. Il est donc prudent de
+réaliser plusieurs tirages et de choisir celui qui est arrivé le plus bas.
+Nous avons vérifié à de nombreuses reprises que cette heuristique maximisait
+l'adéquation avec une identification manuelle. Voici un exemple
+où 10 recuits différents ont été réalisés sur le même cerveau :<br/><br/>
+Accord avec l'expert humain en fonction de l'énergie finale :<br/>
+<img SRC="../../images/recon6.jpg" ALT=""/><br/><br/>
+En fait, comme on ne connait pas actuellement la solution idéale
+au problème de l'identification des sillons, il n'est guère possible
+d'espérer un accord parfait entre l'expert humain et notre système.
+Il n'est donc pas nécessaire de faire énormément de tirages pour obtenir
+une solution raisonnable à tous les coups...<br/><br/>
+Pour finir, il est intéressant, pour comprendre notre approche,
+de faire un parallèle avec la méthode concurrente qui consiste
+à déformer une image modèle dont les sillons ont été identifiés.
+Dans ce dernier cas, seules les intensités guident les déformations,
+ce qui conduit parfois à apparier des sillons différents. En fait,
+la méthode fondée sur des déformations
+est trop couteuse pour permettre une minimisation
+de type recuit simulé. On peut donc interpréter des erreurs
+d'appariement entre sillons comme un blocage dans une vallée
+pas suffisamment profonde. Notre approche qui travaille à un niveau
+plus élévé de représentation des formes permet de résoudre
+ces problèmes. Le modèle n'est plus une image mais
+une structure probabiliste de type graphe. Les déformations
+sont remplacées par un étiquetage, ce qui revient à apparier
+le graphe modèle avec le graphe représentant le nouveau cerveau.<br/><br/>
+
+<img SRC="../../images/recon3.jpg" ALT=""/><br/><br/>
+La notion de graphe aléatoire:<br/>
+<img SRC="../../images/recon1bis.jpg" ALT=""/><br/><br/>
+
+Pour plus d'information :<br/>
+<em><a href="/pdf/mangin-CVRMED95.pdf">A Markovian random field based random graph modelling the human
+  cortical topography</a>,</em>
+J.-F. Mangin, J. Régis, I. Bloch, V. Frouin, Y. Samson, and J. Lopez-Krahe
+ In CVRMed, Nice, LNCS-905, Springer-Verlag, pages 177--183,
+  1995.<br/><br/>
+<em> <a href="/pdf/riviere-MIA02.pdf">Automatic recognition of cortical sulci of the human brain using a congregation of neural networks</a>.</em>
+D. Rivière, J.-F. Mangin, D. Papadopoulos, J.-M. Martinez, V. Frouin, and
+  J. Régis.
+Medical Image Analysis, 6(2), pp 77-92
+<br/><br/>
+
+Pour une approche combinant reconnaissance des sillons et déformations non rigides développée
+avec le projet Epidaure de l'INRIA:<br/>
+<em> <a href="/pdf/cachier-MICCAI01.pdf">Multisubject non-rigid registration of brain MRI using intensity and
+  geometric features</a>.</em>
+P. Cachier, J.-F. Mangin, X. Pennec, D. Rivière, D. Papadopoulos-Orfanos,
+  J. Régis, and N. Ayache.
+In MICCAI, Utrecht, The Netherlands, LNCS-2208, Springer Verlag, pages 734--742, 2002.
+</xhtml>
+  </d>
+</d>
+</minf>
