@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<minf expander="minf_2.0">
+<d>
+  <d name="fr">
+    <xhtml name="short"/>
+    <d name="parameters">
+      <xhtml name="labels_translation_map"/>
+      <xhtml name="translation_priors"/>
+      <xhtml name="initial_transformation"/>
+      <xhtml name="local_referentials"/>
+      <xhtml name="output_local_transformations"/>
+      <xhtml name="labels_priors"/>
+      <xhtml name="angle_priors"/>
+      <xhtml name="output_graph"/>
+      <xhtml name="data_graph"/>
+      <xhtml name="model"/>
+      <xhtml name="posterior_probabilities"/>
+      <xhtml name="direction_priors"/>
+      <xhtml name="global_transformation"/>
+    </d>
+    <xhtml name="long"/>
+  </d>
+  <d name="en">
+    <xhtml name="short">The SPAM sulci recognition is a newer alternative to the older <a href="recognition.html">recognition process</a>. Several variants of it are available under the <a href="spam_recognition.html">SPAM recognition</a> process. This one is the "local registration" method, which should take place after a "global registration".</xhtml>
+    <d name="parameters">
+      <xhtml name="labels_translation_map"/>
+      <xhtml name="translation_priors"/>
+      <xhtml name="initial_transformation"/>
+      <xhtml name="local_referentials"/>
+      <xhtml name="output_local_transformations"/>
+      <xhtml name="labels_priors"/>
+      <xhtml name="angle_priors"/>
+      <xhtml name="output_graph"/>
+      <xhtml name="data_graph"/>
+      <xhtml name="model"/>
+      <xhtml name="posterior_probabilities"/>
+      <xhtml name="direction_priors"/>
+      <xhtml name="global_transformation"/>
+    </d>
+    <xhtml name="long"><p>SPAM recognition is based on a probabilistic model which provides for any 3D position the probability of presence of every sulcus. Several variants and additions may also be taken into account (conjoint registration, additional prior contstraints, mix with the older neural network-based recognition, etc.) in a bayesian probabilistic framework.
+</p>
+<p>
+The current version is a second step, and <b>must take place after a global registration step</b>.
+It performs "Local registration", and optimizes both the sulci labelings and a set of rigid registrations between the cortical data of the current subject and the SPAM maps. A local registration is performed for each sulcus, at each step of the iterative labeling process.
+</p>
+<p>Other methods can be accessed via the general process <a href="spam_recognition.html">SPAM recognition</a>.</p>
+<p>For a more precise description of the method, see:
+<ul>
+<li><a href="ftp://static.lnao.fr/lnao/static/papers/perrot_matthieu_media2011_preprint.pdf">M. Perrot, D. Rivière, and J.-F. Mangin. Cortical sulci recognition and spatial normalization. Medical Image Analysis, 15(4):529-550, 2011.</a>
+</li>
+<li><a href="ftp://static.lnao.fr/lnao/static/papers/Perrot-IPMI09.pdf">M. Perrot, D. Rivière, A. Tucholka, and J.-F. Mangin. Joint Bayesian Cortical Sulci Recognition and Spatial Normalization. In Proc. 21th IPMI, LNCS-5636, Williamsburg, VA, pages 176-187, July 2009.</a>.</li>
+</ul>
+</p>
+<p><b><font color="#b00000">Warning: additional model data are required:</font></b></p>
+<p>The process uses learned SPAM models, which are a little too big to be distributed with the main BrainVISA package. They are distributed as separate packages which should be installed on the BrainVISA distribution. They can be very easily installed using the process <a href="bvprocess://spam_install_models">SPAM install models</a>.
+</p>
+</xhtml>
+  </d>
+</d>
+</minf>
