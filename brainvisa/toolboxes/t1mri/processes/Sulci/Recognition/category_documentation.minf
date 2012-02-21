@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<minf version="1.0">
+
+<xhtml name="en">
+  <h1>Sulci recognition toolbox</h1>
+
+  <p>This toolbox contains the automatic cortical sulci recognition processes, and models building tools. It is required for sulcal morphometry.
+  </p>
+</xhtml>
+
+<xhtml name="fr">
+  <h1>Boîte à outils de reconnaissance de sillons</h1>
+
+  <p>Cette boîte à outils contient les traitements de reconnaissance automatique des sillons corticaux, ainsi que les briques pour fabriquer les modèles. Elle est nécessaire pour la morphométrie sulcale.
+  </p>
+</xhtml>
+
+</minf>
