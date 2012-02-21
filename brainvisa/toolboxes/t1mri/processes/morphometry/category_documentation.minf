@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<minf version="1.0">
+
+<xhtml name="en">
+  <h1>Structural morphometry toolbox</h1>
+
+  <p>This toolbox contains tools to measure and record measurements on brain structures: brain volumes, ROI or sulci measurements etc. Statistical analyses can then be performed on them.
+  </p>
+
+</xhtml>
+
+<xhtml name="fr">
+  <h1>Morphométrie structurelle</h1>
+
+  <p>Cette boîte à outils contient des traitements qui permettent de mesurer et d'enregistrer les mesures sur des structures cérébrales: volumes de cerveau, mesures de ROI ou de sillons, etc. Des analyses statistiques pourront ensuite être effectuées sur ces mesures.
+  </p>
+
+</xhtml>
+
+</minf>
