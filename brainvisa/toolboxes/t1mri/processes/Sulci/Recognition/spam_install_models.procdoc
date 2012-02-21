@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<minf expander="minf_2.0">
+<d>
+  <d name="fr">
+    <xhtml name="short"/>
+    <d name="parameters">
+      <xhtml name="download_url"/>
+      <xhtml name="install_talairach_models"/>
+      <xhtml name="destination_database_directory"/>
+      <xhtml name="install_in_compatible_database"/>
+      <xhtml name="install_local_models"/>
+      <xhtml name="install_additional_models"/>
+      <xhtml name="install_global_models"/>
+    </d>
+    <xhtml name="long"/>
+  </d>
+  <d name="en">
+    <xhtml name="short">Download and install SPAM sulci recognition models</xhtml>
+    <d name="parameters">
+      <xhtml name="download_url"/>
+      <xhtml name="install_talairach_models"/>
+      <xhtml name="destination_database_directory"/>
+      <xhtml name="install_in_compatible_database"/>
+      <xhtml name="install_local_models"/>
+      <xhtml name="install_additional_models"/>
+      <xhtml name="install_global_models"/>
+    </d>
+    <xhtml name="long"><p>SPAM models are quite big, so are to be downloaded and installed separately from the main BrainVisa distribution.
+This process automatizes the download and installation process of these models.
+</p>
+<p>Models are normally installed in the BrainVisa internal shared database. However it is possible to install them in a new database, or in any database following the "shared" ontology organization. It is epecially useful for users who are using a common BrianVisa installation and do not have write permissions to its internal database.
+</p>
+<p>Model archives are downloaded from internet, so a network connection is needed. The size of the archives is about 100-120 MBytes each, and there are 4 different archives.
+</p>
+<p>The models installation allows to use the <a href="spam_recognition.html">SPAM recognition</a> processes family, depending on the installed models.
+</p>
+<hr/>
+<p>Alternately, instead of using this process, models can be downloaded by hand from <a href="http://brainvisa.info/downloadpage.html">the BrainVISA web site</a>, in the "data" section. BrainVisa 4.2 is using models version 4.2.
+<li>For "Talairach" mode, the <a href="http://brainvisa.info/download/go.php?url=ftp%3A//ftp.cea.fr/pub/dsv/anatomist/data/descriptive_models-talairach-4.2.zip">"descriptive_models-talairach.zip"</a> package is required.</li>
+<li>For "Global registration" mode, the <a href="http://brainvisa.info/download/go.php?url=ftp%3A//ftp.cea.fr/pub/dsv/anatomist/data/descriptive_models-global-4.2.zip">"descriptive_models-global.zip"</a> package is required</li>
+<li>For "Local registration" mode, the <a href="http://brainvisa.info/download/go.php?url=ftp%3A//ftp.cea.fr/pub/dsv/anatomist/data/descriptive_models-local-4.2.zip">"descriptive_models-local.zip"</a> package is required, and it must be applied after a global registration step, so the requirements for global registration do apply.</li>
+<li>For "Markovian" mode, no additional data is required, but  it must be applied after a global registration step, so the requirements for global registration do apply.</li>
+<li>Additional data are available for SPAM models visualization: use the <a href="http://brainvisa.info/download/go.php?url=ftp%3A//ftp.cea.fr/pub/dsv/anatomist/data/descriptive_models-additional_data-4.2.zip">"descriptive_models-additional_data.zip"</a> file.</li>
+</p>
+<p>All these additional packages should be uncompressed in the BrainVisa binary distribution, in the "share/brainvisa-share-&amp;amp;amp;amp;amp;lt;version&amp;amp;amp;amp;amp;gt;" subdirectory. <b>After uncompressing the data, the internal "shared" database of BrainVisa must be <a href="updateDatabases.html">updated</a></b>.
+</p>
+</xhtml>
+  </d>
+</d>
+</minf>
