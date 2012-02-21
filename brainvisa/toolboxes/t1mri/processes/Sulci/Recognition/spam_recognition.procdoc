@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<minf expander="minf_2.0">
+<d>
+  <d name="fr">
+    <xhtml name="short"/>
+    <d name="parameters">
+      <xhtml name="output_graph"/>
+      <xhtml name="data_graph"/>
+    </d>
+    <xhtml name="long"/>
+  </d>
+  <d name="en">
+    <xhtml name="short">The SPAM sulci recognition is a newer alternative to the older <a href="recognition.html">recognition process</a>. It is much faster and produces different results.</xhtml>
+    <d name="parameters">
+      <xhtml name="output_graph">Output graph (labelled)</xhtml>
+      <xhtml name="data_graph"><a HREF="AnaComputeCorticalFoldArg.html"><img SRC="../../images/III_sulci.jpg" ALT="" border="0"/></a><br/>
+Data to be labelled</xhtml>
+    </d>
+    <xhtml name="long"><p>SPAM recognition is based on a probabilistic model which provides for any 3D position the probability of presence of every sulcus. Several variants and additions may also be taken into account (conjoint registration, additional prior contstraints, mix with the older neural network-based recognition, etc.) in a bayesian probabilistic framework.<br/>
+This process allows to switch between the variants.
+</p>
+<p><b><font color="#b00000">Warning:</font> in BrainVISA version 4.1 and later, the default mode has been set to "global + local registration", if the corresponding model has been installed and is found.</b>
+</p>
+<p>
+<li>
+The <a href="spam_recognitionglobal.html">first step</a> allows two modes:
+<ul>
+  <li>"Talairach" mode is the most "basic" implementation. It performs SPAM estimation of the probabilities in the Talairach space, directly. It is very fast.
+  </li>
+  <li>"Global registration" optimizes both the sulci labelings and an affine registration between the cortical data of the current subject and the SPAM maps. Conjoint registration helps the labeling process, and the output transformation can be actually used as registration information.
+  </li>
+</ul>
+</li>
+<li>
+The <a href="spam_recognitionlocal.html">"Local registration"</a> can optionally be performed after a "Global registration" step. It optimizes locally the registration on a sulcus-by-sulcus basis. It can output a transformation matrix for each sulcus.
+</li>
+<li>
+The <a href="spam_recognitionmarkov.html">"Markovian labeling"</a> can optionally be performed after a "Global registration" step. It takes relations between neighbouring sulcal segments into account in the labeling process.
+</li>
+</p>
+<p>For a more precise description of the method, see:
+<ul>
+<li><a href="ftp://static.lnao.fr/lnao/static/papers/perrot_matthieu_media2011_preprint.pdf">M. Perrot, D. Rivière, and J.-F. Mangin. Cortical sulci recognition and spatial normalization. Medical Image Analysis, 15(4):529-550, 2011.</a>
+</li>
+<li><a href="ftp://static.lnao.fr/lnao/static/papers/Perrot-IPMI09.pdf">M. Perrot, D. Rivière, A. Tucholka, and J.-F. Mangin. Joint Bayesian Cortical Sulci Recognition and Spatial Normalization. In Proc. 21th IPMI, LNCS-5636, Williamsburg, VA, pages 176-187, July 2009.</a>.</li>
+</ul>
+</p>
+<p><b><font color="#b00000">Warning: additional model data are required:</font></b></p>
+<p>The process uses learned SPAM models, which are a little too big to be distributed with the main BrainVISA package. They are distributed as separate packages which should be installed on the BrainVISA distribution. They can be very easily installed using the process <a href="bvprocess://spam_install_models">SPAM install models</a>.
+</p>
+
+<p>Compared to the older <a href="recognition.html">recognition process</a>, results are a bit different, and globally significantly better: the models have been trained on a much larger and cleaner database (62 manually labelled subjects), with a slightly updated nomenclature (use sulci_model_2008.trl as labels_translation_map rather than the classical sulci_model_noroots.trl), and produce results which are subject to different kind of errors.<br/>
+Globally results achieve better recognition rates (15-20% error rates depending on the variant instead of 25%), but some mistakes are more "human-visible" and sometimes allow inconsistancies in sulci which were mostly avoided in the former method. These problems will be solved in future variants of the models which will include additional constraints.<br/>
+Moreover the SPAM recognition is way faster than the former Markovian recognition (a few seconds instead of, typically, half an hour).
+</p></xhtml>
+  </d>
+</d>
+</minf>
