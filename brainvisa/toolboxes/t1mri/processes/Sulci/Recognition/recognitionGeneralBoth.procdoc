@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<minf expander="minf_2.0">
+<d>
+  <d name="fr">
+    <xhtml name="short"/>
+    <d name="parameters">
+      <xhtml name="left_data_graph"/>
+      <xhtml name="left_output_graph"/>
+      <xhtml name="right_data_graph"/>
+      <xhtml name="spam_method"/>
+      <xhtml name="right_output_graph"/>
+      <xhtml name="model"/>
+      <xhtml name="side"/>
+    </d>
+    <xhtml name="long"/>
+  </d>
+  <d name="en">
+    <xhtml name="short"/>
+    <d name="parameters">
+      <xhtml name="left_data_graph"/>
+      <xhtml name="left_output_graph"/>
+      <xhtml name="right_data_graph"/>
+      <xhtml name="spam_method"/>
+      <xhtml name="right_output_graph"/>
+      <xhtml name="model"/>
+      <xhtml name="side"/>
+    </d>
+    <xhtml name="long"><p><b><font color="#b00000">Warning:</font> in BrainVISA version 4.1 and later,
+<ul>
+  <li>the default mode has been set to "SPAM", if the corresponding model has been installed and is found.
+  </li>
+  <li>The ANN default models are the newer 2011 one, which follow the same nomenclature and learning database as the SPAM models, but slightly differ from the older 2000-2001 models.
+  </li>
+</ul>
+</b>
+</p>
+<p>This process is a generalization for both hemispheres, for user convenience, of the <a href="bvprocess://recognitionGeneral">General sulci recognition</a> process, which offers a variety of different methods for sulci recognition.
+</p></xhtml>
+  </d>
+</d>
+</minf>
