@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+  <d name="fr" length="3">
+    <xhtml name="short">Création d'un volume 3D de sillons étiquetés</xhtml>
+    <d name="parameters" length="17">
+      <xhtml name="label_values"/>
+      <xhtml name="bottom"/>
+      <xhtml name="graph"/>
+      <xhtml name="bucket"/>
+      <xhtml name="compress"/>
+      <xhtml name="node_edge_types"/>
+      <xhtml name="int_to_label_translation"/>
+      <xhtml name="simple_surface"/>
+      <xhtml name="custom_label_attributes"/>
+      <xhtml name="custom_node_edge_types"/>
+      <xhtml name="mri"/>
+      <xhtml name="label_translation"/>
+      <xhtml name="hull_junction"/>
+      <xhtml name="label_attributes"/>
+      <xhtml name="input_int_to_label_translation"/>
+      <xhtml name="sulci"/>
+      <xhtml name="custom_buckets"/>
+    </d>
+    <xhtml name="long">Cette brique permet de creer un volume de labels contenant certains buckets,
+au choix les surfaces simples, les fonds de sillons, l'intersection avec l'enveloppe
+du cerveau, ou l'ensemble. Les noms portés par chaque noeud du graphe de sillon
+sont tout d'abord convertis en suivant le dictionnaire (le fichier de traduction).
+Cette commande crache ensuite qqpart un fichier de conversion nom/label,
+a priori la ou vous avez lance brainVISA.
+Cette brique demande de fortes améliorations:-)
+
+This procedure creates 3D volumes including various parts of the sulci.
+For instance to compute SPAMs of their variability in the proportional
+system, or to use them as constraint in a warping process.
+
+In these volumes, each sulcus is represented by an integer  label. These labels are associated either to the 
+"name" attributes of the folds (manual or validated) or to the "label" attributes (automatic recognition).
+By default, the procedure uses "labels" if they exist, otherwise "name".
+
+This procedure is used with a cortical fold graph, whose nodes
+have been manually or automatically associated to a sulcus nomenclature.<br/>
+<img SRC="../../images/morpho-brain.png" ALT=""/>
+<img SRC="../../images/morpho-sulci.png" ALT=""/><br/>
+<img SRC="../../images/morpho-sulci-buck.png" ALT=""/>
+<img SRC="../../images/morpho-sulci-topo.png" ALT=""/><br/>
+Each fold includes several buckets of voxels corresponding to
+the topologically simple surface making up its core (GREEN), its bottom lines
+(including branche's bottoms) (RED) and a few additional voxels corresponding
+to small or spurious branches (CYAN). Here is the example of
+a central sulcus:<br/>
+<img SRC="../../images/morpho-sc.png" ALT=""/>
+<img SRC="../../images/morpho-sc-buck.png" ALT=""/>
+<img SRC="../../images/morpho-sc-topo.png" ALT=""/><br/>
+You can get images of the bottom, of the simple surface or the sum of everything.
+You can also get the junction between each sulcus and the brain hull,
+which corresponds to the line which is sometimes drawn manually
+by some teams. Anatomist's viewer show you the result (the eyes):<br/>
+<img SRC="../../images/morpho-slice-bottom.png" ALT=""/>
+<img SRC="../../images/morpho-slice-ss.png" ALT=""/><br/>
+<img SRC="../../images/morpho-slice-sulci.png" ALT=""/>
+<img SRC="../../images/morpho-slice-junction.png" ALT=""/><br/>
+If you want to get only one sulcus, or a small list of sulci, 
+write their label in the attibute "label_values".
+For instance "S.C._left" or "S.C._left S.F.sup._left":<br/>
+<img SRC="../../images/morpho-slice-sc.png" ALT=""/>
+<img SRC="../../images/morpho-slice-sc-sfsup.png" ALT=""/></xhtml>
+  </d>
+  <d name="en" length="3">
+    <xhtml name="short">Create a 3D volume of the labelled sulci</xhtml>
+    <xhtml name="long">This procedure creates 3D volumes including various parts of the sulci.
+For instance to compute SPAMs of their variability in the proportional
+system, or to use them as constraint in a warping process.
+
+In these volumes, each sulcus is represented by an integer  label. These labels are associated either to the 
+"name" attributes of the folds (manual or validated) or to the "label" attributes (automatic recognition).
+By default, the procedure uses "labels" if they exist, otherwise "name".
+
+This procedure is used with a cortical fold graph, whose nodes
+have been manually or automatically associated to a sulcus nomenclature.<br/>
+<img SRC="../../images/morpho-brain.png" ALT=""/>
+<img SRC="../../images/morpho-sulci.png" ALT=""/><br/>
+<img SRC="../../images/morpho-sulci-buck.png" ALT=""/>
+<img SRC="../../images/morpho-sulci-topo.png" ALT=""/><br/>
+Each fold includes several buckets of voxels corresponding to
+the topologically simple surface making up its core (GREEN), its bottom lines
+(including branche's bottoms) (RED) and a few additional voxels corresponding
+to small or spurious branches (CYAN). Here is the example of
+a central sulcus:<br/>
+<img SRC="../../images/morpho-sc.png" ALT=""/>
+<img SRC="../../images/morpho-sc-buck.png" ALT=""/>
+<img SRC="../../images/morpho-sc-topo.png" ALT=""/><br/>
+You can get images of the bottom, of the simple surface or the sum of everything.
+You can also get the junction between each sulcus and the brain hull,
+which corresponds to the line which is sometimes drawn manually
+by some teams. Anatomist's viewer show you the result (the eyes):<br/>
+<img SRC="../../images/morpho-slice-bottom.png" ALT=""/>
+<img SRC="../../images/morpho-slice-ss.png" ALT=""/><br/>
+<img SRC="../../images/morpho-slice-sulci.png" ALT=""/>
+<img SRC="../../images/morpho-slice-junction.png" ALT=""/><br/>
+If you want to get only one sulcus, or a small list of sulci, 
+write their label in the attibute "label_values".
+For instance "S.C._left" or "S.C._left S.F.sup._left":<br/>
+<img SRC="../../images/morpho-slice-sc.png" ALT=""/>
+<img SRC="../../images/morpho-slice-sc-sfsup.png" ALT=""/>
+
+</xhtml>
+    <d name="parameters" length="16">
+      <xhtml name="bottom"/>
+      <xhtml name="graph"/>
+      <xhtml name="label_translation"/>
+      <xhtml name="compress"/>
+      <xhtml name="int_to_label_translation"/>
+      <xhtml name="simple_surface"/>
+      <xhtml name="custom_label_attributes"/>
+      <xhtml name="hull_junction"/>
+      <xhtml name="custom_node_edge_types"/>
+      <xhtml name="mri"/>
+      <xhtml name="node_edge_types"/>
+      <xhtml name="bucket"/>
+      <xhtml name="label_attributes"/>
+      <xhtml name="custom_buckets"/>
+      <xhtml name="sulci"/>
+      <xhtml name="label_values"/>
+    </d>
+  </d>
+</minf>
