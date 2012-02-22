@@ -1,9 +1,0 @@
-#-----------------------------------------------------------------------------
-class Component_t1mriGPL( GenericMakerComponent ):
-  _name = 't1mri-gpl'
-
-  def dependencies( self ):
-    return [ 'axon' ]
-
-  def libraries( self ):
-    return []
