@@ -39,6 +39,7 @@ from soma.wip.application.api import Application
 import neuroProcesses
 import subprocess
 import glob
+from brainvisa.configuration.sulci_configuration import SulciConfiguration
 
 configuration = Application().configuration
 
@@ -119,5 +120,9 @@ if spmdir is not None:
     neuroHierarchy.update_soma_workflow_translations()
     del dbs, db
   del spmtemplates, spmdir
+
+#Sulci configuration
+if not configuration.signature.has_key('sulci'):
+  configuration.add( 'sulci', SulciConfiguration() )
 
 
