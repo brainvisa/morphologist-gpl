@@ -58,17 +58,6 @@
   </f>
 
   <f type="ProcessTree">
-    <s name="name">morphometry</s>
-    <l length="1" name="content">
-      <f type="ProcessTree.Leaf">
-        <s name="id">brainvolumes</s>
-        <none name="name"/>
-      </f>
-    </l>
-    <true name="user"/>
-    <s name="id">morphometry</s>
-  </f>
-  <f type="ProcessTree">
     <s name="name">viewers</s>
     <s name="id">viewers</s>
     <l length="16" name="content">
