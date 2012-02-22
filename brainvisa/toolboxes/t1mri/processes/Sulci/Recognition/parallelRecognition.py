@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -108,50 +109,13 @@ def execution( self, context ):
     context.write( 'running ParallelRecognition nodes' )
     pn.run( context )
     context.write( 'ParallelRecognition nodes done' )
-    for x in xrange( self.number_of_trials ):
-        s = nrjfiles[x]
-        f = open( s )
-        en = f.readlines()
-        f.close()
-        #context.write( en )
-        #context.write( '\n' )
-        #context.write( 'len(en):', len(en), '\n' )
-        en = en[ len(en)-1 ].split()[2]
-        energies.append( float( en ) )
-        context.write( 'energy:', en, '\n' )
-    context.write( '\nfinal energies:\n' )
-    context.write( energies )
-    emin = 0
-    M = 0
-    mean = 0
-    var = 0
-    if self.stats_file:
-        statsfile = open( self.stats_file.fullPath(), 'w' )
-    for x in xrange( self.number_of_trials ):
-        mean += energies[x]
-        var += energies[x] * energies[x]
-        if x == 0:
-            m = energies[x]
-            M = energies[x]
-        elif energies[x] < m:
-            emin = x
-            m = energies[x]
-        if M < energies[x]:
-            M = energies[x]
-        if self.stats_file:
-            statsfile.write( res[x] + '\t' + str( energies[x] ) + '\n' )
-    mean /= self.number_of_trials
-    var = var / self.number_of_trials - mean * mean
-    if self.stats_file:
-        statsfile.write( '\nmin:\t' + str( m ) + '\t(' + str( emin ) + ')\n' )
-        statsfile.write( 'max:\t' + str( M ) + '\n' )
-        statsfile.write( 'mean:\t' + str( mean ) + '\n' )
-        statsfile.write( 'stddev:\t' + str( math.sqrt( var ) ) + '\n' )
-        statsfile.close()
-    context.write( 'min: ', m, ' for trial ', emin, '\n' )
-    context.system( 'AimsGraphConvert', '-i', res[emin], '-o',
-                    self.output_graph )
-    if self.energy_plot_file is not None:
-        shutil.copy( stats[emin], self.energy_plot_file.fullPath() )
 
+    # find and keep the best one
+    graphs = [ ReadDiskItem( 'Labelled Cortical folds graph',
+        'Graph And Data' ).findValue( g ) for g in res ]
+    energies = [ ReadDiskItem( 'siRelax Fold Energy',
+        'siRelax Fold Energy' ).findValue( s ) for s in stats ]
+    context.runProcess( 'chooseBestRecognition', labelled_graphs=graphs,
+        energy_plot_files=energies, output_graph=self.output_graph,
+        energy_plot_file=self.energy_plot_file, stats_file=self.stats_file )
 
