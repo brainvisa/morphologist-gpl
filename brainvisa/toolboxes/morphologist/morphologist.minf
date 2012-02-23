@@ -2,7 +2,7 @@
 <minf expander="brainvisa-tree_2.0">
 <l length="6">
   <f type="ProcessTree">
-    <s name="name">t1mri</s>
+    <s name="name">morphologist</s>
     <l length="1" name="content">
       <f type="ProcessTree.Branch">
         <l length="4" name="content">
@@ -24,11 +24,11 @@
           </f>
         </l>
         <s name="name">import</s>
-        <s name="id">t1mri/import</s>
+        <s name="id">morphologist/import</s>
       </f>
     </l>
     <true name="user"/>
-    <s name="id">t1mri</s>
+    <s name="id">morphologist</s>
   </f>
   <f type="ProcessTree">
     <s name="name">Data Management</s>
@@ -44,8 +44,8 @@
               </f>
             </l>
             <true name="editable"/>
-            <s name="name">T1 MRI</s>
-            <s name="id">data management/import/t1mri</s>
+            <s name="name">Morphologist</s>
+            <s name="id">data management/import/morphologist</s>
           </f>
         </l>
         <true name="editable"/>
