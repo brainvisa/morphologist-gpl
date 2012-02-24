@@ -53,6 +53,7 @@ signature = Signature(
     'rate', Float(),
     'stopRate', Float(),
     'niterBelowStopProp', Integer(),
+    'forbid_unknown_label', Boolean(),
 )
 
 
@@ -121,9 +122,11 @@ def initialization( self ):
     self.signature[ 'rate' ].userLevel = 2
     self.signature[ 'stopRate' ].userLevel = 2
     self.signature[ 'niterBelowStopProp' ].userLevel = 2
+    self.signature[ 'forbid_unknown_label' ].userLevel = 2
     self.rate = 0.98
     self.stopRate = 0.05
     self.niterBelowStopProp = 1
+    self.forbid_unknown_label = False
 
 
 def execution( self, context ):
@@ -166,6 +169,7 @@ def execution( self, context ):
         proc.rate = self.rate
         proc.stopRate = self.stopRate
         proc.niterBelowStopProp = self.niterBelowStopProp
+        proc.forbid_unknown_label = self.forbid_unknown_label
 
         nrjfiles.append( s )
 

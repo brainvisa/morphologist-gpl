@@ -52,6 +52,7 @@ signature = Signature(
     'rate', Float(),
     'stopRate', Float(),
     'niterBelowStopProp', Integer(),
+    'forbid_unknown_label', Boolean(),
     )
 
 def modelValue(self, proc, procbis ):
@@ -83,13 +84,15 @@ def initialization( self ):
         self.modelValue )
     self.linkParameters( 'output_graph', 'data_graph' )
     self.linkParameters( 'energy_plot_file', 'output_graph' )
-    for p in ['rate', 'stopRate', 'niterBelowStopProp']:
+    for p in ['rate', 'stopRate', 'niterBelowStopProp',
+        'forbid_unknown_label' ]:
         self.signature[p].userLevel = 2
     self.rate = 0.98
     self.stopRate = 0.05
     self.niterBelowStopProp = 1
     self.parent = {}
     self.parent['manage_tasks'] = False
+    self.forbid_unknown_label = False
 
 def getConfigFile(self, context, graphname):
     def exist(file):
@@ -151,5 +154,29 @@ def execution( self, context ):
         self.parent['file'] = cfgfile
     else:
         context.system(progname, cfgfile)
+        if self.forbid_unknown_label:
+            context.write( _t_( 'second pass to remove unknown labels...' ) )
+            stream = open(cfgfile, 'w' )
+            stream.write( '*BEGIN TREE 1.0 siRelax\n' )
+            stream.write( 'modelFile ' + self.model.fullPath() + '\n' )
+            stream.write( 'graphFile ' + self.output_graph.fullPath() + '\n' )
+            stream.write( 'output ' + self.output_graph.fullPath() + '\n' )
+            stream.write( 'plotfile ' + self.energy_plot_file.fullPath() \
+                              + '\n' )
+            stream.write( 'rate ' + str( self.rate ) + '\n' )
+            stream.write( 'stopRate ' + str( self.stopRate ) + '\n' )
+            stream.write( 'niterBelowStopProp ' + str( self.niterBelowStopProp ) \
+                          + '\n' )
+            stream.write( 'mode icm\n' )
+            stream.write( 'forbidVoidLabel 1\n' )
+            stream.write( 'initLabelsType NONE\n' )
+            stream.write( '*END\n' )
+            stream.close()
+            f = open(cfgfile)
+            context.log( 'siRelax input file for 2nd pass removing ' \
+                '"unknown" label', html=f.read() )
+            f.close()
+            context.system(progname, cfgfile)
+
         trManager = registration.getTransformationManager()
         trManager.copyReferential( self.data_graph, self.output_graph )
