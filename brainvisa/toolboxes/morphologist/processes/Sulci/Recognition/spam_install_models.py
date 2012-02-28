@@ -98,7 +98,7 @@ def addSharedDatabase( context, destdir ):
   neuroConfig.dataPath.append( dbs )
   db = neuroHierarchy.SQLDatabase( os.path.join( destdir,
     'database-' + neuroHierarchy.databaseVersion  + '.sqlite' ),
-    destdir, 'shared' )
+    destdir, 'shared', settings=dbs )
   neuroHierarchy.databases.add( db )
   app = Application()
   dbc = dbconf.DatabasesConfiguration.FileSystemOntology( destdir, True )

@@ -76,8 +76,7 @@ if fsldir and os.path.exists( fsldir ):
       dbs.builtin = True
       neuroConfig.dataPath.insert( 1, dbs )
       db = neuroHierarchy.SQLDatabase( dbs.expert_settings.sqliteFileName,
-        fslshare, 'fsl' )
-      db.uuid = dbs.expert_settings.uuid
+        fslshare, 'fsl', settings=dbs )
       neuroHierarchy.databases.add( db )
       db.clear()
       db.update( context=defaultContext() )
@@ -112,8 +111,7 @@ if spmdir is not None:
     dbs.expert_settings.uuid = 'a91fd1bf-48cf-4759-896e-afea136c0549'
     dbs.builtin = True
     neuroConfig.dataPath.insert( 1, dbs )
-    db = neuroHierarchy.SQLDatabase( dbs.expert_settings.sqliteFileName, spmtemplates, 'spm' )
-    db.uuid = dbs.expert_settings.uuid
+    db = neuroHierarchy.SQLDatabase( dbs.expert_settings.sqliteFileName, spmtemplates, 'spm', settings=dbs )
     neuroHierarchy.databases.add( db )
     db.clear()
     db.update( context=defaultContext() )
