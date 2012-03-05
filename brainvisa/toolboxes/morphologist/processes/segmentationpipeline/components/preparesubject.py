@@ -426,8 +426,11 @@ def execution( self, context ):
   # remove older MNI normalization
   if self.remove_older_MNI_normalization \
     and self.older_MNI_normalization is not None:
-    db = neuroHierarchy.databases.database( \
-      self.older_MNI_normalization.get("_database") )
+    try:
+      db = neuroHierarchy.databases.database( \
+        self.older_MNI_normalization.get("_database") )
+    except: # running without databasing
+      db = None
     for f in self.older_MNI_normalization.existingFiles():
       os.unlink( f )
     if db:
