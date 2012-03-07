@@ -79,7 +79,7 @@ if fsldir and os.path.exists( fsldir ):
         fslshare, 'fsl', settings=dbs )
       neuroHierarchy.databases.add( db )
       db.clear()
-      db.update( context=defaultContext() )
+      db.update( context=neuroProcesses.defaultContext() )
       neuroHierarchy.update_soma_workflow_translations()
 
       del dbs, db #, fsldb
@@ -90,7 +90,6 @@ del fsldir
 
 spmscript = None
 spmdir = None
-
 if configuration.SPM.spm8_standalone_path:
   spmdir = configuration.SPM.spm8_standalone_path
 elif configuration.SPM.spm8_path:
@@ -101,7 +100,8 @@ if spmdir is not None:
   # print 'SPM dir:', spmdir
   spmtemplates = spmdir #os.path.join( spmdir, 'templates' )
   #print 'spmtemplates:', spmtemplates
-  if not neuroHierarchy.databases.hasDatabase( spmtemplates ):
+  if not neuroConfig.fastStart and \
+    not neuroHierarchy.databases.hasDatabase( spmtemplates ):
     dbs = neuroConfig.DatabaseSettings( spmtemplates )
     #spmdb = os.path.join( neuroConfig.homeBrainVISADir, 'spm' )
     #if not os.path.exists( spmdb ):
@@ -114,7 +114,7 @@ if spmdir is not None:
     db = neuroHierarchy.SQLDatabase( dbs.expert_settings.sqliteFileName, spmtemplates, 'spm', settings=dbs )
     neuroHierarchy.databases.add( db )
     db.clear()
-    db.update( context=defaultContext() )
+    db.update( context=neuroProcesses.defaultContext() )
     neuroHierarchy.update_soma_workflow_translations()
     del dbs, db
   del spmtemplates, spmdir
