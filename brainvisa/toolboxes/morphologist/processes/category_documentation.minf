@@ -2,8 +2,10 @@
 <minf version="1.0">
 
 <xhtml name="en">
-  <h1>T1-weighted image processing</h1>
+  <h1>Morphologist</h1>
 
+  <p>Morphologist is the new name for the toolbox including T1 anatomical MRI processing, cortical sulci extraction and identification, and morphometric applications.
+  </p>
   <p>
   Before processing T1-weighted data, it is recommended to import it in a BrainVISA database. See the following categories for more information :
   </p>
@@ -15,12 +17,12 @@
   <p>
   Then, the main pipeline extracts various anatomical objects (hemispheres, grey matter, white matter, cortical sulci...). The first step of this pipeline requires to manually specify to BrainVISA the image orientation (axial, coronal, sagittal...). If you have spatially normalized your data with SPM or MRItotal, you will just have to specify it (be careful if using SPM2 or older, with conventions for left and right...). Otherwise, you may let BrainVisa use SPM or FSL to perform normalization, or you may help brainVISA to virtually normalize your data, clicking on anterior and posterior commissures. All this is done in the process:
      <ul>
-    <li><a href="bvprocess://morphologist"><bvProcessName name="Morphologist 2011"/></a></li>
+    <li><a href="bvprocess://morphologist"><bvProcessName name="Morphologist 2012"/></a></li>
     </ul>
   </p>
   <p>
   Some of the components can be individually triggered in expert mode and may overcome problems occuring with the default pipeline parameters settings.
-  The organization of these new components is compatible with the older (2007, 2004) pipelines.
+  The organization of these new components is compatible with the older (2011, 2007, 2004) pipelines.
   This means that they can be used to replace one old component, using the validation flags to control the pipeline behaviour.
   One of the key refinement is a better bias correction that should work better with low grey/white contrast relative to bias magnitude.
   </p>
@@ -45,10 +47,10 @@
 </xhtml>
 
 <xhtml name="fr">
-  <h1>Analyse des images pondérées en T1</h1>
+  <h1>Analyse des images pondï¿½rï¿½es en T1</h1>
 
   <p>
-  Avant de traiter des données d'IRM T1 anatomique, il est recommandé de les importer dans une base de donnée BrainVISA. Reportez-vous aux catégories suivantes pour plus d'information :
+  Avant de traiter des donnï¿½es d'IRM T1 anatomique, il est recommandï¿½ de les importer dans une base de donnï¿½e BrainVISA. Reportez-vous aux catï¿½gories suivantes pour plus d'information :
   <p>
   <a href="bvcategory://data management"><_t_>data management</_t_></a> /
   <a href="bvcategory://data management/import"><_t_>import</_t_></a> /
@@ -56,17 +58,17 @@
   </p>
   </p>
   <p>
-  Ensuite, le pipeline principal effectue l'extraction de différents objets anatomiques (hémisphères, matière grise, matière blanche, sillons corticaux). La première étape de ce pipeline demande de spécifier manuellement à brainVISA l'orientation de vos acquisitions (axiale, coronale ou sagittale...). Si vous avez normalisé spatialement vos images au préalable avec SPM ou MRItotal, il devrait vous suffire de le spécifier (méfiez vous des conventions de SPM2 ou précédents en ce qui concerne la gauche et la droite). Autrement, vous pouvez laisser BrainVisa utiliser SPM ou FSL pour normaliser les données, ou bien vous devrez cliquer sur quelques points, en particulier les commissures antérieure et postérieure, pour permettre à brainVISA de normaliser virtuellement vos données. Tout cela concerne le traitement:
+  Ensuite, le pipeline principal effectue l'extraction de diffï¿½rents objets anatomiques (hï¿½misphï¿½res, matiï¿½re grise, matiï¿½re blanche, sillons corticaux). La premiï¿½re ï¿½tape de ce pipeline demande de spï¿½cifier manuellement ï¿½ brainVISA l'orientation de vos acquisitions (axiale, coronale ou sagittale...). Si vous avez normalisï¿½ spatialement vos images au prï¿½alable avec SPM ou MRItotal, il devrait vous suffire de le spï¿½cifier (mï¿½fiez vous des conventions de SPM2 ou prï¿½cï¿½dents en ce qui concerne la gauche et la droite). Autrement, vous pouvez laisser BrainVisa utiliser SPM ou FSL pour normaliser les donnï¿½es, ou bien vous devrez cliquer sur quelques points, en particulier les commissures antï¿½rieure et postï¿½rieure, pour permettre ï¿½ brainVISA de normaliser virtuellement vos donnï¿½es. Tout cela concerne le traitement:
   </p>
   <ul>
     <li><a href="bvprocess://morphologist"><bvProcessName name="Morphologist 2011"/></a></li>
   </ul>
   <p>
-  Certains de ses composants peuvent être utilisés individuellement dans le mode expert et pourraient résoudre des problèmes rencontrés avec les réglages par défaut du pipeline Morphologist.
+  Certains de ses composants peuvent ï¿½tre utilisï¿½s individuellement dans le mode expert et pourraient rï¿½soudre des problï¿½mes rencontrï¿½s avec les rï¿½glages par dï¿½faut du pipeline Morphologist.
   L'organisation de ces composants est compatible avec les anciens pipelines (2007, 2004).
-  Pratiquement, ceci signifie qu'ils peuvent être utilisés pour remplacer un ancien traitement, dans la mesure ou les briques de validation permettent
-  d'empêcher le pipeline général d'écraser ces nouveaux résultats.
-  Une des améliorations notoire est un nouvel algorithme de correction de biais qui devrait mieux se comporter avec les images dotées d'un faible contraste gris/blanc relativement à l'amplitude du biais.
+  Pratiquement, ceci signifie qu'ils peuvent ï¿½tre utilisï¿½s pour remplacer un ancien traitement, dans la mesure ou les briques de validation permettent
+  d'empï¿½cher le pipeline gï¿½nï¿½ral d'ï¿½craser ces nouveaux rï¿½sultats.
+  Une des amï¿½liorations notoire est un nouvel algorithme de correction de biais qui devrait mieux se comporter avec les images dotï¿½es d'un faible contraste gris/blanc relativement ï¿½ l'amplitude du biais.
   </p>
     <h2>Database organization for T1-weighted data</h2>
   <p>T1-weighted data are stored in a directory <i>database/protocol/subject/</i><b>t1mri</b>. Database, protocol and subject directories names are choosen by the user but t1mri is a fixed name. </p>
