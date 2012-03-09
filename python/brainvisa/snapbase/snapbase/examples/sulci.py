@@ -14,8 +14,8 @@ class SulciSnapBase(SnapBase):
         dictdata = {}
 
         # Checking for ambiguity between diskitems (acquisition, ...)
-        options = {'_type' : 'T1 MRI Bias Corrected',
-                   'subject' : '*'} #,
+        options = {'_type' : 'T1 MRI Bias Corrected'},
+                   #'subject' : '*'} #,
                    #'protocol' : '*'}
         options.update(general_options)
         solved_ambiguity = False

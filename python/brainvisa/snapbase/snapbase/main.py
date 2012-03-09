@@ -43,6 +43,12 @@ def splitbrain_snap_base():
     snap = splitbrain.SplitBrainSnapBase(preferences)
     snap.snap_base(database, main_window = main_window, qt_app = qt_app )
 
+def raw_snap_base():
+    global main_window, qt_app, database, preferences
+    from examples import raw
+    snap = raw.RawSnapBase(preferences)
+    snap.snap_base(database, main_window = main_window, qt_app = qt_app )
+
 
 # Mesh-based data (with choice of hemisphere side)
 
@@ -154,6 +160,7 @@ def main():
     gui.hemimesh_btn.clicked.connect(hemi_snap_base)
     gui.splitbrain_btn.clicked.connect(splitbrain_snap_base)
     gui.sulci_btn.clicked.connect(sulci_snap_base)
+    gui.raw_btn.clicked.connect(raw_snap_base)
     gui.db_combobox.activated.connect(select_db)
     gui.connect_signals()
 

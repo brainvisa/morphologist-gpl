@@ -303,15 +303,35 @@ class SnapBase():
             window.removeObjects( obj )
             del obj
 
-    def __render_text(self, pixmap, text, font, pos=(50, 50)):
-        ''' Render text on a pixmap using Qt '''
+    def __render_text(self, pixmap, text, font, pos=(50, 50), color='white'):
+        '''
+        Render text on a pixmap using Qt, color may be a string or a tuple of
+        3 HSV values
+        '''
         from PyQt4 import QtGui, QtCore, Qt
         qp = Qt.QPainter(pixmap)
         qp.setFont(font)
-        qp.setPen(QtGui.QColor('white'))
+        if isinstance(color, str):
+            qcol = QtGui.QColor(color)
+        else:
+            qcol = QtGui.QColor()
+            qcol.setHsl(color[0], color[1], color[2])
+        qp.setPen(qcol)
         qp.drawText(pos[0], pos[1], text)
         qp.end()
         return pixmap
+
+    def __get_disinct_colors(self, centers):
+        colors = {}
+        print len(centers), 'colors'
+        import random
+        for i in xrange(0, 360, 360 / len(centers)):
+            colors[centers[len(colors.items())]] = \
+                (int(i), int(90 + random.random() * 10), int(100)) #90 + random.random() * 10)
+
+        print colors
+        return colors
+
 
     def snap_base(self, database_checker, main_window = None, qt_app = None):
 
@@ -381,6 +401,14 @@ class SnapBase():
 
         print 'Rendering %i subjects'%len(dictdata.items())
         output_files = []
+
+        protocols = list(set([each[1] for each in dictdata.keys()]))
+        colors_centers = self.__get_disinct_colors(protocols)
+#                        {'Bordeaux' : (255,255,255),
+#                          'Lille' : (255, 0, 0),
+#                          'Paris' : (0, 255, 0),
+#                          'Toulouse' : (0, 0, 255),
+#                          'Marseille' : (255, 0, 255)}
 
         # Iterating on subjects and data
         for (subject, protocol), diskitems in dictdata.items():
@@ -455,11 +483,6 @@ class SnapBase():
                     tiled_image.paste(i, (int(pos[0]), int(pos[1])))
 
                 # Rendering subject ID
-                colors_centers = {'Bordeaux' : (255,255,255),
-                                  'Lille' : (255, 0, 0),
-                                  'Paris' : (0, 255, 0),
-                                  'Toulouse' : (0, 0, 255),
-                                  'Marseille' : (255, 0, 255)}
                 d_usr = ImageDraw.Draw(tiled_image)
 
                 outfile_path = '%s_%s_%s.png'%(self.preferences['output_path'], subject, d)
@@ -468,7 +491,7 @@ class SnapBase():
 
                 # Rendering text
                 pixmap = Qt.QPixmap(outfile_path)
-                self.__render_text(pixmap, '%s'%subject, font)
+                self.__render_text(pixmap, '%s'%subject, font, color=colors_centers[protocol])
                 pixmap.save(outfile_path)
 
             #window.getInfos()
