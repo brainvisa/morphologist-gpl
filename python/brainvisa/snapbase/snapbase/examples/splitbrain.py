@@ -59,7 +59,7 @@ class SplitBrainSnapBase(SnapBase):
     def get_slices_of_interest(self, data):
 
         slices = {}
-        directions = ['A', 'S']
+        directions = ['C', 'S']
 
         # Unpacking data
         splitbrain, mri = data

@@ -47,12 +47,11 @@ class GreyWhiteSnapBase(SnapBase):
 
                 # Here according to given options, ambiguity should be resolved.
                 # If more than one mri, then some attributes are probably misgiven.
-                if left_rdi and right_rdi:
+                if left_mask and right_mask:
                     dictdata[(subject, protocol)] = {'type' : self.data_type,
                         'mri' : mris[0],
                         'left mask' : left_mask,
                         'right mask' : right_mask}
-
         return dictdata
 
     def get_slices_of_interest(self, data):
