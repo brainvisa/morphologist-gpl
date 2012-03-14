@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from brainvisa.snapbase.snapbase import SnapBase
 
 class SulciSnapBase(SnapBase):
@@ -14,7 +15,7 @@ class SulciSnapBase(SnapBase):
         dictdata = {}
 
         # Checking for ambiguity between diskitems (acquisition, ...)
-        options = {'_type' : 'T1 MRI Bias Corrected'},
+        options = {'_type' : 'T1 MRI Bias Corrected'}
                    #'subject' : '*'} #,
                    #'protocol' : '*'}
         options.update(general_options)
