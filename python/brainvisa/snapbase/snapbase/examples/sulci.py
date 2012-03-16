@@ -112,7 +112,7 @@ class SulciSnapBase(SnapBase):
         return window
 
 
-class LeftSulciSnapBase(SulciSnapBase):
+class LeftSulciSingleViewSnapBase(SulciSnapBase):
 
     def __init__(self, output_path):
         SulciSnapBase.__init__(self, output_path)
@@ -124,7 +124,7 @@ class LeftSulciSnapBase(SulciSnapBase):
             for view_name in ['left']]
         return views
 
-class RightSulciSnapBase(SulciSnapBase):
+class RightSulciSingleViewSnapBase(SulciSnapBase):
 
     def __init__(self, output_path):
         SulciSnapBase.__init__(self, output_path)
@@ -134,4 +134,28 @@ class RightSulciSnapBase(SulciSnapBase):
         views = {}
         views['3D'] =[self.view_quaternions[view_name]
             for view_name in ['right']]
+        return views
+
+class LeftSulciMultiViewSnapBase(SulciSnapBase):
+
+    def __init__(self, output_path):
+        SulciSnapBase.__init__(self, output_path)
+        self.data_type = 'Left Cortical folds Graph'
+
+    def get_views_of_interest(self):
+        views = {}
+        views['3D'] =[self.view_quaternions[view_name]
+            for view_name in ['right bottom', 'back left', 'front top left']]
+        return views
+
+class RightSulciMultiViewSnapBase(SulciSnapBase):
+
+    def __init__(self, output_path):
+        SulciSnapBase.__init__(self, output_path)
+        self.data_type = 'Right Cortical folds Graph'
+
+    def get_views_of_interest(self):
+        views = {}
+        views['3D'] =[self.view_quaternions[view_name]
+            for view_name in ['left bottom', 'back right', 'front top right']]
         return views

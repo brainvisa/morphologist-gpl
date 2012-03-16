@@ -43,6 +43,25 @@ def splitbrain_snap_base():
     snap = splitbrain.SplitBrainSnapBase(preferences)
     snap.snap_base(database, main_window = main_window, qt_app = qt_app )
 
+def comparison_snap_base():
+    global main_window, qt_app, database, preferences
+    from examples import splitbrain
+    compar_type, ok = Qt.QInputDialog.getItem(None,
+            'which segmentation ?',
+            'select grey matter / white matter / brain mask',
+            ['Grey matter', 'White matter', 'Brain mask'],
+            0, False)
+    if ok:
+        item, ok = Qt.QInputDialog.getItem(None,
+                'Which database',
+                'which db',
+                neuroHierarchy.databases._databases.keys(), 0, False)
+        if ok and item != database.directory:
+            preferences['T1 db'] = item
+            preferences['comparison type'] = compar_type
+            snap = splitbrain.SPMComparisonSnapBase(preferences)
+            snap.snap_base(database, main_window = main_window, qt_app = qt_app )
+
 def raw_snap_base():
     global main_window, qt_app, database, preferences
     from examples import raw
@@ -85,19 +104,37 @@ def hemi_snap_base():
 def sulci_snap_base():
     global main_window, qt_app, database, preferences
     from examples import sulci
-    item, ok = Qt.QInputDialog.getItem(None,
-            'Which hemisphere',
-            'Left of right hemisphere',
-            ['left','right'], 0, False)
-    if ok:
-        if item == 'left':
-            preferences['side'] = 'left'
-            snap = sulci.LeftSulciSnapBase(preferences)
-        elif item == 'right':
-            preferences['side'] = 'right'
-            snap = sulci.RightSulciSnapBase(preferences)
+    choice, ok_choice = Qt.QInputDialog.getItem(None,
+        'single or multi view ?', 'single/multi',
+        ['single', 'multi'], 0, False)
+    if ok_choice:
+
+        item, ok = Qt.QInputDialog.getItem(None,
+                'Which hemisphere',
+                'Left of right hemisphere',
+                ['left','right'], 0, False)
+        if ok:
+            if item == 'left':
+                preferences['side'] = 'left'
+                if choice == 'multi':
+                    snap = sulci.LeftSulciMultiViewSnapBase(preferences)
+                elif choice == 'single':
+                    snap = sulci.LeftSulciSingleViewSnapBase(preferences)
+            elif item == 'right':
+                preferences['side'] = 'right'
+                if choice == 'multi':
+                    snap = sulci.RightSulciMultiViewSnapBase(preferences)
+                elif choice == 'single':
+                    snap = sulci.RightSulciSingleViewSnapBase(preferences)
     snap.snap_base(database, main_window = main_window, qt_app = qt_app )
 
+# Fiber Bundles (work in progress)
+
+def fibers_snap_base():
+    global main_window, qt_app, database, preferences
+    from examples import fibers
+    snap = bundles.FibersSnapBase(preferences)
+    snap.snap_base(database, main_window = main_window, qt_app = qt_app )
 
 # Various functions
 
@@ -161,6 +198,8 @@ def main():
     gui.splitbrain_btn.clicked.connect(splitbrain_snap_base)
     gui.sulci_btn.clicked.connect(sulci_snap_base)
     gui.raw_btn.clicked.connect(raw_snap_base)
+    gui.fibers_btn.clicked.connect(fibers_snap_base)
+    gui.comparison_btn.clicked.connect(comparison_snap_base)
     gui.db_combobox.activated.connect(select_db)
     gui.connect_signals()
 

@@ -137,7 +137,8 @@ class SnapBase():
     def __init__(self, preferences):
         self.aobjects = {}
         self.ref = None
-        self.nomenclature = None
+        self.sulci_hierarchy = None
+        self.fibers_hierarchy = None
         self.preferences = preferences
         self.fusion = None
         self.view_quaternions = {'left' : [0.5, 0.5, 0.5, 0.5],
@@ -165,7 +166,15 @@ class SnapBase():
                             'front right' : [-0.664493,
                                             0.23544699999999999,
                                             0.24188200000000001,
-                                            -0.666717]}
+                                            -0.666717],
+                            'front top left' : [-0.42310900000000001,
+                                                -0.17835200000000001,
+                                                -0.33598600000000001,
+                                                -0.82235800000000003],
+                            'front top right' : [-0.42310900000000001,
+                                                0.17835200000000001,
+                                                0.33598600000000001,
+                                                -0.82235800000000003]}
 
     def check_diskitems_ambiguity(self, db, options, verbose=True):
 
@@ -365,6 +374,7 @@ class SnapBase():
         if self.preferences.has_key('side'):
             general_options = {'side' : self.preferences['side']}
         dictdata = self.get_list_diskitems(database_checker, general_options)
+        print 'dictdata', dictdata
 
         # Create Anatomist window
         a = ana.Anatomist('-b')
@@ -380,9 +390,11 @@ class SnapBase():
         self.ref = a.createReferential()
         import os
 	import neuroConfig
-	nomenclature_path = os.path.join(neuroConfig.getSharePath(), neuroConfig.brainvisa_share.config.share, 'nomenclature/hierarchy/sulcal_root_colors.hie')
+	sulci_hierarchy_path = os.path.join(neuroConfig.getSharePath(), neuroConfig.brainvisa_share.config.share, 'nomenclature/hierarchy/sulcal_root_colors.hie')
+        fibers_hierarchy_path = '/neurospin/lnao/Panabase/fibres/pamela/atlas_faisceaux/faisceaux_longs.hie'
         from soma import aims
-        self.nomenclature = a.toAObject(aims.read(nomenclature_path))
+        self.sulci_hierarchy = a.toAObject(aims.read(sulci_hierarchy_path))
+        self.fibers_hierarchy = a.toAObject(aims.read(fibers_hierarchy_path))
 
         c = ana.cpp.CreateWindowCommand('3D', -1, None, [], 1, block,
             2, 0, { '__syntax__' : 'dictionary',  'no_decoration' : 1} )
@@ -460,9 +472,14 @@ class SnapBase():
                 elif d == '3D':
                     for view_quaternion in views[d]:
                         # Setting up the camera
-                        a.execute ('Camera', observer_position = [30.0, 20.0, -20.0],
-                            boundingbox_max = [ 102.579, 91.6496, 53.2049 ],
-                            boundingbox_min = [ -106.464, -79.7929, -36.3754 ], windows=[window] )
+                        #a.execute ('Camera', windows=[window], #observer_position = [30.0, 20.0, -20.0], windows=[window],
+                        #    boundingbox_max = [72.8001, 50.887799999999999, 38.305599999999998],
+                        #    boundingbox_min = [-72.8001, -50.887799999999999, -38.305599999999998])
+#                            boundingbox_max = [ 102.579, 91.6496, 53.2049 ],
+#                            boundingbox_min = [ -106.464, -79.7929, -36.3754 ], windows=[window] )
+                        #boundingbox_max = window.getInfos()['boundingbox_max']
+                        #boundingbox_min = window.getInfos()['boundingbox_min']
+                        #print subject, 'bbmax', boundingbox_max, 'bbmin', boundingbox_min
                         window.camera(view_quaternion = view_quaternion,
                                       zoom = 0.718)
                         qt_app.processEvents()
@@ -474,7 +491,7 @@ class SnapBase():
 
                 # Building the tiled image
                 image_size = (max([im.size[0] for im in views_images]), max([im.size[1] for im in views_images]))
-                grid_dim = {12 : (4,3), 5 : (2,3), 1 : (1,1)}[len(views_images)]
+                grid_dim = {12 : (4,3), 5 : (2,3), 1 : (1,1), 3: (3,1)}[len(views_images)]
 
                 tiled_image = Image.new('RGBA', (grid_dim[0]*image_size[0], grid_dim[1]*image_size[1]), 'black')
                 positions = [[j*image_size[0], i*image_size[1]] for i in xrange(grid_dim[1]) for j in xrange(grid_dim[0])]

@@ -3,8 +3,8 @@ from brainvisa.snapbase.snapbase import SnapBase
 
 class SplitBrainSnapBase(SnapBase):
 
-    def __init__(self, output_path):
-        SnapBase.__init__(self, output_path)
+    def __init__(self, preferences):
+        SnapBase.__init__(self, preferences)
         self.data_type = 'Split Brain'
 
     def get_list_diskitems(self, db, general_options = {}, verbose = True):
@@ -114,3 +114,73 @@ class SplitBrainSnapBase(SnapBase):
 
         return window
 
+
+
+
+class SPMComparisonSnapBase(SplitBrainSnapBase):
+
+    def __init__(self, preferences):
+        SplitBrainSnapBase.__init__(self, preferences)
+        self.data_type = 'SPM BrainVisa Comparison'
+
+    def get_list_diskitems(self, db, general_options = {}, verbose = True):
+
+        # This function is a bit special since it lets the user get data from two
+        # distinct databases, one for the T1, the other for the segmentations.
+        # This is a bit dodgy because the only link between the two databases is
+        # made by the subject name and protocol, but it has the advantage to keep
+        # external segmentations and difference maps in a separate database, with
+        # no need to import data.
+
+        import neuroProcesses
+        import neuroHierarchy
+
+        dictdata = {}
+
+        # Checking for ambiguity between diskitems (acquisition, ...)
+        options = {'_type' : 'SPM BrainVisa %s Comparison'%self.preferences['comparison type']}
+        options.update(general_options)
+        solved_ambiguity = False
+        t1_db = neuroHierarchy.databases.database(self.preferences['T1 db'])
+        options_T1 = {'_type' : 'T1 MRI Bias Corrected' }
+        options_T1.update(general_options)
+        while not solved_ambiguity:
+            solved_ambiguity, options_T1 = self.check_diskitems_ambiguity(t1_db, options_T1)
+            print 'options : ', options_T1
+
+        for key, value in options_T1.items():
+            if value == '*':
+                options_T1.pop(key)
+
+        # List of subjects according to resulting options
+        subjects_id = set([subject for subject in\
+            db.findAttributes(('subject', 'protocol'), {}, **options )])
+
+        subjects_id_T1 = set([subject for subject in\
+            t1_db.findAttributes(('subject', 'protocol'), {}, **options_T1 )])
+
+        subjects_id = subjects_id.intersection(subjects_id_T1)
+
+        for subject, protocol in subjects_id:
+            # Retrieves MRIs
+            options_T1.update({'_type' : 'T1 MRI Bias Corrected',
+                            'subject' : subject,
+                            'protocol' : protocol})
+            mris = [mri for mri in t1_db.findDiskItems(**options_T1)]
+
+            print mris
+            if len(mris) == 1:
+                options_compar = {}
+                options_compar.update(options)
+                options_compar.update({'_type' : 'SPM BrainVisa %s Comparison'%self.preferences['comparison type'],
+                         'subject' : mris[0].get('subject'),
+                         'protocol' : mris[0].get('protocol')})
+                compar_mask = [each for each in db.findDiskItems(options_compar)]
+
+                # Here according to given options, ambiguity should be resolved.
+                # If more than one mri, then some attributes are probably misgiven.
+                if len(compar_mask) == 1:
+                    dictdata[(subject, protocol)] = {'type' : self.data_type,
+                        'mri' : mris[0],
+                        'splitbrain' : compar_mask[0]}
+        return dictdata

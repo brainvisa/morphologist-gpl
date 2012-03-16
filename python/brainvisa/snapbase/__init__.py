@@ -7,8 +7,10 @@ from brainvisa.snapbase.snapbase.examples.mesh\
                RightWhiteMeshSnapBase
 
 from brainvisa.snapbase.snapbase.examples.sulci\
-        import LeftSulciSnapBase,\
-               RightSulciSnapBase
+        import LeftSulciSingleViewSnapBase,\
+               LeftSulciMultiViewSnapBase,\
+               RightSulciSingleViewSnapBase,\
+               RightSulciMultiViewSnapBase
 
 from brainvisa.snapbase.snapbase.examples.greywhite\
         import GreyWhiteSnapBase
