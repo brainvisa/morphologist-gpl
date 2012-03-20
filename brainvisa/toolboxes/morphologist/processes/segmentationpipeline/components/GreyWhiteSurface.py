@@ -96,18 +96,11 @@ def execution( self, context ):
                     "ne", "-w", "t" )
             
             context.system( "AimsMeshBrain", "-i", white, "-o", self.left_white_mesh, '--internalinterface' )
-            white_mesh = aims.read( self.left_white_mesh.fullPath() )
-            poly = white_mesh.polygon()
-            poly.assign( [ aims.AimsVector_U32_3( [ x[2], x[1], x[0] ] ) for x in poly ] )
-            normal = white_mesh.normal()
-            normal.assign( [ -x for x in normal ] )
-            aims.write( white_mesh, self.left_white_mesh.fullPath() )
             context.system( "meshCleaner", "-i", self.left_white_mesh, "-o", self.left_white_mesh, "-maxCurv", "0.5" )
             
             tm.copyReferential(self.left_grey_white, self.left_white_mesh)
             
             del white
-            del white_mesh
         
     if self.Side in ('Right','Both'):
         
@@ -133,16 +126,9 @@ def execution( self, context ):
                     "ne", "-w", "t" )
             
             context.system( "AimsMeshBrain", "-i", white, "-o", self.right_white_mesh, '--internalinterface' )
-            white_mesh = aims.read( self.right_white_mesh.fullPath() )
-            poly = white_mesh.polygon()
-            poly.assign( [ aims.AimsVector_U32_3( [ x[2], x[1], x[0] ] ) for x in poly ] )
-            normal = white_mesh.normal()
-            normal.assign( [ -x for x in normal ] )
-            aims.write( white_mesh, self.right_white_mesh.fullPath() )
             context.system( "meshCleaner", "-i", self.right_white_mesh, "-o", self.right_white_mesh, "-maxCurv", "0.5" )
             
             tm.copyReferential(self.right_grey_white, self.right_white_mesh)
             
             del white
-            del white_mesh
     
