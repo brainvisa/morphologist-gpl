@@ -67,7 +67,10 @@ class linkCheckModels:
     self.proc = proc
   def __call__( self, node ):
     eNode = self.proc.executionNode()
-    eNode.CheckSPAMmodels.setSelected( eNode.SulciRecognition.isSelected() )
+    if eNode.SulciRecognition.isSelected():
+      proc = getProcessInstance( 'check_spam_models' )
+      if proc:
+        defaultContext().runProcess( proc )
 
 
 def initialization( self ):
@@ -97,11 +100,6 @@ def initialization( self ):
 
 
   eNode = SerialExecutionNode( self.name, parameterized=self )
-
-  reco = getProcess('recognitionGeneral')
-  if reco:
-    eNode.addChild( 'CheckSPAMmodels',
-      ProcessExecutionNode( 'check_spam_models', optional=1, selected=0 ) )
 
   eNode.addChild( 'PrepareSubject',
                   ProcessExecutionNode( 'acpcOrNormalization', optional = 1 ) )
@@ -144,7 +142,7 @@ def initialization( self ):
                   ProcessExecutionNode( 'CorticalFoldsGraphGeneral',
                                         optional = 1 ) )
 
-
+  reco = getProcess('recognitionGeneral')
   if reco:
     eNode.addChild( 'SulciRecognition',
       ProcessExecutionNode( 'Sulci Recognition (both hemispheres)',

@@ -48,13 +48,14 @@ def execution( self, context ):
   context.write( 'models:', len( models ) )
   if len( models ) == 0:
     context.warning( _t_( 'SPAM models have not be installed yet.' ) )
-    gui = False
-    try:
-      import neuroProcessesGUI
-      if isinstance( context, neuroProcessesGUI.ProcessView ):
-        gui = True
-    except:
-      pass
+    gui = neuroConfig.gui
+    #gui = False
+    #try:
+      #import neuroProcessesGUI
+      #if isinstance( context, neuroProcessesGUI.ProcessView ):
+        #gui = True
+    #except:
+      #pass
     if gui:
       inst = context.ask( _t_( 'Do you want to download and install the SPAM ' \
         'models for sulci identification ?' ),
@@ -67,6 +68,8 @@ def execution( self, context ):
       elif inst == 2:
         ap.configuration.sulci.check_spam_models = False
         ap.configuration.save( neuroConfig.userOptionFile )
+    return False
   else:
     context.write( _t_( 'SPAM models are present.' ) )
+    return True
 
