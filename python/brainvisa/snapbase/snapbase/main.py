@@ -169,7 +169,8 @@ def load_preferences(minf_dict):
                     'database_dir' : '',
                     'create_poster' : False,
                     'create_poster_command' : 'montage -geometry +0+0 -background black -tile 10',
-                    'remove_snapshots' : False}
+                    'remove_snapshots' : False,
+                    'default_attributes' : ['subject', 'protocol', 'acquisition']}
     for each in default_pref.keys():
         if minf_dict.has_key(each):
             preferences[each] = minf_dict[each]

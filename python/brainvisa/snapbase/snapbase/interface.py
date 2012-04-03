@@ -41,6 +41,108 @@ class HoverComboBox(QtGui.QComboBox):
     def leaveEvent(self, event):
         self.emit(Qt.SIGNAL('leave'))
 
+class Ui_attribute_widget(QtGui.QFrame):
+    def __init__(self, parent, text='', items=[]):
+        QtGui.QWidget.__init__(self, parent)
+        self.horiz_layout = QtGui.QHBoxLayout(self)
+        self.att_lbl = QtGui.QLabel(self)
+        self.att_lbl.setObjectName('att_lbl')
+        self.att_lbl.setFrameShape(QtGui.QFrame.Box)
+        self.att_lbl.setFrameShadow(QtGui.QFrame.Raised)
+        self.att_lbl.setAlignment(QtCore.Qt.AlignCenter)
+        self.att_lbl.setMinimumSize(QtCore.QSize(100,31))
+        self.att_lbl.setText(text)
+        self.horiz_layout.addWidget(self.att_lbl)
+        self.att_combo = QtGui.QComboBox(self)
+        self.att_combo.setObjectName('att_combo')
+        self.att_combo.setMinimumSize(QtCore.QSize(200,31))
+        for each in items:
+            self.att_combo.addItem(each)
+        self.att_combo.addItem('< any >')
+        self.horiz_layout.addWidget(self.att_combo)
+
+
+class Ui_attributes_window(object):
+    def clicked_on_ok(self):
+        self.window.accept()
+
+    def change_event(self):
+
+        dictdata = self.snap_base.get_dictdata(self.get_attributes())
+        self.title_lbl.setText('%i dictdata'%len(dictdata))
+        print dictdata
+
+    def get_attributes(self):
+        att_res = {}
+        for frame in self.frames:
+            att = frame.att_lbl.text()
+            att_combo_value = frame.att_combo.currentText()
+            if att_combo_value == '< any >':
+                att_res[att] = '*'
+            else:
+                att_res[att] = att_combo_value
+        return att_res
+
+    def setupUi(self, window, items=[]):
+        window.setObjectName("window")
+        window.setModal(True)
+        window.setWindowTitle('Select attributes')
+
+        self.window = window
+        window.resize(348, 380)
+        window.setMinimumSize(QtCore.QSize(348, 50*len(items) + 125))
+        window.setMaximumSize(QtCore.QSize(348, 50*len(items) + 125))
+        font = Qt.QFont()
+        font.setPointSize(8)
+        self.central_widget = QtGui.QWidget(window)
+        self.central_widget.setObjectName("central_widget")
+        self.verticalLayout = QtGui.QVBoxLayout(self.central_widget)
+        self.verticalLayout.setObjectName("verticalLayout")
+
+        self.frames = []
+        for i, item in enumerate(items):
+            self.frames.append(Ui_attribute_widget(self.central_widget, item[0], item[1]))
+            self.frames[-1].setObjectName('frame%d'%i)
+            self.frames[-1].setMinimumSize(QtCore.QSize(331, 50))
+            self.frames[-1].setMaximumSize(QtCore.QSize(331, 50))
+            self.frames[-1].setFrameShape(QtGui.QFrame.StyledPanel)
+            self.frames[-1].setFrameShadow(QtGui.QFrame.Raised)
+            self.verticalLayout.addWidget(self.frames[-1])
+
+        self.ok_btn = HoverButton(self.central_widget)
+        self.ok_btn.setMinimumSize(QtCore.QSize(100, 40))
+        self.verticalLayout.addWidget(self.ok_btn)
+
+        icon = QtGui.QIcon()
+        import os
+        pix_dir = os.path.split(__file__)[0]
+        import sys
+        self.ok_btn.setText('OK')
+        self.ok_btn.setObjectName('ok_btn')
+        self.verticalLayout.addWidget(self.ok_btn, 0)
+
+        self.title_lbl = QtGui.QLabel(self.central_widget)
+        self.title_lbl.setFrameShape(QtGui.QFrame.Box)
+        self.title_lbl.setFrameShadow(QtGui.QFrame.Raised)
+        self.title_lbl.setAlignment(QtCore.Qt.AlignCenter)
+        self.title_lbl.setObjectName("title_lbl")
+        self.title_lbl.setMinimumSize(QtCore.QSize(250,31))
+        self.title_lbl.setFont(font)
+        self.verticalLayout.addWidget(self.title_lbl)
+
+
+    def connect_signals(self, snap_base):
+        self.ok_btn.clicked.connect(self.clicked_on_ok)
+
+        self.snap_base = snap_base
+        for frame in self.frames:
+            frame.att_combo.activated.connect(self.change_event)
+
+
+
+
+
+
 class Ui_main_window(object):
 
     def leave_status(self):
@@ -63,10 +165,6 @@ class Ui_main_window(object):
         self.central_widget = QtGui.QWidget(main_window)
         self.central_widget.setObjectName("central_widget")
         self.central_widget.setStyleSheet('color: white; background-color: black;')
-        #self.central_widget.setStyleSheet('background-color: '\
-        #    'qradialgradient(cx: 0.5, cy: 0.5, radius: 4, fx: 0.5, fy: 1, '\
-        #    'stop: 0 rgba(30,30,30,255), stop: 0.2 rgba(30,30,30,144), '\
-        #    'stop: 0.4 rgba(30,30,30,32));')
         self.verticalLayout = QtGui.QVBoxLayout(self.central_widget)
         self.verticalLayout.setObjectName("verticalLayout")
         self.title_lbl = QtGui.QLabel(self.central_widget)

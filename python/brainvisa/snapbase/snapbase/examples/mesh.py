@@ -4,22 +4,17 @@ class MeshSnapBase(SnapBase):
     def __init__(self, output_path):
         SnapBase.__init__(self, output_path)
 
-    def get_list_diskitems(self, db, general_options = {}, verbose=True):
+    def get_dictdata(self, selected_attributes):
 
         import neuroProcesses
         import neuroHierarchy
 
-        dictdata = {}
+        options = {}
+        options.update(self.options)
+        options.update(selected_attributes)
+        print 'opt:', options
 
-        # Checking for ambiguity between diskitems (acquisition, ...)
-        options = {'_type' : 'T1 MRI Bias Corrected'}#,
-                   #'subject' : '*'} #,
-                   #'protocol' : '*'}
-        options.update(general_options)
-        solved_ambiguity = False
-        while not solved_ambiguity:
-            solved_ambiguity, options = self.check_diskitems_ambiguity(db, options)
-            print 'options : ', options
+        dictdata = {}
 
         for key, value in options.items():
             if value == '*':
@@ -27,14 +22,14 @@ class MeshSnapBase(SnapBase):
 
         # List of subjects according to resulting options
         subjects_id = set([subject for subject in\
-            db.findAttributes(('subject', 'protocol'), {}, **options )])
+            self.db.findAttributes(('subject', 'protocol'), {}, **options )])
 
         for subject, protocol in subjects_id:
             # Retrieves Left Hemisphere White Meshes
             options.update({'_type' : self.data_type,
                             'subject' : subject,
                             'protocol' : protocol})
-            meshes = [mesh for mesh in db.findDiskItems(**options)]
+            meshes = [mesh for mesh in self.db.findDiskItems(**options)]
 
             if len (meshes) == 1 :
                 # Retrieves the corresponding transform if existing

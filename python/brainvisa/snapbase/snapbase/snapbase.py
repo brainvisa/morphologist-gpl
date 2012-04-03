@@ -176,7 +176,79 @@ class SnapBase():
                                                 0.33598600000000001,
                                                 -0.82235800000000003]}
 
+    def get_list_diskitems(self, db, general_options = {}, verbose = True):
+        '''
+        Returns a dict indexed by (subject, protocol), each item being a
+        dict of relevant listitems referred to by their datatype.
+
+        dictdata[('TOTO', 'Bordeaux')] = {'mesh': mesh_diskitem, ...}
+        '''
+
+        # Checking for ambiguity between diskitems (acquisition, ...)
+        options = {'_type' : 'T1 MRI Bias Corrected'}
+        options.update(general_options)
+
+        self.db = db
+        self.options = options
+        solved_ambiguity, attributes = self.check_diskitems_ambiguity(db, options)
+
+        if not solved_ambiguity:
+            return []
+        print 'attributes : ', attributes
+
+        return self.get_dictdata(attributes)
+
     def check_diskitems_ambiguity(self, db, options, verbose=True):
+        if verbose:
+            print 'checking ambiguity %s' % options
+
+        from PyQt4 import QtGui, QtCore, Qt
+        dialog = QtGui.QDialog(None)
+        from interface import *
+
+        default_att = self.preferences['default_attributes']
+        items = []
+        opt = {}
+        for key, value in options.items():
+            if value != '*':
+                opt[key] = value
+
+        diskitems = [dsk for dsk in db.findDiskItems(**opt)]
+        # (If no diskitems then error)
+        if len(diskitems) > 0 :
+            # Consider only attributes that are common to all diskitems
+            att = set(diskitems[0].attributes().keys())
+            for dsk in diskitems:
+                att = att.intersection(set(dsk.attributes().keys()))
+
+            # Select attributes taking string-based values
+            attributes = {}
+            for each in att:
+                if basestring in type(diskitems[0].get(each)).mro():
+                    attributes[each] = set()
+            # List all existing possible values for these attributes
+            for each in attributes.keys():
+                for dsk in diskitems:
+                    attributes[each].add(dsk.get(each))
+
+        for att in default_att:
+            items.append((att, list(attributes[att])))
+
+        # Running the GUI
+        gui = Ui_attributes_window()
+        gui.setupUi(dialog, items)
+        gui.connect_signals(self)
+        res = dialog.exec_()
+
+        # Retrieving selected attributes and returning the result
+        if res == 1:
+            att_res = gui.get_attributes()
+            print res, att_res
+            return True, att_res
+        else:
+            return False, options
+
+    def check_diskitems_ambiguity_old(self, db, options, verbose=True):
 
         if verbose:
             print 'checking ambiguity %s' %options
@@ -256,15 +328,6 @@ class SnapBase():
             raise IndexError
 
         return diskitems, options
-
-    def get_list_diskitems(self, database_checker, verbose=True):
-        '''
-        Returns a dict indexed by (subject, protocol), each item being a
-        dict of relevant listitems referred to by their datatype.
-
-        dictdata[('TOTO', 'Bordeaux')] = {'mesh': mesh_diskitem, ...}
-        '''
-        raise NotImplementedError
 
     def get_slices_of_interest(self, data):
         '''
@@ -376,6 +439,10 @@ class SnapBase():
         dictdata = self.get_list_diskitems(database_checker, general_options)
         print 'dictdata', dictdata
 
+        # If no dictdata (e.g. closing the attributes window), then nothing happens
+        if len(dictdata) == 0:
+            return
+
         # Create Anatomist window
         a = ana.Anatomist('-b')
         if runqt:
@@ -416,11 +483,6 @@ class SnapBase():
 
         protocols = list(set([each[1] for each in dictdata.keys()]))
         colors_centers = self.__get_disinct_colors(protocols)
-#                        {'Bordeaux' : (255,255,255),
-#                          'Lille' : (255, 0, 0),
-#                          'Paris' : (0, 255, 0),
-#                          'Toulouse' : (0, 0, 255),
-#                          'Marseille' : (255, 0, 255)}
 
         # Iterating on subjects and data
         for (subject, protocol), diskitems in dictdata.items():
@@ -479,7 +541,6 @@ class SnapBase():
 #                            boundingbox_min = [ -106.464, -79.7929, -36.3754 ], windows=[window] )
                         #boundingbox_max = window.getInfos()['boundingbox_max']
                         #boundingbox_min = window.getInfos()['boundingbox_min']
-                        #print subject, 'bbmax', boundingbox_max, 'bbmin', boundingbox_min
                         window.camera(view_quaternion = view_quaternion,
                                       zoom = 0.718)
                         qt_app.processEvents()
