@@ -404,6 +404,42 @@ class SnapBase():
         print colors
         return colors
 
+    def get_outfile_path(self, attributes):
+        ''' builds and returns a path with proper file tree containing
+        name of subject, type, hemisphere side/slice direction if provided'''
+        import os, shutil, string
+
+        id_translat = {'Grey White Mask' : 'GW',
+                       'Left Hemisphere Mesh' : 'mesh_L',
+                       'Right Hemisphere Mesh' : 'mesh_R',
+                       'Left White Hemisphere Mesh' : 'white_L',
+                       'Right White Hemisphere Mesh' : 'white_R',
+                       'Split Brain' : 'split',
+                       'Left Cortical folds Graph' : 'sulci_L',
+                       'Right Cortical folds Graph' : 'sulci_R',
+                       'SPM BrainVisa Comparison' : 'spmVSmorpho',
+                       'Raw T1 MRI' : 'raw'}
+
+        output_dir = self.preferences['output_path']
+        filename_root = self.preferences['filename_root']
+
+        assert(os.path.exists(output_dir))
+
+        if id_translat.has_key(self.data_type):
+            id_type = id_translat[self.data_type]
+        else:
+            id_type = string.replace(self.data_type, ' ', '_').lower()
+
+        output_filename = '%s%s'%(filename_root, id_type)
+
+        for att in attributes:
+            output_filename = '%s_%s'%(output_filename, att)
+
+        output_filename = '%s.png'%output_filename
+
+        outfile_path = os.path.join(output_dir, output_filename)
+
+        return outfile_path
 
     def snap_base(self, database_checker, main_window = None, qt_app = None):
 
@@ -563,7 +599,8 @@ class SnapBase():
                 # Rendering subject ID
                 d_usr = ImageDraw.Draw(tiled_image)
 
-                outfile_path = '%s_%s_%s.png'%(self.preferences['output_path'], subject, d)
+                attributes = [protocol, subject, d]
+                outfile_path = self.get_outfile_path(attributes)
                 output_files.append(outfile_path)
                 tiled_image.save(outfile_path, 'PNG')
 

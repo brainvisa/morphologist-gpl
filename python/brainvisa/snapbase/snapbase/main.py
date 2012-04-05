@@ -165,7 +165,8 @@ def load_preferences(minf_dict):
     ''' Returns a directory built from .minf settings file '''
 
     preferences = {}
-    default_pref = {'output_path' : '/tmp/snapshots',
+    default_pref = {'output_path' : '/tmp/',
+                    'filename_root' : 'snapshots_',
                     'database_dir' : '',
                     'create_poster' : False,
                     'create_poster_command' : 'montage -geometry +0+0 -background black -tile 10',

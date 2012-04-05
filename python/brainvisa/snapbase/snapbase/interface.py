@@ -363,8 +363,8 @@ class Ui_main_window(object):
         QtCore.QMetaObject.connectSlotsByName(main_window)
 
     def retranslateUi(self, main_window):
-        main_window.setWindowTitle(QtGui.QApplication.translate("main_window", "SnapBase v0.1", None, QtGui.QApplication.UnicodeUTF8))
-        self.title_lbl.setText(QtGui.QApplication.translate("main_window", "SnapBase v0.1", None, QtGui.QApplication.UnicodeUTF8))
+        main_window.setWindowTitle(QtGui.QApplication.translate("main_window", "SnapBase v0.2", None, QtGui.QApplication.UnicodeUTF8))
+        self.title_lbl.setText(QtGui.QApplication.translate("main_window", "SnapBase v0.2", None, QtGui.QApplication.UnicodeUTF8))
 
     def connect_signals(self):
         ''' Connecting signals when the mouse enters/leaves any button '''
