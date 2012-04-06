@@ -96,8 +96,8 @@ def execution( self, context ):
   dims = self.t1mri.get( 'volume_dimension' )[:3]
   vs = self.t1mri.get( 'voxel_size' )[:3]
   dimm = [ x*y for x,y in zip( dims, vs ) ]
-  vs2 = R.transform( vs )
-  dims2 = [ int(round(x)) for x in R.transform( dims ) ]
+  vs2 = [ abs(x) for x in R.transform( vs ) ]
+  dims2 = [ abs( int(round(x))) for x in R.transform( dims ) ]
   #context.write( 'dims: ', str( dims ), ' -> ', str( dims2 ) )
   #context.write( 'vs: ', str( vs ), ' -> ', str( vs2 ) )
   s = aims.Motion( R )
