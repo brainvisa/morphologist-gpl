@@ -185,7 +185,7 @@ class SnapBase():
         '''
 
         # Checking for ambiguity between diskitems (acquisition, ...)
-        options = {'_type' : 'T1 MRI Bias Corrected'}
+        options = {'_type' : 'Raw T1 MRI'}
         options.update(general_options)
 
         self.db = db
