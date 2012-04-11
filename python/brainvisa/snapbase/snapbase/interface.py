@@ -56,9 +56,9 @@ class Ui_attribute_widget(QtGui.QFrame):
         self.att_combo = QtGui.QComboBox(self)
         self.att_combo.setObjectName('att_combo')
         self.att_combo.setMinimumSize(QtCore.QSize(200,31))
+        self.att_combo.addItem('< any >')
         for each in items:
             self.att_combo.addItem(each)
-        self.att_combo.addItem('< any >')
         self.horiz_layout.addWidget(self.att_combo)
 
 

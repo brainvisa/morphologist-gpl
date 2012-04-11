@@ -213,7 +213,9 @@ class SnapBase():
             if value != '*':
                 opt[key] = value
 
+        print opt
         diskitems = [dsk for dsk in db.findDiskItems(**opt)]
+        res = 0
         # (If no diskitems then error)
         if len(diskitems) > 0 :
             # Consider only attributes that are common to all diskitems
@@ -231,14 +233,14 @@ class SnapBase():
                 for dsk in diskitems:
                     attributes[each].add(dsk.get(each))
 
-        for att in default_att:
-            items.append((att, list(attributes[att])))
+            for att in default_att:
+                items.append((att, list(attributes[att])))
 
-        # Running the GUI
-        gui = Ui_attributes_window()
-        gui.setupUi(dialog, items)
-        gui.connect_signals(self)
-        res = dialog.exec_()
+            # Running the GUI
+            gui = Ui_attributes_window()
+            gui.setupUi(dialog, items)
+            gui.connect_signals(self)
+            res = dialog.exec_()
 
         # Retrieving selected attributes and returning the result
         if res == 1:
