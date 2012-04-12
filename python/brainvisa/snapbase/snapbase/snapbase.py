@@ -234,7 +234,13 @@ class SnapBase():
                     attributes[each].add(dsk.get(each))
             print "attributs communs et str:", attributes
             for att in default_att:
-                items.append((att, list(attributes[att])))
+                try:
+                    items.append((att, list(attributes[att])))
+                except KeyError as e:
+                    for dsk in diskitems:
+                        if not att in dsk.attributes():
+                            print dsk.fileName(), 'misses attribute', att
+                    raise e
 
             # Running the GUI
             gui = Ui_attributes_window()
