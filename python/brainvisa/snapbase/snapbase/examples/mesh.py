@@ -4,7 +4,7 @@ class MeshSnapBase(SnapBase):
     def __init__(self, output_path):
         SnapBase.__init__(self, output_path)
 
-    def get_dictdata(self, selected_attributes):
+    def get_dictdata(self, selected_attributes, verbose=True):
 
         import neuroProcesses
         import neuroHierarchy
@@ -42,7 +42,10 @@ class MeshSnapBase(SnapBase):
                     dictdata[(subject, protocol)] = {'type' : self.data_type,
                         'mesh' : meshes[0],
                         'transform' : transform}
-
+            else:
+                if verbose:
+                    print '(subject %s, protocol %s) error in retrieving diskitems'\
+                        %(subject, protocol)
         return dictdata
 
     def get_views_of_interest(self):

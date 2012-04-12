@@ -7,7 +7,7 @@ class GreyWhiteSnapBase(SnapBase):
         SnapBase.__init__(self, output_path)
         self.data_type = 'Grey White Mask'
 
-    def get_dictdata(self, selected_attributes):
+    def get_dictdata(self, selected_attributes, verbose=True):
 
         import neuroProcesses
         import neuroHierarchy
@@ -47,6 +47,10 @@ class GreyWhiteSnapBase(SnapBase):
                         'mri' : mris[0],
                         'left mask' : left_mask,
                         'right mask' : right_mask}
+            else:
+                if verbose:
+                    print '(subject %s, protocol %s) error in retrieving diskitems'\
+                        %(subject, protocol)
         return dictdata
 
     def get_slices_of_interest(self, data):

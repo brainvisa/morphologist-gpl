@@ -68,6 +68,12 @@ def raw_snap_base():
     snap = raw.RawSnapBase(preferences)
     snap.snap_base(database, main_window = main_window, qt_app = qt_app )
 
+def tablet_snap_base():
+    global main_window, qt_app, database, preferences
+    from examples import raw
+    snap = raw.TabletSnapBase(preferences)
+    snap.snap_base(database, main_window = main_window, qt_app = qt_app )
+
 
 # Mesh-based data (with choice of hemisphere side)
 
@@ -202,6 +208,7 @@ def main():
     gui.raw_btn.clicked.connect(raw_snap_base)
     gui.fibers_btn.clicked.connect(fibers_snap_base)
     gui.comparison_btn.clicked.connect(comparison_snap_base)
+    gui.tablet_btn.clicked.connect(tablet_snap_base)
     gui.db_combobox.activated.connect(select_db)
     gui.connect_signals()
 

@@ -7,7 +7,7 @@ class SplitBrainSnapBase(SnapBase):
         SnapBase.__init__(self, preferences)
         self.data_type = 'Split Brain'
 
-    def get_dictdata(self, selected_attributes):
+    def get_dictdata(self, selected_attributes, verbose = True):
 
         import neuroProcesses
         import neuroHierarchy

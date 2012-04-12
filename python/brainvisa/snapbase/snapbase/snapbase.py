@@ -196,7 +196,7 @@ class SnapBase():
             return []
         print 'attributes : ', attributes
 
-        return self.get_dictdata(attributes)
+        return self.get_dictdata(attributes, verbose=False)
 
     def check_diskitems_ambiguity(self, db, options, verbose=True):
         if verbose:
@@ -232,7 +232,7 @@ class SnapBase():
             for each in attributes.keys():
                 for dsk in diskitems:
                     attributes[each].add(dsk.get(each))
-
+            print "attributs communs et str:", attributes
             for att in default_att:
                 items.append((att, list(attributes[att])))
 
@@ -240,6 +240,7 @@ class SnapBase():
             gui = Ui_attributes_window()
             gui.setupUi(dialog, items)
             gui.connect_signals(self)
+            gui.change_event()
             res = dialog.exec_()
 
         # Retrieving selected attributes and returning the result
@@ -420,7 +421,8 @@ class SnapBase():
                        'Left Cortical folds Graph' : 'sulci_L',
                        'Right Cortical folds Graph' : 'sulci_R',
                        'SPM BrainVisa Comparison' : 'spmVSmorpho',
-                       'Raw T1 MRI' : 'raw'}
+                       'Raw T1 MRI' : 'raw',
+                       'Vitamin Tablet Snapshots' : 'tablet'}
 
         output_dir = self.preferences['output_path']
         filename_root = self.preferences['filename_root']
@@ -590,7 +592,7 @@ class SnapBase():
 
                 # Building the tiled image
                 image_size = (max([im.size[0] for im in views_images]), max([im.size[1] for im in views_images]))
-                grid_dim = {12 : (4,3), 5 : (2,3), 1 : (1,1), 3: (3,1)}[len(views_images)]
+                grid_dim = {12 : (4,3), 5 : (2,3), 1 : (1,1), 3: (3,1), 20 : (4,5)}[len(views_images)]
 
                 tiled_image = Image.new('RGBA', (grid_dim[0]*image_size[0], grid_dim[1]*image_size[1]), 'black')
                 positions = [[j*image_size[0], i*image_size[1]] for i in xrange(grid_dim[1]) for j in xrange(grid_dim[0])]
@@ -601,7 +603,11 @@ class SnapBase():
                 # Rendering subject ID
                 d_usr = ImageDraw.Draw(tiled_image)
 
-                attributes = [protocol, subject, d]
+                attributes = [protocol, subject]
+                acquisition = diskitems['mri'].get('acquisition')
+                attributes.append(acquisition)
+                if d != '3D':
+                    attributes.append(d)
                 outfile_path = self.get_outfile_path(attributes)
                 output_files.append(outfile_path)
                 tiled_image.save(outfile_path, 'PNG')

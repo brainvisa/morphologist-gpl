@@ -7,7 +7,7 @@ class RawSnapBase(SnapBase):
         SnapBase.__init__(self, output_path)
         self.data_type = 'Raw T1 MRI'
 
-    def get_dictdata(self, selected_attributes):
+    def get_dictdata(self, selected_attributes, verbose=True):
 
         import neuroProcesses
         import neuroHierarchy
@@ -35,8 +35,12 @@ class RawSnapBase(SnapBase):
             mris = [mri for mri in self.db.findDiskItems(**options)]
 
             if len(mris) == 1:
-                dictdata[(subject, protocol)] = {'type' : self.data_type,
+                dictdata[(subject, protocol)] = {'type' : 'Raw T1 MRI',
                     'mri' : mris[0]}
+            else:
+                if verbose:
+                    print '(subject %s, protocol %s) error in retrieving diskitems'\
+                        %(subject, protocol)
 
         return dictdata
 
@@ -95,3 +99,36 @@ class RawSnapBase(SnapBase):
 
         return window
 
+
+class TabletSnapBase(RawSnapBase):
+
+    def __init__(self, output_path):
+        SnapBase.__init__(self, output_path)
+        self.data_type = 'Vitamin Tablet Snapshots'
+
+    def get_slices_of_interest(self, data):
+
+        slices = {}
+        directions = ['A']
+
+        # Unpacking data
+        mri = data
+
+        slices_minmax = detect_slices_of_interest(mri, directions)
+        voxel_size = mri.header()['voxel_size']
+
+        for d in directions :
+            d_minmax = (min(slices_minmax[d][0],
+                slices_minmax[d][1]), max(slices_minmax[d][0],
+                slices_minmax[d][1]))
+
+            slices_list = range(d_minmax[0], d_minmax[1],
+                (d_minmax[1]-d_minmax[0])/50.0)[8:15]
+            print slices_list
+            slices_list = range(d_minmax[0]+30,d_minmax[0]+130,5)
+            print slices_list
+            # This converts each slice index into a list applicable to
+                # Anatomist camera function
+            slices[d] = [(i, self.__get_slice_position__(d, i, voxel_size)) for i in slices_list]
+
+        return slices

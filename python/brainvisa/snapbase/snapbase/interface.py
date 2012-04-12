@@ -25,6 +25,8 @@ class HoverButton(QtGui.QPushButton):
             self.emit(Qt.SIGNAL('enter'), str('All Labeled Fiber Bundles in the database'))
         elif self.objectName() == 'comparison_btn':
             self.emit(Qt.SIGNAL('enter'), str('All Comparisons in the database'))
+        elif self.objectName() == 'tablet_btn':
+            self.emit(Qt.SIGNAL('enter'), str('All Raw T1 MRI (tablets) in the database'))
 
     def leaveEvent(self, event):
         self.emit(Qt.SIGNAL('leave'))
@@ -68,8 +70,9 @@ class Ui_attributes_window(object):
 
     def change_event(self):
 
-        dictdata = self.snap_base.get_dictdata(self.get_attributes())
+        dictdata = self.snap_base.get_dictdata(self.get_attributes(), verbose=False)
         self.title_lbl.setText('%i dictdata'%len(dictdata))
+        self.ok_btn.setEnabled(len(dictdata)!=0)
         print dictdata
 
     def get_attributes(self):
@@ -287,23 +290,26 @@ class Ui_main_window(object):
         self.comparison_btn.setSizePolicy(sizePolicy)
         self.comparison_btn.setMinimumSize(QtCore.QSize(100, 100))
         self.comparison_btn.setText("")
-        icon6 = QtGui.QIcon()
-        icon6.addPixmap(QtGui.QPixmap(os.path.join(pix_dir, 'comparison.png')), QtGui.QIcon.Normal, QtGui.QIcon.On)
-        self.comparison_btn.setIcon(icon6)
+        icon7 = QtGui.QIcon()
+        icon7.addPixmap(QtGui.QPixmap(os.path.join(pix_dir, 'comparison.png')), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        self.comparison_btn.setIcon(icon7)
         self.comparison_btn.setIconSize(QtCore.QSize(90, 90))
         self.comparison_btn.setObjectName("comparison_btn")
         self.gridLayout.addWidget(self.comparison_btn, 2, 1, 1, 1)
-        self.btn_6 = HoverButton(self.widget)
-        self.btn_6.setEnabled(False)
+        self.tablet_btn = HoverButton(self.widget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.btn_6.sizePolicy().hasHeightForWidth())
-        self.btn_6.setSizePolicy(sizePolicy)
-        self.btn_6.setMinimumSize(QtCore.QSize(100, 100))
-        self.btn_6.setText("")
-        self.btn_6.setObjectName("btn_6")
-        self.gridLayout.addWidget(self.btn_6, 2, 2, 1, 1)
+        sizePolicy.setHeightForWidth(self.tablet_btn.sizePolicy().hasHeightForWidth())
+        self.tablet_btn.setSizePolicy(sizePolicy)
+        self.tablet_btn.setMinimumSize(QtCore.QSize(100, 100))
+        self.tablet_btn.setText("")
+        icon8 = QtGui.QIcon()
+        icon8.addPixmap(QtGui.QPixmap(os.path.join(pix_dir, 'tablet.png')), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        self.tablet_btn.setIcon(icon8)
+        self.tablet_btn.setIconSize(QtCore.QSize(90, 90))
+        self.tablet_btn.setObjectName("tablet_btn")
+        self.gridLayout.addWidget(self.tablet_btn, 2, 2, 1, 1)
         self.btn_7 = HoverButton(self.widget)
         self.btn_7.setEnabled(False)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
@@ -383,6 +389,8 @@ class Ui_main_window(object):
         self.raw_btn.connect(self.raw_btn, Qt.SIGNAL('leave'), self.leave_status)
         self.fibers_btn.connect(self.fibers_btn, Qt.SIGNAL('enter'), self.enter_status)
         self.fibers_btn.connect(self.fibers_btn, Qt.SIGNAL('leave'), self.leave_status)
+        self.tablet_btn.connect(self.tablet_btn, Qt.SIGNAL('enter'), self.enter_status)
+        self.tablet_btn.connect(self.tablet_btn, Qt.SIGNAL('leave'), self.leave_status)
         self.comparison_btn.connect(self.comparison_btn, Qt.SIGNAL('enter'), self.enter_status)
         self.comparison_btn.connect(self.comparison_btn, Qt.SIGNAL('leave'), self.leave_status)
         self.db_combobox.connect(self.db_combobox, Qt.SIGNAL('enter'), self.enter_status)
