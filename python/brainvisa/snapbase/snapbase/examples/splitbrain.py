@@ -143,7 +143,7 @@ class SPMComparisonSnapBase(SplitBrainSnapBase):
 
         return self.get_dictdata(att_T1)
 
-    def get_dictdata(self, selected_attributes):
+    def get_dictdata(self, selected_attributes, verbose=True):
 
         # This function is a bit special since it lets the user get data from two
         # distinct databases, one for the T1, the other for the segmentations.
@@ -157,7 +157,6 @@ class SPMComparisonSnapBase(SplitBrainSnapBase):
 
         options = {}
         options.update(self.options)
-#        options.update(opt)
         print 'opt:', options
         options_T1 = {}
         options_T1.update(self.options_T1)

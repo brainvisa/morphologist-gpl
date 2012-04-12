@@ -139,7 +139,7 @@ def sulci_snap_base():
 def fibers_snap_base():
     global main_window, qt_app, database, preferences
     from examples import fibers
-    snap = bundles.FibersSnapBase(preferences)
+    snap = fibers.FibersSnapBase(preferences)
     snap.snap_base(database, main_window = main_window, qt_app = qt_app )
 
 # Various functions
@@ -190,13 +190,13 @@ def load_preferences(minf_dict):
 def main():
 
     global main_window, qt_app, database, preferences
-    from interface import *
+    import interface
 
     # Create Qt App and window
     qt_app = Qt.QApplication( sys.argv )
     qt_app.setQuitOnLastWindowClosed(True)
     main_window = MainWindow()
-    gui = Ui_main_window()
+    gui = interface.Ui_main_window()
     gui.setupUi(main_window)
 
     # Connecting Qt Signals

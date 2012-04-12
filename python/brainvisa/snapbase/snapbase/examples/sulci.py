@@ -111,7 +111,7 @@ class LeftSulciSingleViewSnapBase(SulciSnapBase):
 
     def __init__(self, output_path):
         SulciSnapBase.__init__(self, output_path)
-        self.data_type = 'Left Cortical folds Graph'
+        self.data_type = 'Left Cortical folds graph'
 
     def get_views_of_interest(self):
         views = {}
@@ -123,7 +123,7 @@ class RightSulciSingleViewSnapBase(SulciSnapBase):
 
     def __init__(self, output_path):
         SulciSnapBase.__init__(self, output_path)
-        self.data_type = 'Right Cortical folds Graph'
+        self.data_type = 'Right Cortical folds graph'
 
     def get_views_of_interest(self):
         views = {}
@@ -135,7 +135,7 @@ class LeftSulciMultiViewSnapBase(SulciSnapBase):
 
     def __init__(self, output_path):
         SulciSnapBase.__init__(self, output_path)
-        self.data_type = 'Left Cortical folds Graph'
+        self.data_type = 'Left Cortical folds graph'
 
     def get_views_of_interest(self):
         views = {}
@@ -147,7 +147,7 @@ class RightSulciMultiViewSnapBase(SulciSnapBase):
 
     def __init__(self, output_path):
         SulciSnapBase.__init__(self, output_path)
-        self.data_type = 'Right Cortical folds Graph'
+        self.data_type = 'Right Cortical folds graph'
 
     def get_views_of_interest(self):
         views = {}

@@ -185,7 +185,16 @@ class SnapBase():
         '''
 
         # Checking for ambiguity between diskitems (acquisition, ...)
-        options = {'_type' : 'Raw T1 MRI'}
+
+        type_transl = {'Split Brain' : 'Voronoi Diagram',
+                       'SPM BrainVisa Comparison' : 'Raw T1 MRI',
+                       'Vitamin Tablet Snapshots' : 'Raw T1 MRI'}
+        if type_transl.has_key(self.data_type):
+            id_type = type_transl[self.data_type]
+        else:
+            id_type = self.data_type
+
+        options = {'_type' : id_type}
         options.update(general_options)
 
         self.db = db
@@ -194,7 +203,8 @@ class SnapBase():
 
         if not solved_ambiguity:
             return []
-        print 'attributes : ', attributes
+        if verbose :
+            print 'attributes : ', attributes
 
         return self.get_dictdata(attributes, verbose=False)
 
@@ -215,6 +225,7 @@ class SnapBase():
 
         print opt
         diskitems = [dsk for dsk in db.findDiskItems(**opt)]
+        print diskitems
         res = 0
         # (If no diskitems then error)
         if len(diskitems) > 0 :
@@ -232,7 +243,7 @@ class SnapBase():
             for each in attributes.keys():
                 for dsk in diskitems:
                     attributes[each].add(dsk.get(each))
-            print "attributs communs et str:", attributes
+            #print "attributs communs et str:", attributes
             for att in default_att:
                 try:
                     items.append((att, list(attributes[att])))
@@ -482,6 +493,7 @@ class SnapBase():
         general_options = {}
         if self.preferences.has_key('side'):
             general_options = {'side' : self.preferences['side']}
+
         dictdata = self.get_list_diskitems(database_checker, general_options)
         print 'dictdata', dictdata
 
@@ -568,7 +580,7 @@ class SnapBase():
                         snapshot = get_snapshot(qgl)
 
                         # Rendering slice number
-                        if self.data_type == 'Grey White Mask' or self.data_type == 'Split Brain':
+                        if self.data_type in ['Grey White Mask', 'Split Brain', 'SPM BrainVisa Comparison', 'Raw T1 MRI', 'Vitamin Tablet Snapshots']:
                             data = snapshot.convert('RGBA').tostring('raw', 'BGRA')
                             qim = Qt.QImage(data, snapshot.size[0], snapshot.size[1], Qt.QImage.Format_ARGB32)
                             pix = Qt.QPixmap.fromImage(qim)
@@ -610,7 +622,21 @@ class SnapBase():
                 d_usr = ImageDraw.Draw(tiled_image)
 
                 attributes = [protocol, subject]
-                acquisition = diskitems['mri'].get('acquisition')
+                #print diskitems
+
+                acquisition_key = {'Grey White Mask' : 'mri',
+                       'Left Hemisphere Mesh' : 'mesh',
+                       'Right Hemisphere Mesh' : 'mesh',
+                       'Left White Hemisphere Mesh' : 'mesh',
+                       'Right White Hemisphere Mesh' : 'mesh',
+                       'Split Brain' : 'mri',
+                       'Left Cortical folds Graph' : 'mri',
+                       'Right Cortical folds Graph' : 'mri',
+                       'SPM BrainVisa Comparison' : 'mri',
+                       'Raw T1 MRI' : 'mri',
+                       'Vitamin Tablet Snapshots' : 'mri'}
+
+                acquisition = diskitems[acquisition_key[self.data_type]].get('acquisition')
                 attributes.append(acquisition)
                 if d != '3D':
                     attributes.append(d)
