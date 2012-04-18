@@ -41,12 +41,13 @@ def validation():
         raise ValidationError( _t_( 'soma.aims module cannot be imported: ' ) \
             +  e.message )
 
+name = 'Reset internal image transformation'
 userLevel = 1
 
 signature = Signature(
-    'input_image', ReadDiskItem( "Raw T1 MRI",
+    'input_image', ReadDiskItem( "4D Volume",
         'aims readable volume formats' ),
-    'output_image', WriteDiskItem( "Raw T1 MRI",
+    'output_image', WriteDiskItem( "4D Volume",
         'aims writable volume formats' ),
     'origin', Choice( ( 'Center of the image', 0 ), ( 'Gravity center', 1 ) ),
 )
