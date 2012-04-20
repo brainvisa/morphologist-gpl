@@ -56,6 +56,10 @@ signature = Signature(
                                         'Aims mesh formats' ),
     'right_white_mesh', WriteDiskItem( 'Right Hemisphere White Mesh',
                                         'Aims mesh formats' ),
+    'left_white_mesh_fine', WriteDiskItem( 'Left Fine Hemisphere White Mesh',
+                                    'Aims mesh formats' ),
+    'right_white_mesh_fine', WriteDiskItem( 'Right Fine Hemisphere White Mesh',
+                                     'Aims mesh formats' ),
 ) 
 # Default values
 def initialization( self ):
@@ -66,6 +70,8 @@ def initialization( self ):
     self.linkParameters( 'right_hemi_cortex', 'mri_corrected' )
     self.linkParameters( 'left_white_mesh', 'mri_corrected' )
     self.linkParameters( 'right_white_mesh', 'mri_corrected' )
+    self.linkParameters( 'left_white_mesh_fine', 'mri_corrected' )
+    self.linkParameters( 'right_white_mesh_fine', 'mri_corrected' )
     self.Side = "Both"
 #
 #
@@ -96,10 +102,13 @@ def execution( self, context ):
                     "ne", "-w", "t" )
             
             context.system( "AimsMeshBrain", "-i", white, "-o", self.left_white_mesh, '--internalinterface' )
+            context.system( "AimsMeshBrain", "-i", white, "-o", self.left_white_mesh_fine, '--internalinterface', "--deciMaxClearance",  "1", "--deciMaxError", "1" )
             context.system( "meshCleaner", "-i", self.left_white_mesh, "-o", self.left_white_mesh, "-maxCurv", "0.5" )
-            
+            context.system( "meshCleaner", "-i", self.left_white_mesh_fine, "-o", self.left_white_mesh_fine, "-maxCurv", "0.6" )
+
             tm.copyReferential(self.left_grey_white, self.left_white_mesh)
-            
+            tm.copyReferential(self.left_grey_white, self.left_white_mesh_fine)
+
             del white
         
     if self.Side in ('Right','Both'):
@@ -126,9 +135,12 @@ def execution( self, context ):
                     "ne", "-w", "t" )
             
             context.system( "AimsMeshBrain", "-i", white, "-o", self.right_white_mesh, '--internalinterface' )
+            context.system( "AimsMeshBrain", "-i", white, "-o", self.right_white_mesh_fine, '--internalinterface', "--deciMaxClearance",  "1", "--deciMaxError", "1" )
             context.system( "meshCleaner", "-i", self.right_white_mesh, "-o", self.right_white_mesh, "-maxCurv", "0.5" )
+            context.system( "meshCleaner", "-i", self.right_white_mesh_fine, "-o", self.right_white_mesh_fine, "-maxCurv", "0.6" )
             
             tm.copyReferential(self.right_grey_white, self.right_white_mesh)
-            
+            tm.copyReferential(self.right_grey_white, self.right_white_mesh_fine)
+
             del white
     
