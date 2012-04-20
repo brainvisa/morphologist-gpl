@@ -38,13 +38,13 @@ import registration
 
 
 signature = Signature(
-    'labelled_graph', ReadDiskItem( 'Labelled Cortical Folds Graph', 'Graph' ),
-    'unlabelled_graph', ReadDiskItem( 'Cortical Folds Graph', 'Graph' ),
-    'output_graph', WriteDiskItem( 'Labelled Cortical folds graph', 'Graph',
-        requiredAttributes = { 'labelled' : 'Yes',
-                               'automatically_labelled' : 'Yes'} ),
+    'labelled_graph', ReadDiskItem( 'Labelled Cortical Folds Graph', 'Graph and data' ),
+    'unlabelled_graph', ReadDiskItem( 'Cortical Folds Graph', 'Graph and data' ),
+    'output_graph', WriteDiskItem( 'Labelled Cortical folds graph', 'Graph and Data',
+        requiredAttributes = { 'labelled' : 'Yes' } ),
     'label_attribute', Choice( 'name', 'label' ),
     'output_labels_table', WriteDiskItem( 'Text File', 'Text File' ),
+    'force_same_space', Boolean(),
 )
 
 
@@ -76,16 +76,27 @@ def initialization( self ):
       la = 'label'
     return la
 
+  def linkOutputGraph( self, process ):
+    manual = 'No'
+    if self.labelled_graph:
+      manual = self.labelled_graph.get( 'manually_labelled', None )
+    return signature[ 'output_graph' ].findValue( self.unlabelled_graph,
+      requiredAttributes={ 'manually_labelled' : manual } )
+
   self.setOptional( 'output_labels_table' )
-  self.linkParameters( 'output_graph', 'unlabelled_graph' )
-  self.linkParameters( 'label_attribute', [ 'labelled_graph',
-    'unlabelled_graph' ], linkLabelAttribute )
+  self.linkParameters( 'output_graph', [ 'unlabelled_graph',
+    'labelled_graph' ], linkOutputGraph )
+  self.linkParameters( 'label_attribute', 'labelled_graph',
+    linkLabelAttribute )
+  self.force_same_space = False
 
 def execution( self, context ):
   cmd = [ 'AimsGraphTransferLabels', '-i', self.unlabelled_graph, '-j',
     self.labelled_graph, '-o', self.output_graph, '-l', self.label_attribute ]
   if self.output_labels_table:
     cmd += [ '-m', self.output_labels_table ]
+  if self.force_same_space:
+    cmd.append( '-s' )
   context.system( *cmd )
   trManager = registration.getTransformationManager()
   trManager.copyReferential( self.unlabelled_graph, self.output_graph )
