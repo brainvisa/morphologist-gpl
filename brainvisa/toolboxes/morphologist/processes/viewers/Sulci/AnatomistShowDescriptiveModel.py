@@ -149,8 +149,8 @@ def execution( self, context ):
     # set an identity transform between the SPAM model and Talairach AC/PC
     # it is temporary until we handle SPAMs refs correctly
     if aref is not None:
-      context.write( 'setting ID transfo' )
-      tr = a.Transformation(a)
+      tr = a.newId()
+      #tr = a.Transformation(a)
       a.execute( 'LoadTransformation', origin=aref, destination=a.centralRef,
         matrix=[ 0, 0, 0,  1, 0, 0, 0, 1, 0, 0, 0, 1 ],
         res_pointer=tr )
