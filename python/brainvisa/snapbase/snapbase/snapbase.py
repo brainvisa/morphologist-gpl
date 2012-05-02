@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 def create_simple_qt_app(main_window):
 
     from PyQt4 import QtGui, QtCore, Qt
@@ -247,11 +248,11 @@ class SnapBase():
             for att in default_att:
                 try:
                     items.append((att, list(attributes[att])))
-                except KeyError as e:
+                except KeyError:
                     for dsk in diskitems:
                         if not att in dsk.attributes():
                             print dsk.fileName(), 'misses attribute', att
-                    raise e
+                    raise
 
             # Running the GUI
             gui = Ui_attributes_window()
