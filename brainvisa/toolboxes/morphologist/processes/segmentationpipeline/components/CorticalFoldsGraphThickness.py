@@ -34,6 +34,7 @@
 from neuroProcesses import *
 from soma.path import find_in_path
 import shfjGlobals
+import registration
 
 name = 'Cortical Fold Graph Thickness and Volumes'
 userLevel = 2
@@ -71,8 +72,14 @@ def initialization( self ):
 def execution( self, context ):
   cmd = [ 'python', find_in_path( 'AimsFoldsGraphThickness.py' ),
     '-i', self.graph, '-c', self.hemi_cortex, '-g', self.GW_interface,
-    '-w', self.white_mesh, '-l', self.hemi_mesh, '-o', self.output_graph,
-    '-m', self.output_mid_interface ]
+    '-w', self.white_mesh, '-l', self.hemi_mesh, '-o', self.output_graph ]
+  if self.write_mid_interface is not None:
+    cmd += [ '-m', self.output_mid_interface ]
   if self.sulci_voronoi is not None:
     cmd += [ '-v', self.sulci_voronoi ]
   context.system( *cmd )
+  trManager = registration.getTransformationManager()
+  trManager.copyReferential( self.graph, self.output_graph )
+  if self.write_mid_interface is not None:
+    trManager.copyReferential( self.graph, self.output_mid_interface )
+

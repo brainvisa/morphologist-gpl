@@ -35,7 +35,7 @@ from neuroProcesses import *
 import shfjGlobals
 import registration
 
-name = 'Compute Cortical Fold Graph Upgrade From Old'
+name = 'Cortical Fold Graph Upgrade Structure'
 userLevel = 2
 
 # Argument declaration
@@ -56,41 +56,33 @@ signature = Signature(
 
 # Default values
 def initialization( self ):
+  def linkGraphVersion( self, proc ):
+    p = WriteDiskItem( 'Cortical folds graph', 'Graph' )
+    return p.findValue( self.old_graph,
+                        requiredAttributes = {
+                          'graph_version' : self.graph_version } )
+
+  self.linkParameters( 'skeleton', 'old_graph' )
+  self.linkParameters( 'graph', ( 'old_graph', 'graph_version' ),
+    linkGraphVersion )
+  self.compute_fold_meshes = True
+  self.linkParameters( 'commissure_coordinates', 'old_graph' )
+  self.linkParameters( 'Talairach_transform', 'old_graph' )
   self.setOptional( 'commissure_coordinates' )
 
-  eNode = SerialExecutionNode( self.name, parameterized = self )
-  eNode.addChild( 'FoldGraphUpgradeStructure',
-    ProcessExecutionNode( 'foldgraphupgradestructure', optional= 1 ) )
-  eNode.addChild( 'SulciVoronoi',
-                   ProcessExecutionNode( 'SulciVoronoi', optional = 1 ) )
-  eNode.addChild( 'CorticalFoldsGraphThickness',
-                   ProcessExecutionNode( 'CorticalFoldsGraphThickness',
-                   optional = 1 ) )
-  eNode.CorticalFoldsGraphThickness.clearLinksTo( 'hemi_cortex' )
-  eNode.CorticalFoldsGraphThickness.clearLinksTo( 'output_graph' )
-  eNode.CorticalFoldsGraphThickness.clearLinksTo( 'sulci_voronoi' )
-  eNode.addDoubleLink( 'FoldGraphUpgradeStructure.old_graph', 'old_graph' )
-  eNode.addDoubleLink( 'FoldGraphUpgradeStructure.skeleton', 'skeleton' )
-  eNode.addDoubleLink( 'FoldGraphUpgradeStructure.graph_version',
-    'graph_version' )
-  eNode.addDoubleLink( 'FoldGraphUpgradeStructure.graph', 'graph' )
-  eNode.addDoubleLink( 'FoldGraphUpgradeStructure.commissure_coordinates',
-    'commissure_coordinates' )
-  eNode.addDoubleLink( 'FoldGraphUpgradeStructure.Talairach_transform',
-    'Talairach_transform' )
-  eNode.addLink( 'SulciVoronoi.graph', 'graph' )
-  eNode.addLink( 'graph', 'SulciVoronoi.graph' )
-  eNode.addLink( 'SulciVoronoi.hemi_cortex',
-    'CorticalFoldsGraphThickness.hemi_cortex' )
-  eNode.addLink( 'CorticalFoldsGraphThickness.hemi_cortex',
-    'SulciVoronoi.hemi_cortex' )
-  eNode.addLink( 'CorticalFoldsGraphThickness.graph', 'graph' )
-  eNode.addLink( 'graph', 'CorticalFoldsGraphThickness.graph' )
-  eNode.addLink( 'CorticalFoldsGraphThickness.output_graph', 'graph' )
-  eNode.addLink( 'graph', 'CorticalFoldsGraphThickness.output_graph' )
-  eNode.addLink( 'SulciVoronoi.sulci_voronoi',
-    'CorticalFoldsGraphThickness.sulci_voronoi' )
-  eNode.addLink( 'CorticalFoldsGraphThickness.sulci_voronoi',
-    'SulciVoronoi.sulci_voronoi' )
-  self.setExecutionNode( eNode )
+
+def execution( self, context ):
+  attp = [ 'AimsFoldArgAtt', '-i', self.skeleton.fullPath(), '-g',
+           self.old_graph.fullPath(), '-o', self.graph.fullPath(),
+           '-m', self.Talairach_transform, '--graphversion',
+           self.graph_version ]
+  if not self.compute_fold_meshes:
+    attp.append( '-n' )
+  if self.commissure_coordinates:
+    attp += [ '--apc', self.commissure_coordinates ]
+  if not self.allow_multithreading:
+    attp += [ '--threads', '1' ]
+  context.system( *attp )
+  trManager = registration.getTransformationManager()
+  trManager.copyReferential( self.old_graph, self.graph )
 

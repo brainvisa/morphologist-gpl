@@ -35,6 +35,7 @@
 from neuroProcesses import *
 from soma.path import find_in_path
 import shfjGlobals
+import registration
 
 name = 'Sulci Voronoi'
 userLevel = 0
@@ -68,3 +69,7 @@ def initialization( self ):
 def execution( self, context ):
   context.system( 'python', find_in_path( 'AimsSulciVoronoi.py' ),
     '-f', self.graph, '-g', self.hemi_cortex, '-o', self.sulci_voronoi )
+  trManager = registration.getTransformationManager()
+  trManager.copyReferential( self.hemi_cortex, self.sulci_voronoi )
+
+

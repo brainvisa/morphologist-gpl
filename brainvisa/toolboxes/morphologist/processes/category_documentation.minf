@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="iso-8859-1" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <minf version="1.0">
 
 <xhtml name="en">
@@ -47,10 +47,10 @@
 </xhtml>
 
 <xhtml name="fr">
-  <h1>Analyse des images pond�r�es en T1</h1>
+  <h1>Analyse des images pondérées en T1</h1>
 
   <p>
-  Avant de traiter des donn�es d'IRM T1 anatomique, il est recommand� de les importer dans une base de donn�e BrainVISA. Reportez-vous aux cat�gories suivantes pour plus d'information :
+  Avant de traiter des données d'IRM T1 anatomique, il est recommandé de les importer dans une base de donnée BrainVISA. Reportez-vous aux catégories suivantes pour plus d'information :
   <p>
   <a href="bvcategory://data management"><_t_>data management</_t_></a> /
   <a href="bvcategory://data management/import"><_t_>import</_t_></a> /
@@ -58,17 +58,17 @@
   </p>
   </p>
   <p>
-  Ensuite, le pipeline principal effectue l'extraction de diff�rents objets anatomiques (h�misph�res, mati�re grise, mati�re blanche, sillons corticaux). La premi�re �tape de ce pipeline demande de sp�cifier manuellement � brainVISA l'orientation de vos acquisitions (axiale, coronale ou sagittale...). Si vous avez normalis� spatialement vos images au pr�alable avec SPM ou MRItotal, il devrait vous suffire de le sp�cifier (m�fiez vous des conventions de SPM2 ou pr�c�dents en ce qui concerne la gauche et la droite). Autrement, vous pouvez laisser BrainVisa utiliser SPM ou FSL pour normaliser les donn�es, ou bien vous devrez cliquer sur quelques points, en particulier les commissures ant�rieure et post�rieure, pour permettre � brainVISA de normaliser virtuellement vos donn�es. Tout cela concerne le traitement:
+  Ensuite, le pipeline principal effectue l'extraction de différents objets anatomiques (hémisphères, matière grise, matière blanche, sillons corticaux). La première étape de ce pipeline demande de spécifier manuellement à brainVISA l'orientation de vos acquisitions (axiale, coronale ou sagittale...). Si vous avez normalisé spatialement vos images au préalable avec SPM ou MRItotal, il devrait vous suffire de le spécifier (méfiez vous des conventions de SPM2 ou précédents en ce qui concerne la gauche et la droite). Autrement, vous pouvez laisser BrainVisa utiliser SPM ou FSL pour normaliser les données, ou bien vous devrez cliquer sur quelques points, en particulier les commissures antérieure et postérieure, pour permettre à brainVISA de normaliser virtuellement vos données. Tout cela concerne le traitement:
   </p>
   <ul>
     <li><a href="bvprocess://morphologist"><bvProcessName name="Morphologist 2011"/></a></li>
   </ul>
   <p>
-  Certains de ses composants peuvent �tre utilis�s individuellement dans le mode expert et pourraient r�soudre des probl�mes rencontr�s avec les r�glages par d�faut du pipeline Morphologist.
+  Certains de ses composants peuvent être utilisés individuellement dans le mode expert et pourraient résoudre des problèmes rencontrés avec les réglages par défaut du pipeline Morphologist.
   L'organisation de ces composants est compatible avec les anciens pipelines (2007, 2004).
-  Pratiquement, ceci signifie qu'ils peuvent �tre utilis�s pour remplacer un ancien traitement, dans la mesure ou les briques de validation permettent
-  d'emp�cher le pipeline g�n�ral d'�craser ces nouveaux r�sultats.
-  Une des am�liorations notoire est un nouvel algorithme de correction de biais qui devrait mieux se comporter avec les images dot�es d'un faible contraste gris/blanc relativement � l'amplitude du biais.
+  Pratiquement, ceci signifie qu'ils peuvent être utilisés pour remplacer un ancien traitement, dans la mesure ou les briques de validation permettent
+  d'empêcher le pipeline général d'écraser ces nouveaux résultats.
+  Une des améliorations notoire est un nouvel algorithme de correction de biais qui devrait mieux se comporter avec les images dotées d'un faible contraste gris/blanc relativement à l'amplitude du biais.
   </p>
     <h2>Database organization for T1-weighted data</h2>
   <p>T1-weighted data are stored in a directory <i>database/protocol/subject/</i><b>t1mri</b>. Database, protocol and subject directories names are choosen by the user but t1mri is a fixed name. </p>
