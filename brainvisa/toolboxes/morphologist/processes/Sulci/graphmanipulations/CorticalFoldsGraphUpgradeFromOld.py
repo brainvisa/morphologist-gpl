@@ -42,7 +42,7 @@ userLevel = 2
 signature = Signature(
   'old_graph', ReadDiskItem( 'Cortical folds graph', 'Graph' ),
   'skeleton', ReadDiskItem( 'Cortex Skeleton', shfjGlobals.aimsVolumeFormats ),
-  'graph_version', OpenChoice( '3.1', '3.2' ),
+  'graph_version', OpenChoice( '3.1', '3.3' ),
   'graph', WriteDiskItem( 'Cortical folds graph', 'Graph' ),
   'commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
                                           'Commissure coordinates'),
