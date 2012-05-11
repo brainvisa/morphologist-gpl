@@ -35,7 +35,7 @@
 
 from neuroProcesses import *
 import shfjGlobals
-import neuroDataGUI
+from brainvisa.processing.qtgui import neuroDataGUI
 import registration
 from brainvisa import anatomist
 
