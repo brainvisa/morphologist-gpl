@@ -33,7 +33,7 @@
 from neuroProcesses import *
 import shfjGlobals
 from brainvisa import shelltools
-from backwardCompatibleQt import *
+from brainvisa.processing.qtgui.backwardCompatibleQt import *
 from brainvisa import anatomist
 
 name = 'Anatomist Show 3D Activations'

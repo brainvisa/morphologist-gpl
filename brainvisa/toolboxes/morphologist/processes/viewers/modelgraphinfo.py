@@ -31,7 +31,7 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from neuroProcesses import *
-from backwardCompatibleQt import *
+from brainvisa.processing.qtgui.backwardCompatibleQt import *
 from neuroProcessesGUI import HTMLBrowser
 
 name = 'Show Model Graph Info'
