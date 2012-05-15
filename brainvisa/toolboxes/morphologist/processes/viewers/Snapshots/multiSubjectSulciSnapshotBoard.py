@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -33,7 +34,6 @@
 from neuroProcesses import *
 import shfjGlobals
 from brainvisa import anatomist
-#import neuroPopen2
 import time
 
 name = 'Multi Subject Sulci Snapshot Board'
@@ -114,31 +114,7 @@ def initialization( self ):
 def execution( self, context ):
   n = max( len( self.graphs ), len( self.meshes ) )
   images = []
-  # load into memory
-  #import imp
-  #anasul = imp.find_module( "anaSulciSnapshot",
-    #[ os.path.dirname( find_in_path( 'anaSulciSnapshot.py' ) ) ] )
-  #anasulci = mainThreadActions().call( imp.load_module, "anaSulciSnapshot", anasul[0], anasul[1],
-    #anasul[2] )
-  #anasul[0].close()
-
-  # other variant: use a pipe (popen)
-  #pout, pin, perr = neuroPopen2.popen3( find_in_path( 'python' ) + '-u -',
-    #bufsize=1 )
-  #print >> pin, 'import imp'
-  #print >> pin, 'anasul = imp.find_module( "anaSulciSnapshot", [ "' \
-    #+ os.path.dirname( find_in_path( 'anaSulciSnapshot.py' ) ) + '" ] )'
-  #print >> pin, 'anasulci = imp.load_module( "anaSulciSnapshot", anasul[0], ' \
-    #'anasul[1], anasul[2] )'
-  #print >> pin, 'anasul[0].close()'
-  #context.write( 'import imp' )
-  #context.write( 'anasul = imp.find_module( "anaSulciSnapshot", [ "' \
-    #+ os.path.dirname( find_in_path( 'anaSulciSnapshot.py' ) ) + '" ] )' )
-  #context.write( 'anasulci = imp.load_module( "anaSulciSnapshot", anasul[0], ' \
-    #'anasul[1], anasul[2] )' )
-  #context.write( 'anasul[0].close()' )
-
-  # still another method: load a python script into the running BV anatomist
+  # load a python script into the running BV anatomist
   pyscript = context.temporary( 'Python Script' )
   pys = open( pyscript.fullPath(), 'w' )
   print >> pys, 'import imp'
