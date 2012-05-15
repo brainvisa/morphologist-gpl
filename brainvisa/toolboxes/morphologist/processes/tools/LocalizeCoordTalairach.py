@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
@@ -35,8 +35,8 @@
 
 from neuroProcesses import *
 import shfjGlobals
-from brainvisa.processing.qtgui import neuroDataGUI
-import registration
+from brainvisa.data.qtgui import neuroDataGUI
+from brainvisa import registration
 from brainvisa import anatomist
 
 class TalairachPointEditor( neuroDataGUI.PointEditor ):

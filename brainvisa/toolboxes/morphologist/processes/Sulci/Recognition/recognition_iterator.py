@@ -32,7 +32,7 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from neuroProcesses import *
-import neuroData
+from brainvisa.data import neuroData
 name = 'Automatic recognition iterator'
 userLevel = 1
 

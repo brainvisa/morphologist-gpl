@@ -32,7 +32,6 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from neuroProcesses import *
-import neuroData
 
 name = 'Sulcal Model Graph Pipeline'
 userLevel = 2
