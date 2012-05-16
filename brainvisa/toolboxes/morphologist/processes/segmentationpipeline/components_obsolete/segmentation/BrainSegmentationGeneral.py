@@ -32,7 +32,7 @@
 
 import shfjGlobals
 
-from neuroProcesses import *
+from brainvisa.processes import *
 name = 'Brain Mask Segmentation'
 userLevel = 2
 

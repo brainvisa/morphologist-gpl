@@ -1,4 +1,4 @@
-from neuroProcesses import *
+from brainvisa.processes import *
 from brainvisa.data.labelSelection import LabelSelection
 import registration
 

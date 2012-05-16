@@ -37,7 +37,7 @@
 # je m'en suis servi pour les experiences sur les invariants et la colab avec
 # Pascal Cathier
 
-from neuroProcesses import *
+from brainvisa.processes import *
 from brainvisa.data.labelSelection import LabelSelection
 import registration
 

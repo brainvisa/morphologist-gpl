@@ -32,7 +32,7 @@
 
 import shfjGlobals, registration
 
-from neuroProcesses import *
+from brainvisa.processes import *
 name = '3 - Compute Brain Mask'
 userLevel = 2
 

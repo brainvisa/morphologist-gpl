@@ -36,7 +36,7 @@ from brainvisa.configuration import neuroConfig
 from brainvisa.data import neuroHierarchy
 import distutils.spawn
 from soma.wip.application.api import Application
-import neuroProcesses
+import brainvisa.processes
 import subprocess
 import glob
 from brainvisa.configuration.sulci_configuration import SulciConfiguration
@@ -79,7 +79,7 @@ if fsldir and os.path.exists( fsldir ):
         fslshare, 'fsl', settings=dbs )
       neuroHierarchy.databases.add( db )
       db.clear()
-      db.update( context=neuroProcesses.defaultContext() )
+      db.update( context=brainvisa.processes.defaultContext() )
       neuroHierarchy.update_soma_workflow_translations()
 
       del dbs, db #, fsldb
@@ -114,7 +114,7 @@ if spmdir is not None:
     db = neuroHierarchy.SQLDatabase( dbs.expert_settings.sqliteFileName, spmtemplates, 'spm', settings=dbs )
     neuroHierarchy.databases.add( db )
     db.clear()
-    db.update( context=neuroProcesses.defaultContext() )
+    db.update( context=brainvisa.processes.defaultContext() )
     neuroHierarchy.update_soma_workflow_translations()
     del dbs, db
   del spmtemplates, spmdir

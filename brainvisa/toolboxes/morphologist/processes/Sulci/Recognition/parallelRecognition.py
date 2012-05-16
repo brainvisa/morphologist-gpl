@@ -31,7 +31,7 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
-from neuroProcesses import *
+from brainvisa.processes import *
 import shutil, math, os
 
 name = 'Parallel recognition'
@@ -90,9 +90,9 @@ def _iterateAccept( self ):
     try:
         params = self._iterationDialog.getLists()
         processes = self.process._iterate( **params )
-        iterationProcess = neuroProcesses.IterationProcess( self.process.name+" iteration", processes )
+        iterationProcess = brainvisa.processes.IterationProcess( self.process.name+" iteration", processes )
         procs = defaultContext().runProcess( iterationProcess )
-        iteration2 = neuroProcesses.IterationProcess( self.process.name+" iteration", procs )
+        iteration2 = brainvisa.processes.IterationProcess( self.process.name+" iteration", procs )
         showProcess( iteration2 )
     except:
         neuroException.showException()

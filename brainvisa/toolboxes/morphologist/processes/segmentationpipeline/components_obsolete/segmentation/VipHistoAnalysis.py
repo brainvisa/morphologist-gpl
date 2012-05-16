@@ -34,7 +34,7 @@
 # VipHistoAnalysis
 #
 
-from neuroProcesses import *
+from brainvisa.processes import *
 
 name = 'Vip Histogram analysis'
 userLevel = 1

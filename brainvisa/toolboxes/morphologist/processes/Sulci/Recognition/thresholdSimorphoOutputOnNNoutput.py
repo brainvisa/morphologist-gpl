@@ -30,7 +30,7 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
-from neuroProcesses import *
+from brainvisa.processes import *
 import re, os, os.path, glob, string
 name = 'Select folds & relations with good recognition percentage'
 userLevel=0

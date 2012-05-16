@@ -32,7 +32,7 @@
 
 import shfjGlobals
 
-from neuroProcesses import *
+from brainvisa.processes import *
 name = 'Correction Brain Mask from T1 MRI'
 userLevel = 0
 

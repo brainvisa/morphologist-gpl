@@ -35,7 +35,7 @@
 import shfjGlobals
 from brainvisa import shelltools
 
-from neuroProcesses import *
+from brainvisa.processes import *
 name = 'Create Sulcus Label Volume'
 userLevel = 2
 

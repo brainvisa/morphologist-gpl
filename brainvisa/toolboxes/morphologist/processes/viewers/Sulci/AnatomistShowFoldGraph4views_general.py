@@ -36,7 +36,7 @@
 # using original file "AnatomistShowFoldGraph.py" #
 ###################################################
 
-from neuroProcesses import *
+from brainvisa.processes import *
 import shfjGlobals
 from brainvisa import anatomist
 import numpy, os

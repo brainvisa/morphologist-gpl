@@ -33,7 +33,7 @@
 #
 # MeshCurvatureEstimation process declaration
 #
-from neuroProcesses import *
+from brainvisa.processes import *
 import shfjGlobals     
 
 name = 'White Mesh Curvature Estimation'

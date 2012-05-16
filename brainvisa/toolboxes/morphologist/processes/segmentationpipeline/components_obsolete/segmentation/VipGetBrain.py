@@ -33,7 +33,7 @@
 #
 # Brain segmentation process declaration
 #
-from neuroProcesses import *
+from brainvisa.processes import *
 import shfjGlobals, registration
 
 name = 'Vip Get Brain'

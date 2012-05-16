@@ -32,7 +32,7 @@
 
 import shfjGlobals
 
-from neuroProcesses import *
+from brainvisa.processes import *
 name ='Get Hemi Surface'
 userLevel = 2
 

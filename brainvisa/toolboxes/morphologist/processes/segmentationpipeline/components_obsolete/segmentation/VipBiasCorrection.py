@@ -33,7 +33,7 @@
 #
 # VipBiasCorrection
 #
-from neuroProcesses import *
+from brainvisa.processes import *
 import shfjGlobals, registration
 
 name = 'Vip Bias Correction'

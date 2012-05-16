@@ -34,7 +34,7 @@
 # AimsInflate process declaration
 #
 
-from neuroProcesses import *
+from brainvisa.processes import *
 
 name = 'Inflate Cortical Surface'
 userLevel = 0
