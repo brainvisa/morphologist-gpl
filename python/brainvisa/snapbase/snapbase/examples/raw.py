@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from brainvisa.snapbase.snapbase import detect_slices_of_interest
 from brainvisa.snapbase.snapbase import SnapBase
 
@@ -8,9 +9,6 @@ class RawSnapBase(SnapBase):
         self.data_type = 'Raw T1 MRI'
 
     def get_dictdata(self, selected_attributes, verbose=True):
-
-        import neuroProcesses
-        import neuroHierarchy
 
         options = {}
         options.update(self.options)

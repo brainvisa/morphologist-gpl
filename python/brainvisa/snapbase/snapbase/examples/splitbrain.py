@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from brainvisa.snapbase.snapbase import detect_slices_of_interest
 from brainvisa.snapbase.snapbase import SnapBase
 
@@ -10,7 +11,7 @@ class SplitBrainSnapBase(SnapBase):
     def get_dictdata(self, selected_attributes, verbose = True):
 
         import neuroProcesses
-        import neuroHierarchy
+        from brainvisa.data import neuroHierarchy
 
         options = {}
         options.update(self.options)
@@ -121,7 +122,7 @@ class SPMComparisonSnapBase(SplitBrainSnapBase):
     def get_list_diskitems(self, db, general_options = {}, verbose = True):
 
         import neuroProcesses
-        import neuroHierarchy
+        from brainvisa.data import neuroHierarchy
 
         # Checking for ambiguity between diskitems (acquisition, ...)
         options = {'_type' : 'SPM BrainVisa %s Comparison'%self.preferences['comparison type']}
@@ -153,7 +154,7 @@ class SPMComparisonSnapBase(SplitBrainSnapBase):
         # no need to import data.
 
         import neuroProcesses
-        import neuroHierarchy
+        from brainvisa.data import neuroHierarchy
 
         options = {}
         options.update(self.options)

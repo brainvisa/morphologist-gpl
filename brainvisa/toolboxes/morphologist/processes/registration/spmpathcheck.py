@@ -33,7 +33,8 @@
 
 from neuroProcesses import *
 from soma.wip.application.api import Application
-import neuroConfig, neuroHierarchy
+from brainvisa.configuration import neuroConfig
+from brainvisa.data import neuroHierarchy
 import distutils.spawn
 import sys
 
@@ -50,7 +51,7 @@ def initialization( self ):
 
 def inlineGUI( self, values, pview, parent, externalRunButton=False ):
   from PyQt4 import QtGui
-  import neuroProcessesGUI
+  from brainvisa.processing.qtgui import neuroProcessesGUI
   vb = QtGui.QWidget()
   lay = QtGui.QVBoxLayout( vb )
   lay.addWidget( neuroProcessesGUI.ProcessView.defaultInlineGUI( pview, vb,

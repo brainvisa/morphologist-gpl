@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from brainvisa.snapbase.snapbase import SnapBase
 
 class FibersSnapBase(SnapBase):
@@ -9,8 +10,6 @@ class FibersSnapBase(SnapBase):
 
     def get_list_diskitems(self, db, general_options = {}, verbose = True):
 
-        import neuroProcesses
-        import neuroHierarchy
         import os
 
         # This module is particular since it retrieves data out from a proper BV db

@@ -33,7 +33,7 @@
 
 from neuroProcesses import *
 from soma.wip.application.api import Application
-import neuroConfig
+from brainvisa.configuration import neuroConfig
 
 name = 'Check SPAM models installation'
 userLevel = 2

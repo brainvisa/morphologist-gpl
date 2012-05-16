@@ -33,10 +33,6 @@
 
 from neuroProcesses import *
 from brainvisa import anatomist
-import registration
-from soma import aims
-import numpy
-from neuroHierarchy import databases
 
 name = 'Anatomist Show Symmetrized Folds Graph'
 #roles = ('viewer',)

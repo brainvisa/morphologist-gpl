@@ -32,8 +32,8 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 import os, re, sys
-import neuroConfig
-import neuroHierarchy
+from brainvisa.configuration import neuroConfig
+from brainvisa.data import neuroHierarchy
 import distutils.spawn
 from soma.wip.application.api import Application
 import neuroProcesses

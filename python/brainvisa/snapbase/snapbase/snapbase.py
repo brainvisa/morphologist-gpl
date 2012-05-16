@@ -468,7 +468,7 @@ class SnapBase():
         import anatomist.direct.api as ana
         from PyQt4 import QtGui, QtCore, Qt
         from PIL import Image, ImageDraw, ImageFont
-        import neuroHierarchy
+        from brainvisa.data import neuroHierarchy
 
         font = Qt.QFont('Times', 40)
 
@@ -515,7 +515,7 @@ class SnapBase():
 
         self.ref = a.createReferential()
         import os
-	import neuroConfig
+	from brainvisa.configuration import neuroConfig
 	sulci_hierarchy_path = os.path.join(neuroConfig.getSharePath(), neuroConfig.brainvisa_share.config.share, 'nomenclature/hierarchy/sulcal_root_colors.hie')
         fibers_hierarchy_path = '/neurospin/lnao/Panabase/fibres/pamela/atlas_faisceaux/faisceaux_longs.hie'
         from soma import aims

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from brainvisa.snapbase.snapbase import SnapBase
 
 class MeshSnapBase(SnapBase):
@@ -7,7 +8,7 @@ class MeshSnapBase(SnapBase):
     def get_dictdata(self, selected_attributes, verbose=True):
 
         import neuroProcesses
-        import neuroHierarchy
+        from brainvisa.data import neuroHierarchy
 
         options = {}
         options.update(self.options)

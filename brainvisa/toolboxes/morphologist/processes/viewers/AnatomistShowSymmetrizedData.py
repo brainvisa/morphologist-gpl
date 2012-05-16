@@ -33,10 +33,10 @@
 
 from neuroProcesses import *
 from brainvisa import anatomist
-import registration
+from brainvisa import registration
 from soma import aims
 import numpy
-from neuroHierarchy import databases
+from brainvisa.data.neuroHierarchy import databases
 
 name = 'Anatomist Show Symmetrized data'
 #roles = ('viewer',)

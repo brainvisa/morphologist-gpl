@@ -10,7 +10,7 @@ class SulciSnapBase(SnapBase):
     def get_dictdata(self, selected_attributes, verbose=True):
 
         import neuroProcesses
-        import neuroHierarchy
+        from brainvisa.data import neuroHierarchy
 
         options = {}
         options.update(self.options)

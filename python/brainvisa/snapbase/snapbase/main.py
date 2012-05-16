@@ -1,9 +1,10 @@
+# -*- coding: utf-8 -*-
 
 from brainvisa import axon
 axon.initializeProcesses()
 
-import neuroHierarchy
-import neuroConfig
+from brainvisa.data import neuroHierarchy
+from brainvisa.configuration import neuroConfig
 
 
 from PyQt4 import QtGui, Qt, QtCore

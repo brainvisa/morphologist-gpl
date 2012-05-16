@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -32,7 +33,7 @@
 
 from neuroProcesses import *
 from brainvisa.processing.qtgui.backwardCompatibleQt import *
-from neuroProcessesGUI import HTMLBrowser
+from brainvisa.processing.qtgui.neuroProcessesGUI import HTMLBrowser
 
 name = 'Show Model Graph Info'
 roles = ( 'viewer', )

@@ -37,9 +37,9 @@ try:
   from soma import zipfile
 except:
   import zipfile
-import neuroHierarchy
-from neuroHierarchy import databases
-import neuroConfig
+from brainvisa.data import neuroHierarchy
+from brainvisa.data.neuroHierarchy import databases
+from brainvisa.configuration import neuroConfig
 from soma.wip.application.api import Application
 from brainvisa.configuration import databases_configuration as dbconf
 

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -31,9 +32,9 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from neuroProcesses import *
-import neuroConfig
-import shfjGlobals
-import registration
+from brainvisa.configuration import neuroConfig
+import brainvisa.tools.aimsGlobals as shfjGlobals
+from brainvisa import registration
 import os
 
 def validation():
