@@ -63,14 +63,19 @@ class changeTalairach:
       self.proc.perform_normalization = True
 
 class linkCheckModels:
+  spamModelsChecked = False
+
   def __init__( self, proc ):
     self.proc = proc
+
   def __call__( self, node ):
-    eNode = self.proc.executionNode()
-    if eNode.SulciRecognition.isSelected():
-      proc = getProcessInstance( 'check_spam_models' )
-      if proc:
-        defaultContext().runProcess( proc )
+    if not linkCheckModels.spamModelsChecked:
+      eNode = self.proc.executionNode()
+      if eNode.SulciRecognition.isSelected():
+        proc = getProcessInstance( 'check_spam_models' )
+        linkCheckModels.spamModelsChecked = True
+        if proc:
+          defaultContext().runProcess( proc )
 
 
 def initialization( self ):
