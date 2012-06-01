@@ -233,7 +233,7 @@ def execution( self, context ):
     
     # RIGHT HEMISPHERE
     # w1
-    w_tempR = a.createWindow("3D", no_decoration=True, geometry = [0, 0, self.snapshot_size, self.snapshot_size]) # [positionX, positionY, sizeX, sizeY]
+    w_tempR = a.createWindow("3D", no_decoration=True, geometry = [0, 0, self.snapshot_size, self.snapshot_size], allowreuse=False) # [positionX, positionY, sizeX, sizeY]
     w_tempR.showToolbox(0)
     w_tempR.assignReferential( cr )
     w_tempR.addObjects( [right_graph], add_graph_nodes=True )
@@ -241,14 +241,12 @@ def execution( self, context ):
         w_tempR.addObjects( [right_mesh] )
     a.camera([w_tempR], view_quaternion=view_quaternionR, observer_position=observer_positionR, zoom=applied_zoomR) # Right hemisphere
     a.execute("WindowConfig", **{ 'windows': [w_tempR], 'cursor_visibility': 0, 'raise': 0, 'snapshot': snapshot1 } )
-    my_objects = w_tempR.getInfos()['objects']
-    w_tempR.removeObjects( my_objects )
     #
     a.closeWindows(w_tempR)
 
     # LEFT HEMISPHERE
     # w2
-    w_tempL = a.createWindow("3D", no_decoration=True, geometry = [0, 0, self.snapshot_size, self.snapshot_size]) # [positionX, positionY, sizeX, sizeY]
+    w_tempL = a.createWindow("3D", no_decoration=True, geometry = [0, 0, self.snapshot_size, self.snapshot_size], allowreuse=False) # [positionX, positionY, sizeX, sizeY]
     w_tempL.showToolbox(0)
     w_tempL.assignReferential( cr )
     w_tempL.addObjects( [left_graph], add_graph_nodes=True )
@@ -256,8 +254,6 @@ def execution( self, context ):
         w_tempL.addObjects( [left_mesh] )
     a.camera([w_tempL], view_quaternion=view_quaternionL, observer_position=observer_positionL, zoom=applied_zoomL) # Left hemisphere
     a.execute("WindowConfig", **{ 'windows': [w_tempL], 'cursor_visibility': 0, 'raise': 0, 'snapshot': snapshot2 } )
-    my_objects = w_tempL.getInfos()['objects']
-    w_tempL.removeObjects( my_objects )
     #
     a.closeWindows(w_tempL)
 
