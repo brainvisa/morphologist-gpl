@@ -224,7 +224,7 @@ def execution( self, context ):
         'flip will not be checked' ) )
     else:
       x = ( 1, 0, 0 )
-      lvec = r3.transformInverse( ( lh[0] - ac[0], lh[1] - ac[2], lh[2] - ac[2] ) )
+      lvec = r3.transform( ( lh[0] - ac[0], lh[1] - ac[1], lh[2] - ac[2] ) )
       if dot( x, lvec ) < 0:
         context.write( _t_( 'X is flipped' ) )
         trans[0] *= -1
