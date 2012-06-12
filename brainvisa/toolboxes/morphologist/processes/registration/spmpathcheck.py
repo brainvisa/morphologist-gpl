@@ -164,7 +164,7 @@ def execution( self, context ):
     configuration.SPM.spm5_path = spm5path
     context.write('=> spm5 was found: ', spm5path)
   else:
-    configuration.SPM.spm5_path = spm5path
+    configuration.SPM.spm5_path = ""
     context.write('=> spm5 was not found.')
 
   spmpath = None
