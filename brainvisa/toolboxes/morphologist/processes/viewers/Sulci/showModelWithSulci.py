@@ -98,12 +98,18 @@ def execution( self, context ):
         show_unknown=self.show_unknown, nomenclature=self.nomenclature,
         show_mesh=self.show_mesh, white_mesh=self.white_mesh,
         mesh_TO_spam=self.mesh_TO_spam )
-    bk = a.createWindowsBlock( nbRows=2, nbCols=None )
+    oldwins = [ x for x in objlist if isinstance( x, a.AWindow ) ]
+    objlist = [ x for x in objlist if isinstance( x, a.AObject ) ]
+    # clean windows used by AnatomistShowDescriptiveModel in case they are
+    # reusable
+    a.removeObjects( objects=objlist, windows=oldwins, remove_children=True )
+    del oldwins
+    bk = a.createWindowsBlock( nbRows=2, nbCols=0 )
     w = a.createWindow( '3D', block=bk )
     w.setControl( 'SelectionControl' )
-    objlist = [ x for x in objlist if not isinstance( x, a.AWindow ) ]
     w.addObjects( [ x for x in objlist if x.objectType!='NOMENCLATURE' ],
       add_graph_nodes=True )
+
     if not self.show_unknown and self.nomenclature is not None:
       # temporarily make a windows group to have a separate selection
       g = a.linkWindows( [w] )
@@ -122,7 +128,12 @@ def execution( self, context ):
           nomenclature=self.nomenclature )
       if self.nomenclature is not None:
         vres = vres[2:]
+      oldwins = [ x for x in vres if isinstance( x, a.AWindow ) ]
       vres = [ x for x in vres if isinstance( x, a.AObject ) ]
+      # clean windows used by AnatomistShowDescriptiveModel in case they are
+      # reusable
+      a.removeObjects( objects=vres, windows=oldwins, remove_children=True )
+      del oldwins
       if first:
         first = False
         if self.show_first_mesh_alone:
