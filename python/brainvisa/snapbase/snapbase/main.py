@@ -44,6 +44,12 @@ def splitbrain_snap_base():
     snap = splitbrain.SplitBrainSnapBase(preferences)
     snap.snap_base(database, main_window = main_window, qt_app = qt_app )
 
+def brainmask_snap_base():
+    global main_window, qt_app, database, preferences
+    from examples import splitbrain
+    snap = splitbrain.BrainMaskSnapBase(preferences)
+    snap.snap_base(database, main_window = main_window, qt_app = qt_app )
+
 def comparison_snap_base():
     global main_window, qt_app, database, preferences
     from examples import splitbrain
@@ -210,6 +216,7 @@ def main():
     gui.fibers_btn.clicked.connect(fibers_snap_base)
     gui.comparison_btn.clicked.connect(comparison_snap_base)
     gui.tablet_btn.clicked.connect(tablet_snap_base)
+    gui.brainmask_btn.clicked.connect(brainmask_snap_base)
     gui.db_combobox.activated.connect(select_db)
     gui.connect_signals()
 

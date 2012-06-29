@@ -635,7 +635,8 @@ class SnapBase():
                        'Right Cortical folds Graph' : 'mri',
                        'SPM BrainVisa Comparison' : 'mri',
                        'Raw T1 MRI' : 'mri',
-                       'Vitamin Tablet Snapshots' : 'mri'}
+                       'Vitamin Tablet Snapshots' : 'mri',
+                       'T1 Brain Mask': 'mri'}
 
                 acquisition = diskitems[acquisition_key[self.data_type]].get('acquisition')
                 attributes.append(acquisition)

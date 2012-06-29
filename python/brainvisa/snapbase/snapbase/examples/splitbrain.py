@@ -111,6 +111,113 @@ class SplitBrainSnapBase(SnapBase):
         return window
 
 
+class BrainMaskSnapBase(SnapBase):
+
+    def __init__(self, preferences):
+        SnapBase.__init__(self, preferences)
+        self.data_type = 'T1 Brain Mask'
+
+    def get_dictdata(self, selected_attributes, verbose = True):
+
+        import neuroProcesses
+        import neuroHierarchy
+
+        options = {}
+        options.update(self.options)
+        options.update(selected_attributes)
+        print 'opt:', options
+
+        dictdata = {}
+
+        for key, value in options.items():
+            if value == '*':
+                options.pop(key)
+
+        # List of subjects according to resulting options
+        subjects_id = set([subject for subject in\
+            self.db.findAttributes(('subject', 'protocol'), {}, **options )])
+
+        for subject, protocol in subjects_id:
+            # Retrieves MRIs
+            options.update({'_type' : 'T1 MRI Bias Corrected',
+                            'subject' : subject,
+                            'protocol' : protocol})
+            mris = [mri for mri in self.db.findDiskItems(**options)]
+
+            if len(mris) == 1:
+                rdi = neuroHierarchy.ReadDiskItem('T1 Brain Mask', neuroProcesses.getAllFormats())
+                brainmask = rdi.findValue(mris[0])
+
+                # Here according to given options, ambiguity should be resolved.
+                # If more than one mri, then some attributes are probably misgiven.
+                if brainmask:
+                    dictdata[(subject, protocol)] = {'type' : self.data_type,
+                        'mri' : mris[0],
+                        'brainmask' : brainmask}
+            else:
+                if verbose:
+                    print '(subject %s, protocol %s) error in retrieving diskitems'\
+                        %(subject, protocol)
+
+        return dictdata
+
+    def get_slices_of_interest(self, data):
+
+        slices = {}
+        directions = ['C', 'S']
+
+        # Unpacking data
+        brainmask, mri = data
+        voxel_size = mri.header()['voxel_size']
+
+        brainmask_minmax = detect_slices_of_interest(brainmask, directions)
+
+        for d in directions :
+            d_minmax = (brainmask_minmax[d][0], brainmask_minmax[d][1])
+
+            slices_list = range(d_minmax[0], d_minmax[1],
+                (d_minmax[1]-d_minmax[0])/14)[1:13]
+            # This converts each slice index into a list applicable to
+                # Anatomist camera function
+            slices[d] = [(i, self.__get_slice_position__(d, i, voxel_size)) for i in slices_list]
+
+        return slices
+
+    def read_data(self, diskitems):
+
+        from soma import aims
+        import anatomist.direct.api as ana
+        a = ana.Anatomist('-b')
+
+        brainmask = aims.read(diskitems['brainmask'].fileName())
+        mri = aims.read(diskitems['mri'].fileName())
+        return brainmask, mri
+
+    def set_viewer(self, data, w):
+
+        import anatomist.direct.api as ana
+        a = ana.Anatomist('-b')
+
+        brainmask, mri = data
+
+        ana_brainmask = a.toAObject(brainmask)
+        ana_mri = a.toAObject(mri)
+        for each in ana_brainmask, ana_mri:
+            each.releaseAppRef()
+
+        # Fusion of the two masks
+        palette = a.getPalette('GREEN-ufusion')
+        ana_brainmask.setPalette( palette )
+        self.aobjects['brainmask'] = a.fusionObjects( [ana_mri, ana_brainmask], method='Fusion2DMethod' )
+        a.execute("Fusion2DParams", object=self.aobjects['brainmask'], mode='linear', rate = 0.7,
+                      reorder_objects = [ ana_mri, ana_brainmask] )
+
+        # Load in Anatomist window
+        window = a.AWindow(a, w)
+        window.assignReferential( a.centralReferential()  )
+        a.addObjects( self.aobjects['brainmask'], [window] )
+
+        return window
 
 
 class SPMComparisonSnapBase(SplitBrainSnapBase):

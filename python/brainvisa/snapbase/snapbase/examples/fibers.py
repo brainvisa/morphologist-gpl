@@ -21,7 +21,9 @@ class FibersSnapBase(SnapBase):
         subjects = [each for each in os.listdir(db.directory) \
             if os.path.isdir(os.path.join(db.directory, each)) and \
             'Bundle-labelling' in os.listdir(os.path.join(db.directory, each))]
+            #'labelling' in os.listdir(os.path.join(db.directory, each))]
 
+        subjects = ['201106090040003CHBR']
         for subject in subjects:
             subject_dir = os.path.join(db.directory, subject)
             trm_dir = os.path.join(subject_dir, 'TRM')
@@ -29,7 +31,8 @@ class FibersSnapBase(SnapBase):
             #trm_path = '' #os.path.join(trm_dir, 'dw_to_t1.trm')
             #assert(os.path.exists(trm_path))
             bundles_dir = os.path.join(subject_dir, 'Bundle-labelling')
-            assert(len(os.listdir(bundles_dir)) == 1 and os.listdir(bundles_dir)[0] == subject)
+            #bundles_dir = os.path.join(subject_dir, 'labelling')
+            #assert(len(os.listdir(bundles_dir)) == 1 and os.listdir(bundles_dir)[0] == subject)
             bundles_dir = os.path.join(bundles_dir, subject)
             bundles_list = []
             for bundle in [os.path.join(bundles_dir, each) for each in os.listdir(bundles_dir) \
