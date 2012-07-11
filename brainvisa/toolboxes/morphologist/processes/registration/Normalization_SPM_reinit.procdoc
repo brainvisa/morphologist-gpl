@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<minf expander="minf_2.0">
+<d>
+  <d name="fr">
+    <xhtml name="short"/>
+    <d name="parameters">
+      <xhtml name="anatomy_data"/>
+      <xhtml name="init_translation_origin"/>
+      <xhtml name="transformations_informations"/>
+      <xhtml name="job_file"/>
+      <xhtml name="normalized_anatomy_data"/>
+      <xhtml name="allow_retry_initialization"/>
+      <xhtml name="voxel_size"/>
+      <xhtml name="nbiteration"/>
+      <xhtml name="cutoff_option"/>
+      <xhtml name="anatomical_template"/>
+    </d>
+    <xhtml name="long"/>
+  </d>
+  <d name="en">
+    <xhtml name="short"/>
+    <d name="parameters">
+      <xhtml name="anatomy_data"/>
+      <xhtml name="init_translation_origin"/>
+      <xhtml name="transformations_informations"/>
+      <xhtml name="job_file"/>
+      <xhtml name="normalized_anatomy_data"/>
+      <xhtml name="allow_retry_initialization"/>
+      <xhtml name="voxel_size"/>
+      <xhtml name="nbiteration"/>
+      <xhtml name="cutoff_option"/>
+      <xhtml name="anatomical_template"/>
+    </d>
+    <xhtml name="long"><p>This process is similar to the <a href="Normalization_SPM.html">Anatomy normalization using SPM</a> process, but will try a second time in case of failure: if the output normalization matrix cannot be output, it will reset any internal transformation to a scanner-based referential in the NIFTI file, using the <a href="resetInternalImageTransformation.html">Reset internal transformation</a> process, before trying again the SPM normalization. It may solve cases when the internal transformation is wrong.
+</p>
+<p><b>Warning:</b> However in some cases SPM will actually write a normalization matrix, but will be wrong because of a wrong initialization due to a bad internal transformation to a scanner-based referential. In that case, BrainVisa cannot detect the problem easily, so you may need to run <a href="resetInternalImageTransformation.html">Reset internal transformation</a> by hand first.
+</p></xhtml>
+  </d>
+</d>
+</minf>

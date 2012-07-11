@@ -1,18 +1,38 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <minf expander="minf_2.0">
 <d>
+  <d name="fr">
+    <xhtml name="short"/>
+    <d name="parameters">
+      <xhtml name="anatomy_data"/>
+      <xhtml name="transformations_informations"/>
+      <xhtml name="job_file"/>
+      <xhtml name="normalized_anatomy_data"/>
+      <xhtml name="voxel_size"/>
+      <xhtml name="nbiteration"/>
+      <xhtml name="cutoff_option"/>
+      <xhtml name="anatomical_template"/>
+    </d>
+    <xhtml name="long"/>
+  </d>
   <d name="en">
     <xhtml name="short">BE CAREFUL : This process can not be iterated. It is constructed to launch the correction for all images successively.</xhtml>
     <d name="parameters">
       <xhtml name="anatomy_data">The anatomical data to normalize</xhtml>
       <xhtml name="transformations_informations">The resulting transformation writen by SPM 5</xhtml>
       <xhtml name="job_file">The Matlab file containing the SPM5 job that will be launched</xhtml>
+      <xhtml name="normalized_anatomy_data"/>
       <xhtml name="voxel_size">The size of each voxel of the volume</xhtml>
       <xhtml name="nbiteration">The number of iteration for the normalization </xhtml>
       <xhtml name="cutoff_option">The type of transformation (Inf = rigid transformation)</xhtml>
       <xhtml name="anatomical_template">The template on which the normalisation will be done. If there is no specified template, the T1 MRI template of SPM5 is chosen.</xhtml>
     </d>
-    <xhtml name="long"/>
+    <xhtml name="long"><p>This process calls SPM to perform anatomical normalization. So SPM must be present, installed and available, to run. If you encounter problems with SPM, you can check the SPM configuration options in the preferences.
+</p>
+<p><b>In case of problems:</b> SPM takes into account any transformation to a scanner-based coordinates system present in NIFTI files. Typically it may contain at least an origin translation, or an additional rotation. If such a transformation is present, SPM uses it to initialize the normalization process. In some cases, this transformation is not correct. Especially if you need to flip the image, you can do it using the AC/PC "<a href="bvprocess://preparesubject">Prepare subject</a>" process, but the transformation to the scanner-based referential will be combined, and will still be present in the NIFTI file. In such case, you may need to reset the internal transformations using the <a href="bvprocess://resetInternalImageTransformation">Reset internal image transformation</a> process, before using this normalization process.
+</p>
+<p>There is a variant of this normalization process, which will try to run SPM normalization first, and, if it fails (that is, if it does not write the output transformation), then any internal transformation is reset from the NITFI file (using the <a href="bvprocess://resetInternalImageTransformation">Reset internal image transformation</a> process), and SPM normalization is tried again: this is the <a href="bvprocess://Normalization_SPM_reinit">Anatomy normalization using SPM with reinitiailization</a> process.
+</p></xhtml>
   </d>
 </d>
 </minf>
