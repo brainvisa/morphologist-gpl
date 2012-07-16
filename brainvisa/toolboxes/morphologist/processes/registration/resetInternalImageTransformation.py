@@ -39,7 +39,7 @@ def validation():
         from soma import aims
     except Exception, e:
         raise ValidationError( _t_( 'soma.aims module cannot be imported: ' ) \
-            +  e.message )
+            +  str(e) )
 
 name = 'Reset internal image transformation'
 userLevel = 1
