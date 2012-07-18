@@ -22,9 +22,9 @@
   </p>
   <p>
   Some of the components can be individually triggered in expert mode and may overcome problems occuring with the default pipeline parameters settings.
-  The organization of these new components is compatible with the older (2011, 2007, 2004) pipelines.
-  This means that they can be used to replace one old component, using the validation flags to control the pipeline behaviour.
-  One of the key refinement is a better bias correction that should work better with low grey/white contrast relative to bias magnitude.
+  The organization of these new components is compatible with the older (2011, 2007, 2004) pipelines. However in the 2012 version of the pipeline, obsolete variants of components have been removed. However they can still be found in the older versions of the pipelines, still present in <a href="bvcategory://morphologist/segmentationpipeline/older_pipelines">"Segmentation pipeline/Older pipelines"</a>.
+  This means that individual components can be used to replace one old component, using the validation flags to control the pipeline behaviour.
+  Almost all steps of the Morphologist pipeline have been notably improved in the 2012 version.
   </p>
 
   <h2>Database organization for T1-weighted data</h2>
@@ -61,14 +61,14 @@
   Ensuite, le pipeline principal effectue l'extraction de différents objets anatomiques (hémisphères, matière grise, matière blanche, sillons corticaux). La première étape de ce pipeline demande de spécifier manuellement à brainVISA l'orientation de vos acquisitions (axiale, coronale ou sagittale...). Si vous avez normalisé spatialement vos images au préalable avec SPM ou MRItotal, il devrait vous suffire de le spécifier (méfiez vous des conventions de SPM2 ou précédents en ce qui concerne la gauche et la droite). Autrement, vous pouvez laisser BrainVisa utiliser SPM ou FSL pour normaliser les données, ou bien vous devrez cliquer sur quelques points, en particulier les commissures antérieure et postérieure, pour permettre à brainVISA de normaliser virtuellement vos données. Tout cela concerne le traitement:
   </p>
   <ul>
-    <li><a href="bvprocess://morphologist"><bvProcessName name="Morphologist 2011"/></a></li>
+    <li><a href="bvprocess://morphologist"><bvProcessName name="Morphologist 2012"/></a></li>
   </ul>
   <p>
   Certains de ses composants peuvent être utilisés individuellement dans le mode expert et pourraient résoudre des problèmes rencontrés avec les réglages par défaut du pipeline Morphologist.
-  L'organisation de ces composants est compatible avec les anciens pipelines (2007, 2004).
-  Pratiquement, ceci signifie qu'ils peuvent être utilisés pour remplacer un ancien traitement, dans la mesure ou les briques de validation permettent
+  L'organisation de ces composants est compatible avec les anciens pipelines (2011, 2007, 2004). Cependant les anciennes variantes qui n'ont plus lieu d'être ont été retirées du pipeline 2012. Elles peuvent toujours être trouvées dans les anciennes versions du pipeline, toujours présentes dans <a href="bvcategory://morphologist/segmentationpipeline/older_pipelines">"Pipeline de segmentation/Anciens pipelines"</a>.
+  Pratiquement, ceci signifie que les composants individuels peuvent être utilisés pour remplacer un ancien traitement, dans la mesure ou les briques de validation permettent
   d'empêcher le pipeline général d'écraser ces nouveaux résultats.
-  Une des améliorations notoire est un nouvel algorithme de correction de biais qui devrait mieux se comporter avec les images dotées d'un faible contraste gris/blanc relativement à l'amplitude du biais.
+  Presque toutes les étapes ont été notablement améliorées dans le pipeline Morphologist 2012.
   </p>
     <h2>Database organization for T1-weighted data</h2>
   <p>T1-weighted data are stored in a directory <i>database/protocol/subject/</i><b>t1mri</b>. Database, protocol and subject directories names are choosen by the user but t1mri is a fixed name. </p>
