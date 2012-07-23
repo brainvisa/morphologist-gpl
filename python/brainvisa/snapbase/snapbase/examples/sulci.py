@@ -3,8 +3,8 @@ from brainvisa.snapbase.snapbase import SnapBase
 
 class SulciSnapBase(SnapBase):
 
-    def __init__(self, output_path):
-        SnapBase.__init__(self, output_path)
+    def __init__(self, preferences):
+        SnapBase.__init__(self, preferences)
 
 
     def get_dictdata(self, selected_attributes, verbose=True):
@@ -109,8 +109,9 @@ class SulciSnapBase(SnapBase):
 
 class LeftSulciSingleViewSnapBase(SulciSnapBase):
 
-    def __init__(self, output_path):
-        SulciSnapBase.__init__(self, output_path)
+    def __init__(self, preferences):
+        SulciSnapBase.__init__(self, preferences)
+        self.preferences['side'] = 'left'
         self.data_type = 'Left Cortical folds graph'
 
     def get_views_of_interest(self):
@@ -121,8 +122,9 @@ class LeftSulciSingleViewSnapBase(SulciSnapBase):
 
 class RightSulciSingleViewSnapBase(SulciSnapBase):
 
-    def __init__(self, output_path):
-        SulciSnapBase.__init__(self, output_path)
+    def __init__(self, preferences):
+        SulciSnapBase.__init__(self, preferences)
+        self.preferences['side'] = 'right'
         self.data_type = 'Right Cortical folds graph'
 
     def get_views_of_interest(self):
@@ -133,8 +135,9 @@ class RightSulciSingleViewSnapBase(SulciSnapBase):
 
 class LeftSulciMultiViewSnapBase(SulciSnapBase):
 
-    def __init__(self, output_path):
-        SulciSnapBase.__init__(self, output_path)
+    def __init__(self, preferences):
+        SulciSnapBase.__init__(self, preferences)
+        self.preferences['side'] = 'left'
         self.data_type = 'Left Cortical folds graph'
 
     def get_views_of_interest(self):
@@ -145,8 +148,9 @@ class LeftSulciMultiViewSnapBase(SulciSnapBase):
 
 class RightSulciMultiViewSnapBase(SulciSnapBase):
 
-    def __init__(self, output_path):
-        SulciSnapBase.__init__(self, output_path)
+    def __init__(self, preferences):
+        SulciSnapBase.__init__(self, preferences)
+        self.preferences['side'] = 'right'
         self.data_type = 'Right Cortical folds graph'
 
     def get_views_of_interest(self):

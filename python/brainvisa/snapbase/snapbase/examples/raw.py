@@ -29,7 +29,8 @@ class RawSnapBase(SnapBase):
             # Retrieves MRIs
             options.update({'_type' : 'Raw T1 MRI',
                             'subject' : subject,
-                            'protocol' : protocol})
+                            'protocol' : protocol,
+                            'normalized' : 'no'})
             mris = [mri for mri in self.db.findDiskItems(**options)]
 
             if len(mris) == 1:

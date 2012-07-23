@@ -29,6 +29,8 @@ class HoverButton(QtGui.QPushButton):
             self.emit(Qt.SIGNAL('enter'), str('All Raw T1 MRI (tablets) in the database'))
         elif self.objectName() == 'brainmask_btn':
             self.emit(Qt.SIGNAL('enter'), str('All T1 Brain Mask in the database'))
+        elif self.objectName() == 'btn_help':
+            self.emit(Qt.SIGNAL('enter'), str('Display a comprehensive help message'))
 
     def leaveEvent(self, event):
         self.emit(Qt.SIGNAL('leave'))
@@ -47,6 +49,8 @@ class HoverComboBox(QtGui.QComboBox):
 
 class Ui_attribute_widget(QtGui.QFrame):
     def __init__(self, parent, text='', items=[]):
+        import locale
+
         QtGui.QWidget.__init__(self, parent)
         self.horiz_layout = QtGui.QHBoxLayout(self)
         self.att_lbl = QtGui.QLabel(self)
@@ -61,6 +65,9 @@ class Ui_attribute_widget(QtGui.QFrame):
         self.att_combo.setObjectName('att_combo')
         self.att_combo.setMinimumSize(QtCore.QSize(200,31))
         self.att_combo.addItem('< any >')
+
+        locale.setlocale(locale.LC_ALL, "")
+        items.sort(cmp=locale.strcoll)
         for each in items:
             self.att_combo.addItem(each)
         self.horiz_layout.addWidget(self.att_combo)
@@ -73,7 +80,7 @@ class Ui_attributes_window(object):
     def change_event(self):
 
         dictdata = self.snap_base.get_dictdata(self.get_attributes(), verbose=False)
-        self.title_lbl.setText('%i dictdata'%len(dictdata))
+        self.title_lbl.setText('%i items found'%len(dictdata))
         self.ok_btn.setEnabled(len(dictdata)!=0)
         print dictdata
 
@@ -151,12 +158,15 @@ class Ui_attributes_window(object):
 class Ui_main_window(object):
 
     def leave_status(self):
-        self.statusbar.showMessage('')
+        self.statusbar.showMessage(self.statusbar.default_status_msg)
 
     def enter_status(self, msg):
         self.statusbar.showMessage(msg)
 
-    def setupUi(self, main_window):
+    def set_default_status_msg(self, msg):
+        self.statusbar.default_status_msg = msg
+
+    def setupUi(self, main_window, default_status_msg=''):
         main_window.setObjectName("main_window")
         main_window.resize(348, 571)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
@@ -199,7 +209,7 @@ class Ui_main_window(object):
         self.greywhite_btn.setIcon(icon)
         self.greywhite_btn.setIconSize(QtCore.QSize(90, 90))
         self.greywhite_btn.setObjectName("greywhite_btn")
-        self.gridLayout.addWidget(self.greywhite_btn, 0, 0, 1, 1)
+        self.gridLayout.addWidget(self.greywhite_btn, 1, 1, 1, 1)
         self.hemimesh_btn = HoverButton(self.widget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -213,7 +223,7 @@ class Ui_main_window(object):
         self.hemimesh_btn.setIcon(icon1)
         self.hemimesh_btn.setIconSize(QtCore.QSize(90, 90))
         self.hemimesh_btn.setObjectName("hemimesh_btn")
-        self.gridLayout.addWidget(self.hemimesh_btn, 0, 1, 1, 1)
+        self.gridLayout.addWidget(self.hemimesh_btn, 2, 0, 1, 1)
         self.whitemesh_btn = HoverButton(self.widget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -227,7 +237,7 @@ class Ui_main_window(object):
         self.whitemesh_btn.setIcon(icon2)
         self.whitemesh_btn.setIconSize(QtCore.QSize(90, 90))
         self.whitemesh_btn.setObjectName("whitemesh_btn")
-        self.gridLayout.addWidget(self.whitemesh_btn, 0, 2, 1, 1)
+        self.gridLayout.addWidget(self.whitemesh_btn, 1, 2, 1, 1)
         self.splitbrain_btn = HoverButton(self.widget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -255,7 +265,7 @@ class Ui_main_window(object):
         self.sulci_btn.setIcon(icon4)
         self.sulci_btn.setIconSize(QtCore.QSize(90, 90))
         self.sulci_btn.setObjectName("sulci_btn")
-        self.gridLayout.addWidget(self.sulci_btn, 1, 1, 1, 1)
+        self.gridLayout.addWidget(self.sulci_btn, 2, 1, 1, 1)
         self.raw_btn = HoverButton(self.widget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -269,7 +279,7 @@ class Ui_main_window(object):
         self.raw_btn.setIcon(icon5)
         self.raw_btn.setIconSize(QtCore.QSize(90, 90))
         self.raw_btn.setObjectName("raw_btn")
-        self.gridLayout.addWidget(self.raw_btn, 1, 2, 1, 1)
+        self.gridLayout.addWidget(self.raw_btn, 0, 0, 1, 1)
         self.fibers_btn = HoverButton(self.widget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -283,7 +293,8 @@ class Ui_main_window(object):
         self.fibers_btn.setIcon(icon6)
         self.fibers_btn.setIconSize(QtCore.QSize(90, 90))
         self.fibers_btn.setObjectName("fibers_btn")
-        self.gridLayout.addWidget(self.fibers_btn, 2, 0, 1, 1)
+        self.gridLayout.addWidget(self.fibers_btn, 2, 2, 1, 1)
+        self.fibers_btn.setEnabled(False)
         self.comparison_btn = HoverButton(self.widget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -297,7 +308,8 @@ class Ui_main_window(object):
         self.comparison_btn.setIcon(icon7)
         self.comparison_btn.setIconSize(QtCore.QSize(90, 90))
         self.comparison_btn.setObjectName("comparison_btn")
-        self.gridLayout.addWidget(self.comparison_btn, 2, 1, 1, 1)
+        self.gridLayout.addWidget(self.comparison_btn, 3, 0, 1, 1)
+        self.comparison_btn.setEnabled(False)
         self.tablet_btn = HoverButton(self.widget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -311,7 +323,7 @@ class Ui_main_window(object):
         self.tablet_btn.setIcon(icon8)
         self.tablet_btn.setIconSize(QtCore.QSize(90, 90))
         self.tablet_btn.setObjectName("tablet_btn")
-        self.gridLayout.addWidget(self.tablet_btn, 2, 2, 1, 1)
+        self.gridLayout.addWidget(self.tablet_btn, 0, 1, 1, 1)
         self.brainmask_btn = HoverButton(self.widget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -325,7 +337,7 @@ class Ui_main_window(object):
         self.brainmask_btn.setIcon(icon9)
         self.brainmask_btn.setIconSize(QtCore.QSize(90, 90))
         self.brainmask_btn.setObjectName("brainmask_btn")
-        self.gridLayout.addWidget(self.brainmask_btn, 3, 0, 1, 1)
+        self.gridLayout.addWidget(self.brainmask_btn, 0, 2, 1, 1)
         self.btn_8 = HoverButton(self.widget)
         self.btn_8.setEnabled(False)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
@@ -337,17 +349,27 @@ class Ui_main_window(object):
         self.btn_8.setText("")
         self.btn_8.setObjectName("btn_8")
         self.gridLayout.addWidget(self.btn_8, 3, 1, 1, 1)
-        self.btn_9 = HoverButton(self.widget)
-        self.btn_9.setEnabled(False)
+#        self.btn_9 = HoverButton(self.widget)
+#        self.btn_9.setEnabled(False)
+#        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+#        sizePolicy.setHorizontalStretch(0)
+#        sizePolicy.setVerticalStretch(0)
+#        sizePolicy.setHeightForWidth(self.btn_9.sizePolicy().hasHeightForWidth())
+#        self.btn_9.setSizePolicy(sizePolicy)
+#        self.btn_9.setMinimumSize(QtCore.QSize(100, 100))
+#        self.btn_9.setText("")
+#        self.btn_9.setObjectName("btn_9")
+#        self.gridLayout.addWidget(self.btn_9, 3, 2, 1, 1)
+        self.btn_help = HoverButton(self.widget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.btn_9.sizePolicy().hasHeightForWidth())
-        self.btn_9.setSizePolicy(sizePolicy)
-        self.btn_9.setMinimumSize(QtCore.QSize(100, 100))
-        self.btn_9.setText("")
-        self.btn_9.setObjectName("btn_9")
-        self.gridLayout.addWidget(self.btn_9, 3, 2, 1, 1)
+        sizePolicy.setHeightForWidth(self.btn_help.sizePolicy().hasHeightForWidth())
+        self.btn_help.setSizePolicy(sizePolicy)
+        self.btn_help.setMinimumSize(QtCore.QSize(100, 33))
+        self.btn_help.setText("?")
+        self.btn_help.setObjectName("btn_help")
+        self.gridLayout.addWidget(self.btn_help, 3, 2, 1, 1)
         self.verticalLayout.addWidget(self.widget)
         self.db_combobox = HoverComboBox(self.widget)
         self.db_combobox.setStyleSheet('color: white; selection-color:white; background-color: black;')
@@ -365,6 +387,7 @@ class Ui_main_window(object):
         self.menubar.setObjectName("menubar")
         main_window.setMenuBar(self.menubar)
         self.statusbar = QtGui.QStatusBar(main_window)
+        self.statusbar.default_status_msg = default_status_msg
         self.statusbar.setObjectName("statusbar")
         self.statusbar.setFont(font)
         self.statusbar.setStyleSheet('color: white; background-color: black;')
@@ -400,5 +423,7 @@ class Ui_main_window(object):
         self.comparison_btn.connect(self.comparison_btn, Qt.SIGNAL('leave'), self.leave_status)
         self.brainmask_btn.connect(self.brainmask_btn, Qt.SIGNAL('enter'), self.enter_status)
         self.brainmask_btn.connect(self.brainmask_btn, Qt.SIGNAL('leave'), self.leave_status)
+        self.btn_help.connect(self.btn_help, Qt.SIGNAL('enter'), self.enter_status)
+        self.btn_help.connect(self.btn_help, Qt.SIGNAL('leave'), self.leave_status)
         self.db_combobox.connect(self.db_combobox, Qt.SIGNAL('enter'), self.enter_status)
         self.db_combobox.connect(self.db_combobox, Qt.SIGNAL('leave'), self.leave_status)

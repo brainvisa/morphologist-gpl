@@ -215,7 +215,7 @@ class SnapBase():
 
         from PyQt4 import QtGui, QtCore, Qt
         dialog = QtGui.QDialog(None)
-        from interface import *
+        import interface
 
         default_att = self.preferences['default_attributes']
         items = []
@@ -229,7 +229,7 @@ class SnapBase():
         print diskitems
         res = 0
         # (If no diskitems then error)
-        if len(diskitems) > 0 :
+        if len(diskitems) > 1 :
             # Consider only attributes that are common to all diskitems
             att = set(diskitems[0].attributes().keys())
             for dsk in diskitems:
@@ -255,100 +255,28 @@ class SnapBase():
                     raise
 
             # Running the GUI
-            gui = Ui_attributes_window()
+            gui = interface.Ui_attributes_window()
             gui.setupUi(dialog, items)
             gui.connect_signals(self)
             gui.change_event()
             res = dialog.exec_()
+        elif len(diskitems) == 1:
+            res = -1
+            att_res = {}
+            for att in diskitems[0].attributes():
+                att_res[att] = diskitems[0].get(att)
+            print res, att_res
 
         # Retrieving selected attributes and returning the result
         if res == 1:
             att_res = gui.get_attributes()
             print res, att_res
             return True, att_res
+        elif res == -1:
+            return True, att_res
         else:
             return False, options
 
-    def check_diskitems_ambiguity_old(self, db, options, verbose=True):
-
-        if verbose:
-            print 'checking ambiguity %s' %options
-        # Get a first list of diskitems according to given options
-        opt = {}
-        for key, value in options.items():
-            if value != '*':
-                opt[key] = value
-        diskitems = [dsk for dsk in db.findDiskItems(**opt)]
-
-        # (If no diskitems then error)
-        if len(diskitems) > 0 :
-            # Consider only attributes that are common to all diskitems
-            att = set(diskitems[0].attributes().keys())
-            for dsk in diskitems:
-                att = att.intersection(set(dsk.attributes().keys()))
-
-            # Select attributes taking string-based values
-            attributes = {}
-            for each in att:
-                if basestring in type(diskitems[0].get(each)).mro():
-                    attributes[each] = set()
-            # List all existing possible values for these attributes
-            for each in attributes.keys():
-                for dsk in diskitems:
-                    attributes[each].add(dsk.get(each))
-
-            # If any attribute is marked as '*' (like subjects or protocols,
-            # which may all included regardless of their values), consider
-            # that no filter is applied to that one.
-            for key, value in options.items():
-                if value == '*' and attributes.has_key(key):
-                    if verbose:
-                        print 'all values of attribute %s are included (%s)'%(key, value)
-                    attributes.pop(key)
-
-            # Consider remaining attributes: any attribute with only one
-            # possible value is removed from filtering
-            for key, value in attributes.items():
-		if len(value) == 1:
-		    attributes.pop(key)
-                    if verbose:
-                        print 'attribute %s has only one value and is ignored (%s)'%(key, value)
-
-            # Check for attributes that may have one specific value per diskitem
-            # (like an extra subject id)
-            if len(attributes.items()) == 0:
-                return True, options
-            else :
-                key, value = attributes.items()[0]
-                res = []
-                for each in value:
-                    opt = {}
-                    for k, v in options.items():
-                        if v != '*':
-                            opt[k] = v
-                    opt.update({key: value})
-                    res = [i for i in db.findDiskItems(**opt)]
-                    if len(res) > 1:
-                        from PyQt4 import QtGui, Qt, QtCore
-                        v = [unicode(i) for i in list(value)]
-                        item, ok = Qt.QInputDialog.getItem(None, 'Choose',
-                             'beware of attribute %s'%key,
-                             v, 0, False)
-                        if ok:
-                            ok = Qt.QMessageBox.information(None, 'Attribute %s'%key,
-                                 'Your choice : %s'%item)
-                            options[key] = item
-                            return False, options
-                        else:
-                            ok = Qt.QMessageBox.information(None, 'Attribute %s'%key,
-                                 'All values for this attribute will be included. '\
-                                 'If ambiguity subsists, rerun the process from the beginning.')
-                            options[key] ='*'
-                            return False, options
-        else:
-            raise IndexError
-
-        return diskitems, options
 
     def get_slices_of_interest(self, data):
         '''
@@ -371,6 +299,7 @@ class SnapBase():
 
     def read_data(self, diskitems, data_type):
         '''
+    print res, att_res
         Given a dictionary of diskitems for one subject,
         returns a tuple of relevant data
         '''
@@ -463,7 +392,7 @@ class SnapBase():
 
         return outfile_path
 
-    def snap_base(self, database_checker, main_window = None, qt_app = None):
+    def snap_base(self, database, main_window = None, qt_app = None):
 
         import anatomist.direct.api as ana
         from PyQt4 import QtGui, QtCore, Qt
@@ -495,7 +424,7 @@ class SnapBase():
         if self.preferences.has_key('side'):
             general_options = {'side' : self.preferences['side']}
 
-        dictdata = self.get_list_diskitems(database_checker, general_options)
+        dictdata = self.get_list_diskitems(database, general_options)
         print 'dictdata', dictdata
 
         # If no dictdata (e.g. closing the attributes window), then nothing happens
@@ -504,8 +433,8 @@ class SnapBase():
 
         # Create Anatomist window
         a = ana.Anatomist('-b')
-        if runqt:
-            main_window = MainWindow()
+        if main_window is None:
+            main_window = QtGui.QMainWindow()
         central_layout, central_widget, size_policy = create_simple_qt_app(main_window)
 
         block = QtGui.QWidget(central_widget)
@@ -631,8 +560,8 @@ class SnapBase():
                        'Left Hemisphere White Mesh' : 'mesh',
                        'Right Hemisphere White Mesh' : 'mesh',
                        'Split Brain' : 'mri',
-                       'Left Cortical folds Graph' : 'mri',
-                       'Right Cortical folds Graph' : 'mri',
+                       'Left Cortical folds graph' : 'mri',
+                       'Right Cortical folds graph' : 'mri',
                        'SPM BrainVisa Comparison' : 'mri',
                        'Raw T1 MRI' : 'mri',
                        'Vitamin Tablet Snapshots' : 'mri',
@@ -660,8 +589,10 @@ class SnapBase():
         #if runqt:
         #    qt_app.exec_()
 
-        if runqt:
-            neuroHierarchy.databases.currentThreadCleanup()
+
+
+        print 'closing everything'
+        neuroHierarchy.databases.currentThreadCleanup()
 
         if self.preferences.has_key('create_poster') and self.preferences.has_key('create_poster_command') and self.preferences['create_poster']:
             print 'generating poster'
@@ -674,5 +605,13 @@ class SnapBase():
                 print 'removing ', string.join([i for i in output_files], ' ')
                 os.system('rm -f %s'%string.join([i for i in output_files], ' '))
 
+        print 'saving preferences'
+        import main
+        main.save_preferences(self.preferences)
 
-        main_window.closeEvent(None)
+        # Keep track of the list of produced files but after saving preferences so it is not stored in the prefs
+        self.preferences['output_files'] = output_files
+
+        main_window.close()
+        ok = Qt.QMessageBox.warning(None, 'Success.',
+            '%d snapshots were succesfully created in %s.'%(len(output_files), self.preferences['output_path']), Qt.QMessageBox.Ok)

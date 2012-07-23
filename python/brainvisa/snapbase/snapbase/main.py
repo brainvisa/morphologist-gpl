@@ -1,34 +1,50 @@
 # -*- coding: utf-8 -*-
-
-from brainvisa import axon
-axon.initializeProcesses()
+import sys
+if not sys.modules.has_key('brainvisa.axon'):
+    from brainvisa import axon
+    axon.initializeProcesses()
 
 from brainvisa.data import neuroHierarchy
 from brainvisa.configuration import neuroConfig
 
-
 from PyQt4 import QtGui, Qt, QtCore
-import sys
 
 main_window = None
 qt_app = None
 database = None
 preferences = {}
 
+# Display help message box
+class HelpWindow(QtGui.QWidget):
+    def __init__(self, parent=None):
+        QtGui.QWidget.__init__(self, parent)
 
-# Inheriting QMainWindow to implement closeEvent
-
-class MainWindow(QtGui.QMainWindow):
-    def __init__(self, parent = None):
-        QtGui.QMainWindow.__init__(self, parent)
+    def setupUi(self, parent):
+        self.parent = parent
+        self.setObjectName('helpbox')
+        self.setWindowTitle('SnapBase v0.2 introduction')
+        self.resize(348, 571)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.sizePolicy().hasHeightForWidth())
+        self.setSizePolicy(sizePolicy)
+        self.doc = QtGui.QTextDocument()
+        self.doc.setHtml('bonjour')
+        self.qte = QtGui.QTextEdit(self)
+        self.qte.setMinimumSize(QtCore.QSize(200,31))
+        self.setMinimumSize(QtCore.QSize(200,31))
+        self.qte.setDocument(self.doc)
+        self.layout = QtGui.QVBoxLayout(self)
+        self.layout.addWidget(self.qte)
 
     def closeEvent(self, event):
-        print 'closing everything'
-        neuroHierarchy.databases.currentThreadCleanup()
-        print 'saving preferences'
-        save_preferences(preferences)
-        sys.exit(0)
+        self.parent.setEnabled(True)
 
+def display_help_msgbox():
+    global gui
+    gui.helpbox.parent.setEnabled(False)
+    gui.helpbox.show()
 
 # Voxel-based data (without choice of hemisphere side)
 
@@ -128,13 +144,13 @@ def sulci_snap_base():
                 ['left','right'], 0, False)
         if ok:
             if item == 'left':
-                preferences['side'] = 'left'
+                #preferences['side'] = 'left'
                 if choice == 'multi':
                     snap = sulci.LeftSulciMultiViewSnapBase(preferences)
                 elif choice == 'single':
                     snap = sulci.LeftSulciSingleViewSnapBase(preferences)
             elif item == 'right':
-                preferences['side'] = 'right'
+                #preferences['side'] = 'right'
                 if choice == 'multi':
                     snap = sulci.RightSulciMultiViewSnapBase(preferences)
                 elif choice == 'single':
@@ -151,7 +167,7 @@ def fibers_snap_base():
 
 # Various functions
 
-def select_db(item):
+def select_db(item, verbose=True):
     '''
     Setup the global variable database according to the selected item in
     the combobox.
@@ -161,8 +177,9 @@ def select_db(item):
     global database, preferences
     database = neuroHierarchy.databases._databases.items()[item][1]
     preferences['database_dir'] = database.directory
-    msgBox = Qt.QMessageBox.information(None, 'Database selected',
-        'Snapshots will be generated from the following database.\n%s'%database.directory, Qt.QMessageBox.Ok)
+    if verbose:
+        msgBox = Qt.QMessageBox.information(None, 'Database selected',
+            'Snapshots will be generated from the following database.\n%s'%database.directory, Qt.QMessageBox.Ok)
 
 
 def save_preferences(pref):
@@ -196,15 +213,17 @@ def load_preferences(minf_dict):
 
 def main():
 
-    global main_window, qt_app, database, preferences
+    global main_window, gui, qt_app, database, preferences
     import interface
 
     # Create Qt App and window
     qt_app = Qt.QApplication( sys.argv )
     qt_app.setQuitOnLastWindowClosed(True)
-    main_window = MainWindow()
+    main_window = QtGui.QMainWindow()
     gui = interface.Ui_main_window()
     gui.setupUi(main_window)
+    gui.helpbox = HelpWindow()
+    gui.helpbox.setupUi(main_window)
 
     # Connecting Qt Signals
     gui.greywhite_btn.clicked.connect(grey_white_snap_base)
@@ -217,6 +236,7 @@ def main():
     gui.comparison_btn.clicked.connect(comparison_snap_base)
     gui.tablet_btn.clicked.connect(tablet_snap_base)
     gui.brainmask_btn.clicked.connect(brainmask_snap_base)
+    gui.btn_help.clicked.connect(display_help_msgbox)
     gui.db_combobox.activated.connect(select_db)
     gui.connect_signals()
 
@@ -244,7 +264,6 @@ def main():
                 'Please add at least one database in BrainVisa.', Qt.QMessageBox.Ok)
         item = gui.db_combobox.findText(preferences['database_dir'])
         gui.db_combobox.setCurrentIndex(item)
-        gui.statusbar.showMessage('output_path = %s'%preferences['output_path'])
     else:
         # Otherwise, create it and update all necessary
         preferences = load_preferences({})
@@ -254,6 +273,7 @@ def main():
         msgBox = Qt.QMessageBox.information(None, 'SnapBase settings file created',
             'Settings will be stored in %s.\nSnapshots will be saved as %s<subject>_<view>.png. It can be edited in the settings file.'%(snapbase_settings_file, preferences['output_path']), Qt.QMessageBox.Ok)
 
+    gui.set_default_status_msg('output path : %s'%preferences['output_path'])
     main_window.show()
     qt_app.exec_()
     neuroHierarchy.databases.currentThreadCleanup()
