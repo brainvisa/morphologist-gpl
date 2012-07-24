@@ -1,0 +1,122 @@
+<b>User stories </b><br>
+<i><font style="font-family:times new roman,serif" size="3"><br>
+"As a neuroimager, I want to efficiently <b>control the quality of my raw data</b>, <b>whatever the number of subjects</b>."<br>
+<br>
+"As an image processer in the field of neuroscience, I want an efficient quality control on <b>each step of my processing pipeline on the whole database</b>."<br>
+<br>
+"As a neuroscientist, I want beautiful easy images to <b>present results obtained from big cohorts</b>."<br>
+<br>
+"As a neuroscientist, I want to <b>compare many subjects</b> on a same single screen so that I can <b>detect subtle group patterns and abnormalities</b>.</font></i>"<br>
+<br>
+<br>
+<b>Features</b><br>
+<br>
+Generating snapshots of many subjects on a same image<br>
+<br>
+Any type of data is supported, voxel-based or vertex-based, as long as it is viewable in Anatomist software.<br>
+<br>
+Easy selection of subjects, subgroups, or image types, by integration in BrainVisa database system<br>
+<br>
+Fine tuning of the scene and visualization parameters as camera orientation, color maps, slice selection<br>
+<br>
+Code modularity for easy adding of new tools<br>
+<br>
+Python API for batch processing<br>
+<br>
+<br>
+<b>Counters</b><br>
+<br>
+Number of subjects on the biggest snapshot<br>
+<br>
+Number of different tools<br>
+<br>
+<br>
+<b>Documentation</b><br>
+<br>
+Use examples<br>
+<br>
+How to add new plugins<br>
+<br>
+Coding principles<br>
+<br>
+Public API<br>
+<br>
+Dependencies<br>
+<br>
+<br>
+<b>Gallery</b><br>
+<br>
+Raw :<br>
+<br>
+<div style="display:inline;margin:5px 0pt 0pt 10px;text-align:center"><a href="snapshot_raw_A.png"><img src="snapshot_raw_A.png?height=200&amp;width=144" border="0" height="200" width="144"></a></div>
+<div style="display:inline;margin:5px 0pt 0pt 10px;text-align:center"><a href="snapshot_raw_C.png"><img src="snapshot_raw_C.png?height=200&amp;width=130" border="0" height="200" width="130"></a></div>
+<div style="display:inline;margin:5px 0pt 0pt 10px;text-align:center"><a href="snapshot_raw_S.png"><img src="snapshot_raw_S.png?height=200&amp;width=199" border="0" height="200" width="199"></a></div>
+<br>
+<br>
+Vitamin Tablet :<br>
+<br>
+<div style="display:block;text-align:center"><a href="snapshot_tablet_A.png"><img src="snapshot_tablet_A.png?height=200&amp;width=113" border="0" height="200" width="113"></a></div>
+<br>
+Brain Mask :<br>
+<br>
+<div style="display:inline;margin:5px 0pt 0pt 10px;text-align:center"><a href="snapshot_brainmask_C.png"><img src="snapshot_brainmask_C.png?height=200&amp;width=173" border="0" height="200" width="173"></a></div>
+<div style="display:inline;margin:5px 0pt 0pt 10px;text-align:center"><a href="snapshot_brainmask_S.png"><img src="snapshot_brainmask_S.png?height=150&amp;width=200" border="0" height="150" width="200"></a></div>
+<br>
+<br>
+Split Brain :<br>
+<br>
+<div style="display:inline;margin:5px 0pt 0pt 10px;text-align:center"><a href="snapshot_split_C.png"><img src="snapshot_split_C.png?height=158&amp;width=200" border="0" height="158" width="200"></a></div>
+<div style="display:inline;text-align:center;margin:5px 0pt 0pt 10px"><a href="snapshot_split_S.png"><img src="snapshot_split_S.png?height=103&amp;width=200" border="0" height="103" width="200"></a></div>
+<br>
+<br>
+Grey White :<br>
+<br>
+<div style="display:inline;margin:5px 0pt 0pt 10px;text-align:center"><a href="snapshot_greywhite_A.png" imageanchor="1"><img src="snapshot_greywhite_A.png?height=200&amp;width=182" border="0" height="200" width="182"></a></div>
+<div style="display:inline;margin:5px 0pt 0pt 10px;text-align:center"><a href="snapshot_greywhite_S.png" imageanchor="1"><img src="snapshot_greywhite_S.png?height=103&amp;width=200" border="0" height="103" width="200"></a></div>
+<div style="text-align:center"><br>
+</div>
+<div style="display:block;text-align:left">
+<div style="display:block;text-align:center;margin-right:auto;margin-left:auto">
+<div style="text-align:left">White Mesh :<br>
+</div>
+<br>
+<a href="snapshot_white_L.png" imageanchor="1"><img src="snapshot_white_L.png?height=200&amp;width=190" border="0" height="200" width="190"></a><br>
+<br>
+<div style="text-align:left">Hemi Mesh :<br>
+</div>
+<br>
+</div>
+<div style="text-align:center"><a href="snapshot_mesh.png" imageanchor="1"><img src="snapshot_mesh.png?height=141&amp;width=200" border="0" height="141" width="200"></a></div>
+</div>
+<br>
+<br>
+<b>Configuration</b><br>
+<br>
+The file <i>snapbase_settings.minf</i> is created in <i>~/.brainvisa</i>/ when you run SnapBase for the first time.<br>
+<br>
+By simply editing it, various settings can be configured :<br>
+<br>
+<i>default_attributes</i> : data subsets can be filtered according to specific attributes contained in the BrainVisa database (e.g. subject name, protocol name, acquisition name, ...)<br>
+&nbsp; default value : <i>subject, protocol, acquisition</i><br>
+<br>
+<i>filename_root</i> : each snapshot will have a filename starting with this expression<br>
+&nbsp; default : <i>snapshots_</i><br>
+<br>
+<i>database_dir</i> : default database to shoot. This is modified through the bottom listbox on the main window.<br>
+&nbsp; default : BrainVisa shared database<br>
+<br>
+<i>output_path</i> : default directory where the snapshots are stored. This value is recalled in the status bar in the main window.<br>
+<span>&nbsp; default : <i>/tmp/<br>
+</i><br>
+</span><br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<div style="display:block;text-align:left"><a href="snapshot_tablet_A.png" imageanchor="1"><br>
+</a></div>
+<br>
+<br>
+

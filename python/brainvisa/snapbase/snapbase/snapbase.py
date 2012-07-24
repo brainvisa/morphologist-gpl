@@ -596,7 +596,7 @@ class SnapBase():
 
         if self.preferences.has_key('create_poster') and self.preferences.has_key('create_poster_command') and self.preferences['create_poster']:
             print 'generating poster'
-            import os, string
+            import string
             create_poster_command = self.preferences['create_poster_command']
             output_dir = os.path.split(self.preferences['output_path'])[0]
             os.system('%s %s %s'%(create_poster_command, string.join([i for i in output_files], ' '), os.path.join(output_dir, 'poster.jpg') ))
@@ -615,3 +615,4 @@ class SnapBase():
         main_window.close()
         ok = Qt.QMessageBox.warning(None, 'Success.',
             '%d snapshots were succesfully created in %s.'%(len(output_files), self.preferences['output_path']), Qt.QMessageBox.Ok)
+        sys.exit(0)

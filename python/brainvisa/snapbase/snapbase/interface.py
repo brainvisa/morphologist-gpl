@@ -80,7 +80,7 @@ class Ui_attributes_window(object):
     def change_event(self):
 
         dictdata = self.snap_base.get_dictdata(self.get_attributes(), verbose=False)
-        self.title_lbl.setText('%i items found'%len(dictdata))
+        self.title_lbl.setText('%i item(s) found'%len(dictdata))
         self.ok_btn.setEnabled(len(dictdata)!=0)
         print dictdata
 

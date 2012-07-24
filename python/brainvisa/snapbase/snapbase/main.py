@@ -30,7 +30,12 @@ class HelpWindow(QtGui.QWidget):
         sizePolicy.setHeightForWidth(self.sizePolicy().hasHeightForWidth())
         self.setSizePolicy(sizePolicy)
         self.doc = QtGui.QTextDocument()
-        self.doc.setHtml('bonjour')
+        import os
+        help_file = '%s/doc/index.html'%os.path.split(__file__)[0]
+        print help_file
+        f = open(help_file, 'r')
+        help_text = f.read()
+        self.doc.setHtml(help_text)
         self.qte = QtGui.QTextEdit(self)
         self.qte.setMinimumSize(QtCore.QSize(200,31))
         self.setMinimumSize(QtCore.QSize(200,31))
@@ -214,7 +219,7 @@ def load_preferences(minf_dict):
 def main():
 
     global main_window, gui, qt_app, database, preferences
-    import interface
+    import interface, sys
 
     # Create Qt App and window
     qt_app = Qt.QApplication( sys.argv )
@@ -277,3 +282,4 @@ def main():
     main_window.show()
     qt_app.exec_()
     neuroHierarchy.databases.currentThreadCleanup()
+    sys.exit(0)
