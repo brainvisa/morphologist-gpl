@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import sys
+import os, sys
 if not sys.modules.has_key('brainvisa.axon'):
     from brainvisa import axon
     axon.initializeProcesses()
@@ -15,9 +15,10 @@ database = None
 preferences = {}
 
 # Display help message box
-class HelpWindow(QtGui.QWidget):
+class HelpWindow(QtGui.QDialog):
     def __init__(self, parent=None):
-        QtGui.QWidget.__init__(self, parent)
+        QtGui.QDialog.__init__(self, parent)
+        self.setModal(True)
 
     def setupUi(self, parent):
         self.parent = parent
@@ -29,26 +30,32 @@ class HelpWindow(QtGui.QWidget):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.sizePolicy().hasHeightForWidth())
         self.setSizePolicy(sizePolicy)
-        self.doc = QtGui.QTextDocument()
-        import os
+#        self.doc = QtGui.QTextDocument()
         help_file = '%s/doc/index.html'%os.path.split(__file__)[0]
-        print help_file
-        f = open(help_file, 'r')
-        help_text = f.read()
-        self.doc.setHtml(help_text)
-        self.qte = QtGui.QTextEdit(self)
+#        print help_file
+#        f = open(help_file, 'r')
+#        help_text = f.read()
+#        self.doc.setHtml(help_text)
+#        self.qte = QtGui.QTextEdit(self)
+#        self.qte.setReadOnly(True)
+        from PyQt4 import QtWebKit
+        self.qte = QtWebKit.QWebView(self)
+        self.qte.load(Qt.QUrl(help_file))
         self.qte.setMinimumSize(QtCore.QSize(200,31))
         self.setMinimumSize(QtCore.QSize(200,31))
-        self.qte.setDocument(self.doc)
+#        self.qte.setDocument(self.doc)
         self.layout = QtGui.QVBoxLayout(self)
         self.layout.addWidget(self.qte)
 
     def closeEvent(self, event):
-        self.parent.setEnabled(True)
+        #self.parent.setEnabled(True)
+        pass
 
 def display_help_msgbox():
-    global gui
-    gui.helpbox.parent.setEnabled(False)
+    global gui, main_window
+    #gui.helpbox.parent.setEnabled(False)
+    gui.helpbox = HelpWindow(main_window)
+    gui.helpbox.setupUi(main_window)
     gui.helpbox.show()
 
 # Voxel-based data (without choice of hemisphere side)
@@ -227,8 +234,6 @@ def main():
     main_window = QtGui.QMainWindow()
     gui = interface.Ui_main_window()
     gui.setupUi(main_window)
-    gui.helpbox = HelpWindow()
-    gui.helpbox.setupUi(main_window)
 
     # Connecting Qt Signals
     gui.greywhite_btn.clicked.connect(grey_white_snap_base)
