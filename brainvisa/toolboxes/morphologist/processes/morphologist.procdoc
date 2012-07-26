@@ -34,15 +34,15 @@ Permet de déclencher une chaîne d'analyse d'images qui extrait divers objets d
 </head>
 
 <p>
-Ce pipeline se nomme désormais "<b>Morphologist</b>", il est le principal point d'entrée de la toolbox "IRM T1", qui se nommera elle-même Morphologist dans un futur proche. C'est l'évolution de l'ancien "Pipeline T1 2007".
+Ce pipeline se nomme désormais "<b>Morphologist</b>", il est le principal point d'entrée de la toolbox "Morphologist" dédiée aux traitement des IRM T1. C'est l'évolution de l'ancien "Pipeline T1".
 </p>
 
 <p>
-Celui-ci constitue la seconde version de Morphologist. Les anciennes versions du pipeline sont toujours accessibles dans le répertoire <a href="categories/t1mri/segmentationpipeline/category_documentation.html">"Pipeline de segmentation / Anciens pipelines"</a> et devraient en principe fonctionner comme avant.
+Celui-ci constitue la seconde version de Morphologist. Les anciennes versions du pipeline sont toujours accessibles dans le répertoire <a href="categories/morphologist/segmentationpipeline/older_pipelines/category_documentation.html">"Pipeline de segmentation / Anciens pipelines"</a> et devraient en principe fonctionner comme avant.
 </p>
 
 <p id="warning"><b><font color="#b00000">Nouveautés du 2012 vs. 2011:</font></b><br/>
-Dans Morphologist 2012, les premières étapes du pipeline (correction du biais, analyse de l'histogramme, segmentation du cerveau, séparation des hémisphères) ont été nettoyées pour faciliter l'utilisation du pipeline. Il n'y a maintenant plus qu'un seul choix pour chaque étapes. De plus l'interface gris/blanc a subi des améliorations notables, qui rend la surface du gris/blanc en cohérence avec la classification. Les maillages ont eux aussi été améliorés. Ils suivent plus précisement les contour du masque à mailler et possèdent plus de noeuds.
+Dans Morphologist 2012, les premières étapes du pipeline (correction du biais, analyse de l'histogramme, segmentation du cerveau, séparation des hémisphères) ont été nettoyées pour faciliter l'utilisation du pipeline. Il n'y a maintenant plus qu'un seul choix pour chaque étapes. De plus l'interface gris/blanc a subi des améliorations notables, qui rend la surface du gris/blanc en cohérence avec la classification. Les maillages ont eux aussi été améliorés. Ils suivent plus précisement les contours du masque à mailler et possèdent plus de noeuds.
 </p>
 
 <p>
@@ -63,7 +63,7 @@ de segmentation de NeuroSpin ;</li>
 </p>
 
 <p>
-Pour pouvoir lancer ce pipeline, il est impératif de remplir les paramères d'orientation de l'image, dans la première étape (ou d'utiliser indépendamment la brique <a href="preparesubject.html">Preparation du Sujet pour le Pipeline Anatomique</a>). Faites attention, dans la version 4.2 de BrainVISA, la méthode par défaut de reconnaissance a changé pour une labélisation basée sur des SPAM avec une reconnaissance global puis local, si le model correspondant a été installé.
+Pour pouvoir lancer ce pipeline, il est impératif, soit d'utiliser une option de normalisation (qui nécessite un des logiciels SPM ou FSL), soit de de remplir les paramères d'orientation de l'image, dans la première étape (ou d'utiliser indépendamment la brique <a href="preparesubject.html">Preparation du Sujet pour le Pipeline Anatomique</a>). Faites attention, dans la version 4.2 de BrainVISA, la méthode par défaut de reconnaissance a changé pour une labélisation basée sur des SPAM avec une reconnaissance avec recalage global puis local, si le model correspondant a été installé.
 </p>
 <p>
 Ce pipeline traite normalement les deux hémisphères, mais vous pouvez changer les paramètres pour qu'un seul hémisphère ne soit traité.
@@ -79,8 +79,10 @@ Il enchaîne les traitements suivants (sauf si leur résultat a déjà été val
 </ol>
 </p>
 <p>
-Un certain nombre de ces briques proposent un choix entre une ancienne version de l'algorithme et une nouvelle mouture. Les réglages par défaut correspondent à l'alternative que nous considérons comme la plus robuste ou la plus performante, mais un choix différent peut avoir de meilleurs résultats sur certaines images.
-Avec un peu d'expérience, il est possible de jongler de manière itérative avec les pipelines complet et les briques qui les composent. Si pour des raisons de temps, vous n'avez fait tourner qu'une partie des traitements. Vous pouvez en demander plus sans recalculer les premiers traitements en "lockant" certains résultats avec les briques de validation.
+Un certain nombre de ces briques peuvent proposer un choix entre une ancienne version de l'algorithme et une nouvelle mouture. Les réglages par défaut correspondent à l'alternative que nous considérons comme la plus robuste ou la plus performante, mais un choix différent peut avoir de meilleurs résultats sur certaines images.
+Avec un peu d'expérience, il est possible de jongler de manière itérative avec les pipelines complet et les briques qui les composent. Si pour des raisons de temps, vous n'avez fait tourner qu'une partie des traitements. Vous pouvez en demander plus sans recalculer les premiers traitements en "lockant" certains résultats avec le système de vérouillage (click droit sur le nom d'une donnée, et sélectionner "lock" dans le menu), ou alternativement en utilisant le les vieilles briques de validation.
+</p>
+<p>Notons que depuis la version 2012, le pipeline a été rendu sufisamment robuste pour pouvoir tourner de bout en bout, avec les réglages par défaut et sans intervention manuelle, dans une très grande majorité de cas.
 </p>
 <br/><br/>
 <hr/>
@@ -123,7 +125,7 @@ le site de Marseille à cause du biais important de leur scanner 3T: <a href="ht
 </li>
 <li>Après la phase de réglage préalable, nous suggérons de traiter les données en deux étapes :
  <ol>
-  <li><em>Des images brutes au masque du cerveau :</em> Ceci peut être itérer sur l'ensemble de vos cerveaux. Il vous reste alors à verifier les résultats un à un, et essayer quelques réglages décrits ci-dessus si certains résultats ne sont pas à la hauteur. (Vous pouvez également réaliser certaines corrections en dessinant dans Anatomist: <a href="AnaLabelVolumeEditor.html">Editeur d'image de labels</a>.)</li>
+  <li><em>Des images brutes au masque du cerveau :</em> Ceci peut être itéré sur l'ensemble de vos cerveaux. Il vous reste alors à verifier les résultats un à un, et essayer quelques réglages décrits ci-dessus si certains résultats ne sont pas à la hauteur. (Vous pouvez également réaliser certaines corrections en dessinant dans Anatomist: <a href="AnaLabelVolumeEditor.html">Editeur d'image de labels</a>.)</li>
   <li><em>Le reste des traitements (maillages, graphes...) :</em> Vous devez d'abord verrouiller les résultats des étapes précédentes pour éviter qu'ils ne soient écrasés par le pipeline général. Utilisez : <a href="AnaValidateAll.html">Validation du pipeline</a>. Pous pouvez ensuite itérer le pipeline avant d'aller dormir.</li>
  </ol>
 </li>
@@ -180,15 +182,15 @@ Trigger all segmentation tools for T1-weighted data</xhtml>
 </head>
 
 <p>
-This pipeline is now named "<b>Morphologist</b>", and is the main entry point of the "T1 MRI" toolbox, which should be soon also renamed Morphologist. It is the evolution of the older "T1 Pipeline 2007". 
+This pipeline is now named "<b>Morphologist</b>", and is the main entry point of the "Morphologist" toolbox dedicated to the processing of T1 MRI data. It is the evolution of the older "T1 Pipeline". 
 </p>
 
 <p>
-This is the second version of Morphologist. Older versions of the pipeline are still available in the sub-directory <a href="categories/t1mri/segmentationpipeline/older_pipelines/category_documentation.html">"segmentation Pipeline / Older pipelines"</a>, and should normally work as they used to.
+This is the second version of Morphologist. Older versions of the pipeline are still available in the sub-directory <a href="categories/morphologist/segmentationpipeline/older_pipelines/category_documentation.html">"segmentation Pipeline / Older pipelines"</a>, and should normally work as they used to.
 </p>
 
 <p id="warning"><b><font color="#b00000">News in 2012 vs. 2011:</font></b><br/>
-In Morphologist 2012, the first steps of the pipeline (bias correction, histogram analysis, brain segmentation, hemispheres separation) have been clean up. Now there is only one choice for each step. Furthermore the grey/white interface has undergone significant improvements, making the grey/white surface consistent with the grey/white classification and meshes have been also improve, making them less decimated and more precise to the mask.
+In Morphologist 2012, the first steps of the pipeline (bias correction, histogram analysis, brain segmentation, hemispheres separation) have been clean up. Now there is only one choice for each step. Furthermore the grey/white interface has undergone significant improvements, making the grey/white surface consistent with the grey/white classification and meshes have been also improved, making them less decimated and more precise to the mask.
 </p>
 
 <p>
@@ -208,7 +210,7 @@ This pipeline allows to compute:
 </p>
 
 <p>
-Before running a pipeline, you have to fill in image orientation parameters in the first step, or independently use the <a href="preparesubject.html">Prepare Subject for Anatomical Pipeline</a> process. <b>Be careful that the default recognition method in BrainVISA 4.2 has changed</b> to SPAM recognition with global+local registration, if the corresponding models have been installed.<br/>
+Before running a pipeline, you have to, either enable a normalization process (needing either SPM or FSL software), or fill in image orientation parameters in the first step, or independently use the <a href="preparesubject.html">Prepare Subject for Anatomical Pipeline</a> process. <b>Be careful that the default recognition method in BrainVISA 4.2 has changed</b> to SPAM recognition with global+local registration, if the corresponding models have been installed.<br/>
 </p>
 
 <p>
@@ -227,12 +229,15 @@ A pipeline normally deals with both hemispheres, but can be asked to process onl
 </p>
 
 <p>
-A number of these steps allow to choose between an older version of the algorithm and a new one. The default settings correspond to the alternative we consider to be the most robust or the most performant, but a different choice may achieve better results on some images.
+Some of these steps may allow to choose between an older version of the algorithm and a new one. The default settings correspond to the alternative we consider to be the most robust or the most performant, but a different choice may achieve better results on some images.
 <br/>
 With some practice, you may play iteratively with the pipelines.
 For instance, if you have trigerred a "sub-pipeline" only, you may
 ask for more without having to recompute the whole stuff. For
-that purpose, lock the first results using <em>BrainVISA</em> validation tools.
+that purpose, you can lock the first results using the files locking system (right click on the data parameter name and select "lock" in the menu), or alternatively use the old <em>BrainVISA</em> validation tools.
+</p>
+
+<p>It is to be noted that since version 2012, the pipeline has been made robust enough to run all steps, with the default settings and without manual intervention, on a large majority of cases.
 </p>
 
 <br/><br/>
