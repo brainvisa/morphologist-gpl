@@ -131,6 +131,13 @@ le site de Marseille à cause du biais important de leur scanner 3T: <a href="ht
 </li>
 </ol>
 </p>
+<hr/>
+
+<h1>Contrôle visuel à l'échelle des bases de données</h1>
+<p>Après avoir fait fonctionner le pipeline Morphologist sur un ensemble de sujets, il est fortement recommandé de vérifier à l'oeil les résultats produits: un pipeline qui tourne jusqu'au bout ne signifie pas que les résultats sont corrects...
+</p>
+<p>Un nouveau module de contrôle visuel a été mis en place depuis la version 4.3 de BrainVisa / Morphologist: <a href="snapbase.html">SnapBase</a>. Cet outil permet de faire des captures d'écran de la visualisation de certaines données, sous certains points de vue, pour les données de bases entières, de manière à présenter ensemble les résultats d'en ensemble de sujets. Il permet de repérer a posteriori, très rapidement et facilement, des sujets dont l'analyse a manifestement grossièrement échoué, parmi de gros ensembles de sujets.
+</p>
 
 <br/>
 <img SRC="../../images/III_T1mri.jpg" ALT=""/>
@@ -288,6 +295,14 @@ of the 3T large bias field: <a href="http://marspack.free.fr/">http://marspack.f
  </ol>
 </li>
 </ol>
+</p>
+
+<hr/>
+
+<h1>Visual control at databases scale</h1>
+<p>After running the Morphologist pipeline on a set of subjects, it is highly recommended to visually inspect the results: a pipeline which runs to the end does not imply that it has produced good results...
+</p>
+<p>A new visual control module has been released since BrainVisa / Morphologist version 4.3: <a href="bvprocess://snapbase">SnapBase</a>. This tool allows to perform snapshots of the visualization of some data, under given points of view, on entire databases, so as to present the results for all subjects together. This allows to spot, a posteriori, very quickly and easily, some subjects for which the analysis has largely failed, amongst large amounts of subjects.
 </p>
 
 <br/>
