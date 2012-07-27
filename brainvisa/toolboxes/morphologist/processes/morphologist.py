@@ -210,7 +210,7 @@ def initialization( self ):
 
 
   eNode.BrainSegmentation.removeLink( 'histo_analysis', 'mri_corrected' )
-  eNode.BrainSegmentation.removeLink( 'Commissure_coordinates',
+  eNode.BrainSegmentation.removeLink( 'commissure_coordinates',
                                       'mri_corrected' )
   eNode.BrainSegmentation.removeLink( 'white_ridges', 'mri_corrected' )
 
@@ -224,10 +224,10 @@ def initialization( self ):
   eNode.addLink( 'HistoAnalysis.histo_analysis',
                  'BrainSegmentation.histo_analysis' )
 
-  eNode.addLink( 'BrainSegmentation.Commissure_coordinates',
-                 'PrepareSubject.Commissure_coordinates' )
-  eNode.addLink( 'PrepareSubject.Commissure_coordinates',
-                 'BrainSegmentation.Commissure_coordinates' )
+  eNode.addLink( 'BrainSegmentation.commissure_coordinates',
+                 'PrepareSubject.commissure_coordinates' )
+  eNode.addLink( 'PrepareSubject.commissure_coordinates',
+                 'BrainSegmentation.commissure_coordinates' )
 
   eNode.addLink( 'BrainSegmentation.white_ridges',
                  'BiasCorrection.white_ridges' )
@@ -263,8 +263,8 @@ def initialization( self ):
                  'SplitBrain.brain_mask' )
 
   eNode.addLink( 'SplitBrain.commissure_coordinates',
-                 'PrepareSubject.Commissure_coordinates' )
-  eNode.addLink( 'PrepareSubject.Commissure_coordinates',
+                 'PrepareSubject.commissure_coordinates' )
+  eNode.addLink( 'PrepareSubject.commissure_coordinates',
                  'SplitBrain.commissure_coordinates' )
 
   eNode.addLink( 'SplitBrain.white_ridges',
@@ -273,7 +273,7 @@ def initialization( self ):
                  'SplitBrain.white_ridges' )
 
 
-  eNode.TalairachTransformation.removeLink( 'Commissure_coordinates',
+  eNode.TalairachTransformation.removeLink( 'commissure_coordinates',
                                             'split_mask' )
 
   eNode.addLink( 'TalairachTransformation.split_mask',
@@ -281,16 +281,16 @@ def initialization( self ):
   eNode.addLink( 'SplitBrain.split_mask',
                  'TalairachTransformation.split_mask' )
 
-  eNode.addLink( 'TalairachTransformation.Commissure_coordinates',
-                 'PrepareSubject.Commissure_coordinates' )
-  eNode.addLink( 'PrepareSubject.Commissure_coordinates',
-                 'TalairachTransformation.Commissure_coordinates' )
+  eNode.addLink( 'TalairachTransformation.commissure_coordinates',
+                 'PrepareSubject.commissure_coordinates' )
+  eNode.addLink( 'PrepareSubject.commissure_coordinates',
+                 'TalairachTransformation.commissure_coordinates' )
 
 
   eNode.GreyWhiteClassification.removeLink( 'histo_analysis', 'mri_corrected' )
   eNode.GreyWhiteClassification.removeLink( 'split_mask', 'mri_corrected' )
   eNode.GreyWhiteClassification.removeLink( 'edges', 'mri_corrected' )
-  eNode.GreyWhiteClassification.removeLink( 'Commissure_coordinates', 'mri_corrected' )
+  eNode.GreyWhiteClassification.removeLink( 'commissure_coordinates', 'mri_corrected' )
 
   eNode.addDoubleLink( 'GreyWhiteClassification.mri_corrected',
                        'BiasCorrection.mri_corrected' )
@@ -300,8 +300,8 @@ def initialization( self ):
                        'SplitBrain.split_mask' )
   eNode.addDoubleLink( 'GreyWhiteClassification.edges',
                        'BiasCorrection.edges' )
-  eNode.addDoubleLink( 'GreyWhiteClassification.Commissure_coordinates',
-                       'PrepareSubject.Commissure_coordinates' )
+  eNode.addDoubleLink( 'GreyWhiteClassification.commissure_coordinates',
+                       'PrepareSubject.commissure_coordinates' )
 
 
   eNode.GreyWhiteSurface.removeLink( 'histo_analysis', 'mri_corrected' )
@@ -317,8 +317,8 @@ def initialization( self ):
   eNode.addDoubleLink( 'GreyWhiteSurface.right_grey_white',
                        'GreyWhiteClassification.right_grey_white' )
 
-  eNode.HemispheresMesh.removeLink( 'brain_voronoi', 'mri_corrected' )
-  eNode.HemispheresMesh.removeLink( 'left_hemi_cortex', 'brain_voronoi' )
+  eNode.HemispheresMesh.removeLink( 'split_mask', 'mri_corrected' )
+  eNode.HemispheresMesh.removeLink( 'left_hemi_cortex', 'split_mask' )
   eNode.HemispheresMesh.removeLink( 'right_hemi_cortex', 'left_hemi_cortex' )
 
   eNode.addLink( 'HemispheresMesh.mri_corrected',
@@ -326,10 +326,10 @@ def initialization( self ):
   eNode.addLink( 'BiasCorrection.mri_corrected',
                  'HemispheresMesh.mri_corrected' )
 
-  eNode.addLink( 'HemispheresMesh.brain_voronoi',
+  eNode.addLink( 'HemispheresMesh.split_mask',
                  'SplitBrain.split_mask' )
   eNode.addLink( 'SplitBrain.split_mask',
-                 'HemispheresMesh.brain_voronoi' )
+                 'HemispheresMesh.split_mask' )
 
   eNode.addDoubleLink( 'HemispheresMesh.left_hemi_cortex',
                        'GreyWhiteSurface.left_hemi_cortex' )
@@ -381,8 +381,8 @@ def initialization( self ):
                  'CorticalFoldsGraph.split_mask' )
 
   eNode.addLink( 'CorticalFoldsGraph.commissure_coordinates',
-                 'PrepareSubject.Commissure_coordinates' )
-  eNode.addLink( 'PrepareSubject.Commissure_coordinates',
+                 'PrepareSubject.commissure_coordinates' )
+  eNode.addLink( 'PrepareSubject.commissure_coordinates',
                  'CorticalFoldsGraph.commissure_coordinates' )
 
   eNode.addLink( 'CorticalFoldsGraph.Talairach_transform',
