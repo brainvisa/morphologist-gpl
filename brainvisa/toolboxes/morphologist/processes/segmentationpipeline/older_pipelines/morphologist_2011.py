@@ -330,7 +330,7 @@ def initialization( self ):
                  'GreyWhiteInterface.white_ridges' )
 
 
-  eNode.HemispheresMesh.removeLink( 'brain_voronoi', 'mri_corrected' )
+  eNode.HemispheresMesh.removeLink( 'split_mask', 'mri_corrected' )
   eNode.HemispheresMesh.removeLink( 'left_hemi_cortex', 'mri_corrected' )
   eNode.HemispheresMesh.removeLink( 'right_hemi_cortex', 'mri_corrected' )
 
@@ -339,10 +339,10 @@ def initialization( self ):
   eNode.addLink( 'BiasCorrection.mri_corrected',
                  'HemispheresMesh.mri_corrected' )
 
-  eNode.addLink( 'HemispheresMesh.brain_voronoi',
+  eNode.addLink( 'HemispheresMesh.split_mask',
                  'SplitBrain.split_mask' )
   eNode.addLink( 'SplitBrain.split_mask',
-                 'HemispheresMesh.brain_voronoi' )
+                 'HemispheresMesh.split_mask' )
 
   eNode.addLink( 'HemispheresMesh.left_hemi_cortex',
                  'GreyWhiteInterface.left_hemi_cortex' )

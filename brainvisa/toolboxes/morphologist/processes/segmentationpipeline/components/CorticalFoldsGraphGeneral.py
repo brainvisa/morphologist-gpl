@@ -40,7 +40,7 @@ userLevel = 2
 signature = Signature(
   'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
       'Aims readable volume formats' ),
-  'split_mask', ReadDiskItem( 'Voronoi Diagram',
+  'split_mask', ReadDiskItem( 'Split Brain Mask',
       'Aims readable volume formats' ),
   'left_graph', WriteDiskItem( 'Cortical folds graph', 'Graph',
                                requiredAttributes = { 'labelled' : 'No',
@@ -273,3 +273,5 @@ def initialization( self ):
   eNode.CorticalFoldsGraph_3_1._selectionChange.add( x )
   x = switch_3_0( self )
   eNode.CorticalFoldsGraph_3_0._selectionChange.add( x )
+
+  eNode.CorticalFoldsGraph_3_1.setSelected( True )

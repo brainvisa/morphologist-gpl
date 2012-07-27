@@ -42,7 +42,7 @@ signature = Signature(
   'Side', Choice("Both","Left","Right"),
   'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
       'Aims readable volume formats' ),
-  'brain_voronoi', ReadDiskItem( 'Voronoi Diagram',
+  'split_mask', ReadDiskItem( 'Split Brain Mask',
       'Aims readable volume formats' ),
   'left_hemi_cortex', ReadDiskItem( 'Left CSF+GREY Mask',
       'Aims writable volume formats' ),
@@ -55,8 +55,8 @@ signature = Signature(
 ) 
 # Default values
 def initialization( self ):
-  self.linkParameters( 'brain_voronoi', 'mri_corrected' )
-  self.linkParameters( 'left_hemi_cortex', 'brain_voronoi' )
+  self.linkParameters( 'split_mask', 'mri_corrected' )
+  self.linkParameters( 'left_hemi_cortex', 'split_mask' )
   self.linkParameters( 'right_hemi_cortex', 'left_hemi_cortex' )
   self.linkParameters( 'left_hemi_mesh', 'left_hemi_cortex' )
   self.linkParameters( 'right_hemi_mesh', 'right_hemi_cortex' )
@@ -71,7 +71,7 @@ def execution( self, context ):
     else:
         context.write( "Masking Bias corrected image with left hemisphere mask...")
         braing = context.temporary( 'GIS Image' )
-        context.system( "VipMask", "-i", self.mri_corrected, "-m", self.brain_voronoi, "-o", braing, "-w", "t", "-l", "2" )
+        context.system( "VipMask", "-i", self.mri_corrected, "-m", self.split_mask, "-o", braing, "-w", "t", "-l", "2" )
         
         context.write("Computing skeleton...")
         skeleton = context.temporary( 'GIS Image' )
@@ -100,7 +100,7 @@ def execution( self, context ):
     else:
         context.write( "Masking Bias corrected image with right hemisphere mask...")
         braing = context.temporary( 'GIS Image' )
-        context.system( "VipMask", "-i", self.mri_corrected, "-m", self.brain_voronoi, "-o", braing, "-w", "t", "-l", "1" )
+        context.system( "VipMask", "-i", self.mri_corrected, "-m", self.split_mask, "-o", braing, "-w", "t", "-l", "1" )
         
         context.write("Computing skeleton...")
         skeleton = context.temporary( 'GIS Image' )

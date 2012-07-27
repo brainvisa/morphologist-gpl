@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -41,15 +42,15 @@ def validation():
   anatomist.validation()
 
 signature = Signature(
-  'brain_voronoi', ReadDiskItem( 'Voronoi Diagram',
+  'split_mask', ReadDiskItem( 'Split Brain Mask',
     'Anatomist volume formats' ),
   'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
     'Anatomist volume formats' ),
 )
 
 def initialization( self ):
-  self.linkParameters( 'mri_corrected', 'brain_voronoi' )
+  self.linkParameters( 'mri_corrected', 'split_mask' )
 
 def execution( self, context ):
   a = anatomist.Anatomist()
-  return a.viewMaskOnMRI( self.mri_corrected, self.brain_voronoi, a.getPalette("RAINBOW"), 'linear', 0.7 )
+  return a.viewMaskOnMRI( self.mri_corrected, self.split_mask, a.getPalette("RAINBOW"), 'linear', 0.7 )

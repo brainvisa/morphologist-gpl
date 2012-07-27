@@ -43,11 +43,11 @@ signature = Signature(
     'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
 	'Aims readable volume formats' ),
     'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-    'split_mask', ReadDiskItem( 'Voronoi Diagram',
+    'split_mask', ReadDiskItem( 'Split Brain Mask',
 	'Aims readable volume formats' ),
     'edges', ReadDiskItem( 'T1 MRI Edges',
 	'Aims readable volume formats' ),
-    'Commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
+    'commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
 	'Commissure coordinates'),
     'Side', Choice("Both","Left","Right"),
     'left_grey_white', WriteDiskItem( 'Left Grey White Mask',
@@ -62,42 +62,89 @@ def initialization( self ):
     self.linkParameters( 'right_grey_white', 'mri_corrected' )
     self.linkParameters( 'split_mask', 'mri_corrected' )
     self.linkParameters( 'edges', 'mri_corrected' )
-    self.linkParameters( 'Commissure_coordinates', 'mri_corrected' )
+    self.linkParameters( 'commissure_coordinates', 'mri_corrected' )
     self.Side = "Both"
 #
 #
 
 def execution( self, context ):
     tm=registration.getTransformationManager()
+    
+    #hemis = context.temporary( 'GIS Image' )
+    #grey_white = context.temporary( 'GIS Image' )
+    #context.write( "Computing hemispheres grey-white classification..." )
+    #context.system( "VipDoubleThreshold", "-i",
+                    #self.split_mask, "-o", hemis,
+                    #"-tl", "1", "-th", "2",
+                    #"-m", "be", "-c", "b", "-w", "t" )
+    #context.system( "VipMerge", "-i",
+                    #hemis, "-m", self.split_mask,
+                    #"-o", hemis, "-c", "l",
+                    #"-l", "3", "-v", "3", "-w", "t" )
+    #context.system( "VipGreyWhiteClassif", "-i",
+                    #self.mri_corrected, "-h",
+                    #self.histo_analysis, "-mask",
+                    #hemis, "-edges",
+                    #self.edges, "-o",
+                    #grey_white, "-l", "255",
+                    #"-mode", "b", "-w",
+                    #"t", "-a", "N" )
+    
+    #if self.Side in ('Left','Both'):
+        
+        #if os.path.exists(self.left_grey_white.fullName() + '.loc'):
+            #context.write( "Left grey-white locked")
+        #else:
+            #context.system( "VipMask", "-i", grey_white,
+                            #"-m", self.split_mask,
+                            #"-o", self.left_grey_white,
+                            #"-w", "t", "-l", "2" )
+            #tm.copyReferential(self.mri_corrected, self.left_grey_white)
+    
+    #if self.Side in ('Right','Both'):
+        
+        #if os.path.exists(self.right_grey_white.fullName() + '.loc'):
+            #context.write( "Right grey-white locked")
+        #else:
+            #context.system( "VipMask", "-i", grey_white,
+                            #"-m", self.split_mask,
+                            #"-o", self.right_grey_white,
+                            #"-w", "t", "-l", "1" )
+            #tm.copyReferential(self.mri_corrected, self.right_grey_white)
+    
+    #del hemis
+    #del grey_white
+    
     if self.Side in ('Left','Both'):
-	
-	if os.path.exists(self.left_grey_white.fullName() + '.loc'):
-	    context.write( "Left grey-white locked")
-	else:
-	    context.write( "Computing left hemisphere grey-white classification..." )
-	    context.system( "VipGreyWhiteClassif", "-i",
-			    self.mri_corrected, "-h",
-			    self.histo_analysis, "-m",
-			    self.split_mask, "-edges",
-			    self.edges, "-P",
-			    self.Commissure_coordinates, "-o",
-			    self.left_grey_white, "-l", "2", "-w",
-			    "t", "-a", "N" )
-	    tm.copyReferential(self.mri_corrected, self.left_grey_white)
-
+        
+        if os.path.exists(self.left_grey_white.fullName() + '.loc'):
+            context.write( "Left grey-white locked")
+        else:
+            context.write( "Computing left hemisphere grey-white classification..." )
+            context.system( "VipGreyWhiteClassif", "-i",
+                            self.mri_corrected, "-h",
+                            self.histo_analysis, "-m",
+                            self.split_mask, "-edges",
+                            self.edges, "-P",
+                            self.commissure_coordinates, "-o",
+                            self.left_grey_white, "-l", "2",
+                            "-w", "t", "-a", "N" )
+            tm.copyReferential(self.mri_corrected, self.left_grey_white)
+    
     if self.Side in ('Right','Both'):
-	
-	if os.path.exists(self.right_grey_white.fullName() + '.loc'):
-	    context.write( "Right grey-white locked")
-	else:
-	    context.write( "Computing right hemisphere grey-white classification..." )
-	    context.system( "VipGreyWhiteClassif", "-i",
-			    self.mri_corrected, "-h",
-			    self.histo_analysis, "-m",
-			    self.split_mask, "-edges",
-			    self.edges, "-P",
-			    self.Commissure_coordinates, "-o",
-			    self.right_grey_white, "-l", "1", "-w",
-			    "t", "-a", "N" )
-	    tm.copyReferential(self.mri_corrected, self.right_grey_white)
+        
+        if os.path.exists(self.right_grey_white.fullName() + '.loc'):
+            context.write( "Right grey-white locked")
+        else:
+            context.write( "Computing right hemisphere grey-white classification..." )
+            context.system( "VipGreyWhiteClassif", "-i",
+                            self.mri_corrected, "-h",
+                            self.histo_analysis, "-m",
+                            self.split_mask, "-edges",
+                            self.edges, "-P",
+                            self.commissure_coordinates, "-o",
+                            self.right_grey_white, "-l", "1",
+                            "-w", "t", "-a", "N" )
+            tm.copyReferential(self.mri_corrected, self.right_grey_white)
+    
 

@@ -41,7 +41,7 @@ signature = Signature(
       'Aims readable volume formats' ),
   'mode', Choice("Voronoi", "Watershed (2011)"),
   'variant', Choice("regularized","GW Barycentre","WM Standard Deviation"),
-  'split_mask', WriteDiskItem( "Voronoi Diagram",
+  'split_mask', WriteDiskItem( 'Split Brain Mask',
       'Aims writable volume formats' ),
   'bary_factor', Choice("0.9","0.8","0.7","0.6","0.5","0.4","0.3","0.2","0.1"),
   'mult_factor', Choice("0.5","1","1.5","2","2.5","3","3.5","4"),
@@ -49,13 +49,13 @@ signature = Signature(
   'cc_min_size', Integer(),
   'visu', Choice("No","Yes"),
   'Use_ridges', Boolean(),
-  'white_ridges', ReadDiskItem( "T1 MRI White Matter Ridges",
+  'white_ridges', ReadDiskItem( 'T1 MRI White Matter Ridges',
       'Aims readable volume formats' ),
   'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
   'brain_mask', ReadDiskItem( 'T1 Brain Mask',
       'Aims readable volume formats' ),
   'Use_template', Boolean(), 
-  'voronoi_template', ReadDiskItem( 'Hemispheres Template',
+  'split_template', ReadDiskItem( 'Hemispheres Template',
       'Aims readable volume formats' ),
   'commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
                                           'Commissure coordinates'),
@@ -73,9 +73,9 @@ def initialization( self ):
   self.visu = "No"
   self.mode = "Watershed (2011)"
   self.variant = "GW Barycentre"
-  self.voronoi_template = self.signature[ 'voronoi_template' ].findValue( {} )
+  self.split_template = self.signature[ 'split_template' ].findValue( {} )
   self.Use_template = "True"
-  self.setOptional('voronoi_template')
+  self.setOptional('split_template')
   self.setOptional('commissure_coordinates')
   self.bary_factor = "0.6"
   self.setOptional('bary_factor')
@@ -99,7 +99,7 @@ def execution( self, context ):
       elif self.variant=="WM Standard Deviation":
         option_list += ['-Coef', self.mult_factor,'-walgo','c']
       if self.Use_template:
-        option_list += ['-template', self.voronoi_template.fullPath(),'-TemplateUse', 'y']
+        option_list += ['-template', self.split_template.fullPath(),'-TemplateUse', 'y']
       else:
         option_list += ['-TemplateUse', 'n']
       if self.Use_ridges:

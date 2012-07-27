@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -49,7 +50,7 @@ signature = Signature(
   'Talairach_transform',
     WriteDiskItem( 'Transform Raw T1 MRI to Talairach-AC/PC-Anatomist',
                    'Transformation matrix' ),
-  'Commissure_coordinates', WriteDiskItem( 'Commissure coordinates',
+  'commissure_coordinates', WriteDiskItem( 'Commissure coordinates',
                                            'Commissure coordinates'),
   't1mri', ReadDiskItem( 'Raw T1 MRI', 'Aims Readable Volume Formats' ),
   'source_referential', ReadDiskItem( 'Referential', 'Referential' ),
@@ -92,9 +93,9 @@ def initialization( self ):
         return []
   self.linkParameters( 'Talairach_transform',
     'normalization_transformation' )
-  self.linkParameters( 'Commissure_coordinates', 'Talairach_transform' )
-  self.setOptional( 'Commissure_coordinates' )
-  self.linkParameters( 't1mri', 'Commissure_coordinates' )
+  self.linkParameters( 'commissure_coordinates', 'Talairach_transform' )
+  self.setOptional( 'commissure_coordinates' )
+  self.linkParameters( 't1mri', 'commissure_coordinates' )
   self.setOptional( 't1mri' )
   self.linkParameters( 'source_referential', [ 'normalization_transformation',
     't1mri' ], linkRef )
@@ -127,10 +128,10 @@ def execution( self, context ):
       self.Talairach_transform,
       source_referential = self.source_referential,
       destination_referential = acpcReferential )
-  if self.Commissure_coordinates:
+  if self.commissure_coordinates:
     if not self.t1mri:
       context.warning( 't1mri parameter is not set. Cannot write ' \
-        'Commissure_coordinates output' )
+        'commissure_coordinates output' )
       return
     va = shfjGlobals.aimsVolumeAttributes( self.t1mri )
     vs = va.get( 'voxel_size', [ 1., 1., 1. ] )
@@ -144,7 +145,7 @@ def execution( self, context ):
     context.write( 'AC:', ac, ', mm:', list( acmm ) )
     context.write( 'PC:', pc, ', mm:', list( pcmm ) )
     context.write( 'IP:', ip, ', mm:', list( ipmm ) )
-    apc = open( self.Commissure_coordinates.fullPath(), 'w' )
+    apc = open( self.commissure_coordinates.fullPath(), 'w' )
     print >> apc, 'AC:', ' '.join( [ str(x) for x in ac ] )
     print >> apc, 'PC:', ' '.join( [ str(x) for x in pc ] )
     print >> apc, 'IH:', ' '.join( [ str(x) for x in ip ] )

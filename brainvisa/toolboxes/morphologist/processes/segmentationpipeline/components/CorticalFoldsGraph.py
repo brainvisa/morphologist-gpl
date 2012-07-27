@@ -42,7 +42,7 @@ signature = Signature(
   'side', Choice( 'Left', 'Right' ),
   'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
       'Aims readable volume formats' ),
-  'split_mask', ReadDiskItem( 'Voronoi Diagram',
+  'split_mask', ReadDiskItem( 'Split Brain Mask',
       'Aims readable volume formats' ),
   'hemi_cortex', ReadDiskItem( 'CSF+GREY Mask',
       'Aims readable volume formats' ),

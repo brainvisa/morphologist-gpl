@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -36,9 +37,9 @@ name = 'Talairach Transformation'
 userLevel = 2
 
 signature = Signature(
-  'split_mask', ReadDiskItem( "Voronoi Diagram",
+  'split_mask', ReadDiskItem( 'Split Brain Mask',
       'Aims readable volume formats' ),
-  'Commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
+  'commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
                                           'Commissure coordinates'), 
   'Talairach_transform',
   WriteDiskItem( 'Transform Raw T1 MRI to Talairach-AC/PC-Anatomist',
@@ -47,7 +48,7 @@ signature = Signature(
 
 
 def initialization( self ):
-  self.linkParameters( 'Commissure_coordinates', 'split_mask' )
+  self.linkParameters( 'commissure_coordinates', 'split_mask' )
   self.linkParameters( 'Talairach_transform', 'split_mask' )
 
 def execution( self, context ):
@@ -55,7 +56,7 @@ def execution( self, context ):
   context.system( 'AimsThreshold', '-i', self.split_mask, '-o', tmp,
                   '-m', 'be', '-t', '1', '-u', '2', '-b' )
   context.system( 'VipTalairachTransform', '-i',
-                  self.Commissure_coordinates, '-o', 
+                  self.commissure_coordinates, '-o', 
                   self.Talairach_transform, '-m', tmp )
   trManager = registration.getTransformationManager()
   acpcReferential = trManager.referential( 
