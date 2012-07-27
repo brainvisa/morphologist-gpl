@@ -42,7 +42,7 @@ userLevel = 0
 
 signature = Signature(
   'T1mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.vipVolumeFormats ),  
-  'Commissure_coordinates', WriteDiskItem( 'Commissure coordinates','Commissure coordinates'),
+  'commissure_coordinates', WriteDiskItem( 'Commissure coordinates','Commissure coordinates'),
   'Normalised',Choice('No','MNI from SPM','MNI from Mritotal', 'Marseille from SPM'),
   'Anterior_Commissure', Point3D(), 
   'Posterior_Commissure', Point3D(), 
@@ -64,8 +64,8 @@ class APCReader:
 
   def __call__( self, values, process ):
     acp = None
-    if values.Commissure_coordinates is not None:
-      acp = values.Commissure_coordinates
+    if values.commissure_coordinates is not None:
+      acp = values.commissure_coordinates
     #elif values.T1mri:
     #  acp = ReadDiskItem( 'Commissure coordinates','Commissure coordinates')\
     #    .findValue( values.T1mri )
@@ -91,7 +91,7 @@ def initialization( self ):
       return 'MNI from SPM'
     return 'No'
 
-  self.linkParameters( 'Commissure_coordinates', 'T1mri' )
+  self.linkParameters( 'commissure_coordinates', 'T1mri' )
   self.Normalised = 'No'
   self.setOptional( 'Anterior_Commissure' )
   self.setOptional( 'Posterior_Commissure' )
@@ -101,11 +101,11 @@ def initialization( self ):
   self.signature[ 'Interhemispheric_Point' ].add3DLink( self, 'T1mri' )
   self.signature[ 'Left_Hemisphere_Point' ].add3DLink( self, 'T1mri' )
   self.linkParameters( 'Anterior_Commissure',
-                       'Commissure_coordinates', APCReader( 'AC' ) )
+                       'commissure_coordinates', APCReader( 'AC' ) )
   self.linkParameters( 'Posterior_Commissure',
-                       'Commissure_coordinates', APCReader( 'PC' ) )
+                       'commissure_coordinates', APCReader( 'PC' ) )
   self.linkParameters( 'Interhemispheric_Point',
-                       'Commissure_coordinates', APCReader( 'IH' ) )
+                       'commissure_coordinates', APCReader( 'IH' ) )
   self.setOptional( 'Left_Hemisphere_Point' )
   self.allow_flip_initial_MRI = 0
   self.linkParameters( 'Normalised', 'T1mri', linknorm )
@@ -406,7 +406,7 @@ def execution( self, context ):
         pcmm = pc
         ipmm = ip
 
-  f = open( self.Commissure_coordinates.fullPath(), 'w' )
+  f = open( self.commissure_coordinates.fullPath(), 'w' )
   f.write( "AC: " + string.join( map( lambda x:str(x), ac ) ) + '\n' )
   f.write( "PC: " + string.join( map( lambda x:str(x), pc ) ) + '\n' )
   f.write( "IH: " + string.join( map( lambda x:str(x), ip ) ) + '\n' )
