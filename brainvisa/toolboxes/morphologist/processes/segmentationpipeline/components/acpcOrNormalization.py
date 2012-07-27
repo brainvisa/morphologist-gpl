@@ -42,7 +42,7 @@ userLevel = 0
 
 signature = Signature(
   'T1mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.aimsVolumeFormats ),
-  'Commissure_coordinates', WriteDiskItem( 'Commissure coordinates',
+  'commissure_coordinates', WriteDiskItem( 'Commissure coordinates',
     'Commissure coordinates'),
   'allow_flip_initial_MRI', Boolean(),
   )
@@ -72,10 +72,10 @@ def initialization( self ):
 
     eNode.addLink( 'StandardACPC.T1mri', 'T1mri' )
     eNode.addLink( 'T1mri', 'StandardACPC.T1mri' )
-    eNode.addLink( 'StandardACPC.Commissure_coordinates',
-      'Commissure_coordinates' )
-    eNode.addLink( 'Commissure_coordinates',
-      'StandardACPC.Commissure_coordinates' )
+    eNode.addLink( 'StandardACPC.commissure_coordinates',
+      'commissure_coordinates' )
+    eNode.addLink( 'commissure_coordinates',
+      'StandardACPC.commissure_coordinates' )
     eNode.addLink( 'StandardACPC.allow_flip_initial_MRI',
       'allow_flip_initial_MRI' )
     eNode.addLink( 'allow_flip_initial_MRI',
@@ -97,9 +97,9 @@ def initialization( self ):
       'Normalization.Normalization.allow_flip_initial_MRI' )
 
     if ps:
-      eNode1.TalairachFromNormalization.removeLink( 'Commissure_coordinates',
+      eNode1.TalairachFromNormalization.removeLink( 'commissure_coordinates',
         'Talairach_transform' )
-    eNode1.TalairachFromNormalization.removeLink( 't1mri', 'Commissure_coordinates' )
+    eNode1.TalairachFromNormalization.removeLink( 't1mri', 'commissure_coordinates' )
 
     eNode.addLink( 'Normalization.TalairachFromNormalization.t1mri', 'T1mri' )
     eNode.addLink( 'T1mri', 'Normalization.TalairachFromNormalization.t1mri' )
@@ -109,10 +109,10 @@ def initialization( self ):
     eNode.addLink( 'Normalization.Normalization.transformation',
       'Normalization.TalairachFromNormalization.normalization_transformation' )
     eNode.addLink( \
-      'Normalization.TalairachFromNormalization.Commissure_coordinates',
-      'Commissure_coordinates' )
-    eNode.addLink( 'Commissure_coordinates',
-      'Normalization.TalairachFromNormalization.Commissure_coordinates' )
+      'Normalization.TalairachFromNormalization.commissure_coordinates',
+      'commissure_coordinates' )
+    eNode.addLink( 'commissure_coordinates',
+      'Normalization.TalairachFromNormalization.commissure_coordinates' )
 
   self.setExecutionNode( eNode )
 
