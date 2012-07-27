@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -55,7 +56,7 @@ insert( '.',
   "Rskeleton_<filename>", SetType( 'Right Cortex Skeleton' ), SetWeakAttr( 'side', 'right' ),
   "Lroots_<filename>", SetType( 'Left Cortex Catchment Bassins' ), SetWeakAttr( 'side', 'left' ),
   "Rroots_<filename>", SetType( 'Right Cortex Catchment Bassins' ), SetWeakAttr( 'side', 'right' ),
-  "voronoi_<filename>", SetType( 'Voronoi Diagram' ), SetWeakAttr( 'side', 'both' ),
+  "voronoi_<filename>", SetType( 'Split Brain Mask' ), SetWeakAttr( 'side', 'both' ),
   "<filename>_Lwhite_curv", SetType( 'White Curvature Texture' ), SetWeakAttr( 'side', 'left' ),
   "<filename>_Rwhite_curv", SetType( 'White Curvature Texture' ), SetWeakAttr( 'side', 'right' ),
   "<filename>_Lwhite_sulci", SetType( 'Sulci White Texture' ), SetWeakAttr( 'side', 'left' ),
