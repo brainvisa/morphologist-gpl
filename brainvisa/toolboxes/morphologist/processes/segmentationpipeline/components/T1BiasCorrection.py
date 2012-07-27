@@ -67,7 +67,7 @@ signature = Signature(
   'edge_mask',Choice('yes','no'),
   'write_edges', Choice('yes','no'),
   'edges', WriteDiskItem( "T1 MRI Edges", shfjGlobals.aimsWriteVolumeFormats ),
-  'Commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
+  'commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
       'Commissure coordinates'),
   'delete_last_n_slices', OpenChoice("auto", "0", "10", "20", "30"),
 )
@@ -98,8 +98,8 @@ def initialization( self ):
   self.variance_fraction = 75
   self.edge_mask = 'yes'
   self.delete_last_n_slices = 'auto'
-  self.setOptional('Commissure_coordinates')
-  self.linkParameters( 'Commissure_coordinates', 'mri_corrected' )
+  self.setOptional('commissure_coordinates')
+  self.linkParameters( 'commissure_coordinates', 'mri_corrected' )
 
 def execution( self, context ):
   if self.mode == 'write_all':
@@ -120,8 +120,8 @@ def execution( self, context ):
     else:
         option_list = []
         constant_list = ['VipT1BiasCorrection', '-i', self.mri.fullPath(), '-o', self.mri_corrected.fullPath() , '-Fwrite', self.write_field, '-field', self.field.fullPath(), '-Wwrite', self.write_wridges, '-wridge', self.white_ridges.fullPath(),'-Kregul', self.field_rigidity, '-sampling',  self.sampling, '-Kcrest', self.wridges_weight, '-Grid', self.ngrid, '-ZregulTuning', self.zdir_multiply_regul, '-vp',self.variance_fraction,'-e',edge, '-eWrite', self.write_edges, '-ename', self.edges.fullPath(), '-vWrite', self.write_variance, '-vname', self.variance.fullPath(), '-mWrite',self.write_meancurvature, '-mname', self.meancurvature.fullPath(), '-hWrite', self.write_hfiltered, '-hname', self.hfiltered.fullPath(), '-Last', self.delete_last_n_slices]
-        if self.Commissure_coordinates is not None:
-          option_list += ['-Points', self.Commissure_coordinates.fullPath()]
+        if self.commissure_coordinates is not None:
+          option_list += ['-Points', self.commissure_coordinates.fullPath()]
         if self.mode == "write_minimal without correction":
           option_list += ['-Dcorrect', "n"]
         apply( context.system, constant_list+option_list )
