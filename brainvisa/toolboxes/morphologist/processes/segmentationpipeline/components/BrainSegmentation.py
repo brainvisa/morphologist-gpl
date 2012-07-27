@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -54,7 +55,7 @@ signature = Signature(
   'visu', Choice("No","Yes"),
   'white_ridges', ReadDiskItem( "T1 MRI White Matter Ridges",
       shfjGlobals.aimsVolumeFormats ),
-  'Commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
+  'commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
       'Commissure coordinates'),
   'variance', ReadDiskItem( "T1 MRI Variance", shfjGlobals.aimsVolumeFormats ),
   'edges', ReadDiskItem( "T1 MRI Edges", shfjGlobals.aimsVolumeFormats ),
@@ -77,8 +78,8 @@ def initialization( self ):
   self.last_slice = 0
   self.setOptional('white_ridges')
   self.setOptional('lesion_mask')
-  self.setOptional('Commissure_coordinates')
-  self.linkParameters( 'Commissure_coordinates', 'mri_corrected' )
+  self.setOptional('commissure_coordinates')
+  self.linkParameters( 'commissure_coordinates', 'mri_corrected' )
   self.variant = "2010"
   self.visu = "No"
   self.layer = "0"
@@ -90,8 +91,8 @@ def execution( self, context ):
   else:
       option_list = []
       constant_list = ['VipGetBrain','-berosion',self.erosion_size,'-i',self.mri_corrected.fullPath(),'-analyse', 'r', '-hname',  self.histo_analysis.fullPath(),'-bname', self.brain_mask.fullPath(),'-First',self.first_slice,'-Last', self.last_slice, '-layer', self.layer]
-      if self.Commissure_coordinates is not None:
-        option_list += ['-Points', self.Commissure_coordinates.fullPath()]
+      if self.commissure_coordinates is not None:
+        option_list += ['-Points', self.commissure_coordinates.fullPath()]
       if self.lesion_mask is not None:
         option_list += ['-patho', self.lesion_mask.fullPath()]
       if self.variant == "2005 based on white ridge":
