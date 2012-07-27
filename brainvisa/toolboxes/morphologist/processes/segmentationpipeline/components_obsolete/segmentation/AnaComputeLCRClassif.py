@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -44,7 +45,7 @@ signature = Signature(
   'left_csf', WriteDiskItem( 'Left CSF Mask', 'Aims writable volume formats' ),
   'right_csf', WriteDiskItem( 'Right CSF Mask',
     'Aims writable volume formats' ),
-  'brain_voronoi', WriteDiskItem( "Voronoi Diagram",
+  'split_mask', WriteDiskItem( 'Split Brain Mask',
     'Aims writable volume formats' ),
 
 )
@@ -53,7 +54,7 @@ def initialization( self ):
     self.linkParameters( 'right_grey_white', 'left_grey_white' )
     self.linkParameters( 'left_csf', 'left_grey_white' )
     self.linkParameters( 'right_csf', 'right_grey_white' )
-    self.linkParameters( 'brain_voronoi', 'left_grey_white' )
+    self.linkParameters( 'split_mask', 'left_grey_white' )
 
 def execution( self, context ):
     
@@ -75,7 +76,7 @@ def execution( self, context ):
     brainL_closed = self.left_csf.fullPath()
 
     #Extract cerebelum mask
-    context.system( 'AimsThreshold', '-i', self.brain_voronoi.fullPath(), '-o', cerebelum, '-m', 'eq', '-t', '3' )
+    context.system( 'AimsThreshold', '-i', self.split_mask.fullPath(), '-o', cerebelum, '-m', 'eq', '-t', '3' )
     
     context.system( 'AimsReplaceLevel', '-i', cerebelum , '-o', cerebelum, '-g', '0','3', '-n', '1', '0')
     context.system( 'AimsReplaceLevel', '-i', cerebelum , '-o', '/tmp/cerebelum.ima', '-g', '0','3', '-n', '1', '0')

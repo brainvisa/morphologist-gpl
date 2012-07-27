@@ -40,7 +40,7 @@ userLevel = 2
 signature = Signature(
   'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
       'Aims readable volume formats' ),
-  'split_mask', ReadDiskItem( 'Voronoi Diagram',
+  'split_mask', ReadDiskItem( 'Split Brain Mask',
       'Aims readable volume formats' ),
   'left_graph', WriteDiskItem( 'Cortical folds graph', 'Graph',
                                requiredAttributes = { 'labelled' : 'No',
@@ -167,7 +167,7 @@ def initialization( self ):
   eNode.CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.removeLink( \
       'Talairach_transform', 'split_mask' )
 
-  eNode.CorticalFoldsGraph_3_0.clearLinksTo( 'brain_voronoi' )
+  eNode.CorticalFoldsGraph_3_0.clearLinksTo( 'split_mask' )
   eNode.CorticalFoldsGraph_3_0.clearLinksTo( 'Commissure_coordinates' )
 
   # links for 3.1 version
@@ -229,8 +229,8 @@ def initialization( self ):
   eNode.addLink( 'CorticalFoldsGraph_3_0.mri_corrected', 'mri_corrected' )
   eNode.addLink( 'mri_corrected', 'CorticalFoldsGraph_3_0.mri_corrected' )
 
-  eNode.addLink( 'CorticalFoldsGraph_3_0.brain_voronoi', 'split_mask' )
-  eNode.addLink( 'split_mask', 'CorticalFoldsGraph_3_0.brain_voronoi' )
+  eNode.addLink( 'CorticalFoldsGraph_3_0.split_mask', 'split_mask' )
+  eNode.addLink( 'split_mask', 'CorticalFoldsGraph_3_0.split_mask' )
 
   eNode.addLink( 'CorticalFoldsGraph_3_0.Lgraph', 'left_graph' )
   eNode.addLink( 'left_graph', 'CorticalFoldsGraph_3_0.Lgraph' )

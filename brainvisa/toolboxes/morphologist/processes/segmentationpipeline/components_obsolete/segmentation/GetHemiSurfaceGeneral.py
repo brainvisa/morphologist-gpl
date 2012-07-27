@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -40,7 +41,7 @@ signature = Signature(
   'Side', Choice("Both","Left","Right"),
   'mri_corrected', ReadDiskItem( "T1 MRI Bias Corrected",
       shfjGlobals.vipVolumeFormats ),
-  'brain_voronoi', ReadDiskItem( 'Voronoi Diagram',
+  'split_mask', ReadDiskItem( 'Split Brain Mask',
       shfjGlobals.vipVolumeFormats ),
   'left_hemi_cortex', ReadDiskItem( 'Left CSF+GREY Mask',
       'Aims writable volume formats' ),
@@ -63,13 +64,13 @@ def initialization( self ):
                   ProcessExecutionNode( 'AnaGetOpenedHemiSurface', selected = 0 ) )
 
   # break internal links
-  eNode.GetSphericalHemiSurface.clearLinksTo('brain_voronoi')
+  eNode.GetSphericalHemiSurface.clearLinksTo('split_mask')
   eNode.GetSphericalHemiSurface.clearLinksTo('left_hemi_cortex')
   eNode.GetSphericalHemiSurface.clearLinksTo('right_hemi_cortex')
   eNode.GetSphericalHemiSurface.clearLinksTo('left_hemi_mesh')
   eNode.GetSphericalHemiSurface.clearLinksTo('right_hemi_mesh')
   
-  eNode.GetOpenedHemiSurface.clearLinksTo('brain_voronoi')
+  eNode.GetOpenedHemiSurface.clearLinksTo('split_mask')
   eNode.GetOpenedHemiSurface.clearLinksTo('left_hemi_cortex')
   eNode.GetOpenedHemiSurface.clearLinksTo('right_hemi_cortex')
   eNode.GetOpenedHemiSurface.clearLinksTo('left_hemi_mesh')
@@ -78,8 +79,8 @@ def initialization( self ):
   # links
   eNode.addLink('GetSphericalHemiSurface.mri_corrected', 'mri_corrected')
   eNode.addLink('mri_corrected', 'GetSphericalHemiSurface.mri_corrected')
-  eNode.addLink('GetSphericalHemiSurface.brain_voronoi', 'brain_voronoi')
-  eNode.addLink('brain_voronoi', 'GetSphericalHemiSurface.brain_voronoi')
+  eNode.addLink('GetSphericalHemiSurface.split_mask', 'split_mask')
+  eNode.addLink('split_mask', 'GetSphericalHemiSurface.split_mask')
   eNode.addLink('GetSphericalHemiSurface.left_hemi_cortex', 'left_hemi_cortex')
   eNode.addLink('left_hemi_cortex', 'GetSphericalHemiSurface.left_hemi_cortex')
   eNode.addLink('GetSphericalHemiSurface.right_hemi_cortex', 'right_hemi_cortex')
@@ -91,8 +92,8 @@ def initialization( self ):
   
   eNode.addLink('GetOpenedHemiSurface.mri_corrected', 'mri_corrected')
   eNode.addLink('mri_corrected', 'GetOpenedHemiSurface.mri_corrected')
-  eNode.addLink('GetOpenedHemiSurface.brain_voronoi', 'brain_voronoi')
-  eNode.addLink('brain_voronoi', 'GetOpenedHemiSurface.brain_voronoi')
+  eNode.addLink('GetOpenedHemiSurface.split_mask', 'split_mask')
+  eNode.addLink('split_mask', 'GetOpenedHemiSurface.split_mask')
   eNode.addLink('GetOpenedHemiSurface.left_hemi_cortex', 'left_hemi_cortex')
   eNode.addLink('left_hemi_cortex', 'GetOpenedHemiSurface.left_hemi_cortex')
   eNode.addLink('GetOpenedHemiSurface.right_hemi_cortex', 'right_hemi_cortex')
@@ -103,7 +104,7 @@ def initialization( self ):
   eNode.addLink('right_hemi_mesh', 'GetOpenedHemiSurface.right_hemi_mesh')
   
   # self links
-  self.linkParameters( 'brain_voronoi', 'mri_corrected' )
+  self.linkParameters( 'split_mask', 'mri_corrected' )
   self.linkParameters( 'left_hemi_cortex', 'mri_corrected' )
   self.linkParameters( 'right_hemi_cortex', 'mri_corrected' )
   self.linkParameters( 'left_hemi_mesh', 'mri_corrected' )

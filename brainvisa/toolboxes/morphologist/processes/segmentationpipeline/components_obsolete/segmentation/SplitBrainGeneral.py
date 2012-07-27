@@ -38,16 +38,16 @@ userLevel = 2
 signature = Signature(
   'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
       'Aims readable volume formats' ),
-  'split_mask', WriteDiskItem( "Voronoi Diagram",
+  'split_mask', WriteDiskItem( 'Split Brain Mask',
       'Aims writable volume formats' ),
   'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
   'brain_mask', ReadDiskItem( 'T1 Brain Mask',
       'Aims readable volume formats' ),
-  'use_template', Boolean(), 
-  'voronoi_template', ReadDiskItem( 'Hemispheres Template',
+  'use_template', Boolean(),
+  'split_template', ReadDiskItem( 'Hemispheres Template',
       'Aims readable volume formats' ),
   'commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
-                                          'Commissure coordinates'), 
+      'Commissure coordinates'),
   'use_ridges', Boolean(),
   'white_ridges', ReadDiskItem( "T1 MRI White Matter Ridges",
       'Aims readable volume formats' ),
@@ -56,9 +56,9 @@ signature = Signature(
 
 def initialization( self ):
   self.setOptional('white_ridges')
-  self.voronoi_template = self.signature[ 'voronoi_template' ].findValue( {} )
+  self.split_template = self.signature[ 'split_template' ].findValue( {} )
   self.use_template = "True"
-  self.setOptional('voronoi_template')
+  self.setOptional('split_template')
   self.setOptional('commissure_coordinates')
 
   # create nodes
@@ -78,14 +78,14 @@ def initialization( self ):
   eNode.SplitBrain05.clearLinksTo( 'histo_analysis' )
   eNode.SplitBrain05.clearLinksTo( 'brain_mask' )
   eNode.SplitBrain05.clearLinksTo( 'Use_template' )
-  eNode.SplitBrain05.clearLinksTo( 'voronoi_template' )
+  eNode.SplitBrain05.clearLinksTo( 'split_template' )
   eNode.SplitBrain05.clearLinksTo( 'commissure_coordinates' )
 
   eNode.SplitBrain04.clearLinksTo( 'histo_analysis' )
   eNode.SplitBrain04.clearLinksTo( 'brain_mask' )
   eNode.SplitBrain04.clearLinksTo( 'Use_template' )
-  eNode.SplitBrain04.clearLinksTo( 'brain_voronoi' )
-  eNode.SplitBrain04.clearLinksTo( 'voronoi_template' )
+  eNode.SplitBrain04.clearLinksTo( 'split_mask' )
+  eNode.SplitBrain04.clearLinksTo( 'split_template' )
   eNode.SplitBrain04.clearLinksTo( 'Commissure_coordinates' )
 
   # links for 2005 version
@@ -104,8 +104,8 @@ def initialization( self ):
   eNode.addLink( 'brain_mask', 'SplitBrain05.brain_mask' )
   eNode.addLink( 'SplitBrain05.Use_template', 'use_template' )
   eNode.addLink( 'use_template', 'SplitBrain05.Use_template' )
-  eNode.addLink( 'SplitBrain05.voronoi_template', 'voronoi_template' )
-  eNode.addLink( 'voronoi_template', 'SplitBrain05.voronoi_template' )
+  eNode.addLink( 'SplitBrain05.split_template', 'split_template' )
+  eNode.addLink( 'split_template', 'SplitBrain05.split_template' )
   eNode.addLink( 'SplitBrain05.commissure_coordinates',
                  'commissure_coordinates' )
   eNode.addLink( 'commissure_coordinates',
@@ -121,10 +121,10 @@ def initialization( self ):
   eNode.addLink( 'brain_mask', 'SplitBrain04.brain_mask' )
   eNode.addLink( 'SplitBrain04.Use_template', 'use_template' )
   eNode.addLink( 'use_template', 'SplitBrain04.Use_template' )
-  eNode.addLink( 'SplitBrain04.voronoi_template', 'voronoi_template' )
-  eNode.addLink( 'voronoi_template', 'SplitBrain04.voronoi_template' )
-  eNode.addLink( 'SplitBrain04.brain_voronoi', 'split_mask' )
-  eNode.addLink( 'split_mask', 'SplitBrain04.brain_voronoi' )
+  eNode.addLink( 'SplitBrain04.split_template', 'split_template' )
+  eNode.addLink( 'split_template', 'SplitBrain04.split_template' )
+  eNode.addLink( 'SplitBrain04.split_mask', 'split_mask' )
+  eNode.addLink( 'split_mask', 'SplitBrain04.split_mask' )
   eNode.addLink( 'SplitBrain04.Commissure_coordinates',
                  'commissure_coordinates' )
   eNode.addLink( 'commissure_coordinates',

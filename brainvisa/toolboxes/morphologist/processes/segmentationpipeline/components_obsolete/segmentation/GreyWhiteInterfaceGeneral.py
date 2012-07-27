@@ -39,7 +39,7 @@ signature = Signature(
   'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
       'Aims readable volume formats' ),
   'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-  'split_mask', ReadDiskItem( "Voronoi Diagram",
+  'split_mask', ReadDiskItem( 'Split Brain Mask',
       'Aims readable volume formats' ),
   'LGW_interface', WriteDiskItem( 'Left Grey White Mask',
       'Aims writable volume formats' ),
@@ -97,11 +97,11 @@ def initialization( self ):
   eNode.GreyWhiteMesh.GreyWhiteInterface05.clearLinksTo( 'right_white_mesh_fine' )
   
   eNode.GreyWhiteInterface.clearLinksTo( 'histo_analysis' )
-  eNode.GreyWhiteInterface.clearLinksTo( 'brain_voronoi' )
+  eNode.GreyWhiteInterface.clearLinksTo( 'split_mask' )
   eNode.GreyWhiteInterface.clearLinksTo( 'left_grey_white' )
   eNode.GreyWhiteInterface.clearLinksTo( 'right_grey_white' )
   eNode.GreyWhiteMesh.GreyWhiteMesh.clearLinksTo( 'histo_analysis' )
-  eNode.GreyWhiteMesh.GreyWhiteMesh.clearLinksTo( 'brain_voronoi' )
+  eNode.GreyWhiteMesh.GreyWhiteMesh.clearLinksTo( 'split_mask' )
   eNode.GreyWhiteMesh.GreyWhiteMesh.clearLinksTo( 'left_white_mesh' )
   eNode.GreyWhiteMesh.GreyWhiteMesh.clearLinksTo( 'right_white_mesh' )
   eNode.GreyWhiteMesh.GreyWhiteMesh.clearLinksTo( 'left_white_mesh_fine' )
@@ -113,8 +113,8 @@ def initialization( self ):
   eNode.addLink( 'mri_corrected', 'GreyWhiteInterface.mri_corrected' )
   eNode.addLink( 'GreyWhiteInterface.histo_analysis', 'histo_analysis' )
   eNode.addLink( 'histo_analysis', 'GreyWhiteInterface.histo_analysis' )
-  eNode.addLink( 'GreyWhiteInterface.brain_voronoi', 'split_mask' )
-  eNode.addLink( 'split_mask', 'GreyWhiteInterface.brain_voronoi' )
+  eNode.addLink( 'GreyWhiteInterface.split_mask', 'split_mask' )
+  eNode.addLink( 'split_mask', 'GreyWhiteInterface.split_mask' )
   eNode.addLink( 'GreyWhiteInterface.left_grey_white', 'LGW_interface' )
   eNode.addLink( 'LGW_interface', 'GreyWhiteInterface.left_grey_white' )
   eNode.addLink( 'GreyWhiteInterface.right_grey_white', 'RGW_interface' )
@@ -172,10 +172,10 @@ def initialization( self ):
                  'histo_analysis' )
   eNode.addLink( 'histo_analysis',
                  'GreyWhiteMesh.GreyWhiteMesh.histo_analysis' )
-  eNode.addLink( 'GreyWhiteMesh.GreyWhiteMesh.brain_voronoi',
+  eNode.addLink( 'GreyWhiteMesh.GreyWhiteMesh.split_mask',
                  'split_mask' )
   eNode.addLink( 'split_mask',
-                 'GreyWhiteMesh.GreyWhiteMesh.brain_voronoi' )
+                 'GreyWhiteMesh.GreyWhiteMesh.split_mask' )
   eNode.addLink( 'GreyWhiteMesh.GreyWhiteMesh.left_white_mesh',
                  'left_white_mesh' )
   eNode.addLink( 'left_white_mesh',

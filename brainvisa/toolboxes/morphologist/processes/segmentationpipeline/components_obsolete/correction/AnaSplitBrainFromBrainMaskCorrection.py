@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -39,11 +40,11 @@ signature = Signature(
   'variant', Choice("Standard procedure","Barycentre 0.9","Barycentre 0.75","Barycentre 0.5","Barycentre 0.25",
                     "2 * standard deviation", "2.5 * standard deviation", "3 * standard deviation",
                     "3.5 * standard deviation", "4 * standard deviation"),
-  'brain_voronoi', WriteDiskItem( "Voronoi Diagram", 'GIS Image' ),
+  'split_mask', WriteDiskItem( 'Split Brain Mask', 'GIS Image' ),
   'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
   'brain_mask', ReadDiskItem( 'T1 Brain Mask', 'GIS Image' ),
   'Use_template', Boolean(), 
-  'voronoi_template', ReadDiskItem( 'Hemispheres Template', 'GIS Image' ),
+  'split_template', ReadDiskItem( 'Hemispheres Template', 'GIS Image' ),
   'Commissure_coordinates', ReadDiskItem( 'Commissure coordinates','Commissure coordinates'),
 
 )
@@ -52,12 +53,12 @@ signature = Signature(
 def initialization( self ):
   self.linkParameters( 'histo_analysis', 'mri_corrected' )
   self.linkParameters( 'brain_mask', 'mri_corrected' )
-  self.linkParameters( 'brain_voronoi', 'mri_corrected' )
+  self.linkParameters( 'split_mask', 'mri_corrected' )
   self.linkParameters( 'Commissure_coordinates', 'mri_corrected' )
   self.variant = "Barycentre 0.25"
-  self.voronoi_template = self.signature[ 'voronoi_template' ].findValue( {} )
+  self.split_template = self.signature[ 'split_template' ].findValue( {} )
   self.Use_template = 1
-  self.setOptional('voronoi_template')
+  self.setOptional('split_template')
   self.setOptional('Commissure_coordinates')
 
 def execution( self, context ):
@@ -66,8 +67,8 @@ def execution( self, context ):
                         mri_corrected = self.mri_corrected,
                         histo_analysis = self.histo_analysis,
                         brain_mask = self.brain_mask,
-                        brain_voronoi = self.brain_voronoi,
-                        voronoi_template = self.voronoi_template,
+                        split_mask = self.split_mask,
+                        split_template = self.split_template,
                         Use_template = self.Use_template,
                         Commissure_coordinates = self.Commissure_coordinates )
   if self.variant== "Barycentre 0.9":
@@ -75,8 +76,8 @@ def execution( self, context ):
                         mri_corrected = self.mri_corrected,
                         histo_analysis = self.histo_analysis,
                         brain_mask = self.brain_mask,
-                        brain_voronoi = self.brain_voronoi,
-                        voronoi_template = self.voronoi_template,
+                        split_mask = self.split_mask,
+                        split_template = self.split_template,
                         Use_template = self.Use_template,
                         Commissure_coordinates = self.Commissure_coordinates,
                         white_algo = 'b',
@@ -86,8 +87,8 @@ def execution( self, context ):
                         mri_corrected = self.mri_corrected,
                         histo_analysis = self.histo_analysis,
                         brain_mask = self.brain_mask,
-                        brain_voronoi = self.brain_voronoi,
-                        voronoi_template = self.voronoi_template,
+                        split_mask = self.split_mask,
+                        split_template = self.split_template,
                         Use_template = self.Use_template,
                         Commissure_coordinates = self.Commissure_coordinates,
                         white_algo = 'b',
@@ -97,8 +98,8 @@ def execution( self, context ):
                         mri_corrected = self.mri_corrected,
                         histo_analysis = self.histo_analysis,
                         brain_mask = self.brain_mask,
-                        brain_voronoi = self.brain_voronoi,
-                        voronoi_template = self.voronoi_template,
+                        split_mask = self.split_mask,
+                        split_template = self.split_template,
                         Use_template = self.Use_template,
                         Commissure_coordinates = self.Commissure_coordinates,
                         white_algo = 'b',
@@ -108,8 +109,8 @@ def execution( self, context ):
                         mri_corrected = self.mri_corrected,
                         histo_analysis = self.histo_analysis,
                         brain_mask = self.brain_mask,
-                        brain_voronoi = self.brain_voronoi,
-                        voronoi_template = self.voronoi_template,
+                        split_mask = self.split_mask,
+                        split_template = self.split_template,
                         Use_template = self.Use_template,
                         Commissure_coordinates = self.Commissure_coordinates,
                         white_algo = 'b',
@@ -119,8 +120,8 @@ def execution( self, context ):
                         mri_corrected = self.mri_corrected,
                         histo_analysis = self.histo_analysis,
                         brain_mask = self.brain_mask,
-                        brain_voronoi = self.brain_voronoi,
-                        voronoi_template = self.voronoi_template,
+                        split_mask = self.split_mask,
+                        split_template = self.split_template,
                         Use_template = self.Use_template,
                         Commissure_coordinates = self.Commissure_coordinates,
                         white_algo = 'c',
@@ -130,8 +131,8 @@ def execution( self, context ):
                         mri_corrected = self.mri_corrected,
                         histo_analysis = self.histo_analysis,
                         brain_mask = self.brain_mask,
-                        brain_voronoi = self.brain_voronoi,
-                        voronoi_template = self.voronoi_template,
+                        split_mask = self.split_mask,
+                        split_template = self.split_template,
                         Use_template = self.Use_template,
                         Commissure_coordinates = self.Commissure_coordinates,
                         white_algo = 'c',
@@ -141,8 +142,8 @@ def execution( self, context ):
                         mri_corrected = self.mri_corrected,
                         histo_analysis = self.histo_analysis,
                         brain_mask = self.brain_mask,
-                        brain_voronoi = self.brain_voronoi,
-                        voronoi_template = self.voronoi_template,
+                        split_mask = self.split_mask,
+                        split_template = self.split_template,
                         Use_template = self.Use_template,
                         Commissure_coordinates = self.Commissure_coordinates,
                         white_algo = 'c',
@@ -152,8 +153,8 @@ def execution( self, context ):
                         mri_corrected = self.mri_corrected,
                         histo_analysis = self.histo_analysis,
                         brain_mask = self.brain_mask,
-                        brain_voronoi = self.brain_voronoi,
-                        voronoi_template = self.voronoi_template,
+                        split_mask = self.split_mask,
+                        split_template = self.split_template,
                         Use_template = self.Use_template,
                         Commissure_coordinates = self.Commissure_coordinates,
                         white_algo = 'c',
@@ -163,8 +164,8 @@ def execution( self, context ):
                         mri_corrected = self.mri_corrected,
                         histo_analysis = self.histo_analysis,
                         brain_mask = self.brain_mask,
-                        brain_voronoi = self.brain_voronoi,
-                        voronoi_template = self.voronoi_template,
+                        split_mask = self.split_mask,
+                        split_template = self.split_template,
                         Use_template = self.Use_template,
                         Commissure_coordinates = self.Commissure_coordinates,
                         white_algo = 'c',

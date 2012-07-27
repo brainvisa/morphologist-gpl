@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -43,7 +44,7 @@ signature = Signature(
   'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
       'Aims readable volume formats' ),
   'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-  'brain_voronoi', ReadDiskItem( 'Voronoi Diagram',
+  'split_mask', ReadDiskItem( 'Split Brain Mask',
       'Aims readable volume formats' ),
   'left_white_mesh', WriteDiskItem( 'Left Hemisphere White Mesh',
       'Aims mesh formats' ),
@@ -66,7 +67,7 @@ def initialization( self ):
   self.linkParameters( 'right_white_mesh', 'mri_corrected' )
   self.linkParameters( 'left_white_mesh_fine', 'mri_corrected' )
   self.linkParameters( 'right_white_mesh_fine', 'mri_corrected' )
-  self.linkParameters( 'brain_voronoi', 'mri_corrected' )
+  self.linkParameters( 'split_mask', 'mri_corrected' )
   self.Side = "Both"
   self.oversampling = "best resolution in each direction"
   self.pressure = "100"
@@ -77,7 +78,7 @@ def initialization( self ):
 def execution( self, context ):
   if self.oversampling == "none":
      over_nobias = self.mri_corrected
-     over_voronoi = self.brain_voronoi
+     over_split = self.split_mask
   else:
      attrs = shfjGlobals.aimsVolumeAttributes( self.mri_corrected,
                                                forceFormat=1 )
@@ -110,7 +111,7 @@ def execution( self, context ):
         newvox = 0.5
      context.write( "New cubic spatial resolution:" + str(newvox))
      over_nobias = context.temporary( 'GIS Image')
-     over_voronoi = context.temporary( 'GIS Image')
+     over_split = context.temporary( 'GIS Image')
      newdimx = int((dimx+1)*voxx/newvox)
      newdimy = int((dimy+1)*voxy/newvox)
      newdimz = int((dimz+1)*voxz/newvox)      
@@ -121,12 +122,12 @@ def execution( self, context ):
                     "-dz", str(newdimz), "-sx", str(newvox), "-sy", 
                     str(newvox), "-sz", str(newvox), "-did", "-o", 
                     over_nobias)
-     context.write( "Computing oversampled voronoi diagram (nearest neighbor)")      
-     context.system("VipSplineResamp", "-i", self.brain_voronoi,
+     context.write( "Computing oversampled split brain mask (nearest neighbor)")      
+     context.system("VipSplineResamp", "-i", self.split_mask,
                     "-ord", "0", "-dx", str(newdimx), "-dy", str(newdimy), 
                     "-dz", str(newdimz), "-sx", str(newvox), "-sy", 
                     str(newvox), "-sz", str(newvox), "-did", "-o", 
-                    over_voronoi)
+                    over_split)
   trManager = registration.getTransformationManager()
   if self.Side in ('Left','Both'):
     if os.path.exists(self.left_white_mesh.fullName() + '.loc'):
@@ -135,7 +136,7 @@ def execution( self, context ):
       context.write( "Masking Bias corrected image with left hemisphere mask...")
       braing = context.temporary( 'GIS Image' )
       context.system( "VipMask", "-i", over_nobias, "-m",
-                      over_voronoi, "-o", braing,
+                      over_split, "-o", braing,
                       "-w", "t", "-l", "2" )
       
       hemi_cortex = context.temporary( 'GIS Image' )  
@@ -177,7 +178,7 @@ def execution( self, context ):
       context.write( "Masking Bias corrected image with right hemisphere mask...")
       braing = context.temporary( 'GIS Image' )
       context.system( "VipMask", "-i", over_nobias, "-m",
-                      over_voronoi, "-o", braing,
+                      over_split, "-o", braing,
                       "-w", "t", "-l", "1" )
       
       hemi_cortex = context.temporary( 'GIS Image' )  
@@ -213,4 +214,4 @@ def execution( self, context ):
       trManager.copyReferential( self.mri_corrected, self.right_white_mesh_fine )
 
   del over_nobias
-  del over_voronoi
+  del over_split

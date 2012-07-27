@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -37,7 +38,7 @@ name = 'Validation_4 Split Brain from Brain Mask'
 userLevel = 0
 
 signature = Signature(
-  'brain_voronoi', ReadDiskItem( 'Voronoi Diagram',
+  'split_mask', ReadDiskItem( 'Split Brain Mask',
     'Aims readable volume formats' ),
   'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
     'Aims readable volume formats' ),
@@ -45,28 +46,28 @@ signature = Signature(
 )
 
 def initialization( self ):
-  self.linkParameters(  'mri_corrected','brain_voronoi' )
+  self.linkParameters(  'mri_corrected','split_mask' )
   self.validation = "Visualise"
 
 def execution( self, context ):
     if self.validation == "Visualise":
       return(context.runProcess('AnatomistShowSplitBrain',
-        mri_corrected=self.mri_corrected,brain_voronoi=self.brain_voronoi))
+        mri_corrected=self.mri_corrected,split_mask=self.split_mask))
     elif self.validation == "Lock":
-      if os.path.exists(self.brain_voronoi.fullName() + '.loc'):
-        context.write(self.brain_voronoi.fullName(),'has already been locked')
+      if os.path.exists(self.split_mask.fullName() + '.loc'):
+        context.write(self.split_mask.fullName(),'has already been locked')
       else:
-        shelltools.touch( self.brain_voronoi.fullName() + '.loc' )
+        shelltools.touch( self.split_mask.fullName() + '.loc' )
 
     elif self.validation == "Unlock":
-      if os.path.exists(self.brain_voronoi.fullName() + '.loc'):
-        os.unlink( self.brain_voronoi.fullName() + '.loc' )
+      if os.path.exists(self.split_mask.fullName() + '.loc'):
+        os.unlink( self.split_mask.fullName() + '.loc' )
       else:
-        context.write(self.brain_voronoi.fullName(),'has not been locked')
+        context.write(self.split_mask.fullName(),'has not been locked')
     #elif self.validation == "Delete":
-        #if os.path.exists(self.brain_voronoi.fullName() + '.loc'):
-            #context.write("Sorry, I can not delete ",self.brain_voronoi.fullName(),', which has been locked')
-        #elif os.path.exists(self.brain_voronoi.fullName() + '.ima') or os.path.exists(self.brain_voronoi.fullName() + '.ima.gz'):
-            #shelltools.rm( self.brain_voronoi.fullName() + '.*' )
+        #if os.path.exists(self.split_mask.fullName() + '.loc'):
+            #context.write("Sorry, I can not delete ",self.split_mask.fullName(),', which has been locked')
+        #elif os.path.exists(self.split_mask.fullName() + '.ima') or os.path.exists(self.split_mask.fullName() + '.ima.gz'):
+            #shelltools.rm( self.split_mask.fullName() + '.*' )
         #else:
-            #context.write("Sorry ", self.brain_voronoi.fullName(),' does not exist on fdisk')
+            #context.write("Sorry ", self.split_mask.fullName(),' does not exist on fdisk')

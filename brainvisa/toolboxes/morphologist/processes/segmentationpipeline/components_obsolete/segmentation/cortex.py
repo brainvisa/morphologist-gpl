@@ -44,7 +44,7 @@ signature = Signature(
   'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
       'Aims readable volume formats' ),
   'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-  'split_mask', ReadDiskItem( "Voronoi Diagram",
+  'split_mask', ReadDiskItem( 'Split Brain Mask',
       'Aims readable volume formats' ),
   'use_ridges', Boolean(),
   'white_ridges', ReadDiskItem( "T1 MRI White Matter Ridges",

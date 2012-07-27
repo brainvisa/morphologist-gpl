@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -41,7 +42,7 @@ signature = Signature(
   'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
       'Aims readable volume formats' ),
   'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-  'brain_voronoi', ReadDiskItem( 'Voronoi Diagram',
+  'split_mask', ReadDiskItem( 'Split Brain Mask',
       'Aims readable volume formats' ),
   'Side', Choice("Both","Left","Right"),
   'left_grey_white', WriteDiskItem( 'Left Grey White Mask',
@@ -54,7 +55,7 @@ def initialization( self ):
   self.linkParameters( 'histo_analysis', 'mri_corrected' )
   self.linkParameters( 'left_grey_white', 'mri_corrected' )
   self.linkParameters( 'right_grey_white', 'mri_corrected' )
-  self.linkParameters( 'brain_voronoi', 'mri_corrected' )
+  self.linkParameters( 'split_mask', 'mri_corrected' )
   self.Side = "Both"
 #
 #
@@ -70,7 +71,7 @@ def execution( self, context ):
         context.system( "VipGreyWhiteClassif", "-i",
                         self.mri_corrected, "-h",
                         self.histo_analysis, "-m",
-                        self.brain_voronoi, "-o",
+                        self.split_mask, "-o",
                         self.left_grey_white, "-l", "2", "-w", "t", "-a", "R")
         tm.copyReferential(self.mri_corrected, self.left_grey_white)
   if self.Side in ('Right','Both'):
@@ -82,7 +83,7 @@ def execution( self, context ):
         context.system( "VipGreyWhiteClassif", "-i",
                         self.mri_corrected, "-h",
                         self.histo_analysis, "-m",
-                        self.brain_voronoi, "-o",
+                        self.split_mask, "-o",
                         self.right_grey_white, "-l", "1", "-w",
                         "t", "-a", "R")
         tm.copyReferential(self.mri_corrected, self.right_grey_white)

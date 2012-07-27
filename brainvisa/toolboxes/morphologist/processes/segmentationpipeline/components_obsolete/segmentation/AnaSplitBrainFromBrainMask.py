@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -43,9 +44,9 @@ signature = Signature(
   'brain_mask', ReadDiskItem( 'T1 Brain Mask',
       'Aims readable volume formats' ),
   'Use_template', Boolean(), 
-  'voronoi_template', ReadDiskItem( 'Hemispheres Template',
+  'split_template', ReadDiskItem( 'Hemispheres Template',
       'Aims readable volume formats' ),
-  'brain_voronoi', WriteDiskItem( "Voronoi Diagram",
+  'split_mask', WriteDiskItem( 'Split Brain Mask',
       'Aims writable volume formats' ),
    'Commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
        'Commissure coordinates'),
@@ -55,11 +56,11 @@ signature = Signature(
 def initialization( self ):
   self.linkParameters( 'histo_analysis', 'mri_corrected' )
   self.linkParameters( 'brain_mask', 'mri_corrected' )
-  self.linkParameters( 'brain_voronoi', 'mri_corrected' )
+  self.linkParameters( 'split_mask', 'mri_corrected' )
   self.linkParameters( 'Commissure_coordinates', 'mri_corrected' )
-  self.voronoi_template = self.signature[ 'voronoi_template' ].findValue( {} )
+  self.split_template = self.signature[ 'split_template' ].findValue( {} )
   self.Use_template = 1
-  self.setOptional('voronoi_template')
+  self.setOptional('split_template')
   self.setOptional('Commissure_coordinates')
 
 def execution( self, context ):
@@ -67,10 +68,10 @@ def execution( self, context ):
                         mri_corrected = self.mri_corrected,
                         histo_analysis = self.histo_analysis,
                         brain_mask = self.brain_mask,
-                        brain_voronoi = self.brain_voronoi,
-                        voronoi_template = self.voronoi_template,
+                        split_mask = self.split_mask,
+                        split_template = self.split_template,
                         Use_template = self.Use_template,
                         Commissure_coordinates = self.Commissure_coordinates )
     # manage referentials
     tm = registration.getTransformationManager()
-    tm.copyReferential(self.mri_corrected, self.brain_voronoi)
+    tm.copyReferential(self.mri_corrected, self.split_mask)

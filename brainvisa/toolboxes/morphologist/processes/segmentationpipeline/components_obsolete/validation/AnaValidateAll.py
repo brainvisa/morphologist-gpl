@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -59,10 +60,10 @@ signature = Signature(
 #  'validation_brain_mask', Choice("Nothing","Visualise","Lock","Unlock","Delete","Compress","Uncompress"),
   'validation_brain_mask',
   Choice("Nothing","Visualise","Lock","Unlock"),
-  'brain_voronoi', ReadDiskItem( "Voronoi Diagram",
+  'split_mask', ReadDiskItem( 'Split Brain Mask',
     'Aims readable volume formats' ),
-#  'validation_brain_voronoi', Choice("Nothing","Visualise","Lock","Unlock","Delete","Compress","Uncompress"),
-  'validation_brain_voronoi',
+#  'validation_split_mask', Choice("Nothing","Visualise","Lock","Unlock","Delete","Compress","Uncompress"),
+  'validation_split_mask',
   Choice("Nothing","Visualise","Lock","Unlock"),
 #  'left_hemi_cortex', ReadDiskItem( 'Left CSF+GREY Mask', 'GIS Image' ),
 #  'validation_left_hemi_cortex', Choice("Nothing","Visualise","Lock","Unlock","Delete","Compress","Uncompress"),
@@ -90,7 +91,7 @@ def initialization( self ):
   self.validation_total = "Visualise"
   self.validation_mri_corrected="Nothing"
   self.validation_histo_analysis="Nothing"
-  self.validation_brain_voronoi="Nothing"
+  self.validation_split_mask="Nothing"
   self.validation_brain_mask="Nothing"
   self.validation_left_hemi_cortex="Nothing"
   self.validation_right_hemi_cortex="Nothing"
@@ -98,7 +99,7 @@ def initialization( self ):
   self.validation_right_hemi_mesh="Nothing"
   self.setOptional('histo_analysis')
   self.setOptional('brain_mask')
-  self.setOptional('brain_voronoi')
+  self.setOptional('split_mask')
 #  self.setOptional('left_hemi_cortex')
 #  self.setOptional('right_hemi_cortex')
   self.setOptional('left_hemi_mesh')
@@ -109,7 +110,7 @@ def initialization( self ):
   self.linkParameters( 'mri_corrected', 'T1mri' )
   self.linkParameters( 'histo_analysis', 'T1mri' )
   self.linkParameters( 'brain_mask', 'T1mri' )
-  self.linkParameters( 'brain_voronoi', 'mri_corrected' )
+  self.linkParameters( 'split_mask', 'mri_corrected' )
 #  self.linkParameters( 'left_hemi_cortex', 'mri_corrected' )
 #  self.linkParameters( 'right_hemi_cortex', 'mri_corrected' )
   self.linkParameters( 'left_hemi_mesh', 'mri_corrected' )
@@ -156,13 +157,13 @@ def execution( self, context ):
   if self.validation_total != "Itemwise":
     result.append(context.runProcess( 'AnaSplitBrainfromBrainMaskValidation',
                                       mri_corrected=self.mri_corrected,
-                                      brain_voronoi=self.brain_voronoi,
+                                      split_mask=self.split_mask,
                                       validation=self.validation_total))   
-  elif self.validation_brain_voronoi!="Nothing":
+  elif self.validation_split_mask!="Nothing":
     result.append(context.runProcess( 'AnaSplitBrainfromBrainMaskValidation',
                                       mri_corrected=self.mri_corrected,
-                                      brain_voronoi=self.brain_voronoi,
-                                      validation=self.validation_brain_voronoi))
+                                      split_mask=self.split_mask,
+                                      validation=self.validation_split_mask))
 
 
   if self.validation_total == "Visualise" or (self.validation_total == "Itemwise" and self.validation_left_hemi_mesh=="Visualise"):

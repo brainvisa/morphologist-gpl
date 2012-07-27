@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -43,12 +44,12 @@ signature = Signature(
   'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
       'Aims readable volume formats' ),
   'Use_template', Boolean(), 
-  'voronoi_template', ReadDiskItem( 'Hemispheres Template',
+  'split_template', ReadDiskItem( 'Hemispheres Template',
       'Aims readable volume formats' ),
   'brain_mask', ReadDiskItem( "T1 Brain Mask",
       'Aims readable volume formats' ),
   'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-  'brain_voronoi', WriteDiskItem( "Voronoi Diagram",
+  'split_mask', WriteDiskItem( 'Split Brain Mask',
       'Aims writable volume formats' ),
   'Commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
       'Commissure coordinates'),
@@ -64,11 +65,11 @@ signature = Signature(
 def initialization( self ):
   self.linkParameters( 'histo_analysis', 'mri_corrected' )
   self.linkParameters( 'brain_mask', 'mri_corrected' )
-  self.linkParameters( 'brain_voronoi', 'mri_corrected' )
+  self.linkParameters( 'split_mask', 'mri_corrected' )
   self.linkParameters( 'Commissure_coordinates', 'mri_corrected' )
-  self.voronoi_template = self.signature[ 'voronoi_template' ].findValue( {} )
+  self.split_template = self.signature[ 'split_template' ].findValue( {} )
   self.Use_template = 1
-  self.setOptional('voronoi_template')
+  self.setOptional('split_template')
   self.setOptional('Commissure_coordinates')
   self.setOptional('white_algo')
   self.setOptional('mult_factor')
@@ -81,9 +82,9 @@ def initialization( self ):
 
 
 def execution( self, context ):
-  if os.path.exists(self.brain_voronoi.fullName() + '.loc'):
-    context.write(self.brain_voronoi.fullName(), ' has been locked')
-    context.write('Remove',self.brain_voronoi.fullName(),'.loc if you want to trigger a new segmentation')
+  if os.path.exists(self.split_mask.fullName() + '.loc'):
+    context.write(self.split_mask.fullName(), ' has been locked')
+    context.write('Remove',self.split_mask.fullName(),'.loc if you want to trigger a new segmentation')
   else:
     option_list = []
     if self.Commissure_coordinates is not None:
@@ -96,13 +97,13 @@ def execution( self, context ):
     if self.white_algo == 'c' :
       option_list += ['-Coef', self.mult_factor]
     if self.Use_template:
-      option_list += ['-template', self.voronoi_template.fullPath(),
+      option_list += ['-template', self.split_template.fullPath(),
                       '-TemplateUse', 'y']
     call_list = ['VipSplitBrain',
                  '-input',  self.mri_corrected.fullPath(),
                  '-brain', self.brain_mask.fullPath(),
                  '-analyse', 'r', '-hname', self.histo_analysis.fullPath(),
-                 '-output', self.brain_voronoi.fullPath(),
+                 '-output', self.split_mask.fullPath(),
                  '-erosion', self.initial_erosion,
                  '-ccsize', self.cc_min_size,
                  '-walgo',self.white_algo

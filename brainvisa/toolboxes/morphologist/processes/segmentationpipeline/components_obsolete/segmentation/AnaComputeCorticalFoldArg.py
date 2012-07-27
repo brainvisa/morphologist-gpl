@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -44,7 +45,7 @@ signature = Signature(
   'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
       'Aims readable volume formats' ),
   'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-  'brain_voronoi', ReadDiskItem( 'Voronoi Diagram',
+  'split_mask', ReadDiskItem( 'Split Brain Mask',
       'Aims readable volume formats' ),
   'left_hemi_cortex', WriteDiskItem( 'Left CSF+GREY Mask',
       'Aims writable volume formats' ),
@@ -69,8 +70,8 @@ signature = Signature(
 # Default values
 def initialization( self ):
   self.linkParameters( 'histo_analysis', 'mri_corrected' )
-  self.linkParameters( 'brain_voronoi', 'histo_analysis' )
-  self.linkParameters( 'left_hemi_cortex', 'brain_voronoi' )
+  self.linkParameters( 'split_mask', 'histo_analysis' )
+  self.linkParameters( 'left_hemi_cortex', 'split_mask' )
   self.linkParameters( 'right_hemi_cortex', 'left_hemi_cortex' )
   self.linkParameters( 'Lgraph', 'Lroots' )
   self.linkParameters( 'Rgraph', 'Rroots' )
@@ -88,11 +89,11 @@ def execution( self, context ):
   context.write( "Masking Bias corrected image with hemisphere masks...")
   Lbraing = context.temporary( 'GIS Image' )
   context.system( 'VipMask', '-i', self.mri_corrected, "-m", 
-                  self.brain_voronoi, "-o", Lbraing, "-w",
+                  self.split_mask, "-o", Lbraing, "-w",
                   "t", "-l", "2" )
   Rbraing = context.temporary( 'GIS Image' )
   context.system( "VipMask", "-i", self.mri_corrected, "-m",
-                  self.brain_voronoi, "-o", Rbraing,
+                  self.split_mask, "-o", Rbraing,
                   "-w", "t", "-l", "1" )
 
   trManager = registration.getTransformationManager()
@@ -105,15 +106,15 @@ def execution( self, context ):
         context.system( "VipHomotopicSnake", "-i", Lbraing, "-h",
                         self.histo_analysis, "-o", 
                         self.left_hemi_cortex, "-w", "t" )
-      trManager.copyReferential( self.brain_voronoi, self.left_hemi_cortex )
+      trManager.copyReferential( self.split_mask, self.left_hemi_cortex )
 
       context.write("Computing skeleton and buried gyrus watershed...")
       context.system( "VipSkeleton", "-i", self.left_hemi_cortex,
                       "-so", self.Lskeleton, "-vo", 
                       self.Lroots, "-g", Lbraing, "-w",
                       "t" )
-      trManager.copyReferential( self.brain_voronoi, self.Lroots )
-      trManager.copyReferential( self.brain_voronoi, self.Lskeleton )
+      trManager.copyReferential( self.split_mask, self.Lroots )
+      trManager.copyReferential( self.split_mask, self.Lskeleton )
 
 
       context.write("Building Attributed Relational Graph...")
@@ -138,7 +139,7 @@ def execution( self, context ):
                       self.Lgraph.fullPath( 0 ) , "-b",
                       os.path.basename( self.Lgraph.fullName() ) + '.data',
                       "-g" )
-      trManager.copyReferential( self.brain_voronoi, self.Lgraph )
+      trManager.copyReferential( self.split_mask, self.Lgraph )
       context.write( 'computing additional attributes' )
       context.system( 'AimsGraphComplete', '-i', self.Lgraph.fullPath(),
                       '--dversion', '3.0', '--mversion', '3.0' )
@@ -155,15 +156,15 @@ def execution( self, context ):
         context.system( "VipHomotopicSnake", "-i", Rbraing, "-h",
                         self.histo_analysis, "-o", 
                         self.right_hemi_cortex, "-w", "t" )
-      trManager.copyReferential( self.brain_voronoi, self.right_hemi_cortex )
+      trManager.copyReferential( self.split_mask, self.right_hemi_cortex )
 
       context.write("Computing skeleton and buried gyrus watershed...")
       context.system( "VipSkeleton", "-i", self.right_hemi_cortex,
                       "-so", self.Rskeleton, "-vo",
                       self.Rroots, "-g", Rbraing,
                       "-w", "t" )
-      trManager.copyReferential( self.brain_voronoi, self.Rroots )
-      trManager.copyReferential( self.brain_voronoi, self.Rskeleton )
+      trManager.copyReferential( self.split_mask, self.Rroots )
+      trManager.copyReferential( self.split_mask, self.Rskeleton )
 
       context.write("Building Attributed Relational Graph...")
       context.system( "VipFoldArg", "-i", self.Rskeleton, "-v",
@@ -186,7 +187,7 @@ def execution( self, context ):
                       self.Rgraph.fullPath( 0 ), "-b",
                       os.path.basename( self.Rgraph.fullName() ) + ".data",
                       "-g" )
-      trManager.copyReferential( self.brain_voronoi, self.Rgraph )
+      trManager.copyReferential( self.split_mask, self.Rgraph )
       context.write( 'computing additional attributes' )
       context.system( 'AimsGraphComplete', '-i', self.Rgraph.fullPath(),
                       '--dversion', '3.0', '--mversion', '3.0' )
