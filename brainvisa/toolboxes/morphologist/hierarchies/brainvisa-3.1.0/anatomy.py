@@ -109,7 +109,12 @@ t1mri_content = (
         'RawT1-<subject>_<acquisition>_TO_unknown_atlas_WITH_bal', SetType("baladin Transformation"),
         'RawT1-<subject>_<acquisition>', SetType( 'Referential of Raw T1 MRI' ),
         'RawT1-<subject>_<acquisition>_TO_Talairach-ACPC', SetType( 'Transform Raw T1 MRI to Talairach-AC/PC-Anatomist' ),
-        'RawT1-<subject>_<acquisition>_TO_Talairach-MNI', SetType( 'Transform Raw T1 MRI to Talairach-MNI template-SPM'), SetWeakAttr('destination_referential', str(registration.talairachMNIReferentialId)),
+        'RawT1-<subject>_<acquisition>_TO_Talairach-MNI', SetType( 'Transform Raw T1 MRI to Talairach-MNI template-SPM'),
+        
+        'RawT1-<subject>_<acquisition>_TO_Scanner_Based', SetType( 'Transformation to Scanner Based Referential' ),
+        'RawT1-<subject>_<acquisition>_Scanner_Based', SetType( 'Scanner Based Referential' ),
+        
+        SetWeakAttr('destination_referential', str(registration.talairachMNIReferentialId)),
       ),
       "{analysis}", SetDefaultAttributeValue( 'analysis', default_analysis ), SetNonMandatoryKeyAttribute( 'analysis' ),
         SetContent( # processing results in analysis
