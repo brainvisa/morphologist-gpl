@@ -443,7 +443,7 @@ class SnapBase():
         central_layout.addWidget(block)
 
         self.ref = a.createReferential()
-        import os
+        import os, sys
 	from brainvisa.configuration import neuroConfig
 	sulci_hierarchy_path = os.path.join(neuroConfig.getSharePath(), neuroConfig.brainvisa_share.config.share, 'nomenclature/hierarchy/sulcal_root_colors.hie')
         fibers_hierarchy_path = '/neurospin/lnao/Panabase/fibres/pamela/atlas_faisceaux/faisceaux_longs.hie'

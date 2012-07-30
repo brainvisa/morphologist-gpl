@@ -21,7 +21,6 @@ class HelpWindow(QtGui.QDialog):
         self.setModal(True)
 
     def setupUi(self, parent):
-        self.parent = parent
         self.setObjectName('helpbox')
         self.setWindowTitle('SnapBase v0.2 introduction')
         self.resize(348, 571)
@@ -30,26 +29,16 @@ class HelpWindow(QtGui.QDialog):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.sizePolicy().hasHeightForWidth())
         self.setSizePolicy(sizePolicy)
-#        self.doc = QtGui.QTextDocument()
         help_file = '%s/doc/index.html'%os.path.split(__file__)[0]
-#        print help_file
-#        f = open(help_file, 'r')
-#        help_text = f.read()
-#        self.doc.setHtml(help_text)
-#        self.qte = QtGui.QTextEdit(self)
-#        self.qte.setReadOnly(True)
         from PyQt4 import QtWebKit
-        self.qte = QtWebKit.QWebView(self)
-        self.qte.load(Qt.QUrl(help_file))
+        self.qte2 = QtWebKit.QWebView(self)
+        self.qte2.load(Qt.QUrl(help_file))
+        self.qte = QtGui.QPushButton("bonjour", self)
         self.qte.setMinimumSize(QtCore.QSize(200,31))
         self.setMinimumSize(QtCore.QSize(200,31))
-#        self.qte.setDocument(self.doc)
         self.layout = QtGui.QVBoxLayout(self)
         self.layout.addWidget(self.qte)
 
-    def closeEvent(self, event):
-        #self.parent.setEnabled(True)
-        pass
 
 def display_help_msgbox():
     global gui, main_window
