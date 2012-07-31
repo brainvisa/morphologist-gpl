@@ -227,8 +227,8 @@ def initialization( self ):
                  'BrainSegmentation.histo_analysis' )
 
   eNode.addLink( 'BrainSegmentation.Commissure_coordinates',
-                 'PrepareSubject.Commissure_coordinates' )
-  eNode.addLink( 'PrepareSubject.Commissure_coordinates',
+                 'PrepareSubject.commissure_coordinates' )
+  eNode.addLink( 'PrepareSubject.commissure_coordinates',
                  'BrainSegmentation.Commissure_coordinates' )
 
   eNode.addLink( 'BrainSegmentation.white_ridges',
@@ -271,8 +271,8 @@ def initialization( self ):
                  'SplitBrain.brain_mask' )
 
   eNode.addLink( 'SplitBrain.commissure_coordinates',
-                 'PrepareSubject.Commissure_coordinates' )
-  eNode.addLink( 'PrepareSubject.Commissure_coordinates',
+                 'PrepareSubject.commissure_coordinates' )
+  eNode.addLink( 'PrepareSubject.commissure_coordinates',
                  'SplitBrain.commissure_coordinates' )
 
 ##  eNode.addLink( 'SplitBrain.use_ridges',
@@ -286,7 +286,7 @@ def initialization( self ):
                  'SplitBrain.white_ridges' )
 
 
-  eNode.TalairachTransformation.removeLink( 'Commissure_coordinates',
+  eNode.TalairachTransformation.removeLink( 'commissure_coordinates',
                                             'split_mask' )
 
   eNode.addLink( 'TalairachTransformation.split_mask',
@@ -294,10 +294,10 @@ def initialization( self ):
   eNode.addLink( 'SplitBrain.split_mask',
                  'TalairachTransformation.split_mask' )
 
-  eNode.addLink( 'TalairachTransformation.Commissure_coordinates',
-                 'PrepareSubject.Commissure_coordinates' )
-  eNode.addLink( 'PrepareSubject.Commissure_coordinates',
-                 'TalairachTransformation.Commissure_coordinates' )
+  eNode.addLink( 'TalairachTransformation.commissure_coordinates',
+                 'PrepareSubject.commissure_coordinates' )
+  eNode.addLink( 'PrepareSubject.commissure_coordinates',
+                 'TalairachTransformation.commissure_coordinates' )
 
 
   eNode.GreyWhiteInterface.removeLink( 'histo_analysis', 'mri_corrected' )
@@ -398,8 +398,8 @@ def initialization( self ):
                  'CorticalFoldsGraph.split_mask' )
 
   eNode.addLink( 'CorticalFoldsGraph.commissure_coordinates',
-                 'PrepareSubject.Commissure_coordinates' )
-  eNode.addLink( 'PrepareSubject.Commissure_coordinates',
+                 'PrepareSubject.commissure_coordinates' )
+  eNode.addLink( 'PrepareSubject.commissure_coordinates',
                  'CorticalFoldsGraph.commissure_coordinates' )
 
   eNode.addLink( 'CorticalFoldsGraph.Talairach_transform',

@@ -83,7 +83,7 @@ def initialization( self ):
 
   eNode.BrainSegmentation05.clearLinksTo( 'brain_mask' )
   eNode.BrainSegmentation05.clearLinksTo( 'white_ridges' )
-  eNode.BrainSegmentation05.clearLinksTo( 'Commissure_coordinates' )
+  eNode.BrainSegmentation05.clearLinksTo( 'commissure_coordinates' )
   eNode.BrainSegmentation05.clearLinksTo( 'histo_analysis' )
   # eNode.BrainSegmentation05.clearLinksTo( 'lesion_mask' )
 
@@ -98,10 +98,10 @@ def initialization( self ):
   eNode.addLink( 'mri_corrected', 'BrainSegmentation05.mri_corrected' )
   eNode.addLink( 'BrainSegmentation05.brain_mask', 'brain_mask' )
   eNode.addLink( 'brain_mask', 'BrainSegmentation05.brain_mask' )
-  eNode.addLink( 'BrainSegmentation05.Commissure_coordinates',
+  eNode.addLink( 'BrainSegmentation05.commissure_coordinates',
                  'Commissure_coordinates' )
   eNode.addLink( 'Commissure_coordinates',
-                 'BrainSegmentation05.Commissure_coordinates' )
+                 'BrainSegmentation05.commissure_coordinates' )
   eNode.addLink( 'BrainSegmentation05.histo_analysis', 'histo_analysis' )
   eNode.addLink( 'histo_analysis', 'BrainSegmentation05.histo_analysis' )
   eNode.addLink( 'BrainSegmentation05.lesion_mask', 'lesion_mask' )
