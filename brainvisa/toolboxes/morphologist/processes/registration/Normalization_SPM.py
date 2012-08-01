@@ -79,11 +79,7 @@ def initialization( self ):
     self.setOptional("anatomical_template")
     self.setOptional( 'job_file' )
     # Link parameters
-    def get_dir(self, process):
-        if self.anatomy_data and self.anatomy_data != []:
-            path = os.path.dirname(self.anatomy_data[0].fullPath())
-            return os.path.join(path,'job_anat_normalization.mat')
-    self.linkParameters("job_file", "anatomy_data", get_dir)
+    self.linkParameters( "job_file", "anatomy_data" )
     self.anatomical_template = self.signature[ 'anatomical_template' ].findValue( { 'databasename' : 'spm',
             'skull_stripped' : 'no' } )
 
