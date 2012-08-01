@@ -94,14 +94,15 @@ t1mri_content = (
   "{acquisition}", SetDefaultAttributeValue( 'acquisition', default_acquisition ), SetNonMandatoryKeyAttribute( 'acquisition' ),
   SetContent(
       # t1mri before processing in acquisition level
-      "<subject>", SetType( 'Raw T1 MRI' ), SetPriorityOffset( +1 ), SetWeakAttr("normalized", "no"),
-      "<subject>", SetType('Commissure coordinates'),
-      "normalized_{normalization}_<subject>", SetType( 'Raw T1 MRI' ), SetWeakAttr("normalized", "yes"),
-      "<subject>_sn", SetType("SPM2 normalization matrix"),
-      "<subject>_fsl", SetType("FSL Transformation"),
+      "<subject>", SetType( 'Raw T1 MRI' ), SetPriorityOffset( +1 ), SetWeakAttr( 'normalized', 'no' ),
+      "<subject>", SetType( 'Commissure coordinates' ),
+      "normalized_{normalization}_<subject>", SetType( 'Raw T1 MRI' ), SetWeakAttr( 'normalized', 'yes' ),
+      "<subject>_sn", SetType( 'SPM2 normalization matrix' ),
+      "<subject>_job_anat_normalization", SetType( 'SPM2 parameters' ),
+      "<subject>_fsl", SetType( 'FSL Transformation' ),
       # lesion mask
-      "lesion_<subject>", SetType( 'Lesion Mask' ), SetPriorityOffset( +1 ), SetWeakAttr("normalized", "no"),
-      "lesion_normalized_{normalization}_<subject>", SetType( 'Lesion Mask' ), SetWeakAttr("normalized", "yes"),
+      "lesion_<subject>", SetType( 'Lesion Mask' ), SetPriorityOffset( +1 ), SetWeakAttr( 'normalized', 'no' ),
+      "lesion_normalized_{normalization}_<subject>", SetType( 'Lesion Mask' ), SetWeakAttr( 'normalized', 'yes' ),
 
       #      "r<subject>", SetType( 'Registered Raw T1 MRI with fMRI' ), SetWeakAttr( 'fMRI_register', 'Yes' ),
       #    "wr<subject>", SetType( 'Registered Raw T1 MRI with fMRI' ), SetWeakAttr( 'fMRI_register', 'Yes' ),
