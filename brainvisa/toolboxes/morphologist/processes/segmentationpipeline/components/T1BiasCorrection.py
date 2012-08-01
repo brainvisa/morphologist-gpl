@@ -119,9 +119,9 @@ def execution( self, context ):
       context.write('Remove',self.mri_corrected.fullName(),'.loc if you want to trigger a new correction')
     else:
         option_list = []
-        constant_list = ['VipT1BiasCorrection', '-i', self.mri.fullPath(), '-o', self.mri_corrected.fullPath() , '-Fwrite', self.write_field, '-field', self.field.fullPath(), '-Wwrite', self.write_wridges, '-wridge', self.white_ridges.fullPath(),'-Kregul', self.field_rigidity, '-sampling',  self.sampling, '-Kcrest', self.wridges_weight, '-Grid', self.ngrid, '-ZregulTuning', self.zdir_multiply_regul, '-vp',self.variance_fraction,'-e',edge, '-eWrite', self.write_edges, '-ename', self.edges.fullPath(), '-vWrite', self.write_variance, '-vname', self.variance.fullPath(), '-mWrite',self.write_meancurvature, '-mname', self.meancurvature.fullPath(), '-hWrite', self.write_hfiltered, '-hname', self.hfiltered.fullPath(), '-Last', self.delete_last_n_slices]
+        constant_list = ['VipT1BiasCorrection', '-i', self.mri, '-o', self.mri_corrected, '-Fwrite', self.write_field, '-field', self.field, '-Wwrite', self.write_wridges, '-wridge', self.white_ridges,'-Kregul', self.field_rigidity, '-sampling',  self.sampling, '-Kcrest', self.wridges_weight, '-Grid', self.ngrid, '-ZregulTuning', self.zdir_multiply_regul, '-vp',self.variance_fraction,'-e',edge, '-eWrite', self.write_edges, '-ename', self.edges, '-vWrite', self.write_variance, '-vname', self.variance, '-mWrite',self.write_meancurvature, '-mname', self.meancurvature, '-hWrite', self.write_hfiltered, '-hname', self.hfiltered, '-Last', self.delete_last_n_slices]
         if self.commissure_coordinates is not None:
-          option_list += ['-Points', self.commissure_coordinates.fullPath()]
+          option_list += ['-Points', self.commissure_coordinates]
         if self.mode == "write_minimal without correction":
           option_list += ['-Dcorrect', "n"]
         apply( context.system, constant_list+option_list )
