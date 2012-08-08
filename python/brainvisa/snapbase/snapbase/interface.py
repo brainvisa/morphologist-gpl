@@ -29,6 +29,8 @@ class HoverButton(QtGui.QPushButton):
             self.emit(Qt.SIGNAL('enter'), str('All Raw T1 MRI (tablets) in the database'))
         elif self.objectName() == 'brainmask_btn':
             self.emit(Qt.SIGNAL('enter'), str('All T1 Brain Mask in the database'))
+        elif self.objectName() == 'btn_thickness':
+            self.emit(Qt.SIGNAL('enter'), str('All Cortical Thickness Maps in the database'))
         elif self.objectName() == 'btn_help':
             self.emit(Qt.SIGNAL('enter'), str('Display a comprehensive help message'))
 
@@ -48,10 +50,11 @@ class HoverComboBox(QtGui.QComboBox):
         self.emit(Qt.SIGNAL('leave'))
 
 class Ui_attribute_widget(QtGui.QFrame):
-    def __init__(self, parent, text='', items=[]):
+    def __init__(self, parent, text='', items=[], _type='combo'):
         import locale
 
         QtGui.QWidget.__init__(self, parent)
+        self._type = _type
         self.horiz_layout = QtGui.QHBoxLayout(self)
         self.att_lbl = QtGui.QLabel(self)
         self.att_lbl.setObjectName('att_lbl')
@@ -61,16 +64,30 @@ class Ui_attribute_widget(QtGui.QFrame):
         self.att_lbl.setMinimumSize(QtCore.QSize(100,31))
         self.att_lbl.setText(text)
         self.horiz_layout.addWidget(self.att_lbl)
-        self.att_combo = QtGui.QComboBox(self)
-        self.att_combo.setObjectName('att_combo')
-        self.att_combo.setMinimumSize(QtCore.QSize(200,31))
-        self.att_combo.addItem('< any >')
 
-        locale.setlocale(locale.LC_ALL, "")
-        items.sort(cmp=locale.strcoll)
-        for each in items:
-            self.att_combo.addItem(each)
-        self.horiz_layout.addWidget(self.att_combo)
+        if _type == 'combo':
+            self.att_combo = QtGui.QComboBox(self)
+            self.att_combo.setObjectName('att_combo')
+            self.att_combo.setMinimumSize(QtCore.QSize(200,31))
+            self.att_combo.addItem('< any >')
+
+            locale.setlocale(locale.LC_ALL, "")
+            items.sort(cmp=locale.strcoll)
+            for each in items:
+                self.att_combo.addItem(each)
+            self.horiz_layout.addWidget(self.att_combo)
+
+
+class Ui_fixed_attribute_widget(Ui_attribute_widget):
+    def __init__(self, parent, text='', text2=''):
+        Ui_attribute_widget.__init__(self, parent, text, [], 'label')
+
+        self.att_lbl2 = QtGui.QLabel(self)
+        self.att_lbl2.setObjectName('att_lbl2')
+        self.att_lbl2.setMinimumSize(QtCore.QSize(200,31))
+        self.att_lbl2.setText('<B>%s</B>'%text2)
+        self.horiz_layout.addWidget(self.att_lbl2)
+
 
 
 class Ui_attributes_window(object):
@@ -87,23 +104,24 @@ class Ui_attributes_window(object):
     def get_attributes(self):
         att_res = {}
         for frame in self.frames:
-            att = frame.att_lbl.text()
-            att_combo_value = frame.att_combo.currentText()
-            if att_combo_value == '< any >':
-                att_res[att] = '*'
-            else:
-                att_res[att] = att_combo_value
+            if frame._type == 'combo':
+                att = frame.att_lbl.text()
+                att_combo_value = frame.att_combo.currentText()
+                if att_combo_value == '< any >':
+                    att_res[att] = '*'
+                else:
+                    att_res[att] = att_combo_value
         return att_res
 
-    def setupUi(self, window, items=[]):
+    def setupUi(self, window, items=[], req_items=[]):
         window.setObjectName("window")
         window.setModal(True)
         window.setWindowTitle('Select attributes')
 
         self.window = window
         window.resize(348, 380)
-        window.setMinimumSize(QtCore.QSize(348, 50*len(items) + 125))
-        window.setMaximumSize(QtCore.QSize(348, 50*len(items) + 125))
+        window.setMinimumSize(QtCore.QSize(348, 52*len(items) + 125))
+        window.setMaximumSize(QtCore.QSize(348, 52*len(items) + 125))
         font = Qt.QFont()
         font.setPointSize(8)
         self.central_widget = QtGui.QWidget(window)
@@ -114,6 +132,14 @@ class Ui_attributes_window(object):
         self.frames = []
         for i, item in enumerate(items):
             self.frames.append(Ui_attribute_widget(self.central_widget, item[0], item[1]))
+            self.frames[-1].setObjectName('frame%d'%i)
+            self.frames[-1].setMinimumSize(QtCore.QSize(331, 50))
+            self.frames[-1].setMaximumSize(QtCore.QSize(331, 50))
+            self.frames[-1].setFrameShape(QtGui.QFrame.StyledPanel)
+            self.frames[-1].setFrameShadow(QtGui.QFrame.Raised)
+            self.verticalLayout.addWidget(self.frames[-1])
+        for i, item in enumerate(req_items):
+            self.frames.append(Ui_fixed_attribute_widget(self.central_widget, item[0], item[1]))
             self.frames[-1].setObjectName('frame%d'%i)
             self.frames[-1].setMinimumSize(QtCore.QSize(331, 50))
             self.frames[-1].setMaximumSize(QtCore.QSize(331, 50))
@@ -148,7 +174,8 @@ class Ui_attributes_window(object):
 
         self.snap_base = snap_base
         for frame in self.frames:
-            frame.att_combo.activated.connect(self.change_event)
+            if frame._type == 'combo':
+                frame.att_combo.activated.connect(self.change_event)
 
 
 
@@ -338,17 +365,20 @@ class Ui_main_window(object):
         self.brainmask_btn.setIconSize(QtCore.QSize(90, 90))
         self.brainmask_btn.setObjectName("brainmask_btn")
         self.gridLayout.addWidget(self.brainmask_btn, 0, 2, 1, 1)
-        self.btn_8 = HoverButton(self.widget)
-        self.btn_8.setEnabled(False)
+        self.btn_thickness = HoverButton(self.widget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.btn_8.sizePolicy().hasHeightForWidth())
-        self.btn_8.setSizePolicy(sizePolicy)
-        self.btn_8.setMinimumSize(QtCore.QSize(100, 100))
-        self.btn_8.setText("")
-        self.btn_8.setObjectName("btn_8")
-        self.gridLayout.addWidget(self.btn_8, 3, 1, 1, 1)
+        sizePolicy.setHeightForWidth(self.btn_thickness.sizePolicy().hasHeightForWidth())
+        self.btn_thickness.setSizePolicy(sizePolicy)
+        self.btn_thickness.setMinimumSize(QtCore.QSize(100, 100))
+        self.btn_thickness.setText("")
+        icon9 = QtGui.QIcon()
+        icon9.addPixmap(QtGui.QPixmap(os.path.join(pix_dir, 'thickness.png')), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        self.btn_thickness.setIcon(icon9)
+        self.btn_thickness.setIconSize(QtCore.QSize(90, 90))
+        self.btn_thickness.setObjectName("btn_thickness")
+        self.gridLayout.addWidget(self.btn_thickness, 3, 1, 1, 1)
 #        self.btn_9 = HoverButton(self.widget)
 #        self.btn_9.setEnabled(False)
 #        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
@@ -423,6 +453,8 @@ class Ui_main_window(object):
         self.comparison_btn.connect(self.comparison_btn, Qt.SIGNAL('leave'), self.leave_status)
         self.brainmask_btn.connect(self.brainmask_btn, Qt.SIGNAL('enter'), self.enter_status)
         self.brainmask_btn.connect(self.brainmask_btn, Qt.SIGNAL('leave'), self.leave_status)
+        self.btn_thickness.connect(self.btn_thickness, Qt.SIGNAL('enter'), self.enter_status)
+        self.btn_thickness.connect(self.btn_thickness, Qt.SIGNAL('leave'), self.leave_status)
         self.btn_help.connect(self.btn_help, Qt.SIGNAL('enter'), self.enter_status)
         self.btn_help.connect(self.btn_help, Qt.SIGNAL('leave'), self.leave_status)
         self.db_combobox.connect(self.db_combobox, Qt.SIGNAL('enter'), self.enter_status)

@@ -226,18 +226,16 @@ class SPMComparisonSnapBase(SplitBrainSnapBase):
         SplitBrainSnapBase.__init__(self, preferences)
         self.data_type = 'SPM BrainVisa Comparison'
 
-    def get_list_diskitems(self, db, general_options = {}, verbose = True):
+    def get_list_diskitems(self, db, verbose = True):
 
         import neuroProcesses
         from brainvisa.data import neuroHierarchy
 
         # Checking for ambiguity between diskitems (acquisition, ...)
         options = {'_type' : 'SPM BrainVisa %s Comparison'%self.preferences['comparison type']}
-        options.update(general_options)
         solved_ambiguity = False
         t1_db = neuroHierarchy.databases.database(self.preferences['T1 db'])
         options_T1 = {'_type' : 'T1 MRI Bias Corrected' }
-        options_T1.update(general_options)
 
         self.db = db
         self.options = options

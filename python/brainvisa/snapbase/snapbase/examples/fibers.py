@@ -8,7 +8,7 @@ class FibersSnapBase(SnapBase):
         self.data_type = 'Labelled Fiber Bundles'
 
 
-    def get_list_diskitems(self, db, general_options = {}, verbose = True):
+    def get_list_diskitems(self, db, verbose = True):
 
         import os
 
@@ -23,7 +23,6 @@ class FibersSnapBase(SnapBase):
             'Bundle-labelling' in os.listdir(os.path.join(db.directory, each))]
             #'labelling' in os.listdir(os.path.join(db.directory, each))]
 
-        subjects = ['201106090040003CHBR']
         for subject in subjects:
             subject_dir = os.path.join(db.directory, subject)
             trm_dir = os.path.join(subject_dir, 'TRM')

@@ -38,12 +38,13 @@ class SulciSnapBase(SnapBase):
                 # Retrieves the corresponding transform, mesh, and sulci if existing
                 rdi = neuroHierarchy.ReadDiskItem('Transform Raw T1 MRI to Talairach-AC/PC-Anatomist', neuroProcesses.getAllFormats())
                 transform = rdi.findValue(mris[0])
-                rdi = neuroHierarchy.ReadDiskItem('Hemisphere White Mesh', neuroProcesses.getAllFormats(), requiredAttributes={'side' : options['side']})
+                rdi = neuroHierarchy.ReadDiskItem('Hemisphere White Mesh', neuroProcesses.getAllFormats(), requiredAttributes={'side' : self.preferences['side']})
                 mesh = rdi.findValue(mris[0])
                 req_att = {'subject' : options['subject'],
                            'protocol' : options['protocol'],
-                           'side' : options['side'],
+                           'side' : self.preferences['side'],
                            'labelled' : 'Yes',
+                           'graph_version' : '3.1',
                            'manually_labelled' : 'No',
                            'automatically_labelled' : 'Yes'}
                 rdi = neuroHierarchy.ReadDiskItem('Labelled Cortical folds graph', neuroProcesses.getAllFormats(), requiredAttributes=req_att )
@@ -112,6 +113,7 @@ class LeftSulciSingleViewSnapBase(SulciSnapBase):
     def __init__(self, preferences):
         SulciSnapBase.__init__(self, preferences)
         self.preferences['side'] = 'left'
+        self.preferences['singlemulti'] = 'single'
         self.data_type = 'Left Cortical folds graph'
 
     def get_views_of_interest(self):
@@ -125,6 +127,7 @@ class RightSulciSingleViewSnapBase(SulciSnapBase):
     def __init__(self, preferences):
         SulciSnapBase.__init__(self, preferences)
         self.preferences['side'] = 'right'
+        self.preferences['singlemulti'] = 'single'
         self.data_type = 'Right Cortical folds graph'
 
     def get_views_of_interest(self):
@@ -138,6 +141,7 @@ class LeftSulciMultiViewSnapBase(SulciSnapBase):
     def __init__(self, preferences):
         SulciSnapBase.__init__(self, preferences)
         self.preferences['side'] = 'left'
+        self.preferences['singlemulti'] = 'multi'
         self.data_type = 'Left Cortical folds graph'
 
     def get_views_of_interest(self):
@@ -151,6 +155,7 @@ class RightSulciMultiViewSnapBase(SulciSnapBase):
     def __init__(self, preferences):
         SulciSnapBase.__init__(self, preferences)
         self.preferences['side'] = 'right'
+        self.preferences['singlemulti'] = 'multi'
         self.data_type = 'Right Cortical folds graph'
 
     def get_views_of_interest(self):

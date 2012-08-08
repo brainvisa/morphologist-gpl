@@ -177,7 +177,7 @@ class SnapBase():
                                                 0.33598600000000001,
                                                 -0.82235800000000003]}
 
-    def get_list_diskitems(self, db, general_options = {}, verbose = True):
+    def get_list_diskitems(self, db, verbose = True):
         '''
         Returns a dict indexed by (subject, protocol), each item being a
         dict of relevant listitems referred to by their datatype.
@@ -186,17 +186,21 @@ class SnapBase():
         '''
 
         # Checking for ambiguity between diskitems (acquisition, ...)
+        import string
 
         type_transl = {'Split Brain' : 'Voronoi Diagram',
                        'SPM BrainVisa Comparison' : 'Raw T1 MRI',
-                       'Vitamin Tablet Snapshots' : 'Raw T1 MRI'}
+                       'Vitamin Tablet Snapshots' : 'Raw T1 MRI',
+                       'Grey White Mask' : 'Raw T1 MRI'}
+        if self.preferences.has_key('side') and self.preferences.has_key('mesh'):
+            type_transl.update({'Cortical Thickness' : '%s Hemisphere %sMesh'%(string.capitalize(self.preferences['side']), {'hemi' : '', 'white' : 'White '}[self.preferences['mesh']])})
+
         if type_transl.has_key(self.data_type):
             id_type = type_transl[self.data_type]
         else:
             id_type = self.data_type
 
         options = {'_type' : id_type}
-        options.update(general_options)
 
         self.db = db
         self.options = options
@@ -218,8 +222,16 @@ class SnapBase():
         import interface
 
         default_att = self.preferences['default_attributes']
+        req_att = self.preferences['required_attributes']
         items = []
+
         opt = {}
+        opt.update(req_att)
+
+        # req_att is a various set of attributes that the user wants constrained
+        # req_att_2 is the subset of these attributes that are found in a current set of diskitems
+        req_att_2 = []
+
         for key, value in options.items():
             if value != '*':
                 opt[key] = value
@@ -244,6 +256,9 @@ class SnapBase():
             for each in attributes.keys():
                 for dsk in diskitems:
                     attributes[each].add(dsk.get(each))
+                if req_att.has_key(each):
+                    req_att_2.append((each, req_att[each]))
+
             #print "attributs communs et str:", attributes
             for att in default_att:
                 try:
@@ -254,9 +269,15 @@ class SnapBase():
                             print dsk.fileName(), 'misses attribute', att
                     raise
 
+#            # display other attributes ?
+#            for each in attributes.keys():
+#                if len(attributes[each]) > 1 and not each in default_att:
+#                    print "ATTR", each, len(attributes[each])
+#                    items.append((each, list(attributes[each])))
+
             # Running the GUI
             gui = interface.Ui_attributes_window()
-            gui.setupUi(dialog, items)
+            gui.setupUi(dialog, items, req_att_2)
             gui.connect_signals(self)
             gui.change_event()
             res = dialog.exec_()
@@ -365,11 +386,17 @@ class SnapBase():
                        'Left Hemisphere White Mesh' : 'white_L',
                        'Right Hemisphere White Mesh' : 'white_R',
                        'Split Brain' : 'split',
-                       'Left Cortical folds Graph' : 'sulci_L',
-                       'Right Cortical folds Graph' : 'sulci_R',
                        'SPM BrainVisa Comparison' : 'spmVSmorpho',
                        'Raw T1 MRI' : 'raw',
                        'Vitamin Tablet Snapshots' : 'tablet'}
+
+        if self.preferences.has_key('singlemulti'):
+            id_translat.update(
+                {'Left Cortical folds graph' : 'sulci_L_%s'%self.preferences['singlemulti'],
+                 'Right Cortical folds graph' : 'sulci_R_%s'%self.preferences['singlemulti']} )
+        if self.preferences.has_key('side') and self.preferences.has_key('mesh'):
+            id_translat.update({'Cortical Thickness' : 'thickness_%s_%s'%(string.upper(self.preferences['side'][0]), self.preferences['mesh'])})
+
 
         output_dir = self.preferences['output_path']
         filename_root = self.preferences['filename_root']
@@ -420,11 +447,8 @@ class SnapBase():
             runqt = False
 
         # Get a list of dict containing needed files
-        general_options = {}
-        if self.preferences.has_key('side'):
-            general_options = {'side' : self.preferences['side']}
 
-        dictdata = self.get_list_diskitems(database, general_options)
+        dictdata = self.get_list_diskitems(database)
         print 'dictdata', dictdata
 
         # If no dictdata (e.g. closing the attributes window), then nothing happens
@@ -565,12 +589,14 @@ class SnapBase():
                        'SPM BrainVisa Comparison' : 'mri',
                        'Raw T1 MRI' : 'mri',
                        'Vitamin Tablet Snapshots' : 'mri',
-                       'T1 Brain Mask': 'mri'}
+                       'T1 Brain Mask': 'mri',
+                       'Cortical Thickness': 'mesh'}
 
                 acquisition = diskitems[acquisition_key[self.data_type]].get('acquisition')
                 attributes.append(acquisition)
                 if d != '3D':
                     attributes.append(d)
+
                 outfile_path = self.get_outfile_path(attributes)
                 output_files.append(outfile_path)
                 tiled_image.save(outfile_path, 'PNG')
@@ -590,7 +616,6 @@ class SnapBase():
         #    qt_app.exec_()
 
 
-
         print 'closing everything'
         neuroHierarchy.databases.currentThreadCleanup()
 
@@ -605,14 +630,12 @@ class SnapBase():
                 print 'removing ', string.join([i for i in output_files], ' ')
                 os.system('rm -f %s'%string.join([i for i in output_files], ' '))
 
-        print 'saving preferences'
-        import main
-        main.save_preferences(self.preferences)
 
         # Keep track of the list of produced files but after saving preferences so it is not stored in the prefs
         self.preferences['output_files'] = output_files
 
         main_window.close()
-        ok = Qt.QMessageBox.warning(None, 'Success.',
-            '%d snapshots were succesfully created in %s.'%(len(output_files), self.preferences['output_path']), Qt.QMessageBox.Ok)
-        sys.exit(0)
+        if self.preferences['display_success_msgbox']:
+            ok = Qt.QMessageBox.warning(None, 'Success.',
+                '%d snapshots were succesfully created in %s.'%(len(output_files), self.preferences['output_path']), Qt.QMessageBox.Ok)
+        #sys.exit(0)

@@ -131,6 +131,33 @@ def hemi_snap_base():
             snap = mesh.RightHemisphereMeshSnapBase(preferences)
         snap.snap_base(database, main_window = main_window, qt_app = qt_app )
 
+def thickness_snap_base():
+    global main_window, qt_app, database, preferences
+    from examples import mesh
+
+    side, ok = Qt.QInputDialog.getItem(None,
+            'Which hemisphere',
+            'Left of right hemisphere',
+            ['left','right'], 0, False)
+    if ok:
+        mesh_choice, ok_mesh = Qt.QInputDialog.getItem(None,
+                'Which mesh',
+                'Hemi or white',
+                ['hemi', 'white'], 0, False)
+        if ok_mesh:
+            if side == 'left':
+                if mesh_choice == 'hemi':
+                    snap = mesh.LeftHemiThicknessSnapBase(preferences)
+                elif mesh_choice == 'white':
+                    snap = mesh.LeftWhiteThicknessSnapBase(preferences)
+            elif side == 'right':
+                if mesh_choice == 'hemi':
+                    snap = mesh.RightHemiThicknessSnapBase(preferences)
+                elif mesh_choice == 'white':
+                    snap = mesh.RightWhiteThicknessSnapBase(preferences)
+    if ok and ok_mesh:
+        snap.snap_base(database, main_window = main_window, qt_app = qt_app )
+
 def sulci_snap_base():
     global main_window, qt_app, database, preferences
     from examples import sulci
@@ -145,18 +172,17 @@ def sulci_snap_base():
                 ['left','right'], 0, False)
         if ok:
             if item == 'left':
-                #preferences['side'] = 'left'
                 if choice == 'multi':
                     snap = sulci.LeftSulciMultiViewSnapBase(preferences)
                 elif choice == 'single':
                     snap = sulci.LeftSulciSingleViewSnapBase(preferences)
             elif item == 'right':
-                #preferences['side'] = 'right'
                 if choice == 'multi':
                     snap = sulci.RightSulciMultiViewSnapBase(preferences)
                 elif choice == 'single':
                     snap = sulci.RightSulciSingleViewSnapBase(preferences)
-    snap.snap_base(database, main_window = main_window, qt_app = qt_app )
+    if ok and ok_choice:
+        snap.snap_base(database, main_window = main_window, qt_app = qt_app )
 
 # Fiber Bundles (work in progress)
 
@@ -178,7 +204,9 @@ def select_db(item, verbose=True):
     global database, preferences
     database = neuroHierarchy.databases._databases.items()[item][1]
     preferences['database_dir'] = database.directory
-    if verbose:
+    print 'saving preferences'
+    save_preferences(preferences)
+    if not verbose:
         msgBox = Qt.QMessageBox.information(None, 'Database selected',
             'Snapshots will be generated from the following database.\n%s'%database.directory, Qt.QMessageBox.Ok)
 
@@ -202,7 +230,9 @@ def load_preferences(minf_dict):
                     'create_poster' : False,
                     'create_poster_command' : 'montage -geometry +0+0 -background black -tile 10',
                     'remove_snapshots' : False,
-                    'default_attributes' : ['subject', 'protocol', 'acquisition']}
+                    'default_attributes' : ['subject', 'protocol', 'acquisition'],
+                    'required_attributes' : {'graph_version' : '3.1'},
+                    'display_success_msgbox' : False}
     for each in default_pref.keys():
         if minf_dict.has_key(each):
             preferences[each] = minf_dict[each]
@@ -235,6 +265,7 @@ def main():
     gui.comparison_btn.clicked.connect(comparison_snap_base)
     gui.tablet_btn.clicked.connect(tablet_snap_base)
     gui.brainmask_btn.clicked.connect(brainmask_snap_base)
+    gui.btn_thickness.clicked.connect(thickness_snap_base)
     gui.btn_help.clicked.connect(display_help_msgbox)
     gui.db_combobox.activated.connect(select_db)
     gui.connect_signals()
@@ -276,4 +307,5 @@ def main():
     main_window.show()
     qt_app.exec_()
     neuroHierarchy.databases.currentThreadCleanup()
-    sys.exit(0)
+    qt_app = None
+    QtGui.qApp = None
