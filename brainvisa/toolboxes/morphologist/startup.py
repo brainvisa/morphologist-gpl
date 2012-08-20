@@ -95,10 +95,16 @@ elif configuration.SPM.spm8_path:
 elif configuration.SPM.spm5_path:
   spmdir = configuration.SPM.spm5_path
 if spmdir is not None:
+  spmtemplates = None
   # print 'SPM dir:', spmdir
-  spmtemplates = spmdir #os.path.join( spmdir, 'templates' )
+  if not os.path.isdir( os.path.join( spmdir, 'templates' ) ):
+    if os.path.isdir( os.path.join( spmdir, 'spm8_mcr', 'spm8',
+      'templates' ) ):
+      spmtemplates = os.path.join( spmdir, 'spm8_mcr', 'spm8' )
+  else:
+    spmtemplates = spmdir #os.path.join( spmdir, 'templates' )
   #print 'spmtemplates:', spmtemplates
-  if not neuroConfig.fastStart and \
+  if not neuroConfig.fastStart and spmtemplates and \
     not neuroHierarchy.databases.hasDatabase( spmtemplates ):
     dbs = neuroConfig.DatabaseSettings( spmtemplates )
     #spmdb = os.path.join( neuroConfig.homeBrainVISADir, 'spm' )
