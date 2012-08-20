@@ -63,7 +63,7 @@ def initialization( self ):
 
   eNode.CorticalFoldsGraphUpgradeFromOld.signature[ 'old_graph' ] \
     = ReadDiskItem( 'Cortical Folds Graph', 'Graph' )
-  eNode.CorticalFoldsGraphUpgradeFromOld.removeLink( 'graph',
+  eNode.CorticalFoldsGraphUpgradeFromOld.FoldGraphUpgradeStructure.removeLink( 'graph',
     ( 'old_graph', 'graph_version' ) )
   eNode.CorticalFoldsGraphUpgradeFromOld.graph_version = '3.2',
   #eNode.CorticalFoldsGraphUpgradeFromOld.signature[ 'graph_version' ] \
