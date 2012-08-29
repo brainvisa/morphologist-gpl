@@ -272,12 +272,14 @@ class RightWhiteMeshSnapBase(WhiteMeshSnapBase):
 class LeftHemisphereMeshSnapBase(HemisphereMeshSnapBase):
     def __init__(self, output_path):
         HemisphereMeshSnapBase.__init__(self, output_path)
+        self.preferences['side'] = 'left'
         self.data_type = 'Left Hemisphere Mesh'
 
 
 class RightHemisphereMeshSnapBase(HemisphereMeshSnapBase):
     def __init__(self, output_path):
         HemisphereMeshSnapBase.__init__(self, output_path)
+        self.preferences['side'] = 'right'
         self.data_type = 'Right Hemisphere Mesh'
 
 
