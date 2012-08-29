@@ -125,7 +125,7 @@ class ThicknessSnapBase(SnapBase):
             if len (meshes) == 1 :
                 # Retrieves the corresponding transform if existing
                 rdi = neuroHierarchy.ReadDiskItem('Transform Raw T1 MRI to Talairach-AC/PC-Anatomist', neuroProcesses.getAllFormats())
-                transform = rdi.findValue(meshes[0])
+                transform = None #rdi.findValue(meshes[0])
 
                 rdi = neuroHierarchy.ReadDiskItem('Cortical thickness', neuroProcesses.getAllFormats(), requiredAttributes={'side':self.preferences['side'], 'mesh': self.preferences['mesh']})
                 tex = rdi.findValue(meshes[0])
@@ -133,7 +133,8 @@ class ThicknessSnapBase(SnapBase):
 
                 # Here according to given options, ambiguity should be resolved.
                 # If more than one mesh, then some attributes are probably misgiven.
-                if transform and tex:
+                #if transform and tex:
+                if tex:
                     dictdata[(subject, protocol)] = {'type' : self.data_type,
                         'mesh' : meshes[0],
                         'tex' : tex,
@@ -147,7 +148,7 @@ class ThicknessSnapBase(SnapBase):
     def get_views_of_interest(self):
         views = {}
         views['3D'] =[self.view_quaternions[view_name]
-            for view_name in [self.preferences['side']]]
+            for view_name in [self.preferences['side']]] #[{'left':'right', 'right':'left'}[self.preferences['side']]]]
         return views
 
     def read_data(self, diskitems):
@@ -159,7 +160,7 @@ class ThicknessSnapBase(SnapBase):
         mesh = aims.read(diskitems['mesh'].fileName())
         tex = aims.read(diskitems['tex'].fileName())
 
-        return mesh, tex, diskitems['transform'].fileName()
+        return mesh, tex, None # diskitems['transform'].fileName()
 
     def set_viewer(self, data, w):
         import anatomist.direct.api as ana
@@ -168,19 +169,19 @@ class ThicknessSnapBase(SnapBase):
         mesh, tex, transform = data
         self.aobjects['mesh'] = a.toAObject(mesh)
         self.aobjects['mesh'].releaseAppRef()
-        self.aobjects['mesh'].assignReferential(self.ref)
+#        self.aobjects['mesh'].assignReferential(self.ref)
         self.aobjects['tex'] = a.toAObject(tex)
         self.aobjects['tex'].releaseAppRef()
-        self.aobjects['tex'].assignReferential(self.ref)
+#        self.aobjects['tex'].assignReferential(self.ref)
         self.aobjects['tex'].setPalette(a.getPalette('Blue-Red'), minVal = 1.0, maxVal = 5.0, absoluteMode=True)
-        a.loadTransformation(transform, self.ref, a.centralReferential())
+#        a.loadTransformation(transform, self.ref, a.centralReferential())
 
         # Load in Anatomist window
         window = a.AWindow(a, w)
-        window.assignReferential( a.centralReferential()  )
+#        window.assignReferential( a.centralReferential()  )
 
         self.aobjects['fusion'] = a.fusionObjects([self.aobjects['mesh'], self.aobjects['tex']], method='FusionTexSurfMethod')
-        self.aobjects['fusion'].assignReferential(self.ref)
+#        self.aobjects['fusion'].assignReferential(self.ref)
         a.addObjects(self.aobjects['fusion'], [window])
 
         return window

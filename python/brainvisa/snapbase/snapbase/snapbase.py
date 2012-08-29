@@ -559,6 +559,7 @@ class SnapBase():
                         w.refreshNow()
                         # Grabbing the snapshot
                         snapshot = get_snapshot(qgl)
+                        snapshot = snapshot.transpose(Image.FLIP_LEFT_RIGHT)
 
                         views_images.append(snapshot)
 
