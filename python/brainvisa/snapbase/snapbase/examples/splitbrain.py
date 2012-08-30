@@ -36,7 +36,7 @@ class SplitBrainSnapBase(SnapBase):
             mris = [mri for mri in self.db.findDiskItems(**options)]
 
             if len(mris) == 1:
-                rdi = neuroHierarchy.ReadDiskItem('Voronoi Diagram', neuroProcesses.getAllFormats())
+                rdi = neuroHierarchy.ReadDiskItem('Split Brain Mask', neuroProcesses.getAllFormats())
                 splitbrain = rdi.findValue(mris[0])
 
                 # Here according to given options, ambiguity should be resolved.

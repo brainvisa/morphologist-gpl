@@ -187,7 +187,7 @@ class SnapBase():
 
         # Checking for ambiguity between diskitems (acquisition, ...)
 
-        type_transl = {'Split Brain' : 'Voronoi Diagram',
+        type_transl = {'Split Brain' : 'Split Brain Mask',
                        'SPM BrainVisa Comparison' : 'Raw T1 MRI',
                        'Vitamin Tablet Snapshots' : 'Raw T1 MRI'}
         if type_transl.has_key(self.data_type):
