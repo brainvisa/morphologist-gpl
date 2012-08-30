@@ -353,7 +353,7 @@ def initialization( self ):
     self.linkParameters( 'left_graph', 't1mri_nobias' )
     self.linkParameters( 'left_skeleton', 't1mri_nobias' )
     self.linkParameters( 'left_roots', 't1mri_nobias' )
-    self.linkParameters( 'left_sulci_voronoi', 't1mri_nobias' )
+    self.linkParameters( 'left_sulci_voronoi', 'left_graph' )
     self.linkParameters( 'left_middle_cortex', 't1mri_nobias' )
     
     self.signature[ 'left_skeleton' ].userLevel = 100
@@ -364,7 +364,7 @@ def initialization( self ):
     self.linkParameters( 'right_graph', 't1mri_nobias' )
     self.linkParameters( 'right_skeleton', 't1mri_nobias' )
     self.linkParameters( 'right_roots', 't1mri_nobias' )
-    self.linkParameters( 'right_sulci_voronoi', 't1mri_nobias' )
+    self.linkParameters( 'right_sulci_voronoi', 'right_graph' )
     self.linkParameters( 'right_middle_cortex', 't1mri_nobias' )
     
     self.signature[ 'right_skeleton' ].userLevel = 100

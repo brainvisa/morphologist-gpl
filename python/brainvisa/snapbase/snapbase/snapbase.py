@@ -188,7 +188,7 @@ class SnapBase():
         # Checking for ambiguity between diskitems (acquisition, ...)
         import string
 
-        type_transl = {'Split Brain' : 'Voronoi Diagram',
+        type_transl = {'Split Brain' : 'Split Brain Mask',
                        'SPM BrainVisa Comparison' : 'Raw T1 MRI',
                        'Vitamin Tablet Snapshots' : 'Raw T1 MRI',
                        'Grey White Mask' : 'Raw T1 MRI'}

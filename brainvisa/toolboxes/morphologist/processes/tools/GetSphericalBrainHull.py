@@ -72,7 +72,7 @@ def execution( self, context ):
     context.system( "VipSingleThreshold", "-i", Hhull, "-o", Hhull, "-t", "0", "-m", "eq", "-c", "b", "-w", "t" )
     
     context.system( "AimsMeshBrain", "-i", Hhull, "-o", self.both_hemi_hull, '--internalinterface' )
-    context.system( "meshCleaner", "-i", self.hemis_hull, "-o", self.both_hemi_hull, "-maxCurv", "0.5" )
+    context.system( "meshCleaner", "-i", self.both_hemi_hull, "-o", self.both_hemi_hull, "-maxCurv", "0.5" )
     
     tm.copyReferential( self.split_mask, self.both_hemi_hull )
     
