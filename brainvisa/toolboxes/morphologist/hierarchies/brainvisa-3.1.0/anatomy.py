@@ -85,6 +85,7 @@ segmentation_content = (
     "Rgw_interface_<subject>", SetType( 'Grey White Mid-Interface Volume' ),
     SetWeakAttr( 'side', 'right' ),
     "lesiondistance_<subject>", SetType( 'Lesion distance map' ),
+    'corpus_callosum_mask', SetType( 'Corpus Callosum mask' ),
 
     'mesh',
     apply( SetContent, mesh_content),
