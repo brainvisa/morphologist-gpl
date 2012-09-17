@@ -48,7 +48,6 @@ signature = Signature(
     'talairach_transformation', ReadDiskItem( \
         'Transform Raw T1 MRI to Talairach-AC/PC-Anatomist',
         'Transformation matrix' ),
-    'dilation_size_before_connected_component', Float(),
   )
 
 def initialization( self ):
@@ -56,7 +55,6 @@ def initialization( self ):
     self.linkParameters( 'corpus_callosum_mask', 'left_grey_white' )
     self.linkParameters( 'talairach_transformation', 'left_grey_white' )
     self.setOptional( 'talairach_transformation' )
-    self.dilation_size_before_connected_component = 3
 
 def execution( self, context ):
     minradius = 15
@@ -113,9 +111,10 @@ def execution( self, context ):
     if not use_talairach:
         # no Talairach info
         # close / dilate segmentation
+        dilation_size_before_connected_component = 3
         dilmask = context.temporary( 'NIFTI-1 image' )
         context.system( 'AimsDilation', '-i', tmp4, '-o', dilmask, '-e',
-        self.dilation_size_before_connected_component )
+        dilation_size_before_connected_component )
 
         # keep biggest connected component
         context.system( 'AimsConnectComp', '-i', dilmask, '-o',
@@ -126,7 +125,7 @@ def execution( self, context ):
             '-r', 2 )
         context.system( 'AimsErosion', '-i', tmp1, '-o',
             self.corpus_callosum_mask,
-            '-e', self.dilation_size_before_connected_component - 2 )
+            '-e', dilation_size_before_connected_component - 2 )
     else:
         # use Talairach info
         # keep all connected components, then filter them out
