@@ -153,6 +153,8 @@ FileType( 'Lesion Mask', 'Label Volume' )
 FileType( 'Lesion distance map', '3D Volume' )
 FileType( 'Sulci Voronoi', 'Label Volume' )
 
+FileType( 'Corpus Callosum mask', 'Label Volume' )
+
 #----------------- Graphs -------------------------
 
 FileType( 'Cortical folds graph', 'Data graph' )
