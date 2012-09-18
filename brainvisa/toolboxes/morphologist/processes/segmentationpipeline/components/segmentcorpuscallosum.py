@@ -156,8 +156,6 @@ def execution( self, context ):
                 mit.next()
             p /= n
             #context.write( roiit.regionName(), p, ', out:', out, '/', n )
-            dmin = numpy.sqrt( dmin )
-            dmax = numpy.sqrt( dmax )
             if p[2] >= -5 or p[2] <= -40 or p[1] <= -40 or p[1] >= 55 \
                 or out > 0.15 * n:
                 todel.append( comp )
