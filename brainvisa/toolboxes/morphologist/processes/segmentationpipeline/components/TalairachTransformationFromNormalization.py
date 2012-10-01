@@ -71,8 +71,9 @@ def initialization( self ):
     if proc.t1mri:
       import sys
       return ReadDiskItem( 'Referential of Raw T1 MRI', \
-			'Referential' ).findValue(self.t1mri )
+                        'Referential' ).findValue(proc.t1mri )
     return None
+
   def linkNormRef( proc, param ):
     trManager = registration.getTransformationManager()
     if proc.normalization_transformation:
@@ -81,16 +82,18 @@ def initialization( self ):
       if s:
         return trManager.referential( s )
     return trManager.referential( registration.talairachMNIReferentialId )
+
   def linkACPC_to_norm( proc, param ):
     trManager = registration.getTransformationManager()
     if proc.normalized_referential:
       _mniToACPCpaths = trManager.findPaths( \
         registration.talairachACPCReferentialId,
-        self.normalized_referential.uuid() )
+        proc.normalized_referential.uuid() )
       for x in _mniToACPCpaths:
         return x
       else:
         return []
+
   self.linkParameters( 'Talairach_transform',
     'normalization_transformation' )
   self.linkParameters( 'commissure_coordinates', 'Talairach_transform' )

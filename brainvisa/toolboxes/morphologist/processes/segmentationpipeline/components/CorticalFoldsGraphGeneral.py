@@ -60,7 +60,7 @@ signature = Signature(
 
 class switch_3_0:
   def __init__( self, proc ):
-    self.proc = proc
+    self.proc = weakref.proxy( proc )
   def __call__( self, node ):
     if node.isSelected():
       self.proc.signature['left_graph'].requiredAttributes = \
@@ -91,7 +91,7 @@ class switch_3_0:
 
 class switch_3_1:
   def __init__( self, proc ):
-    self.proc = proc
+    self.proc = weakref.proxy( proc )
   def __call__( self, node ):
     if node.isSelected():
       self.proc.signature['left_graph'].requiredAttributes = \
