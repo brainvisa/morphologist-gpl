@@ -73,7 +73,7 @@ signature = Signature(
 
 class changeAllowFlip:
   def __init__( self, proc ):
-    self.proc = proc
+    self.proc = weakref.proxy( proc )
   def __call__( self, node ):
     if node.isSelected():
       if not self.proc.allow_flip_initial_MRI:
@@ -156,7 +156,7 @@ def initialization( self ):
 
   self.allow_flip_initial_MRI = False
   self.addLink( None, 'allow_flip_initial_MRI',
-    self.allowFlip )
+    ExecutionNode.MethodCallbackProxy( self.allowFlip ) )
   x = changeAllowFlip( self )
   eNode.ReorientAnatomy._selectionChange.add( x )
   self.allow_retry_initialization = True
