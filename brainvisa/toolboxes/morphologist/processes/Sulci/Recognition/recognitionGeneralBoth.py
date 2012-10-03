@@ -135,8 +135,9 @@ class changeSpamMethod(object):
         # NOTE: can't be moved to __init__, since executionNode
         # does not exist yet
         e = self.proc.executionNode()
-        self.nodeL = e.LeftSulciRecognition.SPAM_recognition09
-        self.nodeR = e.RightSulciRecognition.SPAM_recognition09
+        self.nodeL = weakref.proxy( e.LeftSulciRecognition.SPAM_recognition09 )
+        self.nodeR = weakref.proxy( \
+            e.RightSulciRecognition.SPAM_recognition09 )
 
         nodesL = self.nodeL.global_recognition, \
             self.nodeL.local_or_markovian, \
