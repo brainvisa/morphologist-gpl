@@ -82,7 +82,7 @@ class changeAllowFlip:
       if self.proc.allow_flip_initial_MRI:
         self.proc.allow_flip_initial_MRI = False
 
-def allowFlip( self, allow ):
+def allowFlip( self, *args, **kwargs ):
   eNode = self.executionNode()
   s = eNode.ReorientAnatomy.isSelected()
   if s != self.allow_flip_initial_MRI:
