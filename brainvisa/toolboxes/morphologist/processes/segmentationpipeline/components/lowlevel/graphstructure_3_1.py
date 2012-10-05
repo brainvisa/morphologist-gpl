@@ -63,16 +63,16 @@ signature = Signature(
 
 
 def initialization( self ):
-  def linkSide( self, proc ):
+  def linkSide( proc, dummy ):
     p = ReadDiskItem( 'CSF+GREY Mask', 'aims readable volume formats' )
-    return p.findValue( self.mri_corrected,
-                        requiredAttributes = { 'side' : self.side.lower() } )
+    return p.findValue( proc.mri_corrected,
+                        requiredAttributes = { 'side' : proc.side.lower() } )
 
-  def linkGraphVersion( self, proc ):
+  def linkGraphVersion( proc, dummy ):
     p = WriteDiskItem( 'Cortical folds graph', 'Graph' )
-    return p.findValue( self.hemi_cortex,
+    return p.findValue( proc.hemi_cortex,
                         requiredAttributes = { 'labelled' : 'No',
-                        'graph_version' : self.graph_version } )
+                        'graph_version' : proc.graph_version } )
 
   self.linkParameters( 'split_mask', 'mri_corrected' )
   self.linkParameters( 'hemi_cortex', ( 'split_mask', 'side' ), linkSide )

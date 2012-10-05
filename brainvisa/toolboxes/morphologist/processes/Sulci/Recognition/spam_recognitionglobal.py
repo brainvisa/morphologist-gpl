@@ -64,25 +64,25 @@ signature = Signature(
 )
 
 def initialization( self ):
-  def linkModelType( self, proc ):
+  def linkModelType( proc, dummy ):
     di = ReadDiskItem( 'Sulci Segments Model', 'Text Data Table' )
-    if self.model_type == 'Talairach':
+    if proc.model_type == 'Talairach':
       di.requiredAttributes[ 'sulci_segments_model_type' ] = 'talairach_spam'
-    elif self.model_type == 'Global registration':
+    elif proc.model_type == 'Global registration':
       di.requiredAttributes[ 'sulci_segments_model_type' ] \
         = 'global_registered_spam'
-    x = di.findValue( self.data_graph )
+    x = di.findValue( proc.data_graph )
     return x
-  def linkOutputTrans( self, proc ):
-    if self.model_type == 'Talairach':
+  def linkOutputTrans( proc, dummy ):
+    if proc.model_type == 'Talairach':
       return None
-    return self.signature[ 'output_transformation' ].findValue( \
-      self.output_graph )
-  def linkOutputT1Trans( self, proc ):
-    if self.model_type == 'Talairach':
+    return proc.signature[ 'output_transformation' ].findValue( \
+      proc.output_graph )
+  def linkOutputT1Trans( proc, dummy ):
+    if proc.model_type == 'Talairach':
       return None
-    return self.signature[ 'output_t1_to_global_transformation' ].findValue( \
-      self.output_graph )
+    return proc.signature[ 'output_t1_to_global_transformation' ].findValue( \
+      proc.output_graph )
 
   self.linkParameters( 'output_graph', 'data_graph' )
   self.linkParameters( 'posterior_probabilities', 'output_graph' )

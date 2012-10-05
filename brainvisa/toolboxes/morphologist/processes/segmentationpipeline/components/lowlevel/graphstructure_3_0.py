@@ -59,10 +59,10 @@ signature = Signature(
 
 
 def initialization( self ):
-  def linkSide( self, proc ):
+  def linkSide( proc, dummy ):
     p = ReadDiskItem( 'CSF+GREY Mask', 'aims readable volume formats' )
-    return p.findValue( self.mri_corrected,
-                        requiredAttributes = { 'side' : self.side.lower() } )
+    return p.findValue( proc.mri_corrected,
+                        requiredAttributes = { 'side' : proc.side.lower() } )
 
   self.linkParameters( 'split_mask', 'mri_corrected' )
   self.linkParameters( 'hemi_cortex', ( 'split_mask', 'side' ), linkSide )

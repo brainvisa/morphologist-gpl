@@ -62,7 +62,7 @@ signature = Signature(
 
 class changeSide(object):
     def __init__( self, proc ):
-        self.proc = proc
+        self.proc = weakref.proxy( proc )
     def __call__( self, node ):
         side = self.proc.side
         # must be called to avoid infinite recursion
@@ -90,7 +90,7 @@ class changeSideRight(changeSide):
 
 class changeModel(object):
     def __init__( self, proc ):
-        self.proc = proc
+        self.proc = weakref.proxy( proc )
     def __call__( self, node ):
         if not node.isSelected(): return
         if self.left().isSelected() and self.right().isSelected():
@@ -130,13 +130,14 @@ class changeModelSPAM(changeModel):
 
 class changeSpamMethod(object):
     def __init__(self, proc):
-        self.proc = proc
+        self.proc = weakref.proxy( proc )
     def __call__( self, node=None): #ignore node
         # NOTE: can't be moved to __init__, since executionNode
         # does not exist yet
         e = self.proc.executionNode()
-        self.nodeL = e.LeftSulciRecognition.SPAM_recognition09
-        self.nodeR = e.RightSulciRecognition.SPAM_recognition09
+        self.nodeL = weakref.proxy( e.LeftSulciRecognition.SPAM_recognition09 )
+        self.nodeR = weakref.proxy( \
+            e.RightSulciRecognition.SPAM_recognition09 )
 
         nodesL = self.nodeL.global_recognition, \
             self.nodeL.local_or_markovian, \
@@ -270,7 +271,7 @@ def initialization( self ):
     def linkModel(model, names, parameterized):
         process = parameterized[0]
         signature = process.signature
-        eNode = self.executionNode()
+        eNode = process.executionNode()
         if model == spam_model:
             signature['spam_method'] = Choice('Talairach',
                 'global', 'global+local', 'global+Markov',

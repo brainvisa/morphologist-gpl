@@ -53,7 +53,7 @@ signature = Signature(
 
 class changeTalairach:
   def __init__( self, proc ):
-    self.proc = proc
+    self.proc = weakref.proxy( proc )
   def __call__( self, node ):
     if node.isSelected():
       self.proc.executionNode().TalairachTransformation.setSelected( True )
@@ -64,7 +64,7 @@ class changeTalairach:
 
 class changeUseridges:
   def __init__( self, proc ):
-    self.proc = proc
+    self.proc = weakref.proxy( proc )
   def __call__( self, node ):
     self.proc.executionNode().GreyWhiteInterface.use_ridges = node.isSelected()
     self.proc.executionNode().SplitBrain.SplitBrain05.Use_ridges \
@@ -72,7 +72,7 @@ class changeUseridges:
 
 class linkCheckModels:
   def __init__( self, proc ):
-    self.proc = proc
+    self.proc = weakref.proxy( proc )
   def __call__( self, node ):
     eNode = self.proc.executionNode()
     eNode.CheckSPAMmodels.setSelected( eNode.SulciRecognition.isSelected() )

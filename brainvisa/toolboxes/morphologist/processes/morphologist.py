@@ -53,7 +53,7 @@ signature = Signature(
 
 class changeTalairach:
   def __init__( self, proc ):
-    self.proc = proc
+    self.proc = weakref.proxy( proc )
   def __call__( self, node ):
     if node.isSelected():
       self.proc.executionNode().TalairachTransformation.setSelected( True )
@@ -66,7 +66,7 @@ class linkCheckModels:
   spamModelsChecked = False
 
   def __init__( self, proc ):
-    self.proc = proc
+    self.proc = weakref.proxy( proc )
 
   def __call__( self, node ):
     if not linkCheckModels.spamModelsChecked:

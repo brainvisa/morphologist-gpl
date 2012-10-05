@@ -55,7 +55,7 @@ signature = Signature(
     'forbid_unknown_label', Boolean(),
     )
 
-def modelValue(self, proc, procbis ):
+def modelValue( proc, procbis ):
   """
   the input graph which is linked to the model has not necessarily the same
   graph_version but this attribute is a key for Graph data, so it will be seen
@@ -75,13 +75,13 @@ def modelValue(self, proc, procbis ):
   newind = [ dind[db.index(x)] for x in sorted( db ) ]
   if len( mod ) == 1:
     return val
-  if len( mod ) > self.model_hint:
-    return mod[newind[len( mod ) - self.model_hint - 1]]
+  if len( mod ) > proc.model_hint:
+    return mod[newind[len( mod ) - proc.model_hint - 1]]
   return None
 
 def initialization( self ):
     self.linkParameters( 'model', ( 'data_graph', 'model_hint' ),
-        self.modelValue )
+        modelValue )
     self.linkParameters( 'output_graph', 'data_graph' )
     self.linkParameters( 'energy_plot_file', 'output_graph' )
     for p in ['rate', 'stopRate', 'niterBelowStopProp',
