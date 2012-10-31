@@ -88,25 +88,10 @@ def allowFlip( self, *args, **kwargs ):
     eNode.ReorientAnatomy.setSelected( self.allow_flip_initial_MRI )
 
 def initialization( self ):
-  def linkToAnat( t1mri ):
-    if t1mri is None:
-      return None
-    return [ t1mri ]
-  def linkToT1( anat ):
-    if not anat:
-      return None
-    return anat[0]
-  def linkToTrans( read ):
-    if read is None:
-      return None
-    return [ read ]
-  def linkToRead( trans ):
-    if not trans:
-      return None
-    return trans[0]
+  self.linkParameters( 'transformation', 't1mri' )
   eNode = SerialExecutionNode( self.name, parameterized=self )
 
-  eNode.addChild( 'NormlalizeSPM',
+  eNode.addChild( 'NormalizeSPM',
                   ProcessExecutionNode( 'Normalization_SPM_reinit' ) )
   eNode.addChild( 'ConvertSPMnormalizationToAIMS',
                   ProcessExecutionNode( 'SPMsn3dToAims' ) )
@@ -114,47 +99,43 @@ def initialization( self ):
                   ProcessExecutionNode( 'reorientAnatomy', optional=True,
                   selected=False ) )
 
+  eNode.addDoubleLink( 'NormalizeSPM.anatomy_data', 't1mri' )
+  eNode.addDoubleLink( 'NormalizeSPM.allow_retry_initialization',
+    'allow_retry_initialization' )
+  eNode.addDoubleLink( 'NormalizeSPM.anatomical_template', 'template' )
+
   # fix transformation_matrix type
+  eNode.ConvertSPMnormalizationToAIMS.signature[ 'read' ] = \
+    eNode.NormalizeSPM.signature[ 'transformations_informations' ]
   eNode.ConvertSPMnormalizationToAIMS.signature[ 'write' ] = \
     WriteDiskItem( 'Transform Raw T1 MRI to Talairach-MNI template-SPM',
       'Transformation matrix' )
-  eNode.addDoubleLink( 'NormlalizeSPM.anatomy_data', 't1mri' )
-  eNode.addDoubleLink( 'NormlalizeSPM.allow_retry_initialization',
-    'allow_retry_initialization' )
-  eNode.addLink( 'NormlalizeSPM.anatomical_template', 'template' )
-  eNode.addLink( 'template', 'NormlalizeSPM.anatomical_template' )
-
-  eNode.addLink( 'ConvertSPMnormalizationToAIMS.source_volume', 't1mri' )
-  eNode.addLink( 't1mri', 'ConvertSPMnormalizationToAIMS.source_volume' )
-
-  eNode.ConvertSPMnormalizationToAIMS.removeLink( 'normalized_volume',
-    'read' )
-  eNode.ConvertSPMnormalizationToAIMS.removeLink( 'source_volume', 'read' )
-
-  eNode.addLink( 'transformation', 'ConvertSPMnormalizationToAIMS.write' )
-  eNode.addLink( 'ConvertSPMnormalizationToAIMS.write', 'transformation' )
-
-  eNode.addDoubleLink( 'NormlalizeSPM.transformations_informations',
-    'ConvertSPMnormalizationToAIMS.read' )
-
   # force conversion to take exactly the same formats as the normalization
   # as input, because it uses the storage_to_memory matrix, which is
   # format-dependent
   eNode.ConvertSPMnormalizationToAIMS.signature[ 'source_volume' ].formats \
-    = eNode.NormlalizeSPM.signature[ 'anatomy_data' ].formats
+    = eNode.NormalizeSPM.signature[ 'anatomy_data' ].formats
+
+  eNode.ConvertSPMnormalizationToAIMS.removeLink( 'normalized_volume',
+    'read' )
+  eNode.ConvertSPMnormalizationToAIMS.removeLink( 'source_volume', 'read' )
+  eNode.ConvertSPMnormalizationToAIMS.removeLink( 'write', 'source_volume' )
+
+  eNode.addDoubleLink( 'NormalizeSPM.transformations_informations',
+    'ConvertSPMnormalizationToAIMS.read' )
+  eNode.addDoubleLink( 'ConvertSPMnormalizationToAIMS.source_volume', 't1mri' )
+  eNode.addDoubleLink( 'transformation',
+    'ConvertSPMnormalizationToAIMS.write' )
+
   # this seems not to work automatically
   self.template = self.signature[ 'template' ].findValue( \
     { 'databasename' : 'spm', 'skull_stripped' : 'no' } )
 
   eNode.ReorientAnatomy.removeLink( 'transformation', 't1mri' )
-  eNode.addLink( 't1mri', 'ReorientAnatomy.t1mri' )
-  eNode.addLink( 'ReorientAnatomy.t1mri', 't1mri' )
-  eNode.addLink( 'transformation', 'ReorientAnatomy.transformation' )
-  eNode.addLink( 'ReorientAnatomy.transformation', 'transformation' )
-  eNode.addLink( 'allow_flip_initial_MRI',
+  eNode.addDoubleLink( 't1mri', 'ReorientAnatomy.t1mri' )
+  eNode.addDoubleLink( 'transformation', 'ReorientAnatomy.transformation' )
+  eNode.addDoubleLink( 'allow_flip_initial_MRI',
     'ReorientAnatomy.allow_flip_initial_MRI' )
-  eNode.addLink( 'ReorientAnatomy.allow_flip_initial_MRI',
-    'allow_flip_initial_MRI' )
 
   self.setExecutionNode( eNode )
 

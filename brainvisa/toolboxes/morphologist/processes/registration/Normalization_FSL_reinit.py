@@ -72,7 +72,7 @@ def initialization( self ):
     return self.anatomy_data
   self.linkParameters("transformation_matrix", "anatomy_data")
   self.linkParameters("normalized_anatomy_data", "anatomy_data", anat2results)
-  self.linkParameters("normalized_anatomy_data", "anatomy_data")
+  #self.linkParameters("normalized_anatomy_data", "anatomy_data")
   self.Alignment = 'Not Aligned but Same Orientation'
   self.anatomical_template = self.signature[ 'anatomical_template' ].findValue(
     { 'database' : os.path.join( os.getenv( 'FSLDIR', 'data' ) ),

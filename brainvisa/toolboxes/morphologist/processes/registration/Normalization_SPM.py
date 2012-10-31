@@ -59,14 +59,14 @@ name = 'Anatomy Normalization (using SPM)'
 userLevel = 2
 
 signature = Signature(
-    'anatomy_data', ListOf(ReadDiskItem( "Raw T1 MRI", ['NIFTI-1 image', 'SPM image' ])),
+    'anatomy_data', ReadDiskItem( "Raw T1 MRI", ['NIFTI-1 image', 'SPM image' ]),
     'anatomical_template', ReadDiskItem( "anatomical Template", ['NIFTI-1 image', 'MINC image', 'SPM image'] ),
     'job_file', WriteDiskItem("SPM2 parameters", 'Matlab file'),
     'voxel_size', Choice('[1 1 1]'),
     'cutoff_option', Integer(),
     'nbiteration', Integer(),
-    'transformations_informations', ListOf(WriteDiskItem("SPM2 normalization matrix", 'Matlab file')), 
-    'normalized_anatomy_data', ListOf(WriteDiskItem("Raw T1 MRI", ['NIFTI-1 image', 'SPM image' ], {"normalization" : "SPM"}))
+    'transformations_informations', WriteDiskItem("SPM2 normalization matrix", 'Matlab file'),
+    'normalized_anatomy_data', WriteDiskItem("Raw T1 MRI", ['NIFTI-1 image', 'SPM image' ], {"normalization" : "SPM"})
 )
 
 def initialization( self ):
@@ -94,7 +94,7 @@ def execution( self, context ):
         context.write( _t_( \
           'Using SPM8 standalone version (compiled, Matlab not needed)' ) )
         anat_paths = []
-        for i, anat in enumerate(self.anatomy_data):
+        for i, anat in enumerate([self.anatomy_data]):
             anat_path = anat.fullPath()
             anat_paths.append( anat_path )
             j = i + 1
@@ -151,7 +151,7 @@ matlabbatch{%d}.spm.spatial.normalise.estwrite.roptions.prefix = 'w';
             mat_file.write("cellstr(fullfile(spm('Dir'),'templates','T1.nii'))\n")
         mat_file.write('jobs{1}.spatial{1}.normalise{1}.estwrite.eoptions.cutoff = %d\n' % self.cutoff_option)
         mat_file.write('jobs{1}.spatial{1}.normalise{1}.estwrite.eoptions.nits = %i\n' % self.nbiteration)
-        for i, anat in enumerate(self.anatomy_data):
+        for i, anat in enumerate([self.anatomy_data]):
             #print i, anat
             anat_paths = [ path for path in anat.fullPaths() if path[-4:] == '.img' or path[-4:] == '.ima' or path[-4:] == '.nii' or path.endswith( '.nii.gz' ) ]
             mat_file.write("anat_ref = { '%s'\n" % anat_paths[0])
@@ -187,19 +187,19 @@ matlabbatch{%d}.spm.spatial.normalise.estwrite.roptions.prefix = 'w';
     # place output at correct location
     for i in range( len( anat_paths ) ):
         outfile = anat_paths[i][:anat_paths[i].rfind('.')] + '_sn.mat'
-        if self.transformations_informations[i].fullPath() != outfile:
+        if self.transformations_informations.fullPath() != outfile:
             shelltools.cp( outfile,
-                self.transformations_informations[i].fullPath() )
+                self.transformations_informations.fullPath() )
 
     # Rename the normalized volume written by spm in a form that fit
     # bv hierarchy
-    for i, anat in enumerate(self.anatomy_data):
+    for i, anat in enumerate([self.anatomy_data]):
         for f in anat.fullPaths():
             anatdir=os.path.dirname(f)
             anatname, ext=os.path.splitext(os.path.basename(f))
             wanat=os.path.join(anatdir, "w"+anatname+ext)
             if os.path.exists(wanat):
                 shelltools.mv(wanat,
-                    self.normalized_anatomy_data[i].fullName()+ext)
+                    self.normalized_anatomy_data.fullName()+ext)
     #tm = registration.getTransformationManager()
     #tm.copyReferential( self.anatomical_template, self.normalized_anatomy_data )

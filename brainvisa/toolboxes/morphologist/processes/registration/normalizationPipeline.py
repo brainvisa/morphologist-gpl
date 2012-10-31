@@ -81,6 +81,7 @@ def initialization( self ):
   except:
     bal = None
 
+  self.linkParameters( 'transformation', 't1mri' )
   self.allow_flip_initial_MRI = False
 
   eNode = SelectionExecutionNode( self.name, parameterized=self )
@@ -90,6 +91,7 @@ def initialization( self ):
       ProcessExecutionNode( 'FSLnormalizationPipeline',
         selected=(spm is None) ) )
 
+    eNode.NormalizeFSL.removeLink( 'transformation', 't1mri' )
     eNode.addLink( 'NormalizeFSL.t1mri', 't1mri' )
     eNode.addLink( 't1mri', 'NormalizeFSL.t1mri' )
     eNode.addLink( 'NormalizeFSL.transformation', 'transformation' )
@@ -103,21 +105,18 @@ def initialization( self ):
     eNode.addChild( 'NormalizeSPM',
       ProcessExecutionNode( 'SPMnormalizationPipeline', selected=1 ) )
 
-    eNode.addLink( 'NormalizeSPM.t1mri', 't1mri' )
-    eNode.addLink( 't1mri', 'NormalizeSPM.t1mri' )
-    if not fsl: # TODO: fix links in sub-processes
-      eNode.addLink( 'NormalizeSPM.transformation', 'transformation' )
-      eNode.addLink( 'transformation', 'NormalizeSPM.transformation' )
-    eNode.addLink( 'NormalizeSPM.allow_flip_initial_MRI',
+    eNode.NormalizeSPM.removeLink( 'transformation', 't1mri' )
+    eNode.addDoubleLink( 'NormalizeSPM.t1mri', 't1mri' )
+    eNode.addDoubleLink( 'NormalizeSPM.transformation', 'transformation' )
+    eNode.addDoubleLink( 'NormalizeSPM.allow_flip_initial_MRI',
       'allow_flip_initial_MRI' )
-    eNode.addLink( 'allow_flip_initial_MRI',
-      'NormalizeSPM.allow_flip_initial_MRI' )
 
   if bal:
     eNode.addChild( 'NormalizeBaladin',
       ProcessExecutionNode( 'BaladinNormalizationPipeline',
         selected=(bal is None) ) )
 
+    eNode.NormalizeBaladin.removeLink( 'transformation', 't1mri' )
     eNode.addLink( 'NormalizeBaladin.t1mri', 't1mri' )
     eNode.addLink( 't1mri', 'NormalizeBaladin.t1mri' )
     eNode.addLink( 'NormalizeBaladin.transformation', 'transformation' )

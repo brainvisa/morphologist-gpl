@@ -90,14 +90,14 @@ def execution( self, context ):
     if os.path.exists( self.transformations_informations.fullPath() ):
         os.unlink( self.transformations_informations.fullPath() )
     failed = False
-    normproc = { 'anatomy_data' : [self.anatomy_data],
+    normproc = { 'anatomy_data' : self.anatomy_data,
         'anatomical_template' : self.anatomical_template,
         'job_file' : self.job_file,
         'voxel_size' : self.voxel_size,
         'cutoff_option' : self.cutoff_option,
         'nbiteration' : self.nbiteration,
-        'transformations_informations' : [self.transformations_informations],
-        'normalized_anatomy_data' : [self.normalized_anatomy_data],
+        'transformations_informations' : self.transformations_informations,
+        'normalized_anatomy_data' : self.normalized_anatomy_data,
     }
     try:
         context.runProcess( 'Normalization_SPM', **normproc )
