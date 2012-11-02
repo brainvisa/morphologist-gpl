@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -31,43 +32,38 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
-import shfjGlobals
-from brainvisa import anatomist
+from soma import aims
+import registration
 
-name = 'Anatomist Show Hemisphere With MRI'
-roles = ('viewer',)
+name = 'Grey White Mesh 2012'
 userLevel = 0
 
-def validation():
-  anatomist.validation()
-
+# Argument declaration
 signature = Signature(
-  'hemi_mesh', ReadDiskItem( 'Hemisphere Mesh', 'Anatomist mesh formats' ),
-  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
-    'Anatomist volume formats' ),
+    'hemi_cortex', ReadDiskItem( 'CSF+GREY Mask',
+        'Aims writable volume formats' ),
+    'white_mesh', WriteDiskItem( 'Hemisphere White Mesh',
+        'Aims mesh formats' ),
 )
 
+# Default values
 def initialization( self ):
-  self.setOptional( 'mri_corrected' )
-  self.linkParameters('mri_corrected' , 'hemi_mesh' )
-  
+    self.linkParameters( 'white_mesh', 'hemi_cortex' )
+
+
 def execution( self, context ):
-  a = anatomist.Anatomist()
-  mesh = a.loadObject( self.hemi_mesh, duplicate=True )
-  mesh.setMaterial( a.Material(diffuse = [0.9, 0.7, 0.0, 1]) )
-  returned = [ mesh ]
-  if self.mri_corrected is not None:
-    anat = a.loadObject( self.mri_corrected )
-    returned.append( anat )
-  win3 = a.createWindow( 'Sagittal' )
-  win3.assignReferential( mesh.referential )
-  side = self.hemi_mesh.get( 'side' )
-  if side is not None and side == 'right':
-    win3.camera( view_quaternion=[0.5, -0.5, -0.5, 0.5] )
+    tm=registration.getTransformationManager()
 
-  if self.mri_corrected is not None:
-    win3.addObjects( [anat] )
-  win3.addObjects( [mesh] )
-  returned.append( win3 )
+    context.write("Reconstructing hemisphere white surface...")
+    white = context.temporary( 'GIS Image' )
+    context.system( "VipSingleThreshold", "-i", self.hemi_cortex,
+            "-o", white, "-t", "0", "-c", "b", "-m",
+            "ne", "-w", "t" )
 
-  return returned
+    context.system( "AimsMeshBrain", "-i", white, "-o", self.white_mesh, '--internalinterface' )
+    context.system( "meshCleaner", "-i", self.white_mesh, "-o", self.white_mesh, "-maxCurv", "0.5" )
+
+    tm.copyReferential(self.hemi_cortex, self.white_mesh)
+
+    del white
+

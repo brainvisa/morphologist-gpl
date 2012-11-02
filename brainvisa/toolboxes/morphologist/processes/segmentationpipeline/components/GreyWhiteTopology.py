@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -31,43 +32,38 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
-import shfjGlobals
-from brainvisa import anatomist
+from soma import aims
+import registration
 
-name = 'Anatomist Show Hemisphere With MRI'
-roles = ('viewer',)
+name = 'Grey White Topological correction 2012'
 userLevel = 0
 
-def validation():
-  anatomist.validation()
-
+# Argument declaration
 signature = Signature(
-  'hemi_mesh', ReadDiskItem( 'Hemisphere Mesh', 'Anatomist mesh formats' ),
-  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
-    'Anatomist volume formats' ),
-)
-
+    'grey_white', ReadDiskItem( 'Grey White Mask',
+        'Aims writable volume formats' ),
+    'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
+        'Aims readable volume formats' ),
+    'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
+    'hemi_cortex', WriteDiskItem( 'CSF+GREY Mask',
+        'Aims writable volume formats' ),
+) 
+# Default values
 def initialization( self ):
-  self.setOptional( 'mri_corrected' )
-  self.linkParameters('mri_corrected' , 'hemi_mesh' )
-  
+    self.linkParameters( 'mri_corrected', 'grey_white' )
+    self.linkParameters( 'histo_analysis', 'mri_corrected' )
+    self.linkParameters( 'hemi_cortex', 'grey_white' )
+
+
 def execution( self, context ):
-  a = anatomist.Anatomist()
-  mesh = a.loadObject( self.hemi_mesh, duplicate=True )
-  mesh.setMaterial( a.Material(diffuse = [0.9, 0.7, 0.0, 1]) )
-  returned = [ mesh ]
-  if self.mri_corrected is not None:
-    anat = a.loadObject( self.mri_corrected )
-    returned.append( anat )
-  win3 = a.createWindow( 'Sagittal' )
-  win3.assignReferential( mesh.referential )
-  side = self.hemi_mesh.get( 'side' )
-  if side is not None and side == 'right':
-    win3.camera( view_quaternion=[0.5, -0.5, -0.5, 0.5] )
+    tm=registration.getTransformationManager()
 
-  if self.mri_corrected is not None:
-    win3.addObjects( [anat] )
-  win3.addObjects( [mesh] )
-  returned.append( win3 )
+    context.write( "Detecting spherical cortex interface..." )
+    context.system( "VipHomotopic", "-i",
+                    self.mri_corrected, "-cl",
+                    self.grey_white, "-h",
+                    self.histo_analysis, "-o",
+                    self.hemi_cortex,
+                    "-m", "C", "-w", "t" )
+    tm.copyReferential(self.grey_white, self.hemi_cortex)
 
-  return returned

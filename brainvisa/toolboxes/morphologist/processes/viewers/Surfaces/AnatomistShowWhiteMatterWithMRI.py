@@ -63,7 +63,11 @@ def execution( self, context ):
   win3 = a.createWindow( 'Sagittal' )
   win3.assignReferential( mesh.referential )
   selfdestroy.append( win3 )
-  
+
+  side = self.white_mesh.get( 'side' )
+  if side is not None and side == 'right':
+    win3.camera( view_quaternion=[0.5, -0.5, -0.5, 0.5] )
+
   if self.mri_corrected is not None:
     anat = a.loadObject( self.mri_corrected )
     selfdestroy.append( anat )
