@@ -32,11 +32,11 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
-import shfjGlobals
 
 name = 'Morphologist 2012, parallel version'
 userLevel = 0
 
+# sulci recognition methodes identifiers
 ann_model = 'Abstract Neural Network (ANN)'
 ann_model_2001 = 'ANN, older 2000-2001 labels'
 spam_model_tal = 'Statistical Parametric Anatomy Map (SPAM), in Talairach space'
@@ -44,8 +44,10 @@ spam_model_global = 'SPAM, global registration'
 spam_model_local = 'SPAM, global+local registration'
 spam_model_markov = 'SPAM, global registration + Markovian'
 
+
+# signature
 signature = Signature(
-  'mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.vipVolumeFormats ),
+  'mri', ReadDiskItem( "Raw T1 MRI", 'Aims readable volume formats' ),
   'mri_corrected', WriteDiskItem( "T1 MRI Bias Corrected",
       'Aims writable volume formats' ),
   'perform_normalization', Boolean(),
@@ -93,6 +95,8 @@ class linkCheckModels:
         if proc:
           defaultContext().runProcess( proc )
 
+
+# unselects thickness processing if graphs are not built or are graphs 3.0
 class selectThickness( object ):
   def __init__( self, proc, side ):
     self.proc = weakref.proxy( proc )
@@ -110,6 +114,7 @@ class selectThickness( object ):
       h.GraphThickness.setSelected( False )
 
 
+# process initialization code
 def initialization( self ):
   def changeNormalize( self, proc ):
     eNode = self.executionNode()
@@ -136,12 +141,16 @@ def initialization( self ):
     return self.Normalised
 
   def linkSide( p ):
+    '''Translates between older processes using "Left", "Right" and newer ones
+    using "left", "right"'''
     if p is not None and p == p.lower():
       return p[0].upper() + p[1:]
     else:
       return p.lower()
 
   def setGraphVersion( ver, names, parameterized ):
+    '''Select appropriate sub-processes for a given graph version chosen from
+    the main pipeline option'''
     eNode = parameterized[0].executionNode()
     if ver == '3.1':
       eNode.Hemispheres.LeftHemisphere.Meshes.Graph.CorticalFoldsGraph_3_1.setSelected( True )
@@ -151,11 +160,15 @@ def initialization( self ):
       eNode.Hemispheres.RightHemisphere.Meshes.Graph.CorticalFoldsGraph_3_0.setSelected( True )
 
   def enableRecognition( enabled, names, parameterized ):
+    '''Select appropriate sub-processes when recognition is switched from
+    the main pipeline option'''
     eNode = parameterized[0].executionNode()
     eNode.Hemispheres.LeftHemisphere.SulciRecognition.setSelected( enabled )
     eNode.Hemispheres.RightHemisphere.SulciRecognition.setSelected( enabled )
 
   def setRecognitionMethod( meth, names, parameterized ):
+    '''Select appropriate sub-processes and parameters when recognition method
+    is chosen from the main pipeline option'''
     eNode = parameterized[0].executionNode().Hemispheres
     if meth == ann_model:
       eNode.LeftHemisphere.SulciRecognition.recognition2000.setSelected( True )
@@ -208,28 +221,22 @@ def initialization( self ):
       eNode.LeftHemisphere.SulciRecognition.SPAM_recognition09.global_recognition.model_type = 'Global registration'
       eNode.RightHemisphere.SulciRecognition.SPAM_recognition09.global_recognition.model_type = 'Global registration'
 
-
+  # real initialization code: build the pipeline structure
   eNode = SerialExecutionNode( self.name, parameterized=self )
 
   eNode.addChild( 'PrepareSubject',
                   ProcessExecutionNode( 'acpcOrNormalization', optional = 1 ) )
-
-
   eNode.addChild( 'BiasCorrection',
                   ProcessExecutionNode( 'T1BiasCorrection',
                                         optional = 1 ) )
-
   eNode.addChild( 'HistoAnalysis',
                    ProcessExecutionNode( 'NobiasHistoAnalysis',
                                          optional = 1 ) )
-
   eNode.addChild( 'BrainSegmentation',
                    ProcessExecutionNode( 'BrainSegmentation',
                                          optional = 1 ) )
-
   eNode.addChild( 'SplitBrain',
                    ProcessExecutionNode( 'SplitBrain', optional = 1 ) )
-
   eNode.addChild( 'TalairachTransformation',
                    ProcessExecutionNode( 'TalairachTransformation',
                                          optional = 1 ) )
@@ -293,28 +300,19 @@ def initialization( self ):
 
   # links
 
-  eNode.addLink( 'PrepareSubject.T1mri', 'mri' )
-  eNode.addLink( 'mri', 'PrepareSubject.T1mri' )
+  eNode.addDoubleLink( 'PrepareSubject.T1mri', 'mri' )
 
   if hasattr( eNode.PrepareSubject, 'StandardACPC' ):
-    eNode.addLink( 'PrepareSubject.StandardACPC.Normalised', 'Normalised' )
-    eNode.addLink( 'Normalised', 'PrepareSubject.StandardACPC.Normalised' )
-    eNode.addLink( 'PrepareSubject.StandardACPC.Anterior_Commissure',
+    eNode.addDoubleLink( 'PrepareSubject.StandardACPC.Normalised',
+      'Normalised' )
+    eNode.addDoubleLink( 'PrepareSubject.StandardACPC.Anterior_Commissure',
       'Anterior_Commissure' )
-    eNode.addLink( 'Anterior_Commissure',
-      'PrepareSubject.StandardACPC.Anterior_Commissure' )
-    eNode.addLink( 'PrepareSubject.StandardACPC.Posterior_Commissure',
+    eNode.addDoubleLink( 'PrepareSubject.StandardACPC.Posterior_Commissure',
       'Posterior_Commissure' )
-    eNode.addLink( 'Posterior_Commissure',
-      'PrepareSubject.StandardACPC.Posterior_Commissure' )
-    eNode.addLink( 'PrepareSubject.StandardACPC.Interhemispheric_Point',
+    eNode.addDoubleLink( 'PrepareSubject.StandardACPC.Interhemispheric_Point',
       'Interhemispheric_Point' )
-    eNode.addLink( 'Interhemispheric_Point',
-      'PrepareSubject.StandardACPC.Interhemispheric_Point' )
-    eNode.addLink( 'PrepareSubject.StandardACPC.Left_Hemisphere_Point',
+    eNode.addDoubleLink( 'PrepareSubject.StandardACPC.Left_Hemisphere_Point',
       'Left_Hemisphere_Point' )
-    eNode.addLink( 'Left_Hemisphere_Point',
-      'PrepareSubject.StandardACPC.Left_Hemisphere_Point' )
   self.setOptional( 'Normalised' )
   self.setOptional( 'Anterior_Commissure' )
   self.setOptional( 'Posterior_Commissure' )
@@ -327,204 +325,67 @@ def initialization( self ):
   self.signature[ 'Left_Hemisphere_Point' ].add3DLink( self, 'mri' )
 
 
-
   #eNode.BiasCorrection.removeLink( 'mri_corrected', 'mri' )
-  eNode.addLink( 'BiasCorrection.mri', 'mri' )
-  eNode.addLink( 'mri', 'BiasCorrection.mri' )
-  eNode.addLink( 'BiasCorrection.mri_corrected', 'mri_corrected' )
-  eNode.addLink( 'mri_corrected', 'BiasCorrection.mri_corrected' )
-
+  eNode.addDoubleLink( 'BiasCorrection.mri', 'mri' )
+  eNode.addDoubleLink( 'BiasCorrection.mri_corrected', 'mri_corrected' )
 
   eNode.HistoAnalysis.removeLink( 'hfiltered', 'mri_corrected' )
   eNode.HistoAnalysis.removeLink( 'white_ridges', 'mri_corrected' )
 
-  eNode.addLink( 'HistoAnalysis.mri_corrected',
-                 'BiasCorrection.mri_corrected' )
-  eNode.addLink( 'BiasCorrection.mri_corrected',
-                 'HistoAnalysis.mri_corrected' )
-
-  eNode.addLink( 'HistoAnalysis.hfiltered', 'BiasCorrection.hfiltered' )
-  eNode.addLink( 'HistoAnalysis.white_ridges', 'BiasCorrection.white_ridges' )
-
+  eNode.addDoubleLink( 'HistoAnalysis.mri_corrected',
+                       'BiasCorrection.mri_corrected' )
+  eNode.addDoubleLink( 'HistoAnalysis.hfiltered', 'BiasCorrection.hfiltered' )
+  eNode.addDoubleLink( 'HistoAnalysis.white_ridges',
+                       'BiasCorrection.white_ridges' )
 
   eNode.BrainSegmentation.removeLink( 'histo_analysis', 'mri_corrected' )
   eNode.BrainSegmentation.removeLink( 'commissure_coordinates',
                                       'mri_corrected' )
   eNode.BrainSegmentation.removeLink( 'white_ridges', 'mri_corrected' )
 
-  eNode.addLink( 'BrainSegmentation.mri_corrected',
-                 'BiasCorrection.mri_corrected' )
-  eNode.addLink( 'BiasCorrection.mri_corrected',
-                 'BrainSegmentation.mri_corrected' )
+  eNode.addDoubleLink( 'BrainSegmentation.mri_corrected',
+                       'BiasCorrection.mri_corrected' )
 
-  eNode.addLink( 'BrainSegmentation.histo_analysis',
-                 'HistoAnalysis.histo_analysis' )
-  eNode.addLink( 'HistoAnalysis.histo_analysis',
-                 'BrainSegmentation.histo_analysis' )
+  eNode.addDoubleLink( 'BrainSegmentation.histo_analysis',
+                       'HistoAnalysis.histo_analysis' )
 
-  eNode.addLink( 'BrainSegmentation.commissure_coordinates',
-                 'PrepareSubject.commissure_coordinates' )
-  eNode.addLink( 'PrepareSubject.commissure_coordinates',
-                 'BrainSegmentation.commissure_coordinates' )
+  eNode.addDoubleLink( 'BrainSegmentation.commissure_coordinates',
+                       'PrepareSubject.commissure_coordinates' )
 
-  eNode.addLink( 'BrainSegmentation.white_ridges',
-                 'BiasCorrection.white_ridges' )
-  eNode.addLink( 'BiasCorrection.white_ridges',
-                 'BrainSegmentation.white_ridges' )
+  eNode.addDoubleLink( 'BrainSegmentation.white_ridges',
+                       'BiasCorrection.white_ridges' )
 
   eNode.BrainSegmentation.removeLink( 'variance', 'mri_corrected' )
   eNode.BrainSegmentation.removeLink( 'edges', 'mri_corrected' )
+
   eNode.addDoubleLink( 'BrainSegmentation.variance',
                        'BiasCorrection.variance' )
   eNode.addDoubleLink( 'BrainSegmentation.edges',
                        'BiasCorrection.edges' )
-
 
   eNode.SplitBrain.removeLink( 'histo_analysis', 'mri_corrected' )
   eNode.SplitBrain.removeLink( 'brain_mask', 'mri_corrected' )
   eNode.SplitBrain.removeLink( 'commissure_coordinates', 'mri_corrected' )
   eNode.SplitBrain.removeLink( 'white_ridges', 'mri_corrected' )
 
-  eNode.addLink( 'SplitBrain.mri_corrected',
-                 'BiasCorrection.mri_corrected' )
-  eNode.addLink( 'BiasCorrection.mri_corrected',
-                 'SplitBrain.mri_corrected' )
-
-  eNode.addLink( 'SplitBrain.histo_analysis',
-                 'HistoAnalysis.histo_analysis' )
-  eNode.addLink( 'HistoAnalysis.histo_analysis',
-                 'SplitBrain.histo_analysis' )
-
-  eNode.addLink( 'SplitBrain.brain_mask',
-                 'BrainSegmentation.brain_mask' )
-  eNode.addLink( 'BrainSegmentation.brain_mask',
-                 'SplitBrain.brain_mask' )
-
-  eNode.addLink( 'SplitBrain.commissure_coordinates',
-                 'PrepareSubject.commissure_coordinates' )
-  eNode.addLink( 'PrepareSubject.commissure_coordinates',
-                 'SplitBrain.commissure_coordinates' )
-
-  eNode.addLink( 'SplitBrain.white_ridges',
-                 'BiasCorrection.white_ridges' )
-  eNode.addLink( 'BiasCorrection.white_ridges',
-                 'SplitBrain.white_ridges' )
-
+  eNode.addDoubleLink( 'SplitBrain.mri_corrected',
+                       'BiasCorrection.mri_corrected' )
+  eNode.addDoubleLink( 'SplitBrain.histo_analysis',
+                       'HistoAnalysis.histo_analysis' )
+  eNode.addDoubleLink( 'SplitBrain.brain_mask',
+                       'BrainSegmentation.brain_mask' )
+  eNode.addDoubleLink( 'SplitBrain.commissure_coordinates',
+                       'PrepareSubject.commissure_coordinates' )
+  eNode.addDoubleLink( 'SplitBrain.white_ridges',
+                       'BiasCorrection.white_ridges' )
 
   eNode.TalairachTransformation.removeLink( 'commissure_coordinates',
                                             'split_mask' )
 
-  eNode.addLink( 'TalairachTransformation.split_mask',
-                 'SplitBrain.split_mask' )
-  eNode.addLink( 'SplitBrain.split_mask',
-                 'TalairachTransformation.split_mask' )
-
-  eNode.addLink( 'TalairachTransformation.commissure_coordinates',
-                 'PrepareSubject.commissure_coordinates' )
-  eNode.addLink( 'PrepareSubject.commissure_coordinates',
-                 'TalairachTransformation.commissure_coordinates' )
-
-
-  leftNode.GreyWhiteClassification.removeLink( 'histo_analysis', 'mri_corrected' )
-  leftNode.GreyWhiteClassification.removeLink( 'split_mask', 'mri_corrected' )
-  leftNode.GreyWhiteClassification.removeLink( 'edges', 'mri_corrected' )
-  leftNode.GreyWhiteClassification.removeLink( 'commissure_coordinates', 'mri_corrected' )
-
-  eNode.addDoubleLink( \
-      'Hemispheres.LeftHemisphere.GreyWhiteClassification.mri_corrected',
-      'BiasCorrection.mri_corrected' )
-  eNode.addDoubleLink( \
-      'Hemispheres.LeftHemisphere.GreyWhiteClassification.histo_analysis',
-      'HistoAnalysis.histo_analysis' )
-  eNode.addDoubleLink( \
-      'Hemispheres.LeftHemisphere.GreyWhiteClassification.split_mask',
-      'SplitBrain.split_mask' )
-  eNode.addDoubleLink( \
-      'Hemispheres.LeftHemisphere.GreyWhiteClassification.edges',
-      'BiasCorrection.edges' )
-  eNode.addDoubleLink( \
-      'Hemispheres.LeftHemisphere.GreyWhiteClassification.commissure_coordinates',
-      'PrepareSubject.commissure_coordinates' )
-
-  rightNode.GreyWhiteClassification.removeLink( 'histo_analysis', 'mri_corrected' )
-  rightNode.GreyWhiteClassification.removeLink( 'split_mask', 'mri_corrected' )
-  rightNode.GreyWhiteClassification.removeLink( 'edges', 'mri_corrected' )
-  rightNode.GreyWhiteClassification.removeLink( 'commissure_coordinates', 'mri_corrected' )
-
-  eNode.addDoubleLink( \
-      'Hemispheres.RightHemisphere.GreyWhiteClassification.mri_corrected',
-      'BiasCorrection.mri_corrected' )
-  eNode.addDoubleLink( \
-      'Hemispheres.RightHemisphere.GreyWhiteClassification.histo_analysis',
-      'HistoAnalysis.histo_analysis' )
-  eNode.addDoubleLink( \
-      'Hemispheres.RightHemisphere.GreyWhiteClassification.split_mask',
-      'SplitBrain.split_mask' )
-  eNode.addDoubleLink( \
-      'Hemispheres.RightHemisphere.GreyWhiteClassification.edges',
-      'BiasCorrection.edges' )
-  eNode.addDoubleLink( \
-      'Hemispheres.RightHemisphere.GreyWhiteClassification.commissure_coordinates',
-      'PrepareSubject.commissure_coordinates' )
-
-
-  leftNode.GreyWhiteTopology.removeLink( 'histo_analysis', 'mri_corrected' )
-  leftNode.GreyWhiteTopology.removeLink( 'mri_corrected', 'grey_white' )
-
-  eNode.addDoubleLink( \
-      'Hemispheres.LeftHemisphere.GreyWhiteTopology.mri_corrected',
-      'BiasCorrection.mri_corrected' )
-  eNode.addDoubleLink( \
-      'Hemispheres.LeftHemisphere.GreyWhiteTopology.histo_analysis',
-      'HistoAnalysis.histo_analysis' )
-  eNode.addDoubleLink( \
-      'Hemispheres.LeftHemisphere.GreyWhiteTopology.grey_white',
-      'Hemispheres.LeftHemisphere.GreyWhiteClassification.grey_white' )
-
-  rightNode.GreyWhiteTopology.removeLink( 'histo_analysis', 'mri_corrected' )
-  rightNode.GreyWhiteTopology.removeLink( 'mri_corrected', 'grey_white' )
-
-  eNode.addDoubleLink( \
-      'Hemispheres.RightHemisphere.GreyWhiteTopology.mri_corrected',
-      'BiasCorrection.mri_corrected' )
-  eNode.addDoubleLink( \
-      'Hemispheres.RightHemisphere.GreyWhiteTopology.histo_analysis',
-      'HistoAnalysis.histo_analysis' )
-  eNode.addDoubleLink( \
-      'Hemispheres.RightHemisphere.GreyWhiteTopology.grey_white',
-      'Hemispheres.RightHemisphere.GreyWhiteClassification.grey_white' )
-
-  eNode.addDoubleLink( \
-      'Hemispheres.LeftHemisphere.Meshes.GreyWhiteMesh.hemi_cortex',
-      'Hemispheres.LeftHemisphere.GreyWhiteTopology.hemi_cortex' )
-  eNode.addDoubleLink( \
-      'Hemispheres.RightHemisphere.Meshes.GreyWhiteMesh.hemi_cortex',
-      'Hemispheres.RightHemisphere.GreyWhiteTopology.hemi_cortex' )
-
-  leftMeshes.PialMesh.removeLink( 'split_mask', 'mri_corrected' )
-  leftMeshes.PialMesh.removeLink( 'mri_corrected', 'hemi_cortex' )
-
-  eNode.addDoubleLink( \
-      'Hemispheres.LeftHemisphere.Meshes.PialMesh.mri_corrected',
-      'BiasCorrection.mri_corrected' )
-  eNode.addDoubleLink( 'Hemispheres.LeftHemisphere.Meshes.PialMesh.split_mask',
-      'SplitBrain.split_mask' )
-  eNode.addDoubleLink( \
-      'Hemispheres.LeftHemisphere.Meshes.PialMesh.hemi_cortex',
-      'Hemispheres.LeftHemisphere.GreyWhiteTopology.hemi_cortex' )
-
-  rightMeshes.PialMesh.removeLink( 'split_mask', 'mri_corrected' )
-  rightMeshes.PialMesh.removeLink( 'mri_corrected', 'hemi_cortex' )
-
-  eNode.addDoubleLink( \
-      'Hemispheres.RightHemisphere.Meshes.PialMesh.mri_corrected',
-      'BiasCorrection.mri_corrected' )
-  eNode.addDoubleLink( 'Hemispheres.RightHemisphere.Meshes.PialMesh.split_mask',
-      'SplitBrain.split_mask' )
-  eNode.addDoubleLink( \
-      'Hemispheres.RightHemisphere.Meshes.PialMesh.hemi_cortex',
-      'Hemispheres.RightHemisphere.GreyWhiteTopology.hemi_cortex' )
-
+  eNode.addDoubleLink( 'TalairachTransformation.split_mask',
+                       'SplitBrain.split_mask' )
+  eNode.addDoubleLink( 'TalairachTransformation.commissure_coordinates',
+                       'PrepareSubject.commissure_coordinates' )
 
   hemiProc.HeadMesh.removeLink( 'histo_analysis', 'mri_corrected' )
 
@@ -533,116 +394,145 @@ def initialization( self ):
   eNode.addDoubleLink( 'Hemispheres.HeadMesh.histo_analysis',
       'HistoAnalysis.histo_analysis' )
 
-  # graph
+  reco = getProcess('recognitionGeneral')
 
-  # 3.1
-  for graph in \
-    ( eNode.Hemispheres.LeftHemisphere.Meshes.Graph, eNode.Hemispheres.RightHemisphere.Meshes.Graph ):
+  # in each hemisphere
+  for hemiNode, hemiP, side in \
+    ( ( leftNode, 'Hemispheres.LeftHemisphere', 'Left' ),
+      ( rightNode, 'Hemispheres.RightHemisphere', 'Right' ) ):
+
+    classifNode = hemiNode.GreyWhiteClassification
+    classifNode.removeLink( 'histo_analysis', 'mri_corrected' )
+    classifNode.removeLink( 'split_mask', 'mri_corrected' )
+    classifNode.removeLink( 'edges', 'mri_corrected' )
+    classifNode.removeLink( 'commissure_coordinates', 'mri_corrected' )
+
+    classifP = hemiP + '.GreyWhiteClassification'
+    eNode.addDoubleLink( \
+      classifP + '.mri_corrected', 'BiasCorrection.mri_corrected' )
+    eNode.addDoubleLink( \
+      classifP + '.histo_analysis', 'HistoAnalysis.histo_analysis' )
+    eNode.addDoubleLink( classifP + '.split_mask', 'SplitBrain.split_mask' )
+    eNode.addDoubleLink( classifP + '.edges', 'BiasCorrection.edges' )
+    eNode.addDoubleLink( classifP + '.commissure_coordinates',
+      'PrepareSubject.commissure_coordinates' )
+
+    gwtNode = hemiNode.GreyWhiteTopology
+    gwtNode.removeLink( 'histo_analysis', 'mri_corrected' )
+    gwtNode.removeLink( 'mri_corrected', 'grey_white' )
+
+    eNode.addDoubleLink( \
+      hemiP + '.GreyWhiteTopology.mri_corrected',
+      'BiasCorrection.mri_corrected' )
+    eNode.addDoubleLink( \
+      hemiP + '.GreyWhiteTopology.histo_analysis',
+      'HistoAnalysis.histo_analysis' )
+    eNode.addDoubleLink( \
+      hemiP + '.GreyWhiteTopology.grey_white',
+      hemiP + '.GreyWhiteClassification.grey_white' )
+
+    eNode.addDoubleLink( \
+      hemiP + '.Meshes.GreyWhiteMesh.hemi_cortex',
+      hemiP + '.GreyWhiteTopology.hemi_cortex' )
+
+    meshes = hemiNode.Meshes
+    meshes.PialMesh.removeLink( 'split_mask', 'mri_corrected' )
+    meshes.PialMesh.removeLink( 'mri_corrected', 'hemi_cortex' )
+
+    meshP = hemiP + '.Meshes'
+    eNode.addDoubleLink( \
+      meshP + '.PialMesh.mri_corrected', 'BiasCorrection.mri_corrected' )
+    eNode.addDoubleLink( \
+      meshP + '.PialMesh.split_mask', 'SplitBrain.split_mask' )
+    eNode.addDoubleLink( \
+      meshP + '.PialMesh.hemi_cortex',
+      hemiP + '.GreyWhiteTopology.hemi_cortex' )
+
+    # graphs
+
+    # 3.1
+    graph = meshes.Graph
     graph.removeLink( 'split_mask', 'mri_corrected' )
     graph.removeLink( 'commissure_coordinates', 'mri_corrected' )
     graph.removeLink( 'Talairach_transform', 'split_mask' )
     graph.CorticalFoldsGraph_3_1.removeLink( 'hemi_cortex', 'split_mask' )
     graph.CorticalFoldsGraph_3_1.removeLink( 'hemi_cortex', 'side' )
-    graph.CorticalFoldsGraph_3_1.CorticalFoldsGraphThickness.clearLinksTo('GW_interface')
-    graph.CorticalFoldsGraph_3_1.CorticalFoldsGraphThickness.clearLinksTo('white_mesh')
-    graph.CorticalFoldsGraph_3_1.CorticalFoldsGraphThickness.clearLinksTo('hemi_mesh')
+    graph.CorticalFoldsGraph_3_1.CorticalFoldsGraphThickness.clearLinksTo( \
+      'GW_interface')
+    graph.CorticalFoldsGraph_3_1.CorticalFoldsGraphThickness.clearLinksTo( \
+      'white_mesh')
+    graph.CorticalFoldsGraph_3_1.CorticalFoldsGraphThickness.clearLinksTo( \
+      'hemi_mesh')
 
-  eNode.addDoubleLink( 'Hemispheres.LeftHemisphere.Meshes.Graph.mri_corrected',
-                       'BiasCorrection.mri_corrected' )
-  eNode.addDoubleLink( 'Hemispheres.LeftHemisphere.Meshes.Graph.split_mask',
-                       'SplitBrain.split_mask' )
-  eNode.addDoubleLink( \
-      'Hemispheres.LeftHemisphere.Meshes.Graph.commissure_coordinates',
+    eNode.addDoubleLink( \
+      meshP + '.Graph.mri_corrected', 'BiasCorrection.mri_corrected' )
+    eNode.addDoubleLink(
+      meshP + '.Graph.split_mask', 'SplitBrain.split_mask' )
+    eNode.addDoubleLink( \
+      meshP + '.Graph.commissure_coordinates',
       'PrepareSubject.commissure_coordinates' )
-  eNode.addDoubleLink( \
-      'Hemispheres.LeftHemisphere.Meshes.Graph.Talairach_transform',
+    eNode.addDoubleLink( \
+      meshP + '.Graph.Talairach_transform',
       'TalairachTransformation.Talairach_transform' )
 
-  eNode.addDoubleLink( \
-      'Hemispheres.RightHemisphere.Meshes.Graph.mri_corrected',
-      'BiasCorrection.mri_corrected' )
-  eNode.addDoubleLink( 'Hemispheres.RightHemisphere.Meshes.Graph.split_mask',
-                       'SplitBrain.split_mask' )
-  eNode.addDoubleLink( \
-      'Hemispheres.RightHemisphere.Meshes.Graph.commissure_coordinates',
-      'PrepareSubject.commissure_coordinates' )
-  eNode.addDoubleLink( \
-      'Hemispheres.RightHemisphere.Meshes.Graph.Talairach_transform',
-      'TalairachTransformation.Talairach_transform' )
-
-  for node in ( eNode.Hemispheres.LeftHemisphere, eNode.Hemispheres.RightHemisphere ):
-    node.addDoubleLink( \
-      'Meshes.Graph.side',
-      'GreyWhiteClassification.side', linkSide )
-    node.addDoubleLink( \
+    hemiNode.addDoubleLink( \
+      'Meshes.Graph.side', 'GreyWhiteClassification.side', linkSide )
+    hemiNode.addDoubleLink( \
       'Meshes.Graph.CorticalFoldsGraph_3_1.hemi_cortex',
       'GreyWhiteTopology.hemi_cortex' )
-    node.addDoubleLink( \
-      'Meshes.Graph.CorticalFoldsGraph_3_1.CorticalFoldsGraphThickness.GW_interface',
+    hemiNode.addDoubleLink( \
+      'Meshes.Graph.CorticalFoldsGraph_3_1.CorticalFoldsGraphThickness.' \
+      'GW_interface',
       'GreyWhiteClassification.grey_white' )
-    node.addDoubleLink( \
-      'Meshes.Graph.CorticalFoldsGraph_3_1.CorticalFoldsGraphThickness.white_mesh',
-      'Meshes.GreyWhiteMesh.white_mesh' )
-    node.addDoubleLink( \
-      'Meshes.Graph.CorticalFoldsGraph_3_1.CorticalFoldsGraphThickness.hemi_mesh',
-      'Meshes.PialMesh.hemi_mesh' )
+    hemiNode.Meshes.addDoubleLink( \
+      'Graph.CorticalFoldsGraph_3_1.CorticalFoldsGraphThickness.white_mesh',
+      'GreyWhiteMesh.white_mesh' )
+    hemiNode.Meshes.addDoubleLink( \
+      'Graph.CorticalFoldsGraph_3_1.CorticalFoldsGraphThickness.hemi_mesh',
+      'PialMesh.hemi_mesh' )
 
-  # 3.0
-  for graph in \
-    ( eNode.Hemispheres.LeftHemisphere.Meshes.Graph, eNode.Hemispheres.RightHemisphere.Meshes.Graph ):
-    graph.CorticalFoldsGraph_3_0.removeLink( 'hemi_cortex', 'split_mask' )
-    graph.CorticalFoldsGraph_3_0.removeLink( 'hemi_cortex', 'side' )
+    # 3.0
     graph.CorticalFoldsGraph_3_0.removeLink( 'hemi_cortex', 'split_mask' )
     graph.CorticalFoldsGraph_3_0.removeLink( 'hemi_cortex', 'side' )
 
-  for node in ( eNode.Hemispheres.LeftHemisphere,
-    eNode.Hemispheres.RightHemisphere ):
-    node.addDoubleLink( \
+    hemiNode.addDoubleLink( \
       'Meshes.Graph.CorticalFoldsGraph_3_0.hemi_cortex',
       'GreyWhiteTopology.hemi_cortex' )
 
-  # change thickness process location in three because of its dependencies
-  grthick = leftMeshes.Graph.CorticalFoldsGraph_3_1.CorticalFoldsGraphThickness
-  leftMeshes.Graph.CorticalFoldsGraph_3_1._process.executionNode().removeChild( 'CorticalFoldsGraphThickness' )
-  leftNode.addChild( 'GraphThickness', grthick )
-  grthick = rightMeshes.Graph.CorticalFoldsGraph_3_1.CorticalFoldsGraphThickness
-  rightMeshes.Graph.CorticalFoldsGraph_3_1._process.executionNode().removeChild( 'CorticalFoldsGraphThickness' )
-  rightNode.addChild( 'GraphThickness', grthick )
+    # change thickness process location in three because of its dependencies
+    grthick = graph.CorticalFoldsGraph_3_1.CorticalFoldsGraphThickness
+    graph.CorticalFoldsGraph_3_1._process.executionNode().removeChild( \
+      'CorticalFoldsGraphThickness' )
+    hemiNode.addChild( 'GraphThickness', grthick )
 
-  # disable thickness if graph 3.1 is unselected
-  eNode.Hemispheres.LeftHemisphere.Meshes.Graph._selectionChange.add( selectThickness( self, 'Left' ) )
-  eNode.Hemispheres.LeftHemisphere.Meshes.Graph.CorticalFoldsGraph_3_1._selectionChange.add( selectThickness( self, 'Left' ) )
-  eNode.Hemispheres.RightHemisphere.Meshes.Graph._selectionChange.add( selectThickness( self, 'Right' ) )
-  eNode.Hemispheres.RightHemisphere.Meshes.Graph.CorticalFoldsGraph_3_1._selectionChange.add( selectThickness( self, 'Right' ) )
+    # disable thickness if graph 3.1 is unselected
+    graph._selectionChange.add( selectThickness( self, side ) )
+    graph.CorticalFoldsGraph_3_1._selectionChange.add( \
+      selectThickness( self, side ) )
 
-  eNode.addLink( None, 'sulci_graphs_version', setGraphVersion )
+    # sulci recognition
+    if reco:
+      hemiNode.addChild( 'SulciRecognition',
+        ProcessExecutionNode( 'recognitionGeneral', optional=1, selected=0 ) )
+
+      hemiNode.addDoubleLink( \
+        'SulciRecognition.data_graph', 'Meshes.Graph.graph' )
+
+      hemiNode.SulciRecognition._selectionChange.add( linkCheckModels( self ) )
+
+
+  # back to global pipeline
+
   self.perform_sulci_recognition = False
   self.sulci_recognition_method = spam_model_local
 
-  reco = getProcess('recognitionGeneral')
+  eNode.addLink( None, 'sulci_graphs_version', setGraphVersion )
   if reco:
-    leftNode.addChild( 'SulciRecognition',
-      ProcessExecutionNode( 'recognitionGeneral', optional=1,
-        selected=0 ) )
-    rightNode.addChild( 'SulciRecognition',
-      ProcessExecutionNode( 'recognitionGeneral', optional=1,
-        selected=0 ) )
-
-    leftNode.addDoubleLink( 'SulciRecognition.data_graph',
-        'Meshes.Graph.graph' )
-    rightNode.addDoubleLink( 'SulciRecognition.data_graph',
-        'Meshes.Graph.graph' )
-
-    self.sulci_recognition_method = spam_model_local
-    leftNode.SulciRecognition._selectionChange.add( linkCheckModels( self ) )
-    rightNode.SulciRecognition._selectionChange.add( linkCheckModels( self ) )
     eNode.addLink( None, 'perform_sulci_recognition', enableRecognition )
-    self.sulci_recognition_method = spam_model_local
     eNode.addLink( None, 'sulci_recognition_method', setRecognitionMethod )
-
   else:
+    self.signature[ 'perform_sulci_recognition' ].userLevel = 3
     self.signature[ 'sulci_recognition_method' ].userLevel = 3
-
 
   if len( list( eNode.PrepareSubject.executionNode().children() ) ) == 1:
     self.perform_normalization = False
