@@ -69,10 +69,12 @@ class changeTalairach:
     self.proc = weakref.proxy( proc )
   def __call__( self, node ):
     if node.isSelected():
-      self.proc.executionNode().TalairachTransformation.setSelected( True )
+      self.proc.executionNode().Par.Seg.TalairachTransformation.setSelected(
+        True )
       self.proc.perform_normalization = False
     else:
-      self.proc.executionNode().TalairachTransformation.setSelected( False )
+      self.proc.executionNode().Par.Seg.TalairachTransformation.setSelected(
+        False )
       self.proc.perform_normalization = True
 
 class linkCheckModels:
@@ -82,14 +84,14 @@ class linkCheckModels:
     self.proc = weakref.proxy( proc )
 
   def __call__( self, node ):
-    eNode = self.proc.executionNode()
-    if eNode.Hemispheres.LeftHemisphere.SulciRecognition.isSelected() \
-      == eNode.Hemispheres.RightHemisphere.SulciRecognition.isSelected():
+    eNode = self.proc.executionNode().Par.Seg.Hemispheres
+    if eNode.LeftHemisphere.SulciRecognition.isSelected() \
+      == eNode.RightHemisphere.SulciRecognition.isSelected():
       self.proc.perform_sulci_recognition \
-        = eNode.Hemispheres.LeftHemisphere.SulciRecognition.isSelected()
+        = eNode.LeftHemisphere.SulciRecognition.isSelected()
     if not linkCheckModels.spamModelsChecked:
-      if eNode.Hemispheres.LeftHemisphere.SulciRecognition.isSelected() \
-        or eNode.Hemispheres.RightHemisphere.SulciRecognition.isSelected():
+      if eNode.LeftHemisphere.SulciRecognition.isSelected() \
+        or eNode.RightHemisphere.SulciRecognition.isSelected():
         proc = getProcessInstance( 'check_spam_models' )
         linkCheckModels.spamModelsChecked = True
         if proc:
@@ -102,7 +104,7 @@ class selectThickness( object ):
     self.proc = weakref.proxy( proc )
     self.side = side
   def __call__( self, node ):
-    node = self.proc.executionNode().Hemispheres
+    node = self.proc.executionNode().Par.Seg.Hemispheres
     if self.side == 'Left':
       h = node.LeftHemisphere
     else:
@@ -151,25 +153,25 @@ def initialization( self ):
   def setGraphVersion( ver, names, parameterized ):
     '''Select appropriate sub-processes for a given graph version chosen from
     the main pipeline option'''
-    eNode = parameterized[0].executionNode()
+    eNode = parameterized[0].executionNode().Par.Seg.Hemispheres
     if ver == '3.1':
-      eNode.Hemispheres.LeftHemisphere.Meshes.Graph.CorticalFoldsGraph_3_1.setSelected( True )
-      eNode.Hemispheres.RightHemisphere.Meshes.Graph.CorticalFoldsGraph_3_1.setSelected( True )
+      eNode.LeftHemisphere.Meshes.Graph.CorticalFoldsGraph_3_1.setSelected( True )
+      eNode.RightHemisphere.Meshes.Graph.CorticalFoldsGraph_3_1.setSelected( True )
     else:
-      eNode.Hemispheres.LeftHemisphere.Meshes.Graph.CorticalFoldsGraph_3_0.setSelected( True )
-      eNode.Hemispheres.RightHemisphere.Meshes.Graph.CorticalFoldsGraph_3_0.setSelected( True )
+      eNode.LeftHemisphere.Meshes.Graph.CorticalFoldsGraph_3_0.setSelected( True )
+      eNode.RightHemisphere.Meshes.Graph.CorticalFoldsGraph_3_0.setSelected( True )
 
   def enableRecognition( enabled, names, parameterized ):
     '''Select appropriate sub-processes when recognition is switched from
     the main pipeline option'''
-    eNode = parameterized[0].executionNode()
-    eNode.Hemispheres.LeftHemisphere.SulciRecognition.setSelected( enabled )
-    eNode.Hemispheres.RightHemisphere.SulciRecognition.setSelected( enabled )
+    eNode = parameterized[0].executionNode().Par.Seg.Hemispheres
+    eNode.LeftHemisphere.SulciRecognition.setSelected( enabled )
+    eNode.RightHemisphere.SulciRecognition.setSelected( enabled )
 
   def setRecognitionMethod( meth, names, parameterized ):
     '''Select appropriate sub-processes and parameters when recognition method
     is chosen from the main pipeline option'''
-    eNode = parameterized[0].executionNode().Hemispheres
+    eNode = parameterized[0].executionNode().Par.Seg.Hemispheres
     if meth == ann_model:
       eNode.LeftHemisphere.SulciRecognition.recognition2000.setSelected( True )
       eNode.RightHemisphere.SulciRecognition.recognition2000.setSelected( True )
@@ -235,9 +237,17 @@ def initialization( self ):
   eNode.addChild( 'BrainSegmentation',
                    ProcessExecutionNode( 'BrainSegmentation',
                                          optional = 1 ) )
-  eNode.addChild( 'SplitBrain',
-                   ProcessExecutionNode( 'SplitBrain', optional = 1 ) )
-  eNode.addChild( 'TalairachTransformation',
+  paraNode = ParallelExecutionNode( 'Parallel Node', optional=True,
+    expandedInGui=True )
+  eNode.addChild( 'Par', paraNode )
+
+  segNode = SerialExecutionNode( 'Segmentation', optional=True,
+    expandedInGui=True )
+  paraNode.addChild( 'Seg', segNode )
+
+  segNode.addChild( 'SplitBrain',
+                    ProcessExecutionNode( 'SplitBrain', optional = 1 ) )
+  segNode.addChild( 'TalairachTransformation',
                    ProcessExecutionNode( 'TalairachTransformation',
                                          optional = 1 ) )
 
@@ -292,9 +302,9 @@ def initialization( self ):
   rightNode.addChild( 'Meshes', rightMeshes )
   hemiProc.addChild( 'LeftHemisphere', leftNode )
   hemiProc.addChild( 'RightHemisphere', rightNode )
-  eNode.addChild( 'Hemispheres', hemiProc )
+  segNode.addChild( 'Hemispheres', hemiProc )
 
-  hemiProc.addChild( 'HeadMesh', ProcessExecutionNode( 'headMesh',
+  paraNode.addChild( 'HeadMesh', ProcessExecutionNode( 'headMesh',
                                                     optional = 1 ) )
 
 
@@ -363,43 +373,44 @@ def initialization( self ):
   eNode.addDoubleLink( 'BrainSegmentation.edges',
                        'BiasCorrection.edges' )
 
-  eNode.SplitBrain.removeLink( 'histo_analysis', 'mri_corrected' )
-  eNode.SplitBrain.removeLink( 'brain_mask', 'mri_corrected' )
-  eNode.SplitBrain.removeLink( 'commissure_coordinates', 'mri_corrected' )
-  eNode.SplitBrain.removeLink( 'white_ridges', 'mri_corrected' )
+  segNode.SplitBrain.removeLink( 'histo_analysis', 'mri_corrected' )
+  segNode.SplitBrain.removeLink( 'brain_mask', 'mri_corrected' )
+  segNode.SplitBrain.removeLink( 'commissure_coordinates', 'mri_corrected' )
+  segNode.SplitBrain.removeLink( 'white_ridges', 'mri_corrected' )
 
-  eNode.addDoubleLink( 'SplitBrain.mri_corrected',
+  eNode.addDoubleLink( 'Par.Seg.SplitBrain.mri_corrected',
                        'BiasCorrection.mri_corrected' )
-  eNode.addDoubleLink( 'SplitBrain.histo_analysis',
+  eNode.addDoubleLink( 'Par.Seg.SplitBrain.histo_analysis',
                        'HistoAnalysis.histo_analysis' )
-  eNode.addDoubleLink( 'SplitBrain.brain_mask',
+  eNode.addDoubleLink( 'Par.Seg.SplitBrain.brain_mask',
                        'BrainSegmentation.brain_mask' )
-  eNode.addDoubleLink( 'SplitBrain.commissure_coordinates',
+  eNode.addDoubleLink( 'Par.Seg.SplitBrain.commissure_coordinates',
                        'PrepareSubject.commissure_coordinates' )
-  eNode.addDoubleLink( 'SplitBrain.white_ridges',
+  eNode.addDoubleLink( 'Par.Seg.SplitBrain.white_ridges',
                        'BiasCorrection.white_ridges' )
 
-  eNode.TalairachTransformation.removeLink( 'commissure_coordinates',
-                                            'split_mask' )
+  segNode.TalairachTransformation.removeLink( 'commissure_coordinates',
+                                              'split_mask' )
 
-  eNode.addDoubleLink( 'TalairachTransformation.split_mask',
-                       'SplitBrain.split_mask' )
-  eNode.addDoubleLink( 'TalairachTransformation.commissure_coordinates',
-                       'PrepareSubject.commissure_coordinates' )
+  segNode.addDoubleLink( 'TalairachTransformation.split_mask',
+                         'SplitBrain.split_mask' )
+  eNode.addDoubleLink( \
+    'Par.Seg.TalairachTransformation.commissure_coordinates',
+    'PrepareSubject.commissure_coordinates' )
 
-  hemiProc.HeadMesh.removeLink( 'histo_analysis', 'mri_corrected' )
+  paraNode.HeadMesh.removeLink( 'histo_analysis', 'mri_corrected' )
 
-  eNode.addDoubleLink( 'Hemispheres.HeadMesh.mri_corrected',
+  eNode.addDoubleLink( 'Par.HeadMesh.mri_corrected',
       'BiasCorrection.mri_corrected' )
-  eNode.addDoubleLink( 'Hemispheres.HeadMesh.histo_analysis',
+  eNode.addDoubleLink( 'Par.HeadMesh.histo_analysis',
       'HistoAnalysis.histo_analysis' )
 
   reco = getProcess('recognitionGeneral')
 
   # in each hemisphere
   for hemiNode, hemiP, side in \
-    ( ( leftNode, 'Hemispheres.LeftHemisphere', 'Left' ),
-      ( rightNode, 'Hemispheres.RightHemisphere', 'Right' ) ):
+    ( ( leftNode, 'Par.Seg.Hemispheres.LeftHemisphere', 'Left' ),
+      ( rightNode, 'Par.Seg.Hemispheres.RightHemisphere', 'Right' ) ):
 
     classifNode = hemiNode.GreyWhiteClassification
     classifNode.removeLink( 'histo_analysis', 'mri_corrected' )
@@ -412,7 +423,8 @@ def initialization( self ):
       classifP + '.mri_corrected', 'BiasCorrection.mri_corrected' )
     eNode.addDoubleLink( \
       classifP + '.histo_analysis', 'HistoAnalysis.histo_analysis' )
-    eNode.addDoubleLink( classifP + '.split_mask', 'SplitBrain.split_mask' )
+    eNode.addDoubleLink( classifP + '.split_mask',
+      'Par.Seg.SplitBrain.split_mask' )
     eNode.addDoubleLink( classifP + '.edges', 'BiasCorrection.edges' )
     eNode.addDoubleLink( classifP + '.commissure_coordinates',
       'PrepareSubject.commissure_coordinates' )
@@ -443,7 +455,7 @@ def initialization( self ):
     eNode.addDoubleLink( \
       meshP + '.PialMesh.mri_corrected', 'BiasCorrection.mri_corrected' )
     eNode.addDoubleLink( \
-      meshP + '.PialMesh.split_mask', 'SplitBrain.split_mask' )
+      meshP + '.PialMesh.split_mask', 'Par.Seg.SplitBrain.split_mask' )
     eNode.addDoubleLink( \
       meshP + '.PialMesh.hemi_cortex',
       hemiP + '.GreyWhiteTopology.hemi_cortex' )
@@ -467,13 +479,13 @@ def initialization( self ):
     eNode.addDoubleLink( \
       meshP + '.Graph.mri_corrected', 'BiasCorrection.mri_corrected' )
     eNode.addDoubleLink(
-      meshP + '.Graph.split_mask', 'SplitBrain.split_mask' )
+      meshP + '.Graph.split_mask', 'Par.Seg.SplitBrain.split_mask' )
     eNode.addDoubleLink( \
       meshP + '.Graph.commissure_coordinates',
       'PrepareSubject.commissure_coordinates' )
     eNode.addDoubleLink( \
       meshP + '.Graph.Talairach_transform',
-      'TalairachTransformation.Talairach_transform' )
+      'Par.Seg.TalairachTransformation.Talairach_transform' )
 
     hemiNode.addDoubleLink( \
       'Meshes.Graph.side', 'GreyWhiteClassification.side', linkSide )
@@ -539,7 +551,7 @@ def initialization( self ):
     self.signature[ 'perform_normalization' ].userLevel = 3
   if not hasattr( eNode.PrepareSubject, 'StandardACPC' ) \
     or not eNode.PrepareSubject.StandardACPC.isSelected():
-    eNode.TalairachTransformation.setSelected( False )
+    segNode.TalairachTransformation.setSelected( False )
     self.perform_normalization = True
   else:
     self.perform_normalization = False
