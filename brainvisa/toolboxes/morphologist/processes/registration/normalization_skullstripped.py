@@ -72,6 +72,8 @@ def initialization( self ):
       ProcessExecutionNode( 'normalizationPipeline', selected=1 ) )
     eNode.Normalization.removeLink( 'transformation', 't1mri' )
     eNode.addDoubleLink( 'SkullStripping.t1mri', 't1mri' )
+    eNode.SkullStripping.removeLink( 'brain_mask', 't1mri' )
+    self.linkParameters( 'brain_mask', 't1mri' )
     eNode.addDoubleLink( 'SkullStripping.brain_mask', 'brain_mask' )
     eNode.addDoubleLink( 'SkullStripping.skull_stripped', 'skull_stripped' )
     eNode.addDoubleLink( 'Normalization.t1mri', 'skull_stripped' )

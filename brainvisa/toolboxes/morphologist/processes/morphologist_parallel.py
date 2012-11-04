@@ -438,7 +438,6 @@ def initialization( self ):
   # skull-stripped normalization
   if hasNorm:
     ssnNode.Renorm.removeLink( 'brain_mask', 't1mri' )
-    ssnNode.Renorm.removeLink( 'brain_mask', 't1mri' )
 
     eNode.addDoubleLink( 'mri', 'Par.SStrippedRenorm.Renorm.t1mri' )
     eNode.addDoubleLink( 'BrainSegmentation.brain_mask',
@@ -447,8 +446,8 @@ def initialization( self ):
     ssnNode.TalFromN.removeLink( 'Talairach_transform',
       'normalization_transformation' )
     ssnNode.TalFromN.removeLink( 'commissure_coordinates',
-      'normalization_transformation' )
-    ssnNode.TalFromN.removeLink( 't1mri', 'normalization_transformation' )
+      'Talairach_transform' )
+    ssnNode.TalFromN.removeLink( 't1mri', 'commissure_coordinates' )
 
     ssnNode.addDoubleLink( 'TalFromN.t1mri', 'Renorm.t1mri' )
     ssnNode.addDoubleLink( 'TalFromN.normalization_transformation',
