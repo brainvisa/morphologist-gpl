@@ -116,6 +116,19 @@ class selectThickness( object ):
       h.GraphThickness.setSelected( False )
 
 
+class changeSkullStrippedNoprmalization:
+  def __init__( self, proc ):
+    self.proc = weakref.proxy( proc )
+  def __call__( self, node ):
+    eNode = self.proc.executionNode()
+    if node.isSelected():
+      eNode.Par.Seg.TalairachTransformation.setSelected( False )
+    else:
+      if eNode.PrepareSubject.StandardACPC.isSelected():
+        self.proc.executionNode().Par.Seg.TalairachTransformation.setSelected(
+          True )
+
+
 # process initialization code
 def initialization( self ):
   def changeNormalize( self, proc ):
@@ -243,7 +256,6 @@ def initialization( self ):
 
   segNode = SerialExecutionNode( 'Segmentation', optional=True,
     expandedInGui=True )
-  paraNode.addChild( 'Seg', segNode )
 
   segNode.addChild( 'SplitBrain',
                     ProcessExecutionNode( 'SplitBrain', optional = 1 ) )
@@ -307,6 +319,24 @@ def initialization( self ):
   paraNode.addChild( 'HeadMesh', ProcessExecutionNode( 'headMesh',
                                                     optional = 1 ) )
 
+  hasNorm = False
+  try:
+    p = getProcessInstance( 'normalization_skullstripped' )
+    if p:
+      p.validationDelayed()
+      hasNorm = True
+  except:
+    pass
+  if hasNorm:
+    ssnNode = SerialExecutionNode( 'Re-normalization, skull-stripped',
+      optional=True, selected=False )
+    paraNode.addChild( 'SStrippedRenorm', ssnNode )
+    ssnNode.addChild( 'Renorm',
+      ProcessExecutionNode( 'normalization_skullstripped', optional=True ) )
+    ssnNode.addChild( 'TalFromN',
+      ProcessExecutionNode( 'TalairachTransformationFromNormalization' ) )
+
+  paraNode.addChild( 'Seg', segNode )
 
   # links
 
@@ -404,6 +434,31 @@ def initialization( self ):
       'BiasCorrection.mri_corrected' )
   eNode.addDoubleLink( 'Par.HeadMesh.histo_analysis',
       'HistoAnalysis.histo_analysis' )
+
+  # skull-stripped normalization
+  if hasNorm:
+    ssnNode.Renorm.removeLink( 'brain_mask', 't1mri' )
+    ssnNode.Renorm.removeLink( 'brain_mask', 't1mri' )
+
+    eNode.addDoubleLink( 'mri', 'Par.SStrippedRenorm.Renorm.t1mri' )
+    eNode.addDoubleLink( 'BrainSegmentation.brain_mask',
+        'Par.SStrippedRenorm.Renorm.brain_mask' )
+
+    ssnNode.TalFromN.removeLink( 'Talairach_transform',
+      'normalization_transformation' )
+    ssnNode.TalFromN.removeLink( 'commissure_coordinates',
+      'normalization_transformation' )
+    ssnNode.TalFromN.removeLink( 't1mri', 'normalization_transformation' )
+
+    ssnNode.addDoubleLink( 'TalFromN.t1mri', 'Renorm.t1mri' )
+    ssnNode.addDoubleLink( 'TalFromN.normalization_transformation',
+      'Renorm.transformation' )
+    paraNode.addDoubleLink( \
+      'SStrippedRenorm.TalFromN.Talairach_transform',
+      'Seg.TalairachTransformation.Talairach_transform' )
+    eNode.addDoubleLink( \
+      'Par.SStrippedRenorm.TalFromN.commissure_coordinates',
+      'PrepareSubject.commissure_coordinates' )
 
   reco = getProcess('recognitionGeneral')
 
@@ -522,6 +577,8 @@ def initialization( self ):
     graph.CorticalFoldsGraph_3_1._selectionChange.add( \
       selectThickness( self, side ) )
 
+    graph.addExecutionDependencies( ssnNode )
+
     # sulci recognition
     if reco:
       hemiNode.addChild( 'SulciRecognition',
@@ -559,6 +616,9 @@ def initialization( self ):
   if hasattr( eNode.PrepareSubject, 'StandardACPC' ):
     eNode.PrepareSubject.StandardACPC._selectionChange.add( x )
   self.linkParameters( 'Normalised', 'perform_normalization', changeNormalize )
+
+  x = changeSkullStrippedNoprmalization( self )
+  paraNode.SStrippedRenorm._selectionChange.add( x )
 
   self.setExecutionNode( eNode )
 

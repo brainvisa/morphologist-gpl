@@ -56,7 +56,7 @@ signature = Signature(
 )
 
 def initialization( self ):
-    self.linkParameters("transformation", "t1mri" )
+    self.linkParameters( "transformation", "t1mri" )
     self.skull_stripped = defaultContext().temporary( 'NIFTI-1 image' )
     normalized = defaultContext().temporary( 'NIFTI-1 image' )
     self.template = self.signature['template' ].findValue( \
