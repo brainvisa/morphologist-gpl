@@ -36,6 +36,14 @@ from brainvisa.processes import *
 name = 'Skull-stripped brain normalization'
 userLevel = 2
 
+def validationDelayed():
+  '''validation cannot be done at startup since some sub-processes may not be
+loaded yet. But this validationDelayed method can be used later.
+  '''
+  p = getProcessInstance( 'NormalizationPipeline' )
+  p.validationDelayed()
+
+
 signature = Signature(
     't1mri', ReadDiskItem( "Raw T1 MRI", "Aims readable volume formats" ),
     'brain_mask', ReadDiskItem( "Brain Mask", "Aims readable volume formats" ),
