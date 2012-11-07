@@ -70,6 +70,7 @@ signature = Signature(
   'commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
       'Commissure coordinates'),
   'delete_last_n_slices', OpenChoice("auto", "0", "10", "20", "30"),
+  'fix_random_seed', Boolean(),
 )
 
 # Default values
@@ -82,7 +83,8 @@ def initialization( self ):
   self.linkParameters( 'variance', 'meancurvature' )
   self.linkParameters( 'edges', 'variance' )
 
-
+  self.signature[ 'fix_random_seed' ].userLevel = 3
+  
   self.mode = 'write_minimal'
   self.write_wridges = 'yes'
   self.write_field = 'no'
@@ -100,6 +102,7 @@ def initialization( self ):
   self.delete_last_n_slices = 'auto'
   self.setOptional('commissure_coordinates')
   self.linkParameters( 'commissure_coordinates', 'mri_corrected' )
+  self.fix_random_seed = False
 
 def execution( self, context ):
   if self.mode == 'write_all':
@@ -124,6 +127,8 @@ def execution( self, context ):
           option_list += ['-Points', self.commissure_coordinates]
         if self.mode == "write_minimal without correction":
           option_list += ['-Dcorrect', "n"]
+        if self.fix_random_seed:
+          option_list += ['-srand', '10']
         apply( context.system, constant_list+option_list )
         
         tm = registration.getTransformationManager()

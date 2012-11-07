@@ -44,10 +44,12 @@ signature = Signature(
   'hfiltered', ReadDiskItem( "T1 MRI Filtered For Histo", 'Aims readable volume formats' ),
   'use_wridges', Boolean(),
   'white_ridges', ReadDiskItem( "T1 MRI White Matter Ridges",   'Aims readable volume formats' ),
-  'undersampling', Choice('2', '4', '8', '16', '32', 'auto', 'iteration' )
+  'undersampling', Choice('2', '4', '8', '16', '32', 'auto', 'iteration' ), 
+  'fix_random_seed', Boolean(),
 )
 
 def initialization( self ):
+  self.signature[ 'fix_random_seed' ].userLevel = 3
   self.linkParameters( 'histo_analysis', 'mri_corrected' )
   #self.linkParameters( 'histo', 'mri_corrected' )
   self.linkParameters( 'hfiltered', 'mri_corrected' )
@@ -57,6 +59,7 @@ def initialization( self ):
   self.use_hfiltered =  True
   self.use_wridges = True
   self.undersampling = 'iteration'
+  self.fix_random_seed = False
 
 
 def execution( self, context ):
@@ -74,5 +77,7 @@ def execution( self, context ):
         option_list += ['-mode', 'i']
     else:
         option_list += ['-mode', 'a', '-u', self.undersampling]
+    if self.fix_random_seed:
+        option_list += ['-srand', '10']
     apply( context.system, constant_list+option_list )
     

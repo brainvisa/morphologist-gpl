@@ -59,6 +59,7 @@ signature = Signature(
       'Aims readable volume formats' ),
   'commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
                                           'Commissure coordinates'),
+  'fix_random_seed', Boolean(),
 )
 
 
@@ -68,6 +69,7 @@ def initialization( self ):
   self.linkParameters( 'split_mask', 'mri_corrected' )
   self.linkParameters( 'commissure_coordinates', 'mri_corrected' )
   self.linkParameters( 'white_ridges', 'mri_corrected' )
+  self.signature[ 'fix_random_seed' ].userLevel = 3
   self.Use_ridges = "True"
   self.setOptional('white_ridges')
   self.visu = "No"
@@ -83,6 +85,7 @@ def initialization( self ):
   self.cc_min_size = 500
   self.setOptional('mult_factor')
   self.mult_factor = "2"
+  self.fix_random_seed = False
 
 def execution( self, context ):
     if os.path.exists(self.split_mask.fullName() + '.loc'):
@@ -104,6 +107,8 @@ def execution( self, context ):
         option_list += ['-TemplateUse', 'n']
       if self.Use_ridges:
         option_list += ['-Ridge', self.white_ridges.fullPath()]
+      if self.fix_random_seed:
+        option_list += ['-srand', '10']
       call_list = ['VipSplitBrain',
                      '-input',  self.mri_corrected.fullPath(),
                      '-brain', self.brain_mask.fullPath(),
