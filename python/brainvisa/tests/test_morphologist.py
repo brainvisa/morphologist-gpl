@@ -98,6 +98,7 @@ class TestMorphologistPipeline(unittest.TestCase):
     nodes.child('CorticalFoldsGraph').setSelected(0)
     nodes.child('BiasCorrection').fix_random_seed = True
     nodes.child('HistoAnalysis').fix_random_seed = True
+    nodes.child('BrainSegmentation').fix_random_seed = True
     nodes.child('SplitBrain').fix_random_seed = True
     #nodes.child("SulciRecognition").setSelected(1)
     

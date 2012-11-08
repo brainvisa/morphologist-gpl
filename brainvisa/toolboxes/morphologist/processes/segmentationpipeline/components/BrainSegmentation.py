@@ -64,6 +64,7 @@ signature = Signature(
   'layer', Choice("0","1","2","3","4","5"),
   'first_slice', Integer(),
   'last_slice', Integer(),
+  'fix_random_seed', Boolean(),
 )
 
 def initialization( self ):
@@ -72,6 +73,7 @@ def initialization( self ):
   self.linkParameters( 'white_ridges', 'mri_corrected' )
   self.linkParameters( 'variance', 'mri_corrected' )
   self.linkParameters( 'edges', 'mri_corrected' )
+  self.signature['fix_random_seed'].userLevel = 3
   self.erosion_size = 1.8
   self.first_slice = 0
   self.last_slice = 0
@@ -82,6 +84,7 @@ def initialization( self ):
   self.variant = "2010"
   self.visu = "No"
   self.layer = "0"
+  self.fix_random_seed = False
  
 def execution( self, context ):
   if os.path.exists(self.brain_mask.fullName() + '.loc'):
@@ -115,6 +118,8 @@ def execution( self, context ):
         constant_list += [ '-Variancename', self.variance.fullPath(), '-Edgesname', self.edges.fullPath(), '-Ridge', self.white_ridges.fullPath()]
       else:
         raise RuntimeError( _t_( 'Variant <em>%s</em> not implemented' ) % self.variant )
+      if self.fix_random_seed:
+        option_list += ['-srand', '10']
       result = []
       apply( context.system, constant_list+option_list+call_list )
 
