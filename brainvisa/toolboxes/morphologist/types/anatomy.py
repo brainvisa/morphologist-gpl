@@ -182,7 +182,6 @@ FileType( 'Bounding Box Points', 'ROI' )
 
 #----------------- Registration -------------------------
 
-FileType( 'Referential of Raw T1 MRI', 'Referential' )
 FileType( 'Transform Raw T1 MRI to Talairach-AC/PC-Anatomist', 'Transformation matrix' )
 FileType( 'Transform Raw T1 MRI to Talairach-MNI template-SPM', 'Transformation matrix' )
 FileType( 'Transform Raw T1 MRI to Raw T1 MRI', 'Transformation matrix' )
