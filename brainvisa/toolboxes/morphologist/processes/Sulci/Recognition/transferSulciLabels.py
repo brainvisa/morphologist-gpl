@@ -78,11 +78,14 @@ def initialization( self ):
 
   def linkOutputGraph( self, process ):
     manual = 'No'
-    required = {}
+    required = { 'labelled' : 'Yes' }
     if self.labelled_graph:
       manual = self.labelled_graph.get( 'manually_labelled', None )
       if manual is not None:
         required[ 'manually_labelled' ] = manual
+      auto = self.labelled_graph.get( 'automatically_labelled', None )
+      if auto is not None:
+        required[ 'automatically_labelled' ] = auto
       session = self.labelled_graph.get( 'sulci_recognition_session', None )
       if session is not None:
         required[ 'sulci_recognition_session' ] = session
