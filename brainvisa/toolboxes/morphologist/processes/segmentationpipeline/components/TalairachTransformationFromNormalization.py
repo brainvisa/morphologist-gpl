@@ -86,9 +86,12 @@ def initialization( self ):
   def linkACPC_to_norm( proc, param ):
     trManager = registration.getTransformationManager()
     if proc.normalized_referential:
+      try:
+        id = proc.normalized_referential.uuid()
+      except:
+        return []
       _mniToACPCpaths = trManager.findPaths( \
-        registration.talairachACPCReferentialId,
-        proc.normalized_referential.uuid() )
+        registration.talairachACPCReferentialId, id )
       for x in _mniToACPCpaths:
         return x
       else:
