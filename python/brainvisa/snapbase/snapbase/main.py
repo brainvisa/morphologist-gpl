@@ -33,11 +33,11 @@ class HelpWindow(QtGui.QDialog):
         from PyQt4 import QtWebKit
         self.qte2 = QtWebKit.QWebView(self)
         self.qte2.load(Qt.QUrl(help_file))
-        self.qte = QtGui.QPushButton("bonjour", self)
-        self.qte.setMinimumSize(QtCore.QSize(200,31))
-        self.setMinimumSize(QtCore.QSize(200,31))
+#        self.qte = QtGui.QPushButton("bonjour", self)
+#        self.qte.setMinimumSize(QtCore.QSize(200,231))
+        self.setMinimumSize(QtCore.QSize(200,231))
         self.layout = QtGui.QVBoxLayout(self)
-        self.layout.addWidget(self.qte)
+        self.layout.addWidget(self.qte2)
 
 
 def display_help_msgbox():
@@ -84,19 +84,22 @@ def comparison_snap_base():
             preferences['T1 db'] = item
             preferences['comparison type'] = compar_type
             snap = splitbrain.SPMComparisonSnapBase(preferences)
-            snap.snap_base(database, main_window = main_window, qt_app = qt_app )
+            snap.db = database
+            snap.snap_base(main_window = main_window, qt_app = qt_app )
 
 def raw_snap_base():
     global main_window, qt_app, database, preferences
     from examples import raw
     snap = raw.RawSnapBase(preferences)
-    snap.snap_base(database, main_window = main_window, qt_app = qt_app )
+    snap.db = database
+    snap.snap_base(main_window = main_window, qt_app = qt_app )
 
 def tablet_snap_base():
     global main_window, qt_app, database, preferences
     from examples import raw
     snap = raw.TabletSnapBase(preferences)
-    snap.snap_base(database, main_window = main_window, qt_app = qt_app )
+    snap.db = database
+    snap.snap_base(main_window = main_window, qt_app = qt_app )
 
 
 # Mesh-based data (with choice of hemisphere side)
@@ -114,7 +117,8 @@ def white_mesh_snap_base():
             snap = mesh.LeftWhiteMeshSnapBase(preferences)
         elif item == 'right':
             snap = mesh.RightWhiteMeshSnapBase(preferences)
-        snap.snap_base(database, main_window = main_window, qt_app = qt_app )
+        snap.db = database
+        snap.snap_base(main_window = main_window, qt_app = qt_app )
 
 def hemi_snap_base():
     global main_window, qt_app, database, preferences
@@ -129,7 +133,8 @@ def hemi_snap_base():
             snap = mesh.LeftHemisphereMeshSnapBase(preferences)
         elif item == 'right':
             snap = mesh.RightHemisphereMeshSnapBase(preferences)
-        snap.snap_base(database, main_window = main_window, qt_app = qt_app )
+        snap.db = database
+        snap.snap_base(main_window = main_window, qt_app = qt_app )
 
 def thickness_snap_base():
     global main_window, qt_app, database, preferences
@@ -156,7 +161,8 @@ def thickness_snap_base():
                 elif mesh_choice == 'white':
                     snap = mesh.RightWhiteThicknessSnapBase(preferences)
     if ok and ok_mesh:
-        snap.snap_base(database, main_window = main_window, qt_app = qt_app )
+        snap.db = database
+        snap.snap_base(main_window = main_window, qt_app = qt_app )
 
 def sulci_snap_base():
     global main_window, qt_app, database, preferences
@@ -182,7 +188,8 @@ def sulci_snap_base():
                 elif choice == 'single':
                     snap = sulci.RightSulciSingleViewSnapBase(preferences)
     if ok and ok_choice:
-        snap.snap_base(database, main_window = main_window, qt_app = qt_app )
+        snap.db = database
+        snap.snap_base(main_window = main_window, qt_app = qt_app )
 
 # Fiber Bundles (work in progress)
 
@@ -190,7 +197,8 @@ def fibers_snap_base():
     global main_window, qt_app, database, preferences
     from examples import fibers
     snap = fibers.FibersSnapBase(preferences)
-    snap.snap_base(database, main_window = main_window, qt_app = qt_app )
+    snap.db = database
+    snap.snap_base(main_window = main_window, qt_app = qt_app )
 
 # Various functions
 
