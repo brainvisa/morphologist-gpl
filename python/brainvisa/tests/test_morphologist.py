@@ -10,29 +10,8 @@ from brainvisa.data.writediskitem import WriteDiskItem
 from brainvisa.configuration import neuroConfig
 from brainvisa.data import neuroHierarchy
 from soma.path import relative_path
+import filecmp
 
-
-def comp_files(nfc1, nfc2, lgbuf=32*1024):
-    """Compare les 2 fichiers et renvoie True seulement s'ils ont un contenu 
-    identique"""
-    f1 = f2 = None
-    result = False
-    try:
-        if os.path.getsize(nfc1) == os.path.getsize(nfc2):
-            f1 = open(nfc1, "rb")
-            f2 = open(nfc2, "rb")
-            while True:
-                buf1 = f1.read(lgbuf)
-                if len(buf1) == 0:
-                    result = True
-                    break
-                buf2 = f2.read(lgbuf)
-                if buf1 != buf2:
-                    break
-    finally:
-        if f1 != None: f1.close()
-        if f2 != None: f2.close()
-    return result
 
 class TestMorphologistPipeline(unittest.TestCase):  
   
@@ -134,7 +113,7 @@ class TestMorphologistPipeline(unittest.TestCase):
         if not f.endswith(".minf"):
           f_ref = os.path.join(dirpath, f)
           f_test = os.path.join(test_dir, relative_path(dirpath, ref_dir), f)
-          self.assertTrue(comp_files(f_ref, f_test), 
+          self.assertTrue(filecmp.cmp(f_ref, f_test), 
                           "The content of "+f+" in test is different from the reference results.")
       
   def tearDown(self):
