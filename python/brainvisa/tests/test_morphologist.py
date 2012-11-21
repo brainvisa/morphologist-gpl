@@ -2,7 +2,7 @@ import unittest
 import os
 import tempfile
 import urllib
-import zipfile
+from soma import zipfile
 from shutil import rmtree
 import brainvisa.axon
 from brainvisa.processes import defaultContext
