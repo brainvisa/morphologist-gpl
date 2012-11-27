@@ -58,6 +58,7 @@ loaded yet. But this validationDelayed method can be used later.
     bal = None
   if not fsl and not spm and not bal:
     raise ValidationError( 'No normalization process could be found working' )
+  return fsl, spm, bal
 
 signature = Signature(
   't1mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.aimsVolumeFormats ),
@@ -88,7 +89,7 @@ def initialization( self ):
 
   if fsl:
     eNode.addChild( 'NormalizeFSL',
-      ProcessExecutionNode( 'FSLnormalizationPipeline',
+      ProcessExecutionNode( fsl,
         selected=(spm is None) ) )
 
     eNode.NormalizeFSL.removeLink( 'transformation', 't1mri' )
@@ -103,7 +104,7 @@ def initialization( self ):
 
   if spm:
     eNode.addChild( 'NormalizeSPM',
-      ProcessExecutionNode( 'SPMnormalizationPipeline', selected=1 ) )
+      ProcessExecutionNode( spm, selected=1 ) )
 
     eNode.NormalizeSPM.removeLink( 'transformation', 't1mri' )
     eNode.addDoubleLink( 'NormalizeSPM.t1mri', 't1mri' )
@@ -113,7 +114,7 @@ def initialization( self ):
 
   if bal:
     eNode.addChild( 'NormalizeBaladin',
-      ProcessExecutionNode( 'BaladinNormalizationPipeline',
+      ProcessExecutionNode( bal,
         selected=(bal is None) ) )
 
     eNode.NormalizeBaladin.removeLink( 'transformation', 't1mri' )

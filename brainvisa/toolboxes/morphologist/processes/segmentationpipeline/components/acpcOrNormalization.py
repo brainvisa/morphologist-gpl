@@ -68,7 +68,7 @@ def initialization( self ):
     else:
       sel = 1
     eNode.addChild( 'StandardACPC',
-      ProcessExecutionNode( 'preparesubject', selected=sel ) )
+      ProcessExecutionNode( ps, selected=sel ) )
 
     eNode.addLink( 'StandardACPC.T1mri', 'T1mri' )
     eNode.addLink( 'T1mri', 'StandardACPC.T1mri' )
@@ -84,7 +84,7 @@ def initialization( self ):
   if np:
     eNode1 = SerialExecutionNode( 'Normalization', selected=1 )
     eNode1.addChild( 'Normalization',
-      ProcessExecutionNode( 'normalizationPipeline' ) )
+      ProcessExecutionNode( np ) )
     eNode1.addChild( 'TalairachFromNormalization',
       ProcessExecutionNode( 'TalairachTransformationFromNormalization' ) )
     eNode.addChild( 'Normalization', eNode1 )

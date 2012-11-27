@@ -78,18 +78,9 @@ def initialization( self ):
     eNode.addDoubleLink( 'SkullStripping.skull_stripped', 'skull_stripped' )
     eNode.addDoubleLink( 'Normalization.t1mri', 'skull_stripped' )
     eNode.addDoubleLink( 'Normalization.transformation', 'transformation' )
-    try:
-        fsl = getProcess( 'FSLnormalizationPipeline' )
-    except:
-        fsl = None
-    try:
-        spm = getProcess( 'SPMnormalizationPipeline' )
-    except:
-        spm = None
-    try:
-        bal = getProcess( 'BaladinNormalizationPipeline' )
-    except:
-        bal = None
+    fsl = hasattr( eNode.Normalization, 'NormalizeFSL' )
+    spm = hasattr( eNode.Normalization, 'NormalizeSPM' )
+    bal = hasattr( eNode.Normalization, 'NormalizeBaladin' )
 
     self.setExecutionNode( eNode )
 
