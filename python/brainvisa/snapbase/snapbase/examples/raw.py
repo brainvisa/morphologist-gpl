@@ -10,6 +10,7 @@ class RawSnapBase(SnapBase):
     def get_list_diskitems(self, verbose=True):
 
         from brainvisa.snapbase.snapbase.diskItemBrowser import SnapBaseItemBrowser
+        import neuroHierarchy
 
         id_type = 'Raw T1 MRI'
         d = SnapBaseItemBrowser(neuroHierarchy.databases, required={'_type': id_type})

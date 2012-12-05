@@ -81,7 +81,7 @@ class ThicknessSnapBase(SnapBase):
         import neuroHierarchy, neuroProcesses
 
         id_types = ['FreesurferThicknessType', 'ResampledFreesurferThicknessType', 'FreesurferCurvType', 'ResampledFreesurferCurvType', 'Cortical thickness', 'FreesurferGyri', 'ResampledGyri' ]
-        d = SnapBaseItemBrowser(neuroHierarchy.databases, required={'_type': id_type})
+        d = SnapBaseItemBrowser(neuroHierarchy.databases, required={'_type': id_types})
         res = d.exec_()
         for each in d.getValues():
             id_type = neuroHierarchy.databases.createDiskItemFromFileName(each.fullPath()).type.name
