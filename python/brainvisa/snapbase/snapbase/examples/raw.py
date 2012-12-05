@@ -6,14 +6,13 @@ class RawSnapBase(SnapBase):
 
     def __init__(self, preferences):
         SnapBase.__init__(self, preferences)
-#        self.data_type = 'Raw T1 MRI'
 
     def get_list_diskitems(self, verbose=True):
 
         from brainvisa.snapbase.snapbase.diskItemBrowser import SnapBaseItemBrowser
 
         id_type = 'Raw T1 MRI'
-        d = SnapBaseItemBrowser(self.db, multiple=True, selection={'_database': self.db.directory}, required={'_type': id_type})
+        d = SnapBaseItemBrowser(neuroHierarchy.databases, required={'_type': id_type})
         res = d.exec_()
         dictdata = []
         for each in d.getValues():
@@ -80,7 +79,6 @@ class TabletSnapBase(RawSnapBase):
 
     def __init__(self, preferences):
         SnapBase.__init__(self, preferences)
-        self.data_type = 'Vitamin Tablet Snapshots'
 
     def get_slices_of_interest(self, data):
 

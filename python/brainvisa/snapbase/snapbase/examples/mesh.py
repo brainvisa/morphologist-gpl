@@ -18,7 +18,7 @@ class MeshSnapBase(SnapBase):
 
         print self.__class__.__name__
         id_type = 'Hemisphere %sMesh'%({'HemisphereMeshSnapBase': '', 'WhiteMeshSnapBase': 'White '}[self.__class__.__name__])
-        d = SnapBaseItemBrowser(self.db, multiple=True, selection={'_database': self.db.directory}, required={'_type': id_type})
+        d = SnapBaseItemBrowser(neuroHierarchy.databases, required={'_type': id_type})
         res = d.exec_()
         for each in d.getValues():
             rdi = neuroHierarchy.ReadDiskItem('Transform Raw T1 MRI to Talairach-AC/PC-Anatomist', neuroProcesses.getAllFormats())
@@ -81,14 +81,10 @@ class ThicknessSnapBase(SnapBase):
         import neuroHierarchy, neuroProcesses
 
         id_types = ['FreesurferThicknessType', 'ResampledFreesurferThicknessType', 'FreesurferCurvType', 'ResampledFreesurferCurvType', 'Cortical thickness', 'FreesurferGyri', 'ResampledGyri' ]
-        d = SnapBaseItemBrowser(self.db, multiple=True, selection={'_database': self.db.directory}, required={'_type': id_types})
+        d = SnapBaseItemBrowser(neuroHierarchy.databases, required={'_type': id_type})
         res = d.exec_()
         for each in d.getValues():
-            print each.fullPath()
-            print self.db.createDiskItemFromFileName(each.fullPath())
-            print self.db.createDiskItemFromFileName(each.fullPath()).type
-
-            id_type = self.db.createDiskItemFromFileName(each.fullPath()).type.name
+            id_type = neuroHierarchy.databases.createDiskItemFromFileName(each.fullPath()).type.name
             print id_type[:9]
             #rdi = neuroHierarchy.ReadDiskItem('Hemisphere %sMesh'%({'hemi' : '', 'white' : 'White '}[self.preferences['mesh']]), neuroProcesses.getAllFormats())
             if id_type in ['FreeSurferThicknessType', 'FreesurferCurvType', 'FreesurferGyri']:
@@ -162,16 +158,12 @@ class HemiThicknessSnapBase(ThicknessSnapBase):
     def __init__(self, preferences):
         ThicknessSnapBase.__init__(self, preferences)
         self.preferences['mesh'] = 'hemi'
-        self.data_type = 'Cortical Thickness'
-        self.data_type = 'FreesurferThicknessType'
 
 
 class WhiteThicknessSnapBase(ThicknessSnapBase):
     def __init__(self, preferences):
         ThicknessSnapBase.__init__(self, preferences)
         self.preferences['mesh'] = 'white'
-        self.data_type = 'Cortical Thickness'
-        self.data_type = 'FreesurferThicknessType'
 
 
 #-----------------------------------------
@@ -181,25 +173,6 @@ class WhiteThicknessSnapBase(ThicknessSnapBase):
 class WhiteMeshSnapBase(MeshSnapBase):
     def __init__(self, preferences):
         MeshSnapBase.__init__(self, preferences)
-
-#    def get_list_diskitems(self, verbose = True):
-#
-#        from brainvisa.snapbase.snapbase.diskItemBrowser import SnapBaseItemBrowser
-#
-#        dictdata = []
-#        import neuroHierarchy, neuroProcesses
-#
-#        id_type = 'Hemisphere White Mesh'
-#        d = SnapBaseItemBrowser(self.db, multiple=True, selection={'_database': self.db.directory}, required={'_type': id_type})
-#        res = d.exec_()
-#        for each in d.getValues():
-#            rdi = neuroHierarchy.ReadDiskItem('Transform Raw T1 MRI to Talairach-AC/PC-Anatomist', neuroProcesses.getAllFormats())
-#            transform = rdi.findValue(each)
-#            dictdata.append(((each.get('subject'), each.get('protocol')),
-#               {'type' : 'Hemisphere White Mesh',
-#                'mesh' : each,
-#                'transform' : transform}) )
-#        return dictdata
 
     def get_views_of_interest(self):
         views = {}

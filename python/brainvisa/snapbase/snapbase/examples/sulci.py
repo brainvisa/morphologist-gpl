@@ -18,7 +18,7 @@ class SulciSnapBase(SnapBase):
                 'labelled' : 'Yes',
                 'graph_version' : '3.1',
                 'manually_labelled' : 'No'}
-        d = SnapBaseItemBrowser(self.db, multiple=True, selection={'_database': self.db.directory}, required={'_type': id_type})
+        d = SnapBaseItemBrowser(neuroHierarchy.databases, required={'_type': id_type})
         res = d.exec_()
         for each in d.getValues():
             rdi = neuroHierarchy.ReadDiskItem('Transform Raw T1 MRI to Talairach-AC/PC-Anatomist', neuroProcesses.getAllFormats())
@@ -36,63 +36,6 @@ class SulciSnapBase(SnapBase):
                   'transform' : transform}) )
         return dictdata
 
-    def get_dictdata(self, selected_attributes, verbose=True):
-
-        import neuroProcesses
-        from brainvisa.data import neuroHierarchy
-
-        options = {}
-        options.update(self.options)
-        options.update(selected_attributes)
-        print 'opt:', options
-
-        dictdata = {}
-
-        for key, value in options.items():
-            if value == '*':
-                options.pop(key)
-
-        # List of subjects according to resulting options
-        subjects_id = set([subject for subject in\
-            self.db.findAttributes(('subject', 'protocol'), {}, **options )])
-
-        for subject, protocol in subjects_id:
-            # Retrieves T1 MRI Bias Corrected
-            options.update({'_type' : 'T1 MRI Bias Corrected',
-                            'subject' : subject,
-                            'protocol' : protocol})
-            mris = [mri for mri in self.db.findDiskItems(**options)]
-
-            if len(mris) == 1:
-                # Retrieves the corresponding transform, mesh, and sulci if existing
-                rdi = neuroHierarchy.ReadDiskItem('Transform Raw T1 MRI to Talairach-AC/PC-Anatomist', neuroProcesses.getAllFormats())
-                transform = rdi.findValue(mris[0])
-                rdi = neuroHierarchy.ReadDiskItem('Hemisphere White Mesh', neuroProcesses.getAllFormats(), requiredAttributes={'side' : self.preferences['side']})
-                mesh = rdi.findValue(mris[0])
-                req_att = {'subject' : options['subject'],
-                           'protocol' : options['protocol'],
-                           'side' : self.preferences['side'],
-                           'labelled' : 'Yes',
-                           'graph_version' : '3.1',
-                           'manually_labelled' : 'No',
-                           'automatically_labelled' : 'Yes'}
-                rdi = neuroHierarchy.ReadDiskItem('Labelled Cortical folds graph', neuroProcesses.getAllFormats(), requiredAttributes=req_att )
-                folds_graph = rdi.findValue(mris[0])
-
-                # Here according to given options, ambiguity should be resolved.
-                # If more than one mesh, then some attributes are probably misgiven.
-                if mesh and folds_graph and transform:
-                    dictdata[(subject, protocol)] = {'type' : self.data_type,
-                        'mesh' : mesh,
-                        'transform' : transform,
-                        'mri' : mris[0],
-                        'folds graph' : folds_graph}
-
-            else:
-                if verbose:
-                    print '(subject %s, protocol %s) error in retrieving diskitems'\
-                        %(subject, protocol)
-        return dictdata
 
     def read_data(self, diskitems):
 

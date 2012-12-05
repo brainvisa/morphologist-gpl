@@ -354,7 +354,6 @@ class SnapBase():
         # Get a list of dict containing needed files
 
         if dictdata == None:
-            #d = dib.DiskItemBrowser( neuroHierarchy.databases, required = {'_database': self.db.directory, '_type' : 'Raw T1 MRI'},
             dictdata = self.get_list_diskitems()
         if verbose:
             print 'dictdata', dictdata

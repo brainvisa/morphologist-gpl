@@ -6,7 +6,6 @@ class GreyWhiteSnapBase(SnapBase):
 
     def __init__(self, preferences):
         SnapBase.__init__(self, preferences)
-#        self.data_type = 'Grey White Mask'
 
     def get_list_diskitems(self, verbose = True):
 
@@ -16,7 +15,7 @@ class GreyWhiteSnapBase(SnapBase):
         import neuroHierarchy, neuroProcesses
 
         id_type = 'T1 MRI Bias Corrected'
-        d = SnapBaseItemBrowser(self.db, multiple=True, selection={'_database': self.db.directory}, required={'_type': id_type})
+        d = SnapBaseItemBrowser(neuroHierarchy.databases, required={'_type': id_type})
         res = d.exec_()
         for each in d.getValues():
             left_rdi = neuroHierarchy.ReadDiskItem('Left Grey White Mask', neuroProcesses.getAllFormats())

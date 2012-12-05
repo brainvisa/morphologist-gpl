@@ -7,7 +7,7 @@ class FibersSnapBase(SnapBase):
         SnapBase.__init__(self, preferences)
         self.data_type = 'Labelled Fiber Bundles'
 
-
+#FIXME
     def get_list_diskitems(self, db, verbose = True):
 
         import os
@@ -60,13 +60,8 @@ class FibersSnapBase(SnapBase):
 
     def read_data(self, diskitems):
 
-#        from soma import aims
-#        import anatomist.direct.api as ana
-#        a = ana.Anatomist('-b')
-
         bundles = diskitems['bundles']
         transform = diskitems['transform']
-#        mesh = aims.read(diskitems['mesh'].fileName())
         return bundles, transform
 
     def get_views_of_interest(self):
@@ -82,8 +77,6 @@ class FibersSnapBase(SnapBase):
 
         bundles, transform = data
         ana_bundles = [a.loadObject(each) for each in bundles]
-#        for ana_bundle in ana_bundles:
-#            ana_bundle.releaseAppRef()
         a.execute( 'GraphDisplayProperties', objects=ana_bundles,
           nomenclature_property='name' )
         a.setGraphParams(label_attribute='label', show_tooltips=1, use_nomenclature=1)

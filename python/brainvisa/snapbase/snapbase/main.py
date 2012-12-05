@@ -50,21 +50,18 @@ def grey_white_snap_base():
     global main_window, qt_app, database, preferences
     from examples import greywhite
     snap = greywhite.GreyWhiteSnapBase(preferences)
-    snap.db = database
     snap.snap_base(main_window = main_window, qt_app = qt_app )
 
 def splitbrain_snap_base():
     global main_window, qt_app, database, preferences
     from examples import splitbrain
     snap = splitbrain.SplitBrainSnapBase(preferences)
-    snap.db = database
     snap.snap_base(main_window = main_window, qt_app = qt_app )
 
 def brainmask_snap_base():
     global main_window, qt_app, database, preferences
     from examples import splitbrain
     snap = splitbrain.BrainMaskSnapBase(preferences)
-    snap.db = database
     snap.snap_base(main_window = main_window, qt_app = qt_app )
 
 def comparison_snap_base():
@@ -84,21 +81,18 @@ def comparison_snap_base():
             preferences['T1 db'] = item
             preferences['comparison type'] = compar_type
             snap = splitbrain.SPMComparisonSnapBase(preferences)
-            snap.db = database
             snap.snap_base(main_window = main_window, qt_app = qt_app )
 
 def raw_snap_base():
     global main_window, qt_app, database, preferences
     from examples import raw
     snap = raw.RawSnapBase(preferences)
-    snap.db = database
     snap.snap_base(main_window = main_window, qt_app = qt_app )
 
 def tablet_snap_base():
     global main_window, qt_app, database, preferences
     from examples import raw
     snap = raw.TabletSnapBase(preferences)
-    snap.db = database
     snap.snap_base(main_window = main_window, qt_app = qt_app )
 
 
@@ -109,7 +103,6 @@ def white_mesh_snap_base():
     from examples import mesh
 
     snap = mesh.WhiteMeshSnapBase(preferences)
-    snap.db = database
     snap.snap_base(main_window = main_window, qt_app = qt_app )
 
 def hemi_snap_base():
@@ -117,7 +110,6 @@ def hemi_snap_base():
     from examples import mesh
 
     snap = mesh.HemisphereMeshSnapBase(preferences)
-    snap.db = database
     snap.snap_base(main_window = main_window, qt_app = qt_app )
 
 def thickness_snap_base():
@@ -134,7 +126,6 @@ def thickness_snap_base():
             elif mesh_choice == 'white':
                 snap = mesh.WhiteThicknessSnapBase(preferences)
     if ok_mesh:
-        snap.db = database
         snap.snap_base(main_window = main_window, qt_app = qt_app )
 
 def sulci_snap_base():
@@ -148,7 +139,6 @@ def sulci_snap_base():
             snap = sulci.SulciMultiViewSnapBase(preferences)
         elif choice == 'single':
             snap = sulci.SulciSingleViewSnapBase(preferences)
-        snap.db = database
         snap.snap_base(main_window = main_window, qt_app = qt_app )
 
 # Fiber Bundles (work in progress)
@@ -157,7 +147,6 @@ def fibers_snap_base():
     global main_window, qt_app, database, preferences
     from examples import fibers
     snap = fibers.FibersSnapBase(preferences)
-    snap.db = database
     snap.snap_base(main_window = main_window, qt_app = qt_app )
 
 # Various functions
@@ -243,12 +232,7 @@ def main():
     gui.brainmask_btn.clicked.connect(brainmask_snap_base)
     gui.btn_thickness.clicked.connect(thickness_snap_base)
     gui.btn_help.clicked.connect(display_help_msgbox)
-    gui.db_combobox.activated.connect(select_db)
     gui.connect_signals()
-
-    # Initializes the combobox with databases
-    for db in neuroHierarchy.databases.iterDatabases():
-        gui.db_combobox.addItem(db.directory)
 
     # SnapBase settings
     import os
@@ -269,8 +253,6 @@ def main():
             else:
                 ok = Qt.QMessageBox.warning(None, 'No databases in BrainVisa.',
                 'Please add at least one database in BrainVisa.', Qt.QMessageBox.Ok)
-        item = gui.db_combobox.findText(preferences['database_dir'])
-        gui.db_combobox.setCurrentIndex(item)
     else:
         # Otherwise, create it and update all necessary
         preferences = load_preferences({})
