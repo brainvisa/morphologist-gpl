@@ -16,7 +16,6 @@ class MeshSnapBase(SnapBase):
         dictdata = []
         import neuroHierarchy, neuroProcesses
 
-        print self.__class__.__name__
         id_type = 'Hemisphere %sMesh'%({'HemisphereMeshSnapBase': '', 'WhiteMeshSnapBase': 'White '}[self.__class__.__name__])
         d = SnapBaseItemBrowser(neuroHierarchy.databases, required={'_type': id_type})
         res = d.exec_()
