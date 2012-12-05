@@ -120,8 +120,8 @@ class Ui_attributes_window(object):
 
         self.window = window
         window.resize(348, 380)
-        window.setMinimumSize(QtCore.QSize(348, 52*len(items) + 125))
-        window.setMaximumSize(QtCore.QSize(348, 52*len(items) + 125))
+        window.setMinimumSize(QtCore.QSize(548, 55*(len(items)+len(req_items)) + 110))
+        window.setMaximumSize(QtCore.QSize(548, 1000)) #55*len(items) + 110))
         font = Qt.QFont()
         font.setPointSize(8)
         self.central_widget = QtGui.QWidget(window)
@@ -133,16 +133,16 @@ class Ui_attributes_window(object):
         for i, item in enumerate(items):
             self.frames.append(Ui_attribute_widget(self.central_widget, item[0], item[1]))
             self.frames[-1].setObjectName('frame%d'%i)
-            self.frames[-1].setMinimumSize(QtCore.QSize(331, 50))
-            self.frames[-1].setMaximumSize(QtCore.QSize(331, 50))
+            self.frames[-1].setMinimumSize(QtCore.QSize(531, 50))
+            self.frames[-1].setMaximumSize(QtCore.QSize(531, 50))
             self.frames[-1].setFrameShape(QtGui.QFrame.StyledPanel)
             self.frames[-1].setFrameShadow(QtGui.QFrame.Raised)
             self.verticalLayout.addWidget(self.frames[-1])
         for i, item in enumerate(req_items):
             self.frames.append(Ui_fixed_attribute_widget(self.central_widget, item[0], item[1]))
             self.frames[-1].setObjectName('frame%d'%i)
-            self.frames[-1].setMinimumSize(QtCore.QSize(331, 50))
-            self.frames[-1].setMaximumSize(QtCore.QSize(331, 50))
+            self.frames[-1].setMinimumSize(QtCore.QSize(531, 50))
+            self.frames[-1].setMaximumSize(QtCore.QSize(531, 50))
             self.frames[-1].setFrameShape(QtGui.QFrame.StyledPanel)
             self.frames[-1].setFrameShadow(QtGui.QFrame.Raised)
             self.verticalLayout.addWidget(self.frames[-1])

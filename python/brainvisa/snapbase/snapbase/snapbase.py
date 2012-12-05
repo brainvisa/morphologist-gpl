@@ -135,13 +135,14 @@ class SnapBase():
         elif d == 'S': res = [s*voxel_size[0],0,0,0]
         return res
 
-    def __init__(self, preferences):
+    def __init__(self, preferences = None):
         self.aobjects = {}
         self.ref = None
         self.sulci_hierarchy = None
         self.fibers_hierarchy = None
         self.preferences = preferences
         self.fusion = None
+        self.options = {}
         self.view_quaternions = {'left' : [0.5, 0.5, 0.5, 0.5],
                             'right' : [0.5, -0.5, -0.5, 0.5],
                              'back left' : [-0.24415700000000001,
@@ -152,10 +153,10 @@ class SnapBase():
                                            -0.66650600000000004,
                                            -0.66561400000000004,
                                            0.237873],
-			    'left bottom' : [-0.65499700000000005,
-			                     -0.65245200000000003,
-					     -0.26732800000000001,
-					     -0.2717],
+                            'left bottom' : [-0.65499700000000005,
+                                 -0.65245200000000003,
+                                 -0.26732800000000001,
+                                 -0.2717],
                             'right bottom' : [0.653748,
                                              -0.65495999999999999,
                                              -0.26623000000000002,
@@ -175,128 +176,32 @@ class SnapBase():
                             'front top right' : [-0.42310900000000001,
                                                 0.17835200000000001,
                                                 0.33598600000000001,
-                                                -0.82235800000000003]}
-
-    def get_list_diskitems(self, db, verbose = True):
-        '''
-        Returns a dict indexed by (subject, protocol), each item being a
-        dict of relevant listitems referred to by their datatype.
-
-        dictdata[('TOTO', 'Bordeaux')] = {'mesh': mesh_diskitem, ...}
-        '''
-
-        # Checking for ambiguity between diskitems (acquisition, ...)
-        import string
-
-        type_transl = {'Split Brain' : 'Split Brain Mask',
-                       'SPM BrainVisa Comparison' : 'Raw T1 MRI',
-                       'Vitamin Tablet Snapshots' : 'Raw T1 MRI',
-                       'Grey White Mask' : 'Raw T1 MRI'}
-        if self.preferences.has_key('side') and self.preferences.has_key('mesh'):
-            type_transl.update({'Cortical Thickness' : '%s Hemisphere %sMesh'%(string.capitalize(self.preferences['side']), {'hemi' : '', 'white' : 'White '}[self.preferences['mesh']])})
-
-        if type_transl.has_key(self.data_type):
-            id_type = type_transl[self.data_type]
-        else:
-            id_type = self.data_type
-
-        options = {'_type' : id_type}
-
-        self.db = db
-        self.options = options
-        solved_ambiguity, attributes = self.check_diskitems_ambiguity(db, options)
-
-        if not solved_ambiguity:
-            return []
-        if verbose :
-            print 'attributes : ', attributes
-
-        return self.get_dictdata(attributes, verbose=False)
-
-    def check_diskitems_ambiguity(self, db, options, verbose=True):
-        if verbose:
-            print 'checking ambiguity %s' % options
-
+                                                -0.82235800000000003],
+                            'A' : [1, 0, 0, 0],
+                            'C' : [0.70710700000000004, 0, 0, 0.70710700000000004],
+                            'S' : [0.5, 0.5, 0.5, 0.5]}
         from PyQt4 import QtGui, QtCore, Qt
-        dialog = QtGui.QDialog(None)
-        import interface
 
-        default_att = self.preferences['default_attributes']
-        req_att = self.preferences['required_attributes']
-        items = []
 
-        opt = {}
-        opt.update(req_att)
+        # Defining default quaternions for later
+        self.slice_quaternions = {'A' : [0, 0, 0, 1],
+                             'C' : [0.70710700000000004, 0, 0, 0.70710700000000004],
+                             'S' : [-0.5, -0.5, -0.5, 0.5]}
 
-        # req_att is a various set of attributes that the user wants constrained
-        # req_att_2 is the subset of these attributes that are found in a current set of diskitems
-        req_att_2 = []
 
-        for key, value in options.items():
-            if value != '*':
-                opt[key] = value
-
-        print opt
-        diskitems = [dsk for dsk in db.findDiskItems(**opt)]
-        print diskitems
-        res = 0
-        # (If no diskitems then error)
-        if len(diskitems) > 1 :
-            # Consider only attributes that are common to all diskitems
-            att = set(diskitems[0].attributes().keys())
-            for dsk in diskitems:
-                att = att.intersection(set(dsk.attributes().keys()))
-
-            # Select attributes taking string-based values
-            attributes = {}
-            for each in att:
-                if basestring in type(diskitems[0].get(each)).mro():
-                    attributes[each] = set()
-            # List all existing possible values for these attributes
-            for each in attributes.keys():
-                for dsk in diskitems:
-                    attributes[each].add(dsk.get(each))
-                if req_att.has_key(each):
-                    req_att_2.append((each, req_att[each]))
-
-            #print "attributs communs et str:", attributes
-            for att in default_att:
-                try:
-                    items.append((att, list(attributes[att])))
-                except KeyError:
-                    for dsk in diskitems:
-                        if not att in dsk.attributes():
-                            print dsk.fileName(), 'misses attribute', att
-                    raise
-
-#            # display other attributes ?
-#            for each in attributes.keys():
-#                if len(attributes[each]) > 1 and not each in default_att:
-#                    print "ATTR", each, len(attributes[each])
-#                    items.append((each, list(attributes[each])))
-
-            # Running the GUI
-            gui = interface.Ui_attributes_window()
-            gui.setupUi(dialog, items, req_att_2)
-            gui.connect_signals(self)
-            gui.change_event()
-            res = dialog.exec_()
-        elif len(diskitems) == 1:
-            res = -1
-            att_res = {}
-            for att in diskitems[0].attributes():
-                att_res[att] = diskitems[0].get(att)
-            print res, att_res
-
-        # Retrieving selected attributes and returning the result
-        if res == 1:
-            att_res = gui.get_attributes()
-            print res, att_res
-            return True, att_res
-        elif res == -1:
-            return True, att_res
+        # Do we have to run QApplication ?
+        verbose = False
+        if Qt.qApp.startingUp():
+            if verbose :
+                print 'Running QApp'
+            self.qt_app = Qt.QApplication( sys.argv )
+            self.runqt = True
         else:
-            return False, options
+            if verbose:
+                print 'Not running QApp'
+            self.runqt = False
+
+
 
 
     def get_slices_of_interest(self, data):
@@ -388,12 +293,28 @@ class SnapBase():
                        'Split Brain' : 'split',
                        'SPM BrainVisa Comparison' : 'spmVSmorpho',
                        'Raw T1 MRI' : 'raw',
-                       'Vitamin Tablet Snapshots' : 'tablet'}
+                       'Vitamin Tablet Snapshots' : 'tablet',
+                       #===============
+                       'RawSnapBase' : 'raw',
+                       'TabletSnapBase' : 'tablet',
+                       'SplitBrainSnapBase' :'split',
+                       'BrainMaskSnapBase' : 'brain',
+                       'GreyWhiteSnapBase' : 'GW'}
+        if self.preferences.has_key('side'):
+                id_translat.update({
+                       'HemisphereMeshSnapBase' : 'hemi_%s'%string.upper(self.preferences['side'][0]),
+                       'WhiteMeshSnapBase' : 'white%s'%string.upper(self.preferences['side'][0])})
+        if self.preferences.has_key('side') and self.preferences.has_key('tex_type'):
+                id_translat.update({
+                       'HemiThicknessSnapBase' : 'hemi_%s_%s'%(self.preferences['tex_type'], string.upper(self.preferences['side'][0])),
+                       'WhiteThicknessSnapBase' : 'white_%s_%s'%(self.preferences['tex_type'], string.upper(self.preferences['side'][0])),
+                       })
 
         if self.preferences.has_key('singlemulti'):
             id_translat.update(
-                {'Left Cortical folds graph' : 'sulci_L_%s'%self.preferences['singlemulti'],
-                 'Right Cortical folds graph' : 'sulci_R_%s'%self.preferences['singlemulti']} )
+                {'SulciSingleViewSnapBase' : 'sulci_%s_%s'%(string.upper(self.preferences['side'][0]),self.preferences['singlemulti'])})
+            id_translat.update(
+                {'SulciMultiViewSnapBase' : 'sulci_%s_%s'%(string.upper(self.preferences['side'][0]),self.preferences['singlemulti'])})
         if self.preferences.has_key('side') and self.preferences.has_key('mesh'):
             id_translat.update({'Cortical Thickness' : 'thickness_%s_%s'%(string.upper(self.preferences['side'][0]), self.preferences['mesh'])})
 
@@ -403,10 +324,10 @@ class SnapBase():
 
         assert(os.path.exists(output_dir))
 
-        if id_translat.has_key(self.data_type):
-            id_type = id_translat[self.data_type]
+        if id_translat.has_key(self.__class__.__name__):
+            id_type = id_translat[self.__class__.__name__]
         else:
-            id_type = string.replace(self.data_type, ' ', '_').lower()
+            id_type = string.replace(self.__class__.__name__, ' ', '_').lower()
 
         output_filename = '%s%s'%(filename_root, id_type)
 
@@ -419,42 +340,31 @@ class SnapBase():
 
         return outfile_path
 
-    def snap_base(self, database, main_window = None, qt_app = None):
+    def snap_base(self, main_window = None, qt_app = None, dictdata = None, verbose = False):
 
         import anatomist.direct.api as ana
         from PyQt4 import QtGui, QtCore, Qt
         from PIL import Image, ImageDraw, ImageFont
         from brainvisa.data import neuroHierarchy
+        from brainvisa.data import diskItemBrowser as dib
 
         font = Qt.QFont('Times', 40)
 
-        # Defining default quaternions for later
-        slice_quaternions = {'A' : [0, 0, 0, 1],
-                             'C' : [0.70710700000000004, 0, 0, 0.70710700000000004],
-                             'S' : [-0.5, -0.5, -0.5, 0.5]}
-        view_quaternions = {'A' : [1, 0, 0, 0],
-                            'C' : [0.70710700000000004, 0, 0, 0.70710700000000004],
-                            'S' : [0.5, 0.5, 0.5, 0.5]}
-
-
-        # Do we have to run QApplication ?
-        if Qt.qApp.startingUp():
-            print 'Running QApp'
-            qt_app = Qt.QApplication( sys.argv )
-            runqt = True
-        else:
-            print 'Not running QApp'
-            runqt = False
-
+        #===============================================
         # Get a list of dict containing needed files
 
-        dictdata = self.get_list_diskitems(database)
+        if dictdata == None:
+            #d = dib.DiskItemBrowser( neuroHierarchy.databases, required = {'_database': self.db.directory, '_type' : 'Raw T1 MRI'},
+            dictdata = self.get_list_diskitems()
+        if verbose:
+            print 'dictdata', dictdata
         print 'dictdata', dictdata
 
         # If no dictdata (e.g. closing the attributes window), then nothing happens
         if len(dictdata) == 0:
             return
 
+        #===============================================
         # Create Anatomist window
         a = ana.Anatomist('-b')
         if main_window is None:
@@ -467,14 +377,19 @@ class SnapBase():
         central_layout.addWidget(block)
 
         self.ref = a.createReferential()
+        #===============================================
+        # Load hierarchies
         import os, sys
-	from brainvisa.configuration import neuroConfig
-	sulci_hierarchy_path = os.path.join(neuroConfig.getSharePath(), neuroConfig.brainvisa_share.config.share, 'nomenclature/hierarchy/sulcal_root_colors.hie')
+        from brainvisa.configuration import neuroConfig
+        sulci_hierarchy_path = os.path.join(neuroConfig.getSharePath(), neuroConfig.brainvisa_share.config.share, 'nomenclature/hierarchy/sulcal_root_colors.hie')
         fibers_hierarchy_path = '/neurospin/lnao/Panabase/fibres/pamela/atlas_faisceaux/faisceaux_longs.hie'
+
         from soma import aims
         self.sulci_hierarchy = a.toAObject(aims.read(sulci_hierarchy_path))
         self.fibers_hierarchy = a.toAObject(aims.read(fibers_hierarchy_path))
 
+        #==================================================
+        # Creates Anatomist Window
         c = ana.cpp.CreateWindowCommand('3D', -1, None, [], 1, block,
             2, 0, { '__syntax__' : 'dictionary',  'no_decoration' : 1} )
         a.execute(c)
@@ -487,22 +402,22 @@ class SnapBase():
         a.execute( 'WindowConfig', windows=[w], cursor_visibility=0,
                             light={ 'background' : [ 0., 0., 0., 1. ] } )
 
-        if runqt:
-            qt_app.processEvents()
+        if self.runqt:
+            self.qt_app.processEvents()
 
-        print 'Rendering %i subjects'%len(dictdata.items())
+        #==================================================
+        # Processes dictdatas and runs the snapshot iteration
+        print 'Rendering %i items'%len(dictdata)
         output_files = []
 
-        protocols = list(set([each[1] for each in dictdata.keys()]))
+        protocols = list(set([each[0][1] for each in dictdata]))
         colors_centers = self.__get_disinct_colors(protocols)
 
         # Iterating on subjects and data
-        for (subject, protocol), diskitems in dictdata.items():
-
+        for (subject, protocol), diskitems in dictdata:
             main_window.statusBar().showMessage('%s %s'%(subject, protocol))
             # Reading data and converting to Anatomist object format
             data = self.read_data(diskitems)
-
             try:
                 # Defining slices of interest
                 views = self.get_slices_of_interest(data)
@@ -514,14 +429,13 @@ class SnapBase():
             window = self.set_viewer(data, w)
 
             qgl = w.view().qglWidget()
-
             # Select the view and grab picture (views contains either slices or quaternions)
             for d in views.keys():
                 views_images = []
                 if d in ['A','C','S']:
                     # Setting the slice plane
-                    window.camera(slice_quaternion = slice_quaternions[d],
-                                  view_quaternion = view_quaternions[d],
+                    window.camera(slice_quaternion = self.slice_quaternions[d],
+                                  view_quaternion = self.view_quaternions[d],
                                   zoom = 0.818)
 
                     for s, slice_position in views[d]:
@@ -534,7 +448,7 @@ class SnapBase():
                         snapshot = get_snapshot(qgl)
 
                         # Rendering slice number
-                        if self.data_type in ['Grey White Mask', 'Split Brain', 'SPM BrainVisa Comparison', 'Raw T1 MRI', 'Vitamin Tablet Snapshots']:
+                        if self.__class__.__name__ in ['RawSnapBase', 'Grey White Mask', 'Split Brain', 'SPM BrainVisa Comparison', 'Raw T1 MRI', 'Vitamin Tablet Snapshots']:
                             data = snapshot.convert('RGBA').tostring('raw', 'BGRA')
                             qim = Qt.QImage(data, snapshot.size[0], snapshot.size[1], Qt.QImage.Format_ARGB32)
                             pix = Qt.QPixmap.fromImage(qim)
@@ -591,9 +505,23 @@ class SnapBase():
                        'Raw T1 MRI' : 'mri',
                        'Vitamin Tablet Snapshots' : 'mri',
                        'T1 Brain Mask': 'mri',
-                       'Cortical Thickness': 'mesh'}
+                       'Cortical Thickness': 'mesh',
+                       'FreesurferThicknessType' :'mesh',
+                       #==========
+                       'RawSnapBase': 'mri',
+                       'TabletSnapBase' : 'mri',
+                       'SplitBrainSnapBase' : 'mri',
+                       'BrainMaskSnapBase' : 'mri',
+                       'GreyWhiteSnapBase' : 'mri',
+                       'WhiteMeshSnapBase' : 'mesh',
+                       'HemisphereMeshSnapBase' : 'mesh',
+                       'SulciSingleViewSnapBase' : 'mri',
+                       'SulciMultiViewSnapBase' : 'mri'}
 
-                acquisition = diskitems[acquisition_key[self.data_type]].get('acquisition')
+                if self.__class__.__name__ not in ['HemiThicknessSnapBase', 'WhiteThicknessSnapBase']:
+                    acquisition = diskitems[acquisition_key[self.__class__.__name__]].get('acquisition')
+                else:
+                    acquisition = 'FS'
                 attributes.append(acquisition)
                 if d != '3D':
                     attributes.append(d)

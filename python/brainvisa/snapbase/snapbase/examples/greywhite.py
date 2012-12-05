@@ -4,55 +4,33 @@ from brainvisa.snapbase.snapbase import SnapBase
 
 class GreyWhiteSnapBase(SnapBase):
 
-    def __init__(self, output_path):
-        SnapBase.__init__(self, output_path)
-        self.data_type = 'Grey White Mask'
+    def __init__(self, preferences):
+        SnapBase.__init__(self, preferences)
+#        self.data_type = 'Grey White Mask'
 
-    def get_dictdata(self, selected_attributes, verbose=True):
+    def get_list_diskitems(self, verbose = True):
 
-        import neuroProcesses
-        from brainvisa.data import neuroHierarchy
+        from brainvisa.snapbase.snapbase.diskItemBrowser import SnapBaseItemBrowser
 
-        options = {}
-        options.update(self.options)
-        options.update(selected_attributes)
-        print 'opt:', options
+        dictdata = []
+        import neuroHierarchy, neuroProcesses
 
-        dictdata = {}
-
-        for key, value in options.items():
-            if value == '*':
-                options.pop(key)
-
-        # List of subjects according to resulting options
-        subjects_id = set([subject for subject in\
-            self.db.findAttributes(('subject', 'protocol'), {}, **options )])
-
-        for subject, protocol in subjects_id:
-            # Retrieves MRIs
-            options.update({'_type' : 'T1 MRI Bias Corrected',
-                            'subject' : subject,
-                            'protocol' : protocol})
-            mris = [mri for mri in self.db.findDiskItems(**options)]
-
-            if len(mris) == 1:
-                left_rdi = neuroHierarchy.ReadDiskItem('Left %s'%self.data_type, neuroProcesses.getAllFormats())
-                right_rdi = neuroHierarchy.ReadDiskItem('Right %s'%self.data_type, neuroProcesses.getAllFormats())
-                left_mask = left_rdi.findValue(mris[0])
-                right_mask = right_rdi.findValue(mris[0])
-
-                # Here according to given options, ambiguity should be resolved.
-                # If more than one mri, then some attributes are probably misgiven.
-                if left_mask and right_mask:
-                    dictdata[(subject, protocol)] = {'type' : self.data_type,
-                        'mri' : mris[0],
-                        'left mask' : left_mask,
-                        'right mask' : right_mask}
-            else:
-                if verbose:
-                    print '(subject %s, protocol %s) error in retrieving diskitems'\
-                        %(subject, protocol)
+        id_type = 'T1 MRI Bias Corrected'
+        d = SnapBaseItemBrowser(self.db, multiple=True, selection={'_database': self.db.directory}, required={'_type': id_type})
+        res = d.exec_()
+        for each in d.getValues():
+            left_rdi = neuroHierarchy.ReadDiskItem('Left Grey White Mask', neuroProcesses.getAllFormats())
+            right_rdi = neuroHierarchy.ReadDiskItem('Right Grey White Mask', neuroProcesses.getAllFormats())
+            left_mask = left_rdi.findValue(each)
+            right_mask = right_rdi.findValue(each)
+            if left_mask and right_mask:
+                dictdata.append(((each.get('subject'), each.get('protocol')),
+                   {'type' : 'Grey White Mask',
+                    'mri' : each,
+                    'left mask' : left_mask,
+                    'right mask': right_mask}) )
         return dictdata
+
 
     def get_slices_of_interest(self, data):
 

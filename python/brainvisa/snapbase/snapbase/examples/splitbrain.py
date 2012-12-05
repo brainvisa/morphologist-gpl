@@ -6,50 +6,25 @@ class SplitBrainSnapBase(SnapBase):
 
     def __init__(self, preferences):
         SnapBase.__init__(self, preferences)
-        self.data_type = 'Split Brain'
+#        self.data_type = 'Split Brain'
 
-    def get_dictdata(self, selected_attributes, verbose = True):
+    def get_list_diskitems(self, verbose = True):
 
-        import neuroProcesses
-        from brainvisa.data import neuroHierarchy
+        from brainvisa.snapbase.snapbase.diskItemBrowser import SnapBaseItemBrowser
 
-        options = {}
-        options.update(self.options)
-        options.update(selected_attributes)
-        print 'opt:', options
+        dictdata = []
+        import neuroHierarchy, neuroProcesses
 
-        dictdata = {}
-
-        for key, value in options.items():
-            if value == '*':
-                options.pop(key)
-
-        # List of subjects according to resulting options
-        subjects_id = set([subject for subject in\
-            self.db.findAttributes(('subject', 'protocol'), {}, **options )])
-
-        for subject, protocol in subjects_id:
-            # Retrieves MRIs
-            options.update({'_type' : 'T1 MRI Bias Corrected',
-                            'subject' : subject,
-                            'protocol' : protocol})
-            mris = [mri for mri in self.db.findDiskItems(**options)]
-
-            if len(mris) == 1:
-                rdi = neuroHierarchy.ReadDiskItem('Split Brain Mask', neuroProcesses.getAllFormats())
-                splitbrain = rdi.findValue(mris[0])
-
-                # Here according to given options, ambiguity should be resolved.
-                # If more than one mri, then some attributes are probably misgiven.
-                if splitbrain:
-                    dictdata[(subject, protocol)] = {'type' : self.data_type,
-                        'mri' : mris[0],
-                        'splitbrain' : splitbrain}
-            else:
-                if verbose:
-                    print '(subject %s, protocol %s) error in retrieving diskitems'\
-                        %(subject, protocol)
-
+        id_type = 'Split Brain Mask'
+        d = SnapBaseItemBrowser(self.db, multiple=True, selection={'_database': self.db.directory}, required={'_type': id_type})
+        res = d.exec_()
+        for each in d.getValues():
+            rdi = neuroHierarchy.ReadDiskItem('T1 MRI Bias Corrected', neuroProcesses.getAllFormats())
+            mri = rdi.findValue(each)
+            dictdata.append(((each.get('subject'), each.get('protocol')),
+               {'type' : 'Split Brain',
+                'mri' : mri,
+                'splitbrain' : each}) )
         return dictdata
 
     def get_slices_of_interest(self, data):
@@ -116,6 +91,28 @@ class BrainMaskSnapBase(SnapBase):
     def __init__(self, preferences):
         SnapBase.__init__(self, preferences)
         self.data_type = 'T1 Brain Mask'
+
+
+    def get_list_diskitems(self, verbose = True):
+
+        from brainvisa.snapbase.snapbase.diskItemBrowser import SnapBaseItemBrowser
+
+        dictdata = []
+        import neuroHierarchy, neuroProcesses
+
+        id_type = 'T1 Brain Mask'
+        d = SnapBaseItemBrowser(self.db, multiple=True, selection={'_database': self.db.directory}, required={'_type': id_type})
+        res = d.exec_()
+        for each in d.getValues():
+            rdi = neuroHierarchy.ReadDiskItem('T1 MRI Bias Corrected', neuroProcesses.getAllFormats())
+            mri = rdi.findValue(each)
+            dictdata.append(((each.get('subject'), each.get('protocol')),
+               {'type' : 'T1 Brain Mask',
+                'mri' : mri,
+                'brainmask' : each}) )
+        return dictdata
+
+
 
     def get_dictdata(self, selected_attributes, verbose = True):
 

@@ -4,43 +4,20 @@ from brainvisa.snapbase.snapbase import SnapBase
 
 class RawSnapBase(SnapBase):
 
-    def __init__(self, output_path):
-        SnapBase.__init__(self, output_path)
-        self.data_type = 'Raw T1 MRI'
+    def __init__(self, preferences):
+        SnapBase.__init__(self, preferences)
+#        self.data_type = 'Raw T1 MRI'
 
-    def get_dictdata(self, selected_attributes, verbose=True):
+    def get_list_diskitems(self, verbose=True):
 
-        options = {}
-        options.update(self.options)
-        options.update(selected_attributes)
-        print 'opt:', options
+        from brainvisa.snapbase.snapbase.diskItemBrowser import SnapBaseItemBrowser
 
-        dictdata = {}
-
-        for key, value in options.items():
-            if value == '*':
-                options.pop(key)
-
-        # List of subjects according to resulting options
-        subjects_id = set([subject for subject in\
-            self.db.findAttributes(('subject', 'protocol'), {}, **options )])
-
-        for subject, protocol in subjects_id:
-            # Retrieves MRIs
-            options.update({'_type' : 'Raw T1 MRI',
-                            'subject' : subject,
-                            'protocol' : protocol,
-                            'normalized' : 'no'})
-            mris = [mri for mri in self.db.findDiskItems(**options)]
-
-            if len(mris) == 1:
-                dictdata[(subject, protocol)] = {'type' : 'Raw T1 MRI',
-                    'mri' : mris[0]}
-            else:
-                if verbose:
-                    print '(subject %s, protocol %s) error in retrieving diskitems'\
-                        %(subject, protocol)
-
+        id_type = 'Raw T1 MRI'
+        d = SnapBaseItemBrowser(self.db, multiple=True, selection={'_database': self.db.directory}, required={'_type': id_type})
+        res = d.exec_()
+        dictdata = []
+        for each in d.getValues():
+            dictdata.append(((each.get('subject'), each.get('protocol')), {'type' : 'Raw T1 MRI', 'mri' : each}) )
         return dictdata
 
     def get_slices_of_interest(self, data):
@@ -101,8 +78,8 @@ class RawSnapBase(SnapBase):
 
 class TabletSnapBase(RawSnapBase):
 
-    def __init__(self, output_path):
-        SnapBase.__init__(self, output_path)
+    def __init__(self, preferences):
+        SnapBase.__init__(self, preferences)
         self.data_type = 'Vitamin Tablet Snapshots'
 
     def get_slices_of_interest(self, data):

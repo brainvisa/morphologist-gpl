@@ -3,8 +3,8 @@ from brainvisa.snapbase.snapbase import SnapBase
 
 class FibersSnapBase(SnapBase):
 
-    def __init__(self, output_path):
-        SnapBase.__init__(self, output_path)
+    def __init__(self, preferences):
+        SnapBase.__init__(self, preferences)
         self.data_type = 'Labelled Fiber Bundles'
 
 

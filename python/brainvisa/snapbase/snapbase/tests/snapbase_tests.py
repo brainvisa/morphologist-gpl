@@ -38,7 +38,8 @@ if True:
 
     # LeftWhiteMeshSnapBase
     snap = mesh.LeftWhiteMeshSnapBase(preferences)
-    snap.snap_base(database, main_window = None, qt_app = qt_app )
+    snap.db = database
+    snap.snap_base(main_window = None, qt_app = qt_app )
 
     output_dir = os.path.split(preferences['output_path'])[0]
     print preferences['output_files']
@@ -47,7 +48,8 @@ if True:
 
     # RightWhiteMeshSnapBase
     snap = mesh.RightWhiteMeshSnapBase(preferences)
-    snap.snap_base(database, main_window = None, qt_app = qt_app )
+    snap.db = database
+    snap.snap_base(main_window = None, qt_app = qt_app )
 
     output_dir = os.path.split(preferences['output_path'])[0]
     print preferences['output_files']
@@ -56,7 +58,8 @@ if True:
 
     # LeftHemisphereMeshSnapBase
     snap = mesh.LeftHemisphereMeshSnapBase(preferences)
-    snap.snap_base(database, main_window = None, qt_app = qt_app )
+    snap.db = database
+    snap.snap_base(main_window = None, qt_app = qt_app )
 
     output_dir = os.path.split(preferences['output_path'])[0]
     print preferences['output_files']
@@ -65,7 +68,8 @@ if True:
 
     # RightHemisphereMeshSnapBase
     snap = mesh.RightHemisphereMeshSnapBase(preferences)
-    snap.snap_base(database, main_window = None, qt_app = qt_app )
+    snap.db = database
+    snap.snap_base(main_window = None, qt_app = qt_app )
 
     output_dir = os.path.split(preferences['output_path'])[0]
     print preferences['output_files']
@@ -74,7 +78,8 @@ if True:
 
     # RawSnapBase
     snap = raw.RawSnapBase(preferences)
-    snap.snap_base(database, main_window = None, qt_app = qt_app )
+    snap.db = database
+    snap.snap_base(main_window = None, qt_app = qt_app )
 
     output_dir = os.path.split(preferences['output_path'])[0]
     print preferences['output_files']
@@ -83,7 +88,8 @@ if True:
 
     # TabletSnapBase
     snap = raw.TabletSnapBase(preferences)
-    snap.snap_base(database, main_window = None, qt_app = qt_app )
+    snap.db = database
+    snap.snap_base(main_window = None, qt_app = qt_app )
 
     output_dir = os.path.split(preferences['output_path'])[0]
     print preferences['output_files']
@@ -92,7 +98,8 @@ if True:
 
     # BrainMaskSnapBase
     snap = splitbrain.BrainMaskSnapBase(preferences)
-    snap.snap_base(database, main_window = None, qt_app = qt_app )
+    snap.db = database
+    snap.snap_base(main_window = None, qt_app = qt_app )
 
     output_dir = os.path.split(preferences['output_path'])[0]
     print preferences['output_files']
@@ -101,7 +108,8 @@ if True:
 
     # GreyWhiteSnapBase
     snap = greywhite.GreyWhiteSnapBase(preferences)
-    snap.snap_base(database, main_window = None, qt_app = qt_app )
+    snap.db = database
+    snap.snap_base(main_window = None, qt_app = qt_app )
 
     output_dir = os.path.split(preferences['output_path'])[0]
     print preferences['output_files']
@@ -110,7 +118,8 @@ if True:
 
     # LeftSulciSingleViewSnapBase
     snap = sulci.LeftSulciSingleViewSnapBase(preferences)
-    snap.snap_base(database, main_window = None, qt_app = qt_app )
+    snap.db = database
+    snap.snap_base(main_window = None, qt_app = qt_app )
 
     output_dir = os.path.split(preferences['output_path'])[0]
     print preferences['output_files']
@@ -119,7 +128,8 @@ if True:
 
     # RightSulciSingleViewSnapBase
     snap = sulci.RightSulciSingleViewSnapBase(preferences)
-    snap.snap_base(database, main_window = None, qt_app = qt_app )
+    snap.db = database
+    snap.snap_base(main_window = None, qt_app = qt_app )
 
     output_dir = os.path.split(preferences['output_path'])[0]
     print preferences['output_files']
@@ -129,7 +139,8 @@ if True:
     preferences = main.load_preferences({})
     # LeftSulciMultiViewSnapBase
     snap = sulci.LeftSulciMultiViewSnapBase(preferences)
-    snap.snap_base(database, main_window = None, qt_app = qt_app )
+    snap.db = database
+    snap.snap_base(main_window = None, qt_app = qt_app )
 
     output_dir = os.path.split(preferences['output_path'])[0]
     print preferences['output_files']
@@ -138,7 +149,8 @@ if True:
 
     # RightSulciMultiViewSnapBase
     snap = sulci.RightSulciMultiViewSnapBase(preferences)
-    snap.snap_base(database, main_window = None, qt_app = qt_app )
+    snap.db = database
+    snap.snap_base(main_window = None, qt_app = qt_app )
 
     output_dir = os.path.split(preferences['output_path'])[0]
     print preferences['output_files']

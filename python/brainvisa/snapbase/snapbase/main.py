@@ -6,7 +6,7 @@ if not sys.modules.has_key('brainvisa.axon'):
 
 from brainvisa.data import neuroHierarchy
 from brainvisa.configuration import neuroConfig
-
+from brainvisa.data.sqlFSODatabase import SQLDatabase as SQLdb
 from PyQt4 import QtGui, Qt, QtCore
 
 main_window = None
@@ -33,8 +33,6 @@ class HelpWindow(QtGui.QDialog):
         from PyQt4 import QtWebKit
         self.qte2 = QtWebKit.QWebView(self)
         self.qte2.load(Qt.QUrl(help_file))
-#        self.qte = QtGui.QPushButton("bonjour", self)
-#        self.qte.setMinimumSize(QtCore.QSize(200,231))
         self.setMinimumSize(QtCore.QSize(200,231))
         self.layout = QtGui.QVBoxLayout(self)
         self.layout.addWidget(self.qte2)
@@ -42,7 +40,6 @@ class HelpWindow(QtGui.QDialog):
 
 def display_help_msgbox():
     global gui, main_window
-    #gui.helpbox.parent.setEnabled(False)
     gui.helpbox = HelpWindow(main_window)
     gui.helpbox.setupUi(main_window)
     gui.helpbox.show()
@@ -53,19 +50,22 @@ def grey_white_snap_base():
     global main_window, qt_app, database, preferences
     from examples import greywhite
     snap = greywhite.GreyWhiteSnapBase(preferences)
-    snap.snap_base(database, main_window = main_window, qt_app = qt_app )
+    snap.db = database
+    snap.snap_base(main_window = main_window, qt_app = qt_app )
 
 def splitbrain_snap_base():
     global main_window, qt_app, database, preferences
     from examples import splitbrain
     snap = splitbrain.SplitBrainSnapBase(preferences)
-    snap.snap_base(database, main_window = main_window, qt_app = qt_app )
+    snap.db = database
+    snap.snap_base(main_window = main_window, qt_app = qt_app )
 
 def brainmask_snap_base():
     global main_window, qt_app, database, preferences
     from examples import splitbrain
     snap = splitbrain.BrainMaskSnapBase(preferences)
-    snap.snap_base(database, main_window = main_window, qt_app = qt_app )
+    snap.db = database
+    snap.snap_base(main_window = main_window, qt_app = qt_app )
 
 def comparison_snap_base():
     global main_window, qt_app, database, preferences
@@ -108,59 +108,32 @@ def white_mesh_snap_base():
     global main_window, qt_app, database, preferences
     from examples import mesh
 
-    item, ok = Qt.QInputDialog.getItem(None,
-            'Which hemisphere',
-            'Left of right hemisphere',
-            ['left','right'], 0, False)
-    if ok:
-        if item == 'left':
-            snap = mesh.LeftWhiteMeshSnapBase(preferences)
-        elif item == 'right':
-            snap = mesh.RightWhiteMeshSnapBase(preferences)
-        snap.db = database
-        snap.snap_base(main_window = main_window, qt_app = qt_app )
+    snap = mesh.WhiteMeshSnapBase(preferences)
+    snap.db = database
+    snap.snap_base(main_window = main_window, qt_app = qt_app )
 
 def hemi_snap_base():
     global main_window, qt_app, database, preferences
     from examples import mesh
 
-    item, ok = Qt.QInputDialog.getItem(None,
-            'Which hemisphere',
-            'Left of right hemisphere',
-            ['left','right'], 0, False)
-    if ok:
-        if item == 'left':
-            snap = mesh.LeftHemisphereMeshSnapBase(preferences)
-        elif item == 'right':
-            snap = mesh.RightHemisphereMeshSnapBase(preferences)
-        snap.db = database
-        snap.snap_base(main_window = main_window, qt_app = qt_app )
+    snap = mesh.HemisphereMeshSnapBase(preferences)
+    snap.db = database
+    snap.snap_base(main_window = main_window, qt_app = qt_app )
 
 def thickness_snap_base():
     global main_window, qt_app, database, preferences
     from examples import mesh
 
-    side, ok = Qt.QInputDialog.getItem(None,
-            'Which hemisphere',
-            'Left of right hemisphere',
-            ['left','right'], 0, False)
-    if ok:
-        mesh_choice, ok_mesh = Qt.QInputDialog.getItem(None,
-                'Which mesh',
-                'Hemi or white',
-                ['hemi', 'white'], 0, False)
-        if ok_mesh:
-            if side == 'left':
-                if mesh_choice == 'hemi':
-                    snap = mesh.LeftHemiThicknessSnapBase(preferences)
-                elif mesh_choice == 'white':
-                    snap = mesh.LeftWhiteThicknessSnapBase(preferences)
-            elif side == 'right':
-                if mesh_choice == 'hemi':
-                    snap = mesh.RightHemiThicknessSnapBase(preferences)
-                elif mesh_choice == 'white':
-                    snap = mesh.RightWhiteThicknessSnapBase(preferences)
-    if ok and ok_mesh:
+    mesh_choice, ok_mesh = Qt.QInputDialog.getItem(None,
+            'Which mesh',
+            'Hemi or white',
+            ['hemi', 'white'], 0, False)
+    if ok_mesh:
+            if mesh_choice == 'hemi':
+                snap = mesh.HemiThicknessSnapBase(preferences)
+            elif mesh_choice == 'white':
+                snap = mesh.WhiteThicknessSnapBase(preferences)
+    if ok_mesh:
         snap.db = database
         snap.snap_base(main_window = main_window, qt_app = qt_app )
 
@@ -171,23 +144,10 @@ def sulci_snap_base():
         'single or multi view ?', 'single/multi',
         ['single', 'multi'], 0, False)
     if ok_choice:
-
-        item, ok = Qt.QInputDialog.getItem(None,
-                'Which hemisphere',
-                'Left of right hemisphere',
-                ['left','right'], 0, False)
-        if ok:
-            if item == 'left':
-                if choice == 'multi':
-                    snap = sulci.LeftSulciMultiViewSnapBase(preferences)
-                elif choice == 'single':
-                    snap = sulci.LeftSulciSingleViewSnapBase(preferences)
-            elif item == 'right':
-                if choice == 'multi':
-                    snap = sulci.RightSulciMultiViewSnapBase(preferences)
-                elif choice == 'single':
-                    snap = sulci.RightSulciSingleViewSnapBase(preferences)
-    if ok and ok_choice:
+        if choice == 'multi':
+            snap = sulci.SulciMultiViewSnapBase(preferences)
+        elif choice == 'single':
+            snap = sulci.SulciSingleViewSnapBase(preferences)
         snap.db = database
         snap.snap_base(main_window = main_window, qt_app = qt_app )
 
@@ -201,6 +161,14 @@ def fibers_snap_base():
     snap.snap_base(main_window = main_window, qt_app = qt_app )
 
 # Various functions
+class DummyDatabase(SQLdb):
+
+    def __init__(self, db):
+        SQLdb.__init__(self, db.sqlDatabaseFile, db.directory)
+        return None
+
+    def database(self, name):
+        return self
 
 def select_db(item, verbose=True):
     '''
@@ -210,7 +178,7 @@ def select_db(item, verbose=True):
     '''
 
     global database, preferences
-    database = neuroHierarchy.databases._databases.items()[item][1]
+    database = DummyDatabase(neuroHierarchy.databases._databases.items()[item][1])
     preferences['database_dir'] = database.directory
     print 'saving preferences'
     save_preferences(preferences)
@@ -293,7 +261,8 @@ def main():
         preferences = load_preferences(minf_dict[0])
         # Update combobox (same as select_db without confirmation popup)
         try:
-            database = neuroHierarchy.databases._databases[preferences['database_dir']]
+            #database = neuroHierarchy.databases._databases[preferences['database_dir']]
+            database = DummyDatabase(neuroHierarchy.databases._databases[preferences['database_dir']])
         except KeyError:
             if len(neuroHierarchy.databases._databases.items()) > 0:
                 preferences['database_dir'], database = neuroHierarchy.databases._databases.items()[0]
@@ -315,5 +284,7 @@ def main():
     main_window.show()
     qt_app.exec_()
     neuroHierarchy.databases.currentThreadCleanup()
+
+    # Possibly in order to let the Qt app be garbage-collected
     qt_app = None
     QtGui.qApp = None

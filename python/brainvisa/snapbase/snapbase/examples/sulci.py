@@ -6,6 +6,35 @@ class SulciSnapBase(SnapBase):
     def __init__(self, preferences):
         SnapBase.__init__(self, preferences)
 
+    def get_list_diskitems(self, verbose = True):
+
+        from brainvisa.snapbase.snapbase.diskItemBrowser import SnapBaseItemBrowser
+
+        dictdata = []
+        import neuroHierarchy, neuroProcesses
+
+        id_type = 'Cortical folds graph' #Hemisphere White Mesh'
+        req_att = {'_type' : id_type,
+                'labelled' : 'Yes',
+                'graph_version' : '3.1',
+                'manually_labelled' : 'No'}
+        d = SnapBaseItemBrowser(self.db, multiple=True, selection={'_database': self.db.directory}, required={'_type': id_type})
+        res = d.exec_()
+        for each in d.getValues():
+            rdi = neuroHierarchy.ReadDiskItem('Transform Raw T1 MRI to Talairach-AC/PC-Anatomist', neuroProcesses.getAllFormats())
+            transform = rdi.findValue(each)
+            rdi = neuroHierarchy.ReadDiskItem('Hemisphere White Mesh', neuroProcesses.getAllFormats())
+            mesh = rdi.findValue(each)
+            rdi = neuroHierarchy.ReadDiskItem('Raw T1 MRI', neuroProcesses.getAllFormats())
+            mri = rdi.findValue(each)
+            if mesh and transform and mri:
+              dictdata.append(((each.get('subject'), each.get('protocol')),
+                 {'type' : 'Hemisphere White Mesh',
+                  'mesh' : mesh,
+                  'mri' : mri,
+                  'folds graph' : each,
+                  'transform' : transform}) )
+        return dictdata
 
     def get_dictdata(self, selected_attributes, verbose=True):
 
@@ -73,6 +102,8 @@ class SulciSnapBase(SnapBase):
 
         folds_graph = aims.read(diskitems['folds graph'].fileName())
         mesh = aims.read(diskitems['mesh'].fileName())
+        side = diskitems['mesh'].get('side')
+        self.preferences['side'] = side
         return folds_graph, mesh, diskitems['transform'].fileName()
 
 
@@ -108,58 +139,31 @@ class SulciSnapBase(SnapBase):
         return window
 
 
-class LeftSulciSingleViewSnapBase(SulciSnapBase):
+class SulciSingleViewSnapBase(SulciSnapBase):
 
     def __init__(self, preferences):
         SulciSnapBase.__init__(self, preferences)
-        self.preferences['side'] = 'left'
         self.preferences['singlemulti'] = 'single'
         self.data_type = 'Left Cortical folds graph'
 
     def get_views_of_interest(self):
         views = {}
         views['3D'] =[self.view_quaternions[view_name]
-            for view_name in ['left']]
+            for view_name in [self.preferences['side']]]
         return views
 
-class RightSulciSingleViewSnapBase(SulciSnapBase):
+
+class SulciMultiViewSnapBase(SulciSnapBase):
 
     def __init__(self, preferences):
         SulciSnapBase.__init__(self, preferences)
-        self.preferences['side'] = 'right'
-        self.preferences['singlemulti'] = 'single'
-        self.data_type = 'Right Cortical folds graph'
-
-    def get_views_of_interest(self):
-        views = {}
-        views['3D'] =[self.view_quaternions[view_name]
-            for view_name in ['right']]
-        return views
-
-class LeftSulciMultiViewSnapBase(SulciSnapBase):
-
-    def __init__(self, preferences):
-        SulciSnapBase.__init__(self, preferences)
-        self.preferences['side'] = 'left'
         self.preferences['singlemulti'] = 'multi'
         self.data_type = 'Left Cortical folds graph'
 
     def get_views_of_interest(self):
         views = {}
         views['3D'] =[self.view_quaternions[view_name]
-            for view_name in ['right bottom', 'back left', 'front top left']]
+            for view_name in {'left':['right bottom', 'back left', 'front top left'],
+                               'right': ['left bottom', 'back right', 'front top right']}[self.preferences['side']]]
         return views
 
-class RightSulciMultiViewSnapBase(SulciSnapBase):
-
-    def __init__(self, preferences):
-        SulciSnapBase.__init__(self, preferences)
-        self.preferences['side'] = 'right'
-        self.preferences['singlemulti'] = 'multi'
-        self.data_type = 'Right Cortical folds graph'
-
-    def get_views_of_interest(self):
-        views = {}
-        views['3D'] =[self.view_quaternions[view_name]
-            for view_name in ['left bottom', 'back right', 'front top right']]
-        return views
