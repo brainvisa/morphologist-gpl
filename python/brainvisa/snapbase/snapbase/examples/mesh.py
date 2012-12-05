@@ -127,6 +127,7 @@ class ThicknessSnapBase(SnapBase):
         side = diskitems['mesh'].get('side')
         self.preferences['side'] = side
         tex_type = diskitems['tex'].type.name
+        self.preferences['tex_type'] = tex_type
 
         return mesh, tex, None, tex_type # diskitems['transform'].fileName()
 
