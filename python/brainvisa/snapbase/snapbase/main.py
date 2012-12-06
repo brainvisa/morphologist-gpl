@@ -22,7 +22,7 @@ class HelpWindow(QtGui.QDialog):
 
     def setupUi(self, parent):
         self.setObjectName('helpbox')
-        self.setWindowTitle('SnapBase v0.2 introduction')
+        self.setWindowTitle('SnapBase v0.3 introduction')
         self.resize(348, 571)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
