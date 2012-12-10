@@ -322,7 +322,8 @@ def execution( self, context ):
       context.system( 'AimsResample', '-i', self.T1mri.fullPath(),
                       '-o', self.T1mri.fullPath(), '-m', mfile.fullPath(),
                       '--sx', vs2[0], '--sy', vs2[1], '--sz', vs2[2],
-                      '--dx', dims4[0], '--dy', dims4[1], '--dz', dims4[2] )
+                      '--dx', dims4[0], '--dy', dims4[1], '--dz', dims4[2],
+                      '--type', 'nearest' )
 
       acmm = matrixMult( flipmat, ac )
       pcmm = matrixMult( flipmat, pc )
