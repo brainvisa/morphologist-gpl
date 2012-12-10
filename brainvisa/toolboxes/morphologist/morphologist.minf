@@ -47,6 +47,23 @@
             <s name="name">Morphologist</s>
             <s name="id">data management/import/morphologist</s>
           </f>
+          <f type="ProcessTree.Branch">
+            <l length="2" name="content">
+              <f type="ProcessTree.Leaf">
+                <true name="editable"/>
+                <s name="id">ImportT1MRI_Dicom</s>
+                <none name="name"/>
+              </f>
+              <f type="ProcessTree.Leaf">
+                <true name="editable"/>
+                <s name="id">ImportT1MRI</s>
+                <none name="name"/>
+              </f>
+            </l>
+            <true name="editable"/>
+            <s name="name">t1mri</s>
+            <s name="id">morphologist/import/t1mri</s>
+          </f>
         </l>
         <true name="editable"/>
         <s name="name">import</s>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<minf expander="minf_2.0">
+<d>
+  <d name="fr">
+    <xhtml name="short">Place une image IRM T1 dans la base de données de BrainVISA</xhtml>
+    <d name="parameters">
+      <xhtml name="input">image à placer dans la base</xhtml>
+      <xhtml name="input_spm_orientation"/>
+      <xhtml name="output">emplacement dans la base où placer l'image</xhtml>
+    </d>
+    <xhtml name="long">Cette brique permet de copier une image T1 initialement hors de la base pour la placer dans la base de données de BrainVISA.<br/>
+Pour cela, le paramètre <tt>input</tt> ne peut <em>pas</em> être rempli en utilisant l'icône "base de données" <img src="../../images/icons/database_read.png"/> puisque l'image n'est pas dans la base de données. Il faut utiliser le sélecteur de fichiers standard (icône "fichier" <img src="../../images/icons/browse_read.png"/>).<br/>
+Le paramètre en sortie, <tt>output</tt>, peut en revanche être choisi en utilisant la "base de données" <img src="../../images/icons/database_write.png"/> et c'est ce qui est d'ailleurs fortement conseillé.<br/>
+Comme l'emplacement dans la base de données n'existe pas encore, il va falloir le créer à l'aide de l'interface de choix de l'emplacement de sortie: par exemple dans une base organisée selon l'ontologie proposée avec BrainVISA, il faut définir un champ "protocole", et un champ "sujet" avant de pouvoir y placer une image anatomique. Tout ceci se fait depuis l'interface accessible par la "base de données" rouge <img src="../../images/icons/database_write.png"/>:<br/>
+<img src="../../images/importT1-1.png"/><br/>
+Il faut commencer par choisir la base de données concernée (si vous en avez plusieurs):<br/>
+<img src="../../images/importT1-2.png"/><br/>
+Il faut ensuite créer ou choisir un protocole:<br/>
+<img src="../../images/importT1-3.png"/><br/>
+Si le protocole voulu n'existe pas encore, il suffit de taper un nouveau nom dans le champ "protocole".<br/>
+On crée ou choisit ensuite le nouveau sujet de la même manière:<br/>
+<img src="../../images/importT1-4.png"/><br/>
+Il ne reste plus qu'à sélectionner l'image proposée à droite (ici <tt>morphee.ima</tt>) et à valider.<br/>
+Les champs nécessaires (protocole / sujet) peuvent dépendre de l'organisation de la base de données, qui peut varier d'un site à l'autre.<br/>
+<b>Note:</b> Si vous utilisez le mode <em>itération</em> pour importer plusieurs images, vous pouvez créer plusieurs éléments de sortie en même temps: typiquement, il suffit de taper plusieurs noms séparés par des espaces dans le champ "sujet". Vous pouvez alors sélectionner plusieurs localisations de sortie dans le panneau de sélection à droite:<br/>
+<img src="../../images/importT1-5.png"/><br/></xhtml>
+  </d>
+  <d name="en">
+    <xhtml name="short">Places a T1 MRI image in BrainVISA database</xhtml>
+    <d name="parameters">
+      <xhtml name="input">image to import in the database</xhtml>
+      <xhtml name="input_spm_orientation"/>
+      <xhtml name="output">where in the database the image should be placed</xhtml>
+    </d>
+    <xhtml name="long">This process enables to copy a T1 MRI image initially out of BrainVISA database to its location in the database.<br/>
+To do this, the parameter <tt>input</tt> <em>cannot</em> be set via the "database" icon <img src="../../images/icons/database_read.png"/> since the input image is not in the database. You must use the standard file browser <img src="../../images/icons/browse_read.png"/>.<br/>
+The <tt>output</tt> parameter can be set via the "database" icon <img src="../../images/icons/database_write.png"/>, and this is what is strongly encouraged to do.<br/>
+As the location in the database does not exist yet, it will have to be created using the user interface for the choice of the location: for example for a database organized according to the ontology proposed with BrainVISA, a "protocol" field must and a "subject" field must be assigned before any anatomical image can be placed into it. All this is done with the user interface triggered by the red "database" icon <img src="../../images/icons/database_write.png"/>:<br/>
+<img src="../../images/importT1-1.png"/><br/>
+First, a database must be chosen (if you have several ones):<br/>
+<img src="../../images/importT1-2.png"/><br/>
+Then a protocol should be created or chosen:<br/>
+<img src="../../images/importT1-3.png"/><br/>
+If the protocol you wish does not exist yet, you can type a new name in the protocol field.<br/>
+Then a new subject should be selected or created the same way:<br/>
+<img src="../../images/importT1-4.png"/><br/>
+Now you only have to select the image proposed on the right panel (here, <tt>morphee.ima</tt> and to validate.<br/>
+This protocol / subject fields may vary according to the database organization in your site, but this is the default needed attributes.<br/>
+<b>Note:</b> If you are using the <em>iteration</em> mode to import several images, you can create several output database entries at the same time: typically, you can type several "subject" values, separated by space characters. Then you can select several items in the right selection panel:<br/>
+<img src="../../images/importT1-5.png"/><br/></xhtml>
+  </d>
+</d>
+</minf>
