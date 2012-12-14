@@ -62,6 +62,9 @@ signature = Signature(
   'transformation',
     WriteDiskItem( 'Transform Raw T1 MRI to Talairach-MNI template-SPM',
       'Transformation matrix' ),
+  'spm_transformation', WriteDiskItem("SPM2 normalization matrix", 'Matlab file'),
+  'normalized_t1mri', WriteDiskItem("Raw T1 MRI", ['NIFTI-1 image', 'SPM image' ], 
+                                    {"normalization" : "SPM"}),
   'template', ReadDiskItem( 'anatomical Template',
     ['NIFTI-1 image', 'gz compressed NIFTI-1 image', 'MINC image'] ),
   #'set_transformation_in_source_volume', Boolean(),
@@ -102,6 +105,9 @@ def initialization( self ):
   eNode.addDoubleLink( 'NormalizeSPM.anatomy_data', 't1mri' )
   eNode.addDoubleLink( 'NormalizeSPM.allow_retry_initialization',
     'allow_retry_initialization' )
+  eNode.addDoubleLink('NormalizeSPM.transformations_informations', 
+                      'spm_transformation')
+  eNode.addDoubleLink('NormalizeSPM.normalized_anatomy_data', 'normalized_t1mri')
   eNode.addDoubleLink( 'NormalizeSPM.anatomical_template', 'template' )
 
   # fix transformation_matrix type
