@@ -56,6 +56,7 @@ signature = Signature(
   'source_referential', ReadDiskItem( 'Referential', 'Referential' ),
   'normalized_referential', ReadDiskItem( 'Referential', 'Referential' ),
   'transform_chain_ACPC_to_Normalized', ListOf( ReadDiskItem( 'Transformation', 'Transformation matrix' ) ),
+  'acpc_referential', ReadDiskItem('Referential', 'Referential')
 )
 
 
@@ -101,6 +102,7 @@ def initialization( self ):
     'normalization_transformation' )
   self.linkParameters( 'commissure_coordinates', 'Talairach_transform' )
   self.setOptional( 'commissure_coordinates' )
+  self.setOptional('acpc_referential')
   self.linkParameters( 't1mri', 'commissure_coordinates' )
   self.setOptional( 't1mri' )
   self.linkParameters( 'source_referential', [ 'normalization_transformation',
@@ -109,6 +111,9 @@ def initialization( self ):
     'normalization_transformation', linkNormRef )
   self.linkParameters( 'transform_chain_ACPC_to_Normalized',
     'normalized_referential', linkACPC_to_norm )
+  trManager = registration.getTransformationManager()
+  self.acpc_referential = trManager.referential(
+    registration.talairachACPCReferentialId )
 
 def execution( self, context ):
   from soma import aims
@@ -124,8 +129,7 @@ def execution( self, context ):
   mniToACPC = mniToACPC.inverse()
   t1toACPC = mniToACPC * t1toMni
   aims.write( t1toACPC, self.Talairach_transform.fullPath() )
-  acpcReferential = trManager.referential(
-    registration.talairachACPCReferentialId )
+  acpcReferential = self.acpc_referential
   if acpcReferential is None:
     context.warning( _t_( 'Talairach-AC/PC-Anatomist not found - maybe an ' \
       'installation problem ?' ) )
