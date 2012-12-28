@@ -39,7 +39,7 @@ userLevel = 2
 signature = Signature(
   'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected', 'Aims readable volume formats' ),
   'histo_analysis', WriteDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-  #'histo', WriteDiskItem( 'Histogram', 'Histogram' ),
+  'histo', WriteDiskItem( 'Histogram', 'Histogram' ),
   'use_hfiltered', Boolean(),
   'hfiltered', ReadDiskItem( "T1 MRI Filtered For Histo", 'Aims readable volume formats' ),
   'use_wridges', Boolean(),
@@ -51,7 +51,7 @@ signature = Signature(
 def initialization( self ):
   self.signature[ 'fix_random_seed' ].userLevel = 3
   self.linkParameters( 'histo_analysis', 'mri_corrected' )
-  #self.linkParameters( 'histo', 'mri_corrected' )
+  self.linkParameters( 'histo', 'mri_corrected' )
   self.linkParameters( 'hfiltered', 'mri_corrected' )
   self.linkParameters( 'white_ridges', 'mri_corrected' )
   self.setOptional( 'hfiltered' )
