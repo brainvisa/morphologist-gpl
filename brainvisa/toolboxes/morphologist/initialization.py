@@ -33,20 +33,28 @@
 
 # fix morphologist module path to avoid hiding a "standard" python module with
 # the same name
-def setup_morpho_module():
-    import morphologist
-    if not hasattr( morphologist, '__path__' ):
-        dirn = os.path.dirname( morphologist.__file__ )
-        toadd = []
-        for p in sys.path:
-            if os.path.isdir( p ) and 'morphologist' in os.listdir( p ) \
-                    and os.path.join( p, 'morphologist' ) != dirn:
-                toadd.append( os.path.join( p, 'morphologist' ) )
-        if len( toadd ) != 0:
-            morphologist.__path__ = toadd
-        del toadd
-        del p
-        del dirn
 
-setup_morpho_module()
+try:
+    import morphologist # is it enough ? Here it is not the BV toolbox.
+except:
+    pass
+
+#def setup_morpho_module():
+    #import morphologist
+    #print 'morphologist.__file__:', morphologist.__file__
+    #if not hasattr( morphologist, '__path__' ):
+        #dirn = os.path.dirname( morphologist.__file__ )
+        #toadd = []
+        #for p in sys.path:
+            #if os.path.isdir( p ) and 'morphologist' in os.listdir( p ) \
+                    #and os.path.join( p, 'morphologist' ) != dirn:
+                #toadd.append( os.path.join( p, 'morphologist' ) )
+        #print 'toadd:', toadd
+        #if len( toadd ) != 0:
+            #morphologist.__path__ = toadd
+        #del toadd
+        #del p
+        #del dirn
+
+#setup_morpho_module()
 
