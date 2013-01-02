@@ -37,6 +37,18 @@ name = 'BrainVISA Show Histo analysis'
 userLevel = 0
 roles=("viewer", )
 
+def validation():
+  try:
+    import morphologist.gui.histo_analysis_widget
+  except:
+    # The new viewer does not work: this one will do the job.
+    return
+  # if it succeeds, then the newer viewer will work, and we invalidate
+  # this one
+  raise ValidationError(
+    'A newer histogram analysis viewer replaces this one' )
+
+
 signature = Signature(
   'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
   'use_hfiltered', Boolean(),

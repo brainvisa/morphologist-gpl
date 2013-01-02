@@ -7,9 +7,9 @@
 #
 # This software is governed by the CeCILL license version 2 under
 # French law and abiding by the rules of distribution of free software.
-# You can  use, modify and/or redistribute the software under the 
+# You can  use, modify and/or redistribute the software under the
 # terms of the CeCILL license version 2 as circulated by CEA, CNRS
-# and INRIA at the following URL "http://www.cecill.info". 
+# and INRIA at the following URL "http://www.cecill.info".
 #
 # As a counterpart to the access to the source code and  rights to copy,
 # modify and redistribute granted by the license, users are provided only
@@ -24,44 +24,51 @@
 # therefore means  that it is reserved for developers  and  experienced
 # professionals having in-depth computer knowledge. Users are therefore
 # encouraged to load and test the software's suitability as regards their
-# requirements in conditions enabling the security of their systems and/or 
-# data to be ensured and,  more generally, to use and operate it in the 
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
 # same conditions as regards security.
 #
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
-from soma.wip.application.api import Application
 
-name = 'Edit Histo analysis'
-roles = ('editor',)
-userLevel = 0
+try:
+    from morphologist.gui import histo_analysis_widget
+except:
+    pass
 
 def validation():
-  try:
-    from brainvisa import anatomist
-    anatomist.validation()
-    import morphologist.gui.histo_analysis_widget
-  except Exception, e:
-    # The new editor does not work: this one will do the job.
-    return
-  # if it succeeds, then the newer editor will work, and we invalidate this one
-  raise ValidationError(
-    'A newer histogram analysis editor replaces this one' )
+    try:
+        import morphologist.gui.histo_analysis_widget
+    except:
+        raise ValidationError( 'morphologist .gui.histo_analysis_widget ' \
+            'module cannot be imported' )
+
+name = 'Show histo analysis'
+userLevel = 0
+roles = ( 'viewer', )
 
 signature = Signature(
-  'histo_analysis', WriteDiskItem( 'Histo Analysis', 'Histo Analysis' ),
+    'histo_analysis', ReadDiskItem( 'Histo analysis', 'Histo Analysis' ),
+    'histo', ReadDiskItem( 'Histogram', 'Histogram' ),
 )
 
+
+def initialization( self ):
+    self.linkParameters( 'histo', 'histo_analysis' )
+
+
+def create_histo_widget( self, hdata ):
+    hwid = histo_analysis_widget.HistoAnalysisWidget( None )
+    hwid.setAttribute( QtCore.Qt.WA_DeleteOnClose )
+    hwid.set_histo_data( hdata, nbins=100 )
+    hwid.draw_histo()
+    hwid.show()
+    return hwid
+
 def execution( self, context ):
-  ap = Application()
-  cmd = [ ap.configuration.brainvisa.textEditor ]
-  if textEditor == 'nedit':
-    cmd += [ '-geometry', '50x5' ]
-  if textEditor in ( 'xemacs', 'emacs' ):
-    cmd += [ '-geometry', '50x10' ]
-  elif textEditor == 'kedit':
-    cmd += [ '-geometry', '500x100' ]
-  cmd.append( self.histo_analysis.fullPath() )
-  context.system( *cmd )
+    hdata = histo_analysis_widget.load_histo_data(
+        self.histo_analysis.fullPath(), self.histo.fullPath() )
+    hwid = mainThreadActions().call( self.create_histo_widget, hdata )
+    return hwid
