@@ -44,7 +44,9 @@ from brainvisa.configuration.sulci_configuration import SulciConfiguration
 configuration = Application().configuration
 
 # if FSL is present: setup a database for FSL templates
-fsldir = os.getenv( 'FSLDIR' )
+fsldir = configuration.FSL.fsldir
+if not fsldir:
+  fsldir = os.getenv( 'FSLDIR' )
 if not fsldir and distutils.spawn.find_executable( 'fslview' ):
   # probably a system-wide linux installation like on Ubuntu
   if os.path.isdir( '/usr/share/fsl/data' ):
