@@ -54,6 +54,7 @@ signature = Signature(
 	'Aims writable volume formats' ),
     'right_grey_white', WriteDiskItem( 'Right Grey White Mask',
 	'Aims writable volume formats' ),
+    'fix_random_seed', Boolean(),
 ) 
 # Default values
 def initialization( self ):
@@ -63,7 +64,9 @@ def initialization( self ):
     self.linkParameters( 'split_mask', 'mri_corrected' )
     self.linkParameters( 'edges', 'mri_corrected' )
     self.linkParameters( 'commissure_coordinates', 'mri_corrected' )
+    self.signature[ 'fix_random_seed' ].userLevel = 3
     self.Side = "Both"
+    self.fix_random_seed = False
 #
 #
 
@@ -115,20 +118,25 @@ def execution( self, context ):
     #del hemis
     #del grey_white
     
+    base_command = ["VipGreyWhiteClassif",
+                         "-i", self.mri_corrected,
+                         "-h", self.histo_analysis,
+                         "-m", self.split_mask,
+                         "-edges", self.edges,
+                         "-P", self.commissure_coordinates,
+                         "-w", "t", "-a", "N"]
+    if self.fix_random_seed:
+        base_command += ['-srand', '10']
     if self.Side in ('Left','Both'):
         
         if os.path.exists(self.left_grey_white.fullName() + '.loc'):
             context.write( "Left grey-white locked")
         else:
             context.write( "Computing left hemisphere grey-white classification..." )
-            context.system( "VipGreyWhiteClassif", "-i",
-                            self.mri_corrected, "-h",
-                            self.histo_analysis, "-m",
-                            self.split_mask, "-edges",
-                            self.edges, "-P",
-                            self.commissure_coordinates, "-o",
-                            self.left_grey_white, "-l", "2",
-                            "-w", "t", "-a", "N" )
+            left_command = base_command + ["-o", self.left_grey_white,
+                                           "-l", "2"]
+            context.system(*left_command)
+
             tm.copyReferential(self.mri_corrected, self.left_grey_white)
     
     if self.Side in ('Right','Both'):
@@ -137,14 +145,7 @@ def execution( self, context ):
             context.write( "Right grey-white locked")
         else:
             context.write( "Computing right hemisphere grey-white classification..." )
-            context.system( "VipGreyWhiteClassif", "-i",
-                            self.mri_corrected, "-h",
-                            self.histo_analysis, "-m",
-                            self.split_mask, "-edges",
-                            self.edges, "-P",
-                            self.commissure_coordinates, "-o",
-                            self.right_grey_white, "-l", "1",
-                            "-w", "t", "-a", "N" )
+            right_command = base_command + ["-o", self.right_grey_white,
+                                           "-l", "1"]
+            context.system(*right_command)
             tm.copyReferential(self.mri_corrected, self.right_grey_white)
-    
-
