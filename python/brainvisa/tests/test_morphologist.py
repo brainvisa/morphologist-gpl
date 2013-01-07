@@ -21,11 +21,15 @@ class TestMorphologistPipeline(unittest.TestCase):
     os.chdir(self.tests_dir)
     if not os.path.exists("demo_data.zip"):
       print "* Download ftp://ftp.cea.fr/pub/dsv/anatomist/data/demo_data.zip to ", self.tests_dir
-      urllib.urlretrieve("ftp://ftp.cea.fr/pub/dsv/anatomist/data/demo_data.zip", 
-                         "demo_data.zip")
-    if not os.path.exists("data_unprocessed"):
-      zf = zipfile.ZipFile("demo_data.zip")
-      zf.extractall()
+      urllib.urlretrieve(
+        "ftp://ftp.cea.fr/pub/dsv/anatomist/data/demo_data.zip",
+        "demo_data.zip")
+    if os.path.exists("data_for_anatomist"):
+      rmtree("data_for_anatomist")
+    if os.path.exists("data_unprocessed"):
+      rmtree("data_unprocessed")
+    zf = zipfile.ZipFile("demo_data.zip")
+    zf.extractall()
 
   def create_test_database( self ):
     if not os.path.exists( self.database_directory ):
