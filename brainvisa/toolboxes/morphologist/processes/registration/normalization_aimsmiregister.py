@@ -68,15 +68,17 @@ def initialization( self ):
   self.linkParameters("normalized_anatomy_data", "anatomy_data", anat2results)
   self.linkParameters("transformation_to_MNI", "anatomy_data")
   self.linkParameters("transformation_to_ACPC", "anatomy_data")
+  tplval = { 'skull_stripped' : 'no', 'Size' : '2 mm' }
+  if len( neuroHierarchy.databases._databases ) != 0:
+    tplval[ '_database' ] = neuroHierarchy.databases._databases.keys()[0]
   self.anatomical_template = self.signature[ 'anatomical_template' ].findValue(
-    { 'skull_stripped' : 'no',
-      'Size' : '2 mm',
-      '_database' : neuroHierarchy.databases._databases.keys()[0],
-    } )
-  print 'database:', neuroHierarchy.databases._databases.keys()[0]
-  self.mni_to_acpc = neuroHierarchy.databases.getDiskItemFromUuid(
-    '9b26135b-e608-041a-9e2c-d66043f797cc' )
-  self.smoothing = 8.
+    tplval )
+  try:
+    self.mni_to_acpc = neuroHierarchy.databases.getDiskItemFromUuid(
+      '9b26135b-e608-041a-9e2c-d66043f797cc' )
+  except:
+    self.mni_to_acpc = None
+  self.smoothing = 1.
   self.setOptional( 'normalized_anatomy_data' )
   self.setOptional( 'transformation_to_template' )
   self.setOptional( 'transformation_to_MNI' )
@@ -84,19 +86,25 @@ def initialization( self ):
   self.setOptional( 'mni_to_acpc' )
 
 def execution( self, context ):
+  smoothanat = self.anatomy_data
   if self.smoothing != 0:
     context.write( 'smoothing anatomy_data...' )
-    context.write( 'Hm, I\'ll do it one day...' )
+    smoothanat = context.temporary( 'GIS image' )
+    context.system( 'AimsGaussianSmoothing', '-i', self.anatomy_data,
+      '-o', smoothanat, '-x', self.smoothing, '-y', self.smoothing,
+      '-z', self.smoothing )
   invtrans = context.temporary( 'Transformation matrix' )
   if self.transformation_to_template is None:
     totemplate = context.temporary( 'Transformation matrix' )
   else:
     totemplate = self.transformation_to_template
+  context.write( 'Registering to the template...' )
   context.runProcess( 'Register3DMutualInformation',
-    source_image=self.anatomy_data, reference_image=self.anatomical_template,
+    source_image=smoothanat, reference_image=self.anatomical_template,
     source_to_reference=totemplate,
     reference_to_source=invtrans,
     resampled_image=self.normalized_anatomy_data )
+  context.write( 'Managing transformations chain...' )
   tm = registration.getTransformationManager()
   tomni = self.transformation_to_MNI
   if self.transformation_to_ACPC is not None and tomni is None:
@@ -132,3 +140,5 @@ def execution( self, context ):
   if self.normalized_anatomy_data is not None:
     tm.copyReferential( self.anatomical_template,
       self.normalized_anatomy_data )
+  context.write( 'done.' )
+
