@@ -79,7 +79,7 @@ class HistoAnalysisEditorWidget( QDialog ):
         self.hwid.draw_histo()
         llay.addWidget( self.hwid )
 
-        self._insert_text_edtors( lwid )
+        self._insert_text_editors( lwid )
 
         if mri_corrected is not None:
             self._insert_ana_window( fwid )
@@ -217,7 +217,7 @@ class HistoAnalysisEditorWidget( QDialog ):
         self._color_label.setFixedWidth( self._color_label.sizeHint().width() )
         self._color_label.setText( '50' )
 
-    def _insert_text_edtors( self, lwid ):
+    def _insert_text_editors( self, lwid ):
         '''Text displays and edition of G/W peaks and stdev'''
         lbwid = QWidget( lwid )
         lwid.layout().addWidget( lbwid )
