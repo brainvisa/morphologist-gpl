@@ -17,17 +17,18 @@ class GreyWhiteSnapBase(SnapBase):
         id_type = 'T1 MRI Bias Corrected'
         d = SnapBaseItemBrowser(neuroHierarchy.databases, required={'_type': id_type})
         res = d.exec_()
-        for each in d.getValues():
-            left_rdi = neuroHierarchy.ReadDiskItem('Left Grey White Mask', neuroProcesses.getAllFormats())
-            right_rdi = neuroHierarchy.ReadDiskItem('Right Grey White Mask', neuroProcesses.getAllFormats())
-            left_mask = left_rdi.findValue(each)
-            right_mask = right_rdi.findValue(each)
-            if left_mask and right_mask:
-                dictdata.append(((each.get('subject'), each.get('protocol')),
-                   {'type' : 'Grey White Mask',
-                    'mri' : each,
-                    'left mask' : left_mask,
-                    'right mask': right_mask}) )
+        if d == 1:
+            for each in d.getValues():
+                left_rdi = neuroHierarchy.ReadDiskItem('Left Grey White Mask', neuroProcesses.getAllFormats())
+                right_rdi = neuroHierarchy.ReadDiskItem('Right Grey White Mask', neuroProcesses.getAllFormats())
+                left_mask = left_rdi.findValue(each)
+                right_mask = right_rdi.findValue(each)
+                if left_mask and right_mask:
+                    dictdata.append(((each.get('subject'), each.get('protocol')),
+                       {'type' : 'Grey White Mask',
+                        'mri' : each,
+                        'left mask' : left_mask,
+                        'right mask': right_mask}) )
         return dictdata
 
 

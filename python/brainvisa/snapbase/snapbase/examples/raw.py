@@ -16,8 +16,9 @@ class RawSnapBase(SnapBase):
         d = SnapBaseItemBrowser(neuroHierarchy.databases, required={'_type': id_type})
         res = d.exec_()
         dictdata = []
-        for each in d.getValues():
-            dictdata.append(((each.get('subject'), each.get('protocol')), {'type' : 'Raw T1 MRI', 'mri' : each}) )
+        if d == 1:
+          for each in d.getValues():
+              dictdata.append(((each.get('subject'), each.get('protocol')), {'type' : 'Raw T1 MRI', 'mri' : each}) )
         return dictdata
 
     def get_slices_of_interest(self, data):

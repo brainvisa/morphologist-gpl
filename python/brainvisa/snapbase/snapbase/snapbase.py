@@ -285,17 +285,7 @@ class SnapBase():
         name of subject, type, hemisphere side/slice direction if provided'''
         import os, shutil, string
 
-        id_translat = {'Grey White Mask' : 'GW',
-                       'Left Hemisphere Mesh' : 'mesh_L',
-                       'Right Hemisphere Mesh' : 'mesh_R',
-                       'Left Hemisphere White Mesh' : 'white_L',
-                       'Right Hemisphere White Mesh' : 'white_R',
-                       'Split Brain' : 'split',
-                       'SPM BrainVisa Comparison' : 'spmVSmorpho',
-                       'Raw T1 MRI' : 'raw',
-                       'Vitamin Tablet Snapshots' : 'tablet',
-                       #===============
-                       'RawSnapBase' : 'raw',
+        id_translat = { 'RawSnapBase' : 'raw',
                        'TabletSnapBase' : 'tablet',
                        'SplitBrainSnapBase' :'split',
                        'BrainMaskSnapBase' : 'brain',
@@ -447,7 +437,7 @@ class SnapBase():
                         snapshot = get_snapshot(qgl)
 
                         # Rendering slice number
-                        if self.__class__.__name__ in ['RawSnapBase', 'Grey White Mask', 'Split Brain', 'SPM BrainVisa Comparison', 'Raw T1 MRI', 'Vitamin Tablet Snapshots']:
+                        if self.__class__.__name__ in ['RawSnapBase', 'GreyWhiteSnapBase', 'SplitBrainSnapBase', 'BrainMaskSnapBase', 'TabletSnapBase', 'SPMComparisonSnapBase']:
                             data = snapshot.convert('RGBA').tostring('raw', 'BGRA')
                             qim = Qt.QImage(data, snapshot.size[0], snapshot.size[1], Qt.QImage.Format_ARGB32)
                             pix = Qt.QPixmap.fromImage(qim)

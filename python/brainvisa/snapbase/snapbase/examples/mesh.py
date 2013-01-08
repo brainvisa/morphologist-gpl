@@ -19,13 +19,14 @@ class MeshSnapBase(SnapBase):
         id_type = 'Hemisphere %sMesh'%({'HemisphereMeshSnapBase': '', 'WhiteMeshSnapBase': 'White '}[self.__class__.__name__])
         d = SnapBaseItemBrowser(neuroHierarchy.databases, required={'_type': id_type})
         res = d.exec_()
-        for each in d.getValues():
-            rdi = neuroHierarchy.ReadDiskItem('Transform Raw T1 MRI to Talairach-AC/PC-Anatomist', neuroProcesses.getAllFormats())
-            transform = rdi.findValue(each)
-            dictdata.append(((each.get('subject'), each.get('protocol')),
-               {'type' : id_type,
-                'mesh' : each,
-                'transform' : transform}) )
+        if d == 1:
+          for each in d.getValues():
+              rdi = neuroHierarchy.ReadDiskItem('Transform Raw T1 MRI to Talairach-AC/PC-Anatomist', neuroProcesses.getAllFormats())
+              transform = rdi.findValue(each)
+              dictdata.append(((each.get('subject'), each.get('protocol')),
+                 {'type' : id_type,
+                  'mesh' : each,
+                  'transform' : transform}) )
 
         return dictdata
 

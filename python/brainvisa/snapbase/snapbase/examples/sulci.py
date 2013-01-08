@@ -20,20 +20,21 @@ class SulciSnapBase(SnapBase):
                 'manually_labelled' : 'No'}
         d = SnapBaseItemBrowser(neuroHierarchy.databases, required={'_type': id_type})
         res = d.exec_()
-        for each in d.getValues():
-            rdi = neuroHierarchy.ReadDiskItem('Transform Raw T1 MRI to Talairach-AC/PC-Anatomist', neuroProcesses.getAllFormats())
-            transform = rdi.findValue(each)
-            rdi = neuroHierarchy.ReadDiskItem('Hemisphere White Mesh', neuroProcesses.getAllFormats())
-            mesh = rdi.findValue(each)
-            rdi = neuroHierarchy.ReadDiskItem('Raw T1 MRI', neuroProcesses.getAllFormats())
-            mri = rdi.findValue(each)
-            if mesh and transform and mri:
-              dictdata.append(((each.get('subject'), each.get('protocol')),
-                 {'type' : 'Hemisphere White Mesh',
-                  'mesh' : mesh,
-                  'mri' : mri,
-                  'folds graph' : each,
-                  'transform' : transform}) )
+        if d == 1:
+          for each in d.getValues():
+              rdi = neuroHierarchy.ReadDiskItem('Transform Raw T1 MRI to Talairach-AC/PC-Anatomist', neuroProcesses.getAllFormats())
+              transform = rdi.findValue(each)
+              rdi = neuroHierarchy.ReadDiskItem('Hemisphere White Mesh', neuroProcesses.getAllFormats())
+              mesh = rdi.findValue(each)
+              rdi = neuroHierarchy.ReadDiskItem('Raw T1 MRI', neuroProcesses.getAllFormats())
+              mri = rdi.findValue(each)
+              if mesh and transform and mri:
+                dictdata.append(((each.get('subject'), each.get('protocol')),
+                   {'type' : 'Hemisphere White Mesh',
+                    'mesh' : mesh,
+                    'mri' : mri,
+                    'folds graph' : each,
+                    'transform' : transform}) )
         return dictdata
 
 
