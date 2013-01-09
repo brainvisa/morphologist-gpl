@@ -17,7 +17,7 @@ class SplitBrainSnapBase(SnapBase):
         id_type = 'Split Brain Mask'
         d = SnapBaseItemBrowser(neuroHierarchy.databases, required={'_type': id_type})
         res = d.exec_()
-        if d == 1:
+        if res == d.Accepted:
           for each in d.getValues():
               rdi = neuroHierarchy.ReadDiskItem('T1 MRI Bias Corrected', neuroProcesses.getAllFormats())
               mri = rdi.findValue(each)
@@ -102,13 +102,14 @@ class BrainMaskSnapBase(SnapBase):
         id_type = 'T1 Brain Mask'
         d = SnapBaseItemBrowser(neuroHierarchy.databases, required={'_type': id_type})
         res = d.exec_()
-        for each in d.getValues():
-            rdi = neuroHierarchy.ReadDiskItem('T1 MRI Bias Corrected', neuroProcesses.getAllFormats())
-            mri = rdi.findValue(each)
-            dictdata.append(((each.get('subject'), each.get('protocol')),
-               {'type' : 'T1 Brain Mask',
-                'mri' : mri,
-                'brainmask' : each}) )
+        if res == d.Accepted:
+          for each in d.getValues():
+              rdi = neuroHierarchy.ReadDiskItem('T1 MRI Bias Corrected', neuroProcesses.getAllFormats())
+              mri = rdi.findValue(each)
+              dictdata.append(((each.get('subject'), each.get('protocol')),
+                 {'type' : 'T1 Brain Mask',
+                  'mri' : mri,
+                  'brainmask' : each}) )
         return dictdata
 
     def get_slices_of_interest(self, data):

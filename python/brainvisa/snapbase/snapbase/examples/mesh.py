@@ -19,7 +19,7 @@ class MeshSnapBase(SnapBase):
         id_type = 'Hemisphere %sMesh'%({'HemisphereMeshSnapBase': '', 'WhiteMeshSnapBase': 'White '}[self.__class__.__name__])
         d = SnapBaseItemBrowser(neuroHierarchy.databases, required={'_type': id_type})
         res = d.exec_()
-        if d == 1:
+        if res == d.Accepted:
           for each in d.getValues():
               rdi = neuroHierarchy.ReadDiskItem('Transform Raw T1 MRI to Talairach-AC/PC-Anatomist', neuroProcesses.getAllFormats())
               transform = rdi.findValue(each)
@@ -83,23 +83,24 @@ class ThicknessSnapBase(SnapBase):
         id_types = ['FreesurferThicknessType', 'ResampledFreesurferThicknessType', 'FreesurferCurvType', 'ResampledFreesurferCurvType', 'Cortical thickness', 'FreesurferGyri', 'ResampledGyri' ]
         d = SnapBaseItemBrowser(neuroHierarchy.databases, required={'_type': id_types})
         res = d.exec_()
-        for each in d.getValues():
-            id_type = neuroHierarchy.databases.createDiskItemFromFileName(each.fullPath()).type.name
-            print id_type[:9]
-            #rdi = neuroHierarchy.ReadDiskItem('Hemisphere %sMesh'%({'hemi' : '', 'white' : 'White '}[self.preferences['mesh']]), neuroProcesses.getAllFormats())
-            if id_type in ['FreeSurferThicknessType', 'FreesurferCurvType', 'FreesurferGyri']:
-              rdi = neuroHierarchy.ReadDiskItem('%s'%({'hemi' : 'Pial', 'white' : 'White'}[self.preferences['mesh']]), neuroProcesses.getAllFormats())
-            elif id_type[:9] == 'Resampled':
-              rdi = neuroHierarchy.ReadDiskItem('%s'%({'hemi' : 'AimsPial', 'white' : 'AimsWhite'}[self.preferences['mesh']]), neuroProcesses.getAllFormats())
-            elif id_type in ['Cortical thickness']:
-              rdi = neuroHierarchy.ReadDiskItem('Hemisphere %sMesh'%({'hemi' : '', 'white' : 'White '}[self.preferences['mesh']]), neuroProcesses.getAllFormats())
+        if res == d.Accepted:
+          for each in d.getValues():
+              id_type = neuroHierarchy.databases.createDiskItemFromFileName(each.fullPath()).type.name
+              print id_type[:9]
+              #rdi = neuroHierarchy.ReadDiskItem('Hemisphere %sMesh'%({'hemi' : '', 'white' : 'White '}[self.preferences['mesh']]), neuroProcesses.getAllFormats())
+              if id_type in ['FreeSurferThicknessType', 'FreesurferCurvType', 'FreesurferGyri']:
+                rdi = neuroHierarchy.ReadDiskItem('%s'%({'hemi' : 'Pial', 'white' : 'White'}[self.preferences['mesh']]), neuroProcesses.getAllFormats())
+              elif id_type[:9] == 'Resampled':
+                rdi = neuroHierarchy.ReadDiskItem('%s'%({'hemi' : 'AimsPial', 'white' : 'AimsWhite'}[self.preferences['mesh']]), neuroProcesses.getAllFormats())
+              elif id_type in ['Cortical thickness']:
+                rdi = neuroHierarchy.ReadDiskItem('Hemisphere %sMesh'%({'hemi' : '', 'white' : 'White '}[self.preferences['mesh']]), neuroProcesses.getAllFormats())
 
 
-            mesh = rdi.findValue(each)
-            dictdata.append(((each.get('subject'), each.get('protocol')),
-               {'type' : each.get('_type'),
-                'mesh' : mesh,
-                'tex' : each}) )
+              mesh = rdi.findValue(each)
+              dictdata.append(((each.get('subject'), each.get('protocol')),
+                 {'type' : each.get('_type'),
+                  'mesh' : mesh,
+                  'tex' : each}) )
 
         return dictdata
 

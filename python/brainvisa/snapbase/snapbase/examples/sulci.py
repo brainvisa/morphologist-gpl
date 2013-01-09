@@ -20,7 +20,7 @@ class SulciSnapBase(SnapBase):
                 'manually_labelled' : 'No'}
         d = SnapBaseItemBrowser(neuroHierarchy.databases, required={'_type': id_type})
         res = d.exec_()
-        if d == 1:
+        if res == d.Accepted:
           for each in d.getValues():
               rdi = neuroHierarchy.ReadDiskItem('Transform Raw T1 MRI to Talairach-AC/PC-Anatomist', neuroProcesses.getAllFormats())
               transform = rdi.findValue(each)

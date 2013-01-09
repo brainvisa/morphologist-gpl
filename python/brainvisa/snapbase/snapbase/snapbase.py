@@ -289,7 +289,8 @@ class SnapBase():
                        'TabletSnapBase' : 'tablet',
                        'SplitBrainSnapBase' :'split',
                        'BrainMaskSnapBase' : 'brain',
-                       'GreyWhiteSnapBase' : 'GW'}
+                       'GreyWhiteSnapBase' : 'GW',
+                       'HippocampusSnapBase' : 'hippo'}
         if self.preferences.has_key('side'):
                 id_translat.update({
                        'HemisphereMeshSnapBase' : 'hemi_%s'%string.upper(self.preferences['side'][0]),
@@ -437,7 +438,7 @@ class SnapBase():
                         snapshot = get_snapshot(qgl)
 
                         # Rendering slice number
-                        if self.__class__.__name__ in ['RawSnapBase', 'GreyWhiteSnapBase', 'SplitBrainSnapBase', 'BrainMaskSnapBase', 'TabletSnapBase', 'SPMComparisonSnapBase']:
+                        if self.__class__.__name__ in ['RawSnapBase', 'GreyWhiteSnapBase', 'SplitBrainSnapBase', 'BrainMaskSnapBase', 'TabletSnapBase', 'SPMComparisonSnapBase', 'HippocampusLabelSnapBase']:
                             data = snapshot.convert('RGBA').tostring('raw', 'BGRA')
                             qim = Qt.QImage(data, snapshot.size[0], snapshot.size[1], Qt.QImage.Format_ARGB32)
                             pix = Qt.QPixmap.fromImage(qim)
@@ -507,10 +508,12 @@ class SnapBase():
                        'SulciSingleViewSnapBase' : 'mri',
                        'SulciMultiViewSnapBase' : 'mri'}
 
-                if self.__class__.__name__ not in ['HemiThicknessSnapBase', 'WhiteThicknessSnapBase']:
+                if self.__class__.__name__ not in ['HemiThicknessSnapBase', 'WhiteThicknessSnapBase'] and self.__class__.__name__ not in ['HippocampusLabelSnapBase']:
                     acquisition = diskitems[acquisition_key[self.__class__.__name__]].get('acquisition')
-                else:
+                elif self.__class__.__name__ not in ['HippocampusLabelSnapBase']:
                     acquisition = 'FS'
+                else:
+                    acquisition = 'sacha'
                 attributes.append(acquisition)
                 if d != '3D':
                     attributes.append(d)

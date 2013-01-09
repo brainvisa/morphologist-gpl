@@ -17,7 +17,7 @@ class GreyWhiteSnapBase(SnapBase):
         id_type = 'T1 MRI Bias Corrected'
         d = SnapBaseItemBrowser(neuroHierarchy.databases, required={'_type': id_type})
         res = d.exec_()
-        if d == 1:
+        if res == d.Accepted:
             for each in d.getValues():
                 left_rdi = neuroHierarchy.ReadDiskItem('Left Grey White Mask', neuroProcesses.getAllFormats())
                 right_rdi = neuroHierarchy.ReadDiskItem('Right Grey White Mask', neuroProcesses.getAllFormats())

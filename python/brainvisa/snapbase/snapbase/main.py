@@ -112,6 +112,13 @@ def hemi_snap_base():
     snap = mesh.HemisphereMeshSnapBase(preferences)
     snap.snap_base(main_window = main_window, qt_app = qt_app )
 
+def hippo_snap_base():
+    global main_window, qt_app, database, preferences
+    from examples import hippocampus
+
+    snap = hippocampus.HippocampusLabelSnapBase(preferences)
+    snap.snap_base(main_window = main_window, qt_app = qt_app )
+
 def thickness_snap_base():
     global main_window, qt_app, database, preferences
     from examples import mesh
@@ -231,6 +238,7 @@ def main():
     gui.tablet_btn.clicked.connect(tablet_snap_base)
     gui.brainmask_btn.clicked.connect(brainmask_snap_base)
     gui.btn_thickness.clicked.connect(thickness_snap_base)
+    gui.btn_hippo.clicked.connect(hippo_snap_base)
     gui.btn_help.clicked.connect(display_help_msgbox)
     gui.connect_signals()
 
