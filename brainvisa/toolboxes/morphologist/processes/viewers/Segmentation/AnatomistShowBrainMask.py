@@ -52,5 +52,5 @@ def initialization( self ):
 
 def execution( self, context ):
   a=anatomist.Anatomist()
-  return a.viewMaskOnMRI( self.mri_corrected, self.brain_mask, a.getPalette("GREEN-ufusion"), 'linear', 0.7 )
+  return a.viewMaskOnMRI( self.mri_corrected, self.brain_mask, a.getPalette("GREEN-ufusion"), 'linear_A_if_B_white', 0.7 )
 
