@@ -56,6 +56,8 @@ signature = Signature(
                                         'Aims mesh formats' ),
     'right_white_mesh', WriteDiskItem( 'Right Hemisphere White Mesh',
                                         'Aims mesh formats' ),
+    'fix_random_seed', Boolean(),
+
 ) 
 # Default values
 def initialization( self ):
@@ -66,7 +68,9 @@ def initialization( self ):
     self.linkParameters( 'right_hemi_cortex', 'mri_corrected' )
     self.linkParameters( 'left_white_mesh', 'mri_corrected' )
     self.linkParameters( 'right_white_mesh', 'mri_corrected' )
+    self.signature[ 'fix_random_seed' ].userLevel = 3
     self.Side = "Both"
+    self.fix_random_seed = False
 #
 #
 
@@ -78,12 +82,15 @@ def execution( self, context ):
             context.write( "Left cortex locked")
         else:
             context.write( "Detecting left spherical cortex interface..." )
-            context.system( "VipHomotopic", "-i",
+            command = ["VipHomotopic", "-i",
                             self.mri_corrected, "-cl",
                             self.left_grey_white, "-h",
                             self.histo_analysis, "-o",
                             self.left_hemi_cortex,
-                            "-m", "C", "-w", "t" )
+                            "-m", "C", "-w", "t"]
+            if self.fix_random_seed:     
+                command.extend(['-srand', '10'])
+            context.system(*command)
             tm.copyReferential(self.left_grey_white, self.left_hemi_cortex)
     
         if os.path.exists(self.left_white_mesh.fullName() + '.loc'):
@@ -108,12 +115,15 @@ def execution( self, context ):
             context.write( "Right cortex locked")
         else:
             context.write( "Detecting right spherical cortex interface..." )
-            context.system( "VipHomotopic", "-i",
+            command = ["VipHomotopic", "-i",
                             self.mri_corrected, "-cl",
                             self.right_grey_white, "-h",
                             self.histo_analysis, "-o",
                             self.right_hemi_cortex,
-                            "-m", "C", "-w", "t" )
+                            "-m", "C", "-w", "t"]
+            if self.fix_random_seed:     
+                command.extend(['-srand', '10'])
+            context.system(*command)
             tm.copyReferential(self.right_grey_white, self.right_hemi_cortex)
         
         if os.path.exists(self.right_white_mesh.fullName() + '.loc'):
