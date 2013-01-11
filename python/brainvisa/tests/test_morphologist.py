@@ -2,15 +2,16 @@ import unittest
 import os
 import tempfile
 import urllib
-from soma import zipfile
 from shutil import rmtree
+import filecmp
+
+from soma import zipfile
+from soma.path import relative_path
 import brainvisa.axon
 from brainvisa.processes import defaultContext
 from brainvisa.data.writediskitem import WriteDiskItem
 from brainvisa.configuration import neuroConfig
 from brainvisa.data import neuroHierarchy
-from soma.path import relative_path
-import filecmp
 
 
 class TestMorphologistPipeline(unittest.TestCase):  
@@ -62,7 +63,7 @@ class TestMorphologistPipeline(unittest.TestCase):
     self.download_data()
 
     brainvisa.axon.initializeProcesses()
-    self.database_directory = os.path.join( self.tests_dir, 'database' )
+    self.database_directory = os.path.join( self.tests_dir, 'database_surface' )
     self.database=self.create_test_database()
     self.db_name = self.database.name
     t1 = self.import_data()
@@ -74,8 +75,6 @@ class TestMorphologistPipeline(unittest.TestCase):
     ip = [118.197914124, 99.53125, 45.6000061035]
     # select steps until split brain and fix the random seed
     nodes.child('TalairachTransformation').setSelected(0)
-    nodes.child('GreyWhiteClassification').setSelected(0)
-    nodes.child('GreyWhiteSurface').setSelected(0)
     nodes.child('HemispheresMesh').setSelected(0)
     nodes.child('HeadMesh').setSelected(0)
     nodes.child('CorticalFoldsGraph').setSelected(0)
@@ -83,6 +82,8 @@ class TestMorphologistPipeline(unittest.TestCase):
     nodes.child('HistoAnalysis').fix_random_seed = True
     nodes.child('BrainSegmentation').fix_random_seed = True
     nodes.child('SplitBrain').fix_random_seed = True
+    nodes.child('GreyWhiteClassification').fix_random_seed = True
+    nodes.child('GreyWhiteSurface').fix_random_seed = True
     #nodes.child("SulciRecognition").setSelected(1)
     
     wd=pipeline.signature["mri_corrected"]
