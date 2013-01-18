@@ -37,7 +37,7 @@ from PyQt4.QtGui import QDialog, QWidget, QVBoxLayout, QHBoxLayout, \
     QGridLayout, QPushButton, QLabel, QLineEdit, QDoubleValidator, QSlider
 from PyQt4 import QtCore
 from PyQt4.QtCore import Qt
-from morphologist.gui import histo_analysis_widget
+from morphologist_common import histo_analysis_widget
 
 
 class HistoAnalysisEditorWidget( QDialog ):

@@ -34,7 +34,7 @@
 from brainvisa.processes import *
 
 try:
-    from morphologist.gui import histo_analysis_widget
+    from morphologist_common import histo_analysis_widget
 except:
     pass
 

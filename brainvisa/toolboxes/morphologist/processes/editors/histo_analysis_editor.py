@@ -40,7 +40,7 @@ if neuroConfig.gui:
     try:
         from brainvisa.morphologist.qt4gui.histo_analysis_editor \
             import create_histo_widget
-        from morphologist.gui.histo_analysis_widget import load_histo_data
+        from morphologist_common.histo_analysis_widget import load_histo_data
     except ImportError:
         pass
 
