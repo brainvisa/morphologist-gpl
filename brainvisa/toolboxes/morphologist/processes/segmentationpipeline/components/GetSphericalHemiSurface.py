@@ -52,6 +52,7 @@ signature = Signature(
       'Aims mesh formats' ),
   'right_hemi_mesh', WriteDiskItem( 'Right Hemisphere Mesh',
       'Aims mesh formats' ),
+  'fix_random_seed', Boolean(),
 ) 
 # Default values
 def initialization( self ):
@@ -60,7 +61,11 @@ def initialization( self ):
   self.linkParameters( 'right_hemi_cortex', 'left_hemi_cortex' )
   self.linkParameters( 'left_hemi_mesh', 'left_hemi_cortex' )
   self.linkParameters( 'right_hemi_mesh', 'right_hemi_cortex' )
+ 
+  self.signature['fix_random_seed'].userLevel = 3
+
   self.Side = "Both"
+  self.fix_random_seed = False 
 #
 
 def execution( self, context ):
@@ -76,11 +81,18 @@ def execution( self, context ):
         context.write("Computing skeleton...")
         skeleton = context.temporary( 'GIS Image' )
         roots = context.temporary( 'GIS Image' )
-        context.system( "VipSkeleton", "-i", self.left_hemi_cortex, "-so", skeleton, "-vo", roots, "-g", braing, "-w", "t" )
+        command = ["VipSkeleton", "-i", self.left_hemi_cortex, "-so", skeleton, "-vo", roots, "-g", braing, "-w", "t"]
+        if self.fix_random_seed:
+            command.extend(['-srand', 10]) 
+        apply(context.system, command)
         
         context.write("Reconstructing left hemisphere surface...")
         hemi = context.temporary( 'GIS Image' )
-        context.system( "VipHomotopic", "-i", braing, "-s", skeleton, "-co", self.left_hemi_cortex, "-o", hemi, "-m", "H", "-w", "t" )
+
+        command = ["VipHomotopic", "-i", braing, "-s", skeleton, "-co", self.left_hemi_cortex, "-o", hemi, "-m", "H", "-w", "t" ]
+        if self.fix_random_seed:
+            command.extend(['-srand', 10])
+        apply(context.system, command)
         
         context.system( "VipSingleThreshold", "-i", hemi, "-o", hemi, "-t", "0", "-c", "b", "-m", "ne", "-w", "t" )
         
@@ -105,11 +117,18 @@ def execution( self, context ):
         context.write("Computing skeleton...")
         skeleton = context.temporary( 'GIS Image' )
         roots = context.temporary( 'GIS Image' )
-        context.system( "VipSkeleton", "-i", self.right_hemi_cortex, "-so", skeleton,  "-vo", roots, "-g", braing, "-w", "t" )
+        command = ["VipSkeleton", "-i", self.right_hemi_cortex, "-so", skeleton,  "-vo", roots, "-g", braing, "-w", "t" ]
+        if self.fix_random_seed:
+            command.extend(['-srand', 10])
+        apply(context.system, command)
+
         
         context.write("Reconstructing right hemisphere surface...")
         hemi = context.temporary( 'GIS Image' )
-        context.system( "VipHomotopic", "-i", braing, "-s", skeleton, "-co", self.right_hemi_cortex, "-o", hemi, "-m", "H", "-w", "t" )
+        command = ["VipHomotopic", "-i", braing, "-s", skeleton, "-co", self.right_hemi_cortex, "-o", hemi, "-m", "H", "-w", "t" ]
+        if self.fix_random_seed:
+            command.extend(['-srand', 10])
+        apply(context.system, command)
         
         context.system( "VipSingleThreshold", "-i", hemi, "-o", hemi, "-t", "0", "-c", "b", "-m", "ne", "-w", "t" )
         

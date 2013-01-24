@@ -55,6 +55,7 @@ signature = Signature(
   'Talairach_transform',
   ReadDiskItem( 'Transform Raw T1 MRI to Talairach-AC/PC-Anatomist',
                  'Transformation matrix' ), 
+  'fix_random_seed', Boolean(),
  )
 
 
@@ -126,6 +127,9 @@ class switch_3_1:
 
 def initialization( self ):
   self.setOptional( 'commissure_coordinates' )
+
+  self.signature[ 'fix_random_seed' ].userLevel = 3
+  self.fix_random_seed = False
 
   # create nodes
 
@@ -224,6 +228,9 @@ def initialization( self ):
                  'split_mask' )
   eNode.addLink( 'split_mask',
                  'CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.split_mask' )
+  eNode.addDoubleLink('CorticalFoldsGraph_3_1.LeftCorticalFoldsGraph_3_1.GraphStructure.fix_random_seed',
+                      'fix_random_seed' )
+
 
 
   eNode.addLink( \
@@ -239,6 +246,9 @@ def initialization( self ):
   eNode.addLink( \
       'Talairach_transform',
       'CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.Talairach_transform' )
+  eNode.addDoubleLink('CorticalFoldsGraph_3_1.RightCorticalFoldsGraph_3_1.GraphStructure.fix_random_seed',
+                      'fix_random_seed' )
+
 
 
   eNode.addDoubleLink( 'CorticalFoldsGraph_3_0.LeftCorticalFoldsGraph_3_0.mri_corrected',

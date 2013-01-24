@@ -59,6 +59,7 @@ signature = Signature(
                 'Transformation matrix' ),
   'compute_fold_meshes', Boolean(),
   'allow_multithreading', Boolean(),
+  'fix_random_seed', Boolean(),
  )
 
 
@@ -82,10 +83,11 @@ def initialization( self ):
   self.linkParameters( 'roots', 'skeleton' )
   self.linkParameters( 'commissure_coordinates', 'mri_corrected' )
   self.linkParameters( 'Talairach_transform', 'split_mask' )
+  self.signature[ 'fix_random_seed' ].userLevel = 3
   self.compute_fold_meshes = True
   self.setOptional( 'commissure_coordinates' )
   self.allow_multithreading = True
-
+  self.fix_random_seed = False
 
 def execution( self, context ):
   context.write( "Masking Bias corrected image with hemisphere masks...")
@@ -99,9 +101,12 @@ def execution( self, context ):
                   "-w", "t", "-l", masklabel )
 
   context.write("Computing skeleton and buried gyrus watershed...")
-  context.system( "VipSkeleton", "-i", self.hemi_cortex,
+  command = ["VipSkeleton", "-i", self.hemi_cortex,
                   "-so", self.skeleton, "-vo",
-                  self.roots, "-g", braing, "-w", "t" )
+                  self.roots, "-g", braing, "-w", "t" ]
+  if self.fix_random_seed:
+      command.extend(['-srand', 10])
+  apply(context.system, command)
 
   context.write("Building Attributed Relational Graph...")
   graphd = context.temporary( 'Directory' )
