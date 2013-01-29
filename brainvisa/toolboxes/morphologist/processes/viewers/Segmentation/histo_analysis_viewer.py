@@ -40,7 +40,7 @@ except:
 
 def validation():
     try:
-        import morphologist.gui.histo_analysis_widget
+        import morphologist_common.histo_analysis_widget
     except:
         raise ValidationError( 'morphologist .gui.histo_analysis_widget ' \
             'module cannot be imported' )
