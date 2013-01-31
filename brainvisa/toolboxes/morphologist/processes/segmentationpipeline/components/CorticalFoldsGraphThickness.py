@@ -70,7 +70,7 @@ def initialization( self ):
 
 
 def execution( self, context ):
-  cmd = [ 'python', find_in_path( 'AimsFoldsGraphThickness.py' ),
+  cmd = [ sys.executable, find_in_path( 'AimsFoldsGraphThickness.py' ),
     '-i', self.graph, '-c', self.hemi_cortex, '-g', self.GW_interface,
     '-w', self.white_mesh, '-l', self.hemi_mesh, '-o', self.output_graph ]
   if self.write_mid_interface is not None:

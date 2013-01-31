@@ -67,7 +67,7 @@ def initialization( self ):
 
 
 def execution( self, context ):
-  context.system( 'python', find_in_path( 'AimsSulciVoronoi.py' ),
+  context.system( sys.executable, find_in_path( 'AimsSulciVoronoi.py' ),
     '-f', self.graph, '-g', self.hemi_cortex, '-o', self.sulci_voronoi )
   trManager = registration.getTransformationManager()
   trManager.copyReferential( self.hemi_cortex, self.sulci_voronoi )
