@@ -6,6 +6,7 @@ class GreyWhiteSnapBase(SnapBase):
 
     def __init__(self, preferences):
         SnapBase.__init__(self, preferences)
+        self._do_slice_rendering = True
 
     def get_list_diskitems(self, verbose = True):
 

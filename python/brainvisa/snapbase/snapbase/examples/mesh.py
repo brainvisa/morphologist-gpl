@@ -9,6 +9,10 @@ class MeshSnapBase(SnapBase):
     def __init__(self, preferences):
         SnapBase.__init__(self, preferences)
 
+    def get_attributes(self, diskitems):
+        primary_tag = 'mesh'
+        return [diskitems[primary_tag].get(each) for each in self.preferences.naming_attributes]
+
     def get_list_diskitems(self, verbose = True):
 
         from brainvisa.snapbase.snapbase.diskItemBrowser import SnapBaseItemBrowser
@@ -72,6 +76,10 @@ class MeshSnapBase(SnapBase):
 class ThicknessSnapBase(SnapBase):
     def __init__(self, preferences):
         SnapBase.__init__(self, preferences)
+
+    def get_attributes(self, diskitems):
+        primary_tag = 'mesh'
+        return [diskitems[primary_tag].get(each) for each in self.preferences.naming_attributes]
 
     def get_list_diskitems(self, verbose = True):
 

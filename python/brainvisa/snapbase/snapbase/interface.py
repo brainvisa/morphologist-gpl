@@ -96,10 +96,7 @@ class Ui_attributes_window(object):
 
     def change_event(self):
 
-        dictdata = self.snap_base.get_dictdata(self.get_attributes(), verbose=False)
-        self.title_lbl.setText('%i item(s) found'%len(dictdata))
-        self.ok_btn.setEnabled(len(dictdata)!=0)
-        print dictdata
+        print 'change_event'
 
     def get_attributes(self):
         att_res = {}
@@ -182,7 +179,9 @@ class Ui_attributes_window(object):
 
 
 
-class Ui_main_window(object):
+class Ui_main_window(Qt.QObject):
+    def __init__(self, parent = None):
+        Qt.QObject.__init__(self, parent)
 
     def leave_status(self):
         self.statusbar.showMessage(self.statusbar.default_status_msg)
@@ -393,17 +392,6 @@ class Ui_main_window(object):
         self.btn_hippo.setIconSize(QtCore.QSize(90, 90))
         self.btn_hippo.setObjectName("btn_hippo")
         self.gridLayout.addWidget(self.btn_hippo, 4, 0, 1, 1)
-#        self.btn_9 = HoverButton(self.widget)
-#        self.btn_9.setEnabled(False)
-#        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-#        sizePolicy.setHorizontalStretch(0)
-#        sizePolicy.setVerticalStretch(0)
-#        sizePolicy.setHeightForWidth(self.btn_9.sizePolicy().hasHeightForWidth())
-#        self.btn_9.setSizePolicy(sizePolicy)
-#        self.btn_9.setMinimumSize(QtCore.QSize(100, 100))
-#        self.btn_9.setText("")
-#        self.btn_9.setObjectName("btn_9")
-#        self.gridLayout.addWidget(self.btn_9, 3, 2, 1, 1)
         self.btn_help = HoverButton(self.widget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)

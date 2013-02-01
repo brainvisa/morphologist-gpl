@@ -136,6 +136,7 @@ class SnapBase():
         return res
 
     def __init__(self, preferences = None):
+        self._do_slice_rendering = False
         self.aobjects = {}
         self.ref = None
         self.sulci_hierarchy = None
@@ -272,8 +273,9 @@ class SnapBase():
     def __get_disinct_colors(self, centers):
         colors = {}
         print len(centers), 'colors'
+        print centers
         import random
-        for i in xrange(0, 360, 360 / len(centers)):
+        for i in [each for each in xrange(0, 360, 360 / len(centers))][0:len(centers)]:
             colors[centers[len(colors.items())]] = \
                 (int(i), int(90 + random.random() * 10), int(100)) #90 + random.random() * 10)
 
@@ -346,8 +348,9 @@ class SnapBase():
 
         if dictdata == None:
             dictdata = self.get_list_diskitems()
-        if verbose:
-            print 'dictdata', dictdata
+
+        self.dictdata = dictdata
+
         print 'dictdata', dictdata
 
         # If no dictdata (e.g. closing the attributes window), then nothing happens
@@ -438,7 +441,7 @@ class SnapBase():
                         snapshot = get_snapshot(qgl)
 
                         # Rendering slice number
-                        if self.__class__.__name__ in ['RawSnapBase', 'GreyWhiteSnapBase', 'SplitBrainSnapBase', 'BrainMaskSnapBase', 'TabletSnapBase', 'SPMComparisonSnapBase', 'HippocampusLabelSnapBase']:
+                        if self._do_slice_rendering:
                             data = snapshot.convert('RGBA').tostring('raw', 'BGRA')
                             qim = Qt.QImage(data, snapshot.size[0], snapshot.size[1], Qt.QImage.Format_ARGB32)
                             pix = Qt.QPixmap.fromImage(qim)
@@ -450,13 +453,6 @@ class SnapBase():
                 elif d == '3D':
                     for view_quaternion in views[d]:
                         # Setting up the camera
-                        #a.execute ('Camera', windows=[window], #observer_position = [30.0, 20.0, -20.0], windows=[window],
-                        #    boundingbox_max = [72.8001, 50.887799999999999, 38.305599999999998],
-                        #    boundingbox_min = [-72.8001, -50.887799999999999, -38.305599999999998])
-#                            boundingbox_max = [ 102.579, 91.6496, 53.2049 ],
-#                            boundingbox_min = [ -106.464, -79.7929, -36.3754 ], windows=[window] )
-                        #boundingbox_max = window.getInfos()['boundingbox_max']
-                        #boundingbox_min = window.getInfos()['boundingbox_min']
                         window.camera(view_quaternion = view_quaternion,
                                       zoom = 0.718)
                         qt_app.processEvents()
@@ -469,7 +465,7 @@ class SnapBase():
 
                 # Building the tiled image
                 image_size = (max([im.size[0] for im in views_images]), max([im.size[1] for im in views_images]))
-                grid_dim = {12 : (4,3), 5 : (2,3), 1 : (1,1), 3: (3,1), 20 : (4,5)}[len(views_images)]
+                grid_dim = {12 : (4,3), 5 : (5,1), 7:(7,1),  1 : (1,1), 3: (3,1), 20 : (4,5)}[len(views_images)]
 
                 tiled_image = Image.new('RGBA', (grid_dim[0]*image_size[0], grid_dim[1]*image_size[1]), 'black')
                 positions = [[j*image_size[0], i*image_size[1]] for i in xrange(grid_dim[1]) for j in xrange(grid_dim[0])]
@@ -480,25 +476,11 @@ class SnapBase():
                 # Rendering subject ID
                 d_usr = ImageDraw.Draw(tiled_image)
 
+                attributes = self.preferences['naming_attributes']
                 attributes = [protocol, subject]
                 #print diskitems
 
-                acquisition_key = {'Grey White Mask' : 'mri',
-                       'Left Hemisphere Mesh' : 'mesh',
-                       'Right Hemisphere Mesh' : 'mesh',
-                       'Left Hemisphere White Mesh' : 'mesh',
-                       'Right Hemisphere White Mesh' : 'mesh',
-                       'Split Brain' : 'mri',
-                       'Left Cortical folds graph' : 'mri',
-                       'Right Cortical folds graph' : 'mri',
-                       'SPM BrainVisa Comparison' : 'mri',
-                       'Raw T1 MRI' : 'mri',
-                       'Vitamin Tablet Snapshots' : 'mri',
-                       'T1 Brain Mask': 'mri',
-                       'Cortical Thickness': 'mesh',
-                       'FreesurferThicknessType' :'mesh',
-                       #==========
-                       'RawSnapBase': 'mri',
+                acquisition_key = { 'RawSnapBase': 'mri',
                        'TabletSnapBase' : 'mri',
                        'SplitBrainSnapBase' : 'mri',
                        'BrainMaskSnapBase' : 'mri',
@@ -508,9 +490,9 @@ class SnapBase():
                        'SulciSingleViewSnapBase' : 'mri',
                        'SulciMultiViewSnapBase' : 'mri'}
 
-                if self.__class__.__name__ not in ['HemiThicknessSnapBase', 'WhiteThicknessSnapBase'] and self.__class__.__name__ not in ['HippocampusLabelSnapBase']:
+                if self.__class__.__name__ not in ['HemiThicknessSnapBase', 'WhiteThicknessSnapBase'] and self.__class__.__name__ not in ['HippocampusLeftSnapBase', 'HippocampusRightSnapBase', 'HippocampusLabelLeftSnapBase', 'HippocampusLabelRightSnapBase', 'HippocampusLabelRawLeftSnapBase', 'HippocampusLabelRawRightSnapBase']:
                     acquisition = diskitems[acquisition_key[self.__class__.__name__]].get('acquisition')
-                elif self.__class__.__name__ not in ['HippocampusLabelSnapBase']:
+                elif self.__class__.__name__ not in ['HippocampusLeftSnapBase', 'HippocampusRightSnapBase', 'HippocampusLabelLeftSnapBase', 'HippocampusLabelRightSnapBase', 'HippocampusLabelRawRightSnapBase', 'HippocampusLabelRawLeftSnapBase']:
                     acquisition = 'FS'
                 else:
                     acquisition = 'sacha'
@@ -555,8 +537,10 @@ class SnapBase():
         # Keep track of the list of produced files but after saving preferences so it is not stored in the prefs
         self.preferences['output_files'] = output_files
 
-        main_window.close()
+        #main_window.close()
         if self.preferences['display_success_msgbox']:
             ok = Qt.QMessageBox.warning(None, 'Success.',
                 '%d snapshots were succesfully created in %s.'%(len(output_files), self.preferences['output_path']), Qt.QMessageBox.Ok)
+
+        main_window.emit(Qt.SIGNAL('finished()'))
         #sys.exit(0)
