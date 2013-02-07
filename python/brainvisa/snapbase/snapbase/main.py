@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 import os, sys
-if not sys.modules.has_key('brainvisa.axon'):
-    from brainvisa import axon
-    axon.initializeProcesses()
 
 from brainvisa.data import neuroHierarchy
 from brainvisa.configuration import neuroConfig
@@ -64,24 +61,17 @@ def brainmask_snap_base():
     snap = splitbrain.BrainMaskSnapBase(preferences)
     snap.snap_base(main_window = main_window, qt_app = qt_app )
 
-def comparison_snap_base():
+def spm_snap_base():
     global main_window, qt_app, database, preferences
     from examples import splitbrain
-    compar_type, ok = Qt.QInputDialog.getItem(None,
-            'which segmentation ?',
-            'select grey matter / white matter / brain mask',
-            ['Grey matter', 'White matter', 'Brain mask'],
-            0, False)
-    if ok:
-        item, ok = Qt.QInputDialog.getItem(None,
-                'Which database',
-                'which db',
-                neuroHierarchy.databases._databases.keys(), 0, False)
-        if ok and item != database.directory:
-            preferences['T1 db'] = item
-            preferences['comparison type'] = compar_type
-            snap = splitbrain.SPMComparisonSnapBase(preferences)
-            snap.snap_base(main_window = main_window, qt_app = qt_app )
+    item, ok = Qt.QInputDialog.getItem(None,
+            'Which database',
+            'which db',
+            neuroHierarchy.databases._databases.keys(), 0, False)
+    if ok :
+        preferences['db'] = item
+        snap = splitbrain.SPMGreySnapBase(preferences)
+        snap.snap_base(main_window = main_window, qt_app = qt_app )
 
 def raw_snap_base():
     global main_window, qt_app, database, preferences
@@ -354,21 +344,21 @@ class DummyDatabase(SQLdb):
     def database(self, name):
         return self
 
-def select_db(item, verbose=True):
-    '''
-    Setup the global variable database according to the selected item in
-    the combobox.
-
-    '''
-
-    global database, preferences
-    database = DummyDatabase(neuroHierarchy.databases._databases.items()[item][1])
-    preferences['database_dir'] = database.directory
-    print 'saving preferences'
-    save_preferences(preferences)
-    if not verbose:
-        msgBox = Qt.QMessageBox.information(None, 'Database selected',
-            'Snapshots will be generated from the following database.\n%s'%database.directory, Qt.QMessageBox.Ok)
+#def select_db(item, verbose=True):
+#    '''
+#    Setup the global variable database according to the selected item in
+#    the combobox.
+#
+#    '''
+#
+#    global database, preferences
+#    database = DummyDatabase(neuroHierarchy.databases._databases.items()[item][1])
+#    preferences['database_dir'] = database.directory
+#    print 'saving preferences'
+#    save_preferences(preferences)
+#    if not verbose:
+#        msgBox = Qt.QMessageBox.information(None, 'Database selected',
+#database.directory, Qt.QMessageBox.Ok)
 
 
 def save_preferences(pref):
@@ -386,7 +376,7 @@ def load_preferences(minf_dict):
     preferences = {}
     default_pref = {'output_path' : '/tmp/',
                     'filename_root' : 'snapshots_',
-                    'database_dir' : '',
+                    #'database_dir' : '',
                     'create_poster' : False,
                     'create_poster_command' : 'montage -geometry +0+0 -background black -tile 10',
                     'remove_snapshots' : False,
@@ -415,7 +405,7 @@ def reload_main_layout():
     gui.sulci_btn.clicked.connect(sulci_snap_base)
     gui.raw_btn.clicked.connect(raw_snap_base)
     gui.fibers_btn.clicked.connect(fibers_snap_base)
-    gui.comparison_btn.clicked.connect(comparison_snap_base)
+    gui.spm_btn.clicked.connect(spm_snap_base)
     gui.tablet_btn.clicked.connect(tablet_snap_base)
     gui.brainmask_btn.clicked.connect(brainmask_snap_base)
     gui.btn_thickness.clicked.connect(thickness_snap_base)
@@ -447,23 +437,23 @@ def main():
         print minf_dict
         preferences = load_preferences(minf_dict[0])
         # Update combobox (same as select_db without confirmation popup)
-        try:
+        #try:
             #database = neuroHierarchy.databases._databases[preferences['database_dir']]
-            database = DummyDatabase(neuroHierarchy.databases._databases[preferences['database_dir']])
-        except KeyError:
-            if len(neuroHierarchy.databases._databases.items()) > 0:
-                preferences['database_dir'], database = neuroHierarchy.databases._databases.items()[0]
-            else:
-                ok = Qt.QMessageBox.warning(None, 'No databases in BrainVisa.',
-                'Please add at least one database in BrainVisa.', Qt.QMessageBox.Ok)
+            #database = DummyDatabase(neuroHierarchy.databases._databases[preferences['database_dir']])
+        #except KeyError:
+        #    if len(neuroHierarchy.databases._databases.items()) > 0:
+        #        preferences['database_dir'], database = neuroHierarchy.databases._databases.items()[0]
+        #    else:
+        #        ok = Qt.QMessageBox.warning(None, 'No databases in BrainVisa.',
+        #        'Please add at least one database in BrainVisa.', Qt.QMessageBox.Ok)
     else:
         # Otherwise, create it and update all necessary
         preferences = load_preferences({})
         select_db(0)
-        preferences['database_dir'] = database.directory
+        #preferences['database_dir'] = database.directory
         save_preferences(preferences)
         msgBox = Qt.QMessageBox.information(None, 'SnapBase settings file created',
-            'Settings will be stored in %s.\nSnapshots will be saved as %s<subject>_<view>.png. It can be edited in the settings file.'%(snapbase_settings_file, preferences['output_path']), Qt.QMessageBox.Ok)
+            'Settings will be stored in %s.\nSnapshots will be saved in %s directory. It can be edited in the settings file.'%(snapbase_settings_file, preferences['output_path']), Qt.QMessageBox.Ok)
 
     gui.set_default_status_msg('output path : %s'%preferences['output_path'])
     main_window.show()

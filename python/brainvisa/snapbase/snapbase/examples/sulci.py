@@ -18,10 +18,6 @@ class SulciSnapBase(SnapBase):
         import neuroHierarchy, neuroProcesses
 
         id_type = 'Cortical folds graph' #Hemisphere White Mesh'
-        req_att = {'_type' : id_type,
-                'labelled' : 'Yes',
-                'graph_version' : '3.1',
-                'manually_labelled' : 'No'}
         d = SnapBaseItemBrowser(neuroHierarchy.databases, required={'_type': id_type})
         res = d.exec_()
         if res == d.Accepted:
@@ -66,8 +62,8 @@ class SulciSnapBase(SnapBase):
         ana_graph.releaseAppRef()
         ana_mesh.releaseAppRef()
         a.execute( 'GraphDisplayProperties', objects=[ana_graph],
-          nomenclature_property='label' )
-        a.setGraphParams(label_attribute='label', show_tooltips=1, use_nomenclature=1)
+          nomenclature_property='name' )
+        a.setGraphParams(label_attribute='name', show_tooltips=1, use_nomenclature=1)
         ana_mesh.setMaterial( a.Material(diffuse = [0.8, 0.8, 0.8, 1.0]) )
 
         self.aobjects['folds graph'] = ana_graph

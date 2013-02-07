@@ -127,6 +127,29 @@ def detect_slices_of_interest(data, slice_directions=['A']):
             slices_minmax[direction] = (first_nonempty_slice, last_nonempty_slice)
     return slices_minmax
 
+def parsefilepath(filepath):
+  import re, os
+
+  print filepath
+  files_dict = { 'raw': os.path.join('(?P<database>[\w -/]+)', '(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', '(?P=subject).nii.gz'),
+                 'acpc': os.path.join('(?P<database>[\w -/]+)' ,'(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', '(?P=subject).APC'),
+                 'nobias': os.path.join('(?P<database>[\w -/]+)', '(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', '(?P<analysis>[\w -]+)', 'nobias_(?P=subject).nii.gz'),
+                 'greywhite': os.path.join('(?P<database>[\w -/]+)', '(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', '(?P<analysis>[\w -]+)', 'segmentation', '(?P<side>[LR]?)grey_white_(?P=subject).nii.gz'),
+                 'brainmask': os.path.join('(?P<database>[\w -/]+)', '(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', '(?P<analysis>[\w -]+)', 'segmentation', 'brain_(?P=subject).nii.gz'),
+                 'split': os.path.join('(?P<database>[\w -/]+)', '(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', '(?P<analysis>[\w -]+)', 'segmentation', 'voronoi_(?P=subject).nii.gz'),
+                 'whitemeshes': os.path.join('(?P<database>[\w -/]+)', '(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', '(?P<analysis>[\w -]+)', 'segmentation', 'mesh', '(?P=subject)_(?P<side>[LR]?)white.gii'),
+                 'hemimeshes': os.path.join('(?P<database>[\w -/]+)', '(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', '(?P<analysis>[\w -]+)', 'segmentation', 'mesh', '(?P=subject)_(?P<side>[LR]?)hemi.gii'),
+                 'sulci': os.path.join('(?P<database>[\w -/]+)', '(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', '(?P<analysis>[\w -]+)', 'folds', '(?P<graph_version>[\d.]+)', '(?P<side>[LR]?)(?P=subject).arg'),
+                 'spm_nobias': os.path.join('(?P<database>[\w -/]+)', '(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', 'whasa_(?P<whasa_analysis>[\w -]+)', 'spm_preproc', 'nobias_(?P=subject).nii'),
+                 'spm_greymap': os.path.join('(?P<database>[\w -/]+)', '(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', 'whasa_(?P<whasa_analysis>[\w -]+)', 'spm_preproc', 'unified_segmentation', '(?P=subject)_grey_probamap.nii'),
+                 'spm_whitemap': os.path.join('(?P<database>[\w -/]+)', '(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', 'whasa_(?P<whasa_analysis>[\w -]+)', 'spm_preproc', 'unified_segmentation', '(?P=subject)_white_probamap.nii')}
+
+
+  for datatype, path in files_dict.items():
+    m = re.match(r"%s"%path, filepath)
+    if m:
+       return datatype, m.groupdict()
+
 
 class SnapBase():
     def __get_slice_position__(self, d, s, voxel_size=[1.0,1.0,1.0,1.0]):
@@ -333,6 +356,25 @@ class SnapBase():
 
         return outfile_path
 
+    def get_acquisition(self, diskitems):
+        acquisition_key = { 'RawSnapBase': 'mri',
+               'TabletSnapBase' : 'mri',
+               'SplitBrainSnapBase' : 'mri',
+               'BrainMaskSnapBase' : 'mri',
+               'GreyWhiteSnapBase' : 'mri',
+               'WhiteMeshSnapBase' : 'mesh',
+               'HemisphereMeshSnapBase' : 'mesh',
+               'SulciSingleViewSnapBase' : 'mri',
+               'SulciMultiViewSnapBase' : 'mri'}
+
+        if self.__class__.__name__ not in ['HemiThicknessSnapBase', 'WhiteThicknessSnapBase'] and self.__class__.__name__ not in ['HippocampusLeftSnapBase', 'HippocampusRightSnapBase', 'HippocampusLabelLeftSnapBase', 'HippocampusLabelRightSnapBase', 'HippocampusLabelRawLeftSnapBase', 'HippocampusLabelRawRightSnapBase']:
+            acquisition = diskitems[acquisition_key[self.__class__.__name__]].get('acquisition')
+        elif self.__class__.__name__ not in ['HippocampusLeftSnapBase', 'HippocampusRightSnapBase', 'HippocampusLabelLeftSnapBase', 'HippocampusLabelRightSnapBase', 'HippocampusLabelRawRightSnapBase', 'HippocampusLabelRawLeftSnapBase']:
+            acquisition = 'FS'
+        else:
+            acquisition = 'sacha'
+        return acquisition
+
     def snap_base(self, main_window = None, qt_app = None, dictdata = None, verbose = False):
 
         import anatomist.direct.api as ana
@@ -479,23 +521,8 @@ class SnapBase():
                 attributes = self.preferences['naming_attributes']
                 attributes = [protocol, subject]
                 #print diskitems
+                acquisition = self.get_acquisition(diskitems)
 
-                acquisition_key = { 'RawSnapBase': 'mri',
-                       'TabletSnapBase' : 'mri',
-                       'SplitBrainSnapBase' : 'mri',
-                       'BrainMaskSnapBase' : 'mri',
-                       'GreyWhiteSnapBase' : 'mri',
-                       'WhiteMeshSnapBase' : 'mesh',
-                       'HemisphereMeshSnapBase' : 'mesh',
-                       'SulciSingleViewSnapBase' : 'mri',
-                       'SulciMultiViewSnapBase' : 'mri'}
-
-                if self.__class__.__name__ not in ['HemiThicknessSnapBase', 'WhiteThicknessSnapBase'] and self.__class__.__name__ not in ['HippocampusLeftSnapBase', 'HippocampusRightSnapBase', 'HippocampusLabelLeftSnapBase', 'HippocampusLabelRightSnapBase', 'HippocampusLabelRawLeftSnapBase', 'HippocampusLabelRawRightSnapBase']:
-                    acquisition = diskitems[acquisition_key[self.__class__.__name__]].get('acquisition')
-                elif self.__class__.__name__ not in ['HippocampusLeftSnapBase', 'HippocampusRightSnapBase', 'HippocampusLabelLeftSnapBase', 'HippocampusLabelRightSnapBase', 'HippocampusLabelRawRightSnapBase', 'HippocampusLabelRawLeftSnapBase']:
-                    acquisition = 'FS'
-                else:
-                    acquisition = 'sacha'
                 attributes.append(acquisition)
                 if d != '3D':
                     attributes.append(d)
