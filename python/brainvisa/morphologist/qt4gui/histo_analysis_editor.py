@@ -34,7 +34,8 @@
 from brainvisa import anatomist
 import numpy
 from PyQt4.QtGui import QDialog, QWidget, QVBoxLayout, QHBoxLayout, \
-    QGridLayout, QPushButton, QLabel, QLineEdit, QDoubleValidator, QSlider
+    QGridLayout, QPushButton, QLabel, QLineEdit, QDoubleValidator, QSlider, \
+    QPixmap, QImage, QColor
 from PyQt4 import QtCore
 from PyQt4.QtCore import Qt
 from morphologist_common import histo_analysis_widget
@@ -65,6 +66,7 @@ class HistoAnalysisEditorWidget( QDialog ):
         self._wsedit = None
         self._color_slider = None
         self._color_label = None
+        self._colormap_widget = None
 
         vlay = QVBoxLayout( self )
         fwid = QWidget( self )
@@ -169,6 +171,15 @@ class HistoAnalysisEditorWidget( QDialog ):
         maxVal = hmax / self._tex_max
         self._color_mri.setPalette( palette=self._palette, minVal=0,
             maxVal=maxVal )
+        if self._colormap_widget is not None:
+            img = QImage( pal.shape[0], 1, QImage.Format_RGB32 )
+            for x in xrange( pal.shape[0] ):
+                img.setPixel( x, 0, QColor( pal[x,0], pal[x,1], pal[x,2] ).rgb() )
+            pix = QPixmap()
+            pix.convertFromImage( img )
+            self._colormap_widget.setPixmap( pix )
+            self._colormap_widget.setFixedHeight( 10 )
+            self._colormap_widget.setScaledContents( True )
 
     def _insert_ana_window( self, fwid ):
         '''Builds the Anatomist axial view with color overlays. A slider
@@ -203,6 +214,9 @@ class HistoAnalysisEditorWidget( QDialog ):
         p = ( bb[0] + bb[1] ) / 2
         awin.SetPosition( p, awin.getReferential() )
         self._fusion2d = fusion
+        # colormap
+        self._colormap_widget = QLabel( wid )
+        lay.addWidget( self._colormap_widget )
         # color slider
         bwid = QWidget( wid )
         lay.addWidget( bwid )
