@@ -1,4 +1,11 @@
+import sys
+
+if not sys.modules.has_key('brainvisa.axon'):
+    from brainvisa import axon
+    axon.initializeProcesses()
+
 from snapbase import detect_slices_of_interest
+from snapbase import parsefilepath
 
 #from brainvisa.snapbase.snapbase.examples.mesh\
 #        import LeftHemisphereMeshSnapBase,\
