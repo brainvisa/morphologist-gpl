@@ -140,8 +140,8 @@ class HistoAnalysisEditorWidget( QDialog ):
         orange = ( 255, 150, 0 )
         grnred = ( 150, 255, 0 )
         pal = numpy.zeros( ( ncolors, 3 ), dtype=int )
-        pal[ l[0] : l[1] ] = lightred
-        pal[ l[2] : l[3] ] = red
+        pal[ l[0] : l[1] ] = lightgreen
+        pal[ l[2] : l[3] ] = green
         l = [ int( round( ( han[1][0] - nstd * han[1][1] ) * factor ) ),
             int( round( ( han[1][0] + nstd * han[1][1] ) * factor ) ) + 1,
             int( round( ( han[1][0] - han[1][1] ) * factor ) ),
@@ -151,17 +151,17 @@ class HistoAnalysisEditorWidget( QDialog ):
         l[1] = min( ncolors, l[1] )
         l[3] = min( ncolors, l[3] )
         p = pal[ l[0] : l[2] ]
-        p[ numpy.all( p==red, axis=1 ) ] = orange
-        p[ numpy.all( p==lightred, axis=1 ) ] = lightyellow
-        p[ numpy.all( p==empty, axis=1 ) ] = lightgreen
+        p[ numpy.all( p==green, axis=1 ) ] = grnred
+        p[ numpy.all( p==lightgreen, axis=1 ) ] = lightyellow
+        p[ numpy.all( p==empty, axis=1 ) ] = lightred
         p = pal[ l[3] : l[1] ]
-        p[ numpy.all( p==red, axis=1 ) ] = orange
-        p[ numpy.all( p==lightred, axis=1 ) ] = lightyellow
-        p[ numpy.all( p==empty, axis=1 ) ] = lightgreen
+        p[ numpy.all( p==green, axis=1 ) ] = grnred
+        p[ numpy.all( p==lightgreen, axis=1 ) ] = lightyellow
+        p[ numpy.all( p==empty, axis=1 ) ] = lightred
         p = pal[ l[2] : l[3] ]
-        p[ numpy.all( p==red, axis=1 ) ] = yellow
-        p[ numpy.all( p==lightred, axis=1 ) ] = grnred
-        p[ numpy.all( p==empty, axis=1 ) ] = green
+        p[ numpy.all( p==green, axis=1 ) ] = yellow
+        p[ numpy.all( p==lightgreen, axis=1 ) ] = orange
+        p[ numpy.all( p==empty, axis=1 ) ] = red
         # force last color to be black
         pal[ -1, : ] = 0
         self._palette.setColors( numpy.ravel( pal ) )
