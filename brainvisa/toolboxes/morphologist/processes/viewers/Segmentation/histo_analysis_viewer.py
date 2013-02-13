@@ -32,6 +32,7 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
+from PyQt4 import QtGui
 
 try:
     from morphologist_common import histo_analysis_widget
@@ -62,6 +63,7 @@ def initialization( self ):
 def create_histo_widget( self, hdata ):
     hwid = histo_analysis_widget.HistoAnalysisWidget( None )
     hwid.setAttribute( QtCore.Qt.WA_DeleteOnClose )
+    hwid.show_toolbar( True )
     hwid.set_histo_data( hdata, nbins=100 )
     hwid.draw_histo()
     hwid.show()

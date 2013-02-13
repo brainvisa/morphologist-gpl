@@ -74,6 +74,7 @@ class HistoAnalysisEditorWidget( QDialog ):
         flay.addWidget( lwid )
         llay = QVBoxLayout( lwid )
         self.hwid = histo_analysis_widget.HistoAnalysisWidget( lwid )
+        self.hwid.show_toolbar( True )
         self.hwid.set_histo_data( hdata )
         self.hwid.set_editable( True )
         self.hwid.draw_histo()
