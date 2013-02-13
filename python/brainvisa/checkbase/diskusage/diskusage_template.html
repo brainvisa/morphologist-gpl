@@ -1,0 +1,58 @@
+
+
+<html>
+<head>
+    <style type="text/css" title="style">
+/* basic elements */
+html {
+        margin: 0;
+        padding: 0;
+        }
+body {
+        font: 100% georgia, sans-serif;
+        line-height: 1.88889;
+        color: #555753;
+        background: #fff no-repeat bottom right;
+        margin: 0;
+        padding: 0;
+        }
+p {
+        margin-top: 0;
+        text-align: justify;
+        }
+h3 {
+        font: italic normal 1.4em georgia, sans-serif;
+        letter-spacing: 1px;
+        margin-bottom: 0;
+        color: #7D775C;
+        }
+
+    </style>
+</head>
+
+
+
+<body>
+<h2>General Disk Usage Information for : <i>$DATABASE_ID</i> (generated on $DATETIME_GENERATED in $EXECUTION_TIME)</h2>
+<br>
+<b><h3>General information :</h3></b><br>
+
+Database directory : $DATABASE_DIR<br>
+Identified studies : <i>$STUDIES ($NUMBER_OF_STUDIES studies)</i><br>
+Identified users : <i>$USERS ($NUMBER_OF_USERS users)</i><br>
+Total space on $DATABASE_DIR : <b>$TOTAL_SPACE</b><br>
+Used space : <b>$USED_SPACE</b><br>
+Free space : <b>$FREE_SPACE ($PERCENT)</b><br>
+<br>
+Number of previous checks : <i>$NUMBER_OF_PREVIOUS_CHECKS</i><br>
+
+<br>
+<b><h3>Detailed information on directories :</h3></b><br>
+$SUMMARY_ON_DIRECTORIES
+<br>
+<b><h3>Detailed information on users :</h3></b><br>
+$SUMMARY_ON_USERS
+$SUMMARY_ON_UNDECLARED_DIRS
+$SUMMARY_ON_UNDECLARED_USERS
+</body>
+</html>
