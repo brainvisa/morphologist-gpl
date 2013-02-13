@@ -63,7 +63,7 @@ class TestMorphologistPipeline(unittest.TestCase):
     self.download_data()
 
     brainvisa.axon.initializeProcesses()
-    self.database_directory = os.path.join( self.tests_dir, 'database_surface' )
+    self.database_directory = os.path.join( self.tests_dir, 'db_morphologist' )
     self.database=self.create_test_database()
     self.db_name = self.database.name
     t1 = self.import_data()
@@ -73,9 +73,7 @@ class TestMorphologistPipeline(unittest.TestCase):
     ac = [114.864585876, 118.197914124, 88.7999954224]
     pc = [116.197914124, 147.53125, 91.1999969482]
     ip = [118.197914124, 99.53125, 45.6000061035]
-    # select steps until split brain and fix the random seed
     nodes.child('TalairachTransformation').setSelected(0)
-    nodes.child('HemispheresMesh').setSelected(0)
     nodes.child('HeadMesh').setSelected(0)
     nodes.child('CorticalFoldsGraph').setSelected(0)
     nodes.child('BiasCorrection').fix_random_seed = True
@@ -84,6 +82,8 @@ class TestMorphologistPipeline(unittest.TestCase):
     nodes.child('SplitBrain').fix_random_seed = True
     nodes.child('GreyWhiteClassification').fix_random_seed = True
     nodes.child('GreyWhiteSurface').fix_random_seed = True
+    nodes.child('HemispheresMesh').fix_random_seed = True
+    #nodes.child('CorticalFoldsGraph').fix_random_seed = True
     #nodes.child("SulciRecognition").setSelected(1)
     
     wd=pipeline.signature["mri_corrected"]
