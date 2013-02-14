@@ -122,7 +122,7 @@ class HistoAnalysisEditorWidget( QDialog ):
     def _make_palette_colors( self ):
         '''Recompute the color overlays palette after histo analysis change'''
         ncolors = 200 # num of colors in the palette
-        nstd = 3 # num of stdev displayed as light color
+        nstd = 2.5 # num of stdev displayed as light color
         han = self.hwid.histodata.han
         hmax = max( ( han[0][0] + han[0][1] ), ( han[1][0] + han[1][1] ) ) \
             * 1.3
@@ -207,7 +207,7 @@ class HistoAnalysisEditorWidget( QDialog ):
         bwid = QWidget( wid )
         lay.addWidget( bwid )
         hlay = QHBoxLayout( bwid )
-        hlay.addWidget( QLabel( 'Color:', bwid ) )
+        hlay.addWidget( QLabel( 'Mixing:', bwid ) )
         self._color_slider = QSlider( Qt.Horizontal, bwid )
         hlay.addWidget( self._color_slider )
         self._color_slider.setRange( 0, 100 )
