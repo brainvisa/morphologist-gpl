@@ -65,6 +65,13 @@ def create_histo_widget( self, hdata ):
     hwid.setAttribute( QtCore.Qt.WA_DeleteOnClose )
     hwid.show_toolbar( True )
     hwid.set_histo_data( hdata, nbins=100 )
+    hwid.layout().addWidget( QtGui.QLabel(
+      '<table><tr><td>Gray peak: </td><td><b>%.1f</b></td>'
+      '<td> , std: </td><td><b>%.1f</b></td></tr>'
+      '<tr><td>White peak: </td><td><b>%.1f</b></td>'
+      '<td> , std: </td><td><b>%.1f</b></td></tr></table>'
+      % ( hdata.han[0][0], hdata.han[0][1], hdata.han[1][0], hdata.han[1][1] ),
+      hwid ) )
     hwid.draw_histo()
     hwid.show()
     return hwid
