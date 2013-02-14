@@ -135,8 +135,8 @@ class HistoAnalysisEditorWidget( QDialog ):
         empty = ( 0, 0, 0 )
         red = ( 255, 0, 0 )
         lightred = ( 255, 150, 150 )
-        lightgreen = numpy.array( ( 150, 255, 150 ) )
-        green = numpy.array( ( 0, 255, 0 ) )
+        lightgreen = numpy.array( ( 180, 255, 180 ) )
+        green = numpy.array( ( 60, 255, 60 ) )
         # different colors for overlaps
         lightyellow = ( 255, 255, 150 )
         yellow = ( 255, 255, 0 )
@@ -192,28 +192,11 @@ class HistoAnalysisEditorWidget( QDialog ):
         awin = a.createWindow( 'Axial' )
         awin.setParent( wid )
         lay.addWidget( awin.getInternalRep() )
-        self._mri_corrected = a.loadObject( self._mri_corrected_diskitem,
-            duplicate=True )
-        self._color_mri = a.duplicateObject( self._mri_corrected )
-        awin.setReferential( self._mri_corrected.referential )
         # avoid referential button to become the default button in dialog
         rbut = awin.findChildren( QPushButton )
         for but in rbut:
             but.setAutoDefault( False )
             but.setDefault( False )
-        self._palette = a.createPalette( 'histo_analysis' )
-        self._tex_max = \
-            self._mri_corrected.getInfos()[ 'texture' ][ 'textureMax' ]
-        self._make_palette_colors()
-        fusion = a.fusionObjects( [ self._mri_corrected, self._color_mri ],
-            method='Fusion2DMethod' )
-        awin.addObjects( fusion )
-        a.execute( 'TexturingParams', objects=[fusion], texture_index=1,
-            mode='linear_A_if_B_black', rate=0.5 )
-        bb = self._mri_corrected.boundingbox()
-        p = ( bb[0] + bb[1] ) / 2
-        awin.SetPosition( p, awin.getReferential() )
-        self._fusion2d = fusion
         # colormap
         self._colormap_widget = QLabel( wid )
         lay.addWidget( self._colormap_widget )
@@ -231,6 +214,24 @@ class HistoAnalysisEditorWidget( QDialog ):
         hlay.addWidget( self._color_label )
         self._color_label.setFixedWidth( self._color_label.sizeHint().width() )
         self._color_label.setText( '50' )
+        # display objects
+        self._mri_corrected = a.loadObject( self._mri_corrected_diskitem,
+            duplicate=True )
+        self._color_mri = a.duplicateObject( self._mri_corrected )
+        awin.setReferential( self._mri_corrected.referential )
+        self._palette = a.createPalette( 'histo_analysis' )
+        self._tex_max = \
+            self._mri_corrected.getInfos()[ 'texture' ][ 'textureMax' ]
+        self._make_palette_colors()
+        fusion = a.fusionObjects( [ self._mri_corrected, self._color_mri ],
+            method='Fusion2DMethod' )
+        awin.addObjects( fusion )
+        a.execute( 'TexturingParams', objects=[fusion], texture_index=1,
+            mode='linear_A_if_B_black', rate=0.5 )
+        bb = self._mri_corrected.boundingbox()
+        p = ( bb[0] + bb[1] ) / 2
+        awin.SetPosition( p, awin.getReferential() )
+        self._fusion2d = fusion
 
     def _insert_text_editors( self, lwid ):
         '''Text displays and edition of G/W peaks and stdev'''
