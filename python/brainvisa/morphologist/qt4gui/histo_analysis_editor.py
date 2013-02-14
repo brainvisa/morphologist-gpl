@@ -31,6 +31,9 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
+'''Histo analysis editor.
+'''
+
 from brainvisa import anatomist
 import numpy
 from PyQt4.QtGui import QDialog, QWidget, QVBoxLayout, QHBoxLayout, \
@@ -174,7 +177,8 @@ class HistoAnalysisEditorWidget( QDialog ):
         if self._colormap_widget is not None:
             img = QImage( pal.shape[0], 1, QImage.Format_RGB32 )
             for x in xrange( pal.shape[0] ):
-                img.setPixel( x, 0, QColor( pal[x,0], pal[x,1], pal[x,2] ).rgb() )
+                img.setPixel( x, 0, QColor( pal[x, 0], pal[x, 1], pal[x, 2]
+                    ).rgb() )
             pix = QPixmap()
             pix.convertFromImage( img )
             self._colormap_widget.setPixmap( pix )
