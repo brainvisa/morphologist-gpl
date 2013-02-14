@@ -179,8 +179,7 @@ class HistoAnalysisEditorWidget( QDialog ):
             for x in xrange( pal.shape[0] ):
                 img.setPixel( x, 0, QColor( pal[x, 0], pal[x, 1], pal[x, 2]
                     ).rgb() )
-            pix = QPixmap()
-            pix.convertFromImage( img )
+            pix = QPixmap.fromImage( img )
             self._colormap_widget.setPixmap( pix )
             self._colormap_widget.setFixedHeight( 10 )
             self._colormap_widget.setScaledContents( True )
