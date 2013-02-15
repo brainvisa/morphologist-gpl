@@ -122,13 +122,14 @@ class HistoAnalysisEditorWidget( QDialog ):
     def _make_palette_colors( self ):
         '''Recompute the color overlays palette after histo analysis change'''
         ncolors = 200 # num of colors in the palette
-        nstd = 2.5 # num of stdev displayed as light color
+        nstdg = 2.5 # num of stdev displayed as light color for gray
+        nstdw = 3. # num of stdev displayed as light color for white
         han = self.hwid.histodata.han
         hmax = max( ( han[0][0] + han[0][1] ), ( han[1][0] + han[1][1] ) ) \
             * 1.3
         factor = ncolors / ( hmax + 1. )
-        l = [ int( round( ( han[0][0] - nstd * han[0][1] ) * factor ) ),
-            int( round( ( han[0][0] + nstd * han[0][1] ) * factor ) ) + 1,
+        l = [ int( round( ( han[0][0] - nstdg * han[0][1] ) * factor ) ),
+            int( round( ( han[0][0] + nstdg * han[0][1] ) * factor ) ) + 1,
             int( round( ( han[0][0] - han[0][1] ) * factor ) ),
             int( round( ( han[0][0] + han[0][1] ) * factor ) ) + 1 ]
         l[0] = max( 0, l[0] )
@@ -148,8 +149,8 @@ class HistoAnalysisEditorWidget( QDialog ):
         pal = numpy.zeros( ( ncolors, 3 ), dtype=int )
         pal[ l[0] : l[1] ] = lightgreen
         pal[ l[2] : l[3] ] = green
-        l = [ int( round( ( han[1][0] - nstd * han[1][1] ) * factor ) ),
-            int( round( ( han[1][0] + nstd * han[1][1] ) * factor ) ) + 1,
+        l = [ int( round( ( han[1][0] - nstdw * han[1][1] ) * factor ) ),
+            int( round( ( han[1][0] + nstdw * han[1][1] ) * factor ) ) + 1,
             int( round( ( han[1][0] - han[1][1] ) * factor ) ),
             int( round( ( han[1][0] + han[1][1] ) * factor ) ) + 1 ]
         l[0] = max( 0, l[0] )
