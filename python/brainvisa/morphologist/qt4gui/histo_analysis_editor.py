@@ -157,17 +157,44 @@ class HistoAnalysisEditorWidget( QDialog ):
         l[1] = min( ncolors, l[1] )
         l[3] = min( ncolors, l[3] )
         p = pal[ l[0] : l[2] ]
-        p[ numpy.all( p==green, axis=1 ) ] = grnred
-        p[ numpy.all( p==lightgreen, axis=1 ) ] = lightyellow
-        p[ numpy.all( p==empty, axis=1 ) ] = lightred
+        try:
+            p[ numpy.all( p==green, axis=1 ) ] = grnred
+        except IndexError:
+            pass
+        try:
+            p[ numpy.all( p==lightgreen, axis=1 ) ] = lightyellow
+        except IndexError:
+            pass
+        try:
+            p[ numpy.all( p==empty, axis=1 ) ] = lightred
+        except IndexError:
+            pass
         p = pal[ l[3] : l[1] ]
-        p[ numpy.all( p==green, axis=1 ) ] = grnred
-        p[ numpy.all( p==lightgreen, axis=1 ) ] = lightyellow
-        p[ numpy.all( p==empty, axis=1 ) ] = lightred
+        try:
+            p[ numpy.all( p==green, axis=1 ) ] = grnred
+        except IndexError:
+            pass
+        try:
+            p[ numpy.all( p==lightgreen, axis=1 ) ] = lightyellow
+        except IndexError:
+            pass
+        try:
+            p[ numpy.all( p==empty, axis=1 ) ] = lightred
+        except IndexError:
+            pass
         p = pal[ l[2] : l[3] ]
-        p[ numpy.all( p==green, axis=1 ) ] = yellow
-        p[ numpy.all( p==lightgreen, axis=1 ) ] = orange
-        p[ numpy.all( p==empty, axis=1 ) ] = red
+        try:
+            p[ numpy.all( p==green, axis=1 ) ] = yellow
+        except IndexError:
+            pass
+        try:
+            p[ numpy.all( p==lightgreen, axis=1 ) ] = orange
+        except IndexError:
+            pass
+        try:
+            p[ numpy.all( p==empty, axis=1 ) ] = red
+        except IndexError:
+            pass
         # force last color to be black
         pal[ -1, : ] = 0
         self._palette.setColors( numpy.ravel( pal ) )
