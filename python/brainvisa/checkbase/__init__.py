@@ -110,11 +110,14 @@ def processregexp(regexp, attributes):
 
 def get_subject_hierarchy_files(databasedir, subject):
     from glob import glob
-    key_items = ['raw', 'acpc', 'nobias', 'greywhite', 'brainmask', 'split', 'whitemeshes', 'hemimeshes', 'sulci']
-    attributes = {'subject': subject, 'group': '*', 'database': databasedir, 'modality': '*', 'acquisition': '*', 'analysis':'*','side':'*', 'graph_version':'*'}
+    key_items = ['raw', 'acpc', 'nobias', 'greywhite', 'brainmask', 'split', 'whitemeshes', 'hemimeshes', 'sulci', 'spm_greymap', 'spm_whitemap']
+    attributes = {'subject': subject, 'group': '*', 'database': databasedir, 'modality': '*', 
+                'acquisition': '*', 'analysis':'*', 'side':'*', 'graph_version':'*', 'whasa_analysis':'*'}
     items = {}
     for each in key_items:
         items[each] = glob(processregexp(morphologist_patterns[each], attributes))
+        if len(items[each]) == 0:
+            items.pop(each)
     return items
 
 def get_files(databasedir):
@@ -176,7 +179,7 @@ def check_database_for_existing_files(databasedir):
    for subject in all_subjects:
      subject_files = get_subject_files(databasedir, subject)
      for each in subject_files:
-        m = parsefilepath(each, snapshots_patterns)
+        m = parsefilepath(each, morphologist_patterns) #snapshots_patterns)
         if m:
           datatype, attributes = m
           all_subjects_files.setdefault(subject, {})
@@ -185,4 +188,53 @@ def check_database_for_existing_files(databasedir):
           not_recognized.setdefault(subject, []).append(each)
    return all_subjects_files, not_recognized
     
+def detect_hierarchy(directory, returnvotes=False):
+    from glob import glob
+    import string
+    votes = {'morphologist': 0, 'freesurfer': 0, 'snapshots':0}
+    
+    if os.path.split(os.path.abspath(directory))[1] in ['snapshots']:
+       votes['snapshots'] += 1
+    items = [os.path.split(e)[1] for e in glob('%s/*'%directory)]
+    for each in items:
+      if os.path.isfile(os.path.join(directory, each)) and each[:9] == 'snapshots' and os.path.splitext(each)[1] == '.png':
+        votes['snapshots'] += 1
+      if os.path.isdir(os.path.join(directory, each)): 
+        directories = [os.path.split(e)[1] for e in glob('%s/*'%os.path.join(directory, each)) if os.path.isdir(e)]
+        fs_key_items = ['surf', 'stats', 'src', 'touch', 'label', 'bem', 'scripts', 'tmp', 'trash']
+        s = len(set(directories).intersection(set(fs_key_items)))
+        if s == len(fs_key_items):
+          votes['freesurfer'] += len(fs_key_items)
+        
+#        for root, directories, files in os.walk(each):
+#          if len(string.split(root, os.path.sep)) > 7:
+#            break
+        directories = [os.path.split(e)[1] for e in glob('%s/*/*'%os.path.join(directory, each)) if os.path.isdir(e)]
+        
+        for each_dir in directories:
+           if each_dir in ['t1mri']: #, 'default_analysis', 'whasa_default_analysis', 
+              #'spm_preproc', 'segmentation']:
+                  subdirectories = [os.path.split(e)[1] for e in glob('%s/*/%s/*/*'%(os.path.join(directory, each), each_dir)) if os.path.isdir(e)]
+                  for each_subdir in subdirectories:
+                     if each_subdir in ['default_analysis', 'whasa_default_analysis']:  
+                        #'spm_preproc', 'segmentation']:
+                        votes['morphologist'] += 1
+    m = max(votes.values())
+    if votes.values().count(m) > 1:
+      return None
+    if returnvotes:
+      return votes.keys()[votes.values().index(m)], votes
+    else:
+      return votes.keys()[votes.values().index(m)]
 
+
+
+def detect_hierarchies(rootdir):
+   hierarchies = {}
+   for root, dirs, files in os.walk(rootdir): #, topdown=False):
+      hierarchy = detect_hierarchy(root, True)
+      if hierarchy:
+        winner, votes = hierarchy
+        print root, votes
+        hierarchies[root] = winner
+   return hierarchies

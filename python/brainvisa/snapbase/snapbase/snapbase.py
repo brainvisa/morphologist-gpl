@@ -417,11 +417,11 @@ class SnapBase():
         import os, sys
         from brainvisa.configuration import neuroConfig
         sulci_hierarchy_path = os.path.join(neuroConfig.getSharePath(), neuroConfig.brainvisa_share.config.share, 'nomenclature/hierarchy/sulcal_root_colors.hie')
-        fibers_hierarchy_path = '/neurospin/lnao/Panabase/fibres/pamela/atlas_faisceaux/faisceaux_longs.hie'
+        #fibers_hierarchy_path = '/neurospin/lnao/Panabase/fibres/pamela/atlas_faisceaux/faisceaux_longs.hie'
 
         from soma import aims
         self.sulci_hierarchy = a.toAObject(aims.read(sulci_hierarchy_path))
-        self.fibers_hierarchy = a.toAObject(aims.read(fibers_hierarchy_path))
+        #self.fibers_hierarchy = a.toAObject(aims.read(fibers_hierarchy_path))
 
         #==================================================
         # Creates Anatomist Window
