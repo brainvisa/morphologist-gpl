@@ -188,7 +188,7 @@ matlabbatch{%d}.spm.spatial.normalise.estwrite.roptions.prefix = 'w';
     for i in range( len( anat_paths ) ):
         outfile = anat_paths[i][:anat_paths[i].rfind('.')] + '_sn.mat'
         if self.transformations_informations.fullPath() != outfile:
-            shelltools.cp( outfile,
+            shelltools.mv( outfile,
                 self.transformations_informations.fullPath() )
 
     # Rename the normalized volume written by spm in a form that fit
