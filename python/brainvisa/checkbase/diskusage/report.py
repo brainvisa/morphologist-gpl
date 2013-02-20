@@ -27,6 +27,15 @@ class size( long ):
         return ("{0:{1}f}"+s[i]).format(v, fmt[:-1])
 
 
+def revision_number(filepath):
+   import subprocess, string
+
+   df = subprocess.Popen(['svn', 'info', filepath], stdout=subprocess.PIPE)
+   output = df.communicate()[0]
+   rev_number = string.atoi(output.split('\n')[4].split(' ')[1])
+   return rev_number
+
+
 class HTMLReportGenerator():
 
     def __init__(self, database_checker):
@@ -50,13 +59,14 @@ class HTMLReportGenerator():
 
         html_report = ''
         templates = { 'DISKUSAGE' : 'diskusage_template.html',
-            'TEST' : 'test_template.html',
-            'FEATURE' : 'feature_template.html',
-            'PROTOCOL_TEST' : 'protocol_test_template.html',
-            'PROTOCOL_FEATURE' : 'protocol_feature_template.html' }
+            'HIERARCHY' : 'hierarchy_template.html',
+        }
         m = sys.modules['brainvisa.checkbase.diskusage.check']
         report_template_path = os.path.join(os.path.split(m.__file__)[0],
                 templates[template_id])
+        parent_path = os.path.split(os.path.realpath(report_template_path))[0]
+        conversion_hashtable.update( {'$REVISION_NUMBER' : str(revision_number(parent_path)), })
+
         template_file = open(report_template_path, 'rb')
 
         for line in template_file:
@@ -87,7 +97,7 @@ class HTMLReportGenerator():
             summary += '<br><b><h3>Detailed information on undeclared directories :</h3></b><br>'
 
             for study, study_size in self.database_checker.other_studies.items():
-                gecos, name = self._get_owner_username(os.path.join(self.database_checker.database, study))
+                gecos, name = self._get_owner_username(os.path.join(self.database_checker.rootdirectory, study))
                 summary = summary + '%s: %s (%s - %s)<br>'%(study, str("{0:.2S}".format(size(study_size))), gecos, name)
             summary += '<br>'
         return summary
@@ -109,6 +119,27 @@ class HTMLReportGenerator():
             summary += '<br>'
         return summary
 
+#    def _generate_detailed_directories(self):
+#        from brainvisa import checkbase as c
+#        summary = ''
+#        print self.database_checker.databases['hierarchies']
+#        for key, hierarchies in self.database_checker.databases['hierarchies'].items():
+#            summary += 'Results for directory %s<br><br>'%key
+#            if hierarchies :
+#                for hieradir, hieratype in hierarchies.items():
+#                    subjects = self.database_checker.databases['all_subjects'][hieradir]
+#                    conversion_hashtable = {'$HIERARCHY_DIR': str('%s'%hieradir),
+#                        '$HIERARCHY_DETECTED_TYPE' : str(hieratype),
+#                        '$HIERARCHY_SUBJECTSDIRECTORY' : str('%s (%i)'%(subjects, len(subjects))),
+#                        '$HIERARCHY_SUBJECT_KEY_ITEMS' : str('%s'%(self.database_checker.databases['key_items'][hieradir])),
+#                        '$HIERARCHY_VALID_SUBJECTS' : str(''),
+#                        '$HIERARCHY_INVALID_SUBJECTS' : str(''),
+#                        '$HIERARCHY_IDENTIFIED_ITEMS' : str(self.database_checker.databases['existing_files'][hieradir]),
+#                        '$HIERARCHY_UNIDENTIFIED_FILES' : str(''),
+#                        '$BIOMARKERS' : str(''),
+#                    }
+#                summary += self._convert_from_template('HIERARCHY', conversion_hashtable)
+#        return summary
 
     def generate_html_report(self):
         '''
@@ -123,7 +154,7 @@ class HTMLReportGenerator():
         db_id = '/neurospin/cati/'
         datetime_string = str(time.strftime('%d %m %Y %H:%M:%S', time.gmtime()))
         device, total_size, used, available, percent = string.split(self.database_checker.global_disk_space, ' ')
-        nb_previous_checks = len(glob('/neurospin/cati/Users/operto/logs/*.pdf'))
+        nb_previous_checks = len(glob('/neurospin/cati/Users/operto/logs/report*.*'))
         percent = 100.0 - float(percent)
         hours, remainder = divmod(int(self.database_checker.execution_time), 3600)
         minutes, seconds = divmod(remainder, 60)
@@ -149,6 +180,8 @@ class HTMLReportGenerator():
             '$SUMMARY_ON_UNDECLARED_DIRS' : str(self._generate_summary_on_undeclared_directories()),
             '$SUMMARY_ON_UNDECLARED_USERS' : str(self._generate_summary_on_undeclared_users()),
             '$EXECUTION_TIME' : str(execution_time),
+            #'$HIERARCHIES' : str(self.database_checker.databases['hierarchies']),
+            #'$DETAILED_DIRECTORIES' : str(self._generate_detailed_directories()),
         }
 
         return self._convert_from_template('DISKUSAGE', conversion_hashtable)

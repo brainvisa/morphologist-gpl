@@ -27,6 +27,7 @@ h3 {
         color: #7D775C;
         }
 
+
     </style>
 </head>
 
@@ -34,6 +35,7 @@ h3 {
 
 <body>
 <h2>General Disk Usage Information for : <i>$DATABASE_ID</i> (generated on $DATETIME_GENERATED in $EXECUTION_TIME)</h2>
+<i>&nbsp;&nbsp;Template revision #$REVISION_NUMBER</i>
 <br>
 <b><h3>General information :</h3></b><br>
 
@@ -47,12 +49,21 @@ Free space : <b>$FREE_SPACE ($PERCENT)</b><br>
 Number of previous checks : <i>$NUMBER_OF_PREVIOUS_CHECKS</i><br>
 
 <br>
-<b><h3>Detailed information on directories :</h3></b><br>
+<b><h3>Summary information on directories :</h3></b><br>
 $SUMMARY_ON_DIRECTORIES
 <br>
-<b><h3>Detailed information on users :</h3></b><br>
+<b><h3>Summary information on users :</h3></b><br>
 $SUMMARY_ON_USERS
+
 $SUMMARY_ON_UNDECLARED_DIRS
+
 $SUMMARY_ON_UNDECLARED_USERS
+<br>
+<b><h3>Detailed information on directories :</h3></b><br>
+$DETAILED_DIRECTORIES
+
+<br>
+<b><h3>WIP :</h3></b><br>
+$HIERARCHIES
 </body>
 </html>
