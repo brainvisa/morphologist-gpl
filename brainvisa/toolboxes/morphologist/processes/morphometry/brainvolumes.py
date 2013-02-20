@@ -51,22 +51,30 @@ signature = Signature(
        'AIMS writable volume formats' ),
    'RCSF_interface', WriteDiskItem( 'Right CSF Mask',
        'AIMS writable volume formats' ),
+   'split_mask', ReadDiskItem( 'Split brain mask',
+      'AIMS readable volume formats' ),
+   'subject_name', String(),
    'volumes', WriteDiskItem( 'Data Table', 'Text Data Table' ),
 )
 
 def initialization( self ):
-  def linkvol( self, proc ):
+  def linkSubject( self, proc ):
     if self.mri_corrected is not None:
       subject = self.mri_corrected.get('subject')
+      return subject
+  def linkvol( self, proc ):
+    if self.subject_name is not None:
       return os.path.join( neuroConfig.temporaryDirectory,
-        'volumes_' + subject + '.dat' )
+        'volumes_' + self.subject_name + '.dat' )
     return None
   self.linkParameters( 'LGW_interface', 'mri_corrected' )
   self.linkParameters( 'RGW_interface', 'mri_corrected' )
   self.linkParameters( 'LCSF_interface', 'mri_corrected' )
   self.linkParameters( 'RCSF_interface', 'mri_corrected' )
-  self.linkParameters( 'volumes', 'mri_corrected', linkvol )
-  self.setOptional( 'volumes' )
+  self.linkParameters( 'subject_name', 'mri_corrected', linkSubject )
+  self.linkParameters( 'split_mask', 'mri_corrected' )
+  self.linkParameters( 'volumes', 'subject_name', linkvol )
+  self.setOptional( 'volumes', 'subject_name' )
 
 
 def execution( self, context ):
@@ -91,7 +99,7 @@ def execution( self, context ):
     rres = {}
     white = im1.fullPath()
 
-    subject = self.LGW_interface.get('subject')
+    subject = self.subject_name
 
 
     # white
@@ -132,7 +140,8 @@ def execution( self, context ):
                            left_grey_white = self.LGW_interface,
                            right_grey_white = self.RGW_interface,
                            left_csf = self.LCSF_interface,
-                           right_csf = self.RCSF_interface)
+                           right_csf = self.RCSF_interface,
+                           split_mask = self.split_mask)
     
     lres[ 'LCR' ] = massCenter( context, self.LCSF_interface )
     context.write( 'Left CSF volume: ', lres[ 'LCR' ], '\n' )

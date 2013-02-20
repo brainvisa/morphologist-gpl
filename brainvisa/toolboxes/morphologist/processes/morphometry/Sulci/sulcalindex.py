@@ -42,8 +42,25 @@ userLevel = 1
 signature = Signature(
     'graphs', ListOf( ReadDiskItem( 'Cortical folds graph', 'Graph',
                       requiredAttributes = { 'graph_version' : '3.1' } ) ),
+    'subjects', ListOf( String() ),
+    'sides', ListOf( String() ),
     'output_csv_file', WriteDiskItem( 'CSV file', 'CSV file' )
 )
+
+
+def initialization( self ):
+  def linkSubjects( self, proc ):
+    s = []
+    for g in self.graphs:
+      s.append( g.get( 'subject' ) )
+    return s
+  def linkSides( self, proc ):
+    s = []
+    for g in self.graphs:
+      s.append( g.get( 'side' ) )
+    return s
+  self.linkParameters( 'subjects', 'graphs', linkSubjects )
+  self.linkParameters( 'sides', 'graphs', linkSides )
 
 
 def execution( self, context ):
@@ -51,10 +68,12 @@ def execution( self, context ):
   n = 0
   f = open( self.output_csv_file.fullPath(), 'w' )
   f.write( 'subject\tside\traw\tnormalized\n' )
+  itsubject = iter( self.subjects )
+  itsides = iter( self.sides )
   for graph in self.graphs:
     context.progress( n, ng, process=self )
-    subject = graph.get('subject')
-    side = graph.get('side')
+    subject = itsubject.next()
+    side = itsides.next()
 
     reader = aims.Reader( options={ 'subobjectsfilter' : 0 } )
     ingraph = reader.read( graph.fullPath() )
