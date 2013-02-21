@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import os
 from general import *
+from brainvisa.checkbase import *
+from brainvisa.checkbase.hierarchies.checkbase import Checkbase
 
 patterns = { }
 keyitems = []
@@ -14,3 +16,6 @@ class FreeSurferCheckbase(Checkbase):
               if os.path.isdir(os.path.join(self.directory, each))]
         if save: self.subjects = subjects
         return subjects
+
+    def check_database_for_existing_files(self):
+        return ({}, {})

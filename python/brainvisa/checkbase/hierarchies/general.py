@@ -28,21 +28,6 @@ def processregexp(regexp, attributes):
             res.append('%s%s'%(attributes[field], t[1]))
     return string.join(res, '')
 
-
-def get_subject_hierarchy_files(databasedir, subject, keyitems = None, attributes = None):
-    import morphologist as morpho
-    if not keyitems: keyitems = morpho.keyitems
-    morphologist_attributes = {'subject': subject, 'group': '*', 'database': databasedir, 'modality': '*',
-                'acquisition': '*', 'analysis':'*', 'side':'*', 'graph_version':'*', 'whasa_analysis':'*'}
-    if attributes is None: attributes = morphologist_attributes
-    from glob import glob
-    items = {}
-    for each in key_items:
-        items[each] = glob(processregexp(morpho.patterns[each], attributes))
-        if len(items[each]) == 0:
-            items.pop(each)
-    return items
-
 def get_files(databasedir):
   ''' Returns a list of the files contained in the directory and subdirectories '''
   all_files = []
@@ -80,12 +65,9 @@ def get_subject_files(databasedir, subject):
   return subject_files
 
 
-#def subject_multiplicity(databasedir):
-#    ''' return a list of subjects whose ID is found multiple times in a database directory '''
 
 
 
-#def check_database_for_complete_subjects(databasedir):
 #    all_subjects = get_all_subjects(databasedir)
 
 def detect_hierarchy(directory, returnvotes = False, maxvote=50):

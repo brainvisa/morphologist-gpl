@@ -2,6 +2,7 @@
 import os
 from general import *
 from brainvisa.checkbase import *
+from brainvisa.checkbase.hierarchies.checkbase import Checkbase
 
 patterns = { 'raw': os.path.join('(?P<database>[\w -/]+)', '(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', '(?P=subject).%s'%image_extensions),
                  'acpc': os.path.join('(?P<database>[\w -/]+)' ,'(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', '(?P=subject).APC'),
@@ -34,7 +35,7 @@ class MorphologistCheckbase(Checkbase):
         return centres
 
     def get_subjects(self, excludelist = ['sacha_log_files', 'whasa_log_files'], save = True):
-        centres = self.get_centres(self.directory)
+        centres = self.get_centres(save = False)
         centres_dic = {}
         for centre in centres:
             centres_dic[centre] = []
@@ -46,8 +47,22 @@ class MorphologistCheckbase(Checkbase):
         if save: self.subjects = centres_dic
         return centres_dic
 
-    def missingsubjectfiles(self, subject):
-        items = get_subject_hierarchy_files(self.directory, subject)
+    def get_subject_hierarchy_files(self, subject, keyitems = None, attributes = None):
+       from brainvisa.checkbase.hierarchies import morphologist as morpho
+       if not keyitems: keyitems = morpho.keyitems
+       morphologist_attributes = {'subject': subject, 'group': '*', 'database': self.directory, 'modality': '*',
+                   'acquisition': '*', 'analysis':'*', 'side':'*', 'graph_version':'*', 'whasa_analysis':'*'}
+       if attributes is None: attributes = morphologist_attributes
+       from glob import glob
+       items = {}
+       for each in keyitems:
+           items[each] = glob(processregexp(morpho.patterns[each], attributes))
+           if len(items[each]) == 0:
+               items.pop(each)
+       return items
+
+    def get_subject_missingfiles(self, subject):
+        items = self.get_subject_hierarchy_files(subject)
         missing = []
         for key, value in items.items():
             if len(value) == 0:
@@ -55,17 +70,18 @@ class MorphologistCheckbase(Checkbase):
         return missing
 
     def check_database_for_missing_files(self, save = True):
-        all_subjects = get_flat_subjects(self.directory)
-        missingsubjects = {}
+        all_subjects = self.get_flat_subjects()
+        incompletesubjects = {}
         for subject in all_subjects:
-            missing = missingsubjectfiles(self.directory, subject)
+            missing = self.get_subject_missingfiles(subject)
             if len(missing) > 0:
-                missingsubjects[subject] = missing
-        if save: self.missingsubjects = missingsubjects
-        return missingsubjects
+                incompletesubjects[subject] = missing
+        if save: self.incompletesubjects = incompletesubjects
+        return incompletesubjects
 
     def check_database_for_existing_files(self, save = True):
-       all_subjects = get_flat_subjects(self.directory)
+       from brainvisa.checkbase.hierarchies import morphologist as morpho
+       all_subjects = self.get_flat_subjects()
        all_subjects_files = {}
        not_recognized = {}
        for subject in all_subjects:
@@ -75,7 +91,7 @@ class MorphologistCheckbase(Checkbase):
              not_recognized.setdefault(subject, []).append('subject id exists multiple times')
              subject_files = []
          for each in subject_files:
-            m = parsefilepath(each, self.patterns) #snapshots_patterns)
+            m = parsefilepath(each, morpho.patterns) #snapshots_patterns)
             if m:
               datatype, attributes = m
               all_subjects_files.setdefault(subject, {})
@@ -84,3 +100,7 @@ class MorphologistCheckbase(Checkbase):
               not_recognized.setdefault(subject, []).append(each)
        if save: self.existingfiles = (all_subjects_files, not_recognized)
        return all_subjects_files, not_recognized
+
+    #def check_database_for_complete_subjects(self):
+
+
