@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 from general import *
+from brainvisa.checkbase import *
 
 patterns = { 'raw': os.path.join('(?P<database>[\w -/]+)', '(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', '(?P=subject).%s'%image_extensions),
                  'acpc': os.path.join('(?P<database>[\w -/]+)' ,'(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', '(?P=subject).APC'),
@@ -17,10 +18,9 @@ patterns = { 'raw': os.path.join('(?P<database>[\w -/]+)', '(?P<group>[\w -]+)',
 
 keyitems = ['raw', 'acpc', 'nobias', 'greywhite', 'brainmask', 'split', 'whitemeshes', 'hemimeshes', 'sulci', 'spm_greymap', 'spm_whitemap']
 
-class MorphologistCheckbase(): #Checkbase):
+class MorphologistCheckbase(Checkbase):
     def __init__(self, directory):
-        #Checkbase.__init__(self, directory)
-        self.directory = directory
+        Checkbase.__init__(self, directory)
 
     def get_centres(self, excludelist = ['history_book'], save = True):
         centres = []

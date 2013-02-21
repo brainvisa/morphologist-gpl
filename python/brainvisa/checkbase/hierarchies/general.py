@@ -3,25 +3,17 @@ import os
 image_extensions = '(nii.gz|nii|ima|ima.gz)'
 mesh_extensions = '(gii|mesh)'
 
-patterns = {'morphologist' : {}, #morpho.patterns,
-            'freesurfer' : {}, #free.patterns,
-            'snapshots': {}}#snap.patterns, }
-
-keyitems = {'morphologist' : {},#morpho.keyitems,
-            'freesurfer' : {},#free.keyitems,
-            'snapshots' : {}}#snap.keyitems, }
-
-
-def parsefilepath(filepath, patterns = patterns['morphologist']):
+def parsefilepath(filepath, patterns = None):
+  import morphologist as morpho
   import re, os
-  for datatype, path in patterns.items():
+  for datatype, path in morpho.patterns.items():
     m = re.match(r"%s"%path, filepath)
     if m:
        return datatype, m.groupdict()
 
 
 def getfilepath(datatype, attributes):
-    return processregexp(patterns['morphologist'][datatype], attributes)
+    return processregexp(morpho.patterns[datatype], attributes)
 
 
 def processregexp(regexp, attributes):
@@ -37,15 +29,16 @@ def processregexp(regexp, attributes):
     return string.join(res, '')
 
 
-def get_subject_hierarchy_files(databasedir, subject, key_items = keyitems['morphologist'], attributes = None):
-
+def get_subject_hierarchy_files(databasedir, subject, keyitems = None, attributes = None):
+    import morphologist as morpho
+    if not keyitems: keyitems = morpho.keyitems
     morphologist_attributes = {'subject': subject, 'group': '*', 'database': databasedir, 'modality': '*',
                 'acquisition': '*', 'analysis':'*', 'side':'*', 'graph_version':'*', 'whasa_analysis':'*'}
     if attributes is None: attributes = morphologist_attributes
     from glob import glob
     items = {}
     for each in key_items:
-        items[each] = glob(processregexp(patterns['morphologist'][each], attributes))
+        items[each] = glob(processregexp(morpho.patterns[each], attributes))
         if len(items[each]) == 0:
             items.pop(each)
     return items
@@ -176,3 +169,4 @@ def detect_hierarchies(rootdir, maxdepth=3):
         print root, votes
         hierarchies[root] = winner
    return hierarchies
+

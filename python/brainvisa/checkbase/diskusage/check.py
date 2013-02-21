@@ -88,13 +88,16 @@ def check_free_disk(input_dir, get_sizes = False):
    all_users_list = [each for each in os.listdir(users_dir) if os.path.isdir(os.path.join(users_dir, each))]
    all_studies_list = [ each for each in os.listdir(input_dir) if os.path.isdir(os.path.join(input_dir, each))]
 
-   identified_users_list = users_dict.keys()
+   excludelist = ['.snapshot', 'Users']
+   for each in excludelist:
+      if each in all_studies_list:
+         all_studies_list.pop(all_studies_list.index(each))
 
    # processing users folders
    print 'Processing users...'
    for user in all_users_list:
        print user, 'in progress'
-       if user in identified_users_list:
+       if user in users_dict.keys():
             users_space[user] = get_size(os.path.join(users_dir, user))
             print user, users_space[user], 'identified', time.time() - start_time
        else:
@@ -128,6 +131,7 @@ def check_free_disk(input_dir, get_sizes = False):
 def check_hierarchies(input_dir, do_it = False):
 
    from brainvisa import checkbase as c
+   from brainvisa.checkbase import morphologist as morpho
 
    # create some lists/directories
    databases = {}
@@ -156,6 +160,7 @@ def check_hierarchies(input_dir, do_it = False):
                 databases['hierarchies'][user] = h
                 for db, hiertype in h.items():
                     if hiertype == 'morphologist': m = c.morpho.MorphologistCheckbase(db)
+
                     databases['existing_files'][db] = m.check_database_for_existing_files()
                     databases['all_subjects'][db] = m.get_all_subjects(db)
                     databases['key_items'][db] = m.keyitems
