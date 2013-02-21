@@ -232,11 +232,15 @@ def perform_check(input_dir, logdir = '/neurospin/cati/Users/operto/logs'):
 
     import sys
     print 'Checking free disk............................................'
-    database_checker = check_free_disk(input_dir, get_sizes = False)
+    database_checker = check_free_disk(input_dir, get_sizes = True)
     print ''
     print 'Checking hierarchies............................................'
-    dbcheck_hierachies = check_hierarchies(input_dir, True)
-    database_checker.databases = dbcheck_hierachies.databases
+    try:
+      dbcheck_hierachies = check_hierarchies(input_dir, True)
+      database_checker.databases = dbcheck_hierachies.databases
+    except Exception as e:
+      print e
+      pass
 
     # generating report
     import pdf, report, time

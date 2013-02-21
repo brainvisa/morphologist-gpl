@@ -28,8 +28,11 @@ class Checkbase():
     def get_flat_subjects(self):
         all_subjects = []
         subjects = self.get_subjects()
-        for each in subjects.values():
-          all_subjects.extend(each)
+        if hasattr(subjects, values):
+         for each in subjects.values():
+            all_subjects.extend(each)
+        else:
+           all_subjects.extend(subjects)
         return all_subjects
 
     def check_empty_directories(self):
