@@ -103,7 +103,7 @@ def check_free_disk(input_dir, get_sizes = False):
 
    # processing studies folders
    print 'Processing studies...'
-   for study in studies_list:
+   for study in all_studies_list:
        print study, 'in progress'
        if study in studies_list:
            studies_space[study] = get_size(os.path.join(input_dir, study))
@@ -205,7 +205,7 @@ def perform_check(input_dir, logdir = '/neurospin/cati/Users/operto/logs'):
 
     import sys
     print 'Checking free disk............................................'
-    database_checker = check_free_disk(input_dir, get_sizes = False)
+    database_checker = check_free_disk(input_dir, get_sizes = True)
     #print ''
     #print 'Checking hierarchies............................................'
     #dbcheck_hierachies = check_hierarchies(input_dir, True)
