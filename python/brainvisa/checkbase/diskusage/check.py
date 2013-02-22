@@ -128,6 +128,35 @@ def check_free_disk(input_dir, get_sizes = False):
    return database_checker
 
 
+def perform_checks_hierarchy(h):
+    from brainvisa.checkbase.hierarchies import morphologist as morpho
+    print h
+    checks = {}
+    for each in ['hierarchies', 'existing_files', 'all_subjects', 'key_items', 'complete_subjects',
+      'multiple_subjects', 'empty_subjects']:
+        checks[each] = {}
+
+    for db, hiertype in h.items():
+        if hiertype == 'morphologist':
+           m = morpho.MorphologistCheckbase(db)
+           checks['key_items'][db] = morpho.keyitems
+        elif hiertype == 'freesurfer':
+           m = free.FreeSurferCheckbase(db)
+           checks['key_items'][db] = free.keyitems
+        elif hiertype == 'snapshots':
+           m = snap.SnapshotsCheckbase(db)
+           checks['key_items'][db] = snap.keyitems
+
+        checks['all_subjects'][db] = m.get_flat_subjects()
+        if hiertype == 'morphologist':
+           checks['existing_files'][db] = m.check_database_for_existing_files()
+           checks['multiple_subjects'][db] = m.get_multiple_subjects()
+           checks['complete_subjects'][db] = m.get_complete_subjects()
+           checks['empty_subjects'][db] = m.get_empty_subjects()
+
+    #print checks['all_subjects']
+    return checks
+
 def check_hierarchies(input_dir, do_it = False):
 
    from brainvisa import checkbase as c
@@ -136,9 +165,11 @@ def check_hierarchies(input_dir, do_it = False):
    from brainvisa.checkbase.hierarchies import snapshots as snap
 
    # create some lists/directories
-   databases = {}
-   for each in ['hierarchies', 'existing_files', 'all_subjects', 'key_items', 'complete_subjects']:
-      databases[each] = {}
+   checks = {}
+   hierarchies = {}
+   for each in ['existing_files', 'all_subjects', 'key_items', 'complete_subjects',
+         'multiple_subjects', 'empty_subjects']:
+      checks[each] = {}
    all_studies_list = []
    all_users_list = []
 
@@ -155,55 +186,35 @@ def check_hierarchies(input_dir, do_it = False):
    for user in all_users_list:
        print user, 'in progress'
        if user in identified_users_list:
-              db_dir = os.path.join(users_dir, user)
               if do_it:
-                h = c.detect_hierarchies(db_dir, maxdepth=3)
-                print h
-                databases['hierarchies'][user] = h
-                for db, hiertype in h.items():
-                    if hiertype == 'morphologist':
-                       m = morpho.MorphologistCheckbase(db)
-                       databases['key_items'][db] = morpho.keyitems
-                    elif hiertype == 'freesurfer':
-                       m = free.FreeSurferCheckbase(db)
-                       databases['key_items'][db] = free.keyitems
-                    elif hiertype == 'snapshots':
-                       m = snap.SnapshotsCheckbase(db)
-                       databases['key_items'][db] = snap.keyitems
-
-                    #databases['existing_files'][db] = m.check_database_for_existing_files()
-                    databases['all_subjects'][db] = m.get_flat_subjects()
-                    #databases['complete_subjects'][db] =
+                db_dir = os.path.join(users_dir, user)
+                h = c.detect_hierarchies(db_dir, maxdepth=2)
+                hierarchies[user] = h
+                user_checks = perform_checks_hierarchy(h)
+                for each in checks.keys():
+                   checks[each].update(user_checks[each])
+                #print checks['all_subjects']
 
 
    # processing studies folders
+   do_it = False
    print 'Processing studies...'
    for study in studies_list:
        print study, 'in progress'
        if study in studies_list:
             if do_it:
-                h = c.detect_hierarchies(os.path.join(input_dir, study), maxdepth=3)
-                print h
-                databases['hierarchies'][study] = h
-                for db, hiertype in h.items():
-                    if hiertype == 'morphologist':
-                       m = morpho.MorphologistCheckbase(db)
-                       databases['key_items'][db] = morpho.keyitems
-                    elif hiertype == 'freesurfer':
-                       m = free.FreeSurferCheckbase(db)
-                       databases['key_items'][db] = free.keyitems
-                    elif hiertype == 'snapshots':
-                       m = snap.SnapshotsCheckbase(db)
-                       databases['key_items'][db] = snap.keyitems
-
-                    #databases['existing_files'][db] = m.check_database_for_existing_files()
-                    databases['all_subjects'][db] = m.get_flat_subjects()
-                    #databases['complete_subjects'][db] =
+                db_dir = os.path.join(input_dir, study)
+                h = c.detect_hierarchies(db_dir, maxdepth=1)
+                hierarchies[user] = h
+                study_checks = perform_checks_hierarchy(h)
+                for each in checks.keys():
+                    checks[each].update(study_checks[each])
 
    # compiling results as attributes of an object
    database_checker = DatabaseChecker()
    database_checker.rootdirectory = input_dir
-   database_checker.databases =  databases
+   database_checker.hierarchies =  hierarchies
+   database_checker.checks = checks
    return database_checker
 
 def save_csv(database_checker, logdir = '/neurospin/cati/Users/operto/logs'):
@@ -232,15 +243,14 @@ def perform_check(input_dir, logdir = '/neurospin/cati/Users/operto/logs'):
 
     import sys
     print 'Checking free disk............................................'
-    database_checker = check_free_disk(input_dir, get_sizes = True)
+    database_checker = check_free_disk(input_dir, get_sizes = False)
     print ''
     print 'Checking hierarchies............................................'
-    try:
-      dbcheck_hierachies = check_hierarchies(input_dir, True)
-      database_checker.databases = dbcheck_hierachies.databases
-    except Exception as e:
-      print e
-      pass
+    dbcheck_hierachies = check_hierarchies(input_dir, True)
+    database_checker.hierarchies = dbcheck_hierachies.hierarchies
+    database_checker.checks = dbcheck_hierachies.checks
+    print 'checks'
+    print database_checker.checks
 
     # generating report
     import pdf, report, time

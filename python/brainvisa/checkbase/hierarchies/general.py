@@ -1,22 +1,57 @@
 # -*- coding: utf-8 -*-
 import os
-image_extensions = '(nii.gz|nii|ima|ima.gz)'
-mesh_extensions = '(gii|mesh)'
+image_extensions = '(nii.gz|nii|ima|ima.gz)$'
+mesh_extensions = '(gii|mesh)$'
 
 def parsefilepath(filepath, patterns = None):
   import morphologist as morpho
+  if not patterns: patterns = morpho.patterns
   import re, os
-  for datatype, path in morpho.patterns.items():
+  for datatype, path in patterns.items():
     m = re.match(r"%s"%path, filepath)
     if m:
        return datatype, m.groupdict()
 
 
 def getfilepath(datatype, attributes):
+    import morphologist as morpho
     return processregexp(morpho.patterns[datatype], attributes)
 
 
-def processregexp(regexp, attributes):
+def processregexp(regexp, attributes, wildcards = True):
+    ''' From a regexp and a dictionary of attributes, returns a string where all the regexp fields have been replaced by values given by the dictionary.
+        If wildcards is True, then if a regexp field misses in the dictionary, it is replaced by a wildcard.
+    ex : $r = '(?P<database>[\\w -/]+)/(?P<group>[\\w -]+)/(?P<subject>\\w+)/(?P<modality>\\w+)/(?P<acquisition>[\\w -]+)/(?P=subject).(nii.gz|nii|ima|ima.gz)'
+         $att = {'database' : 'basedonnees', 'group' : 'groupe', 'subject' : 'mr_toto', 'modality' : 't1mri', 'acquisition' : 'default_acquisition', 'inutile' : 'useless'}
+
+         $processregexp(morpho.patterns['raw'], att)
+         'basedonnees/groupe/mr_toto/t1mri/default_acquisition/mr_toto.(nii.gz|nii|ima|ima.gz)'
+    '''
+
+    def _findmatchingparenthesis(s):
+       opening = []
+       closing = []
+       i = 0
+       while i != -1:
+         i = s.find('(', i+1)
+         if i>-1: opening.append(i)
+       i = 0
+       while i != -1:
+         i = s.find(')', i+1)
+         if i>-1: closing.append(i)
+       both = []
+       both.extend(opening)
+       both.extend(closing)
+       score = 1
+       both = set(both)
+       assert(len(both) == len(opening) + len(closing))
+       for each in both:
+          if each in opening:
+             score += 1
+          elif each in closing:
+             score -= 1
+          if score == 0: return each
+
     import string, re
     s = string.split(regexp, '(?P')
     res = []
@@ -24,8 +59,12 @@ def processregexp(regexp, attributes):
         m = re.match('^[=<](?P<field>\w+)', each)
         if m:
             field = m.groupdict()['field']
-            t = string.split(each, ')')
-            res.append('%s%s'%(attributes[field], t[1]))
+            #print field, attributes[field], each[_findmatchingparenthesis(each)+1:]
+            if wildcards:
+               if not attributes.has_key(field):
+                  attributes[field] = '*'
+            res.append('%s%s'%(attributes[field], each[_findmatchingparenthesis(each)+1:].rstrip('$)')) )
+
     return string.join(res, '')
 
 def get_files(databasedir):
@@ -63,12 +102,6 @@ def get_subject_files(databasedir, subject):
       for f in files:
         subject_files.append(os.path.join(root,f))
   return subject_files
-
-
-
-
-
-#    all_subjects = get_all_subjects(databasedir)
 
 def detect_hierarchy(directory, returnvotes = False, maxvote=50):
     def _get_directories(root, threshold = 1, fullpath = False):

@@ -122,19 +122,21 @@ class HTMLReportGenerator():
     def _generate_detailed_directories(self):
         from brainvisa import checkbase as c
         summary = ''
-        print self.database_checker.databases['hierarchies']
-        for key, hierarchies in self.database_checker.databases['hierarchies'].items():
+        print self.database_checker.hierarchies
+        for key, hierarchies in self.database_checker.hierarchies.items():
             summary += 'Results for directory %s<br><br>'%key
             if hierarchies :
                 for hieradir, hieratype in hierarchies.items():
-                    subjects = self.database_checker.databases['all_subjects'][hieradir]
+                    subjects = self.database_checker.checks['all_subjects'][hieradir]
                     conversion_hashtable = {'$HIERARCHY_DIR': str('%s'%hieradir),
                         '$HIERARCHY_DETECTED_TYPE' : str(hieratype),
                         '$HIERARCHY_SUBJECTSDIRECTORY' : str('%s (%i)'%(subjects, len(subjects))),
-                        '$HIERARCHY_SUBJECT_KEY_ITEMS' : str('%s'%(self.database_checker.databases['key_items'][hieradir])),
-                        '$HIERARCHY_VALID_SUBJECTS' : str(''),
+                        '$HIERARCHY_SUBJECT_KEY_ITEMS' : str('%s'%(self.database_checker.checks['key_items'][hieradir])),
+                        '$HIERARCHY_MULTIPLE_SUBJECTS' : str('%s'%self.database_checker.checks['multiple_subjects'][hieradir]),
+                        '$HIERARCHY_EMPTY_SUBJECTS' : str('%s'%self.database_checker.checks['empty_subjects'][hieradir]),
+                        '$HIERARCHY_COMPLETE_SUBJECTS' : str('%s'%self.database_checker.checks['complete_subjects'][hieradir]),
                         '$HIERARCHY_INVALID_SUBJECTS' : str(''),
-                        #'$HIERARCHY_IDENTIFIED_ITEMS' : str(self.database_checker.databases['existing_files'][hieradir]),
+                        #'$HIERARCHY_IDENTIFIED_ITEMS' : str(self.database_checker.checks['existing_files'][hieradir]),
                         '$HIERARCHY_UNIDENTIFIED_FILES' : str(''),
                         '$BIOMARKERS' : str(''),
                     }
@@ -181,9 +183,9 @@ class HTMLReportGenerator():
             '$SUMMARY_ON_UNDECLARED_USERS' : str(self._generate_summary_on_undeclared_users()),
             '$EXECUTION_TIME' : str(execution_time),
         }
-        if hasattr(self.database_checker, 'databases'):
+        if hasattr(self.database_checker, 'hierarchies'):
             conversion_hashtable.update({
-               '$HIERARCHIES' : str(self.database_checker.databases['hierarchies']),
+               '$HIERARCHIES' : str(self.database_checker.hierarchies),
                '$DETAILED_DIRECTORIES' : str(self._generate_detailed_directories()),
             })
 

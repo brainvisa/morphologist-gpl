@@ -27,8 +27,9 @@ class Checkbase():
 
     def get_flat_subjects(self):
         all_subjects = []
-        subjects = self.get_subjects()
-        if hasattr(subjects, values):
+        if not hasattr(self, 'subjects'): subjects = self.get_subjects()
+        else: subjects = self.subjects
+        if hasattr(subjects, 'values'):
          for each in subjects.values():
             all_subjects.extend(each)
         else:
@@ -68,7 +69,18 @@ class Checkbase():
                 liste.append(im)
         return liste
 
-    def check_subjects_unicity(self):
+    def get_multiple_subjects(self):
         ''' return a list of subjects whose ID is found multiple times in a database directory '''
         subjects = self.get_flat_subjects()
-        return len(set(subjects)) == len(subjects)
+        multiple_subjects = []
+        if len(set(subjects)) == len(subjects): return []
+
+        for subject in subjects:
+           if subjects.count(subject) != 1:
+               multiple_subjects.append(subject)
+        return multiple_subjects
+
+    def is_subject_unique(self, subject):
+        ''' return True if subject is unique '''
+        subjects = self.get_flat_subjects()
+        return subjects.count(subject) == 1
