@@ -132,6 +132,9 @@ class HTMLReportGenerator():
                         '$HIERARCHY_DETECTED_TYPE' : str(hieratype),
                         '$HIERARCHY_SUBJECTSDIRECTORY' : str('%s (%i)'%(subjects, len(subjects))),
                         '$HIERARCHY_SUBJECT_KEY_ITEMS' : str('%s'%(self.database_checker.checks['key_items'][hieradir])),
+                    }
+                    if hieratype == 'morphologist':
+                      conversion_hashtable.update({
                         '$HIERARCHY_MULTIPLE_SUBJECTS' : str('%s'%self.database_checker.checks['multiple_subjects'][hieradir]),
                         '$HIERARCHY_EMPTY_SUBJECTS' : str('%s'%self.database_checker.checks['empty_subjects'][hieradir]),
                         '$HIERARCHY_COMPLETE_SUBJECTS' : str('%s'%self.database_checker.checks['complete_subjects'][hieradir]),
@@ -139,8 +142,8 @@ class HTMLReportGenerator():
                         #'$HIERARCHY_IDENTIFIED_ITEMS' : str(self.database_checker.checks['existing_files'][hieradir]),
                         '$HIERARCHY_UNIDENTIFIED_FILES' : str(''),
                         '$BIOMARKERS' : str(''),
-                    }
-                summary += self._convert_from_template('HIERARCHY', conversion_hashtable)
+                      })
+                    summary += self._convert_from_template('HIERARCHY', conversion_hashtable)
         return summary
 
     def generate_html_report(self):

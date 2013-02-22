@@ -130,6 +130,8 @@ def check_free_disk(input_dir, get_sizes = False):
 
 def perform_checks_hierarchy(h):
     from brainvisa.checkbase.hierarchies import morphologist as morpho
+    from brainvisa.checkbase.hierarchies import freesurfer as free
+    from brainvisa.checkbase.hierarchies import snapshots as snap
     print h
     checks = {}
     for each in ['hierarchies', 'existing_files', 'all_subjects', 'key_items', 'complete_subjects',
@@ -160,9 +162,6 @@ def perform_checks_hierarchy(h):
 def check_hierarchies(input_dir, do_it = False):
 
    from brainvisa import checkbase as c
-   from brainvisa.checkbase.hierarchies import morphologist as morpho
-   from brainvisa.checkbase.hierarchies import freesurfer as free
-   from brainvisa.checkbase.hierarchies import snapshots as snap
 
    # create some lists/directories
    checks = {}
@@ -188,7 +187,7 @@ def check_hierarchies(input_dir, do_it = False):
        if user in identified_users_list:
               if do_it:
                 db_dir = os.path.join(users_dir, user)
-                h = c.detect_hierarchies(db_dir, maxdepth=2)
+                h = c.detect_hierarchies(db_dir, maxdepth=3)
                 hierarchies[user] = h
                 user_checks = perform_checks_hierarchy(h)
                 for each in checks.keys():
@@ -197,14 +196,13 @@ def check_hierarchies(input_dir, do_it = False):
 
 
    # processing studies folders
-   do_it = False
    print 'Processing studies...'
    for study in studies_list:
        print study, 'in progress'
        if study in studies_list:
             if do_it:
                 db_dir = os.path.join(input_dir, study)
-                h = c.detect_hierarchies(db_dir, maxdepth=1)
+                h = c.detect_hierarchies(db_dir, maxdepth=3)
                 hierarchies[user] = h
                 study_checks = perform_checks_hierarchy(h)
                 for each in checks.keys():
@@ -243,14 +241,18 @@ def perform_check(input_dir, logdir = '/neurospin/cati/Users/operto/logs'):
 
     import sys
     print 'Checking free disk............................................'
-    database_checker = check_free_disk(input_dir, get_sizes = False)
+    database_checker = check_free_disk(input_dir, get_sizes = True)
     print ''
     print 'Checking hierarchies............................................'
-    dbcheck_hierachies = check_hierarchies(input_dir, True)
-    database_checker.hierarchies = dbcheck_hierachies.hierarchies
-    database_checker.checks = dbcheck_hierachies.checks
-    print 'checks'
-    print database_checker.checks
+    try:
+       dbcheck_hierachies = check_hierarchies(input_dir, True)
+       database_checker.hierarchies = dbcheck_hierachies.hierarchies
+       database_checker.checks = dbcheck_hierachies.checks
+       print 'checks'
+       print database_checker.checks
+    except Exception as e:
+       print e
+       pass
 
     # generating report
     import pdf, report, time

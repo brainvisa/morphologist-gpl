@@ -141,7 +141,7 @@ class MorphologistCheckbase(Checkbase):
        if not hasattr(self, 'subjects'): self.get_subjects(save = True)
        if not hasattr(self, 'existingfiles'): self.check_database_for_existing_files(save = True)
        empty_subjects = []
-       for subject in self.get_flat_subjects():
+       for subject in set(self.get_flat_subjects()).difference(set(self.get_multiple_subjects())):
           if not self.existingfiles[0].has_key(subject):
              #c = len(set(self.existingfiles[0][subject].keys()).intersection(set(morpho.keyitems)))
              #if c == 0:
