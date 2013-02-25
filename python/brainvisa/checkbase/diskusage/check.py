@@ -29,13 +29,23 @@ studies_list = ['Memento',
                 ]
 
 
-def get_size(start_path = '.', fastmode=True):
-    global do_get_size
-    if not do_get_size: return 0
+def get_size(directory = '.', fastmode=True):
+    ''' Returns the size of a directory.
+    By default, the size is computed using du Unix command.
+    If fastmode is set to False, it uses os.walk and returns the
+    sum of sizes of all the files recursively contained in the directory'''
+
+    def fast_get_size(path = '.'):
+       import subprocess
+       df = subprocess.Popen(['du', '-sb', path], stdout=subprocess.PIPE)
+       output = df.communicate()[0]
+       size, directory = output.rstrip('\n').split('\t')
+       return size
+
     total_size = 0
     if fastmode:
-        return fast_get_size(start_path)
-    for dirpath, dirnames, filenames in os.walk(start_path):
+        return fast_get_size(directory)
+    for dirpath, dirnames, filenames in os.walk(directory):
       if not os.path.islink(dirpath):
         for f in filenames:
           if not os.path.islink(os.path.join(dirpath, f)):
@@ -43,30 +53,40 @@ def get_size(start_path = '.', fastmode=True):
             total_size += os.path.getsize(fp)
     return total_size
 
-def fast_get_size(path = '.'):
-    import subprocess
-    df = subprocess.Popen(['du', '-sb', path], stdout=subprocess.PIPE)
-    output = df.communicate()[0]
-    #print output
-    size, directory = output.rstrip('\n').split('\t')
-    return size
-
 
 class DatabaseChecker():
+    ''' DatabaseChecker objects are only intended to store as attributes a collection
+    of database-related information. '''
     def __init__(self):
         pass
 
 
-def check_free_disk(input_dir, get_sizes = False):
-   import subprocess, time
-   global do_get_size, do_get_hierarchies
-   do_get_size = get_sizes
+def check_free_disk(directory, get_sizes = False):
+   ''' Disk usage controlling procedure, originally for /neurospin/cati
+   - gets the output of df Unix function
+   - estimates the size of every folder under the given directory
+   Processes './Users' folder in a distinct way (intended to contain personal
+   folders).
+   Filters '/neurospin/cati/.snapshot' out of being processed.
+   If get_sizes is set to False, skips size estimation and assumes every folder
+   has null size (debug).
+   The procedure uses two lists of identified users/studies (users_dict and
+   studies_list) defined in brainvisa.checkbase.diskusage.check module. Any
+   other folder will still be processed but notified as undeclared.
 
-   # initialize time
-   start_time = time.time()
+   At the end, results are stored as attributes in a DatabaseChecker object.
+   database_checker.rootdirectory : directory
+   database_checker.global_disk_space : df output
+   database_checker.studies_space = {'Memento' : 98765432, ...}
+   database_checker.users_space = {'broca' : 12345678, ...}
+   database_checker.other_studies = {'JUNKDIR' : 5413213, ...}
+   database_checker.other_users = {'datajunkie1337' : 12223, ...}
+   '''
+   import subprocess, time
+   global start_time
 
    # get df output
-   df = subprocess.Popen(["df", input_dir], stdout=subprocess.PIPE)
+   df = subprocess.Popen(["df", directory], stdout=subprocess.PIPE)
    output = df.communicate()[0]
    device, size, used, available, percent, mountpoint = \
    output.split("\n")[1].split()
@@ -84,9 +104,9 @@ def check_free_disk(input_dir, get_sizes = False):
 
    # build a list of directories contained in '/neurospin/cati'
    # with "users" (in './Users/') and studies (in '.')
-   users_dir = os.path.join(input_dir, 'Users')
+   users_dir = os.path.join(directory, 'Users')
    all_users_list = [each for each in os.listdir(users_dir) if os.path.isdir(os.path.join(users_dir, each))]
-   all_studies_list = [ each for each in os.listdir(input_dir) if os.path.isdir(os.path.join(input_dir, each))]
+   all_studies_list = [ each for each in os.listdir(directory) if os.path.isdir(os.path.join(directory, each))]
 
    excludelist = ['.snapshot', 'Users']
    for each in excludelist:
@@ -98,10 +118,14 @@ def check_free_disk(input_dir, get_sizes = False):
    for user in all_users_list:
        print user, 'in progress'
        if user in users_dict.keys():
-            users_space[user] = get_size(os.path.join(users_dir, user))
+            s = 0
+            if get_sizes: s = get_size(os.path.join(users_dir, user))
+            users_space[user] = s
             print user, users_space[user], 'identified', time.time() - start_time
        else:
-            other_users[user] = get_size(os.path.join(users_dir, user))
+            s = 0
+            if get_sizes: s = get_size(os.path.join(users_dir, user))
+            other_users[user] = s
             print user, other_users[user], 'undeclared', time.time() - start_time
 
    # processing studies folders
@@ -109,30 +133,53 @@ def check_free_disk(input_dir, get_sizes = False):
    for study in all_studies_list:
        print study, 'in progress'
        if study in studies_list:
-           studies_space[study] = get_size(os.path.join(input_dir, study))
+           s = 0
+           if get_sizes: s = get_size(os.path.join(directory, study))
+           studies_space[study] = s
            print study, studies_space[study], 'identified', time.time() - start_time
        else:
-           other_studies[study] = get_size(os.path.join(input_dir, study))
+           s = 0
+           if get_sizes: s = get_size(os.path.join(directory, study))
+           other_studies[study] = s
            print study, other_studies[study], 'undeclared', time.time() - start_time
 
    # compiling results as attributes of an object
    database_checker = DatabaseChecker()
-   database_checker.rootdirectory = input_dir
+   database_checker.rootdirectory = directory
    database_checker.global_disk_space =  global_disk_space
    database_checker.studies_space = studies_space
    database_checker.users_space = users_space
    database_checker.other_studies = other_studies
    database_checker.other_users = other_users
-   database_checker.execution_time = time.time() - start_time
 
    return database_checker
 
 
 def perform_checks_hierarchy(h):
+    ''' Runs a series of tests on a given dictionary returned from
+    checkbase.detect_hierarchies. These tests are performed according to the
+    type of the hierarchy.
+    - lists key steps of the production pipeline associated to the hierarchy
+    - lists subjects (or just directories at the subject level) detected in the hierarchy
+    - sorts out subjects whose ID appear multiple times (in distinct groups e.g)
+    - identifies all existing files in the hierarchy and collects the unidentified ones.
+    - lists subjects with complete datasets according to the previous key items
+    - lists subjects with no identified items (possibly mistaken folders)
+    All the results are returned as a dictionary.
+      checks['all_subjects'] : {'/neurospin/cati/Users/dubois/' : ['toto', 'tata', ...], ...}
+      checks['existing_files'] :
+         {'/neurospin/cati/Memento/' : ( {'toto' : {'subject': toto,
+                                                    'group': 'temoins',
+                                                    'acquisition': 'default',
+                                                    'modality' : 't1mri',
+                                                    'extension' : 'nii'}, ...},
+                                         {'tata' : ['i_am_an_unidentified_file.xxx', ...], ...} ), ...}
+      checks['complete_subjects']
+
+    '''
     from brainvisa.checkbase.hierarchies import morphologist as morpho
     from brainvisa.checkbase.hierarchies import freesurfer as free
     from brainvisa.checkbase.hierarchies import snapshots as snap
-    print h
     checks = {}
     for each in ['hierarchies', 'existing_files', 'all_subjects', 'key_items', 'complete_subjects',
       'multiple_subjects', 'empty_subjects']:
@@ -156,7 +203,6 @@ def perform_checks_hierarchy(h):
            checks['complete_subjects'][db] = m.get_complete_subjects()
            checks['empty_subjects'][db] = m.get_empty_subjects()
 
-    #print checks['all_subjects']
     return checks
 
 def check_hierarchies(input_dir, do_it = False):
@@ -239,7 +285,10 @@ def save_csv(database_checker, logdir = '/neurospin/cati/Users/operto/logs'):
 
 def perform_check(input_dir, logdir = '/neurospin/cati/Users/operto/logs'):
 
-    import sys
+    import sys, time
+    global start_time
+    # initialize time
+    start_time = time.time()
     print 'Checking free disk............................................'
     database_checker = check_free_disk(input_dir, get_sizes = True)
     print ''
@@ -254,6 +303,7 @@ def perform_check(input_dir, logdir = '/neurospin/cati/Users/operto/logs'):
        print e
        pass
 
+    database_checker.execution_time = time.time() - start_time
     # generating report
     import pdf, report, time
     datetime_string = str(time.strftime('%d%m%Y-%H%M%S', time.gmtime()))
