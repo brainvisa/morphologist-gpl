@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+from general import *
 
 class Checkbase():
     def __init__(self, directory):
@@ -75,7 +76,7 @@ class Checkbase():
         multiple_subjects = []
         if len(set(subjects)) == len(subjects): return []
 
-        for subject in subjects:
+        for subject in set(subjects):
            if subjects.count(subject) != 1:
                multiple_subjects.append(subject)
         return multiple_subjects
@@ -84,3 +85,131 @@ class Checkbase():
         ''' return True if subject is unique '''
         subjects = self.get_flat_subjects()
         return subjects.count(subject) == 1
+
+
+    def _get_subject_hierarchy_files(self, subject, patterns = None, attributes = None):
+       ''' Returns a dictionary with all the items matching a dictionary of attributes
+       ex : m.get_subject_hierarchy_files('toto')
+            {'acpc': [{'acquisition': 'M000',
+               'database': '/neurospin/cati/totodatabase',
+               'group': 'group_toto',
+               'modality': 't1mri',
+               'subject': 'toto'}],
+            'brainmask': [{'acquisition': 'M000',
+                'analysis': 'default_analysis',
+                'database': '/neurospin/cati/totodatabaze',
+                'extension': 'nii.gz',
+                'group': 'group_toto',
+                'modality': 't1mri',
+                'subject': 'toto'}],
+             'greywhite': [{'acquisition': 'M000', ...}, ...], ...}'''
+       if not attributes:
+          attributes = {'subject' : subject}
+
+       assert(attributes.has_key('subject'))
+       attributes.setdefault('database', self.directory)
+
+       from glob import glob
+       items = {}
+       globitems = []
+       for each in patterns:
+           globitems = glob(getfilepath(each, attributes))
+           for item in globitems:
+              res = parsefilepath(item)
+              if not res is None and res[0] == each:
+                 items.setdefault(each, []).append(res[1])
+       return items
+
+
+    def _get_subject_missing_files(self, subject, keyitems = None):
+        ''' Returns a list of missing items, regarding a set of items considered
+        as important for a specific pipeline (morpho.keyitems) '''
+        items = {}
+        if not hasattr(self, 'existingfiles'):
+           items = self.get_subject_hierarchy_files(subject)
+        else:
+           if self.existingfiles[0].has_key(subject):
+              items = self.existingfiles[0][subject]
+
+        missing = []
+        for key in keyitems:
+           if not items.has_key(key):
+                missing.append(key)
+        return missing
+
+
+    def check_database_for_missing_files(self, save = True):
+        ''' Returns a dictionary containing all the missing files of a hierarchy, indexed by
+        subjects, regarding a set of key items specific to each pipeline. '''
+        if not hasattr(self, 'get_subject_missing_files'): raise NotImplementedError
+        if not hasattr(self, 'subjects'): self.get_subjects(save = True)
+        if not hasattr(self, 'existingfiles'): self.check_database_for_existing_files(save = True)
+        all_subjects = self.get_flat_subjects()
+        incompletesubjects = {}
+        for subject in all_subjects:
+            missing = self.get_subject_missingfiles(subject)
+            if len(missing) > 0:
+                incompletesubjects[subject] = missing
+        if save: self.incompletesubjects = incompletesubjects
+        return incompletesubjects
+
+
+    def _check_database_for_existing_files(self, patterns = None, save = True):
+       ''' This function browses a whole directory, subject after subject,
+       in search for files matching software-specific patterns. All unidentified
+       files is returned in a second list.'''
+       all_subjects = self.get_flat_subjects()
+       all_subjects_files = {}
+       not_recognized = {}
+       unique_subjects = set(all_subjects).difference(set(self.get_multiple_subjects()))
+       for subject in unique_subjects:
+         subject_files = get_subject_files(self.directory, subject)
+         for each in subject_files:
+            m = parsefilepath(each, patterns)
+            if m:
+              datatype, attributes = m
+              all_subjects_files.setdefault(subject, {})
+              all_subjects_files[subject][datatype] = attributes
+            else:
+              not_recognized.setdefault(subject, []).append(each)
+       if save: self.existingfiles = (all_subjects_files, not_recognized)
+       return all_subjects_files, not_recognized
+
+
+    def _get_complete_subjects(self, keyitems = None, save = True):
+       ''' Returns a list of subjects for which all key items have been found existing in
+       the hierarchy (e.g. morpho.keyitems)'''
+       if not hasattr(self, 'subjects'): self.get_subjects(save = True)
+       if not hasattr(self, 'existingfiles'): self.check_database_for_existing_files(save = True)
+       complete_subjects = []
+       incomplete_subjects = []
+       for subject in self.get_flat_subjects():
+          if self.existingfiles[0].has_key(subject):
+             c = len(set(self.existingfiles[0][subject].keys()).intersection(set(keyitems)))
+             if c == len(keyitems):
+                complete_subjects.append(subject)
+             else:
+                incomplete_subjects.append(subject)
+       if save: self.complete_subjects = complete_subjects
+       return self.complete_subjects
+
+
+    def get_empty_subjects(self, save = True):
+       ''' Returns a list of subjects for which no key items have been found existing in
+       the hierarchy (e.g. morpho.keyitems). This helps filtering out directories mistaken for
+       subjects.'''
+       if not hasattr(self, 'subjects'): self.get_subjects(save = True)
+       if not hasattr(self, 'existingfiles'): self.check_database_for_existing_files(save = True)
+       empty_subjects = []
+       for subject in set(self.get_flat_subjects()).difference(set(self.get_multiple_subjects())):
+          if not self.existingfiles[0].has_key(subject):
+              empty_subjects.append(subject)
+       if save: self.empty_subjects = empty_subjects
+       return self.empty_subjects
+
+
+    def perform_checks(self):
+        self.check_database_for_existing_files()
+        self.get_multiple_subjects()
+        self.get_complete_subjects()
+        self.get_empty_subjects()

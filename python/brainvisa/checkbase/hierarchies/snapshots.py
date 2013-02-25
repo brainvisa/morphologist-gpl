@@ -8,6 +8,9 @@ keyitems = []
 
 class SnapshotsCheckbase(Checkbase):
     def __init__(self, directory):
+        from brainvisa.checkbase.hierarchies import snapshots as snap
+        self.patterns = morpho.patterns
+        self.keyitems = morpho.keyitems
         Checkbase.__init__(self, directory)
 
     def check_database_for_existing_files(self):

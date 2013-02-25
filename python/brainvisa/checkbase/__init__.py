@@ -7,5 +7,6 @@ from hierarchies.general import *
 
 from hierarchies import morphologist as morpho
 from hierarchies.morphologist import MorphologistCheckbase
-from hierarchies.checkbase import Checkbase
+from hierarchies.spm import SPMCheckbase
+#from hierarchies.checkbase import Checkbase
 

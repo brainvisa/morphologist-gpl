@@ -175,35 +175,63 @@ def perform_checks_hierarchy(h):
                                                     'extension' : 'nii'}, ...},
                                          {'tata' : ['i_am_an_unidentified_file.xxx', ...], ...} ), ...}
       checks['complete_subjects']
+      checks['multiple_subjects']
+      checks['empty_subjects']
+      checks['checkbase']
 
     '''
     from brainvisa.checkbase.hierarchies import morphologist as morpho
     from brainvisa.checkbase.hierarchies import freesurfer as free
     from brainvisa.checkbase.hierarchies import snapshots as snap
     checks = {}
-    for each in ['hierarchies', 'existing_files', 'all_subjects', 'key_items', 'complete_subjects',
-      'multiple_subjects', 'empty_subjects']:
-        checks[each] = {}
 
     for db, hiertype in h.items():
         if hiertype == 'morphologist':
            m = morpho.MorphologistCheckbase(db)
-           checks['key_items'][db] = morpho.keyitems
+           m.perform_checks()
         elif hiertype == 'freesurfer':
            m = free.FreeSurferCheckbase(db)
-           checks['key_items'][db] = free.keyitems
         elif hiertype == 'snapshots':
            m = snap.SnapshotsCheckbase(db)
-           checks['key_items'][db] = snap.keyitems
 
-        checks['all_subjects'][db] = m.get_flat_subjects()
-        if hiertype == 'morphologist':
-           checks['existing_files'][db] = m.check_database_for_existing_files()
-           checks['multiple_subjects'][db] = m.get_multiple_subjects()
-           checks['complete_subjects'][db] = m.get_complete_subjects()
-           checks['empty_subjects'][db] = m.get_empty_subjects()
+           checks.setdefault('checkbase', {})
+           checks['checkbase'][db] = m
+
+        # extracting results and storing them in checks
+        results = extract_results(db, m)
+        for check, d in results.items():
+           checks.setdefault(check, {})
+           for db, res in results[check].items():
+               checks[check].setdefault(db, {})
+
+           checks[check].update(results[check])
 
     return checks
+
+
+def extract_results(db, checkbase):
+     from brainvisa.checkbase.hierarchies import morphologist as morpho
+     from brainvisa.checkbase.hierarchies import freesurfer as free
+     from brainvisa.checkbase.hierarchies import snapshots as snap
+     checks = {}
+     for each in ['hierarchies', 'existing_files', 'all_subjects', 'key_items', 'complete_subjects',
+      'multiple_subjects', 'empty_subjects', 'checkbase']:
+        checks[each] = {}
+     if isinstance(checkbase, morpho.MorphologistCheckbase):
+        checks['key_items'][db] = morpho.keyitems
+        checks['existing_files'][db] = checkbase.check_database_for_existing_files()
+        checks['multiple_subjects'][db] = checkbase.get_multiple_subjects()
+        checks['complete_subjects'][db] = checkbase.get_complete_subjects()
+        checks['empty_subjects'][db] = checkbase.get_empty_subjects()
+     elif isinstance(checkbase, free.FreeSurferCheckbase):
+        checks['key_items'][db] = free.keyitems
+     elif isinstance(checkbase, snap.SnapshotsCheckbase):
+        checks['key_items'][db] = snap.keyitems
+
+     checks['all_subjects'][db] = checkbase.get_flat_subjects()
+
+     return checks
+
 
 def check_hierarchies(input_dir, do_it = False):
 
@@ -212,9 +240,6 @@ def check_hierarchies(input_dir, do_it = False):
    # create some lists/directories
    checks = {}
    hierarchies = {}
-   for each in ['existing_files', 'all_subjects', 'key_items', 'complete_subjects',
-         'multiple_subjects', 'empty_subjects']:
-      checks[each] = {}
    all_studies_list = []
    all_users_list = []
 
@@ -226,6 +251,8 @@ def check_hierarchies(input_dir, do_it = False):
 
    identified_users_list = users_dict.keys()
 
+
+   do_it = False
    # processing users folders
    print 'Processing users...'
    for user in all_users_list:
@@ -237,10 +264,12 @@ def check_hierarchies(input_dir, do_it = False):
                 hierarchies[user] = h
                 user_checks = perform_checks_hierarchy(h)
                 for each in checks.keys():
+                   for db, res in user_checks[each].items():
+                      checks[each].setdefault(db, {})
                    checks[each].update(user_checks[each])
                 #print checks['all_subjects']
 
-
+   do_it = True
    # processing studies folders
    print 'Processing studies...'
    for study in studies_list:
@@ -252,6 +281,8 @@ def check_hierarchies(input_dir, do_it = False):
                 hierarchies[user] = h
                 study_checks = perform_checks_hierarchy(h)
                 for each in checks.keys():
+                    for db, res in study_checks[each].items():
+                      checks[each].setdefault(db, {})
                     checks[each].update(study_checks[each])
 
    # compiling results as attributes of an object
@@ -283,6 +314,32 @@ def save_csv(database_checker, logdir = '/neurospin/cati/Users/operto/logs'):
         mywriter.writerow([ device, size, used, available, percent, database_checker.execution_time])
 
 
+def save_table(checkbase, logdir = '/neurospin/cati/Users/operto/logs/existingfiles'):
+    import csv, time, string, os
+    datetime_string = str(time.strftime('%d%m%Y-%H%M%S', time.gmtime()))
+    database_id = checkbase.directory
+    changed_database_id = string.replace(database_id, os.path.sep, '_')
+    fields_names = ['subject']
+    fields_names.extend(checkbase.keyitems)
+
+    with open(os.path.join(logdir, '%s-%s.csv'%(changed_database_id, datetime_string)), 'wb',) as csvfile:
+      mywriter = csv.writer(csvfile, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+      mywriter.writerow(fields_names)
+      for subject in checkbase.existingfiles[0].keys():
+         subject_row = [unicode(subject).encode("utf-8")]
+         for each in checkbase.keyitems:
+            if each in checkbase.existingfiles[0][subject].keys():
+               subject_row.append(1)
+            else:
+               subject_row.append(0)
+
+         mywriter.writerow(subject_row)
+
+def save_tables(checks):
+   for db, checkbase in checks.items():
+      save_table(checkbase)
+
+
 def perform_check(input_dir, logdir = '/neurospin/cati/Users/operto/logs'):
 
     import sys, time
@@ -290,18 +347,16 @@ def perform_check(input_dir, logdir = '/neurospin/cati/Users/operto/logs'):
     # initialize time
     start_time = time.time()
     print 'Checking free disk............................................'
-    database_checker = check_free_disk(input_dir, get_sizes = True)
+    database_checker = check_free_disk(input_dir, get_sizes = False)
     print ''
     print 'Checking hierarchies............................................'
-    try:
-       dbcheck_hierachies = check_hierarchies(input_dir, True)
-       database_checker.hierarchies = dbcheck_hierachies.hierarchies
-       database_checker.checks = dbcheck_hierachies.checks
-       print 'checks'
-       print database_checker.checks
-    except Exception as e:
-       print e
-       pass
+    #try:
+    dbcheck_hierachies = check_hierarchies(input_dir, True)
+    database_checker.hierarchies = dbcheck_hierachies.hierarchies
+    database_checker.checks = dbcheck_hierachies.checks
+    #except Exception as e:
+    #   print e
+    #   pass
 
     database_checker.execution_time = time.time() - start_time
     # generating report
@@ -314,5 +369,6 @@ def perform_check(input_dir, logdir = '/neurospin/cati/Users/operto/logs'):
 
     # saving csv
     save_csv(database_checker)
+    save_tables(database_checker.checks)
     with open(html_file, 'wb') as f:
         f.write(html)

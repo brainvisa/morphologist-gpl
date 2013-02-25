@@ -21,6 +21,9 @@ keyitems = ['raw', 'acpc', 'nobias', 'greywhite', 'brainmask', 'split', 'whiteme
 
 class MorphologistCheckbase(Checkbase):
     def __init__(self, directory):
+        from brainvisa.checkbase.hierarchies import morphologist as morpho
+        self.patterns = morpho.patterns
+        self.keyitems = morpho.keyitems
         Checkbase.__init__(self, directory)
 
     def get_centres(self, excludelist = ['history_book'], save = True):
@@ -47,106 +50,27 @@ class MorphologistCheckbase(Checkbase):
         if save: self.subjects = centres_dic
         return centres_dic
 
-    def get_subject_hierarchy_files(self, subject, keyitems = None, attributes = None):
-       ''' Returns a dictionary with all the keyitems matching a dictionary of attributes
-       ex : '''
+
+    def get_subject_hierarchy_files(self, subject, patterns = None, attributes = None):
+       from brainvisa.checkbase.hierarchies import morphologist as morpho
+       if not patterns: patterns = morpho.patterns
+       return self._get_subject_hierarchy_files(subject, patterns, attributes)
+
+
+    def get_subject_missing_files(self, subject, keyitems = None):
+        from brainvisa.checkbase.hierarchies import morphologist as morpho
+        if not keyitems: keyitems = morpho.keyitems
+        return self._get_subject_missing_files(subject, keyitems)
+
+
+    def check_database_for_existing_files(self, patterns = None, save = True):
+       from brainvisa.checkbase.hierarchies import morphologist as morpho
+       if not patterns: patterns = morpho.patterns
+       return self._check_database_for_existing_files(patterns, save)
+
+
+    def get_complete_subjects(self, keyitems = None, save = True):
        from brainvisa.checkbase.hierarchies import morphologist as morpho
        if not keyitems: keyitems = morpho.keyitems
-       if not attributes:
-          attributes = {'subject' : subject}
-
-       assert(attributes.has_key('subject'))
-       attributes.setdefault('database', self.directory)
-
-       from glob import glob
-       items = {}
-       globitems = []
-       for each in keyitems:
-           #items[each] = glob(processregexp(morpho.patterns[each], attributes))
-           globitems = glob(getfilepath(each, attributes))
-           for item in globitems:
-              res = parsefilepath(item)
-              if not res is None and res[0] == each:
-                 items.setdefault(each, []).append(res[1])
-       return items
-
-    def get_subject_missingfiles(self, subject):
-        from brainvisa.checkbase.hierarchies import morphologist as morpho
-        items = {}
-        if not hasattr(self, 'existingfiles'):
-           items = self.get_subject_hierarchy_files(subject)
-        else:
-           if self.existingfiles[0].has_key(subject):
-              items = self.existingfiles[0][subject]
-
-        missing = []
-        for key in morpho.keyitems:
-           if not items.has_key(key):
-                missing.append(key)
-        return missing
-
-    def check_database_for_missing_files(self, save = True):
-        from brainvisa.checkbase.hierarchies import morphologist as morpho
-        if not hasattr(self, 'subjects'): self.get_subjects(save = True)
-        if not hasattr(self, 'existingfiles'): self.check_database_for_existing_files(save = True)
-        all_subjects = self.get_flat_subjects()
-        incompletesubjects = {}
-        for subject in all_subjects:
-            missing = self.get_subject_missingfiles(subject)
-            if len(missing) > 0:
-                incompletesubjects[subject] = missing
-        if save: self.incompletesubjects = incompletesubjects
-        return incompletesubjects
-
-    def check_database_for_existing_files(self, save = True):
-       ''' This function browses a whole directory, subject after subject,
-       in search for files matching software-specific patterns. All unidentified
-       files is retsecond list.'''
-       from brainvisa.checkbase.hierarchies import morphologist as morpho
-       all_subjects = self.get_flat_subjects()
-       all_subjects_files = {}
-       not_recognized = {}
-       unique_subjects = set(all_subjects).difference(set(self.get_multiple_subjects()))
-       for subject in unique_subjects:
-         subject_files = get_subject_files(self.directory, subject)
-         for each in subject_files:
-            m = parsefilepath(each, patterns = morpho.patterns) #snapshots_patterns)
-            if m:
-              datatype, attributes = m
-              all_subjects_files.setdefault(subject, {})
-              all_subjects_files[subject][datatype] = attributes
-            else:
-              not_recognized.setdefault(subject, []).append(each)
-       if save: self.existingfiles = (all_subjects_files, not_recognized)
-       return all_subjects_files, not_recognized
-
-    def get_complete_subjects(self, save = True):
-       from brainvisa.checkbase.hierarchies import morphologist as morpho
-       if not hasattr(self, 'subjects'): self.get_subjects(save = True)
-       if not hasattr(self, 'existingfiles'): self.check_database_for_existing_files(save = True)
-       complete_subjects = []
-       incomplete_subjects = []
-       for subject in self.get_flat_subjects():
-          if self.existingfiles[0].has_key(subject):
-             c = len(set(self.existingfiles[0][subject].keys()).intersection(set(morpho.keyitems)))
-             if c == len(morpho.keyitems):
-                complete_subjects.append(subject)
-             else:
-                incomplete_subjects.append(subject)
-       if save: self.complete_subjects = complete_subjects
-       return self.complete_subjects
-
-    def get_empty_subjects(self, save = True):
-       from brainvisa.checkbase.hierarchies import morphologist as morpho
-       if not hasattr(self, 'subjects'): self.get_subjects(save = True)
-       if not hasattr(self, 'existingfiles'): self.check_database_for_existing_files(save = True)
-       empty_subjects = []
-       for subject in set(self.get_flat_subjects()).difference(set(self.get_multiple_subjects())):
-          if not self.existingfiles[0].has_key(subject):
-             #c = len(set(self.existingfiles[0][subject].keys()).intersection(set(morpho.keyitems)))
-             #if c == 0:
-                empty_subjects.append(subject)
-       if save: self.empty_subjects = empty_subjects
-       return self.empty_subjects
-
+       return self._get_complete_subjects(keyitems, save)
 

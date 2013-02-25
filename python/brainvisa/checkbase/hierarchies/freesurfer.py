@@ -9,6 +9,9 @@ keyitems = []
 
 class FreeSurferCheckbase(Checkbase):
     def __init__(self, directory):
+        from brainvisa.checkbase.hierarchies import freesurfer as free
+        self.patterns = free.patterns
+        self.keyitems = free.keyitems
         Checkbase.__init__(self, directory)
 
     def get_subjects(self, save = True):

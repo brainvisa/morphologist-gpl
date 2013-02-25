@@ -145,7 +145,7 @@ class ThicknessSnapBase(SnapBase):
         self.aobjects['tex'] = a.toAObject(tex)
         self.aobjects['tex'].releaseAppRef()
         if tex_type in ['FreesurferThicknessType', 'ResampledFreesurferThicknessType', 'Cortical thickness']:
-            self.aobjects['tex'].setPalette(a.getPalette('Blue-Red'), minVal = 1.0, maxVal = 5.0, absoluteMode=True)
+            self.aobjects['tex'].setPalette(a.getPalette('Blue-Red-fusion'), minVal = 0.0, maxVal = 500.0, absoluteMode=True)
         elif tex_type in ['FreesurferCurvType', 'ResampledFreesurferCurvType', 'Curvature Texture', 'White Curvature Texture']:
             self.aobjects['tex'].setPalette(a.getPalette('Blue-Red'), minVal = -1.0, maxVal = 1.0, absoluteMode=True)
         elif tex_type in ['FreesurferGyri', 'ResampledGyri']:
