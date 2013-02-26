@@ -136,7 +136,6 @@ class HTMLReportGenerator():
                         '$HIERARCHY_SUBJECT_KEY_ITEMS' : str('%s'%(self.database_checker.checks['key_items'][hieradir])),
                         '$HIERARCHY_INVALID_SUBJECTS' : str(''),
                         '$BIOMARKERS' : str(''),
-                        '$HIERARCHY_MULTIPLE_SUBJECTS' : str(''),
                         '$HIERARCHY_EMPTY_SUBJECTS' : str(''),
                         '$HIERARCHY_COMPLETE_SUBJECTS' : str(''),
                         '$HIERARCHY_INVALID_SUBJECTS' : str(''),
@@ -155,6 +154,8 @@ class HTMLReportGenerator():
                     elif hieratype == 'snapshots':
                       summary += self._convert_from_template('SNAPSHOTS_HIERARCHY', conversion_hashtable)
                     elif hieratype == 'freesurfer':
+                      conversion_hashtable.update({
+                        })
                       summary += self._convert_from_template('FREESURFER_HIERARCHY', conversion_hashtable)
 
         ht = {'$DIRECTORIES_DETAILED_HIERARCHIES' : summary,

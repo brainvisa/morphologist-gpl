@@ -74,3 +74,8 @@ class MorphologistCheckbase(Checkbase):
        if not keyitems: keyitems = morpho.keyitems
        return self._get_complete_subjects(keyitems, save)
 
+    def perform_checks(self):
+        self.check_database_for_existing_files()
+        self.get_multiple_subjects()
+        self.get_complete_subjects()
+        self.get_empty_subjects()

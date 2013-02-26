@@ -193,11 +193,12 @@ def perform_checks_hierarchy(h):
            m.perform_checks()
         elif hiertype == 'freesurfer':
            m = free.FreeSurferCheckbase(db)
+           m.perform_checks()
         elif hiertype == 'snapshots':
            m = snap.SnapshotsCheckbase(db)
 
-           checks.setdefault('checkbase', {})
-           checks['checkbase'][db] = m
+        checks.setdefault('checkbase', {})
+        checks['checkbase'][db] = m
 
         # extracting results and storing them in checks
         results = extract_results(db, m)
@@ -227,6 +228,7 @@ def extract_results(db, checkbase):
         checks['empty_subjects'][db] = checkbase.get_empty_subjects()
      elif isinstance(checkbase, free.FreeSurferCheckbase):
         checks['key_items'][db] = free.keyitems
+        checks['multiple_subjects'][db] = checkbase.get_multiple_subjects()
      elif isinstance(checkbase, snap.SnapshotsCheckbase):
         checks['key_items'][db] = snap.keyitems
 
@@ -298,6 +300,7 @@ def check_hierarchies(input_dir, studies_list = studies_list, users_dir = 'Users
    database_checker.rootdirectory = input_dir
    database_checker.hierarchies =  hierarchies
    database_checker.checks = checks
+   print checks['checkbase'].keys()
    return database_checker
 
 
@@ -346,7 +349,6 @@ def save_table(checkbase, logdir = '/neurospin/cati/Users/operto/logs/existingfi
 
 def save_tables(checks):
    for db, checkbase in checks.items():
-      print db, checkbase.directory
       if hasattr(checkbase, 'existingfiles'):
          save_table(checkbase)
 
@@ -355,19 +357,20 @@ def perform_check(directory = '/neurospin/cati', logdir = '/neurospin/cati/Users
 
     import sys, time
     database_checker = DatabaseChecker()
-    studies_list = ['CATI_MIRROR']
-    users_list = ['operto']
+    #studies_list = ['CATI_MIRROR']
+    #users_list = ['operto']
 
     print 'Checking free disk............................................'
-    dbdisk_checker = check_free_disk(directory, get_sizes = True, studies_list = studies_list, users_dir = 'Users', users_list = users_list)
+    dbdisk_checker = check_free_disk(directory, get_sizes = True) #, studies_list = studies_list, users_dir = 'Users', users_list = users_list)
     for each in ['users_space', 'studies_space', 'other_users', 'other_studies', 'rootdirectory', 'global_disk_space', 'execution_time']:
         setattr(database_checker, each, getattr(dbdisk_checker, each))
 
     print ''
     print 'Checking hierarchies............................................'
-    dbhierarchies_checker = check_hierarchies(directory, studies_list = studies_list, users_dir = 'Users', users_list = users_list)
+    dbhierarchies_checker = check_hierarchies(directory) #, studies_list = studies_list, users_dir = 'Users', users_list = users_list)
     for each in ['hierarchies', 'checks']:
         setattr(database_checker, each, getattr(dbhierarchies_checker, each))
+    print database_checker.checks['checkbase'].keys()
 
     # generating report
     import pdf, report, time

@@ -22,3 +22,7 @@ class FreeSurferCheckbase(Checkbase):
 
     def check_database_for_existing_files(self):
         return ({}, {})
+
+    def perform_checks(self):
+        pass
+        #self.get_multiple_subjects()
