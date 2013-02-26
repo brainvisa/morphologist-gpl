@@ -195,13 +195,10 @@ def detect_hierarchies(directory, maxdepth=3):
    for depth in xrange(maxdepth):
        for i in xrange(depth): globpath = os.path.join(globpath, '*')
        dirs.extend([e for e in glob(globpath) if os.path.isdir(e)])
-   #print dirs, len(dirs)
    for root in dirs:
-
       hierarchy = detect_hierarchy(root, True)
       if hierarchy:
         winner, votes = hierarchy
-        #print root, votes
         hierarchies[root] = winner
    return hierarchies
 

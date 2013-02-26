@@ -59,7 +59,11 @@ class HTMLReportGenerator():
 
         html_report = ''
         templates = { 'DISKUSAGE' : 'diskusage_template.html',
-            'HIERARCHY' : 'hierarchy_template.html',
+            'MORPHOLOGIST_HIERARCHY' : 'hierarchy_template.html',
+            'FREESURFER_HIERARCHY' : 'freesurfer_hierarchy_template.html',
+            'SNAPSHOTS_HIERARCHY' : 'snapshots_hierarchy_template.html',
+            'DIRECTORIES' : 'directories_template.html',
+            'GENERALINFO' : 'generalinformation_template.html',
         }
         m = sys.modules['brainvisa.checkbase.diskusage.check']
         report_template_path = os.path.join(os.path.split(m.__file__)[0],
@@ -120,9 +124,7 @@ class HTMLReportGenerator():
         return summary
 
     def _generate_detailed_directories(self):
-        from brainvisa import checkbase as c
         summary = ''
-        print self.database_checker.hierarchies
         for key, hierarchies in self.database_checker.hierarchies.items():
             summary += 'Results for directory %s<br><br>'%key
             if hierarchies :
@@ -132,6 +134,13 @@ class HTMLReportGenerator():
                         '$HIERARCHY_DETECTED_TYPE' : str(hieratype),
                         '$HIERARCHY_SUBJECTSDIRECTORY' : str('%s (%i)'%(subjects, len(subjects))),
                         '$HIERARCHY_SUBJECT_KEY_ITEMS' : str('%s'%(self.database_checker.checks['key_items'][hieradir])),
+                        '$HIERARCHY_INVALID_SUBJECTS' : str(''),
+                        '$BIOMARKERS' : str(''),
+                        '$HIERARCHY_MULTIPLE_SUBJECTS' : str(''),
+                        '$HIERARCHY_EMPTY_SUBJECTS' : str(''),
+                        '$HIERARCHY_COMPLETE_SUBJECTS' : str(''),
+                        '$HIERARCHY_INVALID_SUBJECTS' : str(''),
+                        '$HIERARCHY_UNIDENTIFIED_FILES' : str(''),
                     }
                     if hieratype == 'morphologist':
                       conversion_hashtable.update({
@@ -139,12 +148,20 @@ class HTMLReportGenerator():
                         '$HIERARCHY_EMPTY_SUBJECTS' : str('%s'%self.database_checker.checks['empty_subjects'][hieradir]),
                         '$HIERARCHY_COMPLETE_SUBJECTS' : str('%s'%self.database_checker.checks['complete_subjects'][hieradir]),
                         '$HIERARCHY_INVALID_SUBJECTS' : str(''),
-                        #'$HIERARCHY_IDENTIFIED_ITEMS' : str(self.database_checker.checks['existing_files'][hieradir]),
                         '$HIERARCHY_UNIDENTIFIED_FILES' : str(''),
                         '$BIOMARKERS' : str(''),
                       })
-                    summary += self._convert_from_template('HIERARCHY', conversion_hashtable)
-        return summary
+                      summary += self._convert_from_template('MORPHOLOGIST_HIERARCHY', conversion_hashtable)
+                    elif hieratype == 'snapshots':
+                      summary += self._convert_from_template('SNAPSHOTS_HIERARCHY', conversion_hashtable)
+                    elif hieratype == 'freesurfer':
+                      summary += self._convert_from_template('FREESURFER_HIERARCHY', conversion_hashtable)
+
+        ht = {'$DIRECTORIES_DETAILED_HIERARCHIES' : summary,
+              '$HIERARCHIES' : self.database_checker.hierarchies,
+              }
+
+        return self._convert_from_template('DIRECTORIES', ht)
 
     def generate_html_report(self):
         '''
@@ -158,24 +175,30 @@ class HTMLReportGenerator():
         from glob import glob
         db_id = '/neurospin/cati/'
         datetime_string = str(time.strftime('%d %m %Y %H:%M:%S', time.gmtime()))
-        device, total_size, used, available, percent = string.split(self.database_checker.global_disk_space, ' ')
         nb_previous_checks = len(glob('/neurospin/cati/Users/operto/logs/report*.*'))
-        percent = 100.0 - float(percent)
-        hours, remainder = divmod(int(self.database_checker.execution_time), 3600)
-        minutes, seconds = divmod(remainder, 60)
-        execution_time=  '%s:%s:%s' % (hours, minutes, seconds)
 
         conversion_hashtable = {
             '$DATABASE_ID' : str(db_id),
             '$DATETIME_GENERATED' : str(datetime_string),
             '$DATETIME_STRING' : str(datetime_string),
+            '$DETAILED_DIRECTORIES' : '',
+            '$GENERAL_INFORMATION' : '',
+        }
+
+        # Information on disk usage
+        if hasattr(self.database_checker, 'studies_space'):
+           device, total_size, used, available, percent = string.split(self.database_checker.global_disk_space, ' ')
+           percent = 100.0 - float(percent)
+           hours, remainder = divmod(int(self.database_checker.execution_time), 3600)
+           minutes, seconds = divmod(remainder, 60)
+           execution_time=  '%s:%s:%s' % (hours, minutes, seconds)
+           ht = {'$NUMBER_OF_STUDIES' : str('%i'%len(self.database_checker.studies_space.keys())),
             '$DATABASE_DIR' : str(db_id),
-            '$NUMBER_OF_STUDIES' : str('%i'%len(self.database_checker.studies_space.keys())),
+            '$NUMBER_OF_PREVIOUS_CHECKS' : str(nb_previous_checks),
             '$STUDIES' : str(self.database_checker.studies_space.keys()),
             '$NUMBER_OF_USERS' : str('%i'%len(self.database_checker.users_space.keys())),
             '$USERS' : str(self.database_checker.users_space.keys()),
             '$UNIDENTIFIED_DIRS' : str('%s (%i studies)'%(str(self.database_checker.other_studies.keys()), len(self.database_checker.other_studies.keys()))),
-            '$NUMBER_OF_PREVIOUS_CHECKS' : str(nb_previous_checks),
             '$TOTAL_SPACE' : str("{0:.2S}".format(size(int(total_size) * 1024.0))),
             '$USED_SPACE' : str("{0:.2S}".format(size(int(used) * 1024.0))),
             '$FREE_SPACE' : str("{0:.2S}".format(size(int(available) * 1024.0))),
@@ -185,11 +208,12 @@ class HTMLReportGenerator():
             '$SUMMARY_ON_UNDECLARED_DIRS' : str(self._generate_summary_on_undeclared_directories()),
             '$SUMMARY_ON_UNDECLARED_USERS' : str(self._generate_summary_on_undeclared_users()),
             '$EXECUTION_TIME' : str(execution_time),
-        }
+           }
+           conversion_hashtable['$GENERAL_INFORMATION'] = self._convert_from_template('GENERALINFO', ht)
+
+
+        # Information on hierarchies
         if hasattr(self.database_checker, 'hierarchies'):
-            conversion_hashtable.update({
-               '$HIERARCHIES' : str(self.database_checker.hierarchies),
-               '$DETAILED_DIRECTORIES' : str(self._generate_detailed_directories()),
-            })
+            conversion_hashtable['$DETAILED_DIRECTORIES'] = self._generate_detailed_directories()
 
         return self._convert_from_template('DISKUSAGE', conversion_hashtable)

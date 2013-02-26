@@ -61,7 +61,7 @@ class DatabaseChecker():
         pass
 
 
-def check_free_disk(directory, get_sizes = False):
+def check_free_disk(directory, get_sizes = False, studies_list = studies_list, users_dir = 'Users', users_list = users_dict.keys(), excludelist = ['.snapshot', 'Users']):
    ''' Disk usage controlling procedure, originally for /neurospin/cati
    - gets the output of df Unix function
    - estimates the size of every folder under the given directory
@@ -83,7 +83,7 @@ def check_free_disk(directory, get_sizes = False):
    database_checker.other_users = {'datajunkie1337' : 12223, ...}
    '''
    import subprocess, time
-   global start_time
+   start_time = time.time()
 
    # get df output
    df = subprocess.Popen(["df", directory], stdout=subprocess.PIPE)
@@ -104,11 +104,10 @@ def check_free_disk(directory, get_sizes = False):
 
    # build a list of directories contained in '/neurospin/cati'
    # with "users" (in './Users/') and studies (in '.')
-   users_dir = os.path.join(directory, 'Users')
+   users_dir = os.path.join(directory, users_dir)
    all_users_list = [each for each in os.listdir(users_dir) if os.path.isdir(os.path.join(users_dir, each))]
    all_studies_list = [ each for each in os.listdir(directory) if os.path.isdir(os.path.join(directory, each))]
 
-   excludelist = ['.snapshot', 'Users']
    for each in excludelist:
       if each in all_studies_list:
          all_studies_list.pop(all_studies_list.index(each))
@@ -117,12 +116,13 @@ def check_free_disk(directory, get_sizes = False):
    print 'Processing users...'
    for user in all_users_list:
        print user, 'in progress'
-       if user in users_dict.keys():
+       if user in users_list:
             s = 0
             if get_sizes: s = get_size(os.path.join(users_dir, user))
             users_space[user] = s
             print user, users_space[user], 'identified', time.time() - start_time
        else:
+            continue
             s = 0
             if get_sizes: s = get_size(os.path.join(users_dir, user))
             other_users[user] = s
@@ -138,6 +138,7 @@ def check_free_disk(directory, get_sizes = False):
            studies_space[study] = s
            print study, studies_space[study], 'identified', time.time() - start_time
        else:
+           continue
            s = 0
            if get_sizes: s = get_size(os.path.join(directory, study))
            other_studies[study] = s
@@ -151,6 +152,7 @@ def check_free_disk(directory, get_sizes = False):
    database_checker.users_space = users_space
    database_checker.other_studies = other_studies
    database_checker.other_users = other_users
+   database_checker.execution_time = time.time() - start_time
 
    return database_checker
 
@@ -233,57 +235,63 @@ def extract_results(db, checkbase):
      return checks
 
 
-def check_hierarchies(input_dir, do_it = False):
+def _check_directories(rootdirectory, dirlist):
+   from brainvisa import checkbase as c
+   checks = {}
+   hierarchies = {}
+
+   for eachdir in dirlist:
+       # process each directory
+       print eachdir, 'in progress'
+       db_dir = os.path.join(rootdirectory, eachdir)
+       h = c.detect_hierarchies(db_dir, maxdepth=3)
+       assert(not hierarchies.has_key(eachdir))
+       hierarchies[eachdir] = h
+       dir_checks = perform_checks_hierarchy(h)
+
+       # update big directory
+       for each in dir_checks.keys():
+          checks.setdefault(each, {})
+          for db, res in dir_checks[each].items():
+             checks[each].setdefault(db, {})
+          checks[each].update(dir_checks[each])
+   return checks, hierarchies
+
+
+def check_hierarchies(input_dir, studies_list = studies_list, users_dir = 'Users', users_list = users_dict.keys()):
 
    from brainvisa import checkbase as c
 
-   # create some lists/directories
-   checks = {}
-   hierarchies = {}
-   all_studies_list = []
-   all_users_list = []
-
    # build a list of directories contained in '/neurospin/cati'
    # with "users" (in './Users/') and studies (in '.')
-   users_dir = os.path.join(input_dir, 'Users')
-   all_users_list = [each for each in os.listdir(users_dir) if os.path.isdir(os.path.join(users_dir, each))]
-   all_studies_list = [ each for each in os.listdir(input_dir) if os.path.isdir(os.path.join(input_dir, each))]
+   users_dir = os.path.join(input_dir, users_dir)
 
-   identified_users_list = users_dict.keys()
+   checks = {}
+   hierarchies = {}
 
-
-   do_it = False
    # processing users folders
    print 'Processing users...'
-   for user in all_users_list:
-       print user, 'in progress'
-       if user in identified_users_list:
-              if do_it:
-                db_dir = os.path.join(users_dir, user)
-                h = c.detect_hierarchies(db_dir, maxdepth=3)
-                hierarchies[user] = h
-                user_checks = perform_checks_hierarchy(h)
-                for each in checks.keys():
-                   for db, res in user_checks[each].items():
-                      checks[each].setdefault(db, {})
-                   checks[each].update(user_checks[each])
-                #print checks['all_subjects']
+   users_checks, users_hierarchies = _check_directories(users_dir, users_list)
 
-   do_it = True
    # processing studies folders
    print 'Processing studies...'
-   for study in studies_list:
-       print study, 'in progress'
-       if study in studies_list:
-            if do_it:
-                db_dir = os.path.join(input_dir, study)
-                h = c.detect_hierarchies(db_dir, maxdepth=3)
-                hierarchies[user] = h
-                study_checks = perform_checks_hierarchy(h)
-                for each in checks.keys():
-                    for db, res in study_checks[each].items():
-                      checks[each].setdefault(db, {})
-                    checks[each].update(study_checks[each])
+   studies_checks, studies_hierarchies = _check_directories(input_dir, studies_list)
+
+   # update big dictionary
+   for each in users_checks.keys():
+       checks.setdefault(each, {})
+       for db, res in users_checks[each].items():
+          checks[each].setdefault(db, {})
+       checks[each].update(users_checks[each])
+   for each in studies_checks.keys():
+       checks.setdefault(each, {})
+       for db, res in studies_checks[each].items():
+          checks[each].setdefault(db, {})
+       checks[each].update(studies_checks[each])
+
+   # update hierarchies
+   hierarchies.update(users_hierarchies)
+   hierarchies.update(studies_hierarchies)
 
    # compiling results as attributes of an object
    database_checker = DatabaseChecker()
@@ -291,6 +299,7 @@ def check_hierarchies(input_dir, do_it = False):
    database_checker.hierarchies =  hierarchies
    database_checker.checks = checks
    return database_checker
+
 
 def save_csv(database_checker, logdir = '/neurospin/cati/Users/operto/logs'):
 
@@ -337,28 +346,29 @@ def save_table(checkbase, logdir = '/neurospin/cati/Users/operto/logs/existingfi
 
 def save_tables(checks):
    for db, checkbase in checks.items():
-      save_table(checkbase)
+      print db, checkbase.directory
+      if hasattr(checkbase, 'existingfiles'):
+         save_table(checkbase)
 
 
-def perform_check(input_dir, logdir = '/neurospin/cati/Users/operto/logs'):
+def perform_check(directory = '/neurospin/cati', logdir = '/neurospin/cati/Users/operto/logs'):
 
     import sys, time
-    global start_time
-    # initialize time
-    start_time = time.time()
+    database_checker = DatabaseChecker()
+    studies_list = ['CATI_MIRROR']
+    users_list = ['operto']
+
     print 'Checking free disk............................................'
-    database_checker = check_free_disk(input_dir, get_sizes = False)
+    dbdisk_checker = check_free_disk(directory, get_sizes = True, studies_list = studies_list, users_dir = 'Users', users_list = users_list)
+    for each in ['users_space', 'studies_space', 'other_users', 'other_studies', 'rootdirectory', 'global_disk_space', 'execution_time']:
+        setattr(database_checker, each, getattr(dbdisk_checker, each))
+
     print ''
     print 'Checking hierarchies............................................'
-    #try:
-    dbcheck_hierachies = check_hierarchies(input_dir, True)
-    database_checker.hierarchies = dbcheck_hierachies.hierarchies
-    database_checker.checks = dbcheck_hierachies.checks
-    #except Exception as e:
-    #   print e
-    #   pass
+    dbhierarchies_checker = check_hierarchies(directory, studies_list = studies_list, users_dir = 'Users', users_list = users_list)
+    for each in ['hierarchies', 'checks']:
+        setattr(database_checker, each, getattr(dbhierarchies_checker, each))
 
-    database_checker.execution_time = time.time() - start_time
     # generating report
     import pdf, report, time
     datetime_string = str(time.strftime('%d%m%Y-%H%M%S', time.gmtime()))
@@ -367,8 +377,20 @@ def perform_check(input_dir, logdir = '/neurospin/cati/Users/operto/logs'):
     html_file = os.path.join(logdir, 'report-%s.html'%datetime_string)
     pdf_file =  os.path.join(logdir, 'report-%s.pdf'%datetime_string)
 
-    # saving csv
-    save_csv(database_checker)
-    save_tables(database_checker.checks)
+    try:
+       if hasattr(database_checker, 'studies_space'):
+          # saving csv
+          save_csv(database_checker)
+    except Exception as e:
+       print e
+       pass
+    try :
+       if hasattr(database_checker, 'checks'):
+          # save tables
+          save_tables(database_checker.checks['checkbase'])
+    except Exception as e:
+       print e
+       pass
+
     with open(html_file, 'wb') as f:
         f.write(html)

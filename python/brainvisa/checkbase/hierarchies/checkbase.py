@@ -213,3 +213,12 @@ class Checkbase():
         self.get_multiple_subjects()
         self.get_complete_subjects()
         self.get_empty_subjects()
+
+
+    def find_centre(subject):
+      centres = m.get_centres()
+      for c in centres:
+         #if subject in m.get_subjects()[c]:
+         for each in m.get_subjects()[c]:
+            if each[-11:] == subject:
+                return c
