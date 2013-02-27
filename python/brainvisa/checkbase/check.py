@@ -34,7 +34,8 @@ def csv2html(csvfile):
    import string
    import codecs
 
-   file = codecs.open(sys.argv[1], encoding='utf-8', mode='r')
+   #file = codecs.open(sys.argv[1], encoding='utf-8', mode='r')
+   file = open(csvfile, 'r')
 
    html += """
    <!DOCTYPE html>
@@ -51,7 +52,9 @@ def csv2html(csvfile):
 
        .b-table {
          width: 100%;
-         border-collapse: collapse;
+         border-spacing : 2px;
+         border-collapse: separate;
+         cellspacing : 3px;
        }
 
        .b-table__cell {
@@ -70,7 +73,7 @@ def csv2html(csvfile):
     <body>
     <table class="b-table">
    """
-
+   color = {'0':'#FFFFFF', '1':'#000000'}
    for line in file:
        line = string.strip(line)
        line_chunks = re.split("[ ,;]", line)
@@ -81,7 +84,11 @@ def csv2html(csvfile):
            chunk = re.sub(r'\\n', '<br />', chunk)
            if not chunk or chunk == '""':
                chunk = "&nbsp;"
-           html += "   <td class='b-table__cell'>" + chunk + "</td>"
+           bgcolor = '#FFFFFF'
+           if chunk in ['1', '0']:
+              bgcolor = color[chunk]
+              chunk = '&nbsp;'
+           html += "   <td bgcolor=%s class='b-table__cell'>"%bgcolor + chunk + "</td>"
        html += "      </tr>"
 
    html += """
@@ -118,8 +125,9 @@ def save_table(checkbase, logdir = '/neurospin/cati/Users/operto/logs/existingfi
     changed_database_id = string.replace(database_id, os.path.sep, '_')
     fields_names = ['subject']
     fields_names.extend(checkbase.keyitems)
-
-    with open(os.path.join(logdir, '%s-%s.csv'%(changed_database_id, datetime_string)), 'wb',) as csvfile:
+    csv_path = os.path.join(logdir, ('%s-%s.csv'%(changed_database_id, datetime_string)).lstrip('.'))
+    with open(csv_path, 'wb',) as csvfile:
+      print csv_path
       mywriter = csv.writer(csvfile, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
       mywriter.writerow(fields_names)
       for subject in checkbase.existingfiles[0].keys():
@@ -132,10 +140,15 @@ def save_table(checkbase, logdir = '/neurospin/cati/Users/operto/logs/existingfi
 
          mywriter.writerow(subject_row)
 
-def save_tables(checks):
+    html = csv2html(csv_path)
+    f = open(csv_path[:-4] + '.html', 'w')
+    f.write(html)
+    f.close()
+
+def save_tables(checks, logdir = '/neurospin/cati/Users/operto/logs/existingfiles', datetime_string = ''):
    for db, checkbase in checks.items():
       if hasattr(checkbase, 'existingfiles'):
-         save_table(checkbase)
+         save_table(checkbase, logdir, datetime_string)
 
 
 def run_disk_check(directory = '/neurospin/cati', logdir = '/neurospin/cati/Users/operto/logs'):
@@ -143,11 +156,12 @@ def run_disk_check(directory = '/neurospin/cati', logdir = '/neurospin/cati/User
     import sys, time, os
     from brainvisa.checkbase import DatabaseChecker
     from brainvisa.checkbase.diskusage.check import check_free_disk
-    studies_list = ['CATI_MIRROR']
-    users_list = ['operto']
+    studies_list = ['Projet_X_050213'] #['MEMENTO_fevrier2013']
+    users_list = [] #'operto']
+    users_dir = ''
 
     print 'Checking free disk............................................'
-    database_checker = check_free_disk(directory, get_sizes = True, studies_list = studies_list, users_dir = 'Users', users_list = users_list)
+    database_checker = check_free_disk(directory, get_sizes = True, studies_list = studies_list, users_dir = users_dir, users_list = users_list)
 
     datetime_string = str(time.strftime('%d%m%Y-%H%M%S', time.gmtime()))
     try:
@@ -174,8 +188,8 @@ def run_hierarchies_check(directory = '/neurospin/cati', logdir = '/neurospin/ca
     import sys, time, os
     from brainvisa.checkbase import DatabaseChecker
     from brainvisa.checkbase.hierarchies.check import check_hierarchies
-    studies_list = ['CATI_MIRROR'] #['MEMENTO_fevrier2013']
-    users_list = ['operto']
+    studies_list = ['Projet_X_050213'] #['MEMENTO_fevrier2013']
+    users_list = [] #'operto']
 
     print 'Checking hierarchies............................................'
     database_checker = check_hierarchies(directory, studies_list = studies_list, users_dir = 'Users', users_list = users_list)
@@ -188,13 +202,12 @@ def run_hierarchies_check(directory = '/neurospin/cati', logdir = '/neurospin/ca
     html_file = os.path.join(logdir, 'hierarchiesreport-%s.html'%datetime_string)
     pdf_file =  os.path.join(logdir, 'hierarchiesreport-%s.pdf'%datetime_string)
 
-    try :
-       if hasattr(database_checker, 'checks'):
+    if hasattr(database_checker, 'checks'):
           # save tables
-          save_tables(database_checker.checks['checkbase'], datetime_string = datetime_string)
-    except Exception as e:
-       print e
-       pass
+          save_tables(database_checker.checks['checkbase'], os.path.join(logdir, 'existingfiles'), datetime_string = datetime_string)
+    #except Exception as e:
+    #   print e
+    #   pass
 
     with open(html_file, 'wb') as f:
         f.write(html)
