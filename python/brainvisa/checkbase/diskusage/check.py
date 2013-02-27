@@ -88,7 +88,7 @@ def check_free_disk(directory, get_sizes = True, studies_list = studies_list, us
             users_space[user] = s
             print user, users_space[user], 'identified', time.time() - start_time
        else:
-            continue
+            #continue
             s = 0
             if get_sizes: s = get_size(os.path.join(users_dir, user))
             other_users[user] = s
@@ -104,7 +104,7 @@ def check_free_disk(directory, get_sizes = True, studies_list = studies_list, us
            studies_space[study] = s
            print study, studies_space[study], 'identified', time.time() - start_time
        else:
-           continue
+           #continue
            s = 0
            if get_sizes: s = get_size(os.path.join(directory, study))
            other_studies[study] = s
