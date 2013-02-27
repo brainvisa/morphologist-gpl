@@ -26,7 +26,7 @@ def get_size(directory = '.', fastmode=True):
             total_size += os.path.getsize(fp)
     return total_size
 
-def check_free_disk(directory, get_sizes = False, studies_list = studies_list, users_dir = 'Users', users_list = users_dict.keys(), excludelist = ['.snapshot', 'Users']):
+def check_free_disk(directory, get_sizes = True, studies_list = studies_list, users_dir = 'Users', users_list = users_dict.keys(), excludelist = ['.snapshot', 'Users']):
    ''' Disk usage controlling procedure, originally for /neurospin/cati
    - gets the output of df Unix function
    - estimates the size of every folder under the given directory

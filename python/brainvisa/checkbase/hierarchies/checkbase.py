@@ -160,6 +160,7 @@ class Checkbase():
        ''' This function browses a whole directory, subject after subject,
        in search for files matching software-specific patterns. All unidentified
        files is returned in a second list.'''
+       from brainvisa.checkbase.hierarchy import get_subject_files
        all_subjects = self.get_flat_subjects()
        all_subjects_files = {}
        not_recognized = {}

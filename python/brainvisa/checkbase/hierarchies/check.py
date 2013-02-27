@@ -109,7 +109,7 @@ def _check_directories(rootdirectory, dirlist):
 def check_hierarchies(input_dir, studies_list = studies_list, users_dir = 'Users', users_list = users_dict.keys()):
 
    from brainvisa.checkbase import DatabaseChecker
-   import os
+   import os, time
 
    # build a list of directories contained in '/neurospin/cati'
    # with "users" (in './Users/') and studies (in '.')
@@ -117,6 +117,7 @@ def check_hierarchies(input_dir, studies_list = studies_list, users_dir = 'Users
 
    checks = {}
    hierarchies = {}
+   start_time = time.time()
 
    # processing users folders
    print 'Processing users...'
@@ -147,6 +148,7 @@ def check_hierarchies(input_dir, studies_list = studies_list, users_dir = 'Users
    database_checker.rootdirectory = input_dir
    database_checker.hierarchies =  hierarchies
    database_checker.checks = checks
+   database_checker.execution_time = time.time() - start_time
    return database_checker
 
 

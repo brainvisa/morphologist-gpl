@@ -30,7 +30,6 @@ class size( long ):
 def revision_number(filepath):
    import subprocess, string
 
-   print filepath
    df = subprocess.Popen(['svn', 'info', filepath], stdout=subprocess.PIPE)
    output = df.communicate()[0]
    rev_number = string.atoi(output.split('\n')[5].split(' ')[1])
@@ -180,21 +179,23 @@ class HTMLReportGenerator():
         datetime_string = str(time.strftime('%d %m %Y %H:%M:%S', time.gmtime()))
         nb_previous_checks = len(glob('/neurospin/cati/Users/operto/logs/report*.*'))
 
+        hours, remainder = divmod(int(self.database_checker.execution_time), 3600)
+        minutes, seconds = divmod(remainder, 60)
+        execution_time=  '%s:%s:%s' % (hours, minutes, seconds)
         conversion_hashtable = {
             '$DATABASE_ID' : str(db_id),
             '$DATETIME_GENERATED' : str(datetime_string),
             '$DATETIME_STRING' : str(datetime_string),
             '$DETAILED_DIRECTORIES' : '',
             '$GENERAL_INFORMATION' : '',
+            '$EXECUTION_TIME' : str(execution_time),
         }
 
         # Information on disk usage
         if hasattr(self.database_checker, 'studies_space'):
            device, total_size, used, available, percent = string.split(self.database_checker.global_disk_space, ' ')
            percent = 100.0 - float(percent)
-           hours, remainder = divmod(int(self.database_checker.execution_time), 3600)
-           minutes, seconds = divmod(remainder, 60)
-           execution_time=  '%s:%s:%s' % (hours, minutes, seconds)
+
            ht = {'$NUMBER_OF_STUDIES' : str('%i'%len(self.database_checker.studies_space.keys())),
             '$DATABASE_DIR' : str(db_id),
             '$NUMBER_OF_PREVIOUS_CHECKS' : str(nb_previous_checks),
@@ -210,7 +211,6 @@ class HTMLReportGenerator():
             '$SUMMARY_ON_USERS' : str(self._generate_summary_on_users()),
             '$SUMMARY_ON_UNDECLARED_DIRS' : str(self._generate_summary_on_undeclared_directories()),
             '$SUMMARY_ON_UNDECLARED_USERS' : str(self._generate_summary_on_undeclared_users()),
-            '$EXECUTION_TIME' : str(execution_time),
            }
            conversion_hashtable['$GENERAL_INFORMATION'] = self._convert_from_template('GENERALINFO', ht)
            return self._convert_from_template('DISKUSAGE', conversion_hashtable)

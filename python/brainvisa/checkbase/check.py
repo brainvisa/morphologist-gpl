@@ -26,12 +26,75 @@ studies_list = ['Memento',
                 'NIMH_Gogtay'
                 ]
 
+def csv2html(csvfile):
+   html = ''
+   import re
+   import cgi
+   import sys
+   import string
+   import codecs
+
+   file = codecs.open(sys.argv[1], encoding='utf-8', mode='r')
+
+   html += """
+   <!DOCTYPE html>
+   <html>
+    <head>
+     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+     <title>Results</title>
+     <style>
+       body {
+         font: .8em Arial, sans-serif;
+         background: #fff;
+         color: #000;
+       }
+
+       .b-table {
+         width: 100%;
+         border-collapse: collapse;
+       }
+
+       .b-table__cell {
+         border: 1px solid;
+       }
+
+       .b-table__cell_min {
+         background: #DFFCD8;
+       }
+
+       .b-table__cell_max {
+         background: #F7D6D6;
+       }
+     </style>
+    </head>
+    <body>
+    <table class="b-table">
+   """
+
+   for line in file:
+       line = string.strip(line)
+       line_chunks = re.split("[ ,;]", line)
+       html += "       <tr class='b-table__row'>"
+       for chunk in line_chunks:
+           chunk = chunk.strip()
+           chunk = cgi.escape(chunk)
+           chunk = re.sub(r'\\n', '<br />', chunk)
+           if not chunk or chunk == '""':
+               chunk = "&nbsp;"
+           html += "   <td class='b-table__cell'>" + chunk + "</td>"
+       html += "      </tr>"
+
+   html += """
+     </table>
+    </body>
+   </html>
+   """
+   return html
 
 
-def save_csv(database_checker, logdir = '/neurospin/cati/Users/operto/logs'):
+def save_csv(database_checker, logdir = '/neurospin/cati/Users/operto/logs', datetime_string = ''):
 
-    import csv, os, time, string
-    datetime_string = str(time.strftime('%d%m%Y-%H%M%S', time.gmtime()))
+    import csv, os, string
     studies_space = database_checker.studies_space
     users_space = database_checker.users_space
 
@@ -49,9 +112,8 @@ def save_csv(database_checker, logdir = '/neurospin/cati/Users/operto/logs'):
         mywriter.writerow([ device, size, used, available, percent, database_checker.execution_time])
 
 
-def save_table(checkbase, logdir = '/neurospin/cati/Users/operto/logs/existingfiles'):
+def save_table(checkbase, logdir = '/neurospin/cati/Users/operto/logs/existingfiles', datetime_string = ''):
     import csv, time, string, os
-    datetime_string = str(time.strftime('%d%m%Y-%H%M%S', time.gmtime()))
     database_id = checkbase.directory
     changed_database_id = string.replace(database_id, os.path.sep, '_')
     fields_names = ['subject']
@@ -81,37 +143,28 @@ def run_disk_check(directory = '/neurospin/cati', logdir = '/neurospin/cati/User
     import sys, time, os
     from brainvisa.checkbase import DatabaseChecker
     from brainvisa.checkbase.diskusage.check import check_free_disk
-    database_checker = DatabaseChecker()
-    studies_list = []#'CATI_MIRROR']
+    studies_list = ['CATI_MIRROR']
     users_list = ['operto']
 
     print 'Checking free disk............................................'
-    dbdisk_checker = check_free_disk(directory, get_sizes = True, studies_list = studies_list, users_dir = 'Users', users_list = users_list)
-    for each in ['users_space', 'studies_space', 'other_users', 'other_studies', 'rootdirectory', 'global_disk_space', 'execution_time']:
-        setattr(database_checker, each, getattr(dbdisk_checker, each))
+    database_checker = check_free_disk(directory, get_sizes = True, studies_list = studies_list, users_dir = 'Users', users_list = users_list)
+
+    datetime_string = str(time.strftime('%d%m%Y-%H%M%S', time.gmtime()))
+    try:
+       if hasattr(database_checker, 'studies_space'):
+          # saving csv
+          save_csv(database_checker, datetime_string = datetime_string)
+    except Exception as e:
+       print e
+       pass
 
     # generating report
     import report
-    datetime_string = str(time.strftime('%d%m%Y-%H%M%S', time.gmtime()))
     reportgen = report.HTMLReportGenerator(database_checker)
     html = reportgen.generate_html_report()
     html_file = os.path.join(logdir, 'diskreport-%s.html'%datetime_string)
     pdf_file =  os.path.join(logdir, 'diskreport-%s.pdf'%datetime_string)
 
-    try:
-       if hasattr(database_checker, 'studies_space'):
-          # saving csv
-          save_csv(database_checker)
-    except Exception as e:
-       print e
-       pass
-    try :
-       if hasattr(database_checker, 'checks'):
-          # save tables
-          save_tables(database_checker.checks['checkbase'])
-    except Exception as e:
-       print e
-       pass
 
     with open(html_file, 'wb') as f:
         f.write(html)
@@ -121,14 +174,11 @@ def run_hierarchies_check(directory = '/neurospin/cati', logdir = '/neurospin/ca
     import sys, time, os
     from brainvisa.checkbase import DatabaseChecker
     from brainvisa.checkbase.hierarchies.check import check_hierarchies
-    database_checker = DatabaseChecker()
-    studies_list = []#'CATI_MIRROR']
+    studies_list = ['CATI_MIRROR'] #['MEMENTO_fevrier2013']
     users_list = ['operto']
 
     print 'Checking hierarchies............................................'
-    dbhierarchies_checker = check_hierarchies(directory, studies_list = studies_list, users_dir = 'Users', users_list = users_list)
-    for each in ['hierarchies', 'checks']:
-        setattr(database_checker, each, getattr(dbhierarchies_checker, each))
+    database_checker = check_hierarchies(directory, studies_list = studies_list, users_dir = 'Users', users_list = users_list)
 
     # generating report
     import report
@@ -138,17 +188,10 @@ def run_hierarchies_check(directory = '/neurospin/cati', logdir = '/neurospin/ca
     html_file = os.path.join(logdir, 'hierarchiesreport-%s.html'%datetime_string)
     pdf_file =  os.path.join(logdir, 'hierarchiesreport-%s.pdf'%datetime_string)
 
-    try:
-       if hasattr(database_checker, 'studies_space'):
-          # saving csv
-          save_csv(database_checker)
-    except Exception as e:
-       print e
-       pass
     try :
        if hasattr(database_checker, 'checks'):
           # save tables
-          save_tables(database_checker.checks['checkbase'])
+          save_tables(database_checker.checks['checkbase'], datetime_string = datetime_string)
     except Exception as e:
        print e
        pass
