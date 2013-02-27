@@ -33,7 +33,7 @@ def revision_number(filepath):
    print filepath
    df = subprocess.Popen(['svn', 'info', filepath], stdout=subprocess.PIPE)
    output = df.communicate()[0]
-   rev_number = string.atoi(output.split('\n')[4].split(' ')[1])
+   rev_number = string.atoi(output.split('\n')[5].split(' ')[1])
    return rev_number
 
 
@@ -65,6 +65,7 @@ class HTMLReportGenerator():
             'SNAPSHOTS_HIERARCHY' : 'snapshots_hierarchy_template.html',
             'DIRECTORIES' : 'directories_template.html',
             'GENERALINFO' : 'generalinfo_template.html',
+            'HIERARCHIES' : 'hierarchies_template.html',
         }
         m = sys.modules['brainvisa.checkbase']
         report_template_path = os.path.join(os.path.split(m.__file__)[0], 'templates',
@@ -212,10 +213,11 @@ class HTMLReportGenerator():
             '$EXECUTION_TIME' : str(execution_time),
            }
            conversion_hashtable['$GENERAL_INFORMATION'] = self._convert_from_template('GENERALINFO', ht)
+           return self._convert_from_template('DISKUSAGE', conversion_hashtable)
 
 
         # Information on hierarchies
         if hasattr(self.database_checker, 'hierarchies'):
-            conversion_hashtable['$DETAILED_DIRECTORIES'] = self._generate_detailed_directories()
+           conversion_hashtable['$DETAILED_DIRECTORIES'] = self._generate_detailed_directories()
+           return self._convert_from_template('HIERARCHIES', conversion_hashtable)
 
-        return self._convert_from_template('DISKUSAGE', conversion_hashtable)

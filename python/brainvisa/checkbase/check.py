@@ -76,12 +76,11 @@ def save_tables(checks):
          save_table(checkbase)
 
 
-def perform_check(directory = '/neurospin/cati', logdir = '/neurospin/cati/Users/operto/logs'):
+def run_disk_check(directory = '/neurospin/cati', logdir = '/neurospin/cati/Users/operto/logs'):
 
-    import sys, time
+    import sys, time, os
     from brainvisa.checkbase import DatabaseChecker
     from brainvisa.checkbase.diskusage.check import check_free_disk
-    from brainvisa.checkbase.hierarchies.check import check_hierarchies
     database_checker = DatabaseChecker()
     studies_list = []#'CATI_MIRROR']
     users_list = ['operto']
@@ -91,20 +90,13 @@ def perform_check(directory = '/neurospin/cati', logdir = '/neurospin/cati/Users
     for each in ['users_space', 'studies_space', 'other_users', 'other_studies', 'rootdirectory', 'global_disk_space', 'execution_time']:
         setattr(database_checker, each, getattr(dbdisk_checker, each))
 
-    print ''
-    print 'Checking hierarchies............................................'
-    dbhierarchies_checker = check_hierarchies(directory, studies_list = studies_list, users_dir = 'Users', users_list = users_list)
-    for each in ['hierarchies', 'checks']:
-        setattr(database_checker, each, getattr(dbhierarchies_checker, each))
-    print database_checker.checks['checkbase'].keys()
-
     # generating report
     import report
     datetime_string = str(time.strftime('%d%m%Y-%H%M%S', time.gmtime()))
     reportgen = report.HTMLReportGenerator(database_checker)
     html = reportgen.generate_html_report()
-    html_file = os.path.join(logdir, 'report-%s.html'%datetime_string)
-    pdf_file =  os.path.join(logdir, 'report-%s.pdf'%datetime_string)
+    html_file = os.path.join(logdir, 'diskreport-%s.html'%datetime_string)
+    pdf_file =  os.path.join(logdir, 'diskreport-%s.pdf'%datetime_string)
 
     try:
        if hasattr(database_checker, 'studies_space'):
@@ -123,3 +115,44 @@ def perform_check(directory = '/neurospin/cati', logdir = '/neurospin/cati/Users
 
     with open(html_file, 'wb') as f:
         f.write(html)
+
+
+def run_hierarchies_check(directory = '/neurospin/cati', logdir = '/neurospin/cati/Users/operto/logs'):
+    import sys, time, os
+    from brainvisa.checkbase import DatabaseChecker
+    from brainvisa.checkbase.hierarchies.check import check_hierarchies
+    database_checker = DatabaseChecker()
+    studies_list = []#'CATI_MIRROR']
+    users_list = ['operto']
+
+    print 'Checking hierarchies............................................'
+    dbhierarchies_checker = check_hierarchies(directory, studies_list = studies_list, users_dir = 'Users', users_list = users_list)
+    for each in ['hierarchies', 'checks']:
+        setattr(database_checker, each, getattr(dbhierarchies_checker, each))
+
+    # generating report
+    import report
+    datetime_string = str(time.strftime('%d%m%Y-%H%M%S', time.gmtime()))
+    reportgen = report.HTMLReportGenerator(database_checker)
+    html = reportgen.generate_html_report()
+    html_file = os.path.join(logdir, 'hierarchiesreport-%s.html'%datetime_string)
+    pdf_file =  os.path.join(logdir, 'hierarchiesreport-%s.pdf'%datetime_string)
+
+    try:
+       if hasattr(database_checker, 'studies_space'):
+          # saving csv
+          save_csv(database_checker)
+    except Exception as e:
+       print e
+       pass
+    try :
+       if hasattr(database_checker, 'checks'):
+          # save tables
+          save_tables(database_checker.checks['checkbase'])
+    except Exception as e:
+       print e
+       pass
+
+    with open(html_file, 'wb') as f:
+        f.write(html)
+

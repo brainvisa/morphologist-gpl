@@ -147,7 +147,6 @@ def check_hierarchies(input_dir, studies_list = studies_list, users_dir = 'Users
    database_checker.rootdirectory = input_dir
    database_checker.hierarchies =  hierarchies
    database_checker.checks = checks
-   print checks['checkbase'].keys()
    return database_checker
 
 
