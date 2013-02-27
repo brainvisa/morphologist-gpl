@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
-from general import *
-from brainvisa.checkbase import *
+from brainvisa.checkbase.hierarchies import *
 from brainvisa.checkbase.hierarchies.checkbase import Checkbase
 
 patterns = { }

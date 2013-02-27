@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
-import os
-from general import *
 
 class Checkbase():
     def __init__(self, directory):
+        import os
         assert (os.path.isdir(directory))
         self.directory = directory
 
-    def get_centres(self):
-        from hierarchies import morphologist as morpho
+    def get_centres(self, save = True):
+        import morphologist as morpho
         m = morpho.MorphologistCheckbase(self.directory)
         if save: self.centres = m.get_centres()
         return m.centres
@@ -38,6 +37,7 @@ class Checkbase():
         return all_subjects
 
     def check_empty_directories(self):
+        import os
         liste = []
         for root, dirs, files in os.walk(self.directory):
             for name in dirs:
@@ -48,6 +48,7 @@ class Checkbase():
 
     def get_T1_images_sizes(self):
         def verif_ext_file(path_file):
+            import os
             prefix, ext = os.path.splitext(path_file)
             if ext == ".gz":
                 pref, exte = os.path.splitext(prefix)
@@ -55,6 +56,7 @@ class Checkbase():
                    return True
             return False
 
+        import os
         dic_image_T1 = {}
         for root, dirs, files in os.walk(self.directory):
             for fic in files:
@@ -215,10 +217,10 @@ class Checkbase():
         self.get_empty_subjects()
 
 
-    def find_centre(subject):
-      centres = m.get_centres()
+    def find_centre(self, subject):
+      centres = self.get_centres()
       for c in centres:
-         #if subject in m.get_subjects()[c]:
-         for each in m.get_subjects()[c]:
+         #if subject in self.get_subjects()[c]:
+         for each in self.get_subjects()[c]:
             if each[-11:] == subject:
                 return c

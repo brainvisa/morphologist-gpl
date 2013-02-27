@@ -30,6 +30,7 @@ class size( long ):
 def revision_number(filepath):
    import subprocess, string
 
+   print filepath
    df = subprocess.Popen(['svn', 'info', filepath], stdout=subprocess.PIPE)
    output = df.communicate()[0]
    rev_number = string.atoi(output.split('\n')[4].split(' ')[1])
@@ -65,10 +66,10 @@ class HTMLReportGenerator():
             'DIRECTORIES' : 'directories_template.html',
             'GENERALINFO' : 'generalinformation_template.html',
         }
-        m = sys.modules['brainvisa.checkbase.diskusage.check']
-        report_template_path = os.path.join(os.path.split(m.__file__)[0],
+        m = sys.modules['brainvisa.checkbase']
+        report_template_path = os.path.join(os.path.split(m.__file__)[0], 'templates',
                 templates[template_id])
-        parent_path = os.path.split(os.path.realpath(report_template_path))[0]
+        parent_path = os.path.realpath(report_template_path) #os.path.split(os.path.realpath(report_template_path))[0]
         conversion_hashtable.update( {'$REVISION_NUMBER' : str(revision_number(parent_path)), })
 
         template_file = open(report_template_path, 'rb')

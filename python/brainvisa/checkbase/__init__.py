@@ -1,12 +1,19 @@
 # -*- coding: utf-8 -*-
-import os
 
-from diskusage.check import perform_check
+class DatabaseChecker():
+    ''' DatabaseChecker objects are only intended to store as attributes a collection
+    of database-related information. '''
+    def __init__(self):
+        pass
+
+#from diskusage.check import perform_check
 from diskusage.check import check_free_disk
-from hierarchies.general import *
-
-from hierarchies import morphologist as morpho
-from hierarchies.morphologist import MorphologistCheckbase
-from hierarchies.spm import SPMCheckbase
+from hierarchies.check import check_hierarchies
+from hierarchies import detect_hierarchies, detect_hierarchy, get_files, get_subject_files, getfilepath, parsefilepath, processregexp, image_extensions, mesh_extensions
+#from hierarchies import *
+#
+#from hierarchies import morphologist as morpho
+#from hierarchies.morphologist import MorphologistCheckbase
+#from hierarchies.spm import SPMCheckbase
 #from hierarchies.checkbase import Checkbase
 
