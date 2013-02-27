@@ -64,7 +64,7 @@ class HTMLReportGenerator():
             'FREESURFER_HIERARCHY' : 'freesurfer_hierarchy_template.html',
             'SNAPSHOTS_HIERARCHY' : 'snapshots_hierarchy_template.html',
             'DIRECTORIES' : 'directories_template.html',
-            'GENERALINFO' : 'generalinformation_template.html',
+            'GENERALINFO' : 'generalinfo_template.html',
         }
         m = sys.modules['brainvisa.checkbase']
         report_template_path = os.path.join(os.path.split(m.__file__)[0], 'templates',
