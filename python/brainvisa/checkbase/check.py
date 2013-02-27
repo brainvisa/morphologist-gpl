@@ -161,7 +161,7 @@ def run_disk_check(directory = '/neurospin/cati', logdir = '/neurospin/cati/User
     users_dir = ''
 
     print 'Checking free disk............................................'
-    database_checker = check_free_disk(directory, get_sizes = True, studies_list = studies_list, users_dir = users_dir, users_list = users_list)
+    database_checker = check_free_disk(directory) #, get_sizes = True, studies_list = studies_list, users_dir = users_dir, users_list = users_list)
 
     datetime_string = str(time.strftime('%d%m%Y-%H%M%S', time.gmtime()))
     try:
@@ -178,8 +178,6 @@ def run_disk_check(directory = '/neurospin/cati', logdir = '/neurospin/cati/User
     html = reportgen.generate_html_report()
     html_file = os.path.join(logdir, 'diskreport-%s.html'%datetime_string)
     pdf_file =  os.path.join(logdir, 'diskreport-%s.pdf'%datetime_string)
-
-
     with open(html_file, 'wb') as f:
         f.write(html)
 
@@ -192,7 +190,7 @@ def run_hierarchies_check(directory = '/neurospin/cati', logdir = '/neurospin/ca
     users_list = [] #'operto']
 
     print 'Checking hierarchies............................................'
-    database_checker = check_hierarchies(directory, studies_list = studies_list, users_dir = 'Users', users_list = users_list)
+    database_checker = check_hierarchies(directory) #, studies_list = studies_list, users_dir = 'Users', users_list = users_list)
 
     # generating report
     import report
@@ -201,14 +199,15 @@ def run_hierarchies_check(directory = '/neurospin/cati', logdir = '/neurospin/ca
     html = reportgen.generate_html_report()
     html_file = os.path.join(logdir, 'hierarchiesreport-%s.html'%datetime_string)
     pdf_file =  os.path.join(logdir, 'hierarchiesreport-%s.pdf'%datetime_string)
-
-    if hasattr(database_checker, 'checks'):
-          # save tables
-          save_tables(database_checker.checks['checkbase'], os.path.join(logdir, 'existingfiles'), datetime_string = datetime_string)
-    #except Exception as e:
-    #   print e
-    #   pass
-
     with open(html_file, 'wb') as f:
         f.write(html)
+
+    try:
+      if hasattr(database_checker, 'checks'):
+          # save tables
+          save_tables(database_checker.checks['checkbase'], os.path.join(logdir, 'existingfiles'), datetime_string = datetime_string)
+    except Exception as e:
+       print e
+       pass
+
 
