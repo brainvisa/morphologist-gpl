@@ -136,19 +136,28 @@ class HistoAnalysisEditorWidget( QDialog ):
         l[2] = max( 0, l[2] )
         l[1] = min( ncolors, l[1] )
         l[3] = min( ncolors, l[3] )
+        # colors
         empty = ( 0, 0, 0 )
-        red = ( 255, 0, 0 )
-        lightred = ( 255, 150, 150 )
-        lightgreen = numpy.array( ( 180, 255, 180 ) )
-        green = numpy.array( ( 60, 255, 60 ) )
+        white_matter = ( 255, 0, 0 )
+        wm_neg = ( 255, 150, 150 )
+        wm_pos = ( 150, 60, 60 )
+        grey_matter = numpy.array( ( 60, 255, 60 ) )
+        gm_neg = numpy.array( ( 60, 150, 60 ) )
+        gm_pos = numpy.array( ( 180, 255, 180 ) )
         # different colors for overlaps
-        lightyellow = ( 255, 255, 150 )
-        yellow = ( 255, 255, 0 )
-        orange = ( 255, 150, 0 )
-        grnred = ( 150, 255, 0 )
+        gm_wm = ( 255, 255, 0 )
+        gm_wm_neg = ( 150, 255, 0 )
+        gm_wm_pos = ( 128, 255, 0 )
+        gm_pos_wm = ( 255, 192, 128 )
+        gm_pos_wm_neg = ( 255, 255, 150 )
+        gm_pos_wm_pos = ( 80, 192, 0 )
+        gm_neg_wm = ( 255, 150, 0 )
+        gm_neg_wm_neg = ( 192, 128, 0 )
+        gm_neg_wm_pos = ( 150, 150, 0 )
         pal = numpy.zeros( ( ncolors, 3 ), dtype=int )
-        pal[ l[0] : l[1] ] = lightgreen
-        pal[ l[2] : l[3] ] = green
+        pal[ l[0] : l[2] ] = gm_neg
+        pal[ l[2] : l[3] ] = grey_matter
+        pal[ l[3] : l[1] ] = gm_pos
         l = [ int( round( ( han[1][0] - nstdw * han[1][1] ) * factor ) ),
             int( round( ( han[1][0] + nstdw * han[1][1] ) * factor ) ) + 1,
             int( round( ( han[1][0] - han[1][1] ) * factor ) ),
@@ -157,43 +166,55 @@ class HistoAnalysisEditorWidget( QDialog ):
         l[2] = max( 0, l[2] )
         l[1] = min( ncolors, l[1] )
         l[3] = min( ncolors, l[3] )
-        p = pal[ l[0] : l[2] ]
+        p = pal[ l[0] : l[2] ] # should be wm_neg
         try:
-            p[ numpy.all( p==green, axis=1 ) ] = grnred
+            p[ numpy.all( p==grey_matter, axis=1 ) ] = gm_wm_neg
         except IndexError:
             pass
         try:
-            p[ numpy.all( p==lightgreen, axis=1 ) ] = lightyellow
+            p[ numpy.all( p==gm_pos, axis=1 ) ] = gm_pos_wm_neg
         except IndexError:
             pass
         try:
-            p[ numpy.all( p==empty, axis=1 ) ] = lightred
-        except IndexError:
-            pass
-        p = pal[ l[3] : l[1] ]
-        try:
-            p[ numpy.all( p==green, axis=1 ) ] = grnred
+            p[ numpy.all( p==gm_neg, axis=1 ) ] = gm_neg_wm_neg
         except IndexError:
             pass
         try:
-            p[ numpy.all( p==lightgreen, axis=1 ) ] = lightyellow
+            p[ numpy.all( p==empty, axis=1 ) ] = wm_neg
+        except IndexError:
+            pass
+        p = pal[ l[3] : l[1] ] # should be wm_pos
+        try:
+            p[ numpy.all( p==grey_matter, axis=1 ) ] = gm_wm_pos
         except IndexError:
             pass
         try:
-            p[ numpy.all( p==empty, axis=1 ) ] = lightred
-        except IndexError:
-            pass
-        p = pal[ l[2] : l[3] ]
-        try:
-            p[ numpy.all( p==green, axis=1 ) ] = yellow
+            p[ numpy.all( p==gm_pos, axis=1 ) ] = gm_pos_wm_pos
         except IndexError:
             pass
         try:
-            p[ numpy.all( p==lightgreen, axis=1 ) ] = orange
+            p[ numpy.all( p==gm_neg, axis=1 ) ] = gm_neg_wm_pos
         except IndexError:
             pass
         try:
-            p[ numpy.all( p==empty, axis=1 ) ] = red
+            p[ numpy.all( p==empty, axis=1 ) ] = wm_pos
+        except IndexError:
+            pass
+        p = pal[ l[2] : l[3] ] # should be wm
+        try:
+            p[ numpy.all( p==grey_matter, axis=1 ) ] = gm_wm
+        except IndexError:
+            pass
+        try:
+            p[ numpy.all( p==gm_pos, axis=1 ) ] = gm_pos_wm
+        except IndexError:
+            pass
+        try:
+            p[ numpy.all( p==gm_neg, axis=1 ) ] = gm_neg_wm
+        except IndexError:
+            pass
+        try:
+            p[ numpy.all( p==empty, axis=1 ) ] = white_matter
         except IndexError:
             pass
         # force last color to be black
