@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+users_dir = 'Users'
 
 users_dict = {'operto' : 'go231605',
               'champseix': 'cc233590',
@@ -125,9 +126,10 @@ def save_table(checkbase, logdir = '/neurospin/cati/Users/operto/logs/existingfi
     changed_database_id = string.replace(database_id, os.path.sep, '_')
     fields_names = ['subject']
     fields_names.extend(checkbase.keyitems)
+    if not os.path.exists(logdir):
+       os.makedirs(logdir)
     csv_path = os.path.join(logdir, ('%s-%s.csv'%(changed_database_id, datetime_string)).lstrip('.'))
     with open(csv_path, 'wb',) as csvfile:
-      print csv_path
       mywriter = csv.writer(csvfile, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
       mywriter.writerow(fields_names)
       for subject in checkbase.existingfiles[0].keys():
@@ -145,31 +147,36 @@ def save_table(checkbase, logdir = '/neurospin/cati/Users/operto/logs/existingfi
     f.write(html)
     f.close()
 
+
 def save_tables(checks, logdir = '/neurospin/cati/Users/operto/logs/existingfiles', datetime_string = ''):
    for db, checkbase in checks.items():
       if hasattr(checkbase, 'existingfiles'):
          save_table(checkbase, logdir, datetime_string)
 
 
-def run_disk_check(directory = '/neurospin/cati', logdir = '/neurospin/cati/Users/operto/logs'):
+def run_disk_check(directory = '/neurospin/cati', logdir = '/neurospin/cati/Users/operto/logs', studies_list = None,
+                   users_list = None, users_dir = None, get_sizes = True, verbose = True):
 
     import sys, time, os
     from brainvisa.checkbase import DatabaseChecker
-    from brainvisa.checkbase.diskusage.check import check_free_disk
-    studies_list = ['Projet_X_050213'] #['MEMENTO_fevrier2013']
-    users_list = [] #'operto']
-    users_dir = ''
+    from brainvisa.checkbase.diskusage.check import check_disk_usage
+    from brainvisa.checkbase import check as ch
+    if not studies_list: studies_list = ch.studies_list
+    if users_list is None: users_list = ch.users_dict.keys()
+    if not users_dir: users_dir = ch.users_dir
+    if len(users_list) == 0: users_dir = ''
+    assert(os.path.exists(logdir))
 
-    print 'Checking free disk............................................'
-    database_checker = check_free_disk(directory) #, get_sizes = True, studies_list = studies_list, users_dir = users_dir, users_list = users_list)
+    if verbose: print 'Checking free disk............................................'
+    database_checker = check_disk_usage(directory, get_sizes = get_sizes, studies_list = studies_list, users_dir = users_dir, users_list = users_list, verbose = verbose)
 
     datetime_string = str(time.strftime('%d%m%Y-%H%M%S', time.gmtime()))
     try:
        if hasattr(database_checker, 'studies_space'):
           # saving csv
-          save_csv(database_checker, datetime_string = datetime_string)
+          save_csv(database_checker, logdir, datetime_string = datetime_string)
     except Exception as e:
-       print e
+       if verbose: print e
        pass
 
     # generating report
@@ -182,15 +189,25 @@ def run_disk_check(directory = '/neurospin/cati', logdir = '/neurospin/cati/User
         f.write(html)
 
 
-def run_hierarchies_check(directory = '/neurospin/cati', logdir = '/neurospin/cati/Users/operto/logs'):
+def run_hierarchies_check(directory = '/neurospin/cati', logdir = '/neurospin/cati/Users/operto/logs', studies_list = None, users_list = None, users_dir = None, verbose = True):
+    ''' Ex:
+    run_hierarchies_check(directory = '/neurospin/cati', logdir = '/neurospin/cati/Users/operto/logs')
+    If studies_list is None, it is then reset to ['Memento', 'ADNI', ...]
+    If users_list is None, it is then reset to ['operto', 'champseix', 'mangin', ...]
+    '''
     import sys, time, os
     from brainvisa.checkbase import DatabaseChecker
     from brainvisa.checkbase.hierarchies.check import check_hierarchies
-    studies_list = ['Projet_X_050213'] #['MEMENTO_fevrier2013']
-    users_list = [] #'operto']
+    from brainvisa.checkbase import check as ch
+    if not studies_list: studies_list = ch.studies_list
+    if not users_list: users_list = ch.users_dict.keys()
+    if not users_dir: users_dir = ch.users_dir
+    if len(users_list) == 0: users_dir = ''
 
-    print 'Checking hierarchies............................................'
-    database_checker = check_hierarchies(directory) #, studies_list = studies_list, users_dir = 'Users', users_list = users_list)
+    assert(os.path.exists(logdir))
+
+    if verbose: print 'Checking hierarchies............................................'
+    database_checker = check_hierarchies(directory, studies_list = studies_list, users_dir = users_dir, users_list = users_list, verbose = verbose)
 
     # generating report
     import report
@@ -202,12 +219,12 @@ def run_hierarchies_check(directory = '/neurospin/cati', logdir = '/neurospin/ca
     with open(html_file, 'wb') as f:
         f.write(html)
 
-    try:
-      if hasattr(database_checker, 'checks'):
+    #try:
+    if hasattr(database_checker, 'checks'):
           # save tables
           save_tables(database_checker.checks['checkbase'], os.path.join(logdir, 'existingfiles'), datetime_string = datetime_string)
-    except Exception as e:
-       print e
-       pass
+    #except Exception as e:
+    #   print e
+    #   pass
 
 

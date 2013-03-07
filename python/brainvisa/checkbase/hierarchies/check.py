@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from brainvisa.checkbase.check import studies_list, users_dict
+from brainvisa.checkbase.check import studies_list, users_dict, users_dir
 
 def perform_checks_hierarchy(h):
     ''' Runs a series of tests on a given dictionary returned from
@@ -82,7 +82,7 @@ def extract_results(db, checkbase):
      return checks
 
 
-def _check_directories(rootdirectory, dirlist):
+def _check_directories(rootdirectory, dirlist, verbose = True):
    from brainvisa import checkbase as c
    import os
    checks = {}
@@ -90,7 +90,7 @@ def _check_directories(rootdirectory, dirlist):
 
    for eachdir in dirlist:
        # process each directory
-       print eachdir, 'in progress'
+       if verbose: print eachdir, 'in progress'
        db_dir = os.path.join(rootdirectory, eachdir)
        h = c.detect_hierarchies(db_dir, maxdepth=3)
        assert(not hierarchies.has_key(eachdir))
@@ -106,7 +106,7 @@ def _check_directories(rootdirectory, dirlist):
    return checks, hierarchies
 
 
-def check_hierarchies(input_dir, studies_list = studies_list, users_dir = 'Users', users_list = users_dict.keys()):
+def check_hierarchies(input_dir, studies_list = studies_list, users_dir = users_dir, users_list = users_dict.keys(), verbose = True):
 
    from brainvisa.checkbase import DatabaseChecker
    import os, time
@@ -120,12 +120,12 @@ def check_hierarchies(input_dir, studies_list = studies_list, users_dir = 'Users
    start_time = time.time()
 
    # processing users folders
-   print 'Processing users...'
-   users_checks, users_hierarchies = _check_directories(users_dir, users_list)
+   if verbose: print 'Processing users...'
+   users_checks, users_hierarchies = _check_directories(users_dir, users_list, verbose = verbose)
 
    # processing studies folders
-   print 'Processing studies...'
-   studies_checks, studies_hierarchies = _check_directories(input_dir, studies_list)
+   if verbose: print 'Processing studies...'
+   studies_checks, studies_hierarchies = _check_directories(input_dir, studies_list, verbose = verbose)
 
    # update big dictionary
    for each in users_checks.keys():

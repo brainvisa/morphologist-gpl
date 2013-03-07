@@ -112,6 +112,7 @@ class Checkbase():
        attributes.setdefault('database', self.directory)
 
        from glob import glob
+       from brainvisa.checkbase.hierarchies import getfilepath, parsefilepath
        items = {}
        globitems = []
        for each in patterns:

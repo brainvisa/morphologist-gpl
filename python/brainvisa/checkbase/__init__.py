@@ -6,7 +6,7 @@ class DatabaseChecker():
     def __init__(self):
         pass
 
-from diskusage.check import check_free_disk
+from diskusage.check import check_disk_usage
 from hierarchies.check import check_hierarchies
 from hierarchies import detect_hierarchies, detect_hierarchy, get_files, get_subject_files, getfilepath, parsefilepath, processregexp, image_extensions, mesh_extensions
 
