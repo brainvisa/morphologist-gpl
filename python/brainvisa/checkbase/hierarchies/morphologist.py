@@ -16,7 +16,7 @@ patterns = { 'raw': os.path.join('(?P<database>[\w -/]+)', '(?P<group>[\w -]+)',
                  'spm_greymap': os.path.join('(?P<database>[\w -/]+)', '(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', 'whasa_(?P<whasa_analysis>[\w -]+)', 'spm_preproc', 'unified_segmentation', '(?P=subject)_grey_probamap.(?P<extension>%s)'%image_extensions),
                  'spm_whitemap': os.path.join('(?P<database>[\w -/]+)', '(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', 'whasa_(?P<whasa_analysis>[\w -]+)', 'spm_preproc', 'unified_segmentation', '(?P=subject)_white_probamap.(?P<extension>%s)'%image_extensions)}
 
-keyitems = ['raw', 'acpc', 'nobias', 'greywhite', 'brainmask', 'split', 'whitemeshes', 'hemimeshes', 'sulci'] #, 'spm_greymap', 'spm_whitemap']
+keyitems = ['raw', 'acpc', 'nobias', 'greywhite', 'brainmask', 'split', 'whitemeshes', 'hemimeshes', 'sulci', 'spm_greymap', 'spm_whitemap']
 
 class MorphologistCheckbase(Checkbase):
     def __init__(self, directory):
@@ -78,3 +78,42 @@ class MorphologistCheckbase(Checkbase):
         self.get_multiple_subjects()
         self.get_complete_subjects()
         self.get_empty_subjects()
+
+    def compute_volumes(self):
+       assert(len(self.get_multiple_subjects()) == 0)
+       if not hasattr('subjects'): self.get_subjects()
+       if not hasattr('existing_files'): self.check_database_for_existing_files()
+       self.volumes = {}
+       for subject in self.get_flat_subjects():
+          self.volumes[each] = {}
+             for key in ['spm_grey', 'spm_white']:
+                if key in self.existing_files[0][subject].keys():
+                   from soma import aims
+                   import numpy as np
+                   data = aims.read(self.existing_files[0][subject][key])
+                   n = data.arraydata()
+                   r = n.ravel()
+                   self.volumes[each][key] = r.sum()
+
+
+
+def pixelsOfValue( data, value ):
+    '''
+    Returns the number of pixels/voxels of a particular value in the data
+    value can be a float or a list of float
+
+    '''
+
+    n = data.arraydata()
+    r = n.ravel()
+    if ( type(value) == type(float()) ):
+        s = r[r==value]
+        return s.size
+    elif (type(value) == type(list())):
+        res = {}
+        for val in value:
+            s = r[r==float(val)]
+            res[val] = s.size
+        return res
+    else:
+        raise TypeError
