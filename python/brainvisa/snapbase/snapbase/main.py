@@ -334,32 +334,6 @@ def fibers_snap_base():
     snap = fibers.FibersSnapBase(preferences)
     snap.snap_base(main_window = main_window, qt_app = qt_app )
 
-# Various functions
-class DummyDatabase(SQLdb):
-
-    def __init__(self, db):
-        SQLdb.__init__(self, db.sqlDatabaseFile, db.directory)
-        return None
-
-    def database(self, name):
-        return self
-
-#def select_db(item, verbose=True):
-#    '''
-#    Setup the global variable database according to the selected item in
-#    the combobox.
-#
-#    '''
-#
-#    global database, preferences
-#    database = DummyDatabase(neuroHierarchy.databases._databases.items()[item][1])
-#    preferences['database_dir'] = database.directory
-#    print 'saving preferences'
-#    save_preferences(preferences)
-#    if not verbose:
-#        msgBox = Qt.QMessageBox.information(None, 'Database selected',
-#database.directory, Qt.QMessageBox.Ok)
-
 
 def save_preferences(pref):
     ''' Save preferences in $HOME/.brainvisa/snapbase_settings.minf '''

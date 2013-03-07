@@ -351,7 +351,7 @@ class SPMGreySnapBase(SplitBrainSnapBase):
             else:
               center = '*'
 
-            hippos_1 = glob(os.path.join(db_dir, center, att['subject'], '*', '*', 'whasa_*', 'spm_preproc', 'unified_segmentation', '%s_%s_probamap.nii'%(att['subject'], spmtype)))
+            hippos_1 = glob(os.path.join(db_dir, center, att['subject'], '*', '*', 'whasa_*', 'spm_preproc', 'unified_segmentation', '%s_%s_probamap.nii.gz'%(att['subject'], spmtype)))
             hippos = []
             mris = []
             for each in hippos_1:
@@ -359,7 +359,7 @@ class SPMGreySnapBase(SplitBrainSnapBase):
               if m:
                 datatype, attributes = m
                 hippos.append(each)
-                mris.append(os.path.join(attributes['database'], attributes['group'], attributes['subject'], attributes['modality'], attributes['acquisition'], 'whasa_%s'%attributes['whasa_analysis'], 'spm_preproc', 'nobias_%s.nii'%attributes['subject']))
+                mris.append(os.path.join(attributes['database'], attributes['group'], attributes['subject'], attributes['modality'], attributes['acquisition'], 'whasa_%s'%attributes['whasa_analysis'], 'spm_preproc', 'nobias_%s.nii.gz'%attributes['subject']))
 
             for hippo, mri in zip(hippos, mris):
                 datatype, attributes = parsefilepath(hippo)
@@ -370,3 +370,29 @@ class SPMGreySnapBase(SplitBrainSnapBase):
                      'mri': mri}))
 
         return dictdata
+
+    def set_viewer(self, data, w):
+
+        import anatomist.direct.api as ana
+        a = ana.Anatomist('-b')
+
+        splitbrain, mri = data
+
+        ana_splitbrain = a.toAObject(splitbrain)
+        ana_mri = a.toAObject(mri)
+        for each in ana_splitbrain, ana_mri:
+            each.releaseAppRef()
+
+        # Fusion of the two masks
+        palette = a.getPalette('Blue-Green-Red-Yellow')
+        ana_splitbrain.setPalette( palette )
+        self.aobjects['split'] = a.fusionObjects( [ana_mri, ana_splitbrain], method='Fusion2DMethod' )
+        a.execute("Fusion2DParams", object=self.aobjects['split'], mode='linear', rate = 0.7,
+                      reorder_objects = [ ana_mri, ana_splitbrain] )
+
+        # Load in Anatomist window
+        window = a.AWindow(a, w)
+        window.assignReferential( a.centralReferential()  )
+        a.addObjects( self.aobjects['split'], [window] )
+
+        return window
