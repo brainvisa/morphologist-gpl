@@ -14,9 +14,20 @@ patterns = { 'raw': os.path.join('(?P<database>[\w -/]+)', '(?P<group>[\w -]+)',
                  'sulci': os.path.join('(?P<database>[\w -/]+)', '(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', '(?P<analysis>[\w -]+)', 'folds', '(?P<graph_version>[\d.]+)', '(?P<side>[LR]?)(?P=subject).arg'),
                  'spm_nobias': os.path.join('(?P<database>[\w -/]+)', '(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', 'whasa_(?P<whasa_analysis>[\w -]+)', 'spm_preproc', 'nobias_(?P=subject).(?P<extension>%s)'%image_extensions),
                  'spm_greymap': os.path.join('(?P<database>[\w -/]+)', '(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', 'whasa_(?P<whasa_analysis>[\w -]+)', 'spm_preproc', 'unified_segmentation', '(?P=subject)_grey_probamap.(?P<extension>%s)'%image_extensions),
-                 'spm_whitemap': os.path.join('(?P<database>[\w -/]+)', '(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', 'whasa_(?P<whasa_analysis>[\w -]+)', 'spm_preproc', 'unified_segmentation', '(?P=subject)_white_probamap.(?P<extension>%s)'%image_extensions)}
+                 'spm_whitemap': os.path.join('(?P<database>[\w -/]+)', '(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', 'whasa_(?P<whasa_analysis>[\w -]+)', 'spm_preproc', 'unified_segmentation', '(?P=subject)_white_probamap.(?P<extension>%s)'%image_extensions),
+                 'spm_csfmap': os.path.join('(?P<database>[\w -/]+)', '(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', 'whasa_(?P<whasa_analysis>[\w -]+)', 'spm_preproc', 'unified_segmentation', '(?P=subject)_csf_probamap.(?P<extension>%s)'%image_extensions),
+                 'spm_greymap_warped': os.path.join('(?P<database>[\w -/]+)', '(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', 'whasa_(?P<whasa_analysis>[\w -]+)', 'spm_preproc', 'unified_segmentation', '(?P=subject)_csf_probamap_warped.(?P<extension>%s)'%image_extensions),
+                 'spm_whitemap_warped': os.path.join('(?P<database>[\w -/]+)', '(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', 'whasa_(?P<whasa_analysis>[\w -]+)', 'spm_preproc', 'unified_segmentation', '(?P=subject)_white_probamap_warped.(?P<extension>%s)'%image_extensions),
+                 'spm_csfmap_warped': os.path.join('(?P<database>[\w -/]+)', '(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', 'whasa_(?P<whasa_analysis>[\w -]+)', 'spm_preproc', 'unified_segmentation', '(?P=subject)_csf_probamap_warped.(?P<extension>%s)'%image_extensions),
+                 'spm_greymap_modulated': os.path.join('(?P<database>[\w -/]+)', '(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', 'whasa_(?P<whasa_analysis>[\w -]+)', 'spm_preproc', 'unified_segmentation', '(?P=subject)_grey_probamap_modulated.(?P<extension>%s)'%image_extensions),
+                 'spm_whitemap_modulated': os.path.join('(?P<database>[\w -/]+)', '(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', 'whasa_(?P<whasa_analysis>[\w -]+)', 'spm_preproc', 'unified_segmentation', '(?P=subject)_white_probamap_modulated.(?P<extension>%s)'%image_extensions),
+                 'spm_csfmap_modulated': os.path.join('(?P<database>[\w -/]+)', '(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', 'whasa_(?P<whasa_analysis>[\w -]+)', 'spm_preproc', 'unified_segmentation', '(?P=subject)_csf_probamap_modulated.(?P<extension>%s)'%image_extensions),
 
-keyitems = ['raw', 'acpc', 'nobias', 'greywhite', 'brainmask', 'split', 'whitemeshes', 'hemimeshes', 'sulci', 'spm_greymap', 'spm_whitemap']
+}
+
+keyitems = ['raw', 'acpc', 'nobias', 'greywhite', 'brainmask', 'split', 'whitemeshes', 'hemimeshes', 'sulci',
+            'spm_greymap', 'spm_whitemap', 'spm_csfmap', 'spm_greymap_warped', 'spm_whitemap_warped',
+            'spm_csfmap_warped', 'spm_greymap_modulated', 'spm_whitemap_modulated','spm_csfmap_modulated']
 
 class MorphologistCheckbase(Checkbase):
     def __init__(self, directory):
@@ -86,7 +97,7 @@ class MorphologistCheckbase(Checkbase):
        self.volumes = {}
        for subject in self.get_flat_subjects():
           self.volumes[each] = {}
-             for key in ['spm_grey', 'spm_white']:
+          for key in ['spm_grey', 'spm_white']:
                 if key in self.existing_files[0][subject].keys():
                    from soma import aims
                    import numpy as np
@@ -95,7 +106,54 @@ class MorphologistCheckbase(Checkbase):
                    r = n.ravel()
                    self.volumes[each][key] = r.sum()
 
+# compute the total intre cranial volume (Clara Fischer - Olivier Colliot)
+def get_volumes( wc_gray, wc_white, wc_csf, mwc_gray, mwc_white, mwc_csf ):
+  #Compute an approximate intracranial mask from unmodulated segmentations
+  wc_gm_im = aims.read(wc_gray)
+  wc_wm_im = aims.read(wc_white)
+  wc_csf_im = aims.read(wc_csf)
+  wc_gm_arr = wc_gm_im.arraydata()
+  wc_wm_arr = wc_wm_im.arraydata()
+  wc_csf_arr = wc_csf_im.arraydata()
 
+  wc_sum_arr = wc_gm_arr + wc_wm_arr + wc_csf_arr
+  mask = (wc_sum_arr > 0.5)
+
+  #Compute volumes by masking the modulated segmentations with the previous mask
+  mwc_gm_im = aims.read(mwc_gray)
+  mwc_wm_im = aims.read(mwc_white)
+  mwc_csf_im = aims.read(mwc_csf)
+  mwc_gm_arr = mwc_gm_im.arraydata()
+  mwc_wm_arr = mwc_wm_im.arraydata()
+  mwc_csf_arr = mwc_csf_im.arraydata()
+  mwc_gm_arr = mwc_gm_arr.astype('float64')
+  mwc_wm_arr = mwc_wm_arr.astype('float64')
+  mwc_csf_arr = mwc_csf_arr.astype('float64')
+
+  mwc_sum_arr = mwc_gm_arr + mwc_wm_arr + mwc_csf_arr
+  mwc_sum_arr[mask == False] = 0.
+  mwc_gm_arr[mask == False] = 0.
+  mwc_wm_arr[mask == False] = 0.
+  mwc_csf_arr[mask == False] = 0.
+  mwc_sum_arr[mwc_sum_arr < 0] = 0.
+  mwc_gm_arr[mwc_gm_arr < 0] = 0.
+  mwc_wm_arr[mwc_wm_arr < 0] = 0.
+  mwc_csf_arr[mwc_csf_arr < 0] = 0.
+
+  vox_sizes = mwc_gm_im.header()['voxel_size'].arraydata()
+  vox_vol = vox_sizes[0]*vox_sizes[1]*vox_sizes[2]
+
+  mwc_sum_arr_mm3 = mwc_sum_arr*vox_vol
+  mwc_gm_arr_mm3 = mwc_gm_arr*vox_vol
+  mwc_wm_arr_mm3 = mwc_wm_arr*vox_vol
+  mwc_csf_arr_mm3 = mwc_csf_arr*vox_vol
+
+  tivol = mwc_sum_arr_mm3.sum()/1000.
+  gmvol = mwc_gm_arr_mm3.sum()/1000.
+  wmvol = mwc_wm_arr_mm3.sum()/1000.
+  csfvol = mwc_csf_arr_mm3.sum()/1000.
+  volumes = [tivol, gmvol, wmvol, csfvol]
+  return volumes
 
 def pixelsOfValue( data, value ):
     '''
