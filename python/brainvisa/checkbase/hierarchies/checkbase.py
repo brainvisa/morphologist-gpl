@@ -173,7 +173,15 @@ class Checkbase():
             if m:
               datatype, attributes = m
               all_subjects_files.setdefault(subject, {})
-              all_subjects_files[subject][datatype] = attributes
+              if all_subjects_files[subject].has_key(datatype):
+                 if isinstance(all_subjects_files[subject][datatype], list):
+                    all_subjects_files[subject][datatype].append(attributes)
+                 elif isinstance(all_subjects_files[subject][datatype], dict):
+                    items = []
+                    items.extend([all_subjects_files[subject][datatype], attributes])
+                    all_subjects_files[subject][datatype] = items
+              else:
+                 all_subjects_files[subject][datatype] = attributes
             else:
               not_recognized.setdefault(subject, []).append(each)
        if save: self.existingfiles = (all_subjects_files, not_recognized)
