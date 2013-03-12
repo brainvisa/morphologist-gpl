@@ -23,8 +23,9 @@ def parsefilepath(filepath, patterns = None):
 
 
 def getfilepath(datatype, attributes):
-    ''' Returns a filepath built on a given datatype and a dictionary of attributes. '''
+    ''' Returns a filepath built on a given datatype and a dictionary of attributes. For now based on Morpho patterns'''
     import morphologist as morpho
+    assert(isinstance(attributes, dict))
     return processregexp(morpho.patterns[datatype], attributes)
 
 

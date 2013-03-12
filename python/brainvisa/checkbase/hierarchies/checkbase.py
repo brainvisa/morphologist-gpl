@@ -115,7 +115,7 @@ class Checkbase():
        from brainvisa.checkbase.hierarchies import getfilepath, parsefilepath
        items = {}
        globitems = []
-       for each in patterns:
+       for each in patterns.keys():
            globitems = glob(getfilepath(each, attributes))
            for item in globitems:
               res = parsefilepath(item)
@@ -150,7 +150,7 @@ class Checkbase():
         all_subjects = self.get_flat_subjects()
         incompletesubjects = {}
         for subject in all_subjects:
-            missing = self.get_subject_missingfiles(subject)
+            missing = self.get_subject_missing_files(subject)
             if len(missing) > 0:
                 incompletesubjects[subject] = missing
         if save: self.incompletesubjects = incompletesubjects
