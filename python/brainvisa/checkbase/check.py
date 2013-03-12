@@ -99,6 +99,30 @@ def csv2html(csvfile):
    """
    return html
 
+def save_volumes(volumes, logdir = '/neurospin/cati/Users/operto/logs/volumes/', datetime_string = ''):
+
+    import csv, time, string, os
+    fields_names = ['subject']
+    # selection of volumes
+    fields_names.extend(['tivol', 'grey', 'white', 'csf', 'brainmask', 'left_grey', 'right_grey', 'left_white', 'right_white', 'spm_greymap', 'spm_whitemap'])
+    if not os.path.exists(logdir):
+       os.makedirs(logdir)
+    csv_path = os.path.join(logdir, ('volumes-%s.csv'%(changed_database_id, datetime_string)).lstrip('.'))
+    with open(csv_path, 'wb',) as csvfile:
+      mywriter = csv.writer(csvfile, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+      mywriter.writerow(fields_names)
+      for subject, vol in volumes.items():
+         subject_row = [unicode(subject).encode("utf-8")]
+         for k, v in vol.items():
+            subject_row.append(1)
+
+         mywriter.writerow(subject_row)
+
+    html = csv2html(csv_path)
+    f = open(csv_path[:-4] + '.html', 'w')
+    f.write(html)
+    f.close()
+
 
 def save_csv(database_checker, logdir = '/neurospin/cati/Users/operto/logs', datetime_string = ''):
 

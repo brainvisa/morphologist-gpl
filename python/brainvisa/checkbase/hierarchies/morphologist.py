@@ -121,14 +121,16 @@ class MorphologistCheckbase(Checkbase):
                   data = aims.read(getfilepath(key, self.existingfiles[0][subject][key]))
                   n = data.arraydata()
                   r = n.ravel()
-                  self.volumes[subject][key] = r.sum()
+                  if key[:3] == 'spm': self.volumes[subject][key] = r.sum() - r.mean()*r.size
+                  else: self.volumes[subject][key] = r.sum() / 255.0
+
           for key in ['left_greywhite', 'right_greywhite']:
                if key in self.existingfiles[0][subject].keys():
                   from soma import aims
                   import numpy as np
                   data = aims.read(getfilepath(key, self.existingfiles[0][subject][key]))
                   side = {'L':'left', 'R':'right'}[self.existingfiles[0][subject][key]['side']]
-                  for k, v in {'grey': 100, 'white':200}.items():
+                  for k, v in {'grey': 100., 'white':200.}.items():
                      self.volumes[subject]['%s_%s'%(side, k)] = pixelsOfValue(data, v)
 
 
