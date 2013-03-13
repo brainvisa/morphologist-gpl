@@ -28,5 +28,3 @@ class SPMCheckbase(Checkbase):
 
 #   def compute_volumes(self):
 
-
-
