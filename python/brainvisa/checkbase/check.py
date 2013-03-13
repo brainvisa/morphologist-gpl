@@ -107,14 +107,17 @@ def save_volumes(volumes, logdir = '/neurospin/cati/Users/operto/logs/volumes/',
     fields_names.extend(['tivol', 'grey', 'white', 'csf', 'brainmask', 'left_grey', 'right_grey', 'left_white', 'right_white', 'spm_greymap', 'spm_whitemap'])
     if not os.path.exists(logdir):
        os.makedirs(logdir)
-    csv_path = os.path.join(logdir, ('volumes-%s.csv'%(changed_database_id, datetime_string)).lstrip('.'))
+    csv_path = os.path.join(logdir, ('volumes-%s.csv'%datetime_string).lstrip('.'))
     with open(csv_path, 'wb',) as csvfile:
       mywriter = csv.writer(csvfile, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
       mywriter.writerow(fields_names)
       for subject, vol in volumes.items():
          subject_row = [unicode(subject).encode("utf-8")]
-         for k, v in vol.items():
-            subject_row.append(1)
+         for k in fields_names[1:]:
+            if vol.has_key(k):
+               subject_row.append('%3.2f'%vol[k])
+            else:
+               subject_row.append('n/a')
 
          mywriter.writerow(subject_row)
 
