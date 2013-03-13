@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-import os, sys, string, time
-import datetime
-import sys
 
 class size( long ):
     """ define a size class to allow custom formatting
@@ -38,26 +35,46 @@ def revision_number(filepath):
 
 class HTMLReportGenerator():
 
-    def __init__(self, database_checker):
+    def __init__(self, database_checker=None):
         '''
     An HTMLReportGenerator instance is in charge of compiling the analysis
     results stored in a DatabaseChecker in order to generate an HTML report
     describing these.
-    As a DatabaseChecker may contain several instances of Quality Check, the
-    ``_qcid`` argument is here to specify which of these must be processed
-    when the function ``generate_html_report`` is called.
         '''
 
         self.database_checker = database_checker
+
+    def generate_from_template(self, template_pathname, conversion_hashtable):
+        '''
+    This command takes an HTML template file, converts its tags (starting with a
+    dollar character) using a hashtable ``conversion_hashtable`` provided as
+    argument, and returns the converted string.
+        '''
+
+        import os, string, sys
+        html_report = ''
+
+        template_file = open(template_pathname, 'rb')
+
+        for line in template_file:
+            for tag in conversion_hashtable.keys():
+                if string.find(line, tag) != -1:
+                    #value = conversion_hashtable.pop(tag)
+                    value = conversion_hashtable[tag]
+                    line = line.replace(tag, value)
+            html_report += line + '\n'
+
+        return html_report
 
     def _convert_from_template(self, template_id, conversion_hashtable):
         '''
     This command takes an HTML template, converts its tags (starting with a
     dollar character) using a hashtable ``conversion_hashtable`` provided as
     argument, and returns the converted string.
+    For internal use only.
         '''
 
-        html_report = ''
+        import os, string, sys
         templates = { 'DISKUSAGE' : 'diskusage_template.html',
             'MORPHOLOGIST_HIERARCHY' : 'hierarchy_template.html',
             'FREESURFER_HIERARCHY' : 'freesurfer_hierarchy_template.html',
@@ -72,17 +89,7 @@ class HTMLReportGenerator():
         parent_path = os.path.realpath(report_template_path) #os.path.split(os.path.realpath(report_template_path))[0]
         conversion_hashtable.update( {'$REVISION_NUMBER' : str(revision_number(parent_path)), })
 
-        template_file = open(report_template_path, 'rb')
-
-        for line in template_file:
-            for tag in conversion_hashtable.keys():
-                if string.find(line, tag) != -1:
-                    #value = conversion_hashtable.pop(tag)
-                    value = conversion_hashtable[tag]
-                    line = line.replace(tag, value)
-            html_report += line + '\n'
-
-        return html_report
+        return self.generate_from_template(report_template_path, conversion_hashtable)
 
     def _generate_summary_on_directories(self):
         summary = ''
@@ -97,6 +104,7 @@ class HTMLReportGenerator():
         return summary
 
     def _generate_summary_on_undeclared_directories(self):
+        import os
         summary = ''
         if len(self.database_checker.other_studies.keys()) > 0:
             summary += '<br><b><h3>Detailed information on undeclared directories :</h3></b><br>'
@@ -108,7 +116,7 @@ class HTMLReportGenerator():
         return summary
 
     def _get_owner_username(self, filename):
-        import pwd
+        import pwd, os
         file_uid = os.stat(str(filename)).st_uid
         for each in pwd.getpwall():
             if each.pw_uid == file_uid:
@@ -175,6 +183,7 @@ class HTMLReportGenerator():
     The result is a string containing HTML code.
         '''
         from glob import glob
+        import string, time
         db_id = '/neurospin/cati/'
         datetime_string = str(time.strftime('%d %m %Y %H:%M:%S', time.gmtime()))
         nb_previous_checks = len(glob('/neurospin/cati/Users/operto/logs/report*.*'))
