@@ -46,6 +46,16 @@ class Checkbase():
                     liste.append(fname)
         return liste
 
+    def get_subject_files(self, databasedir, subject):
+        ''' Returns a list of files whose path match a specific subject.
+        If the database directory matches a 'BrainVisa'-like structure with dedicated levels
+        for groups and subjects, then the whole collection of files under that subject
+        level is returned.
+        For hierarchies like the one used by SnapBase, only files with name matching the
+        subject's one are returned. '''
+
+        raise NotImplementedError
+
     def get_T1_images_sizes(self):
         def verif_ext_file(path_file):
             import os
@@ -115,10 +125,12 @@ class Checkbase():
        from brainvisa.checkbase.hierarchies import getfilepath, parsefilepath
        items = {}
        globitems = []
+       print patterns
        for each in patterns.keys():
-           globitems = glob(getfilepath(each, attributes))
+           globitems = glob(getfilepath(each, attributes, patterns))
+           print globitems
            for item in globitems:
-              res = parsefilepath(item)
+              res = parsefilepath(item, patterns)
               if not res is None and res[0] == each:
                  items.setdefault(each, []).append(res[1])
        return items

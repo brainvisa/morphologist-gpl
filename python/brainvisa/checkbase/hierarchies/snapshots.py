@@ -15,3 +15,18 @@ class SnapshotsCheckbase(Checkbase):
 
     def check_database_for_existing_files(self):
         return ({}, {})
+
+    def get_subject_files(self, subject):
+        ''' Returns a list of files whose path match a specific subject.
+        For hierarchies like the one used by SnapBase, only files with name matching the
+        subject's one are returned. '''
+
+        from glob import glob
+        import re, os
+        subject_files = []
+        files = get_files(self.directory)
+        for f in files:
+          m = re.match('[\w -/]*%s\w*'%subject, f)
+          if m:
+            subject_files.append(f)
+        return subject_files

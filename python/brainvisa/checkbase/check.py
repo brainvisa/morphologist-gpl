@@ -89,6 +89,8 @@ def csv2html(csvfile):
            if chunk in ['1', '0']:
               bgcolor = color[chunk]
               chunk = '&nbsp;'
+           if chunk in ['n/a']:
+              bgcolor = color['1']
            html += "   <td bgcolor=%s class='b-table__cell'>"%bgcolor + chunk + "</td>"
        html += "      </tr>"
 

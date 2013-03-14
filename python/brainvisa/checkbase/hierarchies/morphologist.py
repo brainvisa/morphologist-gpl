@@ -4,7 +4,7 @@ from brainvisa.checkbase.hierarchies import *
 from brainvisa.checkbase.hierarchies.checkbase import Checkbase
 
 patterns = { 'raw': os.path.join('(?P<database>[\w -/]+)', '(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', '(?P=subject).(?P<extension>%s)'%image_extensions),
-                 'acpc': os.path.join('(?P<database>[\w -/]+)' ,'(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', '(?P=subject).APC'),
+                 'acpc': os.path.join('(?P<database>[\w -/]+)' ,'(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', '(?P=subject).APC$'),
                  'nobias': os.path.join('(?P<database>[\w -/]+)', '(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', '(?P<analysis>[\w -]+)', 'nobias_(?P=subject).(?P<extension>%s)'%image_extensions),
                  'left_greywhite': os.path.join('(?P<database>[\w -/]+)', '(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', '(?P<analysis>[\w -]+)', 'segmentation', '(?P<side>[L]?)grey_white_(?P=subject).(?P<extension>%s)'%image_extensions),
                  'right_greywhite': os.path.join('(?P<database>[\w -/]+)', '(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', '(?P<analysis>[\w -]+)', 'segmentation', '(?P<side>[R]?)grey_white_(?P=subject).(?P<extension>%s)'%image_extensions),
@@ -69,6 +69,23 @@ class MorphologistCheckbase(Checkbase):
         if save: self.subjects = centres_dic
         return centres_dic
 
+    def get_subject_files(self, subject):
+        ''' Returns a list of files whose path match a specific subject.
+        If the database directory matches a 'BrainVisa'-like structure with dedicated levels
+        for groups and subjects, then the whole collection of files under that subject
+        level is returned.'''
+
+        from glob import glob
+        import re, os
+        subject_dir = glob(os.path.join(self.directory, '*', subject))
+        subject_files = []
+        assert(len(subject_dir) == 1)
+
+        subject_dir = subject_dir[0]
+        for root, dirs, files in os.walk(subject_dir):
+          for f in files:
+             subject_files.append(os.path.join(root,f))
+        return subject_files
 
     def get_subject_hierarchy_files(self, subject, patterns = None, attributes = None):
        from brainvisa.checkbase.hierarchies import morphologist as morpho
@@ -106,6 +123,7 @@ class MorphologistCheckbase(Checkbase):
        if not hasattr(self, 'existingfiles'): self.check_database_for_existing_files()
        self.volumes = {}
        for subject in self.get_flat_subjects():
+          print subject
           self.volumes[subject] = {}
           spm_wc_vols = ['spm_greymap_warped', 'spm_whitemap_warped', 'spm_csfmap_warped',
                 'spm_greymap_modulated', 'spm_whitemap_modulated', 'spm_csfmap_modulated']
@@ -121,8 +139,9 @@ class MorphologistCheckbase(Checkbase):
                   data = aims.read(getfilepath(key, self.existingfiles[0][subject][key]))
                   n = data.arraydata()
                   r = n.ravel()
-                  if key[:3] == 'spm': self.volumes[subject][key] = r.sum() - r.mean()*r.size
-                  else: self.volumes[subject][key] = r.sum() / 255.0
+                  voxel_size = np.prod(data.header()['voxel_size'])
+                  if key[:3] == 'spm': self.volumes[subject][key] = (r.sum() - r.min()*r.size) * voxel_size
+                  else: self.volumes[subject][key] = r.sum() / 255.0 * voxel_size
 
           for key in ['left_greywhite', 'right_greywhite']:
                if key in self.existingfiles[0][subject].keys():

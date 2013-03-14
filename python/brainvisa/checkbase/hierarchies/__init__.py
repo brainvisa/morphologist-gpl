@@ -22,11 +22,12 @@ def parsefilepath(filepath, patterns = None):
        return datatype, m.groupdict()
 
 
-def getfilepath(datatype, attributes):
+def getfilepath(datatype, attributes, patterns = None):
     ''' Returns a filepath built on a given datatype and a dictionary of attributes. For now based on Morpho patterns'''
     import morphologist as morpho
+    if not patterns: patterns = morpho.patterns
     assert(isinstance(attributes, dict))
-    return processregexp(morpho.patterns[datatype], attributes)
+    return processregexp(patterns[datatype], attributes)
 
 
 def processregexp(regexp, attributes, wildcards = True):
@@ -87,33 +88,6 @@ def get_files(databasedir):
       all_files.append(os.path.join(root, f))
   return all_files
 
-def get_subject_files(databasedir, subject):
-  ''' Returns a list of files whose path match a specific subject.
-  If the database directory matches a 'BrainVisa'-like structure with dedicated levels
-  for groups and subjects, then the whole collection of files under that subject
-  level is returned.
-  For hierarchies like the one used by SnapBase, only files with name matching the
-  subject's one are returned. '''
-
-  from glob import glob
-  import re, os
-  subject_dir = glob(os.path.join(databasedir, '*', subject))
-  subject_files = []
-  if len(subject_dir) == 0:
-    files = get_files(databasedir)
-    for f in files:
-      m = re.match('[\w -/]*%s\w*'%subject, f)
-      if m:
-        subject_files.append(f)
-    #raise Exception('Subject directory not found')
-  else:
-    assert(len(subject_dir) == 1)
-
-    subject_dir = subject_dir[0]
-    for root, dirs, files in os.walk(subject_dir):
-      for f in files:
-        subject_files.append(os.path.join(root,f))
-  return subject_files
 
 def detect_hierarchy(directory, returnvotes = False, maxvote=50):
     ''' Detects if a file tree matches those created/used by Morphologist, FreeSurfer or SnapBase.
