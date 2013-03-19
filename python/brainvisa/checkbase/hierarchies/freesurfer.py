@@ -85,21 +85,19 @@ class FreeSurferCheckbase(Checkbase):
         pass
         #self.get_multiple_subjects()
 
-    def get_thickness(self):
+    def compute_thicknesses(self):
         if not hasattr(self, 'subjects'): self.get_subjects()
         if not hasattr(self, 'existingfiles'): self.check_database_for_existing_files()
         import string
         self.thicknesses = {}
-        for subject in self.get_flat_subjects():
+        for subject in self.existingfiles[0].keys():
            for key in ['left_aparc_stats', 'right_aparc_stats']:
-              test = open(self.existingfiles[0][subject][key]
-              res = [string.splitfields(each.rstrip('\n')) for each in test]
-              measures = [each for each in res if each[0] == 'entorhinal'][0]
-              self.thicknesses[subject][key] = measures
-
-
-
-
+              if self.existingfiles[0][subject].has_key(key):
+                 test = open(getfilepath(key, self.existingfiles[0][subject][key], patterns=self.patterns), 'r')
+                 res = [string.splitfields(each.rstrip('\n')) for each in test]
+                 measures = [each for each in res if each[0] == 'entorhinal'][0]
+                 self.thicknesses.setdefault(subject, {})
+                 self.thicknesses[subject][key] = measures
 
 class FreeSurferLongitudinalCheckbase(Checkbase):
     def __init__(self, directory):
