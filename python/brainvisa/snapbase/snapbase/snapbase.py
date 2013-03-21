@@ -76,7 +76,7 @@ def get_snapshot(qgl):
     return cropped_im
 
 
-def detect_slices_of_interest(data, slice_directions=['A']):
+def detect_slices_of_interest(data, slice_directions=['A'], threshold = 0):
     '''
     Returns a set of slices of interest : { 'S': [5,10,15,20],
                                             'A': [10,11,12,13] }
@@ -90,12 +90,12 @@ def detect_slices_of_interest(data, slice_directions=['A']):
             first_nonempty_slice = 0
             last_nonempty_slice = n_slices_ax - 1
             s = d[0, first_nonempty_slice, :, :]
-            while (s[s!=0].size == 0):
+            while (s[s > threshold].size == 0):
                 first_nonempty_slice += 1
                 s = d[0, first_nonempty_slice, :, :]
 
             s = d[0, last_nonempty_slice, :, :]
-            while (s[s!=0].size == 0):
+            while (s[s > threshold].size == 0):
                 last_nonempty_slice -= 1
                 s = d[0, last_nonempty_slice, :, :]
             slices_minmax[direction] = (first_nonempty_slice, last_nonempty_slice)
@@ -103,12 +103,12 @@ def detect_slices_of_interest(data, slice_directions=['A']):
             first_nonempty_slice = 0
             last_nonempty_slice = n_slices_sa - 1
             s = d[0, :, :, first_nonempty_slice]
-            while (s[s!=0].size == 0):
+            while (s[s > threshold].size == 0):
                 first_nonempty_slice += 1
                 s = d[0, :, :, first_nonempty_slice]
 
             s = d[0, :, :, last_nonempty_slice]
-            while (s[s!=0].size == 0):
+            while (s[s > threshold].size == 0):
                 last_nonempty_slice -= 1
                 s = d[0, :, :, last_nonempty_slice]
             slices_minmax[direction] = (first_nonempty_slice, last_nonempty_slice)
@@ -116,12 +116,12 @@ def detect_slices_of_interest(data, slice_directions=['A']):
             first_nonempty_slice = 0
             last_nonempty_slice = n_slices_co - 1
             s = d[0, :, first_nonempty_slice, :]
-            while (s[s!=0].size == 0):
+            while (s[s > threshold].size == 0):
                 first_nonempty_slice += 1
                 s = d[0, :, first_nonempty_slice, :]
 
             s = d[0, :, last_nonempty_slice, :]
-            while (s[s!=0].size == 0):
+            while (s[s > threshold].size == 0):
                 last_nonempty_slice -= 1
                 s = d[0, :, last_nonempty_slice, :]
             slices_minmax[direction] = (first_nonempty_slice, last_nonempty_slice)

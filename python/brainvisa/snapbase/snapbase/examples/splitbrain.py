@@ -42,7 +42,7 @@ class SplitBrainSnapBase(SnapBase):
         splitbrain, mri = data
         voxel_size = mri.header()['voxel_size']
 
-        splitbrain_minmax = detect_slices_of_interest(splitbrain, directions)
+        splitbrain_minmax = detect_slices_of_interest(splitbrain, directions, threshold = 0)
 
         for d in directions :
             d_minmax = (splitbrain_minmax[d][0], splitbrain_minmax[d][1])
@@ -319,6 +319,36 @@ class SPMGreySnapBase(SplitBrainSnapBase):
         brainmask = aims.read(diskitems['splitbrain'])
         mri = aims.read(diskitems['mri'])
         return brainmask, mri
+
+    def get_slices_of_interest(self, data):
+
+        slices = {}
+        directions = ['C', 'S']
+
+        # Unpacking data
+        splitbrain, mri = data
+        voxel_size = mri.header()['voxel_size']
+
+        mini = splitbrain.arraydata().min()
+        maxi = splitbrain.arraydata().max()
+
+        splitbrain_minmax = detect_slices_of_interest(splitbrain, directions, threshold = (mini + maxi) / 2.0)
+
+        for d in directions :
+            d_minmax = (splitbrain_minmax[d][0], splitbrain_minmax[d][1])
+            step = (d_minmax[1]-d_minmax[0])/12
+            remainder = (d_minmax[1]-d_minmax[0]) - step*12
+            first_slice = d_minmax[0] + (step+remainder)/2
+            last_slice = d_minmax[1] - (step+remainder)/2 + 1
+
+            slices_list = range(first_slice, last_slice, step)
+
+            # This converts each slice index into a list applicable to
+                # Anatomist camera function
+            slices[d] = [(i, self.__get_slice_position__(d, i, voxel_size)) for i in slices_list]
+
+        return slices
+
 
     def get_list_diskitems(self, verbose=True):
 
