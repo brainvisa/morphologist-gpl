@@ -140,7 +140,7 @@ class MorphologistCheckbase(Checkbase):
                   n = data.arraydata()
                   r = n.ravel()
                   voxel_size = np.prod(data.header()['voxel_size'])
-                  if key[:3] == 'spm': self.volumes[subject][key] = (r.sum() - r.min()*r.size) * voxel_size
+                  if key[:3] == 'spm': self.volumes[subject][key] = np.sum(r - r.min()) * voxel_size
                   else: self.volumes[subject][key] = r.sum() / 255.0 * voxel_size
 
           for key in ['left_greywhite', 'right_greywhite']:
@@ -149,8 +149,9 @@ class MorphologistCheckbase(Checkbase):
                   import numpy as np
                   data = aims.read(getfilepath(key, self.existingfiles[0][subject][key]))
                   side = {'L':'left', 'R':'right'}[self.existingfiles[0][subject][key]['side']]
+                  voxel_size = np.prod(data.header()['voxel_size'])
                   for k, v in {'grey': 100., 'white':200.}.items():
-                     self.volumes[subject]['%s_%s'%(side, k)] = pixelsOfValue(data, v)
+                     self.volumes[subject]['%s_%s'%(side, k)] = pixelsOfValue(data, v) * voxel_size
 
 
 # compute the total intre cranial volume (Clara Fischer - Olivier Colliot)

@@ -26,11 +26,50 @@ patterns = { #mri
       'orig001' : os.path.join('(?P<database>[\w -/]+)', '(?P<subject>\w+)', 'mri', 'orig', '001.(?P<extension>%s)'%'[\w.]+$'), #image_extensions),
 
       #stats
+      'aseg_stats' : os.path.join('(?P<database>[\w -/]+)', '(?P<subject>\w+)', 'stats', 'aseg.stats$'),
       'left_aparc_stats' : os.path.join('(?P<database>[\w -/]+)', '(?P<subject>\w+)', 'stats', '(?P<side>[l]?)h.aparc.stats$'),
       'right_aparc_stats' : os.path.join('(?P<database>[\w -/]+)', '(?P<subject>\w+)', 'stats', '(?P<side>[r]?)h.aparc.stats$'),
       }
 
 keyitems = ['nu','wmparc','left_aparc_stats','right_aparc_stats']
+
+freesurfer_surface_regions = ['bankssts',
+ 'caudalanteriorcingulate',
+ 'caudalmiddlefrontal',
+ 'cuneus',
+ 'entorhinal',
+ 'fusiform',
+ 'inferiorparietal',
+ 'inferiortemporal',
+ 'isthmuscingulate',
+ 'lateraloccipital',
+ 'lateralorbitofrontal',
+ 'lingual',
+ 'medialorbitofrontal',
+ 'middletemporal',
+ 'parahippocampal',
+ 'paracentral',
+ 'parsopercularis',
+ 'parsorbitalis',
+ 'parstriangularis',
+ 'pericalcarine',
+ 'postcentral',
+ 'posteriorcingulate',
+ 'precentral',
+ 'precuneus',
+ 'rostralanteriorcingulate',
+ 'rostralmiddlefrontal',
+ 'superiorfrontal',
+ 'superiorparietal',
+ 'superiortemporal',
+ 'supramarginal',
+ 'frontalpole',
+ 'temporalpole',
+ 'transversetemporal',
+ 'insula']
+
+freesurfer_atlas_regions = ['BrainSegVol', 'BrainSegVolNotVent', 'TotalGrayVol', 'eTIV']
+freesurfer_atlas_regions2 = ['Left-Hippocampus', 'Left-Amygdala', 'Right-Hippocampus', 'Right-Amygdala']
 
 class FreeSurferCheckbase(Checkbase):
     def __init__(self, directory):
@@ -85,6 +124,34 @@ class FreeSurferCheckbase(Checkbase):
         pass
         #self.get_multiple_subjects()
 
+    def compute_volumes(self):
+        if not hasattr(self, 'subjects'): self.get_subjects()
+        if not hasattr(self, 'existingfiles'): self.check_database_for_existing_files()
+        import string
+        self.volumes = {}
+        for subject in self.existingfiles[0].keys():
+           key = 'aseg_stats'
+           if self.existingfiles[0][subject].has_key(key):
+              path = getfilepath(key, self.existingfiles[0][subject][key], patterns=self.patterns)
+              test = open(path, 'r').readlines()
+              res = [string.split(each.rstrip('\n'), ', ') for each in test]
+              measures = {}
+              for region in freesurfer_atlas_regions:
+                  m = [each for each in res if region in each]
+                  if len(m) > 0:
+                     v = float(m[0][m[0].index(region) + 2])
+                     measures[region] = v
+
+              res = [string.split(each.rstrip('\n')) for each in test]
+              for region in freesurfer_atlas_regions2:
+                  m = [each for each in res if region in each]
+                  if len(m) > 0: measures[region] = m[0]
+
+
+              self.volumes.setdefault(subject, {})
+              self.volumes[subject] = measures
+
+
     def compute_thicknesses(self):
         if not hasattr(self, 'subjects'): self.get_subjects()
         if not hasattr(self, 'existingfiles'): self.check_database_for_existing_files()
@@ -93,11 +160,21 @@ class FreeSurferCheckbase(Checkbase):
         for subject in self.existingfiles[0].keys():
            for key in ['left_aparc_stats', 'right_aparc_stats']:
               if self.existingfiles[0][subject].has_key(key):
-                 test = open(getfilepath(key, self.existingfiles[0][subject][key], patterns=self.patterns), 'r')
-                 res = [string.splitfields(each.rstrip('\n')) for each in test]
-                 measures = [each for each in res if each[0] == 'entorhinal'][0]
+                 path = getfilepath(key, self.existingfiles[0][subject][key], patterns=self.patterns)
+                 test = open(path, 'r').readlines()
+                 res = [string.split(each.rstrip('\n')) for each in test]
+                 measures = {}
+                 for region in freesurfer_surface_regions:
+                     m = [each for each in res if each[0] == region]
+                     if len(m) > 0: measures[region] = m[0]
+
                  self.thicknesses.setdefault(subject, {})
                  self.thicknesses[subject][key] = measures
+
+                 res = [string.split(each.rstrip('\n'), ', ') for each in test]
+                 avg = [each for each in res if 'MeanThickness' in each][0]
+                 avg_thick = float(avg[avg.index('MeanThickness') + 2])
+                 self.thicknesses[subject][key]['average'] = avg_thick
 
 class FreeSurferLongitudinalCheckbase(Checkbase):
     def __init__(self, directory):
