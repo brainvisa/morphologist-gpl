@@ -96,7 +96,7 @@ class ThicknessSnapBase(SnapBase):
               id_type = neuroHierarchy.databases.createDiskItemFromFileName(each.fullPath()).type.name
               print id_type[:9]
               #rdi = neuroHierarchy.ReadDiskItem('Hemisphere %sMesh'%({'hemi' : '', 'white' : 'White '}[self.preferences['mesh']]), neuroProcesses.getAllFormats())
-              if id_type in ['FreeSurferThicknessType', 'FreesurferCurvType', 'FreesurferGyri']:
+              if id_type in ['FreesurferThicknessType', 'FreesurferCurvType', 'FreesurferGyri']:
                 rdi = neuroHierarchy.ReadDiskItem('%s'%({'hemi' : 'Pial', 'white' : 'White'}[self.preferences['mesh']]), neuroProcesses.getAllFormats())
               elif id_type[:9] == 'Resampled':
                 rdi = neuroHierarchy.ReadDiskItem('%s'%({'hemi' : 'AimsPial', 'white' : 'AimsWhite'}[self.preferences['mesh']]), neuroProcesses.getAllFormats())
