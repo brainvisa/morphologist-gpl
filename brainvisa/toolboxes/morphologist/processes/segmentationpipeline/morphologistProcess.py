@@ -80,6 +80,8 @@ signature = Signature(
     'meancurvature', WriteDiskItem( "T1 MRI Mean Curvature",
         'Aims writable volume formats' ),
     #Histogram Analysis
+    'histo', WriteDiskItem( 'Histogram',
+        'Histogram' ),
     'histo_analysis', WriteDiskItem( 'Histo Analysis',
         'Histo Analysis' ),
     #Brain Mask Segmentation
@@ -308,6 +310,7 @@ def initialization( self ):
     self.signature[ 'meancurvature' ].userLevel = 100
     
     #Histogram Analysis
+    self.linkParameters( 'histo', 't1mri_nobias' )
     self.linkParameters( 'histo_analysis', 't1mri_nobias' )
     
     #Brain Mask Segmentation
@@ -493,6 +496,7 @@ def execution( self, context ):
     context.runProcess("NobiasHistoAnalysis",
                         mri_corrected=self.t1mri_nobias,
                         histo_analysis=self.histo_analysis,
+                        histo=self.histo,
                         hfiltered=self.hfiltered,
                         white_ridges=self.white_ridges)
     
