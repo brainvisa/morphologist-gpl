@@ -6,9 +6,22 @@ class SulciSnapBase(SnapBase):
     def __init__(self, preferences):
         SnapBase.__init__(self, preferences)
 
-    def get_attributes(self, diskitems):
-        primary_tag = 'mri'
-        return [diskitems[primary_tag].get(each) for each in self.preferences.naming_attributes]
+    def snap(self):
+       from PyQt4 import Qt
+       choice, ok_choice = Qt.QInputDialog.getItem(None,
+           'single or multi view ?', 'single/multi',
+           ['single', 'multi'], 0, False)
+       if ok_choice:
+           if choice == 'multi':
+               snap = SulciMultiViewSnapBase(self.preferences)
+           elif choice == 'single':
+               snap = SulciSingleViewSnapBase(self.preferences)
+           snap.snap_base(None, qt_app = self.qt_app)
+
+
+#    def get_attributes(self, diskitems):
+#        primary_tag = 'mri'
+#        return [diskitems[primary_tag].get(each) for each in self.preferences.naming_attributes]
 
     def get_list_diskitems(self, verbose = True):
 
@@ -47,7 +60,7 @@ class SulciSnapBase(SnapBase):
         folds_graph = aims.read(diskitems['folds graph'].fileName())
         mesh = aims.read(diskitems['mesh'].fileName())
         side = diskitems['mesh'].get('side')
-        self.preferences['side'] = side
+        #self.preferences['side'] = side
         return folds_graph, mesh, diskitems['transform'].fileName()
 
 
@@ -87,13 +100,14 @@ class SulciSingleViewSnapBase(SulciSnapBase):
 
     def __init__(self, preferences):
         SulciSnapBase.__init__(self, preferences)
-        self.preferences['singlemulti'] = 'single'
-        self.data_type = 'Left Cortical folds graph'
+        #self.preferences['singlemulti'] = 'single'
+        #self.data_type = 'Left Cortical folds graph'
 
     def get_views_of_interest(self):
         views = {}
+        side = self.get_current_side()
         views['3D'] =[self.view_quaternions[view_name]
-            for view_name in [self.preferences['side']]]
+            for view_name in [side]] #self.preferences['side']]]
         return views
 
 
@@ -101,13 +115,14 @@ class SulciMultiViewSnapBase(SulciSnapBase):
 
     def __init__(self, preferences):
         SulciSnapBase.__init__(self, preferences)
-        self.preferences['singlemulti'] = 'multi'
-        self.data_type = 'Left Cortical folds graph'
+        #self.preferences['singlemulti'] = 'multi'
+        #self.data_type = 'Left Cortical folds graph'
 
     def get_views_of_interest(self):
         views = {}
+        side = self.get_current_side()
         views['3D'] =[self.view_quaternions[view_name]
             for view_name in {'left':['right bottom', 'back left', 'front top left'],
-                               'right': ['left bottom', 'back right', 'front top right']}[self.preferences['side']]]
+                               'right': ['left bottom', 'back right', 'front top right']}[side]] #self.preferences['side']]]
         return views
 

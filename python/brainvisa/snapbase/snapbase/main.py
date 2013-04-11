@@ -3,7 +3,7 @@ import os, sys
 
 from brainvisa.data import neuroHierarchy
 from brainvisa.configuration import neuroConfig
-from brainvisa.data.sqlFSODatabase import SQLDatabase as SQLdb
+#from brainvisa.data.sqlFSODatabase import SQLDatabase as SQLdb
 from PyQt4 import QtGui, Qt, QtCore
 
 main_window = None
@@ -41,26 +41,6 @@ def display_help_msgbox():
     gui.helpbox.setupUi(main_window)
     gui.helpbox.show()
 
-# Voxel-based data (without choice of hemisphere side)
-
-def grey_white_snap_base():
-    global main_window, qt_app, database, preferences
-    from examples import greywhite
-    snap = greywhite.GreyWhiteSnapBase(preferences)
-    snap.snap_base(main_window = main_window, qt_app = qt_app )
-
-def splitbrain_snap_base():
-    global main_window, qt_app, database, preferences
-    from examples import splitbrain
-    snap = splitbrain.SplitBrainSnapBase(preferences)
-    snap.snap_base(main_window = main_window, qt_app = qt_app )
-
-def brainmask_snap_base():
-    global main_window, qt_app, database, preferences
-    from examples import splitbrain
-    snap = splitbrain.BrainMaskSnapBase(preferences)
-    snap.snap_base(main_window = main_window, qt_app = qt_app )
-
 def spm_snap_base():
     global main_window, qt_app, database, preferences
     from examples import splitbrain
@@ -73,34 +53,6 @@ def spm_snap_base():
         snap = splitbrain.SPMGreySnapBase(preferences)
         snap.snap_base(main_window = main_window, qt_app = qt_app )
 
-def raw_snap_base():
-    global main_window, qt_app, database, preferences
-    from examples import raw
-    snap = raw.RawSnapBase(preferences)
-    snap.snap_base(main_window = main_window, qt_app = qt_app )
-
-def tablet_snap_base():
-    global main_window, qt_app, database, preferences
-    from examples import raw
-    snap = raw.TabletSnapBase(preferences)
-    snap.snap_base(main_window = main_window, qt_app = qt_app )
-
-
-# Mesh-based data (with choice of hemisphere side)
-
-def white_mesh_snap_base():
-    global main_window, qt_app, database, preferences
-    from examples import mesh
-
-    snap = mesh.WhiteMeshSnapBase(preferences)
-    snap.snap_base(main_window = main_window, qt_app = qt_app )
-
-def hemi_snap_base():
-    global main_window, qt_app, database, preferences
-    from examples import mesh
-
-    snap = mesh.HemisphereMeshSnapBase(preferences)
-    snap.snap_base(main_window = main_window, qt_app = qt_app )
 
 def recompose(hippo_output_files, raw_output_files):
     from PIL import Image
@@ -297,34 +249,7 @@ def hippo_snap_base():
             #create_pdf_report_meshes(left_hippo_meshes_output_files, right_hippo_meshes_output_files)
 
 
-def thickness_snap_base():
-    global main_window, qt_app, database, preferences
-    from examples import mesh
 
-    mesh_choice, ok_mesh = Qt.QInputDialog.getItem(None,
-            'Which mesh',
-            'Hemi or white',
-            ['hemi', 'white'], 0, False)
-    if ok_mesh:
-            if mesh_choice == 'hemi':
-                snap = mesh.HemiThicknessSnapBase(preferences)
-            elif mesh_choice == 'white':
-                snap = mesh.WhiteThicknessSnapBase(preferences)
-    if ok_mesh:
-        snap.snap_base(main_window = main_window, qt_app = qt_app )
-
-def sulci_snap_base():
-    global main_window, qt_app, database, preferences
-    from examples import sulci
-    choice, ok_choice = Qt.QInputDialog.getItem(None,
-        'single or multi view ?', 'single/multi',
-        ['single', 'multi'], 0, False)
-    if ok_choice:
-        if choice == 'multi':
-            snap = sulci.SulciMultiViewSnapBase(preferences)
-        elif choice == 'single':
-            snap = sulci.SulciSingleViewSnapBase(preferences)
-        snap.snap_base(main_window = main_window, qt_app = qt_app )
 
 # Fiber Bundles (work in progress)
 
@@ -350,7 +275,6 @@ def load_preferences(minf_dict):
     preferences = {}
     default_pref = {'output_path' : '/tmp/',
                     'filename_root' : 'snapshots_',
-                    #'database_dir' : '',
                     'create_poster' : False,
                     'create_poster_command' : 'montage -geometry +0+0 -background black -tile 10',
                     'remove_snapshots' : False,
@@ -367,69 +291,108 @@ def load_preferences(minf_dict):
 
     return preferences
 
-def reload_main_layout():
-    global gui, main_window
-    gui.setupUi(main_window)
+def set_output_path(event):
+    global preferences, gui
+    pix_dir = os.path.split(__file__)[0]
+    destDir = QtGui.QFileDialog.getExistingDirectory(None,
+      'Open working directory',
+      pix_dir,
+      QtGui.QFileDialog.ShowDirsOnly)
+    preferences['output_path'] = destDir
+    save_preferences(preferences)
+    gui.set_default_status_msg('output path : %s'%preferences['output_path'])
+    gui.statusbar.showMessage(gui.statusbar.default_status_msg)
 
-    # Connecting Qt Signals
-    gui.greywhite_btn.clicked.connect(grey_white_snap_base)
-    gui.whitemesh_btn.clicked.connect(white_mesh_snap_base)
-    gui.hemimesh_btn.clicked.connect(hemi_snap_base)
-    gui.splitbrain_btn.clicked.connect(splitbrain_snap_base)
-    gui.sulci_btn.clicked.connect(sulci_snap_base)
-    gui.raw_btn.clicked.connect(raw_snap_base)
-    gui.fibers_btn.clicked.connect(fibers_snap_base)
-    gui.spm_btn.clicked.connect(spm_snap_base)
-    gui.tablet_btn.clicked.connect(tablet_snap_base)
-    gui.brainmask_btn.clicked.connect(brainmask_snap_base)
-    gui.btn_thickness.clicked.connect(thickness_snap_base)
-    gui.btn_hippo.clicked.connect(hippo_snap_base)
-    gui.btn_help.clicked.connect(display_help_msgbox)
-    gui.connect_signals()
+def list_snap_modules():
+   import inspect, imp, os, string
+   direc = os.path.join(os.path.split(__file__)[0], 'examples')
+   print direc
+   snap_files = [each for each in os.listdir(direc) if os.path.isfile(os.path.join(direc, each)) and os.path.splitext(each)[1] == '.py']
+   print snap_files
+   modules = []
+   classes = []
+   root_module = ['brainvisa','snapbase','snapbase']
+   root_module = string.join(root_module, '.')
+   for snap_file in snap_files:
+      print snap_file
+      name = string.join([root_module, os.path.splitext(os.path.split(snap_file)[1])[0]], '.')
+      print name
+      m = imp.load_source(name, os.path.join(direc, snap_file))
+      print m
+      modules.append(m)
+   return modules
 
+def list_snap_classes(modules):
+   import inspect
+   classes = []
+   for m in modules:
+      c = inspect.getmembers(m, inspect.isclass)
+      for name, cla in c:
+         if name.count('SnapBase') > 0:
+            classes.append((name ,cla))
+   return classes
+
+def on_finished():
+   #global preferences, gui
+   pass
 
 def main():
 
     global main_window, gui, qt_app, database, preferences
     import interface, sys
-
+    old_interface = None
     # Create Qt App and window
     qt_app = Qt.QApplication( sys.argv )
     qt_app.setQuitOnLastWindowClosed(True)
     main_window = QtGui.QMainWindow()
     gui = interface.Ui_main_window()
-    gui.connect(main_window, Qt.SIGNAL('finished()'), reload_main_layout)
-    reload_main_layout()
+    gui.setupUi(main_window)
+    gui.fileopen.clicked.connect(set_output_path)
+    main_window.connect(main_window, Qt.SIGNAL('finished()'), on_finished)
+
+    modules = list_snap_modules()
+    snap_classes = list_snap_classes(modules)
 
     # SnapBase settings
-    import os
+    import os, string
     from soma.minf import api as minf
     snapbase_settings_file = os.path.join(neuroConfig.homeBrainVISADir, 'snapbase_settings.minf')
     if os.path.exists(snapbase_settings_file):
         # If settings file exists, load it
         minf_dict = minf.readMinf(snapbase_settings_file)
-        print minf_dict
         preferences = load_preferences(minf_dict[0])
-        # Update combobox (same as select_db without confirmation popup)
-        #try:
-            #database = neuroHierarchy.databases._databases[preferences['database_dir']]
-            #database = DummyDatabase(neuroHierarchy.databases._databases[preferences['database_dir']])
-        #except KeyError:
-        #    if len(neuroHierarchy.databases._databases.items()) > 0:
-        #        preferences['database_dir'], database = neuroHierarchy.databases._databases.items()[0]
-        #    else:
-        #        ok = Qt.QMessageBox.warning(None, 'No databases in BrainVisa.',
-        #        'Please add at least one database in BrainVisa.', Qt.QMessageBox.Ok)
+        #database = neuroHierarchy.databases._databases[preferences['database_dir']]
+        #preferences['database_dir'], database = neuroHierarchy.databases._databases.items()[0]
     else:
         # Otherwise, create it and update all necessary
         preferences = load_preferences({})
         select_db(0)
-        #preferences['database_dir'] = database.directory
         save_preferences(preferences)
         msgBox = Qt.QMessageBox.information(None, 'SnapBase settings file created',
             'Settings will be stored in %s.\nSnapshots will be saved in %s directory. It can be edited in the settings file.'%(snapbase_settings_file, preferences['output_path']), Qt.QMessageBox.Ok)
 
     gui.set_default_status_msg('output path : %s'%preferences['output_path'])
+
+    # Setting up modules
+    gui.modules = []
+    print [each[0] for each in snap_classes]
+
+    excluded_classes = ['SnapBase', 'HippocampusLabelLeftSnapBase', 'HippocampusLabelRawLeftSnapBase', 'HippocampusLabelRawRightSnapBase',
+          'HippocampusLabelRightSnapBase', 'HippocampusLabelSnapBase', 'HippocampusLeftSnapBase', 'HippocampusRightSnapBase', 'HippocampusSnapBase',
+          'SPMComparisonSnapBase', 'SPMGreySnapBase', 'FibersSnapBase', 'SulciMultiViewSnapBase', 'SulciSingleViewSnapBase', 'WhiteThicknessSnapBase', 'HemiThicknessSnapBase']
+    for (name, c) in snap_classes:
+       if not name in excluded_classes:
+         print name
+         gui.modules.append(c(preferences))
+
+    for snap in gui.modules:
+       snap.main_window = main_window
+       snap.qt_app = qt_app
+       name = string.lower(snap.__class__.__name__.split('SnapBase')[0])
+
+       snap.set_interface(gui, name)
+
+
     main_window.show()
     qt_app.exec_()
     neuroHierarchy.databases.currentThreadCleanup()

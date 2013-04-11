@@ -9,9 +9,9 @@ class SplitBrainSnapBase(SnapBase):
         SnapBase.__init__(self, preferences)
         self._do_slice_rendering = True
 
-    def get_attributes(self, diskitems):
-        primary_tag = 'mri'
-        return [diskitems[primary_tag].get(each) for each in self.preferences.naming_attributes]
+#    def get_attributes(self, diskitems):
+#        primary_tag = 'mri'
+#        return [diskitems[primary_tag].get(each) for each in self.preferences.naming_attributes]
 
     def get_list_diskitems(self, verbose = True):
 

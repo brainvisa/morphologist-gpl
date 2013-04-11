@@ -19,11 +19,11 @@ from snapbase import parsefilepath
 #               RightSulciSingleViewSnapBase,\
 #               RightSulciMultiViewSnapBase
 
-from brainvisa.snapbase.snapbase.examples.greywhite\
-        import GreyWhiteSnapBase
+#from brainvisa.snapbase.snapbase.examples.greywhite\
+#        import GreyWhiteSnapBase
 
-from brainvisa.snapbase.snapbase.examples.splitbrain\
-        import SplitBrainSnapBase
+#from brainvisa.snapbase.snapbase.examples.splitbrain\
+#        import SplitBrainSnapBase
 
 def run_gui():
     from brainvisa.snapbase.snapbase import main

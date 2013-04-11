@@ -52,9 +52,9 @@ class GreyWhiteSnapBase(SnapBase):
             remainder = (d_minmax[1]-d_minmax[0]) - step*12
             first_slice = d_minmax[0] + (step+remainder)/2
             last_slice = d_minmax[1] - (step+remainder)/2 + 1
-            
+
             slices_list = range(first_slice, last_slice, step)
-            
+
             # This converts each slice index into a list applicable to
                 # Anatomist camera function
             slices[d] = [(i, self.__get_slice_position__(d, i, voxel_size)) for i in slices_list]

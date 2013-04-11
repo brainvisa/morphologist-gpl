@@ -234,6 +234,34 @@ class SnapBase():
             self.runqt = False
 
 
+    def set_interface(self, gui, name):
+
+        from interface import HoverButton
+        from PyQt4 import QtGui, QtCore, Qt
+        import os
+        pix_dir = os.path.split(__file__)[0]
+        setattr(gui, '%s_btn'%name, HoverButton(gui.widget))
+        btn = getattr(gui, '%s_btn'%name)
+
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(btn.sizePolicy().hasHeightForWidth())
+        btn.setSizePolicy(sizePolicy)
+        btn.setMinimumSize(QtCore.QSize(100, 100))
+        btn.setText("")
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(os.path.join(pix_dir, '%s.png'%name)), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        btn.setIcon(icon)
+        btn.setIconSize(QtCore.QSize(90, 90))
+        btn.setObjectName("%s_btn"%name)
+        wid_number = gui.gridLayout.count()
+        line = wid_number / 3
+        col = wid_number % 3
+        gui.gridLayout.addWidget(btn, line, col , 1, 1)
+        btn.connect(btn, Qt.SIGNAL('enter'), gui.enter_status)
+        btn.connect(btn, Qt.SIGNAL('leave'), gui.leave_status)
+        btn.clicked.connect(self.snap)
 
 
     def get_slices_of_interest(self, data):
@@ -313,34 +341,68 @@ class SnapBase():
         print colors
         return colors
 
+    def get_primary_key(self, classname):
+        acquisition_key = { 'RawSnapBase': 'mri',
+               'TabletSnapBase' : 'mri',
+               'SplitBrainSnapBase' : 'mri',
+               'BrainMaskSnapBase' : 'mri',
+               'GreyWhiteSnapBase' : 'mri',
+               'MeshSnapBase' : 'mesh',
+               'MeshCutSnapBase' : 'split',
+               'SulciSingleViewSnapBase' : 'folds graph',
+               'SulciMultiViewSnapBase' : 'folds graph',
+               'HemiThicknessSnapBase' : 'mesh',
+               'WhiteThicknessSnapBase' : 'mesh'}
+        if acquisition_key.has_key(classname):
+           return acquisition_key[classname]
+
+    def get_current_side(self):
+       prim_key = self.get_primary_key(self.__class__.__name__)
+       if self.current_diskitems[prim_key].has_key('side'):
+          side = self.current_diskitems[prim_key].attributes()['side']
+          return side
+
     def get_outfile_path(self, attributes):
         ''' builds and returns a path with proper file tree containing
         name of subject, type, hemisphere side/slice direction if provided'''
         import os, shutil, string
 
+        class_name = self.__class__.__name__
         id_translat = { 'RawSnapBase' : 'raw',
                        'TabletSnapBase' : 'tablet',
                        'SplitBrainSnapBase' :'split',
                        'BrainMaskSnapBase' : 'brain',
                        'GreyWhiteSnapBase' : 'GW',
                        'HippocampusSnapBase' : 'hippo'}
-        if self.preferences.has_key('side'):
+        is_sided = False
+        side = self.get_current_side()
+        if not side is None:
+           is_sided = True
+           cap_side = string.capitalize(attributes[0]['side'])
+        if is_sided and class_name == 'MeshSnapBase':
+                mesh_type = {'%s Hemisphere Mesh'%cap_side : 'hemi',
+                      '%s Hemisphere White Mesh'%cap_side: 'white',
+                      'Pial': 'pial',
+                      'White' : 'fswhite',
+                      'AimsPial' :'aimspial',
+                      'AimsWhite' : 'aimswhite'
+                      }[attributes[0]['type']]
+                id_translat.update({'MeshSnapBase' : '%s_%s'%(cap_side[0], mesh_type)})
+        if is_sided and class_name.count('Thickness') > 0 :
+                tex_type = self.current_diskitems['tex'].type.name
                 id_translat.update({
-                       'HemisphereMeshSnapBase' : 'hemi_%s'%string.upper(self.preferences['side'][0]),
-                       'WhiteMeshSnapBase' : 'white%s'%string.upper(self.preferences['side'][0])})
-        if self.preferences.has_key('side') and self.preferences.has_key('tex_type'):
-                id_translat.update({
-                       'HemiThicknessSnapBase' : 'hemi_%s_%s'%(self.preferences['tex_type'], string.upper(self.preferences['side'][0])),
-                       'WhiteThicknessSnapBase' : 'white_%s_%s'%(self.preferences['tex_type'], string.upper(self.preferences['side'][0])),
+                       'HemiThicknessSnapBase' : 'hemi_%s_%s'%(tex_type, cap_side[0]),
+                       'WhiteThicknessSnapBase' : 'white_%s_%s'%(tex_type, cap_side[0]),
                        })
 
-        if self.preferences.has_key('singlemulti'):
+        if class_name in ['SulciSingleViewSnapBase', 'SulciMultiViewSnapBase']:
+            view_mode = string.lower(class_name[5:-12])
             id_translat.update(
-                {'SulciSingleViewSnapBase' : 'sulci_%s_%s'%(string.upper(self.preferences['side'][0]),self.preferences['singlemulti'])})
+                {'SulciSingleViewSnapBase' : 'sulci_%s_%s'%(cap_side[0], view_mode)})
             id_translat.update(
-                {'SulciMultiViewSnapBase' : 'sulci_%s_%s'%(string.upper(self.preferences['side'][0]),self.preferences['singlemulti'])})
-        if self.preferences.has_key('side') and self.preferences.has_key('mesh'):
-            id_translat.update({'Cortical Thickness' : 'thickness_%s_%s'%(string.upper(self.preferences['side'][0]), self.preferences['mesh'])})
+                {'SulciMultiViewSnapBase' : 'sulci_%s_%s'%(cap_side[0], view_mode)})
+#        if is_sided and self.preferences.has_key('mesh'):
+#            id_translat.update({'Cortical Thickness' : 'thickness_%s_%s'%(cap_side[0], self.preferences['mesh'])})
 
 
         output_dir = self.preferences['output_path']
@@ -355,7 +417,7 @@ class SnapBase():
 
         output_filename = '%s%s'%(filename_root, id_type)
 
-        for att in attributes:
+        for att in attributes[1:]:
             output_filename = '%s_%s'%(output_filename, att)
 
         output_filename = '%s.png'%output_filename
@@ -365,29 +427,49 @@ class SnapBase():
         return outfile_path
 
     def get_acquisition(self, diskitems):
-        acquisition_key = { 'RawSnapBase': 'mri',
-               'TabletSnapBase' : 'mri',
-               'SplitBrainSnapBase' : 'mri',
-               'BrainMaskSnapBase' : 'mri',
-               'GreyWhiteSnapBase' : 'mri',
-               'WhiteMeshSnapBase' : 'mesh',
-               'HemisphereMeshSnapBase' : 'mesh',
-               'SulciSingleViewSnapBase' : 'mri',
-               'SulciMultiViewSnapBase' : 'mri'}
 
-        if self.__class__.__name__ not in ['HemiThicknessSnapBase', 'WhiteThicknessSnapBase'] and self.__class__.__name__ not in ['HippocampusLeftSnapBase', 'HippocampusRightSnapBase', 'HippocampusLabelLeftSnapBase', 'HippocampusLabelRightSnapBase', 'HippocampusLabelRawLeftSnapBase', 'HippocampusLabelRawRightSnapBase']:
-            acquisition = diskitems[acquisition_key[self.__class__.__name__]].get('acquisition')
-        elif self.__class__.__name__ not in ['HippocampusLeftSnapBase', 'HippocampusRightSnapBase', 'HippocampusLabelLeftSnapBase', 'HippocampusLabelRightSnapBase', 'HippocampusLabelRawRightSnapBase', 'HippocampusLabelRawLeftSnapBase']:
+        class_name = self.__class__.__name__
+        if class_name.count('Thickness') == 0 and class_name.count('Hippocampus') == 0:
+            acquisition = diskitems[self.get_primary_key(self.__class__.__name__)].get('acquisition')
+        elif class_name.count('Thickness') != 0:
             acquisition = 'FS'
-        else:
+        elif class_name.count('Hippocampus') != 0:
             acquisition = 'sacha'
         return acquisition
+
+
+    def get_one_tile(self, views_images, grid_dim = None):
+          from PIL import Image, ImageDraw, ImageFont
+          # Building the tiled image
+          image_size = (max([im.size[0] for im in views_images]), max([im.size[1] for im in views_images]))
+          if not grid_dim:
+             grid_dim = {12 : (4,3), 5 : (5,1), 7:(7,1),  1 : (1,1), 3: (3,1), 20 : (4,5)}[len(views_images)]
+
+          tiled_image = Image.new('RGBA', (grid_dim[0]*image_size[0], grid_dim[1]*image_size[1]), 'black')
+          positions = [[j*image_size[0], i*image_size[1]] for i in xrange(grid_dim[1]) for j in xrange(grid_dim[0])]
+          for i, pos in zip(views_images, positions):
+              pos = [pos[j] + (image_size[j] - min(image_size[j], i.size[j]))/2.0 for j in xrange(len(pos))]
+              tiled_image.paste(i, (int(pos[0]), int(pos[1])))
+
+          return tiled_image
+
+    def set_snap_layout(self, view_images):
+        tiles = []
+        for d in view_images.keys():
+            print d
+            tiles.append(self.get_one_tile(view_images[d]))
+
+        big_tile = self.get_one_tile(tiles, grid_dim = (len(view_images.keys()),1))
+        return big_tile
+
+
+    def snap(self):
+       self.snap_base(None, self.qt_app)
 
     def snap_base(self, main_window = None, qt_app = None, dictdata = None, verbose = False):
 
         import anatomist.direct.api as ana
         from PyQt4 import QtGui, QtCore, Qt
-        from PIL import Image, ImageDraw, ImageFont
         from brainvisa.data import neuroHierarchy
         from brainvisa.data import diskItemBrowser as dib
 
@@ -458,6 +540,7 @@ class SnapBase():
 
         # Iterating on subjects and data
         for (subject, protocol), diskitems in dictdata:
+            self.current_diskitems = diskitems
             main_window.statusBar().showMessage('%s %s'%(subject, protocol))
             # Reading data and converting to Anatomist object format
             data = self.read_data(diskitems)
@@ -473,13 +556,19 @@ class SnapBase():
 
             qgl = w.view().qglWidget()
             # Select the view and grab picture (views contains either slices or quaternions)
+            views_images = {}
             for d in views.keys():
-                views_images = []
                 if d in ['A','C','S']:
                     # Setting the slice plane
                     window.camera(slice_quaternion = self.slice_quaternions[d],
                                   view_quaternion = self.view_quaternions[d],
                                   zoom = 0.818)
+                    if d == 'A':
+                       window.muteAxial()
+                    elif d == 'C':
+                       window.muteCoronal()
+                    elif d == 'S':
+                       window.muteSagittal()
 
                     for s, slice_position in views[d]:
                         # Selecting the slice
@@ -495,10 +584,10 @@ class SnapBase():
                             data = snapshot.convert('RGBA').tostring('raw', 'BGRA')
                             qim = Qt.QImage(data, snapshot.size[0], snapshot.size[1], Qt.QImage.Format_ARGB32)
                             pix = Qt.QPixmap.fromImage(qim)
-                            pix = self.__render_text(pix, '%i'%s, font, (100,100))
+                            pix = self.__render_text(pix, '%i'%s, font, (100,50))
                             snapshot = qt_to_pil_image(pix)
 
-                        views_images.append(snapshot)
+                        views_images.setdefault(d, []).append(snapshot)
 
                 elif d == '3D':
                     for view_quaternion in views[d]:
@@ -511,47 +600,40 @@ class SnapBase():
                         snapshot = get_snapshot(qgl)
                         #snapshot = snapshot.transpose(Image.FLIP_LEFT_RIGHT)
 
-                        views_images.append(snapshot)
+                        views_images.setdefault(d, []).append(snapshot)
 
-                # Building the tiled image
-                image_size = (max([im.size[0] for im in views_images]), max([im.size[1] for im in views_images]))
-                grid_dim = {12 : (4,3), 5 : (5,1), 7:(7,1),  1 : (1,1), 3: (3,1), 20 : (4,5)}[len(views_images)]
 
-                tiled_image = Image.new('RGBA', (grid_dim[0]*image_size[0], grid_dim[1]*image_size[1]), 'black')
-                positions = [[j*image_size[0], i*image_size[1]] for i in xrange(grid_dim[1]) for j in xrange(grid_dim[0])]
-                for i, pos in zip(views_images, positions):
-                    pos = [pos[j] + (image_size[j] - min(image_size[j], i.size[j]))/2.0 for j in xrange(len(pos))]
-                    tiled_image.paste(i, (int(pos[0]), int(pos[1])))
+            big_tile = self.set_snap_layout(views_images)
 
-                # Rendering subject ID
-                d_usr = ImageDraw.Draw(tiled_image)
+            attributes = self.preferences['naming_attributes']
+            primary_key = self.get_primary_key(self.__class__.__name__)
 
-                attributes = self.preferences['naming_attributes']
-                attributes = [protocol, subject]
-                #print diskitems
-                acquisition = self.get_acquisition(diskitems)
+            if not (primary_key is None):
+               attributes = [diskitems[primary_key].attributes()]
+               attributes[0]['type'] = diskitems[primary_key].type.name
+               print attributes
+            else:
+               attributes = ['']
+            attributes.extend([protocol, subject])
+            acquisition = self.get_acquisition(diskitems)
 
-                attributes.append(acquisition)
-                if d != '3D':
-                    attributes.append(d)
+            attributes.append(acquisition)
+            #if d != '3D':
+            #    attributes.append(d)
 
-                outfile_path = self.get_outfile_path(attributes)
-                output_files.append(outfile_path)
-                tiled_image.save(outfile_path, 'PNG')
+            outfile_path = self.get_outfile_path(attributes)
+            output_files.append(outfile_path)
+            big_tile.save(outfile_path, 'PNG')
 
-                # Rendering text
-                pixmap = Qt.QPixmap(outfile_path)
-                self.__render_text(pixmap, '%s'%subject, font, color=colors_centers[protocol])
-                pixmap.save(outfile_path)
+            # Rendering text
+            pixmap = Qt.QPixmap(outfile_path)
+            self.__render_text(pixmap, '%s'%subject, font, color=colors_centers[protocol])
+            pixmap.save(outfile_path)
 
             #window.getInfos()
             print ''
             print self.aobjects
             self.___remove_objects_from_viewer(w)
-
-        # Uncomment to keep the app running
-        #if runqt:
-        #    qt_app.exec_()
 
 
         print 'closing everything'
@@ -572,10 +654,8 @@ class SnapBase():
         # Keep track of the list of produced files but after saving preferences so it is not stored in the prefs
         self.preferences['output_files'] = output_files
 
-        #main_window.close()
         if self.preferences['display_success_msgbox']:
             ok = Qt.QMessageBox.warning(None, 'Success.',
                 '%d snapshots were succesfully created in %s.'%(len(output_files), self.preferences['output_path']), Qt.QMessageBox.Ok)
 
         main_window.emit(Qt.SIGNAL('finished()'))
-        #sys.exit(0)
