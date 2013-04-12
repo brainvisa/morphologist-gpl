@@ -175,7 +175,7 @@ class BrainMaskSnapBase(SnapBase):
         palette = a.getPalette('GREEN-ufusion')
         ana_brainmask.setPalette( palette )
         self.aobjects['brainmask'] = a.fusionObjects( [ana_mri, ana_brainmask], method='Fusion2DMethod' )
-        a.execute("Fusion2DParams", object=self.aobjects['brainmask'], mode='linear', rate = 0.7,
+        a.execute("Fusion2DParams", object=self.aobjects['brainmask'], mode='linear_on_defined', rate = 0.7,
                       reorder_objects = [ ana_mri, ana_brainmask] )
 
         # Load in Anatomist window
