@@ -56,7 +56,6 @@ from soma.controller import Controller
 import soma.fom     
 
 from morphologistSimp import SimpMorpho
-#import morphologist
 
 name = 'Test Simplified Morphologist'
 userLevel = 2
@@ -461,27 +460,21 @@ def initialization( self ):
     #self.signature[ 'right_translation_priors' ].userLevel = 100
     #self.signature[ 'right_global_to_local_transforms' ].userLevel = 100
 
-
-    #Call class traits in morphlogist.py
     
     self.ptrait=SimpMorpho()
-    
-    #c=Controller()
     self.t1mri_prec=None
 
-
-    #for params in self.ptrait.editable_traits():
     for params in self.ptrait._instance_traits():
-        print 'params',params
+        #print 'params',params
         #Link between Ui and traits
         self.addLink(None,params,self.create_completion)
         self.ptrait.on_trait_change(self.update,params)
-        
+
 
 def update(self,object,name,old,new):
-    print 'IN UPDATEEEEEEEEEEEEEEEEEEEEEEEEEE///////////'
-    print 'name',name
-    print 'new',new
+    #print 'object',object
+    #print 'name',name
+    #print 'new',new
     setattr(self,name,new)
 
         
@@ -489,11 +482,10 @@ def update(self,object,name,old,new):
 def create_completion(self,process):
 
     if self.t1mri is not None and self.t1mri is not self.t1mri_prec:
+        self.ptrait.t1mri=str(self.t1mri) 
+        #Trait t1mri changed
         self.t1mri_prec=self.t1mri
-        
-        completion=soma.fom.process_completion( 'morphologist-brainvisa-1.0',self.ptrait.name, 't1mri', str(self.t1mri),directories={'spm' : '/here/is/spm','shared' : '/volatile/bouin/build/trunk/share/brainvisa-share-4.4' }) 
-        for key in completion:
-            setattr(self.ptrait,key,completion[key])
+
              
              
 def execution( self, context ):
