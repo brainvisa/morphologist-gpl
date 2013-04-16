@@ -43,11 +43,17 @@ signature = Signature(
         'Aims readable volume formats' ),
     'white_mesh_fine', WriteDiskItem( 'Fine Hemisphere White Mesh',
         'Aims mesh formats' ),
+    'maxClearance',  Float(),
+    'maxError', Float(),
+    'maxCurv', Float(),
 )
 
 # Default values
 def initialization( self ):
     self.linkParameters( 'white_mesh_fine', 'hemi_cortex' )
+    self.maxClearance=1
+    self.maxError=2
+    self.maxCurv=1.0
 
 
 def execution( self, context ):
@@ -57,8 +63,8 @@ def execution( self, context ):
             "-o", white, "-t", "0", "-c", "b", "-m",
             "ne", "-w", "t" )
 
-    context.system( "AimsMeshBrain", "-i", white, "-o", self.white_mesh_fine, '--internalinterface', "--deciMaxClearance",  "1", "--deciMaxError", "1" )
-    context.system( "meshCleaner", "-i", self.white_mesh_fine, "-o", self.white_mesh_fine, "-maxCurv", "0.6" )
+    context.system( "AimsMeshBrain", "-i", white, "-o", self.white_mesh_fine, '--internalinterface', "--deciMaxClearance",  self.maxClearance, "--deciMaxError", self.maxError )
+    context.system( "meshCleaner", "-i", self.white_mesh_fine, "-o", self.white_mesh_fine, "-maxCurv", self.maxCurv )
 
     tm.copyReferential(self.hemi_cortex, self.white_mesh_fine)
 
