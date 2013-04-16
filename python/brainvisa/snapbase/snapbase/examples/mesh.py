@@ -12,19 +12,15 @@ class MeshSnapBase(SnapBase):
     def snap(self):
        from PyQt4 import Qt
        choice, ok_choice = Qt.QInputDialog.getItem(None,
-           'which views ?', 'which views',
-           ['one', 'many'], 0, False)
+           'single or multi view ?', 'single/multi',
+           ['single', 'multi'], 0, False)
        if ok_choice:
-           if choice == 'one':
+           if choice == 'single':
               self.views = {'left': ['left'], 'right': ['right']}
-           elif choice == 'many':
-              self.views = {'left': ['left', 'right', 'back left', 'front left', 'right bottom'],
-                'right' : ['right', 'left', 'back right', 'front right', 'left bottom']}
+           elif choice == 'multi':
+              self.views = {'left': ['left', 'right', 'back left', 'front left', 'left top', 'right bottom'],
+                'right' : ['right', 'left', 'back right', 'front right', 'right top', 'left bottom']}
            self.snap_base(None, qt_app = self.qt_app)
-
-#    def get_attributes(self, diskitems):
-#        primary_tag = 'mesh'
-#        return [diskitems[primary_tag].get(each) for each in self.preferences.naming_attributes]
 
     def get_list_diskitems(self, verbose = True):
 
@@ -41,8 +37,7 @@ class MeshSnapBase(SnapBase):
               rdi = neuroHierarchy.ReadDiskItem('Transform Raw T1 MRI to Talairach-AC/PC-Anatomist', neuroProcesses.getAllFormats())
               transform = rdi.findValue(each)
               dictdata.append(((each.get('subject'), each.get('protocol')),
-                 {#'type' : each.get('_type'),
-                  'mesh' : each,
+                 { 'mesh' : each,
                   'transform' : transform}) )
 
         return dictdata
@@ -51,12 +46,12 @@ class MeshSnapBase(SnapBase):
     def get_views_of_interest(self):
         views = {}
         side = self.get_current_side()
-        current_views = self.views[side] #self.preferences['side']]
+        current_views = self.views[side]
         prim_key = self.get_primary_key(self.__class__.__name__)
         t = self.current_diskitems[prim_key].type.name
         onto = self.current_diskitems[prim_key].attributes()['_ontology']
         import string
-        if t in  ['Pial', 'White']: #, 'AimsPial', 'AimsWhite']:
+        if t in  ['Pial', 'White']:
            new_views = []
            for each in current_views:
               if each.count('left') > 0:
@@ -79,7 +74,6 @@ class MeshSnapBase(SnapBase):
 
         mesh = aims.read(diskitems['mesh'].fileName())
         side = diskitems['mesh'].get('side')
-        #self.preferences['side'] = side
 
         if not diskitems['transform'] is None:
            trm_file = diskitems['transform'].fileName()
@@ -262,6 +256,10 @@ class MeshCutSnapBase(SnapBase):
               left_white = rdi.findValue(each)
               rdi = neuroHierarchy.ReadDiskItem('Hemisphere White Mesh', neuroProcesses.getAllFormats(), requiredAttributes = {'side': 'right'})
               right_white = rdi.findValue(each)
+              rdi = neuroHierarchy.ReadDiskItem('Left Grey White Mask', neuroProcesses.getAllFormats())
+              left_gw = rdi.findValue(each)
+              rdi = neuroHierarchy.ReadDiskItem('Right Grey White Mask', neuroProcesses.getAllFormats())
+              right_gw = rdi.findValue(each)
               dictdata.append(((each.get('subject'), each.get('protocol')),
                  {'mri' : mri,
                   'split' : split,
@@ -269,6 +267,8 @@ class MeshCutSnapBase(SnapBase):
                   'right hemi' : right_hemi,
                   'left white' : left_white,
                   'right white' : right_white,
+                  'left_gw' : left_gw,
+                  'right_gw': right_gw,
                   'transform' : transform}) )
 
         return dictdata

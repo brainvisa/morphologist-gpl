@@ -44,10 +44,11 @@ class SplitBrainSnapBase(SnapBase):
 
         splitbrain_minmax = detect_slices_of_interest(splitbrain, directions, threshold = 0)
 
+        slices_nb = {'S': 12, 'C': 16}
         for d in directions :
             d_minmax = (splitbrain_minmax[d][0], splitbrain_minmax[d][1])
-            step = (d_minmax[1]-d_minmax[0])/12
-            remainder = (d_minmax[1]-d_minmax[0]) - step*12
+            step = (d_minmax[1]-d_minmax[0])/slices_nb[d]
+            remainder = (d_minmax[1]-d_minmax[0]) - step*slices_nb[d]
             first_slice = d_minmax[0] + (step+remainder)/2
             last_slice = d_minmax[1] - (step+remainder)/2 + 1
 
@@ -134,10 +135,11 @@ class BrainMaskSnapBase(SnapBase):
 
         brainmask_minmax = detect_slices_of_interest(brainmask, directions)
 
+        slices_nb = {'S': 12, 'C': 14}
         for d in directions :
             d_minmax = (brainmask_minmax[d][0], brainmask_minmax[d][1])
-            step = (d_minmax[1]-d_minmax[0])/12
-            remainder = (d_minmax[1]-d_minmax[0]) - step*12
+            step = (d_minmax[1]-d_minmax[0])/slices_nb[d]
+            remainder = (d_minmax[1]-d_minmax[0]) - step*slices_nb[d]
             first_slice = d_minmax[0] + (step+remainder)/2
             last_slice = d_minmax[1] - (step+remainder)/2 + 1
 

@@ -12,16 +12,12 @@ class SulciSnapBase(SnapBase):
            'single or multi view ?', 'single/multi',
            ['single', 'multi'], 0, False)
        if ok_choice:
-           if choice == 'multi':
-               snap = SulciMultiViewSnapBase(self.preferences)
-           elif choice == 'single':
-               snap = SulciSingleViewSnapBase(self.preferences)
-           snap.snap_base(None, qt_app = self.qt_app)
-
-
-#    def get_attributes(self, diskitems):
-#        primary_tag = 'mri'
-#        return [diskitems[primary_tag].get(each) for each in self.preferences.naming_attributes]
+           if choice == 'single':
+              self.views = {'left': ['left'], 'right': ['right']}
+           elif choice == 'multi':
+              self.views = {'left': ['left', 'right', 'back left', 'front left', 'left top', 'right bottom'],
+                'right' : ['right', 'left', 'back right', 'front right', 'right top', 'left bottom']}
+           self.snap_base(None, qt_app = self.qt_app)
 
     def get_list_diskitems(self, verbose = True):
 
@@ -95,34 +91,32 @@ class SulciSnapBase(SnapBase):
 
         return window
 
-
-class SulciSingleViewSnapBase(SulciSnapBase):
-
-    def __init__(self, preferences):
-        SulciSnapBase.__init__(self, preferences)
-        #self.preferences['singlemulti'] = 'single'
-        #self.data_type = 'Left Cortical folds graph'
-
     def get_views_of_interest(self):
         views = {}
         side = self.get_current_side()
-        views['3D'] =[self.view_quaternions[view_name]
-            for view_name in [side]] #self.preferences['side']]]
+        current_views = self.views[side]
+        views['3D'] = [self.view_quaternions[view_name]
+              for view_name in current_views]
         return views
 
-
-class SulciMultiViewSnapBase(SulciSnapBase):
-
-    def __init__(self, preferences):
-        SulciSnapBase.__init__(self, preferences)
-        #self.preferences['singlemulti'] = 'multi'
-        #self.data_type = 'Left Cortical folds graph'
-
-    def get_views_of_interest(self):
-        views = {}
-        side = self.get_current_side()
-        views['3D'] =[self.view_quaternions[view_name]
-            for view_name in {'left':['right bottom', 'back left', 'front top left'],
-                               'right': ['left bottom', 'back right', 'front top right']}[side]] #self.preferences['side']]]
-        return views
-
+#
+#class SulciSingleViewSnapBase(SulciSnapBase):
+#
+#    def __init__(self, preferences):
+#        SulciSnapBase.__init__(self, preferences)
+#
+#
+#
+#class SulciMultiViewSnapBase(SulciSnapBase):
+#
+#    def __init__(self, preferences):
+#        SulciSnapBase.__init__(self, preferences)
+#
+#    def get_views_of_interest(self):
+#        views = {}
+#        side = self.get_current_side()
+#        views['3D'] =[self.view_quaternions[view_name]
+#            for view_name in {'left':['right bottom', 'back left', 'front top left'],
+#                               'right': ['left bottom', 'back right', 'front top right']}[side]] #self.preferences['side']]]
+#        return views
+#

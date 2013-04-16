@@ -324,12 +324,12 @@ def list_snap_modules():
 
 def list_snap_classes(modules):
    import inspect
-   classes = []
+   classes = {}
    for m in modules:
       c = inspect.getmembers(m, inspect.isclass)
       for name, cla in c:
          if name.count('SnapBase') > 0:
-            classes.append((name ,cla))
+            classes[name] = cla
    return classes
 
 def on_finished():
@@ -375,13 +375,18 @@ def main():
 
     # Setting up modules
     gui.modules = []
-    print [each[0] for each in snap_classes]
 
     excluded_classes = ['SnapBase', 'HippocampusLabelLeftSnapBase', 'HippocampusLabelRawLeftSnapBase', 'HippocampusLabelRawRightSnapBase',
           'HippocampusLabelRightSnapBase', 'HippocampusLabelSnapBase', 'HippocampusLeftSnapBase', 'HippocampusRightSnapBase', 'HippocampusSnapBase',
           'SPMComparisonSnapBase', 'SPMGreySnapBase', 'FibersSnapBase', 'SulciMultiViewSnapBase', 'SulciSingleViewSnapBase', 'WhiteThicknessSnapBase', 'HemiThicknessSnapBase']
-    for (name, c) in snap_classes:
-       if not name in excluded_classes:
+
+    ordered_classes = ['RawSnapBase', 'TabletSnapBase', 'BrainMaskSnapBase',
+         'SplitBrainSnapBase', 'GreyWhiteSnapBase', 'SulciSnapBase',
+         'MeshCutSnapBase', 'MeshSnapBase', 'ThicknessSnapBase']
+
+    ordered_snap_classes = [(each, snap_classes[each]) for each in ordered_classes if each in snap_classes.keys() and not each in excluded_classes]
+
+    for (name, c) in ordered_snap_classes:
          print name
          gui.modules.append(c(preferences))
 

@@ -106,7 +106,7 @@ class TabletSnapBase(RawSnapBase):
             slices_list = range(d_minmax[0], d_minmax[1],
                 (d_minmax[1]-d_minmax[0])/50.0)[8:15]
             print slices_list
-            slices_list = range(d_minmax[0]+30,d_minmax[0]+130,5)
+            slices_list = range(d_minmax[0]+30,d_minmax[0]+114,4)
             print slices_list
             # This converts each slice index into a list applicable to
                 # Anatomist camera function

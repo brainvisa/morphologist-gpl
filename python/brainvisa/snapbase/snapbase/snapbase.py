@@ -349,8 +349,8 @@ class SnapBase():
                'GreyWhiteSnapBase' : 'mri',
                'MeshSnapBase' : 'mesh',
                'MeshCutSnapBase' : 'split',
-               'SulciSingleViewSnapBase' : 'folds graph',
-               'SulciMultiViewSnapBase' : 'folds graph',
+               'SulciSnapBase' : 'folds graph',
+               'SulciSnapBase' : 'folds graph',
                'HemiThicknessSnapBase' : 'mesh',
                'WhiteThicknessSnapBase' : 'mesh'}
         if acquisition_key.has_key(classname):
@@ -395,12 +395,14 @@ class SnapBase():
                        'WhiteThicknessSnapBase' : 'white_%s_%s'%(tex_type, cap_side[0]),
                        })
 
-        if class_name in ['SulciSingleViewSnapBase', 'SulciMultiViewSnapBase']:
-            view_mode = string.lower(class_name[5:-12])
+        if class_name == 'SulciSnapBase':
+#            view_mode = string.lower(class_name[5:-12])
+            if len(self.views) == 1:
+               view_mode = 'single'
+            elif len(self.views) > 1:
+               view_mode = 'multi'
             id_translat.update(
-                {'SulciSingleViewSnapBase' : 'sulci_%s_%s'%(cap_side[0], view_mode)})
-            id_translat.update(
-                {'SulciMultiViewSnapBase' : 'sulci_%s_%s'%(cap_side[0], view_mode)})
+                {'SulciSnapBase' : 'sulci_%s_%s'%(cap_side[0], view_mode)})
 #        if is_sided and self.preferences.has_key('mesh'):
 #            id_translat.update({'Cortical Thickness' : 'thickness_%s_%s'%(cap_side[0], self.preferences['mesh'])})
 
@@ -443,7 +445,7 @@ class SnapBase():
           # Building the tiled image
           image_size = (max([im.size[0] for im in views_images]), max([im.size[1] for im in views_images]))
           if not grid_dim:
-             grid_dim = {12 : (4,3), 5 : (5,1), 7:(7,1),  1 : (1,1), 3: (3,1), 20 : (4,5)}[len(views_images)]
+             grid_dim = {16 : (8,2), 12 : (6,2), 6 : (3,2), 7:(7,1),  1 : (1,1), 3: (3,1), 21 : (7,3)}[len(views_images)]
 
           tiled_image = Image.new('RGBA', (grid_dim[0]*image_size[0], grid_dim[1]*image_size[1]), 'black')
           positions = [[j*image_size[0], i*image_size[1]] for i in xrange(grid_dim[1]) for j in xrange(grid_dim[0])]
@@ -459,7 +461,7 @@ class SnapBase():
             print d
             tiles.append(self.get_one_tile(view_images[d]))
 
-        big_tile = self.get_one_tile(tiles, grid_dim = (len(view_images.keys()),1))
+        big_tile = self.get_one_tile(tiles, grid_dim = (1, len(view_images.keys())))
         return big_tile
 
 
