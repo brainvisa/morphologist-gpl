@@ -115,15 +115,20 @@ class ThicknessSnapBase(SnapBase):
            'hemi or white ?', 'hemi/white',
            ['hemi', 'white'], 0, False)
        if ok_choice:
-           if choice == 'hemi':
-               snap = HemiThicknessSnapBase(self.preferences)
-           elif choice == 'white':
-               snap = WhiteThicknessSnapBase(self.preferences)
-           snap.snap_base(None, qt_app = self.qt_app)
-
-#    def get_attributes(self, diskitems):
-#        primary_tag = 'mesh'
-#        return [diskitems[primary_tag].get(each) for each in self.preferences.naming_attributes]
+          if choice == 'hemi':
+              snap = HemiThicknessSnapBase(self.preferences)
+          elif choice == 'white':
+              snap = WhiteThicknessSnapBase(self.preferences)
+          c, ok_c = Qt.QInputDialog.getItem(None,
+              'single or multi view ?', 'single/multi',
+              ['single', 'multi'], 0, False)
+          if ok_c:
+              if c == 'single':
+                 self.views = {'left': ['left'], 'right': ['right']}
+              elif c == 'multi':
+                 self.views = {'left': ['left', 'right', 'back left', 'front left', 'left top', 'right bottom'],
+                   'right' : ['right', 'left', 'back right', 'front right', 'right top', 'left bottom']}
+              snap.snap_base(None, qt_app = self.qt_app)
 
     def get_list_diskitems(self, verbose = True):
 
@@ -161,11 +166,11 @@ class ThicknessSnapBase(SnapBase):
 
     def get_views_of_interest(self):
         views = {}
-
         side = self.get_current_side()
+        current_views = self.views[side]
+
         views['3D'] =[self.view_quaternions[view_name]
-            for view_name in [side]] #[{'left':'right', 'right':'left'}[self.preferences['side']]]]
-            #for view_name in [{'left':'right', 'right':'left'}[self.preferences['side']]]]
+            for view_name in current_views]
         return views
 
     def read_data(self, diskitems):
@@ -177,11 +182,8 @@ class ThicknessSnapBase(SnapBase):
         mesh = aims.read(diskitems['mesh'].fileName())
         tex = aims.read(diskitems['tex'].fileName())
         side = diskitems['mesh'].get('side')
-        #self.preferences['side'] = side
-        #tex_type = diskitems['tex'].type.name
-        #self.preferences['tex_type'] = tex_type
 
-        return mesh, tex # diskitems['transform'].fileName()
+        return mesh, tex
 
     def set_viewer(self, data, w):
         import anatomist.direct.api as ana

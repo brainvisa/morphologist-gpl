@@ -36,7 +36,7 @@ class GreyWhiteSnapBase(SnapBase):
     def get_slices_of_interest(self, data):
 
         slices = {}
-        directions = ['A', 'C']
+        directions = ['C', 'A']
 
         # Unpacking data
         left_mask, right_mask, mri = data

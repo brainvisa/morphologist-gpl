@@ -293,7 +293,11 @@ def load_preferences(minf_dict):
 
 def set_output_path(event):
     global preferences, gui
-    pix_dir = os.path.split(__file__)[0]
+    import os
+    is os.path.exists(preferences['output_path']):
+       pix_dir = preferences['output_path']
+    else:
+       pix_dir = os.path.expanduser('~')
     destDir = QtGui.QFileDialog.getExistingDirectory(None,
       'Open working directory',
       pix_dir,
@@ -382,8 +386,8 @@ def main():
           'SPMComparisonSnapBase', 'SPMGreySnapBase', 'FibersSnapBase', 'SulciMultiViewSnapBase', 'SulciSingleViewSnapBase', 'WhiteThicknessSnapBase', 'HemiThicknessSnapBase']
 
     ordered_classes = ['RawSnapBase', 'TabletSnapBase', 'BrainMaskSnapBase',
-         'SplitBrainSnapBase', 'GreyWhiteSnapBase', 'SulciSnapBase',
-         'MeshCutSnapBase', 'MeshSnapBase', 'ThicknessSnapBase']
+         'SplitBrainSnapBase', 'GreyWhiteSnapBase',
+         'MeshCutSnapBase', 'MeshSnapBase', 'ThicknessSnapBase', 'SulciSnapBase']
 
     ordered_snap_classes = [(each, snap_classes[each]) for each in ordered_classes if each in snap_classes.keys() and not each in excluded_classes]
 
