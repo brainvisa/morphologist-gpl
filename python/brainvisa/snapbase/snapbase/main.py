@@ -298,10 +298,11 @@ def set_output_path(event):
       'Open working directory',
       pix_dir,
       QtGui.QFileDialog.ShowDirsOnly)
-    preferences['output_path'] = destDir
-    save_preferences(preferences)
-    gui.set_default_status_msg('output path : %s'%preferences['output_path'])
-    gui.statusbar.showMessage(gui.statusbar.default_status_msg)
+    if destDir != '':
+       preferences['output_path'] = destDir
+       save_preferences(preferences)
+       gui.set_default_status_msg('output path : %s'%preferences['output_path'])
+       gui.statusbar.showMessage(gui.statusbar.default_status_msg)
 
 def list_snap_modules():
    import inspect, imp, os, string

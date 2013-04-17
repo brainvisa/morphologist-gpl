@@ -35,9 +35,8 @@ class GreyWhiteSnapBase(SnapBase):
 
     def get_slices_of_interest(self, data):
 
-        print 'toto'
         slices = {}
-        directions = ['S', 'A']
+        directions = ['A', 'C']
 
         # Unpacking data
         left_mask, right_mask, mri = data
@@ -46,7 +45,7 @@ class GreyWhiteSnapBase(SnapBase):
         right_slices_minmax = detect_slices_of_interest(right_mask, directions)
         voxel_size = mri.header()['voxel_size']
 
-        slices_nb = {'S': 12, 'A': 16}
+        slices_nb = {'S': 12, 'A': 16, 'C': 16}
         for d in directions :
             d_minmax = (min(left_slices_minmax[d][0], right_slices_minmax[d][0]),
                         max(left_slices_minmax[d][1], right_slices_minmax[d][1]))

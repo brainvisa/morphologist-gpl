@@ -36,7 +36,7 @@ class SplitBrainSnapBase(SnapBase):
     def get_slices_of_interest(self, data):
 
         slices = {}
-        directions = ['C', 'S']
+        directions = ['S', 'C']
 
         # Unpacking data
         splitbrain, mri = data
@@ -127,7 +127,7 @@ class BrainMaskSnapBase(SnapBase):
     def get_slices_of_interest(self, data):
 
         slices = {}
-        directions = ['C', 'S']
+        directions = ['S', 'C']
 
         # Unpacking data
         brainmask, mri = data
@@ -135,7 +135,7 @@ class BrainMaskSnapBase(SnapBase):
 
         brainmask_minmax = detect_slices_of_interest(brainmask, directions)
 
-        slices_nb = {'S': 12, 'C': 14}
+        slices_nb = {'S': 12, 'C': 16}
         for d in directions :
             d_minmax = (brainmask_minmax[d][0], brainmask_minmax[d][1])
             step = (d_minmax[1]-d_minmax[0])/slices_nb[d]

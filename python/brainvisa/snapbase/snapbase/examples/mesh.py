@@ -267,28 +267,31 @@ class MeshCutSnapBase(SnapBase):
                   'right hemi' : right_hemi,
                   'left white' : left_white,
                   'right white' : right_white,
-                  'left_gw' : left_gw,
-                  'right_gw': right_gw,
+                  'left mask' : left_gw,
+                  'right mask': right_gw,
                   'transform' : transform}) )
 
         return dictdata
 
     def get_slices_of_interest(self, data):
-        from brainvisa.snapbase.snapbase import detect_slices_of_interest
 
+        from brainvisa.snapbase.snapbase import detect_slices_of_interest
         slices = {}
-        directions = ['C', 'S']
+        directions = ['A', 'C']
 
         # Unpacking data
-        left_hemi, right_hemi, left_white, right_white, split, mri, transform = data
+        left_hemi, right_hemi, left_white, right_white, left_mask, right_mask, mri, trm_file = data
+
+        left_slices_minmax = detect_slices_of_interest(left_mask, directions)
+        right_slices_minmax = detect_slices_of_interest(right_mask, directions)
         voxel_size = mri.header()['voxel_size']
 
-        split_minmax = detect_slices_of_interest(split, directions, threshold = 0)
-
+        slices_nb = {'S': 12, 'A': 16, 'C': 16}
         for d in directions :
-            d_minmax = (split_minmax[d][0], split_minmax[d][1])
-            step = (d_minmax[1]-d_minmax[0])/12
-            remainder = (d_minmax[1]-d_minmax[0]) - step*12
+            d_minmax = (min(left_slices_minmax[d][0], right_slices_minmax[d][0]),
+                        max(left_slices_minmax[d][1], right_slices_minmax[d][1]))
+            step = (d_minmax[1]-d_minmax[0])/slices_nb[d]
+            remainder = (d_minmax[1]-d_minmax[0]) - step*slices_nb[d]
             first_slice = d_minmax[0] + (step+remainder)/2
             last_slice = d_minmax[1] - (step+remainder)/2 + 1
 
@@ -300,7 +303,6 @@ class MeshCutSnapBase(SnapBase):
 
         return slices
 
-
     def read_data(self, diskitems):
 
         from soma import aims
@@ -311,21 +313,22 @@ class MeshCutSnapBase(SnapBase):
         right_hemi = aims.read(diskitems['right hemi'].fileName())
         left_white = aims.read(diskitems['left white'].fileName())
         right_white = aims.read(diskitems['right white'].fileName())
-        split = aims.read(diskitems['split'].fileName())
         mri = aims.read(diskitems['mri'].fileName())
+        left_mask = aims.read(diskitems['left mask'].fileName())
+        right_mask = aims.read(diskitems['right mask'].fileName())
 
         if not diskitems['transform'] is None:
            trm_file = diskitems['transform'].fileName()
         else:
            trm_file = None
 
-        return left_hemi, right_hemi, left_white, right_white, split, mri, trm_file
+        return left_hemi, right_hemi, left_white, right_white, left_mask, right_mask, mri, trm_file
 
     def set_viewer(self, data, w):
         import anatomist.direct.api as ana
         a = ana.Anatomist('-b')
 
-        left_hemi, right_hemi, left_white, right_white, split, mri, transform = data
+        left_hemi, right_hemi, left_white, right_white, left_mask, right_mask, mri, transform = data
         self.aobjects['left hemi'] = a.toAObject(left_hemi)
         self.aobjects['left hemi'].releaseAppRef()
         self.aobjects['left hemi'].assignReferential(a.centralReferential())
@@ -342,20 +345,34 @@ class MeshCutSnapBase(SnapBase):
         self.aobjects['mri'].releaseAppRef()
         self.aobjects['mri'].assignReferential(a.centralReferential())
 
+        ana_left_mask = a.toAObject(left_mask)
+        ana_right_mask = a.toAObject(right_mask)
+        for each in ana_left_mask, ana_right_mask:
+            each.releaseAppRef()
+
+        # Fusion of the two masks
+        fusion_mask = a.fusionObjects( [ana_left_mask, ana_right_mask], method='Fusion2DMethod' )
+
+        palette = a.getPalette('RAINBOW')
+        fusion_mask.setPalette( palette )
+        self.aobjects['fusion'] = a.fusionObjects( [self.aobjects['mri'], fusion_mask], method='Fusion2DMethod' )
+        a.execute("Fusion2DParams", object=self.aobjects['fusion'],
+            mode='linear', rate = 0.7, reorder_objects = [ self.aobjects['mri'], fusion_mask ] )
+
         if not transform is None:
            a.loadTransformation(transform, self.ref, a.centralReferential())
 
         self.aobjects['left hemi cut'] = a.fusionObjects( [self.aobjects['left hemi']], method='Fusion2DMeshMethod' )
-        self.aobjects['left hemi cut'].setMaterial(diffuse = [1, 1, 0.1, 1])
+        self.aobjects['left hemi cut'].setMaterial(diffuse = [1, 1, 0.1, 0.7])
         self.aobjects['left hemi cut'].assignReferential(a.centralReferential())
         self.aobjects['right hemi cut'] = a.fusionObjects( [self.aobjects['right hemi']], method='Fusion2DMeshMethod' )
-        self.aobjects['right hemi cut'].setMaterial(diffuse = [1, 1, 0.1, 1])
+        self.aobjects['right hemi cut'].setMaterial(diffuse = [1, 1, 0.1, 0.7])
         self.aobjects['right hemi cut'].assignReferential(a.centralReferential())
         self.aobjects['left white cut'] = a.fusionObjects( [self.aobjects['left white']], method='Fusion2DMeshMethod' )
-        self.aobjects['left white cut'].setMaterial(diffuse = [0.1, 1.0, 1.0, 1])
+        self.aobjects['left white cut'].setMaterial(diffuse = [0.1, 1.0, 1.0, 0.7])
         self.aobjects['left white cut'].assignReferential(a.centralReferential())
         self.aobjects['right white cut'] = a.fusionObjects( [self.aobjects['right white']], method='Fusion2DMeshMethod' )
-        self.aobjects['right white cut'].setMaterial(diffuse = [0.1, 1.0, 1.0, 1])
+        self.aobjects['right white cut'].setMaterial(diffuse = [0.1, 1.0, 1.0, 0.7])
         self.aobjects['right white cut'].assignReferential(a.centralReferential())
 
         # Load in Anatomist window
@@ -365,6 +382,7 @@ class MeshCutSnapBase(SnapBase):
         a.addObjects( self.aobjects['right hemi cut'], [window] )
         a.addObjects( self.aobjects['left white cut'], [window] )
         a.addObjects( self.aobjects['right white cut'], [window] )
+        a.addObjects( self.aobjects['fusion'], [window] )
         a.addObjects( self.aobjects['mri'], [window] )
 
         return window
