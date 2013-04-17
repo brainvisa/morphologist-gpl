@@ -371,6 +371,7 @@ class SnapBase():
         id_translat = { 'RawSnapBase' : 'raw',
                        'TabletSnapBase' : 'tablet',
                        'SplitBrainSnapBase' :'split',
+                       'MeshCutSnapBase' :'meshcut',
                        'BrainMaskSnapBase' : 'brain',
                        'GreyWhiteSnapBase' : 'GW',
                        'HippocampusSnapBase' : 'hippo'}
