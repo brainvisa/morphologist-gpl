@@ -565,6 +565,9 @@ class SnapBase():
                     window.camera(slice_quaternion = self.slice_quaternions[d],
                                   view_quaternion = self.view_quaternions[d],
                                   zoom = 0.818)
+                    a.execute( 'LinkedCursor', window=w, position=[0,0,0,0] )
+                    qt_app.processEvents()
+                    w.refreshNow()
                     if d == 'A':
                        window.muteAxial()
                     elif d == 'C':
@@ -577,6 +580,7 @@ class SnapBase():
                         a.execute( 'LinkedCursor', window=w, position=slice_position )
                         qt_app.processEvents()
                         w.refreshNow()
+                        print 'linked', s, slice_position
 
                         # Grabbing the snapshot
                         snapshot = get_snapshot(qgl)

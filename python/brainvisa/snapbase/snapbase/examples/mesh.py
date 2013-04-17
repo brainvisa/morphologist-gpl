@@ -302,7 +302,8 @@ class MeshCutSnapBase(SnapBase):
 
             # This converts each slice index into a list applicable to
                 # Anatomist camera function
-            slices[d] = [(i, self.__get_slice_position__(d, i, voxel_size)) for i in slices_list]
+            slices[d] = [(i, self.__get_slice_position__(d, i, voxel_size)) for i in slices_list][0:3]
+            print d, slices
 
         return slices
 
