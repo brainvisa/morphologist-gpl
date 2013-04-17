@@ -294,7 +294,7 @@ def load_preferences(minf_dict):
 def set_output_path(event):
     global preferences, gui
     import os
-    is os.path.exists(preferences['output_path']):
+    if os.path.exists(preferences['output_path']):
        pix_dir = preferences['output_path']
     else:
        pix_dir = os.path.expanduser('~')
@@ -307,6 +307,7 @@ def set_output_path(event):
        save_preferences(preferences)
        gui.set_default_status_msg('output path : %s'%preferences['output_path'])
        gui.statusbar.showMessage(gui.statusbar.default_status_msg)
+       gui.statusbar.setToolTip(gui.statusbar.default_status_msg)
 
 def list_snap_modules():
    import inspect, imp, os, string

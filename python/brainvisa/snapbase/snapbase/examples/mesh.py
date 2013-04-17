@@ -124,9 +124,9 @@ class ThicknessSnapBase(SnapBase):
               ['single', 'multi'], 0, False)
           if ok_c:
               if c == 'single':
-                 self.views = {'left': ['left'], 'right': ['right']}
+                 snap.views = {'left': ['left'], 'right': ['right']}
               elif c == 'multi':
-                 self.views = {'left': ['left', 'right', 'back left', 'front left', 'left top', 'right bottom'],
+                 snap.views = {'left': ['left', 'right', 'back left', 'front left', 'left top', 'right bottom'],
                    'right' : ['right', 'left', 'back right', 'front right', 'right top', 'left bottom']}
               snap.snap_base(None, qt_app = self.qt_app)
 
@@ -279,7 +279,7 @@ class MeshCutSnapBase(SnapBase):
 
         from brainvisa.snapbase.snapbase import detect_slices_of_interest
         slices = {}
-        directions = ['A', 'C']
+        directions = ['C', 'A']
 
         # Unpacking data
         left_hemi, right_hemi, left_white, right_white, left_mask, right_mask, mri, trm_file = data
@@ -287,6 +287,7 @@ class MeshCutSnapBase(SnapBase):
         left_slices_minmax = detect_slices_of_interest(left_mask, directions)
         right_slices_minmax = detect_slices_of_interest(right_mask, directions)
         voxel_size = mri.header()['voxel_size']
+        print voxel_size, left_mask.header()['voxel_size']
 
         slices_nb = {'S': 12, 'A': 16, 'C': 16}
         for d in directions :

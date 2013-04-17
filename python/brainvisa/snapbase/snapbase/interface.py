@@ -171,9 +171,11 @@ class Ui_main_window(Qt.QObject):
 
     def leave_status(self):
         self.statusbar.showMessage(self.statusbar.default_status_msg)
+        self.statusbar.setToolTip(self.statusbar.default_status_msg)
 
     def enter_status(self, msg):
         self.statusbar.showMessage(msg)
+        self.statusbar.setToolTip(msg)
 
     def set_default_status_msg(self, msg):
         self.statusbar.default_status_msg = msg
