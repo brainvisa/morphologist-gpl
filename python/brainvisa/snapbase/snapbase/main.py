@@ -282,7 +282,9 @@ def load_preferences(minf_dict):
                     'required_attributes' : {'graph_version' : '3.1'},
                     'naming_attributes' : ['subject', 'protocol', 'acquisition'],
                     'output_naming_template': "'%s_%s_%s'%(subject, protocol, acquisition)",
-                    'display_success_msgbox' : False}
+                    'display_success_msgbox' : False,
+                    'display_fusion_on_meshcut': True,
+                    'render_subjects_id': True}
     for each in default_pref.keys():
         if minf_dict.has_key(each):
             preferences[each] = minf_dict[each]
@@ -310,16 +312,19 @@ def set_output_path(event):
        gui.statusbar.setToolTip(gui.statusbar.default_status_msg)
 
 def set_settings(event):
+   global preferences
    print 'set_settings'
    from PyQt4 import QtGui, QtCore, Qt
    from brainvisa.snapbase.snapbase.interface import Ui_settings_window
    window = QtGui.QDialog()
    s = Ui_settings_window()
-   items = []
-   s.setupUi(window, items=items)
+   s.setupUi(window, items=preferences, exclude_items=['output_path', 'naming_attributes', 'required_attributes', 'default_attributes'])
    res = s.window.exec_()
    if res == QtGui.QDialog.Accepted:
       options = s.get_results()
+      print options
+      preferences.update(options)
+      save_preferences(preferences)
 
 
 def list_snap_modules():
@@ -354,6 +359,18 @@ def list_snap_classes(modules):
 def on_finished():
    pass
 
+class MainWindow(QtGui.QMainWindow):
+   def __init__(self, parent = None):
+      QtGui.QMainWindow.__init__(self, parent)
+
+   def closeEvent(self, event):
+      import sys
+      neuroHierarchy.databases.currentThreadCleanup()
+      # Possibly in order to let the Qt app be garbage-collected
+      #qt_app = None
+      #QtGui.qApp = None
+      sys.exit(0)
+
 def main():
 
     global main_window, gui, qt_app, database, preferences
@@ -362,7 +379,7 @@ def main():
     # Create Qt App and window
     qt_app = Qt.QApplication( sys.argv )
     qt_app.setQuitOnLastWindowClosed(True)
-    main_window = QtGui.QMainWindow()
+    main_window = MainWindow()
     gui = interface.Ui_main_window()
     gui.setupUi(main_window)
     gui.fileopen.clicked.connect(set_output_path)
@@ -419,8 +436,4 @@ def main():
 
     main_window.show()
     qt_app.exec_()
-    neuroHierarchy.databases.currentThreadCleanup()
 
-    # Possibly in order to let the Qt app be garbage-collected
-    qt_app = None
-    QtGui.qApp = None

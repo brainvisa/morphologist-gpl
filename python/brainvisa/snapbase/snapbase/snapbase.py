@@ -165,8 +165,7 @@ class SnapBase():
         self.sulci_hierarchy = None
         self.fibers_hierarchy = None
         self.preferences = preferences
-        self.output_path = preferences['output_path']
-        self.filename_root = preferences['filename_root']
+
         self.fusion = None
         self.options = {}
         self.view_quaternions = {'left' : [0.5, 0.5, 0.5, 0.5],
@@ -364,7 +363,7 @@ class SnapBase():
           side = self.current_diskitems[prim_key].attributes()['side']
           return side
 
-    def get_outfile_path(self, attributes):
+    def get_outfile_path(self, outputdir, filename_root, attributes):
         ''' builds and returns a path with proper file tree containing
         name of subject, type, hemisphere side/slice direction if provided'''
         import os, shutil, string
@@ -399,7 +398,6 @@ class SnapBase():
                        })
 
         if class_name == 'SulciSnapBase':
-#            view_mode = string.lower(class_name[5:-12])
             if len(self.views) == 1:
                view_mode = 'single'
             elif len(self.views) > 1:
@@ -410,10 +408,7 @@ class SnapBase():
 #            id_translat.update({'Cortical Thickness' : 'thickness_%s_%s'%(cap_side[0], self.preferences['mesh'])})
 
 
-        output_dir = self.output_path
-        filename_root = self.filename_root
-
-        assert(os.path.exists(output_dir))
+        assert(os.path.exists(outputdir))
 
         if id_translat.has_key(self.__class__.__name__):
             id_type = id_translat[self.__class__.__name__]
@@ -427,7 +422,7 @@ class SnapBase():
 
         output_filename = '%s.png'%output_filename
 
-        outfile_path = os.path.join(output_dir, output_filename)
+        outfile_path = os.path.join(outputdir, output_filename)
 
         return outfile_path
 
@@ -464,7 +459,13 @@ class SnapBase():
             print d
             tiles.append(self.get_one_tile(view_images[d]))
 
-        big_tile = self.get_one_tile(tiles, grid_dim = (1, len(view_images.keys())))
+        class_name = self.__class__.__name__
+        if class_name == 'RawSnapBase':
+           geometry = (len(view_images.keys()), 1)
+        else:
+           geometry = (1, len(view_images.keys()))
+
+        big_tile = self.get_one_tile(tiles, grid_dim = geometry)
         return big_tile
 
 
@@ -523,6 +524,15 @@ class SnapBase():
         c = ana.cpp.CreateWindowCommand('3D', -1, None, [], 1, block,
             2, 0, { '__syntax__' : 'dictionary',  'no_decoration' : 1} )
         a.execute(c)
+
+        # Associates the outputfile_path to the new window
+        c.output_path = str(self.preferences['output_path'])
+        print c.output_path
+        c.prefs = {}
+        for each in ['output_path', 'render_subjects_id', 'filename_root']:
+           c.prefs[each] = self.preferences[each]
+
+
         w = c.createdWindow()
         w.setSizePolicy(size_policy)
         w.setMinimumSize(QtCore.QSize(1250, 950))
@@ -619,24 +629,23 @@ class SnapBase():
             if not (primary_key is None):
                attributes = [diskitems[primary_key].attributes()]
                attributes[0]['type'] = diskitems[primary_key].type.name
-               print attributes
             else:
                attributes = ['']
             attributes.extend([protocol, subject])
             acquisition = self.get_acquisition(diskitems)
 
             attributes.append(acquisition)
-            #if d != '3D':
-            #    attributes.append(d)
 
-            outfile_path = self.get_outfile_path(attributes)
+            outfile_path = self.get_outfile_path(c.prefs['output_path'], c.prefs['filename_root'], attributes)
             output_files.append(outfile_path)
+            print 'Writing... ', outfile_path
             big_tile.save(outfile_path, 'PNG')
 
             # Rendering text
-            pixmap = Qt.QPixmap(outfile_path)
-            self.__render_text(pixmap, '%s'%subject, font, color=colors_centers[protocol])
-            pixmap.save(outfile_path)
+            if c.prefs['render_subjects_id']:
+               pixmap = Qt.QPixmap(outfile_path)
+               self.__render_text(pixmap, '%s'%subject, font, color=colors_centers[protocol])
+               pixmap.save(outfile_path)
 
             #window.getInfos()
             print ''
@@ -651,7 +660,7 @@ class SnapBase():
             print 'generating poster'
             import string
             create_poster_command = self.preferences['create_poster_command']
-            output_dir = os.path.split(self.output_path)[0]
+            output_dir = os.path.split(c.output_path)[0]
             os.system('%s %s %s'%(create_poster_command, string.join([i for i in output_files], ' '), os.path.join(output_dir, 'poster.jpg') ))
 
             if self.preferences.has_key('remove_snapshots') and self.preferences['remove_snapshots']:
@@ -664,6 +673,6 @@ class SnapBase():
 
         if self.preferences['display_success_msgbox']:
             ok = Qt.QMessageBox.warning(None, 'Success.',
-                '%d snapshots were succesfully created in %s.'%(len(output_files), self.output_path), Qt.QMessageBox.Ok)
+                '%d snapshots were succesfully created in %s.'%(len(output_files), c.output_path), Qt.QMessageBox.Ok)
 
         main_window.emit(Qt.SIGNAL('finished()'))

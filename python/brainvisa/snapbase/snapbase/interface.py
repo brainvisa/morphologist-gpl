@@ -83,19 +83,21 @@ class FileDialogButton(QtGui.QPushButton):
        print 'toto'
        destDir = QtGui.QFileDialog.getExistingDirectory(None,
          'Open working directory',
-         pix_dir,
+         self.destdir,
          QtGui.QFileDialog.ShowDirsOnly)
-       self.destdir = destdir
-       print destdir
+       self.destdir = destDir
+       print destDir
 
-   def __init__(self, parent):
+   def __init__(self, parent, startdir):
       QtGui.QPushButton.__init__(self, parent)
+      self.destdir = startdir
       self.clicked.connect(self.opendialog)
 
 
 class Ui_setting_widget(QtGui.QFrame):
-   def __init__(self, parent, text = '', items = []):
+   def __init__(self, parent, text = '', item = []):
       import locale
+      print text, item
       QtGui.QFrame.__init__(self, parent)
 
       self.horiz_layout = QtGui.QHBoxLayout(self)
@@ -107,41 +109,52 @@ class Ui_setting_widget(QtGui.QFrame):
       self.att_lbl.setMinimumSize(QtCore.QSize(100,31))
       self.att_lbl.setText(text)
       self.horiz_layout.addWidget(self.att_lbl)
-      if isinstance(items, list):
+      if isinstance(item, list):
          self.att_combo = QtGui.QComboBox(self)
          self.att_combo.setObjectName('att_combo')
          self.att_combo.setMinimumSize(QtCore.QSize(200,31))
          locale.setlocale(locale.LC_ALL, "")
-         items.sort(cmp=locale.strcoll)
-         for each in items:
+         item.sort(cmp=locale.strcoll)
+         for each in item:
             self.att_combo.addItem(each)
-      elif isinstance(items, str):
+      elif isinstance(item, basestring):
          import os
-         if os.path.exists(items):
-            self.att_combo = FileDialogButton(self)
+         if os.path.exists(item):
+            self.att_combo = FileDialogButton(self, item)
             self.att_combo.setObjectName('att_combo')
             self.att_combo.setMinimumSize(QtCore.QSize(200,31))
-            self.att_combo.setText('test')
+            self.att_combo.setText(item)
          else:
             self.att_combo = QtGui.QLineEdit(self)
             self.att_combo.setObjectName('att_combo')
             self.att_combo.setMinimumSize(QtCore.QSize(200,31))
-            self.att_combo.setText(items)
+            self.att_combo.setText(item)
+      elif isinstance(item, bool):
+         self.att_combo = QtGui.QCheckBox(self)
+         self.att_combo.setObjectName('att_combo')
+         self.att_combo.setChecked(item)
+      else:
+         print type(item)
 
-
-      self.horiz_layout.addWidget(self.att_combo)
+      if hasattr(self, 'att_combo'):
+         self.horiz_layout.addWidget(self.att_combo)
+      else:
+         return None
 
 
 class Ui_settings_window(object):
     def get_results(self):
         res = {}
-        for each in self.frames:
+        for each in [e for e in self.frames if hasattr(e, 'att_combo')]:
+
            if isinstance(each.att_combo, QtGui.QComboBox):
               res[each.att_lbl.text()] = each.att_combo.currentText()
            elif isinstance(each.att_combo, QtGui.QLineEdit):
               res[each.att_lbl.text()] = each.att_combo.text()
            elif isinstance(each.att_combo, FileDialogButton):
               res[each.att_lbl.text()] = each.att_combo.destdir
+           elif isinstance(each.att_combo, QtGui.QCheckBox):
+              res[each.att_lbl.text()] = each.att_combo.isChecked()
 
         return res
 
@@ -149,13 +162,10 @@ class Ui_settings_window(object):
         self.results = self.get_results()
         self.window.accept()
 
-    def setupUi(self, window, items=[]): #, req_items=[]):
+    def setupUi(self, window, items, exclude_items=[]): #, req_items=[]):
         window.setObjectName("window")
         window.setModal(True)
         window.setWindowTitle('Settings')
-        items = [('coucou', ['a','b','c'])]
-        items.append(('test_dir', '/tmp/'))
-        items.append(('test_str', 'toto'))
 
         self.window = window
         window.resize(348, 380)
@@ -169,13 +179,16 @@ class Ui_settings_window(object):
         self.verticalLayout.setObjectName("verticalLayout")
 
         self.frames = []
-        for i, item in enumerate(items):
-            self.frames.append(Ui_setting_widget(self.central_widget, item[0], item[1]))
-            self.frames[-1].setObjectName('frame%d'%i)
-            self.frames[-1].setMinimumSize(QtCore.QSize(531, 50))
-            self.frames[-1].setMaximumSize(QtCore.QSize(531, 50))
-            self.frames[-1].setFrameShape(QtGui.QFrame.StyledPanel)
-            self.frames[-1].setFrameShadow(QtGui.QFrame.Raised)
+        for i, (k, item) in enumerate(items.items()):
+           if not k in exclude_items:
+            widget = Ui_setting_widget(self.central_widget, k, item)
+            if not widget is None:
+               self.frames.append(widget)
+               self.frames[-1].setObjectName('frame%d'%i)
+               self.frames[-1].setMinimumSize(QtCore.QSize(531, 50))
+               self.frames[-1].setMaximumSize(QtCore.QSize(531, 50))
+               self.frames[-1].setFrameShape(QtGui.QFrame.StyledPanel)
+               self.frames[-1].setFrameShadow(QtGui.QFrame.Raised)
 
             self.verticalLayout.addWidget(self.frames[-1])
 
