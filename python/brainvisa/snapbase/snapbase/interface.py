@@ -78,7 +78,133 @@ class Ui_fixed_attribute_widget(Ui_attribute_widget):
         self.att_lbl2.setText('<B>%s</B>'%text2)
         self.horiz_layout.addWidget(self.att_lbl2)
 
+class FileDialogButton(QtGui.QPushButton):
+   def opendialog(self, event):
+       print 'toto'
+       destDir = QtGui.QFileDialog.getExistingDirectory(None,
+         'Open working directory',
+         pix_dir,
+         QtGui.QFileDialog.ShowDirsOnly)
+       self.destdir = destdir
+       print destdir
 
+   def __init__(self, parent):
+      QtGui.QPushButton.__init__(self, parent)
+      self.clicked.connect(self.opendialog)
+
+
+class Ui_setting_widget(QtGui.QFrame):
+   def __init__(self, parent, text = '', items = []):
+      import locale
+      QtGui.QFrame.__init__(self, parent)
+
+      self.horiz_layout = QtGui.QHBoxLayout(self)
+      self.att_lbl = QtGui.QLabel(self)
+      self.att_lbl.setObjectName('att_lbl')
+      self.att_lbl.setFrameShape(QtGui.QFrame.Box)
+      self.att_lbl.setFrameShadow(QtGui.QFrame.Raised)
+      self.att_lbl.setAlignment(QtCore.Qt.AlignCenter)
+      self.att_lbl.setMinimumSize(QtCore.QSize(100,31))
+      self.att_lbl.setText(text)
+      self.horiz_layout.addWidget(self.att_lbl)
+      if isinstance(items, list):
+         self.att_combo = QtGui.QComboBox(self)
+         self.att_combo.setObjectName('att_combo')
+         self.att_combo.setMinimumSize(QtCore.QSize(200,31))
+         locale.setlocale(locale.LC_ALL, "")
+         items.sort(cmp=locale.strcoll)
+         for each in items:
+            self.att_combo.addItem(each)
+      elif isinstance(items, str):
+         import os
+         if os.path.exists(items):
+            self.att_combo = FileDialogButton(self)
+            self.att_combo.setObjectName('att_combo')
+            self.att_combo.setMinimumSize(QtCore.QSize(200,31))
+            self.att_combo.setText('test')
+         else:
+            self.att_combo = QtGui.QLineEdit(self)
+            self.att_combo.setObjectName('att_combo')
+            self.att_combo.setMinimumSize(QtCore.QSize(200,31))
+            self.att_combo.setText(items)
+
+
+      self.horiz_layout.addWidget(self.att_combo)
+
+
+class Ui_settings_window(object):
+    def get_results(self):
+        res = {}
+        for each in self.frames:
+           if isinstance(each.att_combo, QtGui.QComboBox):
+              res[each.att_lbl.text()] = each.att_combo.currentText()
+           elif isinstance(each.att_combo, QtGui.QLineEdit):
+              res[each.att_lbl.text()] = each.att_combo.text()
+           elif isinstance(each.att_combo, FileDialogButton):
+              res[each.att_lbl.text()] = each.att_combo.destdir
+
+        return res
+
+    def clicked_on_ok(self):
+        self.results = self.get_results()
+        self.window.accept()
+
+    def setupUi(self, window, items=[]): #, req_items=[]):
+        window.setObjectName("window")
+        window.setModal(True)
+        window.setWindowTitle('Settings')
+        items = [('coucou', ['a','b','c'])]
+        items.append(('test_dir', '/tmp/'))
+        items.append(('test_str', 'toto'))
+
+        self.window = window
+        window.resize(348, 380)
+        window.setMinimumSize(QtCore.QSize(548, 55*len(items) + 110))
+        window.setMaximumSize(QtCore.QSize(548, 1000)) #55*len(items) + 110))
+        font = Qt.QFont()
+        font.setPointSize(8)
+        self.central_widget = QtGui.QWidget(window)
+        self.central_widget.setObjectName("central_widget")
+        self.verticalLayout = QtGui.QVBoxLayout(self.central_widget)
+        self.verticalLayout.setObjectName("verticalLayout")
+
+        self.frames = []
+        for i, item in enumerate(items):
+            self.frames.append(Ui_setting_widget(self.central_widget, item[0], item[1]))
+            self.frames[-1].setObjectName('frame%d'%i)
+            self.frames[-1].setMinimumSize(QtCore.QSize(531, 50))
+            self.frames[-1].setMaximumSize(QtCore.QSize(531, 50))
+            self.frames[-1].setFrameShape(QtGui.QFrame.StyledPanel)
+            self.frames[-1].setFrameShadow(QtGui.QFrame.Raised)
+
+            self.verticalLayout.addWidget(self.frames[-1])
+
+
+        self.ok_btn = QtGui.QPushButton(self.central_widget)
+        self.ok_btn.setMinimumSize(QtCore.QSize(100, 40))
+        self.verticalLayout.addWidget(self.ok_btn)
+
+        icon = QtGui.QIcon()
+        import os
+        pix_dir = os.path.split(__file__)[0]
+        import sys
+        self.ok_btn.setText('OK')
+        self.ok_btn.setObjectName('ok_btn')
+        self.verticalLayout.addWidget(self.ok_btn, 0)
+
+        self.title_lbl = QtGui.QLabel(self.central_widget)
+        self.title_lbl.setFrameShape(QtGui.QFrame.Box)
+        self.title_lbl.setFrameShadow(QtGui.QFrame.Raised)
+        self.title_lbl.setAlignment(QtCore.Qt.AlignCenter)
+        self.title_lbl.setObjectName("title_lbl")
+        self.title_lbl.setMinimumSize(QtCore.QSize(250,31))
+        self.title_lbl.setFont(font)
+        self.verticalLayout.addWidget(self.title_lbl)
+        self.connect_signals()
+
+
+    def connect_signals(self):
+        self.ok_btn.clicked.connect(self.clicked_on_ok)
 
 class Ui_attributes_window(object):
     def clicked_on_ok(self):

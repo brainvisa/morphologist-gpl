@@ -309,6 +309,19 @@ def set_output_path(event):
        gui.statusbar.showMessage(gui.statusbar.default_status_msg)
        gui.statusbar.setToolTip(gui.statusbar.default_status_msg)
 
+def set_settings(event):
+   print 'set_settings'
+   from PyQt4 import QtGui, QtCore, Qt
+   from brainvisa.snapbase.snapbase.interface import Ui_settings_window
+   window = QtGui.QDialog()
+   s = Ui_settings_window()
+   items = []
+   s.setupUi(window, items=items)
+   res = s.window.exec_()
+   if res == QtGui.QDialog.Accepted:
+      options = s.get_results()
+
+
 def list_snap_modules():
    import inspect, imp, os, string
    direc = os.path.join(os.path.split(__file__)[0], 'examples')
@@ -339,7 +352,6 @@ def list_snap_classes(modules):
    return classes
 
 def on_finished():
-   #global preferences, gui
    pass
 
 def main():
@@ -354,6 +366,7 @@ def main():
     gui = interface.Ui_main_window()
     gui.setupUi(main_window)
     gui.fileopen.clicked.connect(set_output_path)
+    gui.settings.clicked.connect(set_settings)
     main_window.connect(main_window, Qt.SIGNAL('finished()'), on_finished)
 
     modules = list_snap_modules()

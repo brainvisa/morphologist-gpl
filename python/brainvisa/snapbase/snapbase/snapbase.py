@@ -165,6 +165,8 @@ class SnapBase():
         self.sulci_hierarchy = None
         self.fibers_hierarchy = None
         self.preferences = preferences
+        self.output_path = preferences['output_path']
+        self.filename_root = preferences['filename_root']
         self.fusion = None
         self.options = {}
         self.view_quaternions = {'left' : [0.5, 0.5, 0.5, 0.5],
@@ -408,8 +410,8 @@ class SnapBase():
 #            id_translat.update({'Cortical Thickness' : 'thickness_%s_%s'%(cap_side[0], self.preferences['mesh'])})
 
 
-        output_dir = self.preferences['output_path']
-        filename_root = self.preferences['filename_root']
+        output_dir = self.output_path
+        filename_root = self.filename_root
 
         assert(os.path.exists(output_dir))
 
@@ -581,7 +583,6 @@ class SnapBase():
                         a.execute( 'LinkedCursor', window=w, position=slice_position )
                         qt_app.processEvents()
                         w.refreshNow()
-                        print 'linked', s, slice_position
 
                         # Grabbing the snapshot
                         snapshot = get_snapshot(qgl)
@@ -650,7 +651,7 @@ class SnapBase():
             print 'generating poster'
             import string
             create_poster_command = self.preferences['create_poster_command']
-            output_dir = os.path.split(self.preferences['output_path'])[0]
+            output_dir = os.path.split(self.output_path)[0]
             os.system('%s %s %s'%(create_poster_command, string.join([i for i in output_files], ' '), os.path.join(output_dir, 'poster.jpg') ))
 
             if self.preferences.has_key('remove_snapshots') and self.preferences['remove_snapshots']:
@@ -663,6 +664,6 @@ class SnapBase():
 
         if self.preferences['display_success_msgbox']:
             ok = Qt.QMessageBox.warning(None, 'Success.',
-                '%d snapshots were succesfully created in %s.'%(len(output_files), self.preferences['output_path']), Qt.QMessageBox.Ok)
+                '%d snapshots were succesfully created in %s.'%(len(output_files), self.output_path), Qt.QMessageBox.Ok)
 
         main_window.emit(Qt.SIGNAL('finished()'))

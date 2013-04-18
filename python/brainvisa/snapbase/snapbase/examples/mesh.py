@@ -287,7 +287,6 @@ class MeshCutSnapBase(SnapBase):
         left_slices_minmax = detect_slices_of_interest(left_mask, directions)
         right_slices_minmax = detect_slices_of_interest(right_mask, directions)
         voxel_size = mri.header()['voxel_size']
-        print voxel_size, left_mask.header()['voxel_size']
 
         slices_nb = {'S': 12, 'A': 16, 'C': 16}
         for d in directions :
@@ -303,7 +302,6 @@ class MeshCutSnapBase(SnapBase):
             # This converts each slice index into a list applicable to
                 # Anatomist camera function
             slices[d] = [(i, self.__get_slice_position__(d, i, voxel_size)) for i in slices_list] #[0:3]
-            print d, slices
 
         return slices
 
