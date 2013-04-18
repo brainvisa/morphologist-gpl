@@ -470,7 +470,23 @@ class SnapBase():
 
 
     def snap(self):
+       self.main_window.setEnabled(False)
        self.snap_base(None, self.qt_app)
+       self.main_window.setEnabled(True)
+
+    def closeEvent(self, name, event):
+
+       print name, event
+       w = event['window']
+       output_files = w.prefs['output_files']
+       from PyQt4 import Qt
+       if not len(w.prefs['output_files']) == len(self.dictdata):
+          ok = Qt.QMessageBox.warning(None, 'Snap cancelled.',
+                'Snap cancelled. %d snapshots over %s were created in %s.'%(len(output_files), len(self.dictdata), w.prefs['output_path']), Qt.QMessageBox.Ok)
+       elif self.preferences['display_success_msgbox']:
+          ok = Qt.QMessageBox.warning(None, 'Success.',
+                '%d snapshots were succesfully created in %s.'%(len(output_files), w.prefs['output_path']), Qt.QMessageBox.Ok)
+
 
     def snap_base(self, main_window = None, qt_app = None, dictdata = None, verbose = False):
 
@@ -489,8 +505,6 @@ class SnapBase():
 
         self.dictdata = dictdata
 
-        print 'dictdata', dictdata
-
         # If no dictdata (e.g. closing the attributes window), then nothing happens
         if len(dictdata) == 0:
             return
@@ -498,6 +512,7 @@ class SnapBase():
         #===============================================
         # Create Anatomist window
         a = ana.Anatomist('-b')
+        a.onCloseWindowNotifier.add(self.closeEvent)
         if main_window is None:
             main_window = QtGui.QMainWindow()
         central_layout, central_widget, size_policy = create_simple_qt_app(main_window)
@@ -525,14 +540,6 @@ class SnapBase():
             2, 0, { '__syntax__' : 'dictionary',  'no_decoration' : 1} )
         a.execute(c)
 
-        # Associates the outputfile_path to the new window
-        c.output_path = str(self.preferences['output_path'])
-        print c.output_path
-        c.prefs = {}
-        for each in ['output_path', 'render_subjects_id', 'filename_root']:
-           c.prefs[each] = self.preferences[each]
-
-
         w = c.createdWindow()
         w.setSizePolicy(size_policy)
         w.setMinimumSize(QtCore.QSize(1250, 950))
@@ -542,9 +549,14 @@ class SnapBase():
         a.execute( 'WindowConfig', windows=[w], cursor_visibility=0,
                             light={ 'background' : [ 0., 0., 0., 1. ] } )
 
-        if self.runqt:
-            self.qt_app.processEvents()
+        # Associates the outputfile_path to the new window
+        w.output_path = str(self.preferences['output_path'])
+        w.prefs = {}
+        for each in ['output_path', 'render_subjects_id', 'filename_root']:
+           w.prefs[each] = self.preferences[each]
 
+        qt_app.processEvents()
+        w.refreshNow()
         #==================================================
         # Processes dictdatas and runs the snapshot iteration
         print 'Rendering %i items'%len(dictdata)
@@ -555,6 +567,7 @@ class SnapBase():
 
         # Iterating on subjects and data
         for (subject, protocol), diskitems in dictdata:
+          if w.view().isVisible():
             self.current_diskitems = diskitems
             main_window.statusBar().showMessage('%s %s'%(subject, protocol))
             # Reading data and converting to Anatomist object format
@@ -636,13 +649,13 @@ class SnapBase():
 
             attributes.append(acquisition)
 
-            outfile_path = self.get_outfile_path(c.prefs['output_path'], c.prefs['filename_root'], attributes)
+            outfile_path = self.get_outfile_path(w.prefs['output_path'], w.prefs['filename_root'], attributes)
             output_files.append(outfile_path)
             print 'Writing... ', outfile_path
             big_tile.save(outfile_path, 'PNG')
 
             # Rendering text
-            if c.prefs['render_subjects_id']:
+            if w.prefs['render_subjects_id']:
                pixmap = Qt.QPixmap(outfile_path)
                self.__render_text(pixmap, '%s'%subject, font, color=colors_centers[protocol])
                pixmap.save(outfile_path)
@@ -660,7 +673,7 @@ class SnapBase():
             print 'generating poster'
             import string
             create_poster_command = self.preferences['create_poster_command']
-            output_dir = os.path.split(c.output_path)[0]
+            output_dir = os.path.split(w.prefs['output_path'])[0]
             os.system('%s %s %s'%(create_poster_command, string.join([i for i in output_files], ' '), os.path.join(output_dir, 'poster.jpg') ))
 
             if self.preferences.has_key('remove_snapshots') and self.preferences['remove_snapshots']:
@@ -669,10 +682,7 @@ class SnapBase():
 
 
         # Keep track of the list of produced files but after saving preferences so it is not stored in the prefs
-        self.preferences['output_files'] = output_files
+        w.prefs['output_files'] = output_files
 
-        if self.preferences['display_success_msgbox']:
-            ok = Qt.QMessageBox.warning(None, 'Success.',
-                '%d snapshots were succesfully created in %s.'%(len(output_files), c.output_path), Qt.QMessageBox.Ok)
 
         main_window.emit(Qt.SIGNAL('finished()'))

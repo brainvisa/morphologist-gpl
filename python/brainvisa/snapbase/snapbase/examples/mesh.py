@@ -384,7 +384,9 @@ class MeshCutSnapBase(SnapBase):
         a.addObjects( self.aobjects['right hemi cut'], [window] )
         a.addObjects( self.aobjects['left white cut'], [window] )
         a.addObjects( self.aobjects['right white cut'], [window] )
-        a.addObjects( self.aobjects['fusion'], [window] )
-        a.addObjects( self.aobjects['mri'], [window] )
+        if self.preferences['display_fusion_on_meshcut']:
+           a.addObjects( self.aobjects['fusion'], [window] )
+        else:
+           a.addObjects( self.aobjects['mri'], [window] )
 
         return window

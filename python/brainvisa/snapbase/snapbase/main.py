@@ -366,9 +366,6 @@ class MainWindow(QtGui.QMainWindow):
    def closeEvent(self, event):
       import sys
       neuroHierarchy.databases.currentThreadCleanup()
-      # Possibly in order to let the Qt app be garbage-collected
-      #qt_app = None
-      #QtGui.qApp = None
       sys.exit(0)
 
 def main():
