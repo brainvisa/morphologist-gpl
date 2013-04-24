@@ -32,10 +32,9 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from neuroProcesses import *
-import shfjGlobals
-import registration
+from brainvisa.tools import aimsGlobals
+from brainvisa import registration
 import os
-import commands
 from soma.wip.application.api import Application
 
 def validation():
@@ -120,11 +119,11 @@ def execution( self, context ):
   NormalizeAnat(context, anat, template, normanat, snmat, s1,
     cost=self.cost_function, searchcost=self.search_cost_function)
   # get image orientations in current formats
-  srcatts = shfjGlobals.aimsVolumeAttributes( self.anatomy_data )
+  srcatts = aimsGlobals.aimsVolumeAttributes( self.anatomy_data )
   srcs2m = srcatts.get( 'storage_to_memory', None )
   if srcs2m:
     self.transformation_matrix.setMinf( 'source_storage_to_memory', srcs2m )
-  dstatts = shfjGlobals.aimsVolumeAttributes( self.anatomical_template )
+  dstatts = aimsGlobals.aimsVolumeAttributes( self.anatomical_template )
   dsts2m = dstatts.get( 'storage_to_memory', None )
   if dsts2m:
     self.transformation_matrix.setMinf( 'destination_storage_to_memory',
