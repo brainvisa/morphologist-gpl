@@ -42,7 +42,7 @@ if neuroConfig.gui:
         # patch to use brainvisa.anatomist instead of the core anatomist
         histo_analysis_editor.anatomist = anatomist
         from morphologist_common.gui.histo_analysis_editor \
-            import create_histo_widget
+            import create_histo_editor
         from morphologist_common.gui.histo_analysis_widget \
             import load_histo_data
     except ImportError:
@@ -87,7 +87,7 @@ def delInMainThread( lock, thing ):
 def execution( self, context ):
     hdata = load_histo_data( self.histo_analysis.fullPath(),
         self.histo.fullPath() )
-    hwid = mainThreadActions().call( create_histo_widget, hdata,
+    hwid = mainThreadActions().call( create_histo_editor, hdata,
         self.mri_corrected )
     try:
         mainThreadActions().call( hwid.exec_ )
