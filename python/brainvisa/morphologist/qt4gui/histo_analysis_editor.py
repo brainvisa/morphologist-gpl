@@ -34,7 +34,9 @@
 '''Histo analysis editor.
 '''
 
-from brainvisa import anatomist
+
+import anatomist.api as anatomist
+# anatomist may be replaced by another implementation (brainvisa.anatomist)
 import numpy
 from PyQt4.QtGui import QDialog, QWidget, QVBoxLayout, QHBoxLayout, \
     QGridLayout, QPushButton, QLabel, QLineEdit, QDoubleValidator, QSlider, \

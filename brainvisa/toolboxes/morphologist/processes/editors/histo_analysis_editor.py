@@ -38,6 +38,9 @@ import numpy
 
 if neuroConfig.gui:
     try:
+        from brainvisa.morphologist.qt4gui import histo_analysis_editor
+        # patch to use brainvisa.anatomist instead of the core anatomist
+        histo_analysis_editor.anatomist = anatomist
         from brainvisa.morphologist.qt4gui.histo_analysis_editor \
             import create_histo_widget
         from morphologist_common.histo_analysis_widget import load_histo_data
