@@ -36,17 +36,40 @@ import shfjGlobals, registration
 
 #from __future__ import absolute_import
 
-import sys, os, stat, posix, time, re, pprint, sqlite3
-try:
-  import yaml as json_reader
-except ImportError:
-  import json as json_reader
+def validation():
+  try:
+    try:
+      import yaml as json_reader
+    except ImportError:
+      import json as json_reader
+      
+  except ImportError:
+    raise ValidationError( 'no valid json implementation found.' )
   
-try:
-  from traits.api import ListStr,HasTraits,File,Float,Instance
-except ImportError:
-  from enthought.traits.api import ListStr,HasTraits,File,Float,Instance
+  try:
+    try:
+      from traits.api import ListStr,HasTraits,File,Float,Instance
+    except ImportError:
+      from enthought.traits.api import ListStr,HasTraits,File,Float,Instance
+      
+  except ImportError:
+    raise ValidationError( 'no valid traits implementation found.' )
+  
+import sys, os, stat, posix, time, re, pprint, sqlite3
 
+try :
+  try:
+    import yaml as json_reader
+  except ImportError:
+    import json as json_reader
+    
+  try:
+    from traits.api import ListStr,HasTraits,File,Float,Instance
+  except ImportError:
+    from enthought.traits.api import ListStr,HasTraits,File,Float,Instance
+
+except ImportError:
+  pass
 
 from soma.path import split_path
 from soma.application import Application
@@ -489,6 +512,7 @@ def create_completion(self,process):
              
              
 def execution( self, context ):
+  
     #Commissure Coordinates
     context.write( "Computing AC/PC Coordinates..." )
     if self.method_ACPC == "Manually":
