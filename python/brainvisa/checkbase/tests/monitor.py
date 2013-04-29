@@ -1,9 +1,9 @@
 #!/usr/bin/python
+from __future__ import with_statement # allow python 2.5 to work
 import pyinotify
 import sys, os
 from brainvisa import checkbase as c
 from brainvisa.checkbase.report import HTMLReportGenerator
-from __future__ import with_statement # allow python 2.5 to work
 
 global html_pathname, template_pathname, read_modules, cbdir
 
