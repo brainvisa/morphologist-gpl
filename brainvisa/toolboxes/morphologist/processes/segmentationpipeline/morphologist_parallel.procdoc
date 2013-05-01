@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<minf expander="minf_2.0">
+<d>
+  <d name="en">
+    <xhtml name="short">A parallel version of the standard <a href="morphologist.html">Morphologist pipeline</a></xhtml>
+    <d name="parameters">
+      <xhtml name="sulci_recognition_method"/>
+      <xhtml name="Interhemispheric_Point"/>
+      <xhtml name="sulci_graphs_version"/>
+      <xhtml name="Normalised"/>
+      <xhtml name="mri_corrected"/>
+      <xhtml name="perform_normalization"/>
+      <xhtml name="mri"/>
+      <xhtml name="perform_sulci_recognition"/>
+      <xhtml name="Left_Hemisphere_Point"/>
+      <xhtml name="Posterior_Commissure"/>
+      <xhtml name="Anterior_Commissure"/>
+    </d>
+    <xhtml name="long"><p>This version of the <a href="morphologist.html">Morphologist pipeline</a> basically does the same thing, but steps are organized in a way which allows a better parallelization: each hemisphere is processed independently, and independent tasks (such as meshing or sulcal graphs extraction) can be done in parallel on multiple CPU machines.</p>
+<p>It is especially useful for single subject processing, taking advantage of 2-6 cores or CPUs during some processing steps for the same subject, where the regular Morphologist does not take advantage of more than 2 cores, only during certain steps, and waits in unnecessary junction points.
+</p>
+<p>The downside is a less lisible pipeline structure, making it a bit more complex to inspect results, so the regular pipeline has not been completely replaced by this new one.
+</p>
+
+</xhtml>
+  </d>
+</d>
+</minf>
