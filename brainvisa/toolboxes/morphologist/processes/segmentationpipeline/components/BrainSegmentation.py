@@ -34,7 +34,7 @@
 import shfjGlobals, registration
 
 from brainvisa.processes import *
-name = '3 - Compute Brain Mask'
+name = 'Compute Brain Mask'
 userLevel = 2
 
 signature = Signature(

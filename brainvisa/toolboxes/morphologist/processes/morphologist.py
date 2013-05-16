@@ -107,7 +107,8 @@ def initialization( self ):
   eNode = SerialExecutionNode( self.name, parameterized=self )
 
   eNode.addChild( 'PrepareSubject',
-                  ProcessExecutionNode( 'acpcOrNormalization', optional = 1 ) )
+                  ProcessExecutionNode( 'acpcOrNormalization', optional = 1,
+                  altname=_t_('Image orientation handling') ) )
 
 
   eNode.addChild( 'BiasCorrection',

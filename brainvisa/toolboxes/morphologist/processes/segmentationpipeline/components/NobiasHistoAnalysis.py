@@ -33,7 +33,7 @@
 
 from brainvisa.processes import *
 
-name = '2 - Histogram analysis'
+name = 'Histogram analysis'
 userLevel = 2
  
 signature = Signature(

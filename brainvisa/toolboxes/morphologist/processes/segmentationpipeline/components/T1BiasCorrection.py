@@ -35,7 +35,7 @@
 from brainvisa.processes import *
 import shfjGlobals, registration
 
-name = '1 - T1 Bias Correction'
+name = 'T1 Bias Correction'
 userLevel = 2
 
 signature = Signature(

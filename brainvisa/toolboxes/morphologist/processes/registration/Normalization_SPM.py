@@ -34,6 +34,8 @@
 from brainvisa.processes import *
 from brainvisa.validation import ValidationError
 from brainvisa import shelltools
+import brainvisa.tools.spm_run as spm
+from brainvisa.tools import spm_registration
 #from numpy import *
 import commands
 import distutils.spawn
@@ -84,60 +86,79 @@ def initialization( self ):
             'skull_stripped' : 'no' } )
 
 
-    
 def execution( self, context ):
     matfileDI = context.temporary( 'Matlab script' )
-    mat_file = file( matfileDI.fullPath(), 'w')
-    if configuration.SPM.spm8_standalone_command \
-        and (configuration.SPM.spm8_standalone_mcr_path or (sys.platform == "win32")):
-        # SPM8 standalone variant
-        context.write( _t_( \
-          'Using SPM8 standalone version (compiled, Matlab not needed)' ) )
-        anat_paths = []
-        for i, anat in enumerate([self.anatomy_data]):
-            anat_path = anat.fullPath()
-            anat_paths.append( anat_path )
-            j = i + 1
-            mat_file.write( \
-"""matlabbatch{%d}.spm.spatial.normalise.estwrite.subj.source = {'%s,1'};
-matlabbatch{%d}.spm.spatial.normalise.estwrite.subj.wtsrc = '';
-matlabbatch{%d}.spm.spatial.normalise.estwrite.subj.resample = {'%s'};
-matlabbatch{%d}.spm.spatial.normalise.estwrite.eoptions.template = {'%s,1'};
-matlabbatch{%d}.spm.spatial.normalise.estwrite.eoptions.weight = '';
-matlabbatch{%d}.spm.spatial.normalise.estwrite.eoptions.smosrc = 8;
-matlabbatch{%d}.spm.spatial.normalise.estwrite.eoptions.smoref = 0;
-matlabbatch{%d}.spm.spatial.normalise.estwrite.eoptions.regtype = 'mni';
-matlabbatch{%d}.spm.spatial.normalise.estwrite.eoptions.cutoff = %d;
-matlabbatch{%d}.spm.spatial.normalise.estwrite.eoptions.nits = %d;
-matlabbatch{%d}.spm.spatial.normalise.estwrite.eoptions.reg = 1;
-matlabbatch{%d}.spm.spatial.normalise.estwrite.roptions.vox = %s;
-matlabbatch{%d}.spm.spatial.normalise.estwrite.roptions.interp = 1;
-matlabbatch{%d}.spm.spatial.normalise.estwrite.roptions.wrap = [0 0 0];
-matlabbatch{%d}.spm.spatial.normalise.estwrite.roptions.prefix = 'w';
-""" \
-                % ( j, anat_path, j, j, anat_path,
-                    j, self.anatomical_template.fullPath(), j, j, j, j,
-                    j, self.cutoff_option, j, self.nbiteration, j,
-                    j, self.voxel_size, j, j, j ) )
-        mat_file.close()
+    try:
+        spm.validation(configuration)
+        use_spm8 = True
+    except:
+        print 'spm8 invalid!'
+        use_spm8 = False
+   #if configuration.SPM.spm8_standalone_command \
+        #and (configuration.SPM.spm8_standalone_mcr_path or (sys.platform == "win32")):
+        ## SPM8 standalone variant
+        #context.write( _t_( \
+          #'Using SPM8 standalone version (compiled, Matlab not needed)' ) )
 
-        mexe = configuration.SPM.spm8_standalone_command
-        pd = os.getcwd()
-        os.chdir( os.path.dirname(matfileDI.fullPath() ))
-        cmd = [ mexe, configuration.SPM.spm8_standalone_mcr_path, 'run',
-            matfileDI.fullPath() ]
-        context.write( 'running SPM command:', cmd )
-        context.system( *cmd )
-        os.chdir( pd )
+    if use_spm8:
+        matfilePath = spm_registration.writeNormalizeMatFile(context,
+            configuration, self.anatomy_data.fullPath(),
+            self.anatomy_data.fullPath(), matfileDI.fullPath(),
+            self.anatomical_template.fullPath(), "''", "''", '8',
+            '0', "'mni'", str( self.cutoff_option ), str( self.nbiteration ),
+            '1', None, None, self.voxel_size, '1', '[0 0 0]', "'w'" )
+
+        #spm.runSpm8Standalone(context, configuration, matfilePath)
+        spm.run(context, configuration, matfilePath)
+
+
+        #mat_file = file( matfileDI.fullPath(), 'w')
+        #anat_paths = []
+        #for i, anat in enumerate([self.anatomy_data]):
+            #anat_path = anat.fullPath()
+            #anat_paths.append( anat_path )
+            #j = i + 1
+            #mat_file.write( \
+#"""matlabbatch{%d}.spm.spatial.normalise.estwrite.subj.source = {'%s,1'};
+#matlabbatch{%d}.spm.spatial.normalise.estwrite.subj.wtsrc = '';
+#matlabbatch{%d}.spm.spatial.normalise.estwrite.subj.resample = {'%s'};
+#matlabbatch{%d}.spm.spatial.normalise.estwrite.eoptions.template = {'%s,1'};
+#matlabbatch{%d}.spm.spatial.normalise.estwrite.eoptions.weight = '';
+#matlabbatch{%d}.spm.spatial.normalise.estwrite.eoptions.smosrc = 8;
+#matlabbatch{%d}.spm.spatial.normalise.estwrite.eoptions.smoref = 0;
+#matlabbatch{%d}.spm.spatial.normalise.estwrite.eoptions.regtype = 'mni';
+#matlabbatch{%d}.spm.spatial.normalise.estwrite.eoptions.cutoff = %d;
+#matlabbatch{%d}.spm.spatial.normalise.estwrite.eoptions.nits = %d;
+#matlabbatch{%d}.spm.spatial.normalise.estwrite.eoptions.reg = 1;
+#matlabbatch{%d}.spm.spatial.normalise.estwrite.roptions.vox = %s;
+#matlabbatch{%d}.spm.spatial.normalise.estwrite.roptions.interp = 1;
+#matlabbatch{%d}.spm.spatial.normalise.estwrite.roptions.wrap = [0 0 0];
+#matlabbatch{%d}.spm.spatial.normalise.estwrite.roptions.prefix = 'w';
+#""" \
+                #% ( j, anat_path, j, j, anat_path,
+                    #j, self.anatomical_template.fullPath(), j, j, j, j,
+                    #j, self.cutoff_option, j, self.nbiteration, j,
+                    #j, self.voxel_size, j, j, j ) )
+        #mat_file.close()
+
+        #mexe = configuration.SPM.spm8_standalone_command
+        #pd = os.getcwd()
+        #os.chdir( os.path.dirname(matfileDI.fullPath() ))
+        #cmd = [ mexe, configuration.SPM.spm8_standalone_mcr_path, 'run',
+            #matfileDI.fullPath() ]
+        #context.write( 'running SPM command:', cmd )
+        #context.system( *cmd )
+        #os.chdir( pd )
 
     else:
         # Matlab-based SPM5-style variant
+        mat_file = file( matfileDI.fullPath(), 'w')
         if os.path.isdir( configuration.SPM.spm8_path ):
             context.write( _t_( 'Using SPM8 with Matlab (experimental)' ) )
         else:
             context.write( _t_( 'Using SPM5 with Matlab' ) )
         if configuration.SPM.spm5_path:
-            mat_file.write( "addPath( '" + configuration.SPM.spm5_path \
+            mat_file.write( "addpath( '" + configuration.SPM.spm5_path \
                 + "')\n" )
         mat_file.write("if exist('spm8')==2\n  spm8;\n")
         mat_file.write("elseif exist('spm5')==2\n  spm5;\n")
@@ -185,21 +206,20 @@ matlabbatch{%d}.spm.spatial.normalise.estwrite.roptions.prefix = 'w';
         os.chdir( pd )
 
     # place output at correct location
-    for i in range( len( anat_paths ) ):
-        outfile = anat_paths[i][:anat_paths[i].rfind('.')] + '_sn.mat'
-        if self.transformations_informations.fullPath() != outfile:
+    outfile = self.anatomy_data.fullPath()[
+        :self.anatomy_data.fullPath().rfind('.')] + '_sn.mat'
+    if self.transformations_informations.fullPath() != outfile:
             shelltools.mv( outfile,
-                self.transformations_informations.fullPath() )
+            self.transformations_informations.fullPath() )
 
-    # Rename the normalized volume written by spm in a form that fit
+    # Rename the normalized volume written by spm in a form that fits
     # bv hierarchy
-    for i, anat in enumerate([self.anatomy_data]):
-        for f in anat.fullPaths():
-            anatdir=os.path.dirname(f)
-            anatname, ext=os.path.splitext(os.path.basename(f))
-            wanat=os.path.join(anatdir, "w"+anatname+ext)
-            if os.path.exists(wanat):
-                shelltools.mv(wanat,
-                    self.normalized_anatomy_data.fullName()+ext)
+    for f in self.anatomy_data.fullPaths():
+        anatdir=os.path.dirname(f)
+        anatname, ext=os.path.splitext(os.path.basename(f))
+        wanat=os.path.join(anatdir, "w"+anatname+ext)
+        if os.path.exists(wanat):
+            shelltools.mv(wanat,
+                self.normalized_anatomy_data.fullName()+ext)
     #tm = registration.getTransformationManager()
     #tm.copyReferential( self.anatomical_template, self.normalized_anatomy_data )

@@ -33,7 +33,7 @@
 
 from brainvisa.processes import *
 import registration
-name = '4 - Split Brain Mask'
+name = 'Split Brain Mask'
 userLevel = 2
 
 signature = Signature(
