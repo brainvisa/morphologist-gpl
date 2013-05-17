@@ -37,8 +37,8 @@ name = 'Morphologist 2013, parallel version'
 userLevel = 0
 
 def validation():
-  if sys.version_info[:3] < [2, 7, 4] and userLevel < 5:
-    raise ValidationError( 'This process experiences unstabilities with python < 2.7.4 and may make BrainVisa crash, so it is disabled. If you really with to try it, change your userLevel to at least 5.' )
+  if sys.version_info[:3] < (2, 7, 4) and userLevel < 5:
+    raise ValidationError( 'This process experiences unstabilities with python &lt; 2.7.4 and may make BrainVisa crash, so it is disabled. If you really <em>really</em> wish to try it, change your userLevel to at least 5.' )
 
 # sulci recognition methodes identifiers
 ann_model = 'Abstract Neural Network (ANN)'
