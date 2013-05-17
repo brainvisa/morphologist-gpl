@@ -55,7 +55,7 @@ def validation():
   except ImportError:
     raise ValidationError( 'no valid traits implementation found.' )
   
-import sys, os, stat, posix, time, re, pprint, sqlite3
+import sys, os, stat, time, re, pprint, sqlite3
 
 try :
   try:
@@ -68,17 +68,18 @@ try :
   except ImportError:
     from enthought.traits.api import ListStr,HasTraits,File,Float,Instance
 
+  from soma.path import split_path
+  from soma.application import Application
+  from soma.config import short_version
+
+  from soma.controller import Controller
+  import soma.fom     
+
+  from morphologistSimp import SimpMorpho
+
 except ImportError:
   pass
 
-from soma.path import split_path
-from soma.application import Application
-from soma.config import short_version
-
-from soma.controller import Controller
-import soma.fom     
-
-from morphologistSimp import SimpMorpho
 
 name = 'Test Simplified Morphologist'
 userLevel = 2
