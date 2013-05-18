@@ -267,13 +267,10 @@ def initialization( self ):
           if ontologies[ db[0] ] == 'brainvisa-3.1.0' ]
         if len( databases ) == 1:
           db = databases[0]
-          #return self.signature[ 'imported_mri' ].findValue( self.mri,
-            #requiredAttributes={ '_database': db.ontology } )
           value = self.mri.hierarchyAttributes()
           if value.get("subject", None) is None:
             value["subject"]=os.path.basename(self.mri.fullPath()).partition(".")[0]
           value[ '_database' ] = db[0]
-          #value[ 'protocol' ] = 'subjects'
           print 'value:', value
           return value
 
