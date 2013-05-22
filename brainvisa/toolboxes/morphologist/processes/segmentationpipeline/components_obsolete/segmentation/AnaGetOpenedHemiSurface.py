@@ -94,7 +94,7 @@ def execution( self, context ):
 
       context.write( "Triangulation and Decimation..." )
       context.system( "AimsMeshBrain", "-i", openbrain.fullPath(), "-o", 
-                      self.left_hemi_mesh.fullPath() )
+                      self.left_hemi_mesh.fullPath(), "--smoothType", "laplacian" )
       trManager.copyReferential( self.mri_corrected, self.left_hemi_mesh )
       del openbrain
 
@@ -123,6 +123,6 @@ def execution( self, context ):
 
       context.write( "Triangulation and Decimation..." )
       context.system( "AimsMeshBrain", "-i", openbrain.fullPath(), "-o", 
-                      self.right_hemi_mesh.fullPath() )
+                      self.right_hemi_mesh.fullPath(), "--smoothType", "laplacian" )
       trManager.copyReferential( self.mri_corrected, self.right_hemi_mesh )
       del openbrain
