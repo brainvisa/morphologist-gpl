@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -88,5 +89,5 @@ def execution( self, context ):
   
       context.write( "Triangulation and Decimation..." )
       context.system( "AimsMeshBrain", "-i", openbrain.fullPath(), "-o", 
-                      self.brain_mesh.fullPath() )
+                      self.brain_mesh.fullPath(), "--smoothType", "laplacian" )
       del openbrain
