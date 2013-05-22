@@ -43,7 +43,7 @@ def execution( self, context ):
     context.system( "VipTopoClassification", "-i", Lhull, "-o", Lhull, "-l", "0", "-w", "t" )
     context.system( "VipSingleThreshold", "-i", Lhull, "-o", Lhull, "-t", "10", "-m", "gt", "-c", "b", "-w", "t" )
     
-    context.system( "AimsMeshBrain", "-i", Lhull, "-o", self.left_hemi_hull, '--internalinterface' )
+    context.system( "AimsMeshBrain", "-i", Lhull, "-o", self.left_hemi_hull, "--internalinterface", "--smoothType", "lowpass" )
     context.system( "meshCleaner", "-i", self.left_hemi_hull, "-o", self.left_hemi_hull, "-maxCurv", "0.5" )
     
     tm.copyReferential( self.split_mask, self.left_hemi_hull )
@@ -57,7 +57,7 @@ def execution( self, context ):
     context.system( "VipTopoClassification", "-i", Rhull, "-o", Rhull, "-l", "0", "-w", "t" )
     context.system( "VipSingleThreshold", "-i", Rhull, "-o", Rhull, "-t", "10", "-m", "gt", "-c", "b", "-w", "t" )
     
-    context.system( "AimsMeshBrain", "-i", Rhull, "-o", self.right_hemi_hull, '--internalinterface' )
+    context.system( "AimsMeshBrain", "-i", Rhull, "-o", self.right_hemi_hull, "--internalinterface", "--smoothType", "lowpass" )
     context.system( "meshCleaner", "-i", self.right_hemi_hull, "-o", self.right_hemi_hull, "-maxCurv", "0.5" )
     
     tm.copyReferential( self.split_mask, self.right_hemi_hull )
@@ -71,7 +71,7 @@ def execution( self, context ):
     context.system( "VipClosing", "-i", Hhull, "-o", Hhull, "-s", "10", "-w", "t")
     context.system( "VipSingleThreshold", "-i", Hhull, "-o", Hhull, "-t", "0", "-m", "eq", "-c", "b", "-w", "t" )
     
-    context.system( "AimsMeshBrain", "-i", Hhull, "-o", self.both_hemi_hull, '--internalinterface' )
+    context.system( "AimsMeshBrain", "-i", Hhull, "-o", self.both_hemi_hull, "--internalinterface", "--smoothType", "lowpass" )
     context.system( "meshCleaner", "-i", self.both_hemi_hull, "-o", self.both_hemi_hull, "-maxCurv", "0.5" )
     
     tm.copyReferential( self.split_mask, self.both_hemi_hull )
@@ -85,7 +85,7 @@ def execution( self, context ):
     context.system( "VipClosing", "-i", Bhull, "-o", Bhull, "-s", "10", "-w", "t")
     context.system( "VipSingleThreshold", "-i", Bhull, "-o", Bhull, "-t", "0", "-m", "eq", "-c", "b", "-w", "t" )
     
-    context.system( "AimsMeshBrain", "-i", Bhull, "-o", self.brain_hull, '--internalinterface' )
+    context.system( "AimsMeshBrain", "-i", Bhull, "-o", self.brain_hull, "--internalinterface", "--smoothType", "lowpass" )
     context.system( "meshCleaner", "-i", self.brain_hull, "-o", self.brain_hull, "-maxCurv", "0.5" )
     
     tm.copyReferential( self.split_mask, self.brain_hull )
