@@ -95,7 +95,7 @@ t1mri_content = (
   "{acquisition}", SetDefaultAttributeValue( 'acquisition', default_acquisition ), SetNonMandatoryKeyAttribute( 'acquisition' ),
   SetContent(
       # t1mri before processing in acquisition level
-      "<subject>", SetType( 'Raw T1 MRI' ), SetPriorityOffset( +1 ), SetWeakAttr( 'normalized', 'no' ),
+      #"<subject>", SetType( 'Raw T1 MRI' ), SetPriorityOffset( +1 ), SetWeakAttr( 'normalized', 'no' ),
       "<subject>", SetType( 'Commissure coordinates' ),
       "normalized_{normalization}_<subject>", SetType( 'Raw T1 MRI' ), SetWeakAttr( 'normalized', 'yes' ),
       "<subject>_sn", SetType( 'SPM2 normalization matrix' ),
@@ -120,8 +120,7 @@ t1mri_content = (
       ),
       "{analysis}", SetDefaultAttributeValue( 'analysis', default_analysis ), SetNonMandatoryKeyAttribute( 'analysis' ),
         SetContent( # processing results in analysis
-          "nobias_<subject>", SetType( 'T1 MRI Bias Corrected' ),
-#          "basis_fornobias_<subject>", SetType( 'T1 MRI Basis for Bias Computation' ),
+          #"nobias_<subject>", SetType( 'T1 MRI Bias Corrected' ),
           "biasfield_<subject>", SetType( 'T1 MRI Bias Field' ),
           "whiteridge_<subject>", SetType( 'T1 MRI White Matter Ridges' ),
           "variance_<subject>", SetType( 'T1 MRI Variance' ),
