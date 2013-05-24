@@ -44,6 +44,7 @@ class TestMorphologistPipeline(unittest.TestCase):
                                            settings=database_settings )
     neuroHierarchy.databases.add( database )
     neuroConfig.dataPath.append( database_settings )
+    database.update( context=defaultContext() )
     return database
 
   def import_data(self):
