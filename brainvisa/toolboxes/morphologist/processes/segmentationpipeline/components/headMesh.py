@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -39,7 +40,7 @@ userLevel = 0
 
 # Argument declaration
 signature = Signature(
-  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
+  't1mri_nobias', ReadDiskItem( 'T1 MRI Bias Corrected',
       'Aims readable volume formats' ),
   'head_mask', WriteDiskItem( 'Head Mask',
       'Aims writable volume formats' ),
@@ -57,12 +58,12 @@ def initialization( self ):
   def linkMask( self, proc ):
     p = self.signature[ 'head_mask' ]
     if not self.histo_analysis:
-      if self.mri_corrected:
-        return p.findValue( self.mri_corrected )
+      if self.t1mri_nobias:
+        return p.findValue( self.t1mri_nobias )
       return None
     reqatt = {}
-    if self.mri_corrected:
-      format = self.mri_corrected.format
+    if self.t1mri_nobias:
+      format = self.t1mri_nobias.format
       if format:
         reqatt[ '_format' ] = set( [ format.name ] )
     if reqatt:
@@ -71,10 +72,10 @@ def initialization( self ):
       x = p.findValue( self.histo_analysis )
     return x
 
-  self.linkParameters( 'head_mask', ( 'histo_analysis', 'mri_corrected' ),
+  self.linkParameters( 'head_mask', ( 'histo_analysis', 't1mri_nobias' ),
     linkMask )
   self.linkParameters( 'head_mesh', 'head_mask' )
-  self.linkParameters( 'histo_analysis', 'mri_corrected' )
+  self.linkParameters( 'histo_analysis', 't1mri_nobias' )
   self.setOptional('first_slice')
   self.setOptional('threshold')
   self.setOptional('closing')
@@ -92,7 +93,7 @@ def execution( self, context ):
   else:
     mask = context.temporary( 'GIS image' )
   call_list = [ 'VipGetHead', 
-                '-i', self.mri_corrected,
+                '-i', self.t1mri_nobias,
                 '-o', mask,
                 '-w', 't', '-r', 't' ]
   option_list = []
@@ -108,8 +109,8 @@ def execution( self, context ):
       option_list += [ '-c', self.closing ]
   apply( context.system, call_list+option_list )
   context.system( 'AimsMeshBrain', '-i', mask.fullPath(), '-o',
-                  self.head_mesh.fullPath() )
+                  self.head_mesh.fullPath(), "--smoothType", "laplacian" )
   trManager = registration.getTransformationManager()
-  trManager.copyReferential( self.mri_corrected, self.head_mesh )
+  trManager.copyReferential( self.t1mri_nobias, self.head_mesh )
   if self.keep_head_mask:
-    trManager.copyReferential( self.mri_corrected, self.head_mask )
+    trManager.copyReferential( self.t1mri_nobias, self.head_mask )
