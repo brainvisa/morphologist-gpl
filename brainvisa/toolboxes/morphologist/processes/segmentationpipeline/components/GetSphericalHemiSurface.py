@@ -96,7 +96,7 @@ def execution( self, context ):
         
         context.system( "VipSingleThreshold", "-i", hemi, "-o", hemi, "-t", "0", "-c", "b", "-m", "ne", "-w", "t" )
         
-        context.system( "AimsMeshBrain", "-i", hemi.fullPath(), "-o", self.left_hemi_mesh, '--internalinterface' )
+        context.system( "AimsMeshBrain", "-i", hemi.fullPath(), "-o", self.left_hemi_mesh, '--internalinterface', "--smoothType", "laplacian" )
         context.system( "meshCleaner", "-i", self.left_hemi_mesh, "-o", self.left_hemi_mesh, "-maxCurv", "0.5" )
         
         trManager.copyReferential( self.mri_corrected, self.left_hemi_mesh )
@@ -132,7 +132,7 @@ def execution( self, context ):
         
         context.system( "VipSingleThreshold", "-i", hemi, "-o", hemi, "-t", "0", "-c", "b", "-m", "ne", "-w", "t" )
         
-        context.system( "AimsMeshBrain", "-i", hemi.fullPath(), "-o", self.right_hemi_mesh, '--internalinterface' )
+        context.system( "AimsMeshBrain", "-i", hemi.fullPath(), "-o", self.right_hemi_mesh, '--internalinterface', "--smoothType", "laplacian" )
         context.system( "meshCleaner", "-i", self.right_hemi_mesh.fullPath(), "-o", self.right_hemi_mesh.fullPath(), "-maxCurv", "0.5" )
 
         trManager.copyReferential( self.mri_corrected, self.right_hemi_mesh )
