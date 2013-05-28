@@ -39,11 +39,12 @@ class TestMorphologistPipeline(unittest.TestCase):
     database_settings = neuroConfig.DatabaseSettings( self.database_directory )
     database = neuroHierarchy.SQLDatabase( os.path.join(self.database_directory, "database.sqlite"), 
                                            self.database_directory, 
-                                           'brainvisa-3.1.0', 
+                                           'brainvisa-3.2.0',
                                            context=defaultContext(), 
                                            settings=database_settings )
     neuroHierarchy.databases.add( database )
     neuroConfig.dataPath.append( database_settings )
+    database.clear( context=defaultContext() )
     database.update( context=defaultContext() )
     return database
 
@@ -52,7 +53,7 @@ class TestMorphologistPipeline(unittest.TestCase):
                          "sujet01", "anatomy", "sujet01.ima")
     wd=WriteDiskItem("Raw T1 MRI", "NIFTI-1 image")
     output=wd.findValue({"_database" : self.db_name, 
-                         "protocol" : "test", "subject" : "sujet01"})
+                         "center" : "test", "subject" : "sujet01"})
     if not output.isReadable():
       print "* Import test data"
       defaultContext().runProcess('ImportT1MRI', input, output)
@@ -90,7 +91,7 @@ class TestMorphologistPipeline(unittest.TestCase):
     wd=pipeline.signature["mri_corrected"]
     self.ref_nobias = wd.findValue({"_database" : self.db_name, 
                                     "_format" : "NIFTI-1 image", 
-                                    "protocol" : "test", "subject" : "sujet01", 
+                                    "center" : "test", "subject" : "sujet01",
                                     "analysis" : "default_analysis"})
     # if needed, run the pipeline a first time to get reference results 
     # in default_analysis
@@ -102,7 +103,7 @@ class TestMorphologistPipeline(unittest.TestCase):
     # run the pipeline a second time to get test results
     self.test_nobias = wd.findValue({"_database" : self.db_name, 
                                      "_format" : "NIFTI-1 image", 
-                                     "protocol" : "test", "subject" : "sujet01", 
+                                     "center" : "test", "subject" : "sujet01",
                                      "analysis" : "test"})
     if self.test_nobias.isReadable():
       rmtree(os.path.dirname(self.test_nobias.fullPath()))
