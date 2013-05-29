@@ -102,7 +102,11 @@ def execution( self, context ):
                     "-o", white, "-t", "0", "-c", "b", "-m",
                     "ne", "-w", "t" )
             
-            context.system( "AimsMeshBrain", "-i", white, "-o", self.left_white_mesh, "--internalinterface", "--smoothType", "laplacian" )
+            context.system( "AimsMeshBrain", "-i", white,
+                            "-o", self.left_white_mesh,
+                            "--smoothType", "laplacian",
+                            "--smoothIt", 5, "smoothRate", 0.4,
+                            "--internalinterface" )
             context.system( "meshCleaner", "-i", self.left_white_mesh, "-o", self.left_white_mesh, "-maxCurv", "0.5" )
 
             tm.copyReferential(self.left_grey_white, self.left_white_mesh)
@@ -135,7 +139,11 @@ def execution( self, context ):
                     "-o", white, "-t", "0", "-c", "b", "-m",
                     "ne", "-w", "t" )
             
-            context.system( "AimsMeshBrain", "-i", white, "-o", self.right_white_mesh, '--internalinterface', "--smoothType", "laplacian" )
+            context.system( "AimsMeshBrain", "-i", white,
+                            "-o", self.right_white_mesh,
+                            "--smoothType", "laplacian",
+                            "--smoothIt", 5, "smoothRate", 0.4,
+                            "--internalinterface" )
             context.system( "meshCleaner", "-i", self.right_white_mesh, "-o", self.right_white_mesh, "-maxCurv", "0.5" )
             
             tm.copyReferential(self.right_grey_white, self.right_white_mesh)
