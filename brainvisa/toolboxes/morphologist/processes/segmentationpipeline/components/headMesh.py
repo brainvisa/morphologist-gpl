@@ -40,77 +40,82 @@ userLevel = 0
 
 # Argument declaration
 signature = Signature(
-  't1mri_nobias', ReadDiskItem( 'T1 MRI Bias Corrected',
-      'Aims readable volume formats' ),
-  'head_mask', WriteDiskItem( 'Head Mask',
-      'Aims writable volume formats' ),
-  'head_mesh', WriteDiskItem( 'Head Mesh', 'Aims mesh formats' ),
-  'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-  'keep_head_mask', Boolean(), 
-  'first_slice', Integer(),
-  'threshold', Integer(),
-  'closing', Float(),
-  'remove_mask', ReadDiskItem( '3D Volume', 'Aims readable volume formats' ),
+    't1mri_nobias', ReadDiskItem( 'T1 MRI Bias Corrected',
+        'Aims readable volume formats' ),
+    'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
+    'head_mesh', WriteDiskItem( 'Head Mesh', 'Aims mesh formats' ),
+    'head_mask', WriteDiskItem( 'Head Mask',
+        'Aims writable volume formats' ),
+    'keep_head_mask', Boolean(),
+    'remove_mask', ReadDiskItem( '3D Volume', 'Aims readable volume formats' ),
+    'first_slice', Integer(),
+    'threshold', Integer(),
+    'closing', Float(),
 )
 
 # Default values
 def initialization( self ):
-  def linkMask( self, proc ):
-    p = self.signature[ 'head_mask' ]
-    if not self.histo_analysis:
-      if self.t1mri_nobias:
-        return p.findValue( self.t1mri_nobias )
-      return None
-    reqatt = {}
-    if self.t1mri_nobias:
-      format = self.t1mri_nobias.format
-      if format:
-        reqatt[ '_format' ] = set( [ format.name ] )
-    if reqatt:
-      x = p.findValue( self.histo_analysis, requiredAttributes=reqatt )
-    else:
-      x = p.findValue( self.histo_analysis )
-    return x
+    def linkMask( self, proc ):
+        p = self.signature[ 'head_mask' ]
+        if not self.histo_analysis:
+            if self.t1mri_nobias:
+                return p.findValue( self.t1mri_nobias )
+            return None
+        reqatt = {}
+        if self.t1mri_nobias:
+            format = self.t1mri_nobias.format
+            if format:
+                reqatt[ '_format' ] = set( [ format.name ] )
+        if reqatt:
+            x = p.findValue( self.histo_analysis, requiredAttributes=reqatt )
+        else:
+            x = p.findValue( self.histo_analysis )
+        return x
 
-  self.linkParameters( 'head_mask', ( 'histo_analysis', 't1mri_nobias' ),
-    linkMask )
-  self.linkParameters( 'head_mesh', 'head_mask' )
-  self.linkParameters( 'histo_analysis', 't1mri_nobias' )
-  self.setOptional('first_slice')
-  self.setOptional('threshold')
-  self.setOptional('closing')
-  self.setOptional('head_mask')
-  self.setOptional('histo_analysis')
-  self.setOptional('remove_mask')
-  self.first_slice = None
-  self.threshold = None
-  self.closing = None
-  self.keep_head_mask = 0
+    self.linkParameters( 'head_mask', ( 'histo_analysis', 't1mri_nobias' ),
+        linkMask )
+    self.linkParameters( 'head_mesh', 'head_mask' )
+    self.linkParameters( 'histo_analysis', 't1mri_nobias' )
+    self.setOptional('first_slice')
+    self.setOptional('threshold')
+    self.setOptional('closing')
+    self.setOptional('head_mask')
+    self.setOptional('histo_analysis')
+    self.setOptional('remove_mask')
+    self.first_slice = None
+    self.threshold = None
+    self.closing = None
+    self.keep_head_mask = 0
 
 def execution( self, context ):
-  if self.head_mask is not None and self.keep_head_mask:
-    mask = self.head_mask
-  else:
-    mask = context.temporary( 'GIS image' )
-  call_list = [ 'VipGetHead', 
+    tm = registration.getTransformationManager()
+    
+    if self.head_mask is not None and self.keep_head_mask:
+        mask = self.head_mask
+    else:
+        mask = context.temporary( 'GIS image' )
+    
+    command = [ 'VipGetHead',
                 '-i', self.t1mri_nobias,
                 '-o', mask,
                 '-w', 't', '-r', 't' ]
-  option_list = []
-  if self.remove_mask is not None:
-      option_list += [ '-h', self.remove_mask ]
-  if self.histo_analysis is not None:
-      option_list += [ '-hn',self.histo_analysis ]
-  if self.first_slice is not None:
-      option_list += [ '-n', self.first_slice ]
-  if self.threshold is not None:
-      option_list += [ '-t', self.threshold ]
-  if self.closing is not None:
-      option_list += [ '-c', self.closing ]
-  apply( context.system, call_list+option_list )
-  context.system( 'AimsMeshBrain', '-i', mask.fullPath(), '-o',
-                  self.head_mesh.fullPath(), "--smoothType", "laplacian" )
-  trManager = registration.getTransformationManager()
-  trManager.copyReferential( self.t1mri_nobias, self.head_mesh )
-  if self.keep_head_mask:
-    trManager.copyReferential( self.t1mri_nobias, self.head_mask )
+    if self.remove_mask is not None:
+        command.extend(['-h', self.remove_mask])
+    if self.histo_analysis is not None:
+        command.extend(['-hn',self.histo_analysis])
+    if self.first_slice is not None:
+        command.extend(['-n', self.first_slice])
+    if self.threshold is not None:
+        command.extend(['-t', self.threshold])
+    if self.closing is not None:
+        command.extend([ '-c', self.closing])
+    
+    context.system( *command )
+    context.system( 'AimsMeshBrain', '-i', mask.fullPath(),
+                    '-o', self.head_mesh.fullPath(), '--smoothIt', 50,
+                    '--smoothRate', 0.5, '--deciMaxClearance', 5. )
+    
+
+    tm.copyReferential( self.t1mri_nobias, self.head_mesh )
+    if self.keep_head_mask:
+        tm.copyReferential( self.t1mri_nobias, self.head_mask )
