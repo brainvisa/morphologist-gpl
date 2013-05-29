@@ -343,12 +343,12 @@ def initialization( self ):
                  'HemispheresMesh.right_hemi_cortex' )
 
 
-  eNode.HeadMesh.removeLink( 'histo_analysis', 'mri_corrected' )
+  eNode.HeadMesh.removeLink( 'histo_analysis', 't1mri_nobias' )
 
-  eNode.addLink( 'HeadMesh.mri_corrected',
+  eNode.addLink( 'HeadMesh.t1mri_nobias',
                  'BiasCorrection.mri_corrected' )
   eNode.addLink( 'BiasCorrection.mri_corrected',
-                 'HeadMesh.mri_corrected' )
+                 'HeadMesh.t1mri_nobias' )
 
   eNode.addLink( 'HeadMesh.histo_analysis',
                  'HistoAnalysis.histo_analysis' )
