@@ -15,7 +15,11 @@ signature = Signature(
 
 
 def initialization(self):
-  databases=[(dbs.directory, neuroHierarchy.databases.database(dbs.directory)) for dbs in neuroConfig.dataPath if dbs.expert_settings.ontology=='brainvisa-3.1.0' ]
+  databases = [
+    (dbs.directory, neuroHierarchy.databases.database(dbs.directory)) \
+      for dbs in neuroConfig.dataPath \
+      if dbs.expert_settings.ontology in \
+        ('brainvisa-3.1.0', 'brainvisa-3.2.0' ) ]
   self.signature['database'].setChoices(*databases)
   if databases:
     self.database=databases[0][1]
