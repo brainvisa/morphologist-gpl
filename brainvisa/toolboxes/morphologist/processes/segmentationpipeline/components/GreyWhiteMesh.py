@@ -64,7 +64,7 @@ def initialization( self ):
 def execution( self, context ):
     tm = registration.getTransformationManager()
     
-    context.write( "Detecting spherical cortex interface..." )
+    context.write( "Detecting spherical inner cortical surface..." )
     command = [ "VipHomotopic", "-i",
                 self.t1mri_nobias, "-cl",
                 self.grey_white, "-h",
@@ -77,7 +77,7 @@ def execution( self, context ):
     
     tm.copyReferential(self.grey_white, self.hemi_cortex)
     
-    context.write("Reconstructing hemisphere white surface...")
+    context.write("Reconstructing hemisphere white mesh...")
     white = context.temporary( 'GIS Image' )
     context.system( "VipSingleThreshold", "-i",
                     self.hemi_cortex, "-o",
