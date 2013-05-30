@@ -329,6 +329,12 @@ def initialization( self ):
   rightNode.addChild( 'GreyWhiteTopology',
                    ProcessExecutionNode( 'GreyWhiteTopology',
                                          optional = 1 ) )
+  leftNode.addChild( 'SulciSkeleton',
+                   ProcessExecutionNode( 'sulciskeleton',
+                                         optional = 1 ) )
+  rightNode.addChild( 'SulciSkeleton',
+                   ProcessExecutionNode( 'sulciskeleton',
+                                         optional = 1 ) )
 
   leftMeshes = ParallelExecutionNode( 'Left meshes and graph', optional=True,
     expandedInGui=True )
@@ -479,9 +485,9 @@ def initialization( self ):
     'Par.Seg.TalairachTransformation.commissure_coordinates',
     'PrepareSubject.commissure_coordinates' )
 
-  paraNode.HeadMesh.removeLink( 'histo_analysis', 'mri_corrected' )
+  paraNode.HeadMesh.removeLink( 'histo_analysis', 't1mri_nobias' )
 
-  eNode.addDoubleLink( 'Par.HeadMesh.mri_corrected',
+  eNode.addDoubleLink( 'Par.HeadMesh.t1mri_nobias',
       'BiasCorrection.mri_corrected' )
   eNode.addDoubleLink( 'Par.HeadMesh.histo_analysis',
       'HistoAnalysis.histo_analysis' )
@@ -518,14 +524,14 @@ def initialization( self ):
       ( rightNode, 'Par.Seg.Hemispheres.RightHemisphere', 'Right' ) ):
 
     classifNode = hemiNode.GreyWhiteClassification
-    classifNode.removeLink( 'histo_analysis', 'mri_corrected' )
-    classifNode.removeLink( 'split_mask', 'mri_corrected' )
-    classifNode.removeLink( 'edges', 'mri_corrected' )
-    classifNode.removeLink( 'commissure_coordinates', 'mri_corrected' )
+    classifNode.removeLink( 'histo_analysis', 't1mri_nobias' )
+    classifNode.removeLink( 'split_mask', 't1mri_nobias' )
+    classifNode.removeLink( 'edges', 't1mri_nobias' )
+    classifNode.removeLink( 'commissure_coordinates', 't1mri_nobias' )
 
     classifP = hemiP + '.GreyWhiteClassification'
     eNode.addDoubleLink( \
-      classifP + '.mri_corrected', 'BiasCorrection.mri_corrected' )
+      classifP + '.t1mri_nobias', 'BiasCorrection.mri_corrected' )
     eNode.addDoubleLink( \
       classifP + '.histo_analysis', 'HistoAnalysis.histo_analysis' )
     eNode.addDoubleLink( classifP + '.split_mask',
@@ -535,11 +541,11 @@ def initialization( self ):
       'PrepareSubject.commissure_coordinates' )
 
     gwtNode = hemiNode.GreyWhiteTopology
-    gwtNode.removeLink( 'histo_analysis', 'mri_corrected' )
-    gwtNode.removeLink( 'mri_corrected', 'grey_white' )
+    gwtNode.removeLink( 't1mri_nobias', 'grey_white' )
+    gwtNode.removeLink( 'histo_analysis', 't1mri_nobias' )
 
     eNode.addDoubleLink( \
-      hemiP + '.GreyWhiteTopology.mri_corrected',
+      hemiP + '.GreyWhiteTopology.t1mri_nobias',
       'BiasCorrection.mri_corrected' )
     eNode.addDoubleLink( \
       hemiP + '.GreyWhiteTopology.histo_analysis',
@@ -548,19 +554,39 @@ def initialization( self ):
       hemiP + '.GreyWhiteTopology.grey_white',
       hemiP + '.GreyWhiteClassification.grey_white' )
 
+    sulskNode = hemiNode.SulciSkeleton
+    sulskNode.removeLink( 'grey_white', 'hemi_cortex' )
+    sulskNode.removeLink( 't1mri_nobias', 'hemi_cortex' )
+
+    eNode.addDoubleLink( \
+      hemiP + '.SulciSkeleton.hemi_cortex',
+      hemiP + '.GreyWhiteTopology.hemi_cortex' )
+    eNode.addDoubleLink( \
+      hemiP + '.SulciSkeleton.grey_white',
+      hemiP + '.GreyWhiteClassification.grey_white' )
+    eNode.addDoubleLink( \
+      hemiP + '.SulciSkeleton.t1mri_nobias',
+      'BiasCorrection.mri_corrected' )
+
     eNode.addDoubleLink( \
       hemiP + '.Meshes.GreyWhiteMesh.hemi_cortex',
       hemiP + '.GreyWhiteTopology.hemi_cortex' )
 
     meshes = hemiNode.Meshes
-    meshes.PialMesh.removeLink( 'split_mask', 'mri_corrected' )
-    meshes.PialMesh.removeLink( 'mri_corrected', 'hemi_cortex' )
-
+    meshes.PialMesh.removeLink( 'grey_white', 'hemi_cortex' )
+    meshes.PialMesh.removeLink( 't1mri_nobias', 'hemi_cortex' )
+    meshes.PialMesh.removeLink( 'skeleton', 'hemi_cortex' )
+    
     meshP = hemiP + '.Meshes'
     eNode.addDoubleLink( \
-      meshP + '.PialMesh.mri_corrected', 'BiasCorrection.mri_corrected' )
+      meshP + '.PialMesh.t1mri_nobias',
+      'BiasCorrection.mri_corrected' )
     eNode.addDoubleLink( \
-      meshP + '.PialMesh.split_mask', 'Par.Seg.SplitBrain.split_mask' )
+      meshP + '.PialMesh.grey_white',
+      hemiP + '.GreyWhiteClassification.grey_white' )
+    eNode.addDoubleLink( \
+      meshP + '.PialMesh.skeleton',
+      hemiP + '.SulciSkeleton.skeleton' )
     eNode.addDoubleLink( \
       meshP + '.PialMesh.hemi_cortex',
       hemiP + '.GreyWhiteTopology.hemi_cortex' )
@@ -606,7 +632,7 @@ def initialization( self ):
       'GreyWhiteMesh.white_mesh' )
     hemiNode.Meshes.addDoubleLink( \
       'Graph.CorticalFoldsGraph_3_1.CorticalFoldsGraphThickness.hemi_mesh',
-      'PialMesh.hemi_mesh' )
+      'PialMesh.pial_mesh' )
 
     # 3.0
     graph.CorticalFoldsGraph_3_0.removeLink( 'hemi_cortex', 'split_mask' )
