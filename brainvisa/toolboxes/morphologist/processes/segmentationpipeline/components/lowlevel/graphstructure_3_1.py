@@ -53,10 +53,9 @@ signature = Signature(
   'graph_version', OpenChoice( '3.1', '3.2' ),
   'graph', WriteDiskItem( 'Cortical folds graph', 'Graph' ),
   'commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
-                                          'Commissure coordinates'),
-  'Talairach_transform',
-  ReadDiskItem( 'Transform Raw T1 MRI to Talairach-AC/PC-Anatomist',
-                'Transformation matrix' ),
+                                          'Commissure coordinates' ),
+  'Talairach_transform', ReadDiskItem( 'Transform Raw T1 MRI to Talairach-AC/PC-Anatomist',
+                                       'Transformation matrix' ),
   'compute_fold_meshes', Boolean(),
   'allow_multithreading', Boolean(),
   'fix_random_seed', Boolean(),
@@ -116,6 +115,7 @@ def execution( self, context ):
 
   attp = [ 'AimsFoldArgAtt', '-i', self.skeleton.fullPath(), '-g',
            graph + '.arg', '-o', self.graph.fullPath(),
+           '--smoothType', 'laplacian',
            '-m', self.Talairach_transform, '--graphversion',
            self.graph_version ]
   if not self.compute_fold_meshes:
