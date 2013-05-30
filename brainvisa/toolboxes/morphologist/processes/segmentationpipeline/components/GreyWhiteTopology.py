@@ -35,7 +35,7 @@ from brainvisa.processes import *
 from soma import aims
 import registration
 
-name = 'Grey White Topological Correction'
+name = 'Hemisphere Grey White Topological Correction'
 userLevel = 0
 
 # Argument declaration
