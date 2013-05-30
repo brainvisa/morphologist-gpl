@@ -35,35 +35,43 @@ from brainvisa.processes import *
 from soma import aims
 import registration
 
-name = 'Grey White Topological correction 2012'
+name = 'Grey White Topological Correction'
 userLevel = 0
 
 # Argument declaration
 signature = Signature(
     'grey_white', ReadDiskItem( 'Grey White Mask',
-        'Aims writable volume formats' ),
-    'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
+        'Aims readable volume formats' ),
+    't1mri_nobias', ReadDiskItem( 'T1 MRI Bias Corrected',
         'Aims readable volume formats' ),
     'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
     'hemi_cortex', WriteDiskItem( 'CSF+GREY Mask',
         'Aims writable volume formats' ),
-) 
+    'fix_random_seed', Boolean(),
+)
+
 # Default values
 def initialization( self ):
-    self.linkParameters( 'mri_corrected', 'grey_white' )
-    self.linkParameters( 'histo_analysis', 'mri_corrected' )
+    self.linkParameters( 't1mri_nobias', 'grey_white' )
+    self.linkParameters( 'histo_analysis', 't1mri_nobias' )
     self.linkParameters( 'hemi_cortex', 'grey_white' )
+    self.signature[ 'fix_random_seed' ].userLevel = 3
+    self.fix_random_seed = False
 
 
 def execution( self, context ):
-    tm=registration.getTransformationManager()
+    tm = registration.getTransformationManager()
 
-    context.write( "Detecting spherical cortex interface..." )
-    context.system( "VipHomotopic", "-i",
-                    self.mri_corrected, "-cl",
-                    self.grey_white, "-h",
-                    self.histo_analysis, "-o",
-                    self.hemi_cortex,
-                    "-m", "C", "-w", "t" )
+    context.write( "Detecting spherical inner cortical interface..." )
+    command = [ "VipHomotopic", "-i",
+                self.t1mri_nobias, "-cl",
+                self.grey_white, "-h",
+                self.histo_analysis, "-o",
+                self.hemi_cortex,
+                "-m", "C", "-w", "t" ]
+    if self.fix_random_seed:
+        command.extend(['-srand', '10'])
+    context.system( *command )
+    
     tm.copyReferential(self.grey_white, self.hemi_cortex)
 
