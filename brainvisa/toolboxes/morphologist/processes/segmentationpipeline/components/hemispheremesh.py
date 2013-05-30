@@ -35,59 +35,63 @@ from brainvisa.processes import *
 import registration
 
 name = 'Hemisphere Pial Mesh'
-userLevel = 2
+userLevel = 0
 
 # Argument declaration
 signature = Signature(
     'hemi_cortex', ReadDiskItem( 'CSF+GREY Mask',
-        'Aims writable volume formats' ),
-    'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
         'Aims readable volume formats' ),
-    'split_mask', ReadDiskItem( 'Split Brain Mask',
+    'grey_white', ReadDiskItem( 'Grey White Mask',
         'Aims readable volume formats' ),
-    'hemi_mesh', WriteDiskItem( 'Hemisphere Mesh', 'Aims mesh formats' ),
-    'side', Choice( 'left', 'right' ),
+    't1mri_nobias', ReadDiskItem( 'T1 MRI Bias Corrected',
+        'Aims readable volume formats' ),
+    'skeleton', ReadDiskItem( 'Cortex Skeleton',
+        'Aims readable volume formats' ),
+    'pial_mesh', WriteDiskItem( 'Hemisphere Mesh', 'Aims mesh formats' ),
+    'fix_random_seed', Boolean(),
 )
 
 # Default values
 def initialization( self ):
-    def linkSide( self, proc ):
-        if self.hemi_cortex is not None:
-            side = self.hemi_cortex.get( 'side' )
-            if side is not None:
-                return side
-        return self.side
-    self.linkParameters( 'split_mask', 'mri_corrected' )
-    self.linkParameters( 'mri_corrected', 'hemi_cortex' )
-    self.linkParameters( 'hemi_mesh', 'hemi_cortex' )
-    self.linkParameters( 'side', 'hemi_cortex', linkSide )
-    self.signature[ 'side' ].userLevel = 3
+    self.linkParameters( 'grey_white', 'hemi_cortex' )
+    self.linkParameters( 't1mri_nobias', 'hemi_cortex' )
+    self.linkParameters( 'skeleton', 'hemi_cortex' )
+    self.linkParameters( 'pial_mesh', 'hemi_cortex' )
+    self.signature['fix_random_seed'].userLevel = 3
+    self.fix_random_seed = False
 
 
 def execution( self, context ):
     trManager = registration.getTransformationManager()
-
-    if self.side == 'left':
-        sideval = 2
-    else:
-        sideval = 1
-    context.write( "Masking Bias corrected image with hemisphere mask...")
-    braing = context.temporary( 'GIS Image' )
-    context.system( "VipMask", "-i", self.mri_corrected, "-m", self.split_mask, "-o", braing, "-w", "t", "-l", sideval )
-
-    context.write("Computing skeleton...")
-    skeleton = context.temporary( 'GIS Image' )
-    roots = context.temporary( 'GIS Image' )
-    context.system( "VipSkeleton", "-i", self.hemi_cortex, "-so", skeleton, "-vo", roots, "-g", braing, "-w", "t" )
-
-    context.write("Reconstructing hemisphere surface...")
-    hemi = context.temporary( 'GIS Image' )
-    context.system( "VipHomotopic", "-i", braing, "-s", skeleton, "-co", self.hemi_cortex, "-o", hemi, "-m", "H", "-w", "t" )
-
-    context.system( "VipSingleThreshold", "-i", hemi, "-o", hemi, "-t", "0", "-c", "b", "-m", "ne", "-w", "t" )
-
-    context.system( "AimsMeshBrain", "-i", hemi.fullPath(), "-o", self.hemi_mesh, '--internalinterface' )
-    context.system( "meshCleaner", "-i", self.hemi_mesh, "-o", self.hemi_mesh, "-maxCurv", "0.5" )
-
-    trManager.copyReferential( self.mri_corrected, self.hemi_mesh )
+    
+    braing = context.temporary( 'NIFTI-1 Image' )
+    context.system( "VipMask", "-i", self.t1mri_nobias,
+                    "-m", self.grey_white, "-o", braing,
+                    "-w", "t" )
+    
+    context.write( "Detecting spherical outer cortical surface..." )
+    hemi = context.temporary( 'NIFTI-1 Image' )
+    command = [ "VipHomotopic", "-i", braing,
+                "-s", self.skeleton,
+                "-co", self.hemi_cortex,
+                "-o", hemi,
+                "-m", "H", "-w", "t" ]
+    if self.fix_random_seed:
+        command.extend(['-srand', 10])
+    context.system( *command )
+    
+    context.write("Reconstructing hemisphere pial mesh...")
+    context.system( "VipSingleThreshold", "-i", hemi,
+                    "-o", hemi, "-t", "0", "-c", "b",
+                    "-m", "ne", "-w", "t" )
+    
+    context.system( "AimsMeshBrain", "-i", hemi.fullPath(), "-o", self.pial_mesh,
+                    "--internalinterface", "--smoothIt", 50 )
+    context.system( "meshCleaner", "-i", self.pial_mesh, "-o",
+                    self.pial_mesh, "-maxCurv", "0.5" )
+    
+    trManager.copyReferential( self.hemi_cortex, self.pial_mesh )
+    
+    del braing
+    del hemi
 
