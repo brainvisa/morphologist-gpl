@@ -99,7 +99,7 @@ def execution( self, context ):
         context.system( "AimsMeshBrain", "-i", hemi.fullPath(),
                         "-o", self.left_hemi_mesh,
                         "--smoothType", "laplacian",
-                        "--smoothIt", 5, "smoothRate", 0.4,
+                        "--smoothIt", 5, "--smoothRate", 0.4,
                         "--internalinterface" )
         context.system( "meshCleaner", "-i", self.left_hemi_mesh, "-o", self.left_hemi_mesh, "-maxCurv", "0.5" )
         
@@ -139,7 +139,7 @@ def execution( self, context ):
         context.system( "AimsMeshBrain", "-i", hemi.fullPath(),
                         "-o", self.right_hemi_mesh,
                         "--smoothType", "laplacian",
-                        "--smoothIt", 5, "smoothRate", 0.4,
+                        "--smoothIt", 5, "--smoothRate", 0.4,
                         "--internalinterface" )
         context.system( "meshCleaner", "-i", self.right_hemi_mesh.fullPath(), "-o", self.right_hemi_mesh.fullPath(), "-maxCurv", "0.5" )
 

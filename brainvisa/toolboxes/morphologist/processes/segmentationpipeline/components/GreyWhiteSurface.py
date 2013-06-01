@@ -105,7 +105,7 @@ def execution( self, context ):
             context.system( "AimsMeshBrain", "-i", white,
                             "-o", self.left_white_mesh,
                             "--smoothType", "laplacian",
-                            "--smoothIt", 5, "smoothRate", 0.4,
+                            "--smoothIt", 5, "--smoothRate", 0.4,
                             "--internalinterface" )
             context.system( "meshCleaner", "-i", self.left_white_mesh, "-o", self.left_white_mesh, "-maxCurv", "0.5" )
 
@@ -142,7 +142,7 @@ def execution( self, context ):
             context.system( "AimsMeshBrain", "-i", white,
                             "-o", self.right_white_mesh,
                             "--smoothType", "laplacian",
-                            "--smoothIt", 5, "smoothRate", 0.4,
+                            "--smoothIt", 5, "--smoothRate", 0.4,
                             "--internalinterface" )
             context.system( "meshCleaner", "-i", self.right_white_mesh, "-o", self.right_white_mesh, "-maxCurv", "0.5" )
             
