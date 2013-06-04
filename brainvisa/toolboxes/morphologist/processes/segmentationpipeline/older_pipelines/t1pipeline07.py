@@ -225,9 +225,9 @@ def initialization( self ):
                  'BrainSegmentation.white_ridges' )
 
   eNode.BrainSegmentation.BrainSegmentation05.removeLink( 'variance',
-    'mri_corrected' )
+    't1mri_nobias' )
   eNode.BrainSegmentation.BrainSegmentation05.removeLink( 'edges',
-    'mri_corrected' )
+    't1mri_nobias' )
   eNode.addLink( 'BrainSegmentation.BrainSegmentation05.variance',
                  'BiasCorrection.BiasCorrection05.variance' )
   eNode.addLink( 'BiasCorrection.BiasCorrection05.variance',
