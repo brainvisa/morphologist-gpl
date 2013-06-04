@@ -33,131 +33,151 @@
 
 
 from brainvisa.processes import *
-import shfjGlobals, registration
+import registration
 
 name = 'T1 Bias Correction'
-userLevel = 2
+userLevel = 0
 
 signature = Signature(
-  'mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.vipVolumeFormats ),
-  'mri_corrected', WriteDiskItem( "T1 MRI Bias Corrected",
-      'Aims writable volume formats' ),
-  'mode', Choice('write_minimal','write_all','delete_useless','write_minimal without correction'),
-  'write_field', Choice('yes','no'),
-  'field', WriteDiskItem( "T1 MRI Bias Field",
-      shfjGlobals.aimsWriteVolumeFormats ),
-  'sampling', Float(),
-  'field_rigidity', Float(),
-  'zdir_multiply_regul',Float(),
-  'wridges_weight',Float(),
-  'ngrid', Integer(),
-  'write_hfiltered', Choice('yes','no'),
-  'hfiltered', WriteDiskItem( "T1 MRI Filtered For Histo",
-      shfjGlobals.aimsWriteVolumeFormats ),
-  'write_wridges', Choice('yes','no','read'),
-  'white_ridges', WriteDiskItem( "T1 MRI White Matter Ridges",
-      shfjGlobals.aimsWriteVolumeFormats, exactType=1  ),
-  'write_meancurvature', Choice('yes','no'),
-  'meancurvature', WriteDiskItem( "T1 MRI Mean Curvature",
-      shfjGlobals.aimsWriteVolumeFormats ),
-  'variance_fraction',Integer(),
-  'write_variance', Choice('yes','no'),
-  'variance', WriteDiskItem( "T1 MRI Variance",
-      shfjGlobals.aimsWriteVolumeFormats ),
-  'edge_mask',Choice('yes','no'),
-  'write_edges', Choice('yes','no'),
-  'edges', WriteDiskItem( "T1 MRI Edges", shfjGlobals.aimsWriteVolumeFormats ),
-  'commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
-      'Commissure coordinates'),
-  'delete_last_n_slices', OpenChoice("auto", "0", "10", "20", "30"),
-  'fix_random_seed', Boolean(),
+    't1mri', ReadDiskItem( 'Raw T1 MRI', 'Aims readable volume formats' ),
+    'commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
+        'Commissure coordinates'),
+    'sampling', Float(),
+    'field_rigidity', Float(),
+    'zdir_multiply_regul',Float(),
+    'wridges_weight',Float(),
+    'ngrid', Integer(),
+    'delete_last_n_slices', OpenChoice('auto (AC/PC Points needed)', '0', '10', '20', '30'),
+    't1mri_nobias', WriteDiskItem( 'T1 MRI Bias Corrected',
+        'Aims writable volume formats' ),
+    'mode', Choice('write_minimal', 'write_all',
+        'delete_useless', 'write_minimal without correction'),
+    'write_field', Choice('yes','no'),
+    'field', WriteDiskItem( 'T1 MRI Bias Field',
+        'Aims writable volume formats' ),
+    'write_hfiltered', Choice('yes','no'),
+    'hfiltered', WriteDiskItem( 'T1 MRI Filtered For Histo',
+        'Aims writable volume formats'),
+    'write_wridges', Choice('yes','no','read'),
+    'white_ridges', WriteDiskItem( 'T1 MRI White Matter Ridges',
+        'Aims writable volume formats', exactType=1 ),
+    'variance_fraction', Integer(),
+    'write_variance', Choice('yes','no'),
+    'variance', WriteDiskItem( 'T1 MRI Variance',
+        'Aims writable volume formats' ),
+    'edge_mask', Choice('yes','no'),
+    'write_edges', Choice('yes','no'),
+    'edges', WriteDiskItem( 'T1 MRI Edges',
+        'Aims writable volume formats' ),
+    'write_meancurvature', Choice('yes','no'),
+    'meancurvature', WriteDiskItem( 'T1 MRI Mean Curvature',
+        'Aims writable volume formats' ),
+    'fix_random_seed', Boolean(),
 )
 
 # Default values
 def initialization( self ):
-  self.linkParameters( 'mri_corrected', 'mri' )
-  self.linkParameters( 'field', 'mri_corrected' )
-  self.linkParameters( 'hfiltered', 'field' )
-  self.linkParameters( 'white_ridges', 'hfiltered' )
-  self.linkParameters( 'meancurvature', 'white_ridges' )
-  self.linkParameters( 'variance', 'meancurvature' )
-  self.linkParameters( 'edges', 'variance' )
-
-  self.signature[ 'fix_random_seed' ].userLevel = 3
-  
-  self.mode = 'write_minimal'
-  self.write_wridges = 'yes'
-  self.write_field = 'no'
-  self.write_hfiltered = 'yes'
-  self.write_variance = 'yes'
-  self.write_meancurvature = 'no'
-  self.write_edges = 'yes'
-  self.field_rigidity = 20
-  self.wridges_weight = 20.
-  self.sampling = 16 
-  self.ngrid = 2
-  self.zdir_multiply_regul = 0.5
-  self.variance_fraction = 75
-  self.edge_mask = 'yes'
-  self.delete_last_n_slices = 'auto'
-  self.setOptional('commissure_coordinates')
-  self.linkParameters( 'commissure_coordinates', 'mri_corrected' )
-  self.fix_random_seed = False
-
-def execution( self, context ):
-  if self.mode == 'write_all':
+    self.linkParameters( 'commissure_coordinates', 't1mri' )
+    self.linkParameters( 't1mri_nobias', 't1mri' )
+    self.linkParameters( 'field', 't1mri_nobias' )
+    self.linkParameters( 'hfiltered', 'field' )
+    self.linkParameters( 'white_ridges', 'hfiltered' )
+    self.linkParameters( 'variance', 'white_ridges' )
+    self.linkParameters( 'edges', 'variance' )
+    self.linkParameters( 'meancurvature', 'edges' )
+    self.setOptional('commissure_coordinates')
+    
+    self.signature[ 'ngrid' ].userLevel = 2
+    self.signature[ 'zdir_multiply_regul' ].userLevel = 2
+    self.signature[ 'variance_fraction' ].userLevel = 2
+    self.signature[ 'fix_random_seed' ].userLevel = 3
+    
+    self.mode = 'write_minimal'
     self.write_wridges = 'yes'
-    self.write_field = 'yes'
+    self.write_field = 'no'
     self.write_hfiltered = 'yes'
     self.write_variance = 'yes'
-    self.write_meancurvature = 'yes'
     self.write_edges = 'yes'
-  if self.edge_mask == 'yes':
-    edge = '3'
-  else:
-    edge = 'n'
-  if self.mode in ("write_minimal","write_all","write_minimal without correction"):
-    if os.path.exists(self.mri_corrected.fullName() + '.loc'):
-      context.write(self.mri_corrected.fullName(), ' has been locked')
-      context.write('Remove',self.mri_corrected.fullName(),'.loc if you want to trigger a new correction')
+    self.write_meancurvature = 'no'
+    self.field_rigidity = 20
+    self.wridges_weight = 20.
+    self.sampling = 16
+    self.ngrid = 2
+    self.zdir_multiply_regul = 0.5
+    self.variance_fraction = 75
+    self.edge_mask = 'yes'
+    self.delete_last_n_slices = 'auto (AC/PC Points needed)'
+    self.fix_random_seed = False
+
+
+def execution( self, context ):
+    if self.mode == 'write_all':
+        self.write_wridges = 'yes'
+        self.write_field = 'yes'
+        self.write_hfiltered = 'yes'
+        self.write_variance = 'yes'
+        self.write_meancurvature = 'yes'
+        self.write_edges = 'yes'
+    if self.edge_mask == 'yes':
+        edge = '3'
     else:
-        option_list = []
-        constant_list = ['VipT1BiasCorrection', '-i', self.mri, '-o', self.mri_corrected, '-Fwrite', self.write_field, '-field', self.field, '-Wwrite', self.write_wridges, '-wridge', self.white_ridges,'-Kregul', self.field_rigidity, '-sampling',  self.sampling, '-Kcrest', self.wridges_weight, '-Grid', self.ngrid, '-ZregulTuning', self.zdir_multiply_regul, '-vp',self.variance_fraction,'-e',edge, '-eWrite', self.write_edges, '-ename', self.edges, '-vWrite', self.write_variance, '-vname', self.variance, '-mWrite',self.write_meancurvature, '-mname', self.meancurvature, '-hWrite', self.write_hfiltered, '-hname', self.hfiltered, '-Last', self.delete_last_n_slices]
-        if self.commissure_coordinates is not None:
-          option_list += ['-Points', self.commissure_coordinates]
-        if self.mode == "write_minimal without correction":
-          option_list += ['-Dcorrect', "n"]
-        if self.fix_random_seed:
-          option_list += ['-srand', '10']
-        apply( context.system, constant_list+option_list )
+        edge = 'n'
+    if self.mode in ('write_minimal', 'write_all', 'write_minimal without correction'):
+        if os.path.exists(self.t1mri_nobias.fullName() + '.loc'):
+            context.write(self.t1mri_nobias.fullName(), ' has been locked')
+            context.write('Remove', self.t1mri_nobias.fullName(), '.loc if you want to trigger a new correction')
+        else:
+            command = [ 'VipT1BiasCorrection', '-i', self.t1mri,
+                        '-o', self.t1mri_nobias,
+                        '-Fwrite', self.write_field,
+                        '-field', self.field,
+                        '-Wwrite', self.write_wridges,
+                        '-wridge', self.white_ridges,
+                        '-Kregul', self.field_rigidity,
+                        '-sampling', self.sampling,
+                        '-Kcrest', self.wridges_weight,
+                        '-Grid', self.ngrid,
+                        '-ZregulTuning', self.zdir_multiply_regul,
+                        '-vp', self.variance_fraction, '-e', edge,
+                        '-eWrite', self.write_edges,
+                        '-ename', self.edges,
+                        '-vWrite', self.write_variance,
+                        '-vname', self.variance,
+                        '-mWrite', self.write_meancurvature,
+                        '-mname', self.meancurvature,
+                        '-hWrite', self.write_hfiltered,
+                        '-hname', self.hfiltered,
+                        '-Last', self.delete_last_n_slices ]
+            if self.commissure_coordinates is not None:
+                command += ['-Points', self.commissure_coordinates]
+            if self.mode == 'write_minimal without correction':
+                command += ['-Dcorrect', 'n']
+            if self.fix_random_seed:
+                command += ['-srand', '10']
+            context.system( *command )
+            
+            tm = registration.getTransformationManager()
+            tm.copyReferential(self.t1mri, self.t1mri_nobias)
+            if self.write_field:
+                tm.copyReferential( self.t1mri, self.field )
+            if self.write_hfiltered:
+                tm.copyReferential( self.t1mri, self.hfiltered )
+            if self.write_wridges:
+                tm.copyReferential( self.t1mri, self.white_ridges )
+            if self.write_variance:
+                tm.copyReferential( self.t1mri, self.variance )
+            if self.write_edges:
+                tm.copyReferential( self.t1mri, self.edges )
+            if self.write_meancurvature:
+                tm.copyReferential( self.t1mri, self.meancurvature )
         
-        tm = registration.getTransformationManager()
-        tm.copyReferential(self.mri, self.mri_corrected)
-        if self.write_field:
-          tm.copyReferential( self.mri, self.field )
-        if self.write_hfiltered:
-          tm.copyReferential( self.mri, self.hfiltered )
-        if self.write_wridges:
-          tm.copyReferential( self.mri, self.white_ridges )
-        if self.write_variance:
-          tm.copyReferential( self.mri, self.variance )
-        if self.write_meancurvature:
-          tm.copyReferential( self.mri, self.meancurvature )
-        if self.write_edges:
-          tm.copyReferential( self.mri, self.edges )
-  elif  self.mode == 'delete_useless':
-    if os.path.exists(self.field.fullName() + '.ima') or os.path.exists(self.field.fullName() + '.ima.gz'):
-      shelltools.rm( self.field.fullName() + '.*' )
-    if os.path.exists(self.variance.fullName() + '.ima') or os.path.exists(self.variance.fullName() + '.ima.gz'):
-      shelltools.rm( self.variance.fullName() + '.*' )
-    if os.path.exists(self.edges.fullName() + '.ima') or os.path.exists(self.edges.fullName() + '.ima.gz'):
-      shelltools.rm( self.edges.fullName() + '.*' )
-    if os.path.exists(self.meancurvature.fullName() + '.ima') or os.path.exists(self.meancurvature.fullName() + '.ima.gz'):
-      shelltools.rm( self.meancurvature.fullName() + '.*' )
-#  elif  self.mode == 'gzip_wridge_and_hfiltered':
-#    if os.path.exists(self.hfiltered.fullName() + '.ima'):
-#      context.system("gunzip --force " + self.hfiltered.fullName() + '.ima')
-#      context.system("gunzip --force " + self.hfiltered.fullName() + '.dim')
-#    if os.path.exists(self.white_ridges.fullName() + '.ima'):
-#      context.system("gunzip --force " + self.white_ridges.fullName() + '.ima')
-#      context.system("gunzip --force " + self.white_ridges.fullName() + '.dim')
+    elif self.mode == 'delete_useless':
+        if os.path.exists(self.field.fullName() + '.ima') or os.path.exists(self.field.fullName() + '.ima.gz'):
+            shelltools.rm( self.field.fullName() + '.*' )
+        if os.path.exists(self.variance.fullName() + '.ima') or os.path.exists(self.variance.fullName() + '.ima.gz'):
+            shelltools.rm( self.variance.fullName() + '.*' )
+        if os.path.exists(self.edges.fullName() + '.ima') or os.path.exists(self.edges.fullName() + '.ima.gz'):
+            shelltools.rm( self.edges.fullName() + '.*' )
+        if os.path.exists(self.meancurvature.fullName() + '.ima') or os.path.exists(self.meancurvature.fullName() + '.ima.gz'):
+            shelltools.rm( self.meancurvature.fullName() + '.*' )
+
