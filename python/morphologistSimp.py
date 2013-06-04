@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import os
 try:
     from traits.api import ListStr,HasTraits,File,Float,Instance,Enum
 except ImportError:
@@ -19,74 +19,74 @@ class SimpMorpho(Controller):
         HasTraits.__init__(self)        
     #Input/Output
 
-        add_trait(self,'t1mri',File(exists=True,viewer='viewer.show_volume'))      
+        add_trait(self,'t1mri',File(exists=True,viewer='soma.gui.viewer.show_volume'))      
         #Parameters
         add_trait(self,'method_ACPC',Enum('Manually','SPM Normalization'))        
         #Commissure Coordinates
         add_trait(self,'commissure_coordinates',File(exists=False))
           ##SPM Normalization
-        add_trait(self,'anatomical_template', File(exists=True, viewer='viewer.show_volume' ))
+        add_trait(self,'anatomical_template', File(exists=True, viewer='soma.gui.viewer.show_volume' ))
         add_trait(self,'job_file',File(exists=False))
         add_trait(self,'transformations_information',File(exists=False))
         add_trait(self,'normalized_t1mri',File(exists=False))
         add_trait(self,'talairach_MNI_transform',File(exists=False))
         ###Talairach Transformation
-        add_trait(self,'source_referential',File(exists=True,viewer='viewer.show_text'))
+        add_trait(self,'source_referential',File(exists=True,viewer='soma.gui.viewer.show_text'))
         add_trait(self,'normalized_referential',File(exists=True))
         add_trait(self,'tal_to_normalized_transform',File(exists=True))
         #Bias Correction
-        add_trait(self,'t1mri_nobias', File(exists=False,viewer='viewer.show_t1mri_nobias'))
-        add_trait(self,'hfiltered',File(exists=False,viewer='viewer.show_volume'))
-        add_trait(self,'white_ridges',File(exists=False,viewer='viewer.show_white_ridge'))
-        add_trait(self,'variance',File(exists=False,viewer='viewer.show_rainbow_volume'))
-        add_trait(self,'edges',File(exists=False,viewer='viewer.show_rainbow_volume'))
+        add_trait(self,'t1mri_nobias', File(exists=False,viewer='soma.gui.viewer.show_t1mri_nobias'))
+        add_trait(self,'hfiltered',File(exists=False,viewer='soma.gui.viewer.show_volume'))
+        add_trait(self,'white_ridges',File(exists=False,viewer='soma.gui.viewer.show_white_ridge'))
+        add_trait(self,'variance',File(exists=False,viewer='soma.gui.viewer.show_rainbow_volume'))
+        add_trait(self,'edges',File(exists=False,viewer='soma.gui.viewer.show_rainbow_volume'))
         add_trait(self,'field',File(exists=False))
         add_trait(self,'meancurvature',File(exists=False))        
         #Histogram Analysis
         add_trait(self,'histo',File(exists=False))
-        add_trait(self,'histo_analysis',File(exists=False,viewer='viewer.show_histo'))
+        add_trait(self,'histo_analysis',File(exists=False,viewer='soma.gui.viewer.show_histo'))
         #Brain Mask Segmentation
-        add_trait(self,'brain_mask',File(exists=False,viewer='viewer.show_brain_mask'))
+        add_trait(self,'brain_mask',File(exists=False,viewer='soma.gui.viewer.show_brain_mask'))
         #Split Brain Mask
-        add_trait(self,'split_brain',File(exists=False,viewer='viewer.show_split_brain'))
-        add_trait(self,'split_template',File(exists=True,viewer='viewer.show_volume'))
+        add_trait(self,'split_brain',File(exists=False,viewer='soma.gui.viewer.show_split_brain'))
+        add_trait(self,'split_template',File(exists=True,viewer='soma.gui.viewer.show_volume'))
         #Talairach Transformation       
-        add_trait(self,'talairach_ACPC_transform',File(exists=False,viewer='viewer.show_text'))
+        add_trait(self,'talairach_ACPC_transform',File(exists=False,viewer='soma.gui.viewer.show_text'))
         #Grey/White Classification
-        add_trait(self,'left_grey_white',File(exists=False,viewer='viewer.show_grey_white'))
-        add_trait(self,'right_grey_white',File(exists=False,viewer='viewer.show_grey_white'))   
+        add_trait(self,'left_grey_white',File(exists=False,viewer='soma.gui.viewer.show_grey_white'))
+        add_trait(self,'right_grey_white',File(exists=False,viewer='soma.gui.viewer.show_grey_white'))   
         #Grey/White Surface            
-        add_trait(self,'left_hemi_cortex',File(exists=False,viewer='viewer.show_grey_white'))   
-        add_trait(self,'left_white_mesh',File(exists=False,viewer='viewer.show_white_matter'))        
-        add_trait(self,'right_hemi_cortex',File(exists=False,viewer='viewer.show_grey_white'))
-        add_trait(self,'right_white_mesh',File(exists=False,viewer='viewer.show_white_matter'))      
+        add_trait(self,'left_hemi_cortex',File(exists=False,viewer='soma.gui.viewer.show_grey_white'))   
+        add_trait(self,'left_white_mesh',File(exists=False,viewer='soma.gui.viewer.show_white_matter'))        
+        add_trait(self,'right_hemi_cortex',File(exists=False,viewer='soma.gui.viewer.show_grey_white'))
+        add_trait(self,'right_white_mesh',File(exists=False,viewer='soma.gui.viewer.show_white_matter'))      
         #Spherical Hemispheres Surface      
-        add_trait(self,'left_hemi_mesh',File(exists=False,viewer='viewer.show_hemi'))
-        add_trait(self,'right_hemi_mesh',File(exists=False,viewer='viewer.show_hemi'))
+        add_trait(self,'left_hemi_mesh',File(exists=False,viewer='soma.gui.viewer.show_hemi'))
+        add_trait(self,'right_hemi_mesh',File(exists=False,viewer='soma.gui.viewer.show_hemi'))
         #Cortical Folds Graph
           ##Left
-        add_trait(self,'left_graph',File(exists=False,viewer='viewer.show_fold_graph'))
-        add_trait(self,'left_skeleton',File(exists=False,viewer='viewer.show_volume'))
-        add_trait(self,'left_roots',File(exists=False,viewer='viewer.show_volume'))
-        add_trait(self,'left_sulci_voronoi',File(exists=False,viewer='viewer.show_volume'))
-        add_trait(self,'left_middle_cortex',File(exists=False,viewer='viewer.show_volume'))
+        add_trait(self,'left_graph',File(exists=False,viewer='soma.gui.viewer.show_fold_graph'))
+        add_trait(self,'left_skeleton',File(exists=False,viewer='soma.gui.viewer.show_volume'))
+        add_trait(self,'left_roots',File(exists=False,viewer='soma.gui.viewer.show_volume'))
+        add_trait(self,'left_sulci_voronoi',File(exists=False,viewer='soma.gui.viewer.show_volume'))
+        add_trait(self,'left_middle_cortex',File(exists=False,viewer='soma.gui.viewer.show_volume'))
           ##Right
         add_trait(self,'right_graph',File(exists=False))
-        add_trait(self,'right_skeleton',File(exists=False,viewer='viewer.show_volume'))
-        add_trait(self,'right_roots',File(exists=False,viewer='viewer.show_volume'))
-        add_trait(self,'right_sulci_voronoi',File(exists=False,viewer='viewer.show_volume'))
-        add_trait(self,'right_middle_cortex',File(exists=False,viewer='viewer.show_volume'))
+        add_trait(self,'right_skeleton',File(exists=False,viewer='soma.gui.viewer.show_volume'))
+        add_trait(self,'right_roots',File(exists=False,viewer='soma.gui.viewer.show_volume'))
+        add_trait(self,'right_sulci_voronoi',File(exists=False,viewer='soma.gui.viewer.show_volume'))
+        add_trait(self,'right_middle_cortex',File(exists=False,viewer='soma.gui.viewer.show_volume'))
         #Sulci Recognition
-        add_trait(self,'labels_translation_map',File(exists=True,viewer='viewer.show_text'))
+        add_trait(self,'labels_translation_map',File(exists=True,viewer='soma.gui.viewer.show_text'))
           ##Left
-        add_trait(self,'left_labelled_graph',File(exists=False,viewer='viewer.show_fold_graph'))          
-        add_trait(self,'left_posterior_probabilities',File(exists=False,viewer='viewer.show_text')) 
+        add_trait(self,'left_labelled_graph',File(exists=False,viewer='soma.gui.viewer.show_fold_graph'))          
+        add_trait(self,'left_posterior_probabilities',File(exists=False,viewer='soma.gui.viewer.show_text')) 
         add_trait(self,'left_labels_priors',File(exists=True))
             ###Global 
             #show descriptive model
         add_trait(self,'left_global_model',File(exists=True))                      
-        add_trait(self,'left_tal_to_global_transform',File(exists=False,viewer='viewer.show_text'))
-        add_trait(self,'left_t1_to_global_transform',File(exists=False,viewer='viewer.show_text'))
+        add_trait(self,'left_tal_to_global_transform',File(exists=False,viewer='soma.gui.viewer.show_text'))
+        add_trait(self,'left_t1_to_global_transform',File(exists=False,viewer='soma.gui.viewer.show_text'))
             ###Local
             #show descriptive model
         add_trait(self,'left_local_model',File(exists=True))
@@ -96,7 +96,7 @@ class SimpMorpho(Controller):
         add_trait(self,'left_translation_priors',File(exists=True))
         add_trait(self,'left_global_to_local_transforms',File(exists=False))
           ##Right         
-        add_trait(self,'right_labelled_graph',File(exists=False,viewer='viewer.show_fold_graph'))
+        add_trait(self,'right_labelled_graph',File(exists=False,viewer='soma.gui.viewer.show_fold_graph'))
         add_trait(self,'right_posterior_probabilities',File(exists=False))                  
         add_trait(self,'right_labels_priors',File(exists=True))
             ###Global             
@@ -122,7 +122,7 @@ class SimpMorpho(Controller):
         old: old value of the trait
         new: new value of the trait
         """
-        completion=soma.fom.process_completion( 'morphologist-brainvisa-1.0', self.name, 't1mri', str(self.t1mri),directories={'spm' : '/here/is/spm','shared' : '/volatile/bouin/build/trunk/share/brainvisa-share-4.4' })         
+        completion=soma.fom.process_completion( 'morphologist-brainvisa-1.0', self.name, 't1mri', str(self.t1mri),directories={'spm' : '/here/is/spm','shared' : os.environ[ 'BRAINVISA_SHARE' ] + '/brainvisa-share-4.4' })         
         # Traits modifications
         for key in completion:
             self.trait(key).attributs=completion[key][1] 
