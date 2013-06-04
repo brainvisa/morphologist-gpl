@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -94,8 +95,8 @@ def initialization( self ):
 
   # links for 2005 version
 
-  eNode.addLink( 'BrainSegmentation05.mri_corrected', 'mri_corrected' )
-  eNode.addLink( 'mri_corrected', 'BrainSegmentation05.mri_corrected' )
+  eNode.addLink( 'BrainSegmentation05.t1mri_nobias', 'mri_corrected' )
+  eNode.addLink( 'mri_corrected', 'BrainSegmentation05.t1mri_nobias' )
   eNode.addLink( 'BrainSegmentation05.brain_mask', 'brain_mask' )
   eNode.addLink( 'brain_mask', 'BrainSegmentation05.brain_mask' )
   eNode.addLink( 'BrainSegmentation05.commissure_coordinates',
