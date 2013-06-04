@@ -92,7 +92,7 @@ def initialization( self ):
   eNode = SelectionExecutionNode( self.name, parameterized = self )
 
   eNode.addChild( 'CorticalFoldsGraph_3_1',
-                   ProcessExecutionNode( 'CorticalFoldsGraph', optional = 1,
+                   ProcessExecutionNode( 'CorticalFoldsGraphPipeline', optional = 1,
                    selected=True ) )
 
   eNode.addChild( 'CorticalFoldsGraph_3_0',
