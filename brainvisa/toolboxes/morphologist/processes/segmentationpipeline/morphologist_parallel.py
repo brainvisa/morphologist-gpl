@@ -423,25 +423,25 @@ def initialization( self ):
 
 
   #eNode.BiasCorrection.removeLink( 'mri_corrected', 'mri' )
-  eNode.addDoubleLink( 'BiasCorrection.mri', 'imported_mri' )
-  eNode.addDoubleLink( 'BiasCorrection.mri_corrected', 'mri_corrected' )
+  eNode.addDoubleLink( 'BiasCorrection.t1mri', 'imported_mri' )
+  eNode.addDoubleLink( 'BiasCorrection.t1mri_nobias', 'mri_corrected' )
 
   eNode.HistoAnalysis.removeLink( 'hfiltered', 'mri_corrected' )
   eNode.HistoAnalysis.removeLink( 'white_ridges', 'mri_corrected' )
 
   eNode.addDoubleLink( 'HistoAnalysis.mri_corrected',
-                       'BiasCorrection.mri_corrected' )
+                       'BiasCorrection.t1mri_nobias' )
   eNode.addDoubleLink( 'HistoAnalysis.hfiltered', 'BiasCorrection.hfiltered' )
   eNode.addDoubleLink( 'HistoAnalysis.white_ridges',
                        'BiasCorrection.white_ridges' )
 
-  eNode.BrainSegmentation.removeLink( 'histo_analysis', 'mri_corrected' )
+  eNode.BrainSegmentation.removeLink( 'histo_analysis', 't1mri_nobias' )
   eNode.BrainSegmentation.removeLink( 'commissure_coordinates',
-                                      'mri_corrected' )
-  eNode.BrainSegmentation.removeLink( 'white_ridges', 'mri_corrected' )
+                                      't1mri_nobias' )
+  eNode.BrainSegmentation.removeLink( 'white_ridges', 't1mri_nobias' )
 
-  eNode.addDoubleLink( 'BrainSegmentation.mri_corrected',
-                       'BiasCorrection.mri_corrected' )
+  eNode.addDoubleLink( 'BrainSegmentation.t1mri_nobias',
+                       'BiasCorrection.t1mri_nobias' )
 
   eNode.addDoubleLink( 'BrainSegmentation.histo_analysis',
                        'HistoAnalysis.histo_analysis' )
@@ -452,8 +452,8 @@ def initialization( self ):
   eNode.addDoubleLink( 'BrainSegmentation.white_ridges',
                        'BiasCorrection.white_ridges' )
 
-  eNode.BrainSegmentation.removeLink( 'variance', 'mri_corrected' )
-  eNode.BrainSegmentation.removeLink( 'edges', 'mri_corrected' )
+  eNode.BrainSegmentation.removeLink( 'variance', 't1mri_nobias' )
+  eNode.BrainSegmentation.removeLink( 'edges', 't1mri_nobias' )
 
   eNode.addDoubleLink( 'BrainSegmentation.variance',
                        'BiasCorrection.variance' )
@@ -466,7 +466,7 @@ def initialization( self ):
   segNode.SplitBrain.removeLink( 'white_ridges', 'mri_corrected' )
 
   eNode.addDoubleLink( 'Par.Seg.SplitBrain.mri_corrected',
-                       'BiasCorrection.mri_corrected' )
+                       'BiasCorrection.t1mri_nobias' )
   eNode.addDoubleLink( 'Par.Seg.SplitBrain.histo_analysis',
                        'HistoAnalysis.histo_analysis' )
   eNode.addDoubleLink( 'Par.Seg.SplitBrain.brain_mask',
@@ -488,7 +488,7 @@ def initialization( self ):
   paraNode.HeadMesh.removeLink( 'histo_analysis', 't1mri_nobias' )
 
   eNode.addDoubleLink( 'Par.HeadMesh.t1mri_nobias',
-      'BiasCorrection.mri_corrected' )
+      'BiasCorrection.t1mri_nobias' )
   eNode.addDoubleLink( 'Par.HeadMesh.histo_analysis',
       'HistoAnalysis.histo_analysis' )
 
@@ -525,16 +525,16 @@ def initialization( self ):
 
     classifNode = hemiNode.GreyWhiteClassification
     classifNode.removeLink( 'histo_analysis', 't1mri_nobias' )
-    classifNode.removeLink( 'split_mask', 't1mri_nobias' )
+    classifNode.removeLink( 'split_brain', 't1mri_nobias' )
     classifNode.removeLink( 'edges', 't1mri_nobias' )
     classifNode.removeLink( 'commissure_coordinates', 't1mri_nobias' )
 
     classifP = hemiP + '.GreyWhiteClassification'
     eNode.addDoubleLink( \
-      classifP + '.t1mri_nobias', 'BiasCorrection.mri_corrected' )
+      classifP + '.t1mri_nobias', 'BiasCorrection.t1mri_nobias' )
     eNode.addDoubleLink( \
       classifP + '.histo_analysis', 'HistoAnalysis.histo_analysis' )
-    eNode.addDoubleLink( classifP + '.split_mask',
+    eNode.addDoubleLink( classifP + '.split_brain',
       'Par.Seg.SplitBrain.split_mask' )
     eNode.addDoubleLink( classifP + '.edges', 'BiasCorrection.edges' )
     eNode.addDoubleLink( classifP + '.commissure_coordinates',
@@ -546,7 +546,7 @@ def initialization( self ):
 
     eNode.addDoubleLink( \
       hemiP + '.GreyWhiteTopology.t1mri_nobias',
-      'BiasCorrection.mri_corrected' )
+      'BiasCorrection.t1mri_nobias' )
     eNode.addDoubleLink( \
       hemiP + '.GreyWhiteTopology.histo_analysis',
       'HistoAnalysis.histo_analysis' )
@@ -566,7 +566,7 @@ def initialization( self ):
       hemiP + '.GreyWhiteClassification.grey_white' )
     eNode.addDoubleLink( \
       hemiP + '.SulciSkeleton.t1mri_nobias',
-      'BiasCorrection.mri_corrected' )
+      'BiasCorrection.t1mri_nobias' )
 
     eNode.addDoubleLink( \
       hemiP + '.Meshes.GreyWhiteMesh.hemi_cortex',
@@ -580,7 +580,7 @@ def initialization( self ):
     meshP = hemiP + '.Meshes'
     eNode.addDoubleLink( \
       meshP + '.PialMesh.t1mri_nobias',
-      'BiasCorrection.mri_corrected' )
+      'BiasCorrection.t1mri_nobias' )
     eNode.addDoubleLink( \
       meshP + '.PialMesh.grey_white',
       hemiP + '.GreyWhiteClassification.grey_white' )
@@ -608,7 +608,7 @@ def initialization( self ):
       'hemi_mesh')
 
     eNode.addDoubleLink( \
-      meshP + '.Graph.mri_corrected', 'BiasCorrection.mri_corrected' )
+      meshP + '.Graph.mri_corrected', 'BiasCorrection.t1mri_nobias' )
     eNode.addDoubleLink(
       meshP + '.Graph.split_mask', 'Par.Seg.SplitBrain.split_mask' )
     eNode.addDoubleLink( \
