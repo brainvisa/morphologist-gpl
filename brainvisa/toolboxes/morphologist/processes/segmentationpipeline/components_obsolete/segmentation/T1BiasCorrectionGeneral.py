@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -111,10 +112,10 @@ def initialization( self ):
 
   # links for 2005 version
 
-  eNode.addLink( 'BiasCorrection05.mri', 'mri' )
-  eNode.addLink( 'mri', 'BiasCorrection05.mri' )
-  eNode.addLink( 'BiasCorrection05.mri_corrected', 'mri_corrected' )
-  eNode.addLink( 'mri_corrected', 'BiasCorrection05.mri_corrected' )
+  eNode.addLink( 'BiasCorrection05.t1mri', 'mri' )
+  eNode.addLink( 'mri', 'BiasCorrection05.t1mri' )
+  eNode.addLink( 'BiasCorrection05.t1mri_nobias', 'mri_corrected' )
+  eNode.addLink( 'mri_corrected', 'BiasCorrection05.t1mri_nobias' )
 
   eNode.addLink( 'BiasCorrection05.write_hfiltered', 'write_hfiltered' )
   eNode.addLink( 'write_hfiltered', 'BiasCorrection05.write_hfiltered' )
