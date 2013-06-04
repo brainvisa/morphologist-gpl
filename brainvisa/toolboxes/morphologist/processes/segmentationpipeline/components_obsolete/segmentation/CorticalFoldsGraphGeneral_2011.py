@@ -135,9 +135,9 @@ def initialization( self ):
 
   eNode1 = ParallelExecutionNode( 'CorticalFoldsGraph_3_1', selected=0 )
   eNode1.addChild( 'LeftCorticalFoldsGraph_3_1',
-                   ProcessExecutionNode( 'CorticalFoldsGraph', optional = 1 ) )
+                   ProcessExecutionNode( 'CorticalFoldsGraphPipeline', optional = 1 ) )
   eNode1.addChild( 'RightCorticalFoldsGraph_3_1',
-                   ProcessExecutionNode( 'CorticalFoldsGraph', optional = 1 ) )
+                   ProcessExecutionNode( 'CorticalFoldsGraphPipeline', optional = 1 ) )
   eNode.addChild( 'CorticalFoldsGraph_3_1', eNode1 )
 
   eNode.addChild( 'CorticalFoldsGraph_3_0',
