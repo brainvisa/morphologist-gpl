@@ -44,7 +44,7 @@ signature = Signature(
     't1mri_nobias', ReadDiskItem( 'T1 MRI Bias Corrected',
         'Aims readable volume formats' ),
     'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-    'split_mask', ReadDiskItem( 'Split Brain Mask',
+    'split_brain', ReadDiskItem( 'Split Brain Mask',
         'Aims readable volume formats' ),
     'edges', ReadDiskItem( 'T1 MRI Edges',
         'Aims readable volume formats' ),
@@ -62,7 +62,7 @@ def initialization( self ):
             return self.signature[ 'grey_white' ].findValue( self.t1mri_nobias, requiredAttributes={ 'side': self.side } )
     self.linkParameters( 'histo_analysis', 't1mri_nobias' )
     self.linkParameters( 'grey_white', ( 't1mri_nobias', 'side' ), linkGW )
-    self.linkParameters( 'split_mask', 't1mri_nobias' )
+    self.linkParameters( 'split_brain', 't1mri_nobias' )
     self.linkParameters( 'edges', 't1mri_nobias' )
     self.linkParameters( 'commissure_coordinates', 't1mri_nobias' )
     self.signature[ 'fix_random_seed' ].userLevel = 3
@@ -82,7 +82,7 @@ def execution( self, context ):
         command = [ 'VipGreyWhiteClassif', '-i',
                     self.t1mri_nobias, '-h',
                     self.histo_analysis, '-m',
-                    self.split_mask, '-edges',
+                    self.split_brain, '-edges',
                     self.edges, '-P',
                     self.commissure_coordinates, '-o',
                     self.grey_white, '-l', sideval,
