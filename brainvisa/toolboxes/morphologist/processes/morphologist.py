@@ -525,6 +525,8 @@ def initialization( self ):
         rhemi + '.CorticalFoldsGraph.talairach_transform',
         'TalairachTransformation.Talairach_transform' )
     
+    eNode.addDoubleLink( lhemi + '.CorticalFoldsGraph.graph_version',
+      rhemi + '.CorticalFoldsGraph.graph_version' )
     eNode.addDoubleLink( lhemi + '.CorticalFoldsGraph.graph', 'left_graph' )
     eNode.addDoubleLink( rhemi + '.CorticalFoldsGraph.graph', 'right_graph' )
     
@@ -536,6 +538,7 @@ def initialization( self ):
     leftNode.CorticalFoldsGraph.side = 'Left'
     rightNode.CorticalFoldsGraph.side = 'Right'
     leftNode.SulciRecognition._selectionChange.add( linkCheckModels( self ) )
+    rightNode.SulciRecognition._selectionChange.add( linkCheckModels( self ) )
     
     if len( list( eNode.PrepareSubject.executionNode().children() ) ) == 1:
         self.perform_normalization = False
