@@ -103,9 +103,10 @@ class TestMorphologistPipeline(unittest.TestCase):
     # in default_analysis
     if (not self.ref_nobias.isReadable()):
       print "* Run Morphologist to get reference results"
-      defaultContext().runProcess(pipeline, t1, self.ref_nobias, Anterior_Commissure=ac, 
-                                  Posterior_Commissure=pc, Interhemispheric_Point=ip)
-    
+      defaultContext().runProcess(pipeline, t1mri=t1,
+        t1mri_nobias=self.ref_nobias, Anterior_Commissure=ac,
+        Posterior_Commissure=pc, Interhemispheric_Point=ip)
+
     # run the pipeline a second time to get test results
     self.test_nobias = wd.findValue({"_database" : self.db_name, 
                                      "_format" : "NIFTI-1 image", 
@@ -114,8 +115,9 @@ class TestMorphologistPipeline(unittest.TestCase):
     if self.test_nobias.isReadable():
       rmtree(os.path.dirname(self.test_nobias.fullPath()))
     print "* Run Morphologist to get test results"
-    defaultContext().runProcess(pipeline, t1, self.test_nobias, Anterior_Commissure=ac, 
-                                Posterior_Commissure=pc, Interhemispheric_Point=ip)
+    defaultContext().runProcess(pipeline, t1mri=t1,
+      t1mri_nobias=self.test_nobias, Anterior_Commissure=ac,
+      Posterior_Commissure=pc, Interhemispheric_Point=ip)
 
     
   def test_pipeline_results(self):
