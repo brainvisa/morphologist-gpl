@@ -77,14 +77,20 @@ class TestMorphologistPipeline(unittest.TestCase):
     ip = [118.197914124, 99.53125, 45.6000061035]
     nodes.child('TalairachTransformation').setSelected(0)
     nodes.child('HeadMesh').setSelected(0)
-    nodes.child('CorticalFoldsGraph').setSelected(0)
+    nodes.HemispheresProcessing.LeftHemisphere.CorticalFoldsGraph.setSelected(0)
+    nodes.HemispheresProcessing.RightHemisphere.CorticalFoldsGraph.setSelected(0)
     nodes.child('BiasCorrection').fix_random_seed = True
     nodes.child('HistoAnalysis').fix_random_seed = True
     nodes.child('BrainSegmentation').fix_random_seed = True
     nodes.child('SplitBrain').fix_random_seed = True
-    nodes.child('GreyWhiteClassification').fix_random_seed = True
-    nodes.child('GreyWhiteSurface').fix_random_seed = True
-    nodes.child('HemispheresMesh').fix_random_seed = True
+    nodes.HemispheresProcessing.LeftHemisphere.GreyWhiteClassification.fix_random_seed = True
+    nodes.HemispheresProcessing.RightHemisphere.GreyWhiteClassification.fix_random_seed = True
+    nodes.HemispheresProcessing.LeftHemisphere.GreyWhiteTopology.fix_random_seed = True
+    nodes.HemispheresProcessing.RightHemisphere.GreyWhiteTopology.fix_random_seed = True
+    nodes.HemispheresProcessing.LeftHemisphere.SulciSkeleton.fix_random_seed = True
+    nodes.HemispheresProcessing.RightHemisphere.SulciSkeleton.fix_random_seed = True
+    nodes.HemispheresProcessing.LeftHemisphere.PialMesh.fix_random_seed = True
+    nodes.HemispheresProcessing.RightHemisphere.PialMesh.fix_random_seed = True
     #nodes.child('CorticalFoldsGraph').fix_random_seed = True
     #nodes.child("SulciRecognition").setSelected(1)
     
