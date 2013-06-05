@@ -94,7 +94,7 @@ class TestMorphologistPipeline(unittest.TestCase):
     #nodes.child('CorticalFoldsGraph').fix_random_seed = True
     #nodes.child("SulciRecognition").setSelected(1)
     
-    wd=pipeline.signature["mri_corrected"]
+    wd=pipeline.signature["t1mri_nobias"]
     self.ref_nobias = wd.findValue({"_database" : self.db_name, 
                                     "_format" : "NIFTI-1 image", 
                                     "center" : "test", "subject" : "sujet01",
