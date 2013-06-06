@@ -33,10 +33,9 @@
 
 from brainvisa.processes import *
 from soma.path import find_in_path
-import shfjGlobals
 import registration
 
-name = 'Cortical Fold Graph Thickness and Volumes'
+name = 'Hemisphere Sulci Thickness and Volumes'
 userLevel = 2
 
 
