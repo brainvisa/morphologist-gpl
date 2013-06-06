@@ -37,8 +37,8 @@ from soma.path import find_in_path
 import shfjGlobals
 import registration
 
-name = 'Sulci Voronoi'
-userLevel = 0
+name = 'Hemisphere Sulci Voronoi'
+userLevel = 2
 
 
 signature = Signature(
