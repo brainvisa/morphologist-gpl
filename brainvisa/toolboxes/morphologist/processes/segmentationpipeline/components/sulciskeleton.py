@@ -35,7 +35,7 @@ from brainvisa.processes import *
 import registration
 
 name = 'Hemisphere Sulci Skeleton'
-userLevel = 2
+userLevel = 0
 
 # Argument declaration
 signature = Signature(
