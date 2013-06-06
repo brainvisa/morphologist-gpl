@@ -41,21 +41,24 @@ signature = Signature(
     't1mri', ReadDiskItem( 'Raw T1 MRI',
         'Aims readable volume formats' ),
     'perform_normalization', Boolean(),
-    'Normalised', Choice('No','MNI from SPM','MNI from Mritotal',
-        'Marseille from SPM'),
-    'Anterior_Commissure', Point3D(),
-    'Posterior_Commissure', Point3D(),
-    'Interhemispheric_Point', Point3D(),
-    'Left_Hemisphere_Point', Point3D(),
+    'anterior_commissure', Point3D(),
+    'posterior_commissure', Point3D(),
+    'interhemispheric_point', Point3D(),
+    'left_hemisphere_point', Point3D(),
     't1mri_nobias', WriteDiskItem( 'T1 MRI Bias Corrected',
         'Aims writable volume formats' ),
+    'histo_analysis', WriteDiskItem( 'Histo Analysis', 'Histo Analysis' ),
     'split_brain', WriteDiskItem( 'Split Brain Mask',
         'Aims writable volume formats' ),
-    'perform_sulci_recognition', Boolean(),
-    'left_graph', WriteDiskItem( 'Left Cortical folds graph',
+    'left_graph', WriteDiskItem( 'Left Cortical Folds Graph',
         'Graph', requiredAttributes = {'labelled':'No', 'side':'left'} ),
-    'right_graph', WriteDiskItem( 'Right Cortical folds graph',
+    'right_graph', WriteDiskItem( 'Right Cortical Folds Graph',
         'Graph', requiredAttributes = {'labelled':'No', 'side':'right'} ),
+    'perform_sulci_recognition', Boolean(),
+    'left_labelled_graph', WriteDiskItem( 'Labelled Cortical Folds Graph',
+        'Graph', requiredAttributes = {'labelled':'Yes', 'side':'left'} ),
+    'right_labelled_graph', WriteDiskItem( 'Labelled Cortical Folds Graph',
+        'Graph', requiredAttributes = {'labelled':'Yes', 'side':'right'} ),
 )
 
 
@@ -90,29 +93,17 @@ class linkCheckModels:
 
 
 def initialization( self ):
-    def changeNormalize( self, proc ):
-        eNode = self.executionNode()
+    def changeNormalize( enabled, names, parameterized ):
+        eNode = parameterized[0].executionNode()
         if len( list( eNode.PrepareSubject.executionNode().children() ) ) > 1:
             if hasattr( eNode.PrepareSubject, 'StandardACPC' ):
                 s = eNode.PrepareSubject.StandardACPC.isSelected()
             else:
                 s = False
-            if s == self.perform_normalization:
+            if s == parameterized[0].perform_normalization:
                 y = list(eNode.PrepareSubject.executionNode().children())
                 y[0].setSelected( not self.perform_normalization )
                 y[1].setSelected( self.perform_normalization )
-                ul = self.userLevel
-                if s:
-                    ul = 3
-                # the following userlevel stuff doesn't work
-                self.signature[ 'Normalised' ].userLevel = ul
-                self.signature[ 'Anterior_Commissure' ].userLevel = ul
-                self.signature[ 'Posterior_Commissure' ].userLevel = ul
-                self.signature[ 'Interhemispheric_Point' ].userLevel = ul
-                self.signature[ 'Left_Hemisphere_Point' ].userLevel = ul
-                # enabling this produces widgets deletion problems
-                #self.changeSignature( self.signature )
-        return self.Normalised
     
     def enableRecognition( enabled, names, parameterized ):
         '''Select appropriate sub-processes when recognition is switched from
@@ -127,7 +118,7 @@ def initialization( self ):
     eNode.addChild( 'PrepareSubject',
                     ProcessExecutionNode( 'acpcOrNormalization',
                                           optional = 1,
-                                          altname=_t_('Image orientation handling') ) )
+                                          altname = _t_('Image orientation handling') ) )
     eNode.addChild( 'BiasCorrection',
                     ProcessExecutionNode( 'T1BiasCorrection',
                                           optional = 1 ) )
@@ -154,11 +145,11 @@ def initialization( self ):
     eNode.addChild( 'HemispheresProcessing', hemiProc )
     
     leftNode = SerialExecutionNode( 'Left hemisphere',
-                                    optional=True,
-                                    expandedInGui=True )
+                                    optional = True,
+                                    expandedInGui = True )
     rightNode = SerialExecutionNode( 'Right hemisphere',
-                                     optional=True,
-                                     expandedInGui=True )
+                                     optional = True,
+                                     expandedInGui = True )
     
     hemiProc.addChild( 'LeftHemisphere', leftNode )
     hemiProc.addChild( 'RightHemisphere', rightNode )
@@ -166,55 +157,55 @@ def initialization( self ):
     leftNode.addChild( 'GreyWhiteClassification',
                        ProcessExecutionNode( 'GreyWhiteClassificationHemi',
                                              optional = 1,
-                                             altname=_t_('Grey White Classification') ) )
+                                             altname = _t_('Grey White Classification') ) )
     leftNode.GreyWhiteClassification.side = 'left'
     leftNode.GreyWhiteClassification.signature[ 'side' ].userLevel = 3
     rightNode.addChild( 'GreyWhiteClassification',
                         ProcessExecutionNode( 'GreyWhiteClassificationHemi',
                                               optional = 1,
-                                              altname=_t_('Grey White Classification') ) )
+                                              altname = _t_('Grey White Classification') ) )
     rightNode.GreyWhiteClassification.side = 'right'
     rightNode.GreyWhiteClassification.signature[ 'side' ].userLevel = 3
     leftNode.addChild( 'GreyWhiteTopology',
                        ProcessExecutionNode( 'GreyWhiteTopology',
                                              optional = 1,
-                                             altname=_t_('Grey White Topology Correction') ) )
+                                             altname = _t_('Grey White Topology Correction') ) )
     rightNode.addChild( 'GreyWhiteTopology',
                         ProcessExecutionNode( 'GreyWhiteTopology',
                                               optional = 1,
-                                              altname=_t_('Grey White Topology Correction') ) )
+                                              altname = _t_('Grey White Topology Correction') ) )
     leftNode.addChild( 'GreyWhiteMesh',
                        ProcessExecutionNode( 'GreyWhiteMesh',
                                              optional = 1,
-                                             altname=_t_('Grey White Mesh') ) )
+                                             altname = _t_('Grey White Mesh') ) )
     rightNode.addChild( 'GreyWhiteMesh',
                         ProcessExecutionNode( 'GreyWhiteMesh',
                                               optional = 1,
-                                              altname=_t_('Grey White Mesh') ) )
+                                              altname = _t_('Grey White Mesh') ) )
     leftNode.addChild( 'SulciSkeleton',
                        ProcessExecutionNode( 'sulciskeleton',
                                              optional = 1,
-                                             altname=_t_('Sulci Skeleton and Roots') ) )
+                                             altname = _t_('Sulci Skeleton and Roots') ) )
     rightNode.addChild( 'SulciSkeleton',
                         ProcessExecutionNode( 'sulciskeleton',
                                              optional = 1,
-                                             altname=_t_('Sulci Skeleton and Roots') ) )
+                                             altname = _t_('Sulci Skeleton and Roots') ) )
     leftNode.addChild( 'PialMesh',
                        ProcessExecutionNode( 'hemispheremesh',
                                              optional = 1,
-                                             altname=_t_('Pial Mesh') ) )
+                                             altname = _t_('Pial Mesh') ) )
     rightNode.addChild( 'PialMesh',
                         ProcessExecutionNode( 'hemispheremesh',
                                              optional = 1,
-                                             altname=_t_('Pial Mesh') ) )
+                                             altname = _t_('Pial Mesh') ) )
     leftNode.addChild( 'CorticalFoldsGraph',
                         ProcessExecutionNode( 'corticalfoldsgraph',
                                               optional = 1,
-                                              altname=_t_('Cortical Folds Graph') ) )
+                                              altname = _t_('Cortical Folds Graph') ) )
     rightNode.addChild( 'CorticalFoldsGraph',
                         ProcessExecutionNode( 'corticalfoldsgraph',
                                               optional = 1,
-                                              altname=_t_('Cortical Folds Graph') ) )
+                                              altname = _t_('Cortical Folds Graph') ) )
     
     reco = getProcess('recognitionGeneral')
     if reco:
@@ -224,38 +215,30 @@ def initialization( self ):
         rightNode.addChild( 'SulciRecognition',
                         ProcessExecutionNode( 'recognitionGeneral',
                                               optional = 1, selected = 0 ) )
-    self.perform_sulci_recognition = False
-    if reco:
-        eNode.addLink( None, 'perform_sulci_recognition', enableRecognition )
-    else:
-        self.signature[ 'perform_sulci_recognition' ].userLevel = 3
     
     # Links
     ## Commissures Coordinates
     eNode.addDoubleLink( 'PrepareSubject.T1mri', 't1mri' )
     
     if hasattr( eNode.PrepareSubject, 'StandardACPC' ):
-        eNode.addDoubleLink( 'PrepareSubject.StandardACPC.Normalised',
-                             'Normalised' )
         eNode.addDoubleLink( 'PrepareSubject.StandardACPC.Anterior_Commissure',
-                             'Anterior_Commissure' )
+                             'anterior_commissure' )
         eNode.addDoubleLink( 'PrepareSubject.StandardACPC.Posterior_Commissure',
-                             'Posterior_Commissure' )
+                             'posterior_commissure' )
         eNode.addDoubleLink( 'PrepareSubject.StandardACPC.Interhemispheric_Point',
-                             'Interhemispheric_Point' )
+                             'interhemispheric_point' )
         eNode.addDoubleLink( 'PrepareSubject.StandardACPC.Left_Hemisphere_Point',
-                             'Left_Hemisphere_Point' )
+                             'left_hemisphere_point' )
     
-    self.setOptional( 'Normalised' )
-    self.setOptional( 'Anterior_Commissure' )
-    self.setOptional( 'Posterior_Commissure' )
-    self.setOptional( 'Interhemispheric_Point' )
-    self.setOptional( 'Left_Hemisphere_Point' )
+    self.setOptional( 'anterior_commissure' )
+    self.setOptional( 'posterior_commissure' )
+    self.setOptional( 'interhemispheric_point' )
+    self.setOptional( 'left_hemisphere_point' )
     
-    self.signature[ 'Anterior_Commissure' ].add3DLink( self, 'mri' )
-    self.signature[ 'Posterior_Commissure' ].add3DLink( self, 'mri' )
-    self.signature[ 'Interhemispheric_Point' ].add3DLink( self, 'mri' )
-    self.signature[ 'Left_Hemisphere_Point' ].add3DLink( self, 'mri' )
+    self.signature[ 'anterior_commissure' ].add3DLink( self, 'mri' )
+    self.signature[ 'posterior_commissure' ].add3DLink( self, 'mri' )
+    self.signature[ 'interhemispheric_point' ].add3DLink( self, 'mri' )
+    self.signature[ 'left_hemisphere_point' ].add3DLink( self, 'mri' )
     
     ## Bias Correction
     eNode.addDoubleLink( 'BiasCorrection.t1mri', 't1mri' )
@@ -269,6 +252,7 @@ def initialization( self ):
                          'BiasCorrection.t1mri_nobias' )
     eNode.addLink( 'HistoAnalysis.hfiltered', 'BiasCorrection.hfiltered' )
     eNode.addLink( 'HistoAnalysis.white_ridges', 'BiasCorrection.white_ridges' )
+    eNode.addDoubleLink( 'HistoAnalysis.histo_analysis', 'histo_analysis' )
     
     ## Brain Segmentation
     eNode.BrainSegmentation.removeLink( 'histo_analysis', 't1mri_nobias' )
@@ -291,12 +275,12 @@ def initialization( self ):
                          'BiasCorrection.edges' )
     
     ## Split Brain
-    eNode.SplitBrain.removeLink( 'histo_analysis', 'mri_corrected' )
-    eNode.SplitBrain.removeLink( 'brain_mask', 'mri_corrected' )
-    eNode.SplitBrain.removeLink( 'commissure_coordinates', 'mri_corrected' )
-    eNode.SplitBrain.removeLink( 'white_ridges', 'mri_corrected' )
+    eNode.SplitBrain.removeLink( 't1mri_nobias', 'brain_mask' )
+    eNode.SplitBrain.removeLink( 'histo_analysis', 't1mri_nobias' )
+    eNode.SplitBrain.removeLink( 'commissure_coordinates', 't1mri_nobias' )
+    eNode.SplitBrain.removeLink( 'white_ridges', 't1mri_nobias' )
     
-    eNode.addDoubleLink( 'SplitBrain.mri_corrected',
+    eNode.addDoubleLink( 'SplitBrain.t1mri_nobias',
                          'BiasCorrection.t1mri_nobias' )
     eNode.addDoubleLink( 'SplitBrain.histo_analysis',
                          'HistoAnalysis.histo_analysis' )
@@ -306,14 +290,14 @@ def initialization( self ):
                          'PrepareSubject.commissure_coordinates' )
     eNode.addDoubleLink( 'SplitBrain.white_ridges',
                          'BiasCorrection.white_ridges' )
-    eNode.addDoubleLink( 'SplitBrain.split_mask',
+    eNode.addDoubleLink( 'SplitBrain.split_brain',
                          'split_brain' )
     
     ## Talairach Transformation
     eNode.TalairachTransformation.removeLink( 'commissure_coordinates', 'split_mask' )
     
     eNode.addDoubleLink( 'TalairachTransformation.split_mask',
-                         'SplitBrain.split_mask' )
+                         'SplitBrain.split_brain' )
     eNode.addDoubleLink( 'TalairachTransformation.commissure_coordinates',
                          'PrepareSubject.commissure_coordinates' )
     
@@ -346,7 +330,7 @@ def initialization( self ):
         'HistoAnalysis.histo_analysis' )
     eNode.addDoubleLink( \
         lhemi + '.GreyWhiteClassification.split_brain',
-        'SplitBrain.split_mask' )
+        'SplitBrain.split_brain' )
     eNode.addDoubleLink( \
         lhemi + '.GreyWhiteClassification.edges',
         'BiasCorrection.edges' )
@@ -361,7 +345,7 @@ def initialization( self ):
         'HistoAnalysis.histo_analysis' )
     eNode.addDoubleLink( \
         rhemi + '.GreyWhiteClassification.split_brain',
-        'SplitBrain.split_mask' )
+        'SplitBrain.split_brain' )
     eNode.addDoubleLink( \
         rhemi + '.GreyWhiteClassification.edges',
         'BiasCorrection.edges' )
@@ -525,8 +509,9 @@ def initialization( self ):
         rhemi + '.CorticalFoldsGraph.talairach_transform',
         'TalairachTransformation.Talairach_transform' )
     
-    eNode.addDoubleLink( lhemi + '.CorticalFoldsGraph.graph_version',
-      rhemi + '.CorticalFoldsGraph.graph_version' )
+    eNode.addDoubleLink( \
+        lhemi + '.CorticalFoldsGraph.graph_version',
+        rhemi + '.CorticalFoldsGraph.graph_version' )
     eNode.addDoubleLink( lhemi + '.CorticalFoldsGraph.graph', 'left_graph' )
     eNode.addDoubleLink( rhemi + '.CorticalFoldsGraph.graph', 'right_graph' )
     
@@ -534,28 +519,35 @@ def initialization( self ):
     if reco:
         leftNode.addDoubleLink( 'SulciRecognition.data_graph', 'CorticalFoldsGraph.graph' )
         rightNode.addDoubleLink( 'SulciRecognition.data_graph', 'CorticalFoldsGraph.graph' )
+        eNode.addDoubleLink( lhemi + '.SulciRecognition.output_graph', 'left_labelled_graph' )
+        eNode.addDoubleLink( rhemi + '.SulciRecognition.output_graph', 'right_labelled_graph' )
         
-    leftNode.CorticalFoldsGraph.side = 'Left'
-    rightNode.CorticalFoldsGraph.side = 'Right'
-    leftNode.SulciRecognition._selectionChange.add( linkCheckModels( self ) )
-    rightNode.SulciRecognition._selectionChange.add( linkCheckModels( self ) )
+        leftNode.SulciRecognition._selectionChange.add( linkCheckModels( self ) )
+        rightNode.SulciRecognition._selectionChange.add( linkCheckModels( self ) )
     
-    if len( list( eNode.PrepareSubject.executionNode().children() ) ) == 1:
+    self.perform_sulci_recognition = False
+    self.setOptional( 'left_labelled_graph' )
+    self.setOptional( 'right_labelled_graph' )
+    
+    if reco:
+        eNode.addLink( None, 'perform_sulci_recognition', enableRecognition )
+    else:
+        self.signature[ 'perform_sulci_recognition' ].userLevel = 3
+        self.signature[ 'left_labelled_graph' ].userLevel = 3
+        self.signature[ 'right_labelled_graph' ].userLevel = 3
+    
+    if not hasattr( eNode.PrepareSubject, 'Normalization' ):
         self.perform_normalization = False
         self.signature[ 'perform_normalization' ].userLevel = 3
-    if not hasattr( eNode.PrepareSubject, 'StandardACPC' ) \
-        or not eNode.PrepareSubject.StandardACPC.isSelected():
-        eNode.TalairachTransformation.setSelected( False )
-        self.perform_normalization = True
     else:
-        self.perform_normalization = False
+        print 'perform_normalization = True'
+        self.perform_normalization = True
+    
     x = changeTalairach( self )
     if hasattr( eNode.PrepareSubject, 'StandardACPC' ):
         eNode.PrepareSubject.StandardACPC._selectionChange.add( x )
-    self.linkParameters( 'Normalised', 'perform_normalization', changeNormalize )
+    eNode.addLink( None, 'perform_normalization', changeNormalize )
     
     self.setExecutionNode( eNode )
-
-    # just for now, still stick with AC/PC for test and compatibility
-    self.perform_normalization = False
-    changeNormalize( self, self )
+    
+    eNode.TalairachTransformation.setSelected( False )
