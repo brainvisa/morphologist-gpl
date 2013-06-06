@@ -72,12 +72,12 @@ def initialization( self ):
 
   # break internal links
   
-  eNode.SplitBrain05.clearLinksTo( 'split_mask' )
-  eNode.SplitBrain05.clearLinksTo( 'Use_ridges' )
+  eNode.SplitBrain05.clearLinksTo( 'split_brain' )
+  eNode.SplitBrain05.clearLinksTo( 'use_ridges' )
   eNode.SplitBrain05.clearLinksTo( 'white_ridges' )
   eNode.SplitBrain05.clearLinksTo( 'histo_analysis' )
-  eNode.SplitBrain05.clearLinksTo( 'brain_mask' )
-  eNode.SplitBrain05.clearLinksTo( 'Use_template' )
+  eNode.SplitBrain05.clearLinksTo( 't1mri_nobias' )
+  eNode.SplitBrain05.clearLinksTo( 'use_template' )
   eNode.SplitBrain05.clearLinksTo( 'split_template' )
   eNode.SplitBrain05.clearLinksTo( 'commissure_coordinates' )
 
@@ -90,20 +90,20 @@ def initialization( self ):
 
   # links for 2005 version
 
-  eNode.addLink( 'SplitBrain05.mri_corrected', 'mri_corrected' )
-  eNode.addLink( 'mri_corrected', 'SplitBrain05.mri_corrected' )
-  eNode.addLink( 'SplitBrain05.split_mask', 'split_mask' )
-  eNode.addLink( 'split_mask', 'SplitBrain05.split_mask' )
-  eNode.addLink( 'SplitBrain05.Use_ridges', 'use_ridges' )
-  eNode.addLink( 'use_ridges', 'SplitBrain05.Use_ridges' )
+  eNode.addLink( 'SplitBrain05.t1mri_nobias', 'mri_corrected' )
+  eNode.addLink( 'mri_corrected', 'SplitBrain05.t1mri_nobias' )
+  eNode.addLink( 'SplitBrain05.split_brain', 'split_mask' )
+  eNode.addLink( 'split_mask', 'SplitBrain05.split_brain' )
+  eNode.addLink( 'SplitBrain05.use_ridges', 'use_ridges' )
+  eNode.addLink( 'use_ridges', 'SplitBrain05.use_ridges' )
   eNode.addLink( 'SplitBrain05.white_ridges', 'white_ridges' )
   eNode.addLink( 'white_ridges', 'SplitBrain05.white_ridges' )
   eNode.addLink( 'SplitBrain05.histo_analysis', 'histo_analysis' )
   eNode.addLink( 'histo_analysis', 'SplitBrain05.histo_analysis' )
   eNode.addLink( 'SplitBrain05.brain_mask', 'brain_mask' )
   eNode.addLink( 'brain_mask', 'SplitBrain05.brain_mask' )
-  eNode.addLink( 'SplitBrain05.Use_template', 'use_template' )
-  eNode.addLink( 'use_template', 'SplitBrain05.Use_template' )
+  eNode.addLink( 'SplitBrain05.use_template', 'use_template' )
+  eNode.addLink( 'use_template', 'SplitBrain05.use_template' )
   eNode.addLink( 'SplitBrain05.split_template', 'split_template' )
   eNode.addLink( 'split_template', 'SplitBrain05.split_template' )
   eNode.addLink( 'SplitBrain05.commissure_coordinates',
