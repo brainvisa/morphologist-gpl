@@ -33,95 +33,122 @@
 
 from brainvisa.processes import *
 import registration
+
 name = 'Split Brain Mask'
-userLevel = 2
+userLevel = 0
 
 signature = Signature(
-  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
-      'Aims readable volume formats' ),
-  'mode', Choice("Voronoi", "Watershed (2011)"),
-  'variant', Choice("regularized","GW Barycentre","WM Standard Deviation"),
-  'split_mask', WriteDiskItem( 'Split Brain Mask',
-      'Aims writable volume formats' ),
-  'bary_factor', Choice("0.9","0.8","0.7","0.6","0.5","0.4","0.3","0.2","0.1"),
-  'mult_factor', Choice("0.5","1","1.5","2","2.5","3","3.5","4"),
-  'initial_erosion', Float(),
-  'cc_min_size', Integer(),
-  'visu', Choice("No","Yes"),
-  'Use_ridges', Boolean(),
-  'white_ridges', ReadDiskItem( 'T1 MRI White Matter Ridges',
-      'Aims readable volume formats' ),
-  'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-  'brain_mask', ReadDiskItem( 'T1 Brain Mask',
-      'Aims readable volume formats' ),
-  'Use_template', Boolean(), 
-  'split_template', ReadDiskItem( 'Hemispheres Template',
-      'Aims readable volume formats' ),
-  'commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
-                                          'Commissure coordinates'),
-  'fix_random_seed', Boolean(),
+    'brain_mask', ReadDiskItem( 'T1 Brain Mask',
+        'Aims readable volume formats' ),
+    't1mri_nobias', ReadDiskItem( 'T1 MRI Bias Corrected',
+        'Aims readable volume formats' ),
+    'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
+    'commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
+                                            'Commissure coordinates'),
+    'use_ridges', Boolean(),
+    'white_ridges', ReadDiskItem( 'T1 MRI White Matter Ridges',
+        'Aims readable volume formats' ),
+    'use_template', Boolean(),
+    'split_template', ReadDiskItem( 'Hemispheres Template',
+        'Aims readable volume formats' ),
+    'mode', Choice('Watershed (2011)', 'Voronoi'),
+    'variant', Choice('regularized', 'GW Barycentre', 'WM Standard Deviation'),
+    'bary_factor', Choice(0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1),
+    'mult_factor', Choice(0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4),
+    'initial_erosion', Float(),
+    'cc_min_size', Integer(),
+    'split_brain', WriteDiskItem( 'Split Brain Mask',
+        'Aims writable volume formats' ),
+    'fix_random_seed', Boolean(),
 )
 
+def buildNewSignature(self, walgo):
+    paramSignature = [ 'brain_mask', ReadDiskItem( 'T1 Brain Mask',
+                            'Aims readable volume formats' ),
+                       't1mri_nobias', ReadDiskItem( 'T1 MRI Bias Corrected',
+                            'Aims readable volume formats' ),
+                       'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
+                       'commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
+                            'Commissure coordinates'),
+                       'use_ridges', Boolean(),
+                       'white_ridges', ReadDiskItem( 'T1 MRI White Matter Ridges',
+                            'Aims readable volume formats' ),
+                       'use_template', Boolean(),
+                       'split_template', ReadDiskItem( 'Hemispheres Template',
+                            'Aims readable volume formats' ),
+                       'mode', Choice('Watershed (2011)', 'Voronoi'),
+                       'variant', Choice('regularized', 'GW Barycentre', 'WM Standard Deviation') ]
+    if walgo == 'GW Barycentre':
+        paramSignature += ['bary_factor', Choice(0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1)]
+    elif walgo == 'WM Standard Deviation':
+        paramSignature += ['mult_factor', Choice(0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4)]
+    paramSignature += ['initial_erosion', Float(),
+                       'cc_min_size', Integer(),
+                       'split_brain', WriteDiskItem( 'Split Brain Mask',
+                            'Aims writable volume formats' ),
+                       'fix_random_seed', Boolean()]
+    
+    signature = Signature( *paramSignature )
+    self.changeSignature( signature )
 
 def initialization( self ):
-  self.linkParameters( 'histo_analysis', 'mri_corrected' )
-  self.linkParameters( 'brain_mask', 'mri_corrected' )
-  self.linkParameters( 'split_mask', 'mri_corrected' )
-  self.linkParameters( 'commissure_coordinates', 'mri_corrected' )
-  self.linkParameters( 'white_ridges', 'mri_corrected' )
-  self.signature[ 'fix_random_seed' ].userLevel = 3
-  self.Use_ridges = "True"
-  self.setOptional('white_ridges')
-  self.visu = "No"
-  self.mode = "Watershed (2011)"
-  self.variant = "GW Barycentre"
-  self.split_template = self.signature[ 'split_template' ].findValue( {} )
-  self.Use_template = "True"
-  self.setOptional('split_template')
-  self.setOptional('commissure_coordinates')
-  self.bary_factor = "0.6"
-  self.setOptional('bary_factor')
-  self.initial_erosion = 2
-  self.cc_min_size = 500
-  self.setOptional('mult_factor')
-  self.mult_factor = "2"
-  self.fix_random_seed = False
+    self.addLink( None, 'variant', self.buildNewSignature )
+    self.linkParameters( 't1mri_nobias', 'brain_mask' )
+    self.linkParameters( 'histo_analysis', 't1mri_nobias' )
+    self.linkParameters( 'commissure_coordinates', 't1mri_nobias' )
+    self.linkParameters( 'white_ridges', 't1mri_nobias' )
+    self.linkParameters( 'split_brain', 'brain_mask' )
+    self.split_template = self.signature[ 'split_template' ].findValue( {} )
+    
+    self.setOptional('commissure_coordinates')
+    self.setOptional('white_ridges')
+    self.setOptional('split_template')
+    
+    self.signature[ 'fix_random_seed' ].userLevel = 3
+    
+    self.Use_ridges = 'True'
+    self.use_template = 'True'
+    self.mode = 'Watershed (2011)'
+    self.variant = 'GW Barycentre'
+    self.bary_factor = 0.6
+    self.mult_factor = 2
+    self.initial_erosion = 2
+    self.cc_min_size = 500
+    self.fix_random_seed = False
 
 def execution( self, context ):
-    if os.path.exists(self.split_mask.fullName() + '.loc'):
-      context.write(self.split_mask.fullName(), ' has been locked')
-      context.write('Remove',self.split_mask.fullName(),'.loc if you want to trigger a new segmentation')
+    if os.path.exists(self.split_brain.fullName() + '.loc'):
+        context.write(self.split_brain.fullName(), ' has been locked')
+        context.write('Remove', self.split_brain.fullName(), '.loc if you want to trigger a new segmentation')
     else:
-      option_list = []
-      if self.commissure_coordinates is not None:
-        option_list += ['-Points', self.commissure_coordinates.fullPath()]
-      if self.variant=="regularized":
-        option_list += ['-walgo','r']
-      if self.variant=="GW Barycentre":
-        option_list += ['-Bary', self.bary_factor,'-walgo','b']
-      elif self.variant=="WM Standard Deviation":
-        option_list += ['-Coef', self.mult_factor,'-walgo','c']
-      if self.Use_template:
-        option_list += ['-template', self.split_template.fullPath(),'-TemplateUse', 'y']
-      else:
-        option_list += ['-TemplateUse', 'n']
-      if self.Use_ridges:
-        option_list += ['-Ridge', self.white_ridges.fullPath()]
-      if self.fix_random_seed:
-        option_list += ['-srand', '10']
-      call_list = ['VipSplitBrain',
-                     '-input',  self.mri_corrected.fullPath(),
-                     '-brain', self.brain_mask.fullPath(),
-                     '-analyse', 'r', '-hname', self.histo_analysis.fullPath(),
-                     '-output', self.split_mask.fullPath(),
-                     '-mode', self.mode,
-                     '-erosion', self.initial_erosion,
-                     '-ccsize', self.cc_min_size]
-      result = []
-      apply( context.system, call_list+option_list )
-      
-      # manage referentials
-      tm = registration.getTransformationManager()
-      tm.copyReferential(self.mri_corrected, self.split_mask)
-      
-      return result
+        command = [ 'VipSplitBrain',
+                    '-input',  self.t1mri_nobias,
+                    '-brain', self.brain_mask,
+                    '-analyse', 'r',
+                    '-hname', self.histo_analysis,
+                    '-output', self.split_brain,
+                    '-mode', self.mode,
+                    '-erosion', self.initial_erosion,
+                    '-ccsize', self.cc_min_size ]
+        if self.commissure_coordinates:
+            command += ['-Points', self.commissure_coordinates]
+        if self.variant == 'regularized':
+            command += ['-walgo', 'r']
+        elif self.variant == 'GW Barycentre':
+            command += ['-walgo', 'b', '-Bary', self.bary_factor]
+        elif self.variant == 'WM Standard Deviation':
+            command += ['-walgo', 'c', '-Coef', self.mult_factor]
+        if self.use_template:
+            command += ['-template', self.split_template, '-TemplateUse', 'y']
+        else:
+            command += ['-TemplateUse', 'n']
+        if self.use_ridges:
+            command += ['-Ridge', self.white_ridges]
+        if self.fix_random_seed:
+            command += ['-srand', '10']
+
+        context.system( *command )
+        
+        tm = registration.getTransformationManager()
+        tm.copyReferential(self.t1mri_nobias, self.split_brain)
+
