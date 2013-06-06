@@ -460,12 +460,12 @@ def initialization( self ):
   eNode.addDoubleLink( 'BrainSegmentation.edges',
                        'BiasCorrection.edges' )
 
-  segNode.SplitBrain.removeLink( 'histo_analysis', 'mri_corrected' )
-  segNode.SplitBrain.removeLink( 'brain_mask', 'mri_corrected' )
-  segNode.SplitBrain.removeLink( 'commissure_coordinates', 'mri_corrected' )
-  segNode.SplitBrain.removeLink( 'white_ridges', 'mri_corrected' )
+  segNode.SplitBrain.removeLink( 'histo_analysis', 't1mri_nobias' )
+  segNode.SplitBrain.removeLink( 't1mri_nobias', 'brain_mask' )
+  segNode.SplitBrain.removeLink( 'commissure_coordinates', 't1mri_nobias' )
+  segNode.SplitBrain.removeLink( 'white_ridges', 't1mri_nobias' )
 
-  eNode.addDoubleLink( 'Par.Seg.SplitBrain.mri_corrected',
+  eNode.addDoubleLink( 'Par.Seg.SplitBrain.t1mri_nobias',
                        'BiasCorrection.t1mri_nobias' )
   eNode.addDoubleLink( 'Par.Seg.SplitBrain.histo_analysis',
                        'HistoAnalysis.histo_analysis' )
@@ -480,7 +480,7 @@ def initialization( self ):
                                               'split_mask' )
 
   segNode.addDoubleLink( 'TalairachTransformation.split_mask',
-                         'SplitBrain.split_mask' )
+                         'SplitBrain.split_brain' )
   eNode.addDoubleLink( \
     'Par.Seg.TalairachTransformation.commissure_coordinates',
     'PrepareSubject.commissure_coordinates' )
@@ -535,7 +535,7 @@ def initialization( self ):
     eNode.addDoubleLink( \
       classifP + '.histo_analysis', 'HistoAnalysis.histo_analysis' )
     eNode.addDoubleLink( classifP + '.split_brain',
-      'Par.Seg.SplitBrain.split_mask' )
+      'Par.Seg.SplitBrain.split_brain' )
     eNode.addDoubleLink( classifP + '.edges', 'BiasCorrection.edges' )
     eNode.addDoubleLink( classifP + '.commissure_coordinates',
       'PrepareSubject.commissure_coordinates' )
@@ -610,7 +610,7 @@ def initialization( self ):
     eNode.addDoubleLink( \
       meshP + '.Graph.mri_corrected', 'BiasCorrection.t1mri_nobias' )
     eNode.addDoubleLink(
-      meshP + '.Graph.split_mask', 'Par.Seg.SplitBrain.split_mask' )
+      meshP + '.Graph.split_mask', 'Par.Seg.SplitBrain.split_brain' )
     eNode.addDoubleLink( \
       meshP + '.Graph.commissure_coordinates',
       'PrepareSubject.commissure_coordinates' )
