@@ -71,7 +71,7 @@ def execution( self, context ):
         context.write('Remove',self.histo_analysis.fullName(),'.han.loc if you want to trigger automated analysis')
     else:
         command = [ 'VipHistoAnalysis',
-                    '-i', self.mri_corrected,
+                    '-i', self.t1mri_nobias,
                     '-o', self.histo_analysis,
                     '-Save', 'y' ]
     if self.use_hfiltered and self.hfiltered is not None:
