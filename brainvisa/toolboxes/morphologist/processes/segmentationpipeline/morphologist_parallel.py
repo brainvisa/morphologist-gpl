@@ -426,10 +426,10 @@ def initialization( self ):
   eNode.addDoubleLink( 'BiasCorrection.t1mri', 'imported_mri' )
   eNode.addDoubleLink( 'BiasCorrection.t1mri_nobias', 'mri_corrected' )
 
-  eNode.HistoAnalysis.removeLink( 'hfiltered', 'mri_corrected' )
-  eNode.HistoAnalysis.removeLink( 'white_ridges', 'mri_corrected' )
+  eNode.HistoAnalysis.removeLink( 'hfiltered', 't1mri_nobias' )
+  eNode.HistoAnalysis.removeLink( 'white_ridges', 't1mri_nobias' )
 
-  eNode.addDoubleLink( 'HistoAnalysis.mri_corrected',
+  eNode.addDoubleLink( 'HistoAnalysis.t1mri_nobias',
                        'BiasCorrection.t1mri_nobias' )
   eNode.addDoubleLink( 'HistoAnalysis.hfiltered', 'BiasCorrection.hfiltered' )
   eNode.addDoubleLink( 'HistoAnalysis.white_ridges',

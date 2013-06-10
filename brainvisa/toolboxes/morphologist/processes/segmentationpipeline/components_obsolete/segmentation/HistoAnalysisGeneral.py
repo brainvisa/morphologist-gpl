@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -73,13 +74,13 @@ def initialization( self ):
   # eNode.HistoAnalysis05.removeLink( 'white_ridges', 'mri_corrected' )
   # eNode.HistoAnalysis04.removeLink( 'histo_analysis', 'mri_corrected' )
   # so we do this dirty things
-  eNode.HistoAnalysis05.clearLinksFrom( 'mri_corrected' )
+  eNode.HistoAnalysis05.clearLinksFrom( 't1mri_nobias' )
   eNode.HistoAnalysis04.clearLinksFrom( 'mri_corrected' )
 
   # links for 2005 version
 
-  eNode.addLink( 'HistoAnalysis05.mri_corrected', 'mri_corrected' )
-  eNode.addLink( 'mri_corrected', 'HistoAnalysis05.mri_corrected' )
+  eNode.addLink( 'HistoAnalysis05.t1mri_nobias', 'mri_corrected' )
+  eNode.addLink( 'mri_corrected', 'HistoAnalysis05.t1mri_nobias' )
   eNode.addLink( 'HistoAnalysis05.histo_analysis', 'histo_analysis' )
   eNode.addLink( 'histo_analysis', 'HistoAnalysis05.histo_analysis' )
   eNode.addLink( 'HistoAnalysis05.hfiltered', 'hfiltered' )
