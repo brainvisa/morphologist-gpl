@@ -62,7 +62,7 @@ def initialization( self ):
 def execution( self, context ):
     tm = registration.getTransformationManager()
 
-    context.write( "Detecting spherical inner cortical interface..." )
+    context.write( "Detecting " + self.grey_white.attributes()['side'] + " hemisphere spherical inner cortical interface..." )
     command = [ "VipHomotopic", "-i",
                 self.t1mri_nobias, "-cl",
                 self.grey_white, "-h",

@@ -53,7 +53,7 @@ def initialization( self ):
 def execution( self, context ):
     tm = registration.getTransformationManager()
     
-    context.write("Reconstructing hemisphere white mesh...")
+    context.write("Reconstructing " + self.hemi_cortex.attributes()['side'] + " hemisphere white mesh...")
     white = context.temporary( 'NIFTI-1 Image' )
     context.system( "VipSingleThreshold", "-i",
                     self.hemi_cortex, "-o",

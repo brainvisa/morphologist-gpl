@@ -65,13 +65,11 @@ def initialization( self ):
 def execution( self, context ):
     trManager = registration.getTransformationManager()
     
-    context.write( "Masking bias corrected image with hemisphere mask...")
+    context.write("Computing " + self.hemi_cortex.attributes()['side'] + " sulci skeleton and buried gyrus watershed...")
     braing = context.temporary( 'NIFTI-1 Image' )
     context.system( "VipMask", "-i", self.t1mri_nobias,
                     "-m", self.grey_white, "-o", braing,
                     "-w", "t" )
-
-    context.write("Computing sulci skeleton and buried gyrus watershed...")
     command = [ "VipSkeleton", "-i", self.hemi_cortex,
                 "-so", self.skeleton, "-vo", self.roots,
                 "-g", braing, "-w", "t" ]

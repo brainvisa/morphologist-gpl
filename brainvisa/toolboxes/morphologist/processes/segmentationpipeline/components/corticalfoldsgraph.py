@@ -153,7 +153,7 @@ def initialization( self ):
 def execution( self, context ):
     trManager = registration.getTransformationManager()
     
-    context.write("Building Attributed Relational Graph...")
+    context.write("Building " + self.skeleton.attributes()['side'] + " hemisphere attributed relational sulci graph...")
     graphd = context.temporary( 'Directory' )
     graph = os.path.join( graphd.fullPath(), 'foldgraph' )
     command = ['VipFoldArg',

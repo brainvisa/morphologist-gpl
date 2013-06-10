@@ -40,7 +40,7 @@ userLevel = 0
 
 # Argument declaration
 signature = Signature(
-    'side', Choice( "left", "right" ),
+    'side', Choice( 'left', 'right' ),
     't1mri_nobias', ReadDiskItem( 'T1 MRI Bias Corrected',
         'Aims readable volume formats' ),
     'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
@@ -74,7 +74,7 @@ def execution( self, context ):
         context.write(self.grey_white.fullName(), 'has been locked')
         context.write('Remove', self.grey_white.fullName(), '.loc if you want to trigger a new classification')
     else:
-        context.write( "Computing hemisphere grey-white classification..." )
+        context.write( 'Computing ' + self.side + ' hemisphere grey-white classification...' )
         if self.side == 'left':
             sideval = 2
         else:
