@@ -104,8 +104,8 @@ class TestMorphologistPipeline(unittest.TestCase):
     if (not self.ref_nobias.isReadable()):
       print "* Run Morphologist to get reference results"
       defaultContext().runProcess(pipeline, t1mri=t1,
-        t1mri_nobias=self.ref_nobias, Anterior_Commissure=ac,
-        Posterior_Commissure=pc, Interhemispheric_Point=ip)
+        t1mri_nobias=self.ref_nobias, anterior_commissure=ac,
+        posterior_commissure=pc, interhemispheric_point=ip)
 
     # run the pipeline a second time to get test results
     self.test_nobias = wd.findValue({"_database" : self.db_name, 
