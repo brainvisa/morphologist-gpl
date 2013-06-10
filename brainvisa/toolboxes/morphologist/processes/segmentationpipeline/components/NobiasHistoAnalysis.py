@@ -34,50 +34,55 @@
 from brainvisa.processes import *
 
 name = 'Histogram analysis'
-userLevel = 2
- 
+userLevel = 0
+
 signature = Signature(
-  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected', 'Aims readable volume formats' ),
-  'histo_analysis', WriteDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-  'histo', WriteDiskItem( 'Histogram', 'Histogram' ),
-  'use_hfiltered', Boolean(),
-  'hfiltered', ReadDiskItem( "T1 MRI Filtered For Histo", 'Aims readable volume formats' ),
-  'use_wridges', Boolean(),
-  'white_ridges', ReadDiskItem( "T1 MRI White Matter Ridges",   'Aims readable volume formats' ),
-  'undersampling', Choice('2', '4', '8', '16', '32', 'auto', 'iteration' ), 
-  'fix_random_seed', Boolean(),
+    't1mri_nobias', ReadDiskItem( 'T1 MRI Bias Corrected',
+        'Aims readable volume formats' ),
+    'use_hfiltered', Boolean(),
+    'hfiltered', ReadDiskItem( 'T1 MRI Filtered For Histo',
+        'Aims readable volume formats' ),
+    'use_wridges', Boolean(),
+    'white_ridges', ReadDiskItem( 'T1 MRI White Matter Ridges',
+        'Aims readable volume formats' ),
+    'undersampling', Choice('2', '4', '8', '16', '32', 'auto', 'iteration' ),
+    'histo_analysis', WriteDiskItem( 'Histo Analysis', 'Histo Analysis' ),
+    'histo', WriteDiskItem( 'Histogram', 'Histogram' ),
+    'fix_random_seed', Boolean(),
 )
 
 def initialization( self ):
-  self.signature[ 'fix_random_seed' ].userLevel = 3
-  self.linkParameters( 'histo_analysis', 'mri_corrected' )
-  self.linkParameters( 'histo', 'mri_corrected' )
-  self.linkParameters( 'hfiltered', 'mri_corrected' )
-  self.linkParameters( 'white_ridges', 'mri_corrected' )
-  self.setOptional( 'hfiltered' )
-  self.setOptional( 'white_ridges' )
-  self.use_hfiltered =  True
-  self.use_wridges = True
-  self.undersampling = 'iteration'
-  self.fix_random_seed = False
+    self.signature[ 'fix_random_seed' ].userLevel = 3
+    self.linkParameters( 'histo_analysis', 't1mri_nobias' )
+    self.linkParameters( 'histo', 't1mri_nobias' )
+    self.linkParameters( 'hfiltered', 't1mri_nobias' )
+    self.linkParameters( 'white_ridges', 't1mri_nobias' )
+    self.setOptional( 'hfiltered' )
+    self.setOptional( 'white_ridges' )
+    self.use_hfiltered =  True
+    self.use_wridges = True
+    self.undersampling = 'iteration'
+    self.fix_random_seed = False
 
 
 def execution( self, context ):
-  if os.path.exists(self.histo_analysis.fullName() + '.han.loc'):
-    context.write(self.histo_analysis.fullName(), '.han has been locked')
-    context.write('Remove',self.histo_analysis.fullName(),'.han.loc if you want to trigger automated analysis')
-  else:
-    option_list = []
-    constant_list = ['VipHistoAnalysis', '-i', self.mri_corrected.fullPath(), '-o', self.histo_analysis.fullPath(), '-Save', 'y']
-    if self.use_hfiltered and self.hfiltered is not None:
-        option_list += ['-Mask', self.hfiltered.fullPath()]
-    if self.use_wridges and self.white_ridges is not None:
-        option_list += ['-Ridge', self.white_ridges.fullPath()]
-    if self.undersampling == 'iteration':
-        option_list += ['-mode', 'i']
+    if os.path.exists(self.histo_analysis.fullName() + '.han.loc'):
+        context.write(self.histo_analysis.fullName(), '.han has been locked')
+        context.write('Remove',self.histo_analysis.fullName(),'.han.loc if you want to trigger automated analysis')
     else:
-        option_list += ['-mode', 'a', '-u', self.undersampling]
+        command = [ 'VipHistoAnalysis',
+                    '-i', self.mri_corrected,
+                    '-o', self.histo_analysis,
+                    '-Save', 'y' ]
+    if self.use_hfiltered and self.hfiltered is not None:
+        command += ['-Mask', self.hfiltered]
+    if self.use_wridges and self.white_ridges is not None:
+        command += ['-Ridge', self.white_ridges]
+    if self.undersampling == 'iteration':
+        command += ['-mode', 'i']
+    else:
+        command += ['-mode', 'a', '-u', self.undersampling]
     if self.fix_random_seed:
-        option_list += ['-srand', '10']
-    apply( context.system, constant_list+option_list )
-    
+        command += ['-srand', '10']
+    context.system( *command )
+
