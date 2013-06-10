@@ -116,10 +116,10 @@ class TestMorphologistPipeline(unittest.TestCase):
       rmtree(os.path.dirname(self.test_nobias.fullPath()))
     print "* Run Morphologist to get test results"
     defaultContext().runProcess(pipeline, t1mri=t1,
-      t1mri_nobias=self.test_nobias, Anterior_Commissure=ac,
-      Posterior_Commissure=pc, Interhemispheric_Point=ip)
+      t1mri_nobias=self.test_nobias, anterior_commissure=ac,
+      posterior_commissure=pc, interhemispheric_point=ip)
 
-    
+
   def test_pipeline_results(self):
     ref_dir = os.path.dirname(self.ref_nobias.fullPath())
     test_dir = os.path.dirname(self.test_nobias.fullPath())
