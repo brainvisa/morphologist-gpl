@@ -116,6 +116,7 @@ def initialization( self ):
   eNode.addLink( 'mri', 'BiasCorrection05.t1mri' )
   eNode.addLink( 'BiasCorrection05.t1mri_nobias', 'mri_corrected' )
   eNode.addLink( 'mri_corrected', 'BiasCorrection05.t1mri_nobias' )
+  eNode.addLink( 'BiasCorrection05.commissure_coordinates', 'BiasCorrection05.t1mri_nobias' )
 
   eNode.addLink( 'BiasCorrection05.write_hfiltered', 'write_hfiltered' )
   eNode.addLink( 'write_hfiltered', 'BiasCorrection05.write_hfiltered' )
