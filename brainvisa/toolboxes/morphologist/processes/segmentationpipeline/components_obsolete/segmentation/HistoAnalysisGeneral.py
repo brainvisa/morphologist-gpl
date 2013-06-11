@@ -83,6 +83,7 @@ def initialization( self ):
   eNode.addLink( 'mri_corrected', 'HistoAnalysis05.t1mri_nobias' )
   eNode.addLink( 'HistoAnalysis05.histo_analysis', 'histo_analysis' )
   eNode.addLink( 'histo_analysis', 'HistoAnalysis05.histo_analysis' )
+  eNode.addLink( 'HistoAnalysis05.histo', 'HistoAnalysis05.histo_analysis' )
   eNode.addLink( 'HistoAnalysis05.hfiltered', 'hfiltered' )
   eNode.addLink( 'hfiltered', 'HistoAnalysis05.hfiltered' )
   eNode.addLink( 'HistoAnalysis05.white_ridges', 'white_ridges' )
