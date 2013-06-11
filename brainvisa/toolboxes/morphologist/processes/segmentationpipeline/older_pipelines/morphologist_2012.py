@@ -192,6 +192,9 @@ def initialization( self ):
 
 
   #eNode.BiasCorrection.removeLink( 't1mri_nobias', 't1mri' )
+  eNode.BiasCorrection.removeLink( 'commissure_coordinates', 't1mri' )
+  eNode.addDoubleLink( 'BiasCorrection.commissure_coordinates',
+      'PrepareSubject.commissure_coordinates' )
   eNode.addLink( 'BiasCorrection.t1mri', 'mri' )
   eNode.addLink( 'mri', 'BiasCorrection.t1mri' )
   eNode.addLink( 'BiasCorrection.t1mri_nobias', 'mri_corrected' )
