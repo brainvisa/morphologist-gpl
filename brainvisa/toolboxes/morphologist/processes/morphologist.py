@@ -241,7 +241,10 @@ def initialization( self ):
     self.signature[ 'left_hemisphere_point' ].add3DLink( self, 'mri' )
     
     ## Bias Correction
+    eNode.BiasCorrection.removeLink( 'commissure_coordinates', 't1mri' )
     eNode.addDoubleLink( 'BiasCorrection.t1mri', 't1mri' )
+    eNode.addDoubleLink( 'BiasCorrection.commissure_coordinates',
+      'PrepareSubject.commissure_coordinates' )
     eNode.addDoubleLink( 'BiasCorrection.t1mri_nobias', 't1mri_nobias' )
     
     ## Histogram Analysis
