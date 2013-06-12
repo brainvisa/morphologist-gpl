@@ -69,7 +69,12 @@ def execution( self, context ):
                     "-m", self.grey_white, "-o", braing,
                     "-w", "t" )
     
-    context.write( "Detecting " + self.hemi_cortex.attributes()['side'] + " hemisphere spherical outer cortical surface..." )
+    side = self.hemi_cortex.get( 'side' )
+    if side is not None:
+        context.write( "Detecting " + side + " hemisphere spherical outer cortical surface..." )
+    else:
+        context.write( "Detecting spherical outer cortical surface..." )
+    
     hemi = context.temporary( 'NIFTI-1 Image' )
     command = [ "VipHomotopic", "-i", braing,
                 "-s", self.skeleton,
@@ -80,7 +85,11 @@ def execution( self, context ):
         command.extend(['-srand', 10])
     context.system( *command )
     
-    context.write("Reconstructing " + self.hemi_cortex.attributes()['side'] + " hemisphere pial mesh...")
+    if side is not None:
+        context.write("Reconstructing " + side + " hemisphere pial mesh...")
+    else:
+        context.write("Reconstructing pial mesh...")
+    
     context.system( "VipSingleThreshold", "-i", hemi,
                     "-o", hemi, "-t", "0", "-c", "b",
                     "-m", "ne", "-w", "t" )

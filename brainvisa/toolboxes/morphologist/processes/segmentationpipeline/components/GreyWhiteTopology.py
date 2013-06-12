@@ -61,10 +61,13 @@ def initialization( self ):
 
 def execution( self, context ):
     tm = registration.getTransformationManager()
-
+    
     side = self.grey_white.get( 'side' )
     if side is not None:
-      context.write( "Detecting " + side + " hemisphere spherical inner cortical interface..." )
+        context.write( "Detecting " + side + " hemisphere spherical inner cortical interface..." )
+    else:
+        context.write( "Detecting spherical inner cortical interface..." )
+    
     command = [ "VipHomotopic", "-i",
                 self.t1mri_nobias, "-cl",
                 self.grey_white, "-h",

@@ -65,7 +65,12 @@ def initialization( self ):
 def execution( self, context ):
     trManager = registration.getTransformationManager()
     
-    context.write("Computing " + self.hemi_cortex.attributes()['side'] + " sulci skeleton and buried gyrus watershed...")
+    side = self.hemi_cortex.get( 'side' )
+    if side is not None:
+        context.write("Computing " + side + " sulci skeleton and buried gyrus watershed...")
+    else:
+        context.write("Computing sulci skeleton and buried gyrus watershed...")
+    
     braing = context.temporary( 'NIFTI-1 Image' )
     context.system( "VipMask", "-i", self.t1mri_nobias,
                     "-m", self.grey_white, "-o", braing,
