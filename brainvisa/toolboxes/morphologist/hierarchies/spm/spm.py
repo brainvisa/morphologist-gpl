@@ -34,9 +34,11 @@
 # The FSL database allows to use FSL shared data, especially the normalization
 # templates.
 # The database root is the $FSLDIR/data directory.
-
+# momoTODO move into axon : tools
 hierarchy = (
 SetWeakAttr( 'database', '%f', 'databasename', 'spm' ), SetPriorityOffset( -10 ), SetContent(
+  'tpm', SetContent('grey', SetType('grey probability map')),
+  'toolbox', SetContent('Seg', SetContent('TPM', SetType('tissue probability map'))),                                                                                             
   'templates', SetContent(
   'T1', SetType( 'anatomical Template' ),
     SetWeakAttr( 'normalized', 'yes', 'skull_stripped', 'no', 'Size', '2 mm',

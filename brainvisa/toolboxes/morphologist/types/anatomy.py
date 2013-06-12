@@ -187,7 +187,9 @@ FileType( 'Transform Raw T1 MRI to Talairach-MNI template-SPM', 'Transformation 
 FileType( 'Transform Raw T1 MRI to Raw T1 MRI', 'Transformation matrix' )
 
 #--------------- Templates ------------------------
-FileType( 'anatomical Template', '3D Volume')
+FileType( 'anatomical Template', '3D Volume')# momoTODO move into axon : tools
+FileType( 'grey probability map', '3D Volume')# momoTODO move into axon : tools
+FileType( 'tissue probability map', '4D Volume')# momoTODO move into axon : tools
 FileType( 'anatomical Mask Template', '3D Volume')
 
 #----------- Obsololete registration ----------------------
