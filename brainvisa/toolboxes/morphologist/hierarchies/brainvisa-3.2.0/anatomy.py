@@ -36,6 +36,7 @@
 include( 'base' )
 import registration
 include( 'registration' )
+include( '3DT1_spm' )
 
 mesh_content = (
     "<subject>_brain", SetType( 'Brain Mesh' ), SetWeakAttr( 'side', 'both' ),
@@ -118,7 +119,7 @@ t1mri_content = (
         
         SetWeakAttr('destination_referential', str(registration.talairachMNIReferentialId)),
       ),
-      "{analysis}", SetDefaultAttributeValue( 'analysis', default_analysis ), SetNonMandatoryKeyAttribute( 'analysis' ),
+      "{analysis}",
         SetContent( # processing results in analysis
           #"nobias_<subject>", SetType( 'T1 MRI Bias Corrected' ),
           "biasfield_<subject>", SetType( 'T1 MRI Bias Field' ),
