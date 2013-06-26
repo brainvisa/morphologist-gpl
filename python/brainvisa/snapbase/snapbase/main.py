@@ -399,7 +399,7 @@ def main():
     else:
         # Otherwise, create it and update all necessary
         preferences = load_preferences({})
-        select_db(0)
+        #select_db(0)
         save_preferences(preferences)
         msgBox = Qt.QMessageBox.information(None, 'SnapBase settings file created',
             'Settings will be stored in %s.\nSnapshots will be saved in %s directory. It can be edited in the settings file.'%(snapbase_settings_file, preferences['output_path']), Qt.QMessageBox.Ok)
