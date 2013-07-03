@@ -409,15 +409,16 @@ def main():
     # Setting up modules
     gui.modules = []
 
+    #excluded_classes not necessary... yet
     excluded_classes = ['SnapBase', 'HippocampusLabelLeftSnapBase', 'HippocampusLabelRawLeftSnapBase', 'HippocampusLabelRawRightSnapBase',
           'HippocampusLabelRightSnapBase', 'HippocampusLabelSnapBase', 'HippocampusLeftSnapBase', 'HippocampusRightSnapBase', 'HippocampusSnapBase',
           'SPMComparisonSnapBase', 'SPMGreySnapBase', 'FibersSnapBase', 'SulciMultiViewSnapBase', 'SulciSingleViewSnapBase', 'WhiteThicknessSnapBase', 'HemiThicknessSnapBase']
 
     ordered_classes = ['RawSnapBase', 'TabletSnapBase', 'BrainMaskSnapBase',
          'SplitBrainSnapBase', 'GreyWhiteSnapBase',
-         'MeshCutSnapBase', 'MeshSnapBase', 'ThicknessSnapBase', 'SulciSnapBase']
+         'MeshCutSnapBase', 'MeshSnapBase', 'ThicknessSnapBase', 'SulciSnapBase', 'FreesurferAsegSnapBase']
 
-    ordered_snap_classes = [(each, snap_classes[each]) for each in ordered_classes if each in snap_classes.keys() and not each in excluded_classes]
+    ordered_snap_classes = [(each, snap_classes[each]) for each in ordered_classes if each in snap_classes.keys()] # and not each in excluded_classes]
 
     for (name, c) in ordered_snap_classes:
          print name

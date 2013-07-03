@@ -353,7 +353,8 @@ class SnapBase():
                'SulciSnapBase' : 'folds graph',
                'SulciSnapBase' : 'folds graph',
                'HemiThicknessSnapBase' : 'mesh',
-               'WhiteThicknessSnapBase' : 'mesh'}
+               'WhiteThicknessSnapBase' : 'mesh',
+               'FreesurferAsegSnapBase' : 'mri'}
         if acquisition_key.has_key(classname):
            return acquisition_key[classname]
 
@@ -481,6 +482,7 @@ class SnapBase():
        output_files = w.prefs['output_files']
        from PyQt4 import Qt
        if not len(w.prefs['output_files']) == len(self.dictdata):
+          print w.prefs['output_files'], self.dictdata
           ok = Qt.QMessageBox.warning(None, 'Snap cancelled.',
                 'Snap cancelled. %d snapshots over %s were created in %s.'%(len(output_files), len(self.dictdata), w.prefs['output_path']), Qt.QMessageBox.Ok)
        elif self.preferences['display_success_msgbox']:
