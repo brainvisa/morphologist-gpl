@@ -569,7 +569,7 @@ class SnapBase():
 
         # Iterating on subjects and data
         for (subject, protocol), diskitems in dictdata:
-          if w.view().isVisible():
+          #if w.view().isVisible():
             self.current_diskitems = diskitems
             main_window.statusBar().showMessage('%s %s'%(subject, protocol))
             # Reading data and converting to Anatomist object format
