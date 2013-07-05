@@ -515,6 +515,7 @@ class SnapBase():
         # Create Anatomist window
         a = ana.Anatomist('-b')
         a.onCloseWindowNotifier.add(self.closeEvent)
+        a.config()[ 'windowsUseGraphicsView' ] = 0
         if main_window is None:
             main_window = QtGui.QMainWindow()
         central_layout, central_widget, size_policy = create_simple_qt_app(main_window)
