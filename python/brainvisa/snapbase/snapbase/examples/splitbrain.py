@@ -286,7 +286,7 @@ class SPMGreySnapBase(SplitBrainSnapBase):
 
         return '%s_%s'%(attributes['acquisition'], spmtype)
 
-    def get_outfile_path(self, attributes):
+    def get_outfile_path(self, attributes, outputdir='', filename_root=''):
         import os
 
         output_dir = self.preferences['output_path']
@@ -350,7 +350,16 @@ class SPMGreySnapBase(SplitBrainSnapBase):
 
     def get_list_diskitems(self, verbose=True):
 
-        # Checking for ambiguity between diskitems (acquisition, ...)
+        from PyQt4 import Qt
+        import neuroHierarchy
+        item, ok = Qt.QInputDialog.getItem(None,
+               'Which database',
+               'which db',
+               neuroHierarchy.databases._databases.keys(), 0, False)
+        if ok :
+           self.preferences['db'] = item
+        else:
+           return
         db_dir = self.preferences['db']
 
         dictdata = []
@@ -358,10 +367,9 @@ class SPMGreySnapBase(SplitBrainSnapBase):
 
         import os
         from glob import glob
-        import neuroHierarchy
 
         items = [('subject', [os.path.split(each)[1] for each in glob(os.path.join(db_dir,'*','*')) if os.path.isdir(each) and each not in ['sacha_log_files', '.', '..']] ),
-                 ('type', ['grey mask', 'white mask', 'brain mask'])]
+                 ('type', ['grey mask', 'white mask'])] #, 'brain mask'])]
 
         from PyQt4 import QtGui, Qt
         window = QtGui.QDialog()

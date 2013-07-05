@@ -20,6 +20,7 @@ class HoverButton(QtGui.QPushButton):
              'brainmask_btn':'All T1 Brain Mask in the database',
              'thickness_btn':'All Cortical Thickness Maps in the database',
              'meshcut_btn' : 'All MeshCut',
+             'spmgrey_btn' : 'All SPM Grey maps',
              'btn_help':'Display a comprehensive help message'}
 
        self.emit(Qt.SIGNAL('enter'), str(messages[self.objectName()]))

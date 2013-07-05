@@ -376,7 +376,8 @@ class SnapBase():
                        'MeshCutSnapBase' :'meshcut',
                        'BrainMaskSnapBase' : 'brain',
                        'GreyWhiteSnapBase' : 'GW',
-                       'HippocampusSnapBase' : 'hippo'}
+                       'HippocampusSnapBase' : 'hippo',}
+#                       'SPMGreySnapBase' : 'spm'}
         is_sided = False
         side = self.get_current_side()
         if not side is None:
@@ -570,7 +571,6 @@ class SnapBase():
 
         # Iterating on subjects and data
         for (subject, protocol), diskitems in dictdata:
-          #if w.view().isVisible():
             self.current_diskitems = diskitems
             main_window.statusBar().showMessage('%s %s'%(subject, protocol))
             # Reading data and converting to Anatomist object format
@@ -652,7 +652,7 @@ class SnapBase():
 
             attributes.append(acquisition)
 
-            outfile_path = self.get_outfile_path(w.prefs['output_path'], w.prefs['filename_root'], attributes)
+            outfile_path = self.get_outfile_path(outputdir=w.prefs['output_path'], filename_root=w.prefs['filename_root'], attributes=attributes)
             output_files.append(outfile_path)
             print 'Writing... ', outfile_path
             big_tile.save(outfile_path, 'PNG')
