@@ -212,9 +212,9 @@ def save_action_hierarchies(database_checker, logdir = '/neurospin/cati/Users/op
     studies_space = database_checker.studies_space
     users_space = database_checker.users_space
     res = {}
-    res['action_name'] = 'neurospin_diskusage'
+    res['action_name'] = 'neurospin_folders_inventory'
     res['action_date'] = datetime_string
-    res['action_desc'] = 'General info about disk usage on /neurospin/cati'
+    res['action_desc'] = 'Index of existing identified files on /neurospin/cati'
     res['action_vers'] = '1.0'
     for each in ['studies', 'global']
        res[each] = {}
