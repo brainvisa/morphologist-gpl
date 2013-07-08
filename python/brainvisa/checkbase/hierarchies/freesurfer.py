@@ -68,7 +68,8 @@ freesurfer_surface_regions = ['bankssts',
  'transversetemporal',
  'insula']
 
-freesurfer_atlas_regions = ['BrainSegVol', 'BrainSegVolNotVent', 'TotalGrayVol', 'eTIV']
+freesurfer_atlas_regions = ['BrainSegVol', 'BrainSegVolNotVent', 'TotalGrayVol', 'eTIV', 'lhCortexVol', 'rhCortexVol', 'lhCorticalWhiteMatterVol', 'rhCorticalWhiteMatterVol', 'CorticalWhiteMatterVol',
+         'SubCortGrayVol', 'CortexVol', 'SupraTentorialVol', 'SupraTentorialVolNotVent', 'SurfaceHoles']
 freesurfer_atlas_regions2 = ['Left-Hippocampus', 'Left-Amygdala', 'Right-Hippocampus', 'Right-Amygdala']
 
 class FreeSurferCheckbase(Checkbase):
@@ -124,15 +125,20 @@ class FreeSurferCheckbase(Checkbase):
         pass
         #self.get_multiple_subjects()
 
-    def compute_volumes(self):
+    def compute_volumes(self, fastmode = True):
         if not hasattr(self, 'subjects'): self.get_subjects()
-        if not hasattr(self, 'existingfiles'): self.check_database_for_existing_files()
+        if not hasattr(self, 'existingfiles'):
+            if fastmode:
+               files = self.get_files_of_type('aseg_stats')
+            else:
+               self.check_database_for_existing_files()
+               files = self.existingfiles[0]
         import string
         self.volumes = {}
-        for subject in self.existingfiles[0].keys():
+        for subject in files.keys():
            key = 'aseg_stats'
-           if self.existingfiles[0][subject].has_key(key):
-              path = getfilepath(key, self.existingfiles[0][subject][key], patterns=self.patterns)
+           if files[subject].has_key(key):
+              path = getfilepath(key, files[subject][key], patterns=self.patterns)
               test = open(path, 'r').readlines()
               res = [string.split(each.rstrip('\n'), ', ') for each in test]
               measures = {}
@@ -145,22 +151,28 @@ class FreeSurferCheckbase(Checkbase):
               res = [string.split(each.rstrip('\n')) for each in test]
               for region in freesurfer_atlas_regions2:
                   m = [each for each in res if region in each]
-                  if len(m) > 0: measures[region] = m[0]
+                  if len(m) > 0: measures[region] = float(m[0][m[0].index(region) - 1])
 
 
               self.volumes.setdefault(subject, {})
               self.volumes[subject] = measures
 
 
-    def compute_thicknesses(self):
+    def compute_thicknesses(self, fastmode = True):
         if not hasattr(self, 'subjects'): self.get_subjects()
-        if not hasattr(self, 'existingfiles'): self.check_database_for_existing_files()
+        if not hasattr(self, 'existingfiles'):
+            if fastmode:
+               print 'get_files_of_type'
+               files = self.get_files_of_type(['left_aparc_stats', 'right_aparc_stats'])
+            else:
+               self.check_database_for_existing_files()
+               files = self.existingfiles[0]
         import string
         self.thicknesses = {}
-        for subject in self.existingfiles[0].keys():
+        for subject in files.keys():
            for key in ['left_aparc_stats', 'right_aparc_stats']:
-              if self.existingfiles[0][subject].has_key(key):
-                 path = getfilepath(key, self.existingfiles[0][subject][key], patterns=self.patterns)
+              if files[subject].has_key(key):
+                 path = getfilepath(key, files[subject][key], patterns=self.patterns)
                  test = open(path, 'r').readlines()
                  res = [string.split(each.rstrip('\n')) for each in test]
                  measures = {}

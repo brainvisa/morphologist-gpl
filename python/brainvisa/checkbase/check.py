@@ -25,7 +25,8 @@ studies_list = ['Memento',
                 'Lilly',
                 'MAPT',
                 'N4U',
-                'NIMH_Gogtay'
+                'NIMH_Gogtay',
+                '3C'
                 ]
 
 def csv2html(csvfile):
@@ -130,6 +131,35 @@ def save_volumes(volumes, logdir = '/neurospin/cati/Users/operto/logs/volumes/',
     f.close()
 
 
+def save_volumes_as_csv(volumes, csvfile):
+
+    import csv, os, string
+    with open(csvfile, 'wb',) as csvfile:
+        mywriter = csv.writer(csvfile, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        mywriter.writerow(volumes.items()[0][1].keys())
+        for i, (subject, vol) in enumerate(volumes.items()):
+            row = [subject]
+            row.extend(vol.values())
+            mywriter.writerow(row )
+
+def save_thicknesses_as_csv(volumes, csvfile):
+    import csv, os, string
+    with open(csvfile, 'wb',) as csvfile:
+        mywriter = csv.writer(csvfile, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        f1 = volumes.items()[0][1].items()[0][1]
+        fields = ['%s_%s'%(volumes.items()[0][1].keys()[0][0], each) for each in f1]
+        fields.extend(['%s_%s'%(volumes.items()[0][1].keys()[1][0], each) for each in f1])
+        mywriter.writerow(fields)
+        for i, (subject, vol) in enumerate(volumes.items()):
+            row = [subject]
+            for side, values in vol.items():
+                for name, v in values.items():
+                    if name == 'average':
+                        row.append(v)
+                    else:
+                        row.append(v[4])
+            mywriter.writerow(row)
+
 def save_csv(database_checker, logdir = '/neurospin/cati/Users/operto/logs', datetime_string = ''):
 
     import csv, os, string
@@ -149,6 +179,57 @@ def save_csv(database_checker, logdir = '/neurospin/cati/Users/operto/logs', dat
         device, size, used, available, percent = string.split(database_checker.global_disk_space, ' ')
         mywriter.writerow([ device, size, used, available, percent, database_checker.execution_time])
 
+def save_action_diskusage(database_checker, logdir = '/neurospin/cati/Users/operto/logs/json', datetime_string = ''):
+    import json
+
+    import csv, os, string
+    studies_space = database_checker.studies_space
+    users_space = database_checker.users_space
+    res = {}
+    res['action_name'] = 'neurospin_diskusage'
+    res['action_date'] = datetime_string
+    res['action_desc'] = 'General info about disk usage on /neurospin/cati'
+    res['action_vers'] = '1.0'
+    for each in ['studies', 'global']
+       res[each] = {}
+
+    for i, (study, size) in enumerate(studies_space.items()):
+        res[studies][study] = size
+    for i, (user, size) in enumerate(users_space.items()):
+        res[studies][user] = size
+    s = string.split(database_checker.global_disk_space, ' ')
+    for i, each in enumerate([ 'device', 'size', 'used', 'available', 'percent' ]):
+        res['global'][each] = s[i]
+
+    res['global']['execution_time'] = database_checker.execution_time
+    json_file = os.path.join(logdir, 'action_%s.json'%datetime_string)
+    json.dump(res)
+
+def save_action_hierarchies(database_checker, logdir = '/neurospin/cati/Users/operto/logs/json', datetime_string = ''):
+    import json
+
+    import csv, os, string
+    studies_space = database_checker.studies_space
+    users_space = database_checker.users_space
+    res = {}
+    res['action_name'] = 'neurospin_diskusage'
+    res['action_date'] = datetime_string
+    res['action_desc'] = 'General info about disk usage on /neurospin/cati'
+    res['action_vers'] = '1.0'
+    for each in ['studies', 'global']
+       res[each] = {}
+
+    for i, (study, size) in enumerate(studies_space.items()):
+        res[studies][study] = size
+    for i, (user, size) in enumerate(users_space.items()):
+        res[studies][user] = size
+    s = string.split(database_checker.global_disk_space, ' ')
+    for i, each in enumerate([ 'device', 'size', 'used', 'available', 'percent' ]):
+        res['global'][each] = s[i]
+
+    res['global']['execution_time'] = database_checker.execution_time
+    json_file = os.path.join(logdir, 'action_%s.json'%datetime_string)
+    json.dump(res)
 
 def save_table(checkbase, logdir = '/neurospin/cati/Users/operto/logs/existingfiles', datetime_string = ''):
     import csv, time, string, os
@@ -205,6 +286,7 @@ def run_disk_check(directory = '/neurospin/cati', logdir = '/neurospin/cati/User
        if hasattr(database_checker, 'studies_space'):
           # saving csv
           save_csv(database_checker, logdir, datetime_string = datetime_string)
+          save_action_diskusage(database_checker, os.path.join(logdir, 'json'), datetime_string = datetime_string)
     except Exception as e:
        if verbose: print e
        pass
@@ -252,6 +334,7 @@ def run_hierarchies_check(directory = '/neurospin/cati', logdir = '/neurospin/ca
     #try:
     if hasattr(database_checker, 'checks'):
           # save tables
+          save_action_hierarchies(database_checker, os.path.join(logdir, 'json'), datetime_string)
           save_tables(database_checker.checks['checkbase'], os.path.join(logdir, 'existingfiles'), datetime_string = datetime_string)
     #except Exception as e:
     #   print e
