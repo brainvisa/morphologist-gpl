@@ -44,6 +44,8 @@ class HTMLReportGenerator():
 
         self.database_checker = database_checker
         self.jsonfile = jsonfile
+        import json
+        self.json = json.load(jsonfile)
 
     def generate_from_template(self, template_pathname, conversion_hashtable):
         '''
@@ -102,7 +104,7 @@ class HTMLReportGenerator():
          return summary
        elif self.jsonfile:
          summary = ''
-         for study, study_size in self.jsonfile['studies'].items():
+         for study, study_size in self.json['studies'].items():
             summary = summary + '%s: %s<br>'%(study, str("{0:.2S}".format(size(study_size))))
          return summary
 
@@ -116,7 +118,7 @@ class HTMLReportGenerator():
         return summary
        elif self.jsonfile:
         summary = ''
-        for user, user_size in self.jsonfile['users'].items():
+        for user, user_size in self.json['users'].items():
             summary = summary + '%s: %s<br>'%(user, str("{0:.2S}".format(size(user_size))))
         return summary
 
@@ -250,8 +252,7 @@ class HTMLReportGenerator():
 
 
     def json_to_html(self):
-      import json
-      j = json.load(self.jsonfile)
+      j = self.json
       # neurospin_diskusage
       if j['action_name'] == 'neurospin_diskusage':
          percentage = j['global']['percent']
