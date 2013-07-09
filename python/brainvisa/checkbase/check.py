@@ -196,13 +196,19 @@ def save_action_diskusage(database_checker, logdir = '/neurospin/cati/Users/oper
     res['action_date'] = datetime_string
     res['action_desc'] = 'General info about disk usage on /neurospin/cati'
     res['action_vers'] = '1.0'
-    for each in ['studies', 'global']:
+    for each in ['studies', 'users', 'global']:
        res[each] = {}
 
     for i, (study, size) in enumerate(studies_space.items()):
         res['studies'][study] = size
     for i, (user, size) in enumerate(users_space.items()):
-        res['studies'][user] = size
+        res['users'][user] = size
+
+    for i, (study, size) in enumerate(other_studies.items()):
+        res['studies'][study] = size
+    for i, (user, size) in enumerate(other_users.items()):
+        res['users'][user] = size
+
     s = string.split(database_checker.global_disk_space, ' ')
     for i, each in enumerate([ 'device', 'size', 'used', 'available', 'percent' ]):
         res['global'][each] = s[i]
@@ -319,20 +325,20 @@ def run_disk_check(directory = '/neurospin/cati', logdir = '/neurospin/cati/User
     try:
        if hasattr(database_checker, 'studies_space'):
           # saving csv
-          save_csv(database_checker, logdir, datetime_string = datetime_string)
+          #save_csv(database_checker, logdir, datetime_string = datetime_string)
           save_action_diskusage(database_checker, os.path.join(logdir, 'json'), datetime_string = datetime_string)
     except Exception as e:
        if verbose: print e
        pass
 
     # generating report
-    import report
-    reportgen = report.HTMLReportGenerator(database_checker)
-    html = reportgen.generate_html_report()
-    html_file = os.path.join(logdir, 'diskreport-%s.html'%datetime_string)
-    pdf_file =  os.path.join(logdir, 'diskreport-%s.pdf'%datetime_string)
-    with open(html_file, 'wb') as f:
-        f.write(html)
+    #import report
+    #reportgen = report.HTMLReportGenerator(database_checker)
+    #html = reportgen.generate_html_report()
+    #html_file = os.path.join(logdir, 'diskreport-%s.html'%datetime_string)
+    #pdf_file =  os.path.join(logdir, 'diskreport-%s.pdf'%datetime_string)
+    #with open(html_file, 'wb') as f:
+    #    f.write(html)
 
 
 def run_hierarchies_check(directory = '/neurospin/cati', logdir = '/neurospin/cati/Users/operto/logs', studies_list = None, users_list = None, users_dir = None, verbose = True):
@@ -356,20 +362,20 @@ def run_hierarchies_check(directory = '/neurospin/cati', logdir = '/neurospin/ca
     database_checker = check_hierarchies(directory, studies_list = studies_list, users_dir = users_dir, users_list = users_list, verbose = verbose)
 
     # generating report
-    import report
-    datetime_string = str(time.strftime('%d%m%Y-%H%M%S', time.gmtime()))
-    reportgen = report.HTMLReportGenerator(database_checker)
-    html = reportgen.generate_html_report()
-    html_file = os.path.join(logdir, 'hierarchiesreport-%s.html'%datetime_string)
-    pdf_file =  os.path.join(logdir, 'hierarchiesreport-%s.pdf'%datetime_string)
-    with open(html_file, 'wb') as f:
-        f.write(html)
+    #import report
+    #datetime_string = str(time.strftime('%d%m%Y-%H%M%S', time.gmtime()))
+    #reportgen = report.HTMLReportGenerator(database_checker)
+    #html = reportgen.generate_html_report()
+    #html_file = os.path.join(logdir, 'hierarchiesreport-%s.html'%datetime_string)
+    #pdf_file =  os.path.join(logdir, 'hierarchiesreport-%s.pdf'%datetime_string)
+    #with open(html_file, 'wb') as f:
+    #    f.write(html)
 
     #try:
     if hasattr(database_checker, 'checks'):
           # save tables
           save_action_hierarchies(database_checker.checks['checkbase'], os.path.join(logdir, 'json'), datetime_string)
-          save_tables(database_checker.checks['checkbase'], os.path.join(logdir, 'existingfiles'), datetime_string = datetime_string)
+          #save_tables(database_checker.checks['checkbase'], os.path.join(logdir, 'existingfiles'), datetime_string = datetime_string)
     #except Exception as e:
     #   print e
     #   pass

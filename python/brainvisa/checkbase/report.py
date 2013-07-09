@@ -35,7 +35,7 @@ def revision_number(filepath):
 
 class HTMLReportGenerator():
 
-    def __init__(self, database_checker=None):
+    def __init__(self, database_checker=None, jsonfile = None):
         '''
     An HTMLReportGenerator instance is in charge of compiling the analysis
     results stored in a DatabaseChecker in order to generate an HTML report
@@ -43,6 +43,7 @@ class HTMLReportGenerator():
         '''
 
         self.database_checker = database_checker
+        self.jsonfile = jsonfile
 
     def generate_from_template(self, template_pathname, conversion_hashtable):
         '''
@@ -82,6 +83,7 @@ class HTMLReportGenerator():
             'DIRECTORIES' : 'directories_template.html',
             'GENERALINFO' : 'generalinfo_template.html',
             'HIERARCHIES' : 'hierarchies_template.html',
+            'CATIDBINDEX' : 'indexcatidb_template.html',
         }
         m = sys.modules['brainvisa.checkbase']
         report_template_path = os.path.join(os.path.split(m.__file__)[0], 'templates',
@@ -92,16 +94,32 @@ class HTMLReportGenerator():
         return self.generate_from_template(report_template_path, conversion_hashtable)
 
     def _generate_summary_on_directories(self):
-        summary = ''
-        for study, study_size in self.database_checker.studies_space.items():
+       """The two modes (database_checker and json) are implemented here """
+       if self.database_checker:
+         summary = ''
+         for study, study_size in self.database_checker.studies_space.items():
             summary = summary + '%s: %s<br>'%(study, str("{0:.2S}".format(size(study_size))))
-        return summary
+         return summary
+       elif self.jsonfile:
+         summary = ''
+         for study, study_size in jsonfile['studies'].items():
+            summary = summary + '%s: %s<br>'%(study, str("{0:.2S}".format(size(study_size))))
+         return summary
+
 
     def _generate_summary_on_users(self):
+       """The two modes (database_checker and json) are implemented here """
+       if self.database_checker:
         summary = ''
         for user, user_size in self.database_checker.users_space.items():
             summary = summary + '%s: %s<br>'%(user, str("{0:.2S}".format(size(user_size))))
         return summary
+       elif self.jsonfile:
+        summary = ''
+        for user, user_size in jsonfile['users'].items():
+            summary = summary + '%s: %s<br>'%(user, str("{0:.2S}".format(size(user_size))))
+        return summary
+
 
     def _generate_summary_on_undeclared_directories(self):
         import os
@@ -231,9 +249,10 @@ class HTMLReportGenerator():
            return self._convert_from_template('HIERARCHIES', conversion_hashtable)
 
 
-    def json_to_hashtable(self, jsonfile):
+    def json_to_html(self):
       import json
-      j = json.load(jsonfile)
+      j = json.load(self.jsonfile)
+      # neurospin_diskusage
       if j['action_name'] == 'neurospin_diskusage':
          percentage = j['global']['percent']
          device = j['global']['device']
@@ -241,16 +260,24 @@ class HTMLReportGenerator():
          used = j['global']['used']
          available = j['global']['available']
          time = j['global']['execution_time']
+         datetime = j['action_date']
 
-         conversion_hashtable = {
+         ht = {
+              '$ACTION_DATETIME' : str(datetime),
               '$PERCENTAGE' : str(percentage),
               '$TOTAL_SPACE' : str("{0:.2S}".format(size(int(total_size) * 1024.0))),
               '$USED_SPACE' : str("{0:.2S}".format(size(int(used) * 1024.0))),
               '$FREE_SPACE' : str("{0:.2S}".format(size(int(available) * 1024.0))),
+              '$NUMBER_OF_STUDIES' : len(j['studies']),
+              '$NUMBER_OF_USERS' : len(j['users']),
+              '$SUMMARY_ON_DIRECTORIES' : str(self._generate_summary_on_directories()),
+              '$SUMMARY_ON_USERS' : str(self._generate_summary_on_users()),
               }
-
+         return self._convert_from_template('GENERALINFO', ht)
+      # neurospin_folders_inventory
       elif j['action_name'] == 'neurospin_folders_inventory':
          conversion_hashtable = {'$HIERARCHIES' : j['inventory'].keys()}
+           conversion_hashtable['$DETAILED_DIRECTORIES'] = self._generate_detailed_directories()
+           return self._convert_from_template('HIERARCHIES', conversion_hashtable)
 
-      return conversion_hashtable
 
