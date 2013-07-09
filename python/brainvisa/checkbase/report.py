@@ -32,29 +32,6 @@ def revision_number(filepath):
    rev_number = string.atoi(output.split('\n')[5].split(' ')[1])
    return rev_number
 
-def json_to_hashtable(jsonfile):
-   import json
-   j = json.load(jsonfile)
-   if j['action_name'] == 'neurospin_diskusage':
-      percentage = j['global']['percent']
-      device = j['global']['device']
-      total_size = j['global']['size']
-      used = j['global']['used']
-      available = j['global']['available']
-      time = j['global']['execution_time']
-
-      conversion_hashtable = {
-           '$PERCENTAGE' : str(percentage),
-           '$TOTAL_SPACE' : str("{0:.2S}".format(size(int(total_size) * 1024.0))),
-           '$USED_SPACE' : str("{0:.2S}".format(size(int(used) * 1024.0))),
-           '$FREE_SPACE' : str("{0:.2S}".format(size(int(available) * 1024.0))),
-           }
-
-
-   elif j['action_name'] == 'neurospin_folders_inventory':
-      pass
-   return conversion_hashtable
-
 
 class HTMLReportGenerator():
 
@@ -252,4 +229,27 @@ class HTMLReportGenerator():
         if hasattr(self.database_checker, 'hierarchies'):
            conversion_hashtable['$DETAILED_DIRECTORIES'] = self._generate_detailed_directories()
            return self._convert_from_template('HIERARCHIES', conversion_hashtable)
+
+
+   def json_to_hashtable(self, jsonfile):
+      import json
+      j = json.load(jsonfile)
+      if j['action_name'] == 'neurospin_diskusage':
+         percentage = j['global']['percent']
+         device = j['global']['device']
+         total_size = j['global']['size']
+         used = j['global']['used']
+         available = j['global']['available']
+         time = j['global']['execution_time']
+
+         conversion_hashtable = {
+              '$PERCENTAGE' : str(percentage),
+              '$TOTAL_SPACE' : str("{0:.2S}".format(size(int(total_size) * 1024.0))),
+              '$USED_SPACE' : str("{0:.2S}".format(size(int(used) * 1024.0))),
+              '$FREE_SPACE' : str("{0:.2S}".format(size(int(available) * 1024.0))),
+              }
+
+      elif j['action_name'] == 'neurospin_folders_inventory':
+
+      return conversion_hashtable
 
