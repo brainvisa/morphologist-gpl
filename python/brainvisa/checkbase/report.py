@@ -276,7 +276,7 @@ class HTMLReportGenerator():
          return self._convert_from_template('GENERALINFO', ht)
       # neurospin_folders_inventory
       elif j['action_name'] == 'neurospin_folders_inventory':
-         conversion_hashtable = {'$HIERARCHIES' : j['inventory'].keys()}
+           conversion_hashtable = {'$HIERARCHIES' : j['inventory'].keys()}
            conversion_hashtable['$DETAILED_DIRECTORIES'] = self._generate_detailed_directories()
            return self._convert_from_template('HIERARCHIES', conversion_hashtable)
 
