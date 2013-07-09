@@ -273,7 +273,6 @@ def json_to_tables(jsonfile):
    import json, csv, string, os
    j = json.load(open(jsonfile, 'rb'))
    assert(j['action_name'] == 'neurospin_folders_inventory')
-   from brainvisa import checkbase
    for directory, inv in j['inventory'].items():
        fields_names = ['subject']
        fields_names.extend(inv['key_items'])
