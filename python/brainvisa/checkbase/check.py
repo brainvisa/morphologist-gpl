@@ -306,14 +306,14 @@ def run_disk_check(directory = '/neurospin/cati', logdir = '/neurospin/cati/User
     from brainvisa.checkbase import DatabaseChecker
     from brainvisa.checkbase.diskusage.check import check_disk_usage
     from brainvisa.checkbase import check as ch
-    if not studies_list: studies_list = ['Memento'] #ch.studies_list
-    if users_list is None: users_list = ['operto'] #ch.users_dict.keys()
+    if not studies_list: studies_list = ch.studies_list
+    if users_list is None: users_list = ch.users_dict.keys()
     if not users_dir: users_dir = ch.users_dir
     if len(users_list) == 0: users_dir = ''
     assert(os.path.exists(logdir))
 
     if verbose: print 'Checking free disk............................................'
-    database_checker = check_disk_usage(directory, get_sizes = get_sizes, studies_list = studies_list, users_dir = users_dir, users_list = users_list, verbose = verbose, process_undeclared = False)
+    database_checker = check_disk_usage(directory, get_sizes = get_sizes, studies_list = studies_list, users_dir = users_dir, users_list = users_list, verbose = verbose, process_undeclared = True)
 
     datetime_string = str(time.strftime('%d%m%Y-%H%M%S', time.gmtime()))
     try:
@@ -345,8 +345,8 @@ def run_hierarchies_check(directory = '/neurospin/cati', logdir = '/neurospin/ca
     from brainvisa.checkbase import DatabaseChecker
     from brainvisa.checkbase.hierarchies.check import check_hierarchies
     from brainvisa.checkbase import check as ch
-    if not studies_list: studies_list = []#['Memento'] #ch.studies_list
-    if not users_list: users_list = ['fischer'] #ch.users_dict.keys()
+    if not studies_list: studies_list = ch.studies_list
+    if not users_list: users_list = ch.users_dict.keys()
     if not users_dir: users_dir = ch.users_dir
     if len(users_list) == 0: users_dir = ''
 
