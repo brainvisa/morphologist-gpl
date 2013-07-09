@@ -102,7 +102,7 @@ class HTMLReportGenerator():
          return summary
        elif self.jsonfile:
          summary = ''
-         for study, study_size in jsonfile['studies'].items():
+         for study, study_size in self.jsonfile['studies'].items():
             summary = summary + '%s: %s<br>'%(study, str("{0:.2S}".format(size(study_size))))
          return summary
 
@@ -116,7 +116,7 @@ class HTMLReportGenerator():
         return summary
        elif self.jsonfile:
         summary = ''
-        for user, user_size in jsonfile['users'].items():
+        for user, user_size in self.jsonfile['users'].items():
             summary = summary + '%s: %s<br>'%(user, str("{0:.2S}".format(size(user_size))))
         return summary
 
@@ -268,8 +268,8 @@ class HTMLReportGenerator():
               '$TOTAL_SPACE' : str("{0:.2S}".format(size(int(total_size) * 1024.0))),
               '$USED_SPACE' : str("{0:.2S}".format(size(int(used) * 1024.0))),
               '$FREE_SPACE' : str("{0:.2S}".format(size(int(available) * 1024.0))),
-              '$NUMBER_OF_STUDIES' : len(j['studies']),
-              '$NUMBER_OF_USERS' : len(j['users']),
+              '$NUMBER_OF_STUDIES' : len(j['studies'].items()),
+              '$NUMBER_OF_USERS' : len(j['users'].items()),
               '$SUMMARY_ON_DIRECTORIES' : str(self._generate_summary_on_directories()),
               '$SUMMARY_ON_USERS' : str(self._generate_summary_on_users()),
               }
