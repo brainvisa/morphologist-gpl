@@ -231,7 +231,7 @@ class HTMLReportGenerator():
            return self._convert_from_template('HIERARCHIES', conversion_hashtable)
 
 
-   def json_to_hashtable(self, jsonfile):
+    def json_to_hashtable(self, jsonfile):
       import json
       j = json.load(jsonfile)
       if j['action_name'] == 'neurospin_diskusage':
