@@ -250,6 +250,7 @@ class HTMLReportGenerator():
               }
 
       elif j['action_name'] == 'neurospin_folders_inventory':
+         conversion_hashtable = {'$HIERARCHIES' : j['inventory'].keys()}
 
       return conversion_hashtable
 
