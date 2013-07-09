@@ -27,7 +27,7 @@ def get_size(directory = '.', fastmode=True):
     return total_size
 
 def check_disk_usage(directory, get_sizes = True, studies_list = studies_list, users_dir = 'Users',
-                     users_list = users_dict.keys(), excludelist = ['.snapshot', 'Users'], verbose = True):
+                     users_list = users_dict.keys(), excludelist = ['.snapshot', 'Users'], verbose = True, process_undeclared = True):
    ''' Disk usage controlling procedure, originally for /neurospin/cati
    - gets the output of df Unix function
    - estimates the size of every folder under the given directory
@@ -89,7 +89,7 @@ def check_disk_usage(directory, get_sizes = True, studies_list = studies_list, u
             users_space[user] = s
             if verbose: print user, users_space[user], 'identified', time.time() - start_time
        else:
-            #continue
+            if not process_undeclared: continue
             s = 0
             if get_sizes: s = get_size(os.path.join(users_dir, user))
             other_users[user] = s
@@ -105,7 +105,7 @@ def check_disk_usage(directory, get_sizes = True, studies_list = studies_list, u
            studies_space[study] = s
            if verbose: print study, studies_space[study], 'identified', time.time() - start_time
        else:
-           #continue
+           if not process_undeclared: continue
            s = 0
            if get_sizes: s = get_size(os.path.join(directory, study))
            other_studies[study] = s

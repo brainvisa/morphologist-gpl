@@ -30,15 +30,19 @@ studies_list = ['Memento',
                 ]
 
 def csv2html(csvfile):
+   '''csvfile can be a list of comma separated strings or a csv textfile'''
    html = ''
-   import re
+   import re, os
    import cgi
    import sys
    import string
    import codecs
 
    #file = codecs.open(sys.argv[1], encoding='utf-8', mode='r')
-   file = open(csvfile, 'r')
+   if isinstance(csvfile, basestring) and os.path.exists(csvfile):
+      file = open(csvfile, 'r')
+   elif isinstance(csvfile, list):
+      file = csvfile
 
    html += """
    <!DOCTYPE html>
@@ -185,51 +189,57 @@ def save_action_diskusage(database_checker, logdir = '/neurospin/cati/Users/oper
     import csv, os, string
     studies_space = database_checker.studies_space
     users_space = database_checker.users_space
+    other_studies = database_checker.other_studies
+    other_users = database_checker.other_users
     res = {}
     res['action_name'] = 'neurospin_diskusage'
     res['action_date'] = datetime_string
     res['action_desc'] = 'General info about disk usage on /neurospin/cati'
     res['action_vers'] = '1.0'
-    for each in ['studies', 'global']
+    for each in ['studies', 'global']:
        res[each] = {}
 
     for i, (study, size) in enumerate(studies_space.items()):
-        res[studies][study] = size
+        res['studies'][study] = size
     for i, (user, size) in enumerate(users_space.items()):
-        res[studies][user] = size
+        res['studies'][user] = size
     s = string.split(database_checker.global_disk_space, ' ')
     for i, each in enumerate([ 'device', 'size', 'used', 'available', 'percent' ]):
         res['global'][each] = s[i]
 
     res['global']['execution_time'] = database_checker.execution_time
     json_file = os.path.join(logdir, 'action_%s.json'%datetime_string)
-    json.dump(res)
+    while os.path.exists(json_file):
+       import time
+       time.sleep(2)
+       json_file = os.path.join(logdir, 'action_%s.json'%datetime_string)
+    json.dump(res, open(json_file, 'wb'))
 
-def save_action_hierarchies(database_checker, logdir = '/neurospin/cati/Users/operto/logs/json', datetime_string = ''):
+def save_action_hierarchies(checks, logdir = '/neurospin/cati/Users/operto/logs/json', datetime_string = ''):
     import json
 
     import csv, os, string
-    studies_space = database_checker.studies_space
-    users_space = database_checker.users_space
     res = {}
     res['action_name'] = 'neurospin_folders_inventory'
     res['action_date'] = datetime_string
     res['action_desc'] = 'Index of existing identified files on /neurospin/cati'
     res['action_vers'] = '1.0'
-    for each in ['studies', 'global']
-       res[each] = {}
+    res['inventory'] = {}
+    for db, checkbase in checks.items():
+       print db
+       if hasattr(checkbase, 'existingfiles'):
+          res['inventory'][db] = {}
+          res['inventory'][db]['key_items'] = checkbase.keyitems
+          res['inventory'][db]['identified_items'] = checkbase.existingfiles[0]
+          res['inventory'][db]['unidentified_items'] = checkbase.existingfiles[1]
 
-    for i, (study, size) in enumerate(studies_space.items()):
-        res[studies][study] = size
-    for i, (user, size) in enumerate(users_space.items()):
-        res[studies][user] = size
-    s = string.split(database_checker.global_disk_space, ' ')
-    for i, each in enumerate([ 'device', 'size', 'used', 'available', 'percent' ]):
-        res['global'][each] = s[i]
-
-    res['global']['execution_time'] = database_checker.execution_time
     json_file = os.path.join(logdir, 'action_%s.json'%datetime_string)
-    json.dump(res)
+    while os.path.exists(json_file):
+       import time
+       time.sleep(2)
+       json_file = os.path.join(logdir, 'action_%s.json'%datetime_string)
+
+    json.dump(res, open(json_file, 'wb'))
 
 def save_table(checkbase, logdir = '/neurospin/cati/Users/operto/logs/existingfiles', datetime_string = ''):
     import csv, time, string, os
@@ -258,6 +268,34 @@ def save_table(checkbase, logdir = '/neurospin/cati/Users/operto/logs/existingfi
     f.write(html)
     f.close()
 
+def json_to_tables(jsonfile):
+   tables = {}
+   import json, csv, string, os
+   j = json.load(open(jsonfile, 'rb'))
+   assert(j['action_name'] == 'neurospin_folders_inventory')
+   from brainvisa import checkbase
+   for each, inv in j['inventory'].items():
+       c = checkbase.Checkbase(each)
+       c.keyitems = inv['key_items']
+       c.existingfiles = (inv['identified_items'], inv['unidentified_items'])
+       fields_names = ['subject']
+       fields_names.extend(inv['key_items'])
+       csv = []
+       csv.append(string.join(fields_names, ';'))
+       for subject in c.existingfiles[0].keys():
+            subject_row = [unicode(subject).encode("utf-8")]
+            for each in c.keyitems:
+               if each in c.existingfiles[0][subject].keys():
+                  subject_row.append('1')
+               else:
+                  subject_row.append('0')
+
+            csv.append(string.join(subject_row, ';'))
+
+       html = csv2html(csv)
+       tables[c.directory] = html
+
+   return tables
 
 def save_tables(checks, logdir = '/neurospin/cati/Users/operto/logs/existingfiles', datetime_string = ''):
    for db, checkbase in checks.items():
@@ -272,14 +310,14 @@ def run_disk_check(directory = '/neurospin/cati', logdir = '/neurospin/cati/User
     from brainvisa.checkbase import DatabaseChecker
     from brainvisa.checkbase.diskusage.check import check_disk_usage
     from brainvisa.checkbase import check as ch
-    if not studies_list: studies_list = ch.studies_list
-    if users_list is None: users_list = ch.users_dict.keys()
+    if not studies_list: studies_list = ['Memento'] #ch.studies_list
+    if users_list is None: users_list = ['operto'] #ch.users_dict.keys()
     if not users_dir: users_dir = ch.users_dir
     if len(users_list) == 0: users_dir = ''
     assert(os.path.exists(logdir))
 
     if verbose: print 'Checking free disk............................................'
-    database_checker = check_disk_usage(directory, get_sizes = get_sizes, studies_list = studies_list, users_dir = users_dir, users_list = users_list, verbose = verbose)
+    database_checker = check_disk_usage(directory, get_sizes = get_sizes, studies_list = studies_list, users_dir = users_dir, users_list = users_list, verbose = verbose, process_undeclared = False)
 
     datetime_string = str(time.strftime('%d%m%Y-%H%M%S', time.gmtime()))
     try:
@@ -311,8 +349,8 @@ def run_hierarchies_check(directory = '/neurospin/cati', logdir = '/neurospin/ca
     from brainvisa.checkbase import DatabaseChecker
     from brainvisa.checkbase.hierarchies.check import check_hierarchies
     from brainvisa.checkbase import check as ch
-    if not studies_list: studies_list = ch.studies_list
-    if not users_list: users_list = ch.users_dict.keys()
+    if not studies_list: studies_list = []#['Memento'] #ch.studies_list
+    if not users_list: users_list = ['fischer'] #ch.users_dict.keys()
     if not users_dir: users_dir = ch.users_dir
     if len(users_list) == 0: users_dir = ''
 
@@ -334,7 +372,7 @@ def run_hierarchies_check(directory = '/neurospin/cati', logdir = '/neurospin/ca
     #try:
     if hasattr(database_checker, 'checks'):
           # save tables
-          save_action_hierarchies(database_checker, os.path.join(logdir, 'json'), datetime_string)
+          save_action_hierarchies(database_checker.checks['checkbase'], os.path.join(logdir, 'json'), datetime_string)
           save_tables(database_checker.checks['checkbase'], os.path.join(logdir, 'existingfiles'), datetime_string = datetime_string)
     #except Exception as e:
     #   print e
