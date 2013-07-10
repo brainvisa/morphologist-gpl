@@ -54,7 +54,7 @@ def csv2html(csvfile, with_head_tags=True):
    html += """
      <style>
        body {
-         font: .8em Arial, sans-serif;
+         font: 6px Arial, sans-serif;
          background: #fff;
          color: #000;
        }
