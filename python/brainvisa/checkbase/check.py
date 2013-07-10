@@ -29,7 +29,7 @@ studies_list = ['Memento',
                 '3C'
                 ]
 
-def csv2html(csvfile):
+def csv2html(csvfile, with_head_tags=True):
    '''csvfile can be a list of comma separated strings or a csv textfile'''
    html = ''
    import re, os
@@ -43,13 +43,15 @@ def csv2html(csvfile):
       file = open(csvfile, 'r')
    elif isinstance(csvfile, list):
       file = csvfile
-
+   if with_head_tags:
+      html += """
+      <!DOCTYPE html>
+      <html>
+       <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Results</title>
+      """
    html += """
-   <!DOCTYPE html>
-   <html>
-    <head>
-     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-     <title>Results</title>
      <style>
        body {
          font: .8em Arial, sans-serif;
@@ -75,9 +77,13 @@ def csv2html(csvfile):
        .b-table__cell_max {
          background: #F7D6D6;
        }
-     </style>
+     </style>"""
+   if with_head_tags:
+      html += """
     </head>
     <body>
+      """
+   html += """
     <table class="b-table">
    """
    color = {'0':'#FFFFFF', '1':'#000000'}
@@ -99,12 +105,12 @@ def csv2html(csvfile):
               bgcolor = color['1']
            html += "   <td bgcolor=%s class='b-table__cell'>"%bgcolor + chunk + "</td>"
        html += "      </tr>"
-
-   html += """
-     </table>
-    </body>
-   </html>
-   """
+   if with_head_tags:
+      html += """
+        </table>
+       </body>
+      </html>
+      """
    return html
 
 def save_volumes(volumes, logdir = '/neurospin/cati/Users/operto/logs/volumes/', datetime_string = ''):
@@ -279,10 +285,9 @@ def save_table(checkbase, logdir = '/neurospin/cati/Users/operto/logs/existingfi
     f.write(html)
     f.close()
 
-def json_to_tables(jsonfile):
+def json_to_tables(j):
    tables = {}
    import json, csv, string, os
-   j = json.load(open(jsonfile, 'rb'))
    assert(j['action_name'] == 'neurospin_folders_inventory')
    for directory, inv in j['inventory'].items():
        fields_names = ['subject']
@@ -299,7 +304,7 @@ def json_to_tables(jsonfile):
 
             csv.append(string.join(subject_row, ';'))
 
-       html = csv2html(csv)
+       html = csv2html(csv, with_head_tags=False)
        tables[directory] = html
 
    return tables

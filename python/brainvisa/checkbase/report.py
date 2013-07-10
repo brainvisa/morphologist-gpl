@@ -311,6 +311,9 @@ class HTMLReportGenerator():
       # neurospin_folders_inventory
       elif j['action_name'] == 'neurospin_folders_inventory':
            #conversion_hashtable = {'$HIERARCHIES' : j['inventory'].keys()}
-           return self._generate_detailed_directories()
+           summary = self._generate_detailed_directories()
+           from brainvisa.checkbase import check
+           tables = check.json_to_tables(j)
+           return summary + tables
 
 
