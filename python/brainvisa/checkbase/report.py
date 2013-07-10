@@ -166,7 +166,6 @@ class HTMLReportGenerator():
 
         summary = ''
         for hieradir in hier_list:
-                  summary += 'Results for directory %s<br><br>'%hieradir
                   if hasattr(self, 'database_checker'):
                       hieratype = self.database_checker.hierarchies[hieradir]
                       subjects = self.database_checker.checks['all_subjects'][hieradir]
