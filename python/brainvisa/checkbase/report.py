@@ -314,6 +314,6 @@ class HTMLReportGenerator():
            summary = self._generate_detailed_directories()
            from brainvisa.checkbase import check
            tables = check.json_to_tables(j)
-           return summary + tables
+           return summary + tables.values()
 
 
