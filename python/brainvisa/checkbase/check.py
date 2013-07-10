@@ -214,6 +214,7 @@ def save_action_diskusage(database_checker, logdir = '/neurospin/cati/Users/oper
         res['global'][each] = s[i]
 
     res['global']['execution_time'] = database_checker.execution_time
+    res['global']['directory'] = database_checker.rootdirectory
     json_file = os.path.join(logdir, 'action_%s.json'%datetime_string)
     while os.path.exists(json_file):
        import time

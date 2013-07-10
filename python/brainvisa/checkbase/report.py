@@ -259,7 +259,7 @@ class HTMLReportGenerator():
             '$TOTAL_SPACE' : str("{0:.2S}".format(size(int(total_size) * 1024.0))),
             '$USED_SPACE' : str("{0:.2S}".format(size(int(used) * 1024.0))),
             '$FREE_SPACE' : str("{0:.2S}".format(size(int(available) * 1024.0))),
-            '$PERCENT' : '%s %%'%str(percent),
+            '$PERCENTAGE' : '%s %%'%str(percent),
             '$SUMMARY_ON_DIRECTORIES' : str(self._generate_summary_on_directories()),
             '$SUMMARY_ON_USERS' : str(self._generate_summary_on_users()),
             '$SUMMARY_ON_UNDECLARED_DIRS' : str(self._generate_summary_on_undeclared_directories()),
@@ -286,17 +286,23 @@ class HTMLReportGenerator():
          available = j['global']['available']
          time = j['global']['execution_time']
          datetime = j['action_date']
+         directory = j['global']['directory']
 
          ht = {
+              '$DATABASE_DIR' : str(directory
               '$ACTION_DATETIME' : str(datetime),
               '$PERCENTAGE' : str(percentage),
               '$TOTAL_SPACE' : str("{0:.2S}".format(size(int(total_size) * 1024.0))),
               '$USED_SPACE' : str("{0:.2S}".format(size(int(used) * 1024.0))),
               '$FREE_SPACE' : str("{0:.2S}".format(size(int(available) * 1024.0))),
+              '$STUDIES' : str(j['studies'].keys()),
+              '$USERS' : str(j['users'].keys()),
               '$NUMBER_OF_STUDIES' : len(j['studies'].items()),
               '$NUMBER_OF_USERS' : len(j['users'].items()),
               '$SUMMARY_ON_DIRECTORIES' : str(self._generate_summary_on_directories()),
               '$SUMMARY_ON_USERS' : str(self._generate_summary_on_users()),
+              '$SUMMARY_ON_UNDECLARED_DIRS' : '',
+              '$SUMMARY_ON_UNDECLARED_USERS' : '',
               }
          return self._convert_from_template('GENERALINFO', ht)
       # neurospin_folders_inventory
