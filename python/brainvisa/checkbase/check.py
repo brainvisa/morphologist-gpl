@@ -221,9 +221,9 @@ def save_action_diskusage(database_checker, logdir = '/neurospin/cati/Users/oper
        json_file = os.path.join(logdir, 'action_%s.json'%datetime_string)
     json.dump(res, open(json_file, 'wb'))
 
-def save_action_hierarchies(checks, logdir = '/neurospin/cati/Users/operto/logs/json', datetime_string = ''):
+def save_action_hierarchies(checkbases, logdir = '/neurospin/cati/Users/operto/logs/json', datetime_string = ''):
     import json
-
+    from brainvisa.checkbase import MorphologistCheckbase, FreeSurferCheckbase, SnapshotsCheckbase
     import csv, os, string
     res = {}
     res['action_name'] = 'neurospin_folders_inventory'
@@ -231,13 +231,22 @@ def save_action_hierarchies(checks, logdir = '/neurospin/cati/Users/operto/logs/
     res['action_desc'] = 'Index of existing identified files on /neurospin/cati'
     res['action_vers'] = '1.0'
     res['inventory'] = {}
-    for db, checkbase in checks.items():
+    for db, c in checkbases.items():
        print db
-       if hasattr(checkbase, 'existingfiles'):
+       if hasattr(c, 'existingfiles'):
           res['inventory'][db] = {}
-          res['inventory'][db]['key_items'] = checkbase.keyitems
-          res['inventory'][db]['identified_items'] = checkbase.existingfiles[0]
-          res['inventory'][db]['unidentified_items'] = checkbase.existingfiles[1]
+          res['inventory'][db]['key_items'] = c.keyitems
+          hiertype = "unknown"
+          if isinstance(c, MorphologistCheckbase):
+             hiertype = 'Morphologist'
+          elif isinstance(c, FreeSurferCheckbase):
+             hiertype = 'FreeSurfer'
+          elif isinstance(c, SnapshotsCheckbase):
+             hiertype = 'Snapshots'
+          res['inventory'][db]['hierarchy_type'] = hiertype
+          res['inventory'][db]['identified_items'] = c.existingfiles[0]
+          res['inventory'][db]['unidentified_items'] = c.existingfiles[1]
+          res['inventory'][db]['all_subjects'] = c.get_flat_subjects()
 
     json_file = os.path.join(logdir, 'action_%s.json'%datetime_string)
     while os.path.exists(json_file):

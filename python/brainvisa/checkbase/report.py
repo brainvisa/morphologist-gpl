@@ -159,42 +159,60 @@ class HTMLReportGenerator():
         return summary
 
     def _generate_detailed_directories(self):
+        if hasattr(self, 'database_checker'):
+          hier_list = self.database_checker.hierarchies.keys()
+        elif hasattr(self, 'jsonfile'):
+          hier_list = self.json['inventory'].keys()
+
         summary = ''
-        for key, hierarchies in self.database_checker.hierarchies.items():
-            summary += 'Results for directory %s<br><br>'%key
-            if hierarchies :
-                for hieradir, hieratype in hierarchies.items():
-                    subjects = self.database_checker.checks['all_subjects'][hieradir]
-                    conversion_hashtable = {'$HIERARCHY_DIR': str('%s'%hieradir),
+        for hieradir in hier_list:
+                  summary += 'Results for directory %s<br><br>'%hieradir
+                  if hasattr(self, 'database_checker'):
+                      hieratype = self.database_checker.hierarchies[hieradir]
+                      subjects = self.database_checker.checks['all_subjects'][hieradir]
+                      keyitems = self.database_checker.checks['key_items'][hieradir]
+                      multiple_subjects = self.database_checker.checks['multiple_subjects'][hieradir]
+                      empty_subjects = self.database_checker.checks['empty_subjects'][hieradir]
+                      complete_subjects = self.database_checker.checks['complete_subjects'][hieradir]
+                  else:
+                      subjects = self.json['inventory'][hieradir]['all_subjects']
+                      keyitems = self.json['inventory'][hieradir]['key_items']
+                      hieratype = self.json['inventory'][hieradir]['hierarchy_type']
+                      multiple_subjects = ''
+                      empty_subjects = ''
+                      complete_subjects = ''
+
+
+                  conversion_hashtable = {'$HIERARCHY_DIR': str('%s'%hieradir),
                         '$HIERARCHY_DETECTED_TYPE' : str(hieratype),
                         '$HIERARCHY_SUBJECTSDIRECTORY' : str('%s (%i)'%(subjects, len(subjects))),
-                        '$HIERARCHY_SUBJECT_KEY_ITEMS' : str('%s'%(self.database_checker.checks['key_items'][hieradir])),
+                        '$HIERARCHY_SUBJECT_KEY_ITEMS' : str('%s'%(keyitems)),
                         '$HIERARCHY_INVALID_SUBJECTS' : str(''),
                         '$BIOMARKERS' : str(''),
                         '$HIERARCHY_EMPTY_SUBJECTS' : str(''),
                         '$HIERARCHY_COMPLETE_SUBJECTS' : str(''),
                         '$HIERARCHY_INVALID_SUBJECTS' : str(''),
                         '$HIERARCHY_UNIDENTIFIED_FILES' : str(''),
-                    }
-                    if hieratype == 'morphologist':
+                  }
+                  if hieratype == 'morphologist':
                       conversion_hashtable.update({
-                        '$HIERARCHY_MULTIPLE_SUBJECTS' : str('%s'%self.database_checker.checks['multiple_subjects'][hieradir]),
-                        '$HIERARCHY_EMPTY_SUBJECTS' : str('%s'%self.database_checker.checks['empty_subjects'][hieradir]),
-                        '$HIERARCHY_COMPLETE_SUBJECTS' : str('%s'%self.database_checker.checks['complete_subjects'][hieradir]),
+                        '$HIERARCHY_MULTIPLE_SUBJECTS' : str('%s'%multiple_subjects),
+                        '$HIERARCHY_EMPTY_SUBJECTS' : str('%s'%empty_subjects),
+                        '$HIERARCHY_COMPLETE_SUBJECTS' : str('%s'%complete_subjects),
                         '$HIERARCHY_INVALID_SUBJECTS' : str(''),
                         '$HIERARCHY_UNIDENTIFIED_FILES' : str(''),
                         '$BIOMARKERS' : str(''),
                       })
                       summary += self._convert_from_template('MORPHOLOGIST_HIERARCHY', conversion_hashtable)
-                    elif hieratype == 'snapshots':
+                  elif hieratype == 'snapshots':
                       summary += self._convert_from_template('SNAPSHOTS_HIERARCHY', conversion_hashtable)
-                    elif hieratype == 'freesurfer':
+                  elif hieratype == 'freesurfer':
                       conversion_hashtable.update({
                         })
                       summary += self._convert_from_template('FREESURFER_HIERARCHY', conversion_hashtable)
 
         ht = {'$DIRECTORIES_DETAILED_HIERARCHIES' : summary,
-              '$HIERARCHIES' : self.database_checker.hierarchies,
+              #'$HIERARCHIES' : self.database_checker.hierarchies,
               }
 
         return self._convert_from_template('DIRECTORIES', ht)

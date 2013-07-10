@@ -32,6 +32,7 @@ def perform_checks_hierarchy(h):
     from brainvisa.checkbase.hierarchies import snapshots as snap
     checks = {}
 
+    checks['hierarchies'] = h
     for db, hiertype in h.items():
         if hiertype == 'morphologist':
            m = morpho.MorphologistCheckbase(db)
