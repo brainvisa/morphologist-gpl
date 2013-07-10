@@ -211,11 +211,14 @@ class HTMLReportGenerator():
                         })
                       summary += self._convert_from_template('FREESURFER_HIERARCHY', conversion_hashtable)
 
-        ht = {'$DIRECTORIES_DETAILED_HIERARCHIES' : summary,
+        if hasattr(self, 'database_checker'):
+           ht = {'$DIRECTORIES_DETAILED_HIERARCHIES' : summary,
               #'$HIERARCHIES' : self.database_checker.hierarchies,
               }
 
-        return self._convert_from_template('DIRECTORIES', ht)
+           return self._convert_from_template('DIRECTORIES', ht)
+        elif hasattr(self, 'jsonfile'):
+           return summary
 
     def generate_html_report(self):
         '''
@@ -308,7 +311,6 @@ class HTMLReportGenerator():
       # neurospin_folders_inventory
       elif j['action_name'] == 'neurospin_folders_inventory':
            conversion_hashtable = {'$HIERARCHIES' : j['inventory'].keys()}
-           conversion_hashtable['$DETAILED_DIRECTORIES'] = self._generate_detailed_directories()
-           return self._convert_from_template('HIERARCHIES', conversion_hashtable)
+           return self._generate_detailed_directories()
 
 
