@@ -177,7 +177,8 @@ class HTMLReportGenerator():
                   else:
                       subjects = self.json['inventory'][hieradir]['all_subjects']
                       keyitems = self.json['inventory'][hieradir]['key_items']
-                      hieratype = self.json['inventory'][hieradir]['hierarchy_type']
+                      import string
+                      hieratype = string.lower(self.json['inventory'][hieradir]['hierarchy_type'])
                       multiple_subjects = ''
                       empty_subjects = ''
                       complete_subjects = ''
@@ -310,7 +311,7 @@ class HTMLReportGenerator():
          return self._convert_from_template('GENERALINFO', ht)
       # neurospin_folders_inventory
       elif j['action_name'] == 'neurospin_folders_inventory':
-           conversion_hashtable = {'$HIERARCHIES' : j['inventory'].keys()}
+           #conversion_hashtable = {'$HIERARCHIES' : j['inventory'].keys()}
            return self._generate_detailed_directories()
 
 
