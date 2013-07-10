@@ -315,6 +315,6 @@ class HTMLReportGenerator():
            from brainvisa.checkbase import check
            tables = check.json_to_tables(j)
            import string
-           return summary + string.join(tables.values(), ' ')
+           return summary + string.join(["<b><h3>%s</h3></b>"%(k,v) for k,v in tables.items()], ' ')
 
 
