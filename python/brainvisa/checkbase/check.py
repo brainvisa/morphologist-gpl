@@ -221,12 +221,13 @@ def save_action_diskusage(database_checker, logdir = '/neurospin/cati/Users/oper
        json_file = os.path.join(logdir, 'action_%s.json'%datetime_string)
     json.dump(res, open(json_file, 'wb'))
 
-def save_action_hierarchies(checkbases, logdir = '/neurospin/cati/Users/operto/logs/json', datetime_string = ''):
-    import json
+def get_action_hierarchies(checkbases):
+    import time
     from brainvisa.checkbase import MorphologistCheckbase, FreeSurferCheckbase, SnapshotsCheckbase
     import csv, os, string
     res = {}
     res['action_name'] = 'neurospin_folders_inventory'
+    datetime_string = str(time.strftime('%d%m%Y-%H%M%S', time.gmtime()))
     res['action_date'] = datetime_string
     res['action_desc'] = 'Index of existing identified files on /neurospin/cati'
     res['action_vers'] = '1.0'
@@ -248,13 +249,7 @@ def save_action_hierarchies(checkbases, logdir = '/neurospin/cati/Users/operto/l
           res['inventory'][db]['unidentified_items'] = c.existingfiles[1]
           res['inventory'][db]['all_subjects'] = c.get_flat_subjects()
 
-    json_file = os.path.join(logdir, 'action_%s.json'%datetime_string)
-    while os.path.exists(json_file):
-       import time
-       time.sleep(2)
-       json_file = os.path.join(logdir, 'action_%s.json'%datetime_string)
-
-    json.dump(res, open(json_file, 'wb'))
+    return res
 
 def save_table(checkbase, logdir = '/neurospin/cati/Users/operto/logs/existingfiles', datetime_string = ''):
     import csv, time, string, os
@@ -383,7 +378,17 @@ def run_hierarchies_check(directory = '/neurospin/cati', logdir = '/neurospin/ca
     #try:
     if hasattr(database_checker, 'checks'):
           # save tables
-          save_action_hierarchies(database_checker.checks['checkbase'], os.path.join(logdir, 'json'), datetime_string)
+          action_json = get_action_hierarchies(database_checker.checks['checkbase']) #, os.path.join(logdir, 'json'), datetime_string)
+          datetime_string = str(time.strftime('%d%m%Y-%H%M%S', time.gmtime()))
+          json_file = os.path.join(logdir, 'json', 'action_%s.json'%datetime_string)
+          while os.path.exists(json_file):
+             import time
+             time.sleep(2)
+             json_file = os.path.join(logdir, 'json', 'action_%s.json'%datetime_string)
+
+          import json
+          json.dump(action_json, open(json_file, 'wb'))
+
           #save_tables(database_checker.checks['checkbase'], os.path.join(logdir, 'existingfiles'), datetime_string = datetime_string)
     #except Exception as e:
     #   print e

@@ -122,7 +122,7 @@ class FreeSurferCheckbase(Checkbase):
 
 
     def perform_checks(self):
-        pass
+        self.check_database_for_existing_files()
         #self.get_multiple_subjects()
 
     def compute_volumes(self, fastmode = True):

@@ -42,6 +42,7 @@ def perform_checks_hierarchy(h):
            m.perform_checks()
         elif hiertype == 'snapshots':
            m = snap.SnapshotsCheckbase(db)
+           m.perform_checks()
 
         checks.setdefault('checkbase', {})
         checks['checkbase'][db] = m

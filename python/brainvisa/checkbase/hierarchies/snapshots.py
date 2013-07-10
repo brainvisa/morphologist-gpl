@@ -4,7 +4,7 @@ from brainvisa.checkbase.hierarchies import *
 from brainvisa.checkbase.hierarchies.checkbase import Checkbase
 
 patterns = {'sulci' : os.path.join('(?P<database>[\w -/]+)', 'snapshots_sulci_(?P<side>[LR]?)_(?P<mode>\w+)_(?P<group>\w+)_(?P<subject>\w+)_(?P<acquisition>[\w -/]+).png') }
-keyitems = []
+keyitems = ['sulci']
 
 class SnapshotsCheckbase(Checkbase):
     def __init__(self, directory):
@@ -13,8 +13,13 @@ class SnapshotsCheckbase(Checkbase):
         self.keyitems = snap.keyitems
         Checkbase.__init__(self, directory)
 
-    def check_database_for_existing_files(self):
-        return ({}, {})
+    def check_database_for_existing_files(self, patterns = None, save = True):
+       from brainvisa.checkbase.hierarchies import snapshots as snap
+       if not patterns: patterns = snap.patterns
+       return self._check_database_for_existing_files(patterns, save)
+
+    def perform_checks(self):
+        self.check_database_for_existing_files()
 
     def get_subject_files(self, subject):
         ''' Returns a list of files whose path match a specific subject.
