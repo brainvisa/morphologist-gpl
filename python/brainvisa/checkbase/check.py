@@ -53,12 +53,6 @@ def csv2html(csvfile, with_head_tags=True):
       """
    html += """
      <style>
-       body {
-         font: 6px Arial, sans-serif;
-         background: #fff;
-         color: #000;
-       }
-
        .b-table {
          width: 100%;
          border-spacing : 2px;
@@ -84,7 +78,7 @@ def csv2html(csvfile, with_head_tags=True):
     <body>
       """
    html += """
-    <table class="b-table">
+    <table class="b-table" style="font-size:6px">
    """
    color = {'0':'#FFFFFF', '1':'#000000'}
    for line in file:
