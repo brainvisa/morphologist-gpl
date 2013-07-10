@@ -35,17 +35,19 @@ def revision_number(filepath):
 
 class HTMLReportGenerator():
 
-    def __init__(self, database_checker=None, jsonfile = None):
+    def __init__(self, data=None):
         '''
     An HTMLReportGenerator instance is in charge of compiling the analysis
     results stored in a DatabaseChecker in order to generate an HTML report
     describing these.
+    data is either a DatabaseChecker or a open(jsonfile)
         '''
-
-        self.database_checker = database_checker
-        self.jsonfile = jsonfile
-        import json
-        self.json = json.load(jsonfile)
+        if not isinstance(data, file):
+          self.database_checker = data
+        else:
+          self.jsonfile = data
+          import json
+          self.json = json.load(self.jsonfile)
 
     def generate_from_template(self, template_pathname, conversion_hashtable):
         '''
@@ -64,7 +66,7 @@ class HTMLReportGenerator():
                 if string.find(line, tag) != -1:
                     #value = conversion_hashtable.pop(tag)
                     value = conversion_hashtable[tag]
-                    line = line.replace(tag, value)
+                    line = line.replace(tag, str(value))
             html_report += line + '\n'
 
         return html_report
@@ -97,30 +99,34 @@ class HTMLReportGenerator():
 
     def _generate_summary_on_directories(self):
        """The two modes (database_checker and json) are implemented here """
-       if self.database_checker:
+       if hasattr(self, 'database_checker'):
          summary = ''
          for study, study_size in self.database_checker.studies_space.items():
             summary = summary + '%s: %s<br>'%(study, str("{0:.2S}".format(size(study_size))))
          return summary
-       elif self.jsonfile:
+       elif hasattr(self, 'jsonfile'):
          summary = ''
          for study, study_size in self.json['studies'].items():
             summary = summary + '%s: %s<br>'%(study, str("{0:.2S}".format(size(study_size))))
          return summary
+       else:
+          assert(False)
 
 
     def _generate_summary_on_users(self):
        """The two modes (database_checker and json) are implemented here """
-       if self.database_checker:
+       if hasattr(self, 'database_checker'):
         summary = ''
         for user, user_size in self.database_checker.users_space.items():
             summary = summary + '%s: %s<br>'%(user, str("{0:.2S}".format(size(user_size))))
         return summary
-       elif self.jsonfile:
+       elif hasattr(self, 'jsonfile'):
         summary = ''
         for user, user_size in self.json['users'].items():
             summary = summary + '%s: %s<br>'%(user, str("{0:.2S}".format(size(user_size))))
         return summary
+       else:
+          assert(False)
 
 
     def _generate_summary_on_undeclared_directories(self):
