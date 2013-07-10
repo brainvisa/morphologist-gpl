@@ -289,7 +289,7 @@ class HTMLReportGenerator():
          directory = j['global']['directory']
 
          ht = {
-              '$DATABASE_DIR' : str(directory
+              '$DATABASE_DIR' : str(directory),
               '$ACTION_DATETIME' : str(datetime),
               '$PERCENTAGE' : str(percentage),
               '$TOTAL_SPACE' : str("{0:.2S}".format(size(int(total_size) * 1024.0))),
