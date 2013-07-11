@@ -292,6 +292,7 @@ class HTMLReportGenerator():
          directory = j['global']['directory']
 
          ht = {
+              '$ACTION_DATE' : $str(j['action_date']),
               '$DATABASE_DIR' : str(directory),
               '$ACTION_DATETIME' : str(datetime),
               '$PERCENTAGE' : str(percentage),
