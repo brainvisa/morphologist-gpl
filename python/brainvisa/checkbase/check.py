@@ -352,9 +352,9 @@ def run_hierarchies_check(directory = '/neurospin/cati', logdir = '/neurospin/ca
     If users_list is None, it is then reset to ['operto', 'champseix', 'mangin', ...]
     '''
     import sys, time, os
-    from brainvisa.checkbase import DatabaseChecker
-    from brainvisa.checkbase.hierarchies.check import check_hierarchies
+    from brainvisa.checkbase.hierarchies import check
     from brainvisa.checkbase import check as ch
+    from brainvisa import checkbase as c
     if not studies_list: studies_list = ch.studies_list
     if not users_list: users_list = ch.users_dict.keys()
     if not users_dir: users_dir = ch.users_dir
@@ -362,36 +362,33 @@ def run_hierarchies_check(directory = '/neurospin/cati', logdir = '/neurospin/ca
 
     assert(os.path.exists(logdir))
 
-    if verbose: print 'Checking hierarchies............................................'
-    database_checker = check_hierarchies(directory, studies_list = studies_list, users_dir = users_dir, users_list = users_list, verbose = verbose)
+    import os, time
 
-    # generating report
-    #import report
-    #datetime_string = str(time.strftime('%d%m%Y-%H%M%S', time.gmtime()))
-    #reportgen = report.HTMLReportGenerator(database_checker)
-    #html = reportgen.generate_html_report()
-    #html_file = os.path.join(logdir, 'hierarchiesreport-%s.html'%datetime_string)
-    #pdf_file =  os.path.join(logdir, 'hierarchiesreport-%s.pdf'%datetime_string)
-    #with open(html_file, 'wb') as f:
-    #    f.write(html)
+    start_time = time.time()
 
-    #try:
-    if hasattr(database_checker, 'checks'):
-          # save tables
-          action_json = get_action_hierarchies(database_checker.checks['checkbase']) #, os.path.join(logdir, 'json'), datetime_string)
-          datetime_string = str(time.strftime('%d%m%Y-%H%M%S', time.gmtime()))
+    # processing users folders
+    if verbose: print 'Processing directories...'
+    directories = [os.path.join(directory, each) for each in studies_list]
+    directories.extend([os.path.join(directory, users_dir, each) for each in users_list])
+    directories = ['/neurospin/tmp/operto']
+    print directories
+    for db_dir in directories:
+       # process each directory
+       if verbose: print db_dir, 'in progress'
+       h = c.detect_hierarchies(db_dir, maxdepth=3)
+       print h
+       dir_checks = check.perform_checks_hierarchy(h)
+       action_json = get_action_hierarchies(dir_checks)
+       # save tables
+       datetime_string = str(time.strftime('%d%m%Y-%H%M%S', time.gmtime()))
+       json_file = os.path.join(logdir, 'json', 'action_%s.json'%datetime_string)
+       while os.path.exists(json_file):
+          import time
+          time.sleep(2)
           json_file = os.path.join(logdir, 'json', 'action_%s.json'%datetime_string)
-          while os.path.exists(json_file):
-             import time
-             time.sleep(2)
-             json_file = os.path.join(logdir, 'json', 'action_%s.json'%datetime_string)
 
-          import json
-          json.dump(action_json, open(json_file, 'wb'))
-
-          #save_tables(database_checker.checks['checkbase'], os.path.join(logdir, 'existingfiles'), datetime_string = datetime_string)
-    #except Exception as e:
-    #   print e
-    #   pass
+       import json
+       json.dump(action_json, open(json_file, 'wb'))
 
 
+    #execution_time = time.time() - start_time

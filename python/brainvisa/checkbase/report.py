@@ -317,5 +317,8 @@ class HTMLReportGenerator():
            tables = check.json_to_tables(j)
            import string
            return summary + string.join(["<b><h3>%s</h3></b>%s"%(k,v) for k,v in tables.items()], ' ')
+      # measures
+      elif j['action_name'] == 'measures':
+           pass
 
 
