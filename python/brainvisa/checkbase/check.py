@@ -303,6 +303,30 @@ def json_to_tables(j):
 
    return tables
 
+def json_to_measures_tables(j):
+   tables = {}
+   import json, csv, string, os
+   assert(j['action_name'] == 'measures')
+   for directory, inv in j['inventory'].items():
+       fields_names = ['subject']
+       fields_names.extend(inv['key_items'])
+       csv = []
+       csv.append(string.join(fields_names, ';'))
+       for subject in inv['identified_items'].keys():
+            subject_row = [unicode(subject).encode("utf-8")]
+            for each in inv['key_items']:
+               if each in inv['identified_items'][subject].keys():
+                  subject_row.append('1')
+               else:
+                  subject_row.append('0')
+
+            csv.append(string.join(subject_row, ';'))
+
+       html = csv2html(csv, with_head_tags=False)
+       tables[directory] = html
+
+   return tables
+
 def save_tables(checks, logdir = '/neurospin/cati/Users/operto/logs/existingfiles', datetime_string = ''):
    for db, checkbase in checks.items():
       if hasattr(checkbase, 'existingfiles'):
@@ -369,8 +393,7 @@ def run_hierarchies_check(directory = '/neurospin/cati', logdir = '/neurospin/ca
     # processing users folders
     if verbose: print 'Processing directories...'
     directories = [os.path.join(directory, each) for each in studies_list]
-    directories.extend([os.path.join(directory, users_dir, each) for each in users_list])
-    directories = ['/neurospin/tmp/operto']
+    #directories.extend([os.path.join(directory, users_dir, each) for each in users_list])
     print directories
     for db_dir in directories:
        # process each directory
@@ -378,17 +401,19 @@ def run_hierarchies_check(directory = '/neurospin/cati', logdir = '/neurospin/ca
        h = c.detect_hierarchies(db_dir, maxdepth=3)
        print h
        dir_checks = check.perform_checks_hierarchy(h)
-       action_json = get_action_hierarchies(dir_checks)
-       # save tables
-       datetime_string = str(time.strftime('%d%m%Y-%H%M%S', time.gmtime()))
-       json_file = os.path.join(logdir, 'json', 'action_%s.json'%datetime_string)
-       while os.path.exists(json_file):
-          import time
-          time.sleep(2)
+       if dir_checks.has_key('checkbase'):
+          action_json = get_action_hierarchies(dir_checks['checkbase'])
+          # save tables
+          datetime_string = str(time.strftime('%d%m%Y-%H%M%S', time.gmtime()))
           json_file = os.path.join(logdir, 'json', 'action_%s.json'%datetime_string)
+          while os.path.exists(json_file):
+             import time
+             time.sleep(2)
+             json_file = os.path.join(logdir, 'json', 'action_%s.json'%datetime_string)
 
-       import json
-       json.dump(action_json, open(json_file, 'wb'))
+          import json
+          print 'writing', json_file
+          json.dump(action_json, open(json_file, 'wb'))
 
 
     #execution_time = time.time() - start_time
