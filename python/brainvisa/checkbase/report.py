@@ -310,7 +310,7 @@ class HTMLReportGenerator():
               }
          return self._convert_from_template('GENERALINFO', ht)
       # neurospin_folders_inventory
-      elif j['action_name'] == 'neurospin_folders_inventory':
+      elif j['action_name'] == 'simple_neurospin_folders_inventory':
            #conversion_hashtable = {'$HIERARCHIES' : j['inventory'].keys()}
            summary = self._generate_detailed_directories()
            from brainvisa.checkbase import check
@@ -320,5 +320,7 @@ class HTMLReportGenerator():
       # measures
       elif j['action_name'] == 'measures':
            pass
+      else:
+         assert(False and "Check action_name")
 
 
