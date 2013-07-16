@@ -316,7 +316,7 @@ class HTMLReportGenerator():
            from brainvisa.checkbase import check
            html = check.json_to_html_table(j)
            import string
-           return summary + string.join(["<b><h3>%s</h3></b>%s"%(k,v) for k,v in tables.items()], ' ')
+           return summary + "<b><h3>%s</h3></b>%s"%(j['directory'], html)
       # measures
       elif j['action_name'] == 'measures':
            pass
