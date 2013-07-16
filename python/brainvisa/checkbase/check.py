@@ -290,7 +290,7 @@ def save_table(checkbase, logdir = '/neurospin/cati/Users/operto/logs/existingfi
 
 def json_to_html_table(j):
    import json, csv, string, os
-   assert(j['action_name'] == 'neurospin_folders_inventory')
+   assert(j['action_name'] == 'simple_neurospin_folders_inventory')
    directory = j['directory']
    inv = j['inventory']
    fields_names = ['subject']
