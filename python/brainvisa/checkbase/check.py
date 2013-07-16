@@ -222,7 +222,7 @@ def save_action_diskusage(database_checker, logdir = '/neurospin/cati/Users/oper
        json_file = os.path.join(logdir, 'action_%s.json'%datetime_string)
     json.dump(res, open(json_file, 'wb'))
 
-def get_action_hierarchies(checkbases):
+def hierarchies_to_action(checkbase):
     import time
     from brainvisa.checkbase import MorphologistCheckbase, FreeSurferCheckbase, SnapshotsCheckbase
     import csv, os, string
@@ -232,25 +232,34 @@ def get_action_hierarchies(checkbases):
     res['action_date'] = datetime_string
     res['action_desc'] = 'Index of existing identified files on /neurospin/cati'
     res['action_vers'] = '1.0'
+    res['directory'] = checkbase.directory
+    res['key_items'] = checkbase.keyitems
+    hiertype = "unknown"
+    if isinstance(checkbase, MorphologistCheckbase):
+       hiertype = 'Morphologist'
+    elif isinstance(checkbase, FreeSurferCheckbase):
+       hiertype = 'FreeSurfer'
+    elif isinstance(checkbase, SnapshotsCheckbase):
+       hiertype = 'Snapshots'
+    res['hierarchy_type'] = hiertype
     res['inventory'] = {}
-    for db, c in checkbases.items():
-       print db
-       if hasattr(c, 'existingfiles'):
-          res['inventory'][db] = {}
-          res['inventory'][db]['key_items'] = c.keyitems
-          hiertype = "unknown"
-          if isinstance(c, MorphologistCheckbase):
-             hiertype = 'Morphologist'
-          elif isinstance(c, FreeSurferCheckbase):
-             hiertype = 'FreeSurfer'
-          elif isinstance(c, SnapshotsCheckbase):
-             hiertype = 'Snapshots'
-          res['inventory'][db]['hierarchy_type'] = hiertype
-          res['inventory'][db]['identified_items'] = c.existingfiles[0]
-          res['inventory'][db]['unidentified_items'] = c.existingfiles[1]
-          res['inventory'][db]['all_subjects'] = c.get_flat_subjects()
+    res['inventory']['all_subjects'] = checkbase.get_flat_subjects()
 
+    if hasattr(checkbase, 'existingfiles'):
+          res['inventory']['identified_items'] = checkbase.existingfiles[0]
+          res['inventory']['unidentified_items'] = checkbase.existingfiles[1]
     return res
+
+def hierarchies_simpleaction(json):
+    assert(json['action_name'] == 'neurospin_folders_inventory')
+    res = {}
+    res['action_name'] = 'simple_neurospin_folders_inventory'
+    datetime_string = str(time.strftime('%d%m%Y-%H%M%S', time.gmtime()))
+    res['action_date'] = datetime_string
+    res['action_desc'] = 'Index of existing identified files on /neurospin/cati (simple version)'
+    res['action_vers'] = '1.0'
+
+
 
 def save_table(checkbase, logdir = '/neurospin/cati/Users/operto/logs/existingfiles', datetime_string = ''):
     import csv, time, string, os
@@ -279,29 +288,25 @@ def save_table(checkbase, logdir = '/neurospin/cati/Users/operto/logs/existingfi
     f.write(html)
     f.close()
 
-def json_to_tables(j):
-   tables = {}
+def json_to_html_table(j):
    import json, csv, string, os
    assert(j['action_name'] == 'neurospin_folders_inventory')
-   for directory, inv in j['inventory'].items():
-       fields_names = ['subject']
-       fields_names.extend(inv['key_items'])
-       csv = []
-       csv.append(string.join(fields_names, ';'))
-       for subject in inv['identified_items'].keys():
-            subject_row = [unicode(subject).encode("utf-8")]
-            for each in inv['key_items']:
-               if each in inv['identified_items'][subject].keys():
-                  subject_row.append('1')
-               else:
-                  subject_row.append('0')
+   directory = j['directory']
+   inv = j['inventory']
+   fields_names = ['subject']
+   fields_names.extend(j['key_items'])
+   csv = []
+   t = {True: '1', False:'0'}
+   csv.append(string.join(fields_names, ';'))
+   for subject in inv.keys():
+      subject_row = [unicode(subject).encode("utf-8")]
+      for each in j['key_items']:
+         subject_row.append(t[inv[subject][each]])
 
-            csv.append(string.join(subject_row, ';'))
+      csv.append(string.join(subject_row, ';'))
 
-       html = csv2html(csv, with_head_tags=False)
-       tables[directory] = html
-
-   return tables
+   html = csv2html(csv, with_head_tags=False)
+   return html
 
 def json_to_measures_tables(j):
    tables = {}
@@ -327,10 +332,10 @@ def json_to_measures_tables(j):
 
    return tables
 
-def save_tables(checks, logdir = '/neurospin/cati/Users/operto/logs/existingfiles', datetime_string = ''):
-   for db, checkbase in checks.items():
-      if hasattr(checkbase, 'existingfiles'):
-         save_table(checkbase, logdir, datetime_string)
+#def save_tables(checks, logdir = '/neurospin/cati/Users/operto/logs/existingfiles', datetime_string = ''):
+#   for db, checkbase in checks.items():
+#      if hasattr(checkbase, 'existingfiles'):
+#         save_table(checkbase, logdir, datetime_string)
 
 
 def run_disk_check(directory = '/neurospin/cati', logdir = '/neurospin/cati/Users/operto/logs', studies_list = None,
@@ -354,7 +359,7 @@ def run_disk_check(directory = '/neurospin/cati', logdir = '/neurospin/cati/User
        if hasattr(database_checker, 'studies_space'):
           # saving csv
           #save_csv(database_checker, logdir, datetime_string = datetime_string)
-          save_action_diskusage(database_checker, os.path.join(logdir, 'json'), datetime_string = datetime_string)
+          save_action_diskusage(database_checker, os.path.join(logdir, 'json', 'diskusage'), datetime_string = datetime_string)
     except Exception as e:
        if verbose: print e
        pass
@@ -367,6 +372,50 @@ def run_disk_check(directory = '/neurospin/cati', logdir = '/neurospin/cati/User
     #pdf_file =  os.path.join(logdir, 'diskreport-%s.pdf'%datetime_string)
     #with open(html_file, 'wb') as f:
     #    f.write(html)
+
+
+def jsons_for_web(json, _type='existence'):
+
+   import os, time
+   simple = {}
+   from brainvisa.checkbase import getfilepath
+   if _type == 'existence':
+      simple['key_items'] = json['key_items']
+      simple['directory'] = json['directory']
+      simple['action_name'] = 'simple_neurospin_folders_inventory'
+      datetime_string = str(time.strftime('%d%m%Y-%H%M%S', time.gmtime()))
+      simple['action_date'] = datetime_string
+      simple['action_desc'] = 'Index of existing identified files on /neurospin/cati (simple version)'
+      simple['action_vers'] = '1.0'
+      inv = {}
+      for subject, items in json['inventory']['identified_items'].items():
+         for each in simple['key_items']:
+            inv[subject][each] = each in items.keys()
+      simple['inventory'] = inv
+
+   elif _type == 'dates':
+      simple['key_items'] = json['key_items']
+      simple['directory'] = json['directory']
+      simple['action_name'] = 'simple_neurospin_folders_inventory'
+      datetime_string = str(time.strftime('%d%m%Y-%H%M%S', time.gmtime()))
+      simple['action_date'] = datetime_string
+      simple['action_desc'] = 'Index of existing identified files on /neurospin/cati (simple version)'
+      simple['action_vers'] = '1.0'
+      inv = {}
+      for subject, items in json['inventory']['identified_items'].items():
+         for each in simple['key_items']:
+            if each in items.keys():
+               inv[subject][each] = os.path.getmtime(getfilepath(each, json['inventory'][subject][each]))
+            else:
+               inv[subject][each] = False
+
+      simple['inventory'] = inv
+
+
+
+
+   return simple
+
 
 
 def run_hierarchies_check(directory = '/neurospin/cati', logdir = '/neurospin/cati/Users/operto/logs', studies_list = None, users_list = None, users_dir = None, verbose = True):
@@ -386,34 +435,50 @@ def run_hierarchies_check(directory = '/neurospin/cati', logdir = '/neurospin/ca
 
     assert(os.path.exists(logdir))
 
-    import os, time
+    import os, time, json
 
+    dbindexfile = 'db_indexes.json'
     start_time = time.time()
 
     # processing users folders
     if verbose: print 'Processing directories...'
     directories = [os.path.join(directory, each) for each in studies_list]
-    #directories.extend([os.path.join(directory, users_dir, each) for each in users_list])
+    directories = []
+    directories.extend([os.path.join(directory, users_dir, each) for each in users_list])
     print directories
     for db_dir in directories:
        # process each directory
        if verbose: print db_dir, 'in progress'
        h = c.detect_hierarchies(db_dir, maxdepth=3)
-       print h
-       dir_checks = check.perform_checks_hierarchy(h)
-       if dir_checks.has_key('checkbase'):
-          action_json = get_action_hierarchies(dir_checks['checkbase'])
-          # save tables
-          datetime_string = str(time.strftime('%d%m%Y-%H%M%S', time.gmtime()))
-          json_file = os.path.join(logdir, 'json', 'action_%s.json'%datetime_string)
-          while os.path.exists(json_file):
-             import time
-             time.sleep(2)
-             json_file = os.path.join(logdir, 'json', 'action_%s.json'%datetime_string)
+       databases = []
+       for db, db_type in h.items():
+            dir_checks = check.perform_checks_hierarchy(db, hierarchy_type=db_type)
+            dbj = json.load(open(os.path.join(logdir, 'json', dbindexfile), 'rb'))
+            dbdirs = [each['directory'] for each in dbj]
+            if db in dbdirs:
+                h_index = dbdirs.index(db)
+            else:
+                h_index = len(dbdirs)
+                dbj.append({'directory' : db, 'filename': 'db_%s.json'%h_index, 'hierarchy_type': db_type})
 
-          import json
-          print 'writing', json_file
-          json.dump(action_json, open(json_file, 'wb'))
+            json.dump(dbj, open(os.path.join(logdir, 'json', dbindexfile), 'wb'))
+            action_json = hierarchies_to_action(dir_checks)
+#            # save tables
+#            datetime_string = str(time.strftime('%d%m%Y-%H%M%S', time.gmtime()))
+            json_file = os.path.join(logdir, 'json', 'databases', 'db_%s.json'%h_index)
+            print 'writing', json_file
+            json.dump(action_json, open(json_file, 'wb'))
 
+            # simple json existing files
+            simple_existing_json = jsons_for_web(action_json, _type='existence')
+            simple_jsonfile = os.path.join(logdir, 'json', 'json_for_web', 'existing_%s.json'%h_index)
+            print 'writing', simple_jsonfile
+            json.dump(simple_existing_json, open(simple_jsonfile, 'wb'))
+
+            # dates json
+            simple_existing_json = jsons_for_web(action_json, _type='dates')
+            simple_jsonfile = os.path.join(logdir, 'json', 'json_for_web', 'dates_%s.json'%h_index)
+            print 'writing', simple_jsonfile
+            json.dump(simple_existing_json, open(simple_jsonfile, 'wb'))
 
     #execution_time = time.time() - start_time

@@ -2,7 +2,7 @@
 
 from brainvisa.checkbase.check import studies_list, users_dict, users_dir
 
-def perform_checks_hierarchy(h):
+def perform_checks_hierarchy(directory, hierarchy_type = 'Morphologist'):
     ''' Runs a series of tests on a given dictionary returned from
     checkbase.detect_hierarchies. These tests are performed according to the
     type of the hierarchy.
@@ -30,58 +30,53 @@ def perform_checks_hierarchy(h):
     from brainvisa.checkbase.hierarchies import morphologist as morpho
     from brainvisa.checkbase.hierarchies import freesurfer as free
     from brainvisa.checkbase.hierarchies import snapshots as snap
-    checks = {}
 
-    checks['hierarchies'] = h
-    for db, hiertype in h.items():
-        if hiertype == 'morphologist':
-           m = morpho.MorphologistCheckbase(db)
-           m.perform_checks()
-        elif hiertype == 'freesurfer':
-           m = free.FreeSurferCheckbase(db)
-           m.perform_checks()
-        elif hiertype == 'snapshots':
-           m = snap.SnapshotsCheckbase(db)
-           m.perform_checks()
-
-        checks.setdefault('checkbase', {})
-        checks['checkbase'][db] = m
-
-        # extracting results and storing them in checks
-        results = extract_results(db, m)
-        for check, d in results.items():
-           checks.setdefault(check, {})
-           for db, res in results[check].items():
-               checks[check].setdefault(db, {})
-
-           checks[check].update(results[check])
-
-    return checks
+    if hierarchy_type == 'morphologist':
+        m = morpho.MorphologistCheckbase(directory)
+        m.perform_checks()
+    elif hierarchy_type == 'freesurfer':
+        m = free.FreeSurferCheckbase(directory)
+        m.perform_checks()
+    elif hierarchy_type == 'snapshots':
+        m = snap.SnapshotsCheckbase(directory)
+        m.perform_checks()
 
 
-def extract_results(db, checkbase):
-     from brainvisa.checkbase.hierarchies import morphologist as morpho
-     from brainvisa.checkbase.hierarchies import freesurfer as free
-     from brainvisa.checkbase.hierarchies import snapshots as snap
-     checks = {}
-     for each in ['hierarchies', 'existing_files', 'all_subjects', 'key_items', 'complete_subjects',
-      'multiple_subjects', 'empty_subjects', 'checkbase']:
-        checks[each] = {}
-     if isinstance(checkbase, morpho.MorphologistCheckbase):
-        checks['key_items'][db] = morpho.keyitems
-        checks['existing_files'][db] = checkbase.check_database_for_existing_files()
-        checks['multiple_subjects'][db] = checkbase.get_multiple_subjects()
-        checks['complete_subjects'][db] = checkbase.get_complete_subjects()
-        checks['empty_subjects'][db] = checkbase.get_empty_subjects()
-     elif isinstance(checkbase, free.FreeSurferCheckbase):
-        checks['key_items'][db] = free.keyitems
-        checks['multiple_subjects'][db] = checkbase.get_multiple_subjects()
-     elif isinstance(checkbase, snap.SnapshotsCheckbase):
-        checks['key_items'][db] = snap.keyitems
+#    # extracting results and storing them in checks
+#    results = extract_results(db, m)
+#    for check, d in results.items():
+#       checks.setdefault(check, {})
+#       for db, res in results[check].items():
+#           checks[check].setdefault(db, {})
+#
+#       checks[check].update(results[check])
 
-     checks['all_subjects'][db] = checkbase.get_flat_subjects()
+    return m
 
-     return checks
+
+#def extract_results(db, checkbase):
+#     from brainvisa.checkbase.hierarchies import morphologist as morpho
+#     from brainvisa.checkbase.hierarchies import freesurfer as free
+#     from brainvisa.checkbase.hierarchies import snapshots as snap
+#     checks = {}
+#     for each in ['hierarchies', 'existing_files', 'all_subjects', 'key_items', 'complete_subjects',
+#      'multiple_subjects', 'empty_subjects', 'checkbase']:
+#        checks[each] = {}
+#     if isinstance(checkbase, morpho.MorphologistCheckbase):
+#        checks['key_items'][db] = morpho.keyitems
+#        checks['existing_files'][db] = checkbase.check_database_for_existing_files()
+#        checks['multiple_subjects'][db] = checkbase.get_multiple_subjects()
+#        checks['complete_subjects'][db] = checkbase.get_complete_subjects()
+#        checks['empty_subjects'][db] = checkbase.get_empty_subjects()
+#     elif isinstance(checkbase, free.FreeSurferCheckbase):
+#        checks['key_items'][db] = free.keyitems
+#        checks['multiple_subjects'][db] = checkbase.get_multiple_subjects()
+#     elif isinstance(checkbase, snap.SnapshotsCheckbase):
+#        checks['key_items'][db] = snap.keyitems
+#
+#     checks['all_subjects'][db] = checkbase.get_flat_subjects()
+#
+#     return checks
 
 
 def _check_directories(rootdirectory, dirlist, verbose = True):
