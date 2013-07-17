@@ -174,7 +174,7 @@ class HTMLReportGenerator():
                       empty_subjects = self.database_checker.checks['empty_subjects']
                       complete_subjects = self.database_checker.checks['complete_subjects']
                   else:
-                      subjects = self.json['all_subjects']
+                      subjects = self.json['inventory'].keys()
                       keyitems = self.json['key_items']
                       import string
                       hieratype = string.lower(self.json['hierarchy_type'])
