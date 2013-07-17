@@ -294,7 +294,7 @@ def json_to_html_table(j):
          subject_row.append(t[inv[subject][each]])
 
       csv.append(string.join(subject_row, ';'))
-rrivée des resca
+
    html = csv2html(csv, with_head_tags=False)
    return html
 
