@@ -44,7 +44,7 @@ class HTMLReportGenerator():
         '''
         if not isinstance(data, file) and not isinstance(data, dict):
           self.database_checker = data
-        elif not isistance(data, dict):
+        elif not isinstance(data, dict):
           self.jsonfile = data
           import json
           self.json = json.load(self.jsonfile)
