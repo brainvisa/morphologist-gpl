@@ -392,6 +392,8 @@ def jsons_for_web(json, _type='existence'):
          for each in simple['key_items']:
             inv[subject][each] = each in items.keys()
       simple['inventory'] = inv
+      simple['hierarchy_type'] = json['hierarchy_type']
+      simple['all_subjects'] = json['hierarchy']['all_subjects']
 
    elif _type == 'dates':
       simple['key_items'] = json['key_items']
