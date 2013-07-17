@@ -81,7 +81,7 @@ def json2html(json, embedded_data=None, with_head_tags=True):
 
         bgcolor = '#FFFFFF'
         for each in json['key_items']:
-           bgcolor = color[each in items]
+           bgcolor = color[items[each]]
            emb_data = ''
            if embedded_data.has_key(subject) and embedded_data[subject].has_key(each):
               emb_data = embedded_data[subject][each]
