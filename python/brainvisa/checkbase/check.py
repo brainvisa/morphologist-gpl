@@ -85,7 +85,7 @@ def json2html(json, embedded_data=None, with_head_tags=True):
            emb_data = ''
            if embedded_data.has_key(subject) and embedded_data[subject].has_key(each):
               emb_data = embedded_data[subject][each]
-           html += "   <td bgcolor=%s date-exis='%s' data-date='%s' class='b-table__cell'>&nbsp;</td>"%((bgcolor, each in json['key_items'], emb_data)
+           html += "   <td bgcolor=%s date-exis='%s' data-date='%s' class='b-table__cell'>&nbsp;</td>"%(bgcolor, each in json['key_items'], emb_data)
         html += "      </tr>"
    html += "</table>"
    if with_head_tags:
