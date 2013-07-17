@@ -329,7 +329,7 @@ class HTMLReportGenerator():
       html = "<table>"
       dbindex = self.json['index']
       for each in dbindex:
-         html += '<tr><td>%s</td></td>%s</td></tr>'%(each['directory'], each['hierarchy_type'])
+         html += '<tr><td>%s</td><td>%s</td></tr>'%(each['directory'], each['hierarchy_type'])
       html += "</table>"
       return html
 
