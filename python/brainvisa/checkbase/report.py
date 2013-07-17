@@ -42,12 +42,14 @@ class HTMLReportGenerator():
     describing these.
     data is either a DatabaseChecker or a open(jsonfile)
         '''
-        if not isinstance(data, file):
+        if not isinstance(data, file) and not isinstance(data, dict):
           self.database_checker = data
-        else:
+        elif not isistance(data, dict):
           self.jsonfile = data
           import json
           self.json = json.load(self.jsonfile)
+        else:
+          self.json = data
 
     def generate_from_template(self, template_pathname, conversion_hashtable):
         '''
@@ -322,4 +324,12 @@ class HTMLReportGenerator():
       else:
          assert(False and "Check action_name")
 
+
+   def databaseindex_html(self):
+      html = "<table>"
+      dbindex = self.json['index']
+      for each in dbindex:
+         html += '<tr><td>%s</td></td>%s</td></tr>'%(each['directory'], each['hierarchy_type'])
+      html += "</table>"
+      return html
 

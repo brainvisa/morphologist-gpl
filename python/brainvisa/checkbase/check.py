@@ -89,7 +89,7 @@ def json2html(json, embedded_data=None, with_head_tags=True):
         bgcolor = '#FFFFFF'
         for each in json['key_items']:
            bgcolor = color[each in items]
-           html += "   <td bgcolor=%s class='b-table__cell'>&nbsp;</td>"%bgcolor
+           html += "   <td bgcolor=%s data-aux='%s' class='b-table__cell'>&nbsp;</td>"%(bgcolor, embedded_data[subject][each])
         html += "      </tr>"
    html += "</table>"
    if with_head_tags:
@@ -436,7 +436,7 @@ def run_disk_check(directory = '/neurospin/cati', logdir = '/neurospin/cati/User
 
 def jsons_for_web(json, _type='existence'):
 
-   import os, time
+   import os, time, datetime
    simple = {}
    from brainvisa.checkbase import getfilepath
    from brainvisa.checkbase.hierarchies import morphologist as morpho, freesurfer as free, snapshots as snap
@@ -476,10 +476,7 @@ def jsons_for_web(json, _type='existence'):
                   item = items[each][0]
                elif type(items[each]) == dict:
                   item = items[each]
-                  inv[subject][each] = os.path.getmtime(getfilepath(each, attributes=item, patterns=patterns))
-
-            else:
-               inv[subject][each] = False
+               inv[subject][each] = os.path.getmtime(getfilepath(each, attributes=item, patterns=patterns))
 
       simple['inventory'] = inv
 
@@ -510,6 +507,19 @@ def run_hierarchies_check(directory = '/neurospin/cati', logdir = '/neurospin/ca
     import os, time, json
 
     dbindexfile = 'db_indexes.json'
+    # initialize dbindexfile if necessary
+    try:
+      dbj = json.load(open(os.path.join(logdir, 'json', dbindexfile), 'rb'))
+    except Exception:
+      dbj = {}
+      dbj['action_name'] = 'Databases index'
+      dbj['action_date'] = datetime_string = str(time.strftime('%d%m%Y-%H%M%S', time.gmtime()))
+      dbj['action_desc'] = 'List of hierarchies detected on /neurospin/cati'
+      dbj['action_vers'] = '1.0'
+      dbj['index'] = []
+      json.dump(dbj, open(os.path.join(logdir, 'json', dbindexfile), 'wb'))
+
+
     start_time = time.time()
 
     # processing users folders
@@ -525,7 +535,8 @@ def run_hierarchies_check(directory = '/neurospin/cati', logdir = '/neurospin/ca
        databases = []
        for db, db_type in h.items():
             dir_checks = check.perform_checks_hierarchy(db, hierarchy_type=db_type)
-            dbj = json.load(open(os.path.join(logdir, 'json', dbindexfile), 'rb'))
+            dbfile = json.load(open(os.path.join(logdir, 'json', dbindexfile), 'rb'))
+            dbj = dbfile['index']
             dbdirs = [each['directory'] for each in dbj]
             if db in dbdirs:
                 h_index = dbdirs.index(db)
@@ -533,7 +544,7 @@ def run_hierarchies_check(directory = '/neurospin/cati', logdir = '/neurospin/ca
                 h_index = len(dbdirs)
                 dbj.append({'directory' : db, 'filename': 'db_%s.json'%h_index, 'hierarchy_type': db_type})
 
-            json.dump(dbj, open(os.path.join(logdir, 'json', dbindexfile), 'wb'))
+            json.dump(dbfile, open(os.path.join(logdir, 'json', dbindexfile), 'wb'))
             action_json = hierarchies_to_action(dir_checks)
 #            # save tables
 #            datetime_string = str(time.strftime('%d%m%Y-%H%M%S', time.gmtime()))
