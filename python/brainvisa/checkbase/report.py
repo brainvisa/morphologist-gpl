@@ -106,7 +106,7 @@ class HTMLReportGenerator():
          for study, study_size in self.database_checker.studies_space.items():
             summary = summary + '%s: %s<br>'%(study, str("{0:.2S}".format(size(study_size))))
          return summary
-       elif hasattr(self, 'jsonfile'):
+       elif hasattr(self, 'json'):
          summary = ''
          for study, study_size in self.json['studies'].items():
             summary = summary + '%s: %s<br>'%(study, str("{0:.2S}".format(size(study_size))))
@@ -122,7 +122,7 @@ class HTMLReportGenerator():
         for user, user_size in self.database_checker.users_space.items():
             summary = summary + '%s: %s<br>'%(user, str("{0:.2S}".format(size(user_size))))
         return summary
-       elif hasattr(self, 'jsonfile'):
+       elif hasattr(self, 'json'):
         summary = ''
         for user, user_size in self.json['users'].items():
             summary = summary + '%s: %s<br>'%(user, str("{0:.2S}".format(size(user_size))))
@@ -163,7 +163,7 @@ class HTMLReportGenerator():
     def _generate_detailed_directories(self):
         if hasattr(self, 'database_checker'):
           hier_list = self.database_checker.hierarchies.keys()
-        elif hasattr(self, 'jsonfile'):
+        elif hasattr(self, 'json'):
           hier_list = self.json['inventory'].keys()
 
         summary = ''
@@ -218,7 +218,7 @@ class HTMLReportGenerator():
               }
 
            return self._convert_from_template('DIRECTORIES', ht)
-        elif hasattr(self, 'jsonfile'):
+        elif hasattr(self, 'json'):
            return summary
 
     def generate_html_report(self):
