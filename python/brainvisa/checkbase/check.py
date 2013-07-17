@@ -478,7 +478,7 @@ def jsons_for_web(json, _type='existence'):
                   item = items[each]
                inv[subject][each] = os.path.getmtime(getfilepath(each, attributes=item, patterns=patterns))
 
-      simple['inventory'] = inv
+      simple['dates'] = inv
 
 
 
