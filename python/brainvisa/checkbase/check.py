@@ -399,8 +399,12 @@ def jsons_for_web(json, _type='existence'):
          inv[subject] = {}
          for each in simple['key_items']:
             if each in items.keys():
-               print type(json['inventory']['identified_items'][subject])
-               inv[subject][each] = os.path.getmtime(getfilepath(each, json['inventory']['identified_items'][subject][each]))
+               if type(items[each]) == list:
+                  item = items[each][0]
+               elif type(items[each]) == dict:
+                  item = items[each]
+                  inv[subject][each] = os.path.getmtime(getfilepath(each, item))
+
             else:
                inv[subject][each] = False
 
