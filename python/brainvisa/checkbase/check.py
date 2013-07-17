@@ -369,6 +369,7 @@ def jsons_for_web(json, _type='existence'):
    import os, time
    simple = {}
    from brainvisa.checkbase import getfilepath
+   from brainvisa.checkbase.hierarchies import morphologist as morpho, freesurfer as free, snapshots as snap
    if _type == 'existence':
       simple['key_items'] = json['key_items']
       simple['directory'] = json['directory']
@@ -389,6 +390,8 @@ def jsons_for_web(json, _type='existence'):
    elif _type == 'dates':
       simple['key_items'] = json['key_items']
       simple['directory'] = json['directory']
+      simple['hierarchy_type'] = json['hierarchy_type']
+      patterns = {'Morphologist': morpho.patterns, 'Freesurfer' : free.patterns, 'Snapshots': snap.patterns}[simple['hierarchy_type']]
       simple['action_name'] = 'simple_neurospin_folders_inventory'
       datetime_string = str(time.strftime('%d%m%Y-%H%M%S', time.gmtime()))
       simple['action_date'] = datetime_string
@@ -403,7 +406,7 @@ def jsons_for_web(json, _type='existence'):
                   item = items[each][0]
                elif type(items[each]) == dict:
                   item = items[each]
-                  inv[subject][each] = os.path.getmtime(getfilepath(each, item))
+                  inv[subject][each] = os.path.getmtime(getfilepath(each, attributes=item, patterns=patterns))
 
             else:
                inv[subject][each] = False
