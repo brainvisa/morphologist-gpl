@@ -325,7 +325,7 @@ class HTMLReportGenerator():
          assert(False and "Check action_name")
 
 
-   def databaseindex_html(self):
+    def databaseindex_html(self):
       html = "<table>"
       dbindex = self.json['index']
       for each in dbindex:
