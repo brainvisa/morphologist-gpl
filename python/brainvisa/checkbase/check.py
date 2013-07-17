@@ -85,6 +85,7 @@ def json2html(json, embedded_data=None, with_head_tags=True):
 
    for subject, items in json['inventory'].items():
         html += "       <tr class='b-table__row'>"
+        html += "   <td bgcolor=#FFFFFF class='b-table__cell'>" + subject + '</td>'
 
         bgcolor = '#FFFFFF'
         for each in json['key_items']:
