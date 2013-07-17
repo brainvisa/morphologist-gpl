@@ -167,17 +167,17 @@ class HTMLReportGenerator():
         summary = ''
         for hieradir in hier_list:
                   if hasattr(self, 'database_checker'):
-                      hieratype = self.database_checker.hierarchies[hieradir]
-                      subjects = self.database_checker.checks['all_subjects'][hieradir]
-                      keyitems = self.database_checker.checks['key_items'][hieradir]
-                      multiple_subjects = self.database_checker.checks['multiple_subjects'][hieradir]
-                      empty_subjects = self.database_checker.checks['empty_subjects'][hieradir]
-                      complete_subjects = self.database_checker.checks['complete_subjects'][hieradir]
+                      hieratype = self.database_checker.hierarchies
+                      subjects = self.database_checker.checks['all_subjects']
+                      keyitems = self.database_checker.checks['key_items']
+                      multiple_subjects = self.database_checker.checks['multiple_subjects']
+                      empty_subjects = self.database_checker.checks['empty_subjects']
+                      complete_subjects = self.database_checker.checks['complete_subjects']
                   else:
-                      subjects = self.json['inventory'][hieradir]['all_subjects']
-                      keyitems = self.json['inventory'][hieradir]['key_items']
+                      subjects = self.json['inventory']['all_subjects']
+                      keyitems = self.json['key_items']
                       import string
-                      hieratype = string.lower(self.json['inventory'][hieradir]['hierarchy_type'])
+                      hieratype = string.lower(self.json['hierarchy_type'])
                       multiple_subjects = ''
                       empty_subjects = ''
                       complete_subjects = ''
