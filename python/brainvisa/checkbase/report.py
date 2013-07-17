@@ -313,7 +313,7 @@ class HTMLReportGenerator():
            #conversion_hashtable = {'$HIERARCHIES' : j['inventory'].keys()}
            summary = self._generate_detailed_directories()
            from brainvisa.checkbase import check
-           html = check.json_to_html_table(j)
+           html = check.json2html(j)
            import string
            return summary + "<b><h3>%s</h3></b>%s"%(j['directory'], html)
       # measures

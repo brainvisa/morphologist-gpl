@@ -29,7 +29,78 @@ studies_list = ['Memento',
                 '3C'
                 ]
 
-def csv2html(csvfile, with_head_tags=True):
+def json2html(json, embedded_data=None, with_head_tags=True):
+   '''csvfile can be a list of comma separated strings or a csv textfile'''
+   html = ''
+   import re, os
+   import cgi
+   import sys
+   import string
+   import codecs
+
+   if with_head_tags:
+      html += """
+      <!DOCTYPE html>
+      <html>
+       <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Results</title>
+      """
+   html += """
+     <style>
+       .b-table {
+         width: 100%;
+         border-spacing : 2px;
+         border-collapse: separate;
+         cellspacing : 3px;
+       }
+
+       .b-table__cell {
+         border: 1px solid;
+       }
+
+       .b-table__cell_min {
+         background: #DFFCD8;
+       }
+
+       .b-table__cell_max {
+         background: #F7D6D6;
+       }
+     </style>"""
+   if with_head_tags:
+      html += """
+    </head>
+    <body>
+      """
+   html += """
+    <table class="b-table" style="font-size:6px">
+   """
+   color = {False:'#FFFFFF', True:'#000000'}
+   fields = ['subject']
+   fields.extend(json['key_items'])
+   html += "       <tr class='b-table__row'>"
+   for each in fields:
+      html += "   <td bgcolor=#FFFFFF class='b-table__cell'>" + each + '</td>'
+   html += "       </tr>"
+
+   for subject, items in json['inventory'].items():
+        html += "       <tr class='b-table__row'>"
+        html += "   <td bgcolor=#FFFFFF class='b-table__cell'>" + subject + '</td>'
+
+        bgcolor = '#FFFFFF'
+        for each in items:
+           bgcolor = color[each]
+           html += "   <td bgcolor=%s class='b-table__cell'>&nbsp;</td>"%bgcolor
+        html += "      </tr>"
+   html += "</table>"
+   if with_head_tags:
+      html += """
+       </body>
+      </html>
+      """
+   return html
+
+def csv2html(csvfile, embedded_data = None, with_head_tags=True):
    '''csvfile can be a list of comma separated strings or a csv textfile'''
    html = ''
    import re, os
@@ -278,25 +349,25 @@ def save_table(checkbase, logdir = '/neurospin/cati/Users/operto/logs/existingfi
     f.write(html)
     f.close()
 
-def json_to_html_table(j):
-   import json, csv, string, os
-   assert(j['action_name'] == 'simple_neurospin_folders_inventory')
-   directory = j['directory']
-   inv = j['inventory']
-   fields_names = ['subject']
-   fields_names.extend(j['key_items'])
-   csv = []
-   t = {True: '1', False:'0'}
-   csv.append(string.join(fields_names, ';'))
-   for subject in inv.keys():
-      subject_row = [unicode(subject).encode("utf-8")]
-      for each in j['key_items']:
-         subject_row.append(t[inv[subject][each]])
-
-      csv.append(string.join(subject_row, ';'))
-
-   html = csv2html(csv, with_head_tags=False)
-   return html
+#def json_to_html_table(j):
+#   import json, csv, string, os
+#   assert(j['action_name'] == 'simple_neurospin_folders_inventory')
+#   directory = j['directory']
+#   inv = j['inventory']
+#   fields_names = ['subject']
+#   fields_names.extend(j['key_items'])
+#   csv = []
+#   t = {True: '1', False:'0'}
+#   csv.append(string.join(fields_names, ';'))
+#   for subject in inv.keys():
+#      subject_row = [unicode(subject).encode("utf-8")]
+#      for each in j['key_items']:
+#         subject_row.append(t[inv[subject][each]])
+#
+#      csv.append(string.join(subject_row, ';'))
+#
+#   html = json2html(csv, with_head_tags=False)
+#   return html
 
 def json_to_measures_tables(j):
    tables = {}
@@ -348,7 +419,7 @@ def run_disk_check(directory = '/neurospin/cati', logdir = '/neurospin/cati/User
     try:
        if hasattr(database_checker, 'studies_space'):
           # saving csv
-          #save_csv(database_checker, logdir, datetime_string = datetime_string)
+          save_csv(database_checker, logdir, datetime_string = datetime_string)
           save_action_diskusage(database_checker, os.path.join(logdir, 'json', 'diskusage'), datetime_string = datetime_string)
     except Exception as e:
        if verbose: print e
@@ -391,7 +462,7 @@ def jsons_for_web(json, _type='existence'):
       simple['key_items'] = json['key_items']
       simple['directory'] = json['directory']
       simple['hierarchy_type'] = json['hierarchy_type']
-      patterns = {'Morphologist': morpho.patterns, 'Freesurfer' : free.patterns, 'Snapshots': snap.patterns}[simple['hierarchy_type']]
+      patterns = {'Morphologist': morpho.patterns, 'FreeSurfer' : free.patterns, 'Snapshots': snap.patterns}[simple['hierarchy_type']]
       simple['action_name'] = 'simple_neurospin_folders_inventory'
       datetime_string = str(time.strftime('%d%m%Y-%H%M%S', time.gmtime()))
       simple['action_date'] = datetime_string
