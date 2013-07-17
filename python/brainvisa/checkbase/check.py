@@ -250,16 +250,6 @@ def hierarchies_to_action(checkbase):
           res['inventory']['unidentified_items'] = checkbase.existingfiles[1]
     return res
 
-def hierarchies_simpleaction(json):
-    assert(json['action_name'] == 'neurospin_folders_inventory')
-    res = {}
-    res['action_name'] = 'simple_neurospin_folders_inventory'
-    datetime_string = str(time.strftime('%d%m%Y-%H%M%S', time.gmtime()))
-    res['action_date'] = datetime_string
-    res['action_desc'] = 'Index of existing identified files on /neurospin/cati (simple version)'
-    res['action_vers'] = '1.0'
-
-
 
 def save_table(checkbase, logdir = '/neurospin/cati/Users/operto/logs/existingfiles', datetime_string = ''):
     import csv, time, string, os
@@ -304,7 +294,7 @@ def json_to_html_table(j):
          subject_row.append(t[inv[subject][each]])
 
       csv.append(string.join(subject_row, ';'))
-
+rrivée des resca
    html = csv2html(csv, with_head_tags=False)
    return html
 
@@ -389,11 +379,12 @@ def jsons_for_web(json, _type='existence'):
       simple['action_vers'] = '1.0'
       inv = {}
       for subject, items in json['inventory']['identified_items'].items():
+         inv[subject] = {}
          for each in simple['key_items']:
             inv[subject][each] = each in items.keys()
       simple['inventory'] = inv
       simple['hierarchy_type'] = json['hierarchy_type']
-      simple['all_subjects'] = json['hierarchy']['all_subjects']
+      simple['all_subjects'] = json['inventory']['all_subjects']
 
    elif _type == 'dates':
       simple['key_items'] = json['key_items']
@@ -405,9 +396,11 @@ def jsons_for_web(json, _type='existence'):
       simple['action_vers'] = '1.0'
       inv = {}
       for subject, items in json['inventory']['identified_items'].items():
+         inv[subject] = {}
          for each in simple['key_items']:
             if each in items.keys():
-               inv[subject][each] = os.path.getmtime(getfilepath(each, json['inventory'][subject][each]))
+               print type(json['inventory']['identified_items'][subject])
+               inv[subject][each] = os.path.getmtime(getfilepath(each, json['inventory']['identified_items'][subject][each]))
             else:
                inv[subject][each] = False
 
