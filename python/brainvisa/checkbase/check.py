@@ -522,7 +522,6 @@ def run_hierarchies_check(directory = '/neurospin/cati', logdir = '/neurospin/ca
     # processing users folders
     if verbose: print 'Processing directories...'
     directories = [os.path.join(directory, each) for each in studies_list]
-    directories = []
     directories.extend([os.path.join(directory, users_dir, each) for each in users_list])
     print directories
     for db_dir in directories:
