@@ -318,9 +318,9 @@ class HTMLReportGenerator():
            ed = None
            if j.has_key('embedded_data'):
               ed = j['embedded_data']['dates']
-           html = check.json2html(j, embedded_data=ed)
+           html = check.json2html(j, embedded_data=ed, with_head_tags=False)
            import string
-           return summary + "<b><h3>%s</h3></b>%s"%(j['directory'], html)
+           return summary + html
       # measures
       elif j['action_name'] == 'measures':
            pass

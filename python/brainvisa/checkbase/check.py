@@ -81,11 +81,15 @@ def json2html(json, embedded_data=None, with_head_tags=True):
 
         bgcolor = '#FFFFFF'
         for each in json['key_items']:
-           bgcolor = color[items[each]]
+           bgcolor = color[items.has_key(each)]
            emb_data = ''
-           if not embedded_data is None and embedded_data.has_key(subject) and embedded_data[subject].has_key(each):
-              emb_data = embedded_data[subject][each]
-           html += "   <td bgcolor=%s data-exis='%s' data-date='%s' class='b-table__cell'>&nbsp;</td>"%(bgcolor, items[each], emb_data)
+           if items.has_key(each):
+              if not embedded_data is None and embedded_data.has_key(subject) and embedded_data[subject].has_key(each):
+                 emb_data = embedded_data[subject][each]
+              html += "   <td bgcolor=%s data-exis='%s' data-date='%s' class='b-table__cell'>&nbsp;</td>"%(bgcolor, items[each], emb_data)
+           else:
+              html += "   <td bgcolor=%s data-exis='False' data-date='%s' class='b-table__cell'>&nbsp;</td>"%(bgcolor, emb_data)
+
            #html += "   <td bgcolor=%s class='b-table__cell'>&nbsp;</td>"%(bgcolor)
         html += "      </tr>"
    html += "</table>"
@@ -433,10 +437,11 @@ def run_disk_check(directory = '/neurospin/cati', logdir = '/neurospin/cati/User
 
 def jsons_for_web(json, _type='existence'):
 
-   import os, time, datetime
+   import os, time, datetime, string
    simple = {}
    from brainvisa.checkbase import getfilepath
    from brainvisa.checkbase.hierarchies import morphologist as morpho, freesurfer as free, snapshots as snap
+   patterns = {'Morphologist': morpho.patterns, 'FreeSurfer' : free.patterns, 'Snapshots': snap.patterns}[json['hierarchy_type']]
    if _type == 'existence':
       simple['key_items'] = json['key_items']
       simple['directory'] = json['directory']
@@ -448,8 +453,11 @@ def jsons_for_web(json, _type='existence'):
       inv = {}
       for subject, items in json['inventory']['identified_items'].items():
          inv[subject] = {}
-         for each in simple['key_items']:
-            inv[subject][each] = each in items.keys()
+         for k, v in items.items():
+            if isinstance(v, list):
+               inv[subject][k] = string.join([getfilepath(k, attributes=each, patterns=patterns) for each in v], ',')
+            else:
+               inv[subject][k] = getfilepath(k, attributes=v, patterns=patterns)
       simple['inventory'] = inv
       simple['hierarchy_type'] = json['hierarchy_type']
       simple['all_subjects'] = json['inventory']['all_subjects']
@@ -458,7 +466,6 @@ def jsons_for_web(json, _type='existence'):
       simple['key_items'] = json['key_items']
       simple['directory'] = json['directory']
       simple['hierarchy_type'] = json['hierarchy_type']
-      patterns = {'Morphologist': morpho.patterns, 'FreeSurfer' : free.patterns, 'Snapshots': snap.patterns}[simple['hierarchy_type']]
       simple['action_name'] = 'simple_neurospin_folders_inventory'
       datetime_string = str(time.strftime('%d%m%Y-%H%M%S', time.gmtime()))
       simple['action_date'] = datetime_string
@@ -494,6 +501,7 @@ def run_hierarchies_check(directory = '/neurospin/cati', logdir = '/neurospin/ca
     from brainvisa.checkbase.hierarchies import check
     from brainvisa.checkbase import check as ch
     from brainvisa import checkbase as c
+    from brainvisa.checkbase import report
     if not studies_list: studies_list = ch.studies_list
     if not users_list: users_list = ch.users_dict.keys()
     if not users_dir: users_dir = ch.users_dir
@@ -510,7 +518,8 @@ def run_hierarchies_check(directory = '/neurospin/cati', logdir = '/neurospin/ca
     except Exception:
       dbj = {}
       dbj['action_name'] = 'Databases index'
-      dbj['action_date'] = datetime_string = str(time.strftime('%d%m%Y-%H%M%S', time.gmtime()))
+      datetime_string = str(time.strftime('%d%m%Y-%H%M%S', time.gmtime()))
+      dbj['action_date'] = datetime_string
       dbj['action_desc'] = 'List of hierarchies detected on /neurospin/cati'
       dbj['action_vers'] = '1.0'
       dbj['index'] = []
@@ -522,18 +531,27 @@ def run_hierarchies_check(directory = '/neurospin/cati', logdir = '/neurospin/ca
     # processing users folders
     if verbose: print 'Processing directories...'
     directories = [os.path.join(directory, each) for each in studies_list]
+    #directories = []
     directories.extend([os.path.join(directory, users_dir, each) for each in users_list])
     print directories
-    for db_dir in directories:
-       # process each directory
-       if verbose: print db_dir, 'in progress'
-       h = c.detect_hierarchies(db_dir, maxdepth=3)
-       databases = []
-       for db, db_type in h.items():
-            dir_checks = check.perform_checks_hierarchy(db, hierarchy_type=db_type)
-            dbfile = json.load(open(os.path.join(logdir, 'json', dbindexfile), 'rb'))
-            dbj = dbfile['index']
-            dbdirs = [each['directory'] for each in dbj]
+    dbfile = json.load(open(os.path.join(logdir, 'json', dbindexfile), 'rb'))
+    dbj = dbfile['index']
+    dbdirs = [each['directory'] for each in dbj]
+
+    h = {}
+    for each in dbj:
+       h[each['directory']] = each['hierarchy_type']
+
+    #for db_dir in directories:
+       #if verbose: print db_dir, 'in progress'
+       #h = c.detect_hierarchies(db_dir, maxdepth=3)
+
+    number_of_identified_files = 0
+    number_of_unidentified_files = 0
+    unique_subjects = []
+
+    for db, db_type in h.items():
+            #dir_checks = check.perform_checks_hierarchy(db, hierarchy_type=db_type)
             if db in dbdirs:
                 h_index = dbdirs.index(db)
             else:
@@ -541,23 +559,52 @@ def run_hierarchies_check(directory = '/neurospin/cati', logdir = '/neurospin/ca
                 dbj.append({'directory' : db, 'filename': 'db_%s.json'%h_index, 'hierarchy_type': db_type})
 
             json.dump(dbfile, open(os.path.join(logdir, 'json', dbindexfile), 'wb'))
-            action_json = hierarchies_to_action(dir_checks)
-#            # save tables
-#            datetime_string = str(time.strftime('%d%m%Y-%H%M%S', time.gmtime()))
+            #action_json = hierarchies_to_action(dir_checks)
+            # save tables
             json_file = os.path.join(logdir, 'json', 'databases', 'db_%s.json'%h_index)
             print 'writing', json_file
-            json.dump(action_json, open(json_file, 'wb'))
+            #json.dump(action_json, open(json_file, 'wb'))
+            action_json = json.load(open(json_file, 'rb'))
+
+            # counting identified items
+            unique_subjects.extend(action_json['inventory']['identified_items'].keys())
+            unique_subjects.extend(action_json['inventory']['unidentified_items'].keys())
+            for subject, items in action_json['inventory']['identified_items'].items():
+               for k, v in items.items():
+                  if isinstance(v, list):
+                     nb_items += len(v)
+                  else:
+                     nb_items = 1
+               number_of_identified_files += nb_items
+            for subject, items in action_json['inventory']['unidentified_items'].items():
+               number_of_unidentified_files += len(items)
 
             # simple json existing files
-            simple_existing_json = jsons_for_web(action_json, _type='existence')
-            simple_jsonfile = os.path.join(logdir, 'json', 'json_for_web', 'existing_%s.json'%h_index)
-            print 'writing', simple_jsonfile
-            json.dump(simple_existing_json, open(simple_jsonfile, 'wb'))
+            ej = jsons_for_web(action_json, _type='existence')
+            ejfile = os.path.join(logdir, 'json', 'json_for_web', 'existing_%s.json'%h_index)
+            print 'writing', ejfile
+            json.dump(ej, open(ejfile, 'wb'))
+            #ej = json.load(open(ejfile, 'rb'))
 
             # dates json
-            simple_existing_json = jsons_for_web(action_json, _type='dates')
-            simple_jsonfile = os.path.join(logdir, 'json', 'json_for_web', 'dates_%s.json'%h_index)
-            print 'writing', simple_jsonfile
-            json.dump(simple_existing_json, open(simple_jsonfile, 'wb'))
+            dj = jsons_for_web(action_json, _type='dates')
+            djfile = os.path.join(logdir, 'json', 'json_for_web', 'dates_%s.json'%h_index)
+            print 'writing', djfile
+            json.dump(dj, open(djfile, 'wb'))
+            #dj = json.load(open(djfile, 'rb'))
+
+            # generate html
+            ej['embedded_data'] = dj
+            r = report.HTMLReportGenerator(ej)
+            html = r.json_to_html()
+            htmlfile = os.path.join(logdir, 'html', 'table_%s.html'%h_index)
+            with open(htmlfile, 'wb') as f:
+               f.write(html)
 
     #execution_time = time.time() - start_time
+    #writing counters file
+    countfile = os.path.join(logdir, 'json', 'counters.json')
+    j = json.load(open(countfile, 'rb'))
+    j['counters'].update({'identified_items': number_of_identified_files, 'unidentified_items' : number_of_unidentified_files, 'unique_subjects': len(set(unique_subjects))})
+    print 'writing', countfile
+    json.dump(j, open(countfile, 'wb'))
