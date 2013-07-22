@@ -32,6 +32,12 @@ def revision_number(filepath):
    rev_number = string.atoi(output.split('\n')[5].split(' ')[1])
    return rev_number
 
+import math
+def millify(n):
+    millnames=['','Thousand','Million','Billion','Trillion']
+    millidx=max(0,min(len(millnames)-1,
+                      int(math.floor(math.log10(abs(n))/3.0))))
+    return '%.0f %s'%(n/10**(3*millidx),millnames[millidx])
 
 class HTMLReportGenerator():
 
