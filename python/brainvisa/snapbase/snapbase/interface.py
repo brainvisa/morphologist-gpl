@@ -15,12 +15,11 @@ class HoverButton(QtGui.QPushButton):
              'sulci_btn':'All Left Cortical Folds in the database',
              'raw_btn':'All Raw T1 MRI in the database',
              'fibers_btn':'All Labeled Fiber Bundles in the database',
-             'spm_btn':'All Comparisons in the database',
              'tablet_btn':'All Raw T1 MRI (tablets) in the database',
              'brainmask_btn':'All T1 Brain Mask in the database',
              'thickness_btn':'All Cortical Thickness Maps in the database',
              'meshcut_btn' : 'All MeshCut',
-             'spmgrey_btn' : 'All SPM Grey maps',
+             'spm_btn' : 'All SPM probability maps',
              'btn_help':'Display a comprehensive help message'}
 
        self.emit(Qt.SIGNAL('enter'), str(messages[self.objectName()]))

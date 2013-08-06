@@ -241,6 +241,7 @@ class SnapBase():
         from PyQt4 import QtGui, QtCore, Qt
         import os
         pix_dir = os.path.split(__file__)[0]
+        print pix_dir, name
         setattr(gui, '%s_btn'%name, HoverButton(gui.widget))
         btn = getattr(gui, '%s_btn'%name)
 
@@ -354,6 +355,8 @@ class SnapBase():
                'SulciSnapBase' : 'folds graph',
                'HemiThicknessSnapBase' : 'mesh',
                'WhiteThicknessSnapBase' : 'mesh',
+               'SPMSnapBase' : 'mri',
+               'SPMComparisonSnapBase' : 'mri',
                'FreesurferAsegSnapBase' : 'mri'}
         if acquisition_key.has_key(classname):
            return acquisition_key[classname]
@@ -376,8 +379,9 @@ class SnapBase():
                        'MeshCutSnapBase' :'meshcut',
                        'BrainMaskSnapBase' : 'brain',
                        'GreyWhiteSnapBase' : 'GW',
-                       'HippocampusSnapBase' : 'hippo',}
-#                       'SPMGreySnapBase' : 'spm'}
+                       'HippocampusSnapBase' : 'hippo',
+                       'SPMComparisonSnapBase' : 'SPMcompare',
+                       'SPMSnapBase' : 'spm'}
         is_sided = False
         side = self.get_current_side()
         if not side is None:

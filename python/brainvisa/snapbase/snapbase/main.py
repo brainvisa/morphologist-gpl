@@ -41,19 +41,6 @@ def display_help_msgbox():
     gui.helpbox.setupUi(main_window)
     gui.helpbox.show()
 
-def spm_snap_base():
-    global main_window, qt_app, database, preferences
-    from examples import splitbrain
-    item, ok = Qt.QInputDialog.getItem(None,
-            'Which database',
-            'which db',
-            neuroHierarchy.databases._databases.keys(), 0, False)
-    if ok :
-        preferences['db'] = item
-        snap = splitbrain.SPMGreySnapBase(preferences)
-        snap.snap_base(main_window = main_window, qt_app = qt_app )
-
-
 def recompose(hippo_output_files, raw_output_files):
     from PIL import Image
     # recompose each subject's snapshot
@@ -412,12 +399,12 @@ def main():
     #excluded_classes not necessary... yet
     excluded_classes = ['SnapBase', 'HippocampusLabelLeftSnapBase', 'HippocampusLabelRawLeftSnapBase', 'HippocampusLabelRawRightSnapBase',
           'HippocampusLabelRightSnapBase', 'HippocampusLabelSnapBase', 'HippocampusLeftSnapBase', 'HippocampusRightSnapBase', 'HippocampusSnapBase',
-          'SPMComparisonSnapBase', 'FibersSnapBase', 'SulciMultiViewSnapBase', 'SulciSingleViewSnapBase', 'WhiteThicknessSnapBase', 'HemiThicknessSnapBase']
+          'FibersSnapBase', 'SulciMultiViewSnapBase', 'SulciSingleViewSnapBase', 'WhiteThicknessSnapBase', 'HemiThicknessSnapBase', 'FreesurferAsegSnapBase', 'SPMComparisonSnapBase']
 
     ordered_classes = ['RawSnapBase', 'TabletSnapBase', 'BrainMaskSnapBase',
          'SplitBrainSnapBase', 'GreyWhiteSnapBase',
-         'MeshCutSnapBase', 'MeshSnapBase', 'ThicknessSnapBase', 'SulciSnapBase', 'FreesurferAsegSnapBase',
-         'SPMGreySnapBase']
+         'MeshCutSnapBase', 'MeshSnapBase', 'ThicknessSnapBase', 'SulciSnapBase',
+         'SPMSnapBase']
 
     ordered_snap_classes = [(each, snap_classes[each]) for each in ordered_classes if each in snap_classes.keys()] # and not each in excluded_classes]
 
