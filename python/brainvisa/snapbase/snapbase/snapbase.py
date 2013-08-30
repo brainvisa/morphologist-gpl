@@ -241,7 +241,6 @@ class SnapBase():
         from PyQt4 import QtGui, QtCore, Qt
         import os
         pix_dir = os.path.split(__file__)[0]
-        print pix_dir, name
         setattr(gui, '%s_btn'%name, HoverButton(gui.widget))
         btn = getattr(gui, '%s_btn'%name)
 
@@ -412,6 +411,12 @@ class SnapBase():
                 {'SulciSnapBase' : 'sulci_%s_%s'%(cap_side[0], view_mode)})
 #        if is_sided and self.preferences.has_key('mesh'):
 #            id_translat.update({'Cortical Thickness' : 'thickness_%s_%s'%(cap_side[0], self.preferences['mesh'])})
+        if class_name == 'SPMSnapBase':
+           maptype = self.current_diskitems['greymap'].type.name
+           if 'CSF' in maptype: maptype = 'CSF'
+           elif 'Grey' in maptype: maptype = 'grey'
+           elif 'White' in maptype: maptype = 'white'
+           id_translat.update({'SPMSnapBase' : 'spm_%s'%maptype})
 
 
         assert(os.path.exists(outputdir))
