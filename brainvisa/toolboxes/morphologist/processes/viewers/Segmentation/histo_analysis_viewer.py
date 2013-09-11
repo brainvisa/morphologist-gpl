@@ -35,16 +35,16 @@ from brainvisa.processes import *
 from PyQt4 import QtGui
 
 try:
-    from morphologist_common.gui import histo_analysis_widget
+    from brainvisa.morphologist.qt4gui import histo_analysis_widget
 except:
     pass
 
 def validation():
     try:
-        import morphologist_common.gui.histo_analysis_widget
+        import brainvisa.morphologist.qt4gui.histo_analysis_widget
     except:
         raise ValidationError(
-            'morphologist_common.gui.histo_analysis_widget ' \
+            'brainvisa.morphologist.qt4gui.histo_analysis_widget ' \
             'module cannot be imported' )
 
 name = 'Show histo analysis'

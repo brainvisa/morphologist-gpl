@@ -39,7 +39,7 @@ roles=("viewer", )
 
 def validation():
   try:
-    import morphologist.gui.histo_analysis_widget
+    import brainvisa.morphologist.qt4gui.histo_analysis_widget
   except:
     # The new viewer does not work: this one will do the job.
     return

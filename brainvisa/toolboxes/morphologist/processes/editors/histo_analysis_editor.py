@@ -38,12 +38,12 @@ import numpy
 
 if neuroConfig.gui:
     try:
-        from morphologist_common.gui import histo_analysis_editor
+        from brainvisa.morphologist.qt4gui import histo_analysis_editor
         # patch to use brainvisa.anatomist instead of the core anatomist
         histo_analysis_editor.anatomist = anatomist
-        from morphologist_common.gui.histo_analysis_editor \
+        from brainvisa.morphologist.qt4gui.histo_analysis_editor \
             import create_histo_editor
-        from morphologist_common.gui.histo_analysis_widget \
+        from brainvisa.morphologist.qt4gui.histo_analysis_widget \
             import load_histo_data
     except ImportError:
         pass
@@ -53,10 +53,10 @@ def validation():
         raise ValidationError( 'No GUI.' )
     anatomist.validation()
     try:
-        import morphologist_common.gui.histo_analysis_editor
+        import brainvisa.morphologist.qt4gui.histo_analysis_editor
     except:
         raise ValidationError(
-            'morphologist_common.gui.histo_analysis_editor ' \
+            'brainvisa.morphologist.qt4gui.histo_analysis_editor ' \
             'module cannot be imported' )
 
 name = 'Edit histo analysis'
