@@ -36,7 +36,7 @@ from soma import aims
 import registration
 
 name = 'Grey White Surface 2012'
-userLevel = 0
+userLevel = 2
 
 # Argument declaration
 signature = Signature(
@@ -106,6 +106,7 @@ def execution( self, context ):
                             "-o", self.left_white_mesh,
                             "--smoothType", "laplacian",
                             "--smoothIt", 5, "--smoothRate", 0.4,
+                            "--deciMaxClearance", 5., "--deciMaxError", 3.,
                             "--internalinterface" )
             context.system( "meshCleaner", "-i", self.left_white_mesh, "-o", self.left_white_mesh, "-maxCurv", "0.5" )
 
@@ -143,6 +144,7 @@ def execution( self, context ):
                             "-o", self.right_white_mesh,
                             "--smoothType", "laplacian",
                             "--smoothIt", 5, "--smoothRate", 0.4,
+                            "--deciMaxClearance", 5., "--deciMaxError", 3.,
                             "--internalinterface" )
             context.system( "meshCleaner", "-i", self.right_white_mesh, "-o", self.right_white_mesh, "-maxCurv", "0.5" )
             
