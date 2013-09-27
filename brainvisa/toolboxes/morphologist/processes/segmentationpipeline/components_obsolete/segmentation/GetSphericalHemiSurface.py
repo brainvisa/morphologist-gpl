@@ -100,6 +100,7 @@ def execution( self, context ):
                         "-o", self.left_hemi_mesh,
                         "--smoothType", "laplacian",
                         "--smoothIt", 5, "--smoothRate", 0.4,
+                        "--deciMaxClearance", 5., "--deciMaxError", 3.,
                         "--internalinterface" )
         context.system( "meshCleaner", "-i", self.left_hemi_mesh, "-o", self.left_hemi_mesh, "-maxCurv", "0.5" )
         
@@ -140,6 +141,7 @@ def execution( self, context ):
                         "-o", self.right_hemi_mesh,
                         "--smoothType", "laplacian",
                         "--smoothIt", 5, "--smoothRate", 0.4,
+                        "--deciMaxClearance", 5., "--deciMaxError", 3.,
                         "--internalinterface" )
         context.system( "meshCleaner", "-i", self.right_hemi_mesh.fullPath(), "-o", self.right_hemi_mesh.fullPath(), "-maxCurv", "0.5" )
 
