@@ -35,7 +35,7 @@ from brainvisa.processes import *
 import shfjGlobals
 
 name = 'Morphologist 2011'
-userLevel = 0
+userLevel = 2
 
 signature = Signature(
   'mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.vipVolumeFormats ),

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -35,7 +36,7 @@ from brainvisa.processes import *
 import shfjGlobals     
 
 name = 'Ana Brain Mask from T1 MRI'
-userLevel = 0
+userLevel = 2
 
 signature = Signature(
   'T1mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.vipVolumeFormats ),

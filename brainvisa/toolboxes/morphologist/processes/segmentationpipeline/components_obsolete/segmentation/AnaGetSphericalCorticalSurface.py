@@ -36,7 +36,7 @@ import shfjGlobals
 import registration
 
 name = 'Ana Get Spherical Cortical Surface'
-userLevel = 0
+userLevel = 2
 
 # Argument declaration
 signature = Signature(

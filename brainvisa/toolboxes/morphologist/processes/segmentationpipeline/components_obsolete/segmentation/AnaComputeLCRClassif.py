@@ -35,7 +35,7 @@ from brainvisa.processes import *
 import os, re
 
 name = 'CSF Classif'
-userLevel = 0
+userLevel = 2
 
 signature = Signature(
   'left_grey_white', ReadDiskItem( 'Left Grey White Mask',

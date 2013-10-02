@@ -37,7 +37,7 @@ import  os
 import registration
 
 name = 'Cortical Fold Arg (3.0)'
-userLevel = 0
+userLevel = 2
 
 # Argument declaration
 signature = Signature(

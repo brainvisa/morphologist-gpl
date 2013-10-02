@@ -35,7 +35,7 @@ from brainvisa.processes import *
 import registration
 
 name = 'Ana Compute Hemi Grey White Classification'
-userLevel = 0
+userLevel = 2
 
 # Argument declaration
 signature = Signature(

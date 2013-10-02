@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -33,7 +34,7 @@
 from brainvisa.processes import *
 
 name = 'GraphComplete'
-userLevel = 1
+userLevel = 2
 
 signature = Signature(
     'input_graph', ReadDiskItem( 'Cortical folds graph', 'Graph' ),
