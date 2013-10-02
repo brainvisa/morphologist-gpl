@@ -93,7 +93,7 @@ def execution( self, context ):
     if self.head_mask is not None and self.keep_head_mask:
         mask = self.head_mask
     else:
-        mask = context.temporary( 'GIS image' )
+        mask = context.temporary( 'NIFTI-1 image' )
     
     command = [ 'VipGetHead',
                 '-i', self.t1mri_nobias,
@@ -111,10 +111,13 @@ def execution( self, context ):
         command.extend([ '-c', self.closing])
     
     context.system( *command )
-    context.system( 'AimsMeshBrain', '-i', mask.fullPath(),
-                    '-o', self.head_mesh.fullPath(), '--smoothIt', 50,
+    context.system( 'AimsMeshBrain', '-i', mask,
+                    '-o', self.head_mesh, '--smoothIt', 50,
                     '--smoothRate', 0.5, '--deciMaxClearance', 5. )
-    
+    context.system( "meshCleaner",
+                    "-i", self.head_mesh,
+                    "-o", self.head_mesh,
+                    "-maxCurv", "0.5" )
 
     tm.copyReferential( self.t1mri_nobias, self.head_mesh )
     if self.keep_head_mask:

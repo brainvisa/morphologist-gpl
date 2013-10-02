@@ -38,7 +38,7 @@ from brainvisa.processes import *
 #
 
 name = 'Ana Get Opened Whole Brain Surface'
-userLevel = 0
+userLevel = 2
 
 # Argument declaration
 signature = Signature(
@@ -89,5 +89,7 @@ def execution( self, context ):
   
       context.write( "Triangulation and Decimation..." )
       context.system( "AimsMeshBrain", "-i", openbrain.fullPath(), "-o", 
-                      self.brain_mesh.fullPath(), "--smoothType", "laplacian" )
+                      self.brain_mesh.fullPath(), "--smoothType", "laplacian",
+                      "--smoothIt", 5, "--smoothRate", 0.4,
+                      "--deciMaxClearance", 5., "--deciMaxError", 3. )
       del openbrain
