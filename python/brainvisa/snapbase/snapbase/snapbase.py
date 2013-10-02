@@ -454,7 +454,7 @@ class SnapBase():
           # Building the tiled image
           image_size = (max([im.size[0] for im in views_images]), max([im.size[1] for im in views_images]))
           if not grid_dim:
-             grid_dim = {16 : (8,2), 12 : (6,2), 6 : (3,2), 7:(7,1),  1 : (1,1), 3: (3,1), 21 : (7,3)}[len(views_images)]
+             grid_dim = {16 : (8,2), 14 : (7,2), 12 : (6,2), 6 : (3,2), 7:(7,1),  1 : (1,1), 3: (3,1), 21 : (7,3)}[len(views_images)]
 
           tiled_image = Image.new('RGBA', (grid_dim[0]*image_size[0], grid_dim[1]*image_size[1]), 'black')
           positions = [[j*image_size[0], i*image_size[1]] for i in xrange(grid_dim[1]) for j in xrange(grid_dim[0])]

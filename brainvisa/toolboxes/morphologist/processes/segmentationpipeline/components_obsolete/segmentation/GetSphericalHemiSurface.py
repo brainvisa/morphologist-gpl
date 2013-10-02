@@ -75,19 +75,19 @@ def execution( self, context ):
       context.write( "Left Hemisphere Mesh locked")
     else:
         context.write( "Masking Bias corrected image with left hemisphere mask...")
-        braing = context.temporary( 'GIS Image' )
+        braing = context.temporary( 'NIFTI-1 Image' )
         context.system( "VipMask", "-i", self.mri_corrected, "-m", self.split_mask, "-o", braing, "-w", "t", "-l", "2" )
         
         context.write("Computing skeleton...")
-        skeleton = context.temporary( 'GIS Image' )
-        roots = context.temporary( 'GIS Image' )
+        skeleton = context.temporary( 'NIFTI-1 Image' )
+        roots = context.temporary( 'NIFTI-1 Image' )
         command = ["VipSkeleton", "-i", self.left_hemi_cortex, "-so", skeleton, "-vo", roots, "-g", braing, "-w", "t"]
         if self.fix_random_seed:
             command.extend(['-srand', 10]) 
         apply(context.system, command)
         
         context.write("Reconstructing left hemisphere surface...")
-        hemi = context.temporary( 'GIS Image' )
+        hemi = context.temporary( 'NIFTI-1 Image' )
 
         command = ["VipHomotopic", "-i", braing, "-s", skeleton, "-co", self.left_hemi_cortex, "-o", hemi, "-m", "H", "-w", "t" ]
         if self.fix_random_seed:
@@ -116,12 +116,12 @@ def execution( self, context ):
       context.write( "Right Hemisphere Mesh locked")
     else:
         context.write( "Masking Bias corrected image with right hemisphere mask...")
-        braing = context.temporary( 'GIS Image' )
+        braing = context.temporary( 'NIFTI-1 Image' )
         context.system( "VipMask", "-i", self.mri_corrected, "-m", self.split_mask, "-o", braing, "-w", "t", "-l", "1" )
         
         context.write("Computing skeleton...")
-        skeleton = context.temporary( 'GIS Image' )
-        roots = context.temporary( 'GIS Image' )
+        skeleton = context.temporary( 'NIFTI-1 Image' )
+        roots = context.temporary( 'NIFTI-1 Image' )
         command = ["VipSkeleton", "-i", self.right_hemi_cortex, "-so", skeleton,  "-vo", roots, "-g", braing, "-w", "t" ]
         if self.fix_random_seed:
             command.extend(['-srand', 10])
@@ -129,7 +129,7 @@ def execution( self, context ):
 
         
         context.write("Reconstructing right hemisphere surface...")
-        hemi = context.temporary( 'GIS Image' )
+        hemi = context.temporary( 'NIFTI-1 Image' )
         command = ["VipHomotopic", "-i", braing, "-s", skeleton, "-co", self.right_hemi_cortex, "-o", hemi, "-m", "H", "-w", "t" ]
         if self.fix_random_seed:
             command.extend(['-srand', 10])

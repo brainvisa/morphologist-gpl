@@ -63,6 +63,7 @@ mesh_content = (
 
 segmentation_content = (
     "brain_<subject>", SetType( 'T1 Brain Mask' ), SetWeakAttr( 'side', 'both' ),
+    "grey_white_<subject>", SetType( 'Morphologist Grey White Mask' ), SetWeakAttr( 'side', 'both' ),
     "Rgrey_white_<subject>", SetType( 'Right Grey White Mask' ), SetWeakAttr( 'side', 'right' ),
     "Lgrey_white_<subject>", SetType( 'Left Grey White Mask' ), SetWeakAttr( 'side', 'left' ),
     "cortex_<subject>", SetType( 'Both CSF+GREY Mask' ), SetWeakAttr( 'side', 'both' ),

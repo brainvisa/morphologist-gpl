@@ -35,7 +35,7 @@ from brainvisa.processes import *
 import registration
 
 name = 'Ana Split Brain from Brain Mask'
-userLevel = 0
+userLevel = 2
 
 signature = Signature(
   'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',

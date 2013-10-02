@@ -288,7 +288,7 @@ class MeshCutSnapBase(SnapBase):
         right_slices_minmax = detect_slices_of_interest(right_mask, directions)
         voxel_size = mri.header()['voxel_size']
 
-        slices_nb = {'S': 12, 'A': 16, 'C': 16}
+        slices_nb = {'S': 12, 'A': 14, 'C': 14}
         for d in directions :
             d_minmax = (min(left_slices_minmax[d][0], right_slices_minmax[d][0]),
                         max(left_slices_minmax[d][1], right_slices_minmax[d][1]))

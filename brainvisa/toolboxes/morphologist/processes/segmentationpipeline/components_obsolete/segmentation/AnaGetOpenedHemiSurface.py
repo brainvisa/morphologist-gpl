@@ -39,7 +39,7 @@ import registration
 #
 
 name = 'Ana Get Opened Hemi Surface'
-userLevel = 0
+userLevel = 2
 
 # Argument declaration
 signature = Signature(
@@ -94,7 +94,9 @@ def execution( self, context ):
 
       context.write( "Triangulation and Decimation..." )
       context.system( "AimsMeshBrain", "-i", openbrain.fullPath(), "-o", 
-                      self.left_hemi_mesh.fullPath(), "--smoothType", "laplacian" )
+                      self.left_hemi_mesh.fullPath(), "--smoothType", "laplacian",
+                      "--smoothIt", 5, "--smoothRate", 0.4,
+                      "--deciMaxClearance", 5., "--deciMaxError", 3. )
       trManager.copyReferential( self.mri_corrected, self.left_hemi_mesh )
       del openbrain
 
@@ -123,6 +125,8 @@ def execution( self, context ):
 
       context.write( "Triangulation and Decimation..." )
       context.system( "AimsMeshBrain", "-i", openbrain.fullPath(), "-o", 
-                      self.right_hemi_mesh.fullPath(), "--smoothType", "laplacian" )
+                      self.right_hemi_mesh.fullPath(), "--smoothType", "laplacian",
+                      "--smoothIt", 5, "--smoothRate", 0.4,
+                      "--deciMaxClearance", 5., "--deciMaxError", 3. )
       trManager.copyReferential( self.mri_corrected, self.right_hemi_mesh )
       del openbrain

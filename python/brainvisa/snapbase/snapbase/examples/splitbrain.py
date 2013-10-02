@@ -233,9 +233,9 @@ class SPMSnapBase(SplitBrainSnapBase):
 
         mini = splitbrain.arraydata().min()
         maxi = splitbrain.arraydata().max()
-
+        
         splitbrain_minmax = detect_slices_of_interest(splitbrain, directions, threshold = (mini + maxi) / 2.0)
-
+        
         for d in directions :
             d_minmax = (splitbrain_minmax[d][0], splitbrain_minmax[d][1])
             step = (d_minmax[1]-d_minmax[0])/12

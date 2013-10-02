@@ -36,7 +36,7 @@ from soma import aims
 import registration
 
 name = 'Grey White Classification 2012'
-userLevel = 0
+userLevel = 2
 
 # Argument declaration
 signature = Signature(

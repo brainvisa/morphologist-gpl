@@ -37,7 +37,7 @@ from brainvisa.processes import *
 # Brain segmentation process declaration
 #
 name = 'Vip Split Brain'
-userLevel = 1
+userLevel = 2
 
 # Argument declaration
 signature = Signature(

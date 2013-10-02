@@ -97,7 +97,7 @@ def execution( self, context ):
             context.write( "Left Hemisphere White Mesh Locked")
         else:
             context.write("Reconstructing left hemisphere white surface...")
-            white = context.temporary( 'GIS Image' )
+            white = context.temporary( 'NIFTI-1 Image' )
             context.system( "VipSingleThreshold", "-i", self.left_hemi_cortex,
                     "-o", white, "-t", "0", "-c", "b", "-m",
                     "ne", "-w", "t" )
@@ -135,7 +135,7 @@ def execution( self, context ):
             context.write( "Right Hemisphere White Mesh Locked")
         else:
             context.write("Reconstructing right hemisphere white surface...")
-            white = context.temporary( 'GIS Image' )
+            white = context.temporary( 'NIFTI-1 Image' )
             context.system( "VipSingleThreshold", "-i", self.right_hemi_cortex,
                     "-o", white, "-t", "0", "-c", "b", "-m",
                     "ne", "-w", "t" )

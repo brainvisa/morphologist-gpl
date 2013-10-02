@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  This software and supporting documentation are distributed by
 #      Institut Federatif de Recherche 49
 #      CEA/NeuroSpin, Batiment 145,
@@ -37,7 +38,7 @@ from brainvisa.processes import *
 import shfjGlobals, registration
 
 name = 'Vip Get Brain'
-userLevel = 1
+userLevel = 2
 
 # Argument declaration
 signature = Signature(
