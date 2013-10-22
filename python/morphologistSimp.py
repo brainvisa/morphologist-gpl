@@ -5,40 +5,28 @@ try:
 except ImportError:
     from enthought.traits.api import ListStr,HasTraits,File,Float,Instance,Enum,Str
 
+from soma.pipeline.process import Process
 from soma.controller import Controller,add_trait
 import soma.fom
 import subprocess
 from soma.gui.viewer import *
 
-# class Process( Controller ):
-    # def __init__( self, **kwargs ):
-        # super( Process, self ).__init__( self, **kwargs )
-        # self.viewers = {}
-       # 
-    # def set_viewer( self, parameter, viewer, **kwargs ):
-        # self.viewers[ parameter ] = ( viewer, kwargs )
-       # 
-   # 
-    # def call_viewer( self, parameter ):
-        # viewer, kwargs = self.viewers[ parameter ]
-        # p = GlobalNaming().get_object( viewer )()
-        # for k, v in kwargs.iteritems():
-            # setattr( p, k, v )
-        # return p()
-       # 
        
-class SimpMorpho(Controller):
+class SimpMorpho(Process):
     """ Definition parameters of the process with traits and execution"""
 
     
     def __init__(self):  
-        HasTraits.__init__(self)       
+        super(SimpMorpho, self).__init__() 
+        HasTraits.__init__(self) 
+  
     #Input/Output
         self.name_process = 'morphologistSimp.SimplifiedMorphologist'  
         #~ self.viewer_path = [ 'soma.gui.viewer' ]
-	add_trait(self,'t1mri',File(output=False))     
-        #add_trait(self,'t1mri',File(output=False,viewer='soma.gui.viewer.show_volume.ShowVolume'))     
-        #self.set_viewer( 't1mri', 'soma.gui.viewer.show_volume.ShowVolume', 4, parameter='t1mri' )
+	#add_trait(self,'t1mri',File(output=False,viewer='soma.gui.viewer.show_volume.ShowVolume'))    
+	
+	add_trait(self,'t1mri',File(output=False))   
+        self.set_viewer( 't1mri', 'soma.gui.viewer.show_volume.ShowVolume')
 
         #Parameters
         add_trait(self,'method_ACPC',Enum('Manually','SPM Normalization'))       
@@ -55,8 +43,10 @@ class SimpMorpho(Controller):
         add_trait(self,'tal_to_normalized_transform',File(output=False))
         #Bias Correction
         add_trait(self,'t1mri_nobias', File(output=True))
+	self.set_viewer( 't1mri_nobias', 'soma.gui.viewer.show_t1mri_nobias.ShowT1mriNobias',t1mri=self.t1mri)
         add_trait(self,'hfiltered',File(output=True))
-        add_trait(self,'white_ridges',File(output=True))
+        add_trait(self,'white_ridges',File(output=True,))
+	self.set_viewer( 'white_ridges', 'soma.gui.viewer.show_white_ridges.ShowWhiteRidges',t1mri=self.t1mri,palette="random",mode="linear_on_defined",rate=0.3,wintype="Axial")
         add_trait(self,'variance',File(output=True))
         add_trait(self,'edges',File(output=True))
         add_trait(self,'field',File(output=True))
@@ -87,14 +77,14 @@ class SimpMorpho(Controller):
         add_trait(self,'left_graph',File(output=True))
         add_trait(self,'left_skeleton',File(output=True))
         add_trait(self,'left_roots',File(output=True))
-        add_trait(self,'left_sulci_voronoi',File(output=False))
-        add_trait(self,'left_middle_cortex',File(output=False))
+        add_trait(self,'left_sulci_voronoi',File(output=True))
+        add_trait(self,'left_middle_cortex',File(output=True))
           ##Right
-        add_trait(self,'right_graph',File(output=False))
-        add_trait(self,'right_skeleton',File(output=False))
-        add_trait(self,'right_roots',File(output=False))
-        add_trait(self,'right_sulci_voronoi',File(output=False))
-        add_trait(self,'right_middle_cortex',File(output=False))
+        add_trait(self,'right_graph',File(output=True))
+        add_trait(self,'right_skeleton',File(output=True))
+        add_trait(self,'right_roots',File(output=True))
+        add_trait(self,'right_sulci_voronoi',File(output=True))
+        add_trait(self,'right_middle_cortex',File(output=True))
         #Sulci Recognition
         add_trait(self,'labels_translation_map',File(output=False))
           ##Left
@@ -222,7 +212,7 @@ class SimpMorpho(Controller):
         str_args=[str(x) for x in args]
         str_args=str_args+list_params
         return str_args
-   
+	
    
     def __call__( self ):
         """ Function to call the execution """
