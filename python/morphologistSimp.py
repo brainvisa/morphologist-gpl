@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import os
 try:
-    from traits.api import ListStr,HasTraits,File,Float,Instance,Enum,Str
+    from traits.api import ListStr,HasTraits,File,Float,Instance,Enum,Str,Bool
 except ImportError:
-    from enthought.traits.api import ListStr,HasTraits,File,Float,Instance,Enum,Str
+    from enthought.traits.api import ListStr,HasTraits,File,Float,Instance,Enum,Str,Bool
 
 from soma.pipeline.process import Process
 from soma.controller import Controller,add_trait
@@ -12,12 +12,12 @@ import subprocess
 from soma.gui.viewer import *
 
        
-class SimpMorpho(Process):
+class SimplifiedMorphologist(Process):
     """ Definition parameters of the process with traits and execution"""
 
     
     def __init__(self):  
-        super(SimpMorpho, self).__init__() 
+        super(SimplifiedMorphologist, self).__init__() 
         HasTraits.__init__(self) 
   
     #Input/Output
@@ -26,10 +26,13 @@ class SimpMorpho(Process):
 	#add_trait(self,'t1mri',File(output=False,viewer='soma.gui.viewer.show_volume.ShowVolume'))    
 	
 	add_trait(self,'t1mri',File(output=False))   
-        self.set_viewer( 't1mri', 'soma.gui.viewer.show_volume.ShowVolume')
+        self.set_viewer( 't1mri', 'soma.gui.pipeline.viewer.show_volume.ShowVolume')
 
         #Parameters
+	add_trait(self,'perform_segmentation',Bool(True))
         add_trait(self,'method_ACPC',Enum('Manually','SPM Normalization'))       
+
+
         #Commissure Coordinates
         add_trait(self,'commissure_coordinates',File(output=True))
           ##SPM Normalization
@@ -43,50 +46,57 @@ class SimpMorpho(Process):
         add_trait(self,'tal_to_normalized_transform',File(output=False))
         #Bias Correction
         add_trait(self,'t1mri_nobias', File(output=True))
-	self.set_viewer( 't1mri_nobias', 'soma.gui.viewer.show_t1mri_nobias.ShowT1mriNobias',t1mri=self.t1mri)
+	self.set_viewer( 't1mri_nobias', 'soma.gui.pipeline.viewer.show_t1mri_nobias.ShowT1mriNobias',mri='t1mri',mask='t1mri_nobias')
         add_trait(self,'hfiltered',File(output=True))
         add_trait(self,'white_ridges',File(output=True,))
-	self.set_viewer( 'white_ridges', 'soma.gui.viewer.show_white_ridges.ShowWhiteRidges',t1mri=self.t1mri,palette="random",mode="linear_on_defined",rate=0.3,wintype="Axial")
+	#self.set_viewer( 'white_ridges', 'soma.gui.viewer.show_white_ridges.ShowWhiteRidges',t1mri=self.t1mri,palette="random",mode="linear_on_defined",rate=0.3,wintype="Axial")
         add_trait(self,'variance',File(output=True))
         add_trait(self,'edges',File(output=True))
         add_trait(self,'field',File(output=True))
-        add_trait(self,'meancurvature',File(output=True))       
+        add_trait(self,'meancurvature',File(output=True)) 
+	      
         #Histogram Analysis
         add_trait(self,'histo',File(output=True))
         add_trait(self,'histo_analysis',File(output=True))
+	self.set_viewer('histo_analysis', 'soma.gui.pipeline.viewer.show_histo_analysis.ShowHistoAnalysis',histo='histo',histo_analysis='histo_analysis')
         #Brain Mask Segmentation
         add_trait(self,'brain_mask',File(output=True))
         #Split Brain Mask
         add_trait(self,'split_brain',File(output=True))
+	self.set_viewer('split_brain', 'soma.gui.pipeline.viewer.show_label_image.ShowLabelImage',image='histo',mask='histo_analysis')
         add_trait(self,'split_template',File(output=False))
         #Talairach Transformation      
         add_trait(self,'talairach_ACPC_transform',File(output=True))
         #Grey/White Classification
         add_trait(self,'left_grey_white',File(output=True))
         add_trait(self,'right_grey_white',File(output=True))  
+	
+	add_trait(self,'perform_meshes_and_graphs',Bool(True))
         #Grey/White Surface           
         add_trait(self,'left_hemi_cortex',File(output=True))
         add_trait(self,'left_white_mesh',File(output=True))       
         add_trait(self,'right_hemi_cortex',File(output=True))
         add_trait(self,'right_white_mesh',File(output=True))     
         #Spherical Hemispheres Surface     
-        add_trait(self,'left_hemi_mesh',File(output=True))
-        add_trait(self,'right_hemi_mesh',File(output=True))
+        add_trait(self,'left_pial_mesh',File(output=True))
+        add_trait(self,'right_pial_mesh',File(output=True))
         #Cortical Folds Graph
           ##Left
         add_trait(self,'left_graph',File(output=True))
         add_trait(self,'left_skeleton',File(output=True))
         add_trait(self,'left_roots',File(output=True))
         add_trait(self,'left_sulci_voronoi',File(output=True))
-        add_trait(self,'left_middle_cortex',File(output=True))
+        add_trait(self,'left_cortex_mid_interface',File(output=True))
           ##Right
         add_trait(self,'right_graph',File(output=True))
         add_trait(self,'right_skeleton',File(output=True))
         add_trait(self,'right_roots',File(output=True))
         add_trait(self,'right_sulci_voronoi',File(output=True))
-        add_trait(self,'right_middle_cortex',File(output=True))
+        add_trait(self,'right_cortex_mid_interface',File(output=True))
         #Sulci Recognition
         add_trait(self,'labels_translation_map',File(output=False))
+	
+	add_trait(self,'perform_sulci_SPAM_recognition',Bool(False))
           ##Left
         add_trait(self,'left_labelled_graph',File(output=True))         
         add_trait(self,'left_posterior_probabilities',File(output=True))
