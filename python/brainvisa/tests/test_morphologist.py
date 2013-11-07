@@ -75,6 +75,7 @@ class TestMorphologistPipeline(unittest.TestCase):
     ac = [114.864585876, 118.197914124, 88.7999954224]
     pc = [116.197914124, 147.53125, 91.1999969482]
     ip = [118.197914124, 99.53125, 45.6000061035]
+    pipeline.perform_normalization = False
     nodes.child('TalairachTransformation').setSelected(0)
     nodes.child('HeadMesh').setSelected(0)
     nodes.HemispheresProcessing.LeftHemisphere.CorticalFoldsGraph.setSelected(0)
