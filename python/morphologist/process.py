@@ -10,75 +10,76 @@ from soma.pipeline.pipeline import Pipeline
 class SPMNormalization( Process ):
   def __init__( self, **kwargs ):
     super( SPMNormalization, self ).__init__( **kwargs )
-    self.add_trait( 'image', File( exists=True ) )
-    self.add_trait( 'template', File( exists=True ) )
-    self.add_trait( 'normalized', File() )
+    self.add_trait( 'image', File() )
+    self.add_trait( 'template', File() )
+    self.add_trait( 'normalized', File( output=True ) )
 
     
 class BiasCorrection( Process ):
   def __init__( self, **kwargs ):
     super( BiasCorrection, self ).__init__( **kwargs )
-    self.add_trait( 't1mri', File( exists=True ) )
+    self.add_trait( 't1mri', File() )
     self.add_trait( 'field_rigidity', Float() )
-    self.add_trait( 'nobias', File() )
+    self.add_trait( 'nobias', File( output=True ) )
 
     
 class HistoAnalysis( Process ):
   def __init__( self, **kwargs ):
     super( HistoAnalysis, self ).__init__( **kwargs )
-    self.add_trait( 'image', File( exists=True ) )
-    self.add_trait( 'histo_analysis', File() )
+    self.add_trait( 'image', File() )
+    self.add_trait( 'histo_analysis', File( output=True ) )
 
     
 class BrainMask( Process ):
   def __init__( self, **kwargs ):
     super( BrainMask, self ).__init__( **kwargs )
-    self.add_trait( 't1mri', File( exists=True ) )
-    self.add_trait( 'histo_analysis', File( exists=True ) )
-    self.add_trait( 'brain_mask', File() )
+    self.add_trait( 't1mri', File() )
+    self.add_trait( 'histo_analysis', File() )
+    self.add_trait( 'brain_mask', File( output=True ) )
 
     
 class SplitBrain( Process ):
   def __init__( self, **kwargs ):
     super( SplitBrain, self ).__init__( **kwargs )
-    self.add_trait( 't1mri', File( exists=True ) )
-    self.add_trait( 'histo_analysis', File( exists=True ) )
-    self.add_trait( 'brain_mask', File( exists=True ) )
-    self.add_trait( 'split_brain', File() )
+    self.add_trait( 't1mri', File() )
+    self.add_trait( 'histo_analysis', File() )
+    self.add_trait( 'brain_mask', File() )
+    self.add_trait( 'split_brain', File( output=True ) )
 
     
 class GreyWhiteClassification( Process ):
   def __init__( self, **kwargs ):
     super( GreyWhiteClassification, self ).__init__( **kwargs )
-    self.add_trait( 't1mri', File( exists=True ) )
-    self.add_trait( 'label_image', File( exists=True ) )
+    self.add_trait( 't1mri', File() )
+    self.add_trait( 'label_image', File() )
     self.add_trait( 'label', Int( optional=True ) )
-    self.add_trait( 'gw_classification', File() )
+    self.add_trait( 'gw_classification', File( output=True ) )
 
 
 class GreyWhiteSurface( Process ):
   def __init__( self, **kwargs ):
     super( GreyWhiteSurface, self ).__init__( **kwargs )
-    self.add_trait( 't1mri', File( exists=True ) )
-    self.add_trait( 'gw_classification', File( exists=True ) )
-    self.add_trait( 'hemi_cortex', File() )
-    self.add_trait( 'white_mesh', File() )
+    self.add_trait( 't1mri', File() )
+    self.add_trait( 'gw_classification', File() )
+    self.add_trait( 'hemi_cortex', File( output=True ) )
+    self.add_trait( 'white_mesh', File( output=True ) )
 
     
 class SphericalHemisphereSurface( Process ):
   def __init__( self, **kwargs ):
     super( SphericalHemisphereSurface, self ).__init__( **kwargs )
-    self.add_trait( 'gw_classification', File( exists=True ) )
-    self.add_trait( 'hemi_cortex', File( exists=True ) )
-    self.add_trait( 'hemi_mesh', File() )
+    self.add_trait( 'gw_classification', File() )
+    self.add_trait( 'hemi_cortex', File() )
+    self.add_trait( 'hemi_mesh', File( output=True ) )
 
 
 class GreyWhite( Pipeline ):
   def pipeline_definition( self ):
-    self.add_trait( 't1mri', File( exists=True ) )
+    #self.add_trait( 't1mri', File() )
     
     self.add_process( 'gw_classification', GreyWhiteClassification() )
-    self.add_link( 't1mri->gw_classification.t1mri' )
+    self.export_parameter( 'gw_classification', 't1mri' )
+    #self.add_link( 't1mri->gw_classification.t1mri' )
     
     self.add_process( 'gw_surface', GreyWhiteSurface() )
     self.add_link( 't1mri->gw_surface.t1mri' )
@@ -94,14 +95,11 @@ class GreyWhite( Pipeline ):
 
 class Morphologist( Pipeline ):
   def pipeline_definition( self ):
-    self.add_trait( 't1mri', File(  exists=True ) )
+    self.add_trait( 't1mri', File() )
     
     self.add_process( 'normalization', 'morphologist.process.SPMNormalization' )
     self.add_switch( 'select_normalization', [ 'spm', 'none' ], 't1mri' )
     self.add_process( 'bias_correction', BiasCorrection() )
-    #self.export_parameter( 'bias_correction', 't1mri' )
-    #self.export_parameter( 'normalization', 'image' )
-    #self.add_link( 't1mri->normalization.image' )
 
     self.add_link( 'normalization.normalized->select_normalization.spm' )
     self.add_link( 't1mri->select_normalization.none' )
@@ -172,8 +170,8 @@ if __name__ == '__main__':
   #morphologist.nodes_activation.on_trait_change( set_morphologist_pipeline )
   morphologist.on_trait_change( set_morphologist_pipeline, 'selection_changed' )
   morphologist.on_trait_change( partial( view1.set_pipeline, morphologist ), 'select_normalization' )
-  #view2 = PipelineView( GreyWhite() )
-  #view2.show()
+  view2 = PipelineView( GreyWhite() )
+  view2.show()
 
   cw = ControllerWidget( morphologist, live=True )
   cw.show()
