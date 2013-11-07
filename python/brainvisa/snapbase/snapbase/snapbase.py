@@ -690,7 +690,8 @@ class SnapBase():
 
             if self.preferences.has_key('remove_snapshots') and self.preferences['remove_snapshots']:
                 print 'removing ', string.join([i for i in output_files], ' ')
-                os.system('rm -f %s'%string.join([i for i in output_files], ' '))
+                for i in output_files:
+                    os.unlink( i )
 
 
         # Keep track of the list of produced files but after saving preferences so it is not stored in the prefs
