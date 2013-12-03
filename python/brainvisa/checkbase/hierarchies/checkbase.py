@@ -68,8 +68,11 @@ class Checkbase():
          for key in itemtype:
             globres = glob(getfilepath(key, {'database' : self.directory}, patterns = self.patterns))
             for each in globres:
-               t, att = parsefilepath(each, patterns = self.patterns)
-               files[att['subject']] = {key : att}
+               res = parsefilepath(each, patterns = self.patterns)
+               if not res is None:
+                  t, att = res
+                  files.setdefault(att['subject'], {})
+                  files[att['subject']].setdefault(key, []).append(att)
 
          return files
 
@@ -259,8 +262,14 @@ class Checkbase():
 
     def find_centre(self, subject):
       centres = self.get_centres()
+      res = []
       for c in centres:
-         #if subject in self.get_subjects()[c]:
-         for each in self.get_subjects()[c]:
-            if each[-11:] == subject:
-                return c
+         if subject in self.get_subjects()[c]:
+         #for each in self.get_subjects()[c]:
+         #   if each[-11:] == subject:
+              res.append(c)
+
+      if len(res) == 1:
+         return res[0]
+      else:
+         return res

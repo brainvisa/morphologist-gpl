@@ -21,15 +21,25 @@ patterns = { #mri
       'wmparc' : os.path.join('(?P<database>[\w -/]+)', '(?P<subject>\w+)', 'mri', 'wmparc.(?P<extension>%s)'%'[\w.]+$'), #image_extensions),
       'left_ribbon' : os.path.join('(?P<database>[\w -/]+)', '(?P<subject>\w+)', 'mri', '(?P<side>[l]?)h.ribbon.(?P<extension>%s)'%'[\w.]+$'), #image_extensions),
       'right_ribbon' : os.path.join('(?P<database>[\w -/]+)', '(?P<subject>\w+)', 'mri', '(?P<side>[r]?)h.ribbon.(?P<extension>%s)'%'[\w.]+$'), #image_extensions),
+      'aparc.a2009saseg': os.path.join('(?P<database>[\w -/]+)', '(?P<subject>\w+)', 'mri', 'aparc.a2009s+aseg.(?P<extension>%s)'%'[\w.]+$'), #image_extensions),
+      'talairachlta' : os.path.join('(?P<database>[\w -/]+)', '(?P<subject>\w+)', 'mri', 'transforms', 'talairach.lta$'), #image_extensions),
+      'talairachxfm' : os.path.join('(?P<database>[\w -/]+)', '(?P<subject>\w+)', 'mri', 'transforms', 'talairach.xfm$'), #image_extensions),
+      'talairachm3z' : os.path.join('(?P<database>[\w -/]+)', '(?P<subject>\w+)', 'mri', 'transforms', 'talairach.m3z$'), #image_extensions),
+      'talairachm3zinvmgz' : os.path.join('(?P<database>[\w -/]+)', '(?P<subject>\w+)', 'mri', 'transforms', 'talairach.m3z.inv(?P<param>[\w -]+).mgz$'), #image_extensions),
 
       #mri/orig
       'orig001' : os.path.join('(?P<database>[\w -/]+)', '(?P<subject>\w+)', 'mri', 'orig', '001.(?P<extension>%s)'%'[\w.]+$'), #image_extensions),
 
       #stats
       'aseg_stats' : os.path.join('(?P<database>[\w -/]+)', '(?P<subject>\w+)', 'stats', 'aseg.stats$'),
-      'left_aparc_stats' : os.path.join('(?P<database>[\w -/]+)', '(?P<subject>\w+)', 'stats', '(?P<side>[l]?)h.aparc.stats$'),
-      'right_aparc_stats' : os.path.join('(?P<database>[\w -/]+)', '(?P<subject>\w+)', 'stats', '(?P<side>[r]?)h.aparc.stats$'),
-      }
+      'left_aparc_stats' : os.path.join('(?P<database>[\w -/]+)', '(?P<subject>\w+)', 'stats', 'lh.aparc.stats$'),
+      'right_aparc_stats' : os.path.join('(?P<database>[\w -/]+)', '(?P<subject>\w+)', 'stats', 'rh.aparc.stats$'),
+
+      #surfaces
+      'pial' : os.path.join('(?P<database>[\w -/]+)', '(?P<subject>\w+)', 'surf', '(?P<side>[lr]?)h.pial$'), #image_extensions),
+      'white' : os.path.join('(?P<database>[\w -/]+)', '(?P<subject>\w+)', 'surf', '(?P<side>[lr]?)h.white$'), #image_extensions),
+      'thickness' : os.path.join('(?P<database>[\w -/]+)', '(?P<subject>\w+)', 'surf', '(?P<side>[lr]?)h.thickness$'), #image_extensions),
+     }
 
 keyitems = ['nu','wmparc','left_aparc_stats','right_aparc_stats']
 
@@ -79,9 +89,9 @@ class FreeSurferCheckbase(Checkbase):
         self.keyitems = free.keyitems
         Checkbase.__init__(self, directory)
 
-    def get_subjects(self, save = True):
+    def get_subjects(self, excludelist = ['history_book', 'fsaverage', 'lh.EC_average', 'rh.EC_average'], save = True):
         subjects = [each for each in os.listdir(self.directory) \
-              if os.path.isdir(os.path.join(self.directory, each))]
+              if os.path.isdir(os.path.join(self.directory, each)) and each not in excludelist]
         if save: self.subjects = subjects
         return subjects
 
@@ -172,7 +182,7 @@ class FreeSurferCheckbase(Checkbase):
         for subject in files.keys():
            for key in ['left_aparc_stats', 'right_aparc_stats']:
               if files[subject].has_key(key):
-                 path = getfilepath(key, files[subject][key], patterns=self.patterns)
+                 path = getfilepath(key, files[subject][key][0], patterns=self.patterns)
                  test = open(path, 'r').readlines()
                  res = [string.split(each.rstrip('\n')) for each in test]
                  measures = {}

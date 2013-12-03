@@ -13,6 +13,7 @@ from hierarchies import detect_hierarchies, detect_hierarchy, get_files,  getfil
 from hierarchies.morphologist import MorphologistCheckbase
 from hierarchies.freesurfer import FreeSurferCheckbase
 from hierarchies.snapshots import SnapshotsCheckbase
+from hierarchies.catishared import CATISharedCheckbase
 from hierarchies.spm import SPMCheckbase
 from hierarchies.checkbase import Checkbase
 

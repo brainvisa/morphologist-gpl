@@ -100,6 +100,78 @@ def json2html(json, embedded_data=None, with_head_tags=True):
       """
    return html
 
+def measuresjson2html(json, embedded_data=None, with_head_tags=True):
+   '''csvfile can be a list of comma separated strings or a csv textfile'''
+   html = ''
+   import re, os
+   import cgi
+   import sys
+   import string
+   import codecs
+
+   html = []
+
+   if with_head_tags:
+      html.append("""
+      <!DOCTYPE html>
+      <html>
+       <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Results</title>
+      """)
+   html.append( """
+     <style>
+       table {
+         width: 100%;
+         border-spacing : 2px;
+         border-collapse: separate;
+         cellspacing : 3px;
+       }
+
+       td {
+         border: 1px solid;
+       }
+     </style>""")
+   if with_head_tags:
+      html.append( """
+    </head>
+    <body>
+      """)
+   html.append( """
+    <table style="font-size:6px">
+   """)
+   color = {False:'#FFFFFF', True:'#000000'}
+   fields = ['subject']
+   fields.extend(json['names'])
+   html.append( "       <tr>")
+   for each in fields:
+      html.append( "   <td bgcolor=#FFFFFF >" + each + '</td>' )
+   html.append( "       </tr>")
+   names = json['names']
+
+   for i,(subject, items) in enumerate(json['measures'].items()):
+        html.append( "       <tr>")
+        html.append( "   <td bgcolor=#FFFFFF>" + subject + '</td>')
+
+        bgcolor = '#FFFFFF'
+        for each in names:
+           exists = items.has_key(each)
+           bgcolor = color[exists]
+#           if exists:
+#              html += "   <td bgcolor=%s>&nbsp;</td>"%(bgcolor)
+#           else:
+#              html += "   <td bgcolor=%s>&nbsp;</td>"%(bgcolor)
+
+           html.append("   <td bgcolor=%s>&nbsp;</td>"%(bgcolor))
+        html.append("      </tr>")
+   html.append("</table>")
+   if with_head_tags:
+      html.append("""
+       </body>
+      </html>
+      """)
+   return ''.join(html)
+
 def csv2html(csvfile, embedded_data = None, with_head_tags=True):
    '''csvfile can be a list of comma separated strings or a csv textfile'''
    html = ''
@@ -217,16 +289,18 @@ def save_volumes_as_csv(volumes, csvfile):
             row.extend(vol.values())
             mywriter.writerow(row )
 
-def save_thicknesses_as_csv(volumes, csvfile):
+def save_thicknesses_as_csv(volumes, csvfile, centers={}):
     import csv, os, string
     with open(csvfile, 'wb',) as csvfile:
         mywriter = csv.writer(csvfile, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
         f1 = volumes.items()[0][1].items()[0][1]
-        fields = ['%s_%s'%(volumes.items()[0][1].keys()[0][0], each) for each in f1]
-        fields.extend(['%s_%s'%(volumes.items()[0][1].keys()[1][0], each) for each in f1])
+        fields = ['center', 'subject']
+        fields.extend(['%s_%s'%(volumes.items()[0][1].keys()[0][:volumes.items()[0][1].keys()[0].find('_')], each) for each in f1])
+        fields.extend(['%s_%s'%(volumes.items()[0][1].keys()[1][:volumes.items()[0][1].keys()[0].find('_')], each) for each in f1])
         mywriter.writerow(fields)
         for i, (subject, vol) in enumerate(volumes.items()):
-            row = [subject]
+            row = [centers.get(subject, None)]
+            row.append(subject)
             for side, values in vol.items():
                 for name, v in values.items():
                     if name == 'average':
@@ -592,6 +666,9 @@ def run_hierarchies_check(directory = '/neurospin/cati', logdir = '/neurospin/ca
             print 'writing', djfile
             json.dump(dj, open(djfile, 'wb'))
             #dj = json.load(open(djfile, 'rb'))
+
+            # qc measures ?
+            #qcj = json.load(open(os.path.join(logdir, 'json', 'measures', '
 
             # generate html
             ej['embedded_data'] = dj

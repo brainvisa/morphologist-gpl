@@ -74,7 +74,7 @@ class HTMLReportGenerator():
                 if string.find(line, tag) != -1:
                     #value = conversion_hashtable.pop(tag)
                     value = conversion_hashtable[tag]
-                    line = line.replace(tag, str(value))
+                    line = line.replace(tag, unicode(value))
             html_report += line + '\n'
 
         return html_report
