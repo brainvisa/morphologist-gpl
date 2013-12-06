@@ -170,8 +170,6 @@ class SnapBase():
         self.options = {}
         self.view_quaternions = {'left' : [0.5, 0.5, 0.5, 0.5],
                             'right' : [0.5, -0.5, -0.5, 0.5],
-                            'bottom' : [1, 0, 0, 0],
-                            'top' : [0, 0, 0, 1],
                              'back left' : [-0.24415700000000001,
                                             -0.66425900000000004,
                                            -0.66440299999999997,
@@ -332,7 +330,7 @@ class SnapBase():
         qp.end()
         return pixmap
 
-    def __get_disinct_colors(self, centers):
+    def __get_distinct_colors(self, centers):
         colors = {}
         print len(centers), 'colors'
         print centers
@@ -358,15 +356,20 @@ class SnapBase():
                'WhiteThicknessSnapBase' : 'mesh',
                'SPMSnapBase' : 'mri',
                'SPMComparisonSnapBase' : 'mri',
-               'FreesurferAsegSnapBase' : 'mri'}
+               'FreesurferAsegSnapBase' : 'mri',
+               'HippocampusLabelSnapBase' : 'hippo',
+               'HippocampusRawSnapBase' : 'hippo',
+               'WhasaLabelSnapBase' : 'mri',
+               'WhasaRawSnapBase' : 'mri'}
         if acquisition_key.has_key(classname):
            return acquisition_key[classname]
 
     def get_current_side(self):
        prim_key = self.get_primary_key(self.__class__.__name__)
-       if self.current_diskitems[prim_key].has_key('side'):
-          side = self.current_diskitems[prim_key].attributes()['side']
-          return side
+       for att in ['side', 'hemisphere']:
+         if self.current_diskitems[prim_key].has_key(att):
+           side = self.current_diskitems[prim_key].attributes()[att]
+           return (att, side)
 
     def get_outfile_path(self, outputdir, filename_root, attributes):
         ''' builds and returns a path with proper file tree containing
@@ -380,14 +383,15 @@ class SnapBase():
                        'MeshCutSnapBase' :'meshcut',
                        'BrainMaskSnapBase' : 'brain',
                        'GreyWhiteSnapBase' : 'GW',
-                       'HippocampusSnapBase' : 'hippo',
+                       'HippocampusLabelSnapBase' : 'hippo',
+                       'HippocampusRawSnapBase' : 'hippo',
                        'SPMComparisonSnapBase' : 'SPMcompare',
                        'SPMSnapBase' : 'spm'}
         is_sided = False
         side = self.get_current_side()
         if not side is None:
            is_sided = True
-           cap_side = string.capitalize(attributes[0]['side'])
+           cap_side = string.capitalize(attributes[0][side[0]])
         if is_sided and class_name == 'MeshSnapBase':
                 mesh_type = {'%s Hemisphere Mesh'%cap_side : 'hemi',
                       '%s Hemisphere White Mesh'%cap_side: 'white',
@@ -403,6 +407,11 @@ class SnapBase():
                        'HemiThicknessSnapBase' : 'hemi_%s_%s'%(tex_type, cap_side[0]),
                        'WhiteThicknessSnapBase' : 'white_%s_%s'%(tex_type, cap_side[0]),
                        })
+          
+        if 'Hippocampus' in class_name:
+           id_translat.update(
+                {'HippocampusLabelSnapBase' : 'hippolabel_%s'%(cap_side[0]),
+                 'HippocampusRawSnapBase' : 'hipporaw_%s'%(cap_side[0])})
 
         if class_name == 'SulciSnapBase':
             if len(self.views) == 1:
@@ -448,6 +457,8 @@ class SnapBase():
             acquisition = 'FS'
         elif class_name.count('Hippocampus') != 0:
             acquisition = 'sacha'
+        elif class_name.count('Whasa') != 0:
+            acquisition = 'whasa'
         return acquisition
 
 
@@ -456,7 +467,7 @@ class SnapBase():
           # Building the tiled image
           image_size = (max([im.size[0] for im in views_images]), max([im.size[1] for im in views_images]))
           if not grid_dim:
-             grid_dim = {16 : (8,2), 14 : (7,2), 12 : (6,2), 6 : (3,2), 7:(7,1),  1 : (1,1), 3: (3,1), 2: (2,1), 21 : (7,3)}[len(views_images)]
+             grid_dim = {16 : (8,2), 14 : (7,2), 12 : (6,2), 10:(10,1), 6 : (3,2), 7:(7,1),  1 : (1,1), 4:(1,4), 3: (3,1), 21 : (7,3)}[len(views_images)]
 
           tiled_image = Image.new('RGBA', (grid_dim[0]*image_size[0], grid_dim[1]*image_size[1]), 'black')
           positions = [[j*image_size[0], i*image_size[1]] for i in xrange(grid_dim[1]) for j in xrange(grid_dim[0])]
@@ -474,11 +485,21 @@ class SnapBase():
 
         class_name = self.__class__.__name__
         if class_name == 'RawSnapBase':
-           geometry = (len(view_images.keys()), 1)
+           geometry = (len(view_images.keys()), 1)     
         else:
            geometry = (1, len(view_images.keys()))
 
-        big_tile = self.get_one_tile(tiles, grid_dim = geometry)
+        if 'Hippocampus' in class_name:
+          big_tile = {}
+          for d in view_images.keys():
+            big_tile[d] = self.get_one_tile(view_images[d])
+        elif 'Whasa' in class_name:
+          big_tile = {}
+          big_tile['A1'] = self.get_one_tile(view_images[d][:7])
+          big_tile['A2'] = self.get_one_tile(view_images[d][-7:])
+        else:
+          big_tile = self.get_one_tile(tiles, grid_dim = geometry)
+          
         return big_tile
 
 
@@ -491,15 +512,15 @@ class SnapBase():
 
        print name, event
        w = event['window']
-       output_files = w.prefs['output_files']
-       from PyQt4 import Qt
-       if not len(w.prefs['output_files']) == len(self.dictdata):
-          print w.prefs['output_files'], self.dictdata
-          ok = Qt.QMessageBox.warning(None, 'Snap cancelled.',
-                'Snap cancelled. %d snapshots over %s were created in %s.'%(len(output_files), len(self.dictdata), w.prefs['output_path']), Qt.QMessageBox.Ok)
-       elif self.preferences['display_success_msgbox']:
-          ok = Qt.QMessageBox.warning(None, 'Success.',
-                '%d snapshots were succesfully created in %s.'%(len(output_files), w.prefs['output_path']), Qt.QMessageBox.Ok)
+       #output_files = w.prefs['output_files']
+#       from PyQt4 import Qt
+#       if not len(w.prefs['output_files']) == len(self.dictdata):
+#          print w.prefs['output_files'], self.dictdata
+#          ok = Qt.QMessageBox.warning(None, 'Snap cancelled.',
+#                'Snap cancelled. %d snapshots over %s were created in %s.'%(len(output_files), len(self.dictdata), w.prefs['output_path']), Qt.QMessageBox.Ok)
+#       elif self.preferences['display_success_msgbox']:
+#          ok = Qt.QMessageBox.warning(None, 'Success.',
+#                '%d snapshots were succesfully created in %s.'%(len(output_files), w.prefs['output_path']), Qt.QMessageBox.Ok)
 
 
     def snap_base(self, main_window = None, qt_app = None, dictdata = None, verbose = False):
@@ -576,9 +597,10 @@ class SnapBase():
         # Processes dictdatas and runs the snapshot iteration
         print 'Rendering %i items'%len(dictdata)
         output_files = []
+        attributes_collection = []
 
         protocols = list(set([each[0][1] for each in dictdata]))
-        colors_centers = self.__get_disinct_colors(protocols)
+        colors_centers = self.__get_distinct_colors(protocols)
 
         # Iterating on subjects and data
         for (subject, protocol), diskitems in dictdata:
@@ -663,10 +685,20 @@ class SnapBase():
 
             attributes.append(acquisition)
 
-            outfile_path = self.get_outfile_path(outputdir=w.prefs['output_path'], filename_root=w.prefs['filename_root'], attributes=attributes)
-            output_files.append(outfile_path)
-            print 'Writing... ', outfile_path
-            big_tile.save(outfile_path, 'PNG')
+            if isinstance(big_tile, dict):
+              for d, tile in big_tile.items():
+                attributes.append(d)
+                outfile_path = self.get_outfile_path(outputdir=w.prefs['output_path'], filename_root=w.prefs['filename_root'], attributes=attributes)
+                attributes_collection.append(attributes)
+                attributes.pop(-1)
+                output_files.append(outfile_path)
+                print 'Writing... ', outfile_path
+                tile.save(outfile_path, 'PNG')
+            else:
+              outfile_path = self.get_outfile_path(outputdir=w.prefs['output_path'], filename_root=w.prefs['filename_root'], attributes=attributes)
+              output_files.append(outfile_path)
+              print 'Writing... ', outfile_path
+              big_tile.save(outfile_path, 'PNG')
 
             # Rendering text
             if w.prefs['render_subjects_id']:
@@ -697,7 +729,8 @@ class SnapBase():
 
 
         # Keep track of the list of produced files but after saving preferences so it is not stored in the prefs
-        w.prefs['output_files'] = output_files
-
+        #w.prefs['output_files'] = output_files
+        self.preferences['output_files'] = output_files
+        self.preferences['attributes'] = attributes_collection
 
         main_window.emit(Qt.SIGNAL('finished()'))

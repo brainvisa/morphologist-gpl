@@ -18,6 +18,8 @@ class HoverButton(QtGui.QPushButton):
              'tablet_btn':'All Raw T1 MRI (tablets) in the database',
              'brainmask_btn':'All T1 Brain Mask in the database',
              'thickness_btn':'All Cortical Thickness Maps in the database',
+             'hippocampus_btn':'All Hippocampus in the database',
+             'whasa_btn':'All WHASA Lesion Masks in the database',
              'meshcut_btn' : 'All MeshCut',
              'spm_btn' : 'All SPM probability maps',
              'btn_help':'Display a comprehensive help message'}
