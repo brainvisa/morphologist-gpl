@@ -227,6 +227,7 @@ class SnapBase():
         if Qt.qApp.startingUp():
             if verbose :
                 print 'Running QApp'
+            import sys
             self.qt_app = Qt.QApplication( sys.argv )
             self.runqt = True
         else:
@@ -369,7 +370,13 @@ class SnapBase():
        for att in ['side', 'hemisphere']:
          if self.current_diskitems[prim_key].has_key(att):
            side = self.current_diskitems[prim_key].attributes()[att]
-           return (att, side)
+           return side
+
+    def get_current_sidelabel(self):
+       prim_key = self.get_primary_key(self.__class__.__name__)
+       for att in ['side', 'hemisphere']:
+         if self.current_diskitems[prim_key].has_key(att):
+           return att
 
     def get_outfile_path(self, outputdir, filename_root, attributes):
         ''' builds and returns a path with proper file tree containing
@@ -389,9 +396,10 @@ class SnapBase():
                        'SPMSnapBase' : 'spm'}
         is_sided = False
         side = self.get_current_side()
+        sidelabel = self.get_current_sidelabel()
         if not side is None:
            is_sided = True
-           cap_side = string.capitalize(attributes[0][side[0]])
+           cap_side = string.capitalize(attributes[0][sidelabel])
         if is_sided and class_name == 'MeshSnapBase':
                 mesh_type = {'%s Hemisphere Mesh'%cap_side : 'hemi',
                       '%s Hemisphere White Mesh'%cap_side: 'white',
@@ -407,7 +415,7 @@ class SnapBase():
                        'HemiThicknessSnapBase' : 'hemi_%s_%s'%(tex_type, cap_side[0]),
                        'WhiteThicknessSnapBase' : 'white_%s_%s'%(tex_type, cap_side[0]),
                        })
-          
+
         if 'Hippocampus' in class_name:
            id_translat.update(
                 {'HippocampusLabelSnapBase' : 'hippolabel_%s'%(cap_side[0]),
@@ -485,7 +493,7 @@ class SnapBase():
 
         class_name = self.__class__.__name__
         if class_name == 'RawSnapBase':
-           geometry = (len(view_images.keys()), 1)     
+           geometry = (len(view_images.keys()), 1)
         else:
            geometry = (1, len(view_images.keys()))
 
@@ -499,7 +507,7 @@ class SnapBase():
           big_tile['A2'] = self.get_one_tile(view_images[d][-7:])
         else:
           big_tile = self.get_one_tile(tiles, grid_dim = geometry)
-          
+
         return big_tile
 
 
@@ -539,6 +547,7 @@ class SnapBase():
             dictdata = self.get_list_diskitems()
 
         self.dictdata = dictdata
+        print self.preferences
 
         # If no dictdata (e.g. closing the attributes window), then nothing happens
         if len(dictdata) == 0:
@@ -591,6 +600,8 @@ class SnapBase():
         for each in ['output_path', 'render_subjects_id', 'filename_root']:
            w.prefs[each] = self.preferences[each]
 
+        if qt_app is None:
+           qt_app = self.qt_app
         qt_app.processEvents()
         w.refreshNow()
         #==================================================

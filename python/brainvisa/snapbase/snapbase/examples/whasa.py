@@ -43,7 +43,7 @@ class WhasaSnapBase(SnapBase):
          res = self.whasa_recompose(whasa_output_files, raw_output_files)
          self.create_png_whasa_report(res)
        self.main_window.setEnabled(True)
-       
+
     def whasa_recompose(self, whasa_output_files, raw_output_files):
       from PIL import Image
       import os, string
@@ -68,11 +68,11 @@ class WhasaSnapBase(SnapBase):
                   both_tiles.paste(tile_whasa, (margin, margin))
                   both_tiles.paste(tile_raw, (margin, tile_whasa.size[1] + 3 * margin))
                   views_images.append(both_tiles)
-  
+
           # Building the tiled image
           image_size = (max([im.size[0] for im in views_images]), max([im.size[1] for im in views_images]))
           grid_dim = {12 : (4,3), 14 : (7,2), 5 : (5,1), 10:(10,1), 7:(7,1), 1 : (1,1), 3: (3,1), 20 : (4,5)}[len(views_images)]
-  
+
           tiled_image = Image.new('RGBA', (grid_dim[0] * image_size[0], grid_dim[1] * image_size[1]), 'black')
           positions = [[j*image_size[0], i*image_size[1]] for i in xrange(grid_dim[1]) for j in xrange(grid_dim[0])]
           for i, pos in zip(views_images, positions):
@@ -83,8 +83,13 @@ class WhasaSnapBase(SnapBase):
           #tiled_outpath = self.preferences['output_path'] + '/QCWHASA_label_%s_%s.png'%(subject, direction)
           #tiled_image.save(tiled_outpath, 'PNG')
           tiled_images_outpath.setdefault(subject, []).append(r_path)
+
+          import os
+          command = ['rm ' + w_path]
+          os.system(*command)
+
       return tiled_images_outpath
-          
+
 
     def create_png_whasa_report(self, images_by_subject):
       def __render_text(pixmap, text, font, pos=(50, 50), color='black'):
@@ -103,12 +108,12 @@ class WhasaSnapBase(SnapBase):
           qp.setPen(qcol)
           qp.drawText(pos[0], pos[1], text)
           qp.end()
-  
+
           return pixmap
-  
+
       def qt_to_pil_image(qimg):
           ''' Converting a Qt Image or Pixmap to PIL image '''
-  
+
           from PyQt4 import Qt
           from PIL import Image, ImageChops
           import cStringIO
@@ -121,34 +126,40 @@ class WhasaSnapBase(SnapBase):
           strio.seek(0)
           pil_im = Image.open(strio)
           return pil_im
-  
+
       from PIL import Image
 
       for subject in images_by_subject:
           print subject
           whasa = images_by_subject[subject]
-  
+
           whasa_a_im = Image.open(whasa[0])
           whasa_b_im = Image.open(whasa[1])
           w_whasa_a, h_whasa_a = whasa_a_im.size
           w_whasa_b, h_whasa_b = whasa_b_im.size
-  
+
           margin_h = 200
           margin_w = 100
- 
+
           whole_image = Image.new('RGB', (max(w_whasa_a, w_whasa_b) + 2 * margin_w, 2 * max(h_whasa_a, h_whasa_b) + 3 * margin_h), 'white')
           whole_image.paste(whasa_a_im, (margin_w, margin_h) )
           whole_image.paste(whasa_b_im, (margin_w, 2*margin_h + h_whasa_a) )
-  
+
           from PyQt4 import Qt
-  
+
           font = Qt.QFont('Times', 100)
           data_left = whole_image.convert('RGBA').tostring('raw', 'BGRA')
           qim_left  = Qt.QImage(data_left, whole_image.size[0], whole_image.size[1], Qt.QImage.Format_ARGB32)
           pix_left  = Qt.QPixmap.fromImage(qim_left)
           pix_left  = __render_text(pix_left, 'subject : %s'%subject, font, (20, 120) )
           whole_image = qt_to_pil_image(pix_left)
-  
+
+          import os
+          command = ['rm ' + whasa[0]]
+          os.system(*command)
+          command = ['rm ' + whasa[1]]
+          os.system(*command)
+
           whole_image.save(self.preferences['output_path'] + '/QCWHASA_label_%s.png'%subject, 'PNG')
 
 
@@ -264,7 +275,7 @@ class WhasaLabelSnapBase(SnapBase):
 
             dictdata = []
             import neuroHierarchy, neuroProcesses
-    
+
             id_type = 'WMH Lesion Mask'
             d = SnapBaseItemBrowser(neuroHierarchy.databases, required={'_type': id_type})
             res = d.exec_()
