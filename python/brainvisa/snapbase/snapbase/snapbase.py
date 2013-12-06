@@ -170,6 +170,8 @@ class SnapBase():
         self.options = {}
         self.view_quaternions = {'left' : [0.5, 0.5, 0.5, 0.5],
                             'right' : [0.5, -0.5, -0.5, 0.5],
+                            'bottom' : [1, 0, 0, 0],
+                            'top' : [0, 0, 0, 1],
                              'back left' : [-0.24415700000000001,
                                             -0.66425900000000004,
                                            -0.66440299999999997,
@@ -454,7 +456,7 @@ class SnapBase():
           # Building the tiled image
           image_size = (max([im.size[0] for im in views_images]), max([im.size[1] for im in views_images]))
           if not grid_dim:
-             grid_dim = {16 : (8,2), 14 : (7,2), 12 : (6,2), 6 : (3,2), 7:(7,1),  1 : (1,1), 3: (3,1), 21 : (7,3)}[len(views_images)]
+             grid_dim = {16 : (8,2), 14 : (7,2), 12 : (6,2), 6 : (3,2), 7:(7,1),  1 : (1,1), 3: (3,1), 2: (2,1), 21 : (7,3)}[len(views_images)]
 
           tiled_image = Image.new('RGBA', (grid_dim[0]*image_size[0], grid_dim[1]*image_size[1]), 'black')
           positions = [[j*image_size[0], i*image_size[1]] for i in xrange(grid_dim[1]) for j in xrange(grid_dim[0])]

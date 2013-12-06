@@ -15,8 +15,8 @@ class SulciSnapBase(SnapBase):
            if choice == 'single':
               self.views = {'left': ['left'], 'right': ['right']}
            elif choice == 'multi':
-              self.views = {'left': ['left', 'right', 'back left', 'front left', 'left top', 'right bottom'],
-                'right' : ['right', 'left', 'back right', 'front right', 'right top', 'left bottom']}
+              self.views = {'left': ['left', 'bottom', 'right bottom'], #['left', 'right', 'back left', 'front left', 'left top', 'right bottom'],
+                'right' : ['right', 'bottom', 'left bottom']} #['right', 'left', 'back right', 'front right', 'right top', 'left bottom']}
            self.snap_base(None, qt_app = self.qt_app)
 
     def get_list_diskitems(self, verbose = True):
