@@ -20,7 +20,7 @@ class TalairachTransformation( Process ):
         self.add_trait( 'Talairach_transform', File( output=True) )
 	
 	
-    def __call__(self):
+    #def __call__(self):
 	#tmp = context.temporary( 'GIS image' )
 	#trManager = registration.getTransformationManager()
 	#acpcReferential = trManager.referential( 

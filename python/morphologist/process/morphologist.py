@@ -8,13 +8,14 @@ from soma.pipeline.process import Process
 import subprocess
 from soma.pipeline.pipeline import Pipeline
 
-from morphologist.process.spm_normalization import SPMNormalization
-from morphologist.process.bias_correction import BiasCorrection
-from morphologist.process.histo_analysis import HistoAnalysis
-from morphologist.process.compute_brain_mask import ComputeBrainMask
-from morphologist.process.split_brain_mask import SplitBrainMask
-from morphologist.process.talairach_transformation import TalairachTransformation
-from morphologist.process.head_mesh import HeadMesh
+
+from spm_normalization import SPMNormalization
+from bias_correction import BiasCorrection
+from histo_analysis import HistoAnalysis
+from compute_brain_mask import ComputeBrainMask
+from split_brain_mask import SplitBrainMask
+from talairach_transformation import TalairachTransformation
+from head_mesh import HeadMesh
     
 #class GreyWhiteClassification( Process ):
   #def __init__( self, **kwargs ):
@@ -63,8 +64,9 @@ from morphologist.process.head_mesh import HeadMesh
 
 class Morphologist( Pipeline ):
     def __init__(self):  
+        print '__initt'
         super(Morphologist, self).__init__() 
-        self.name_process = 'morphologistPipeline.Morphologist'
+        self.name_process = 'Morphologist'
 
     def pipeline_definition( self ):
       
@@ -160,13 +162,13 @@ class Morphologist( Pipeline ):
                               #'split_brain': (1089.0, 163.0)}
                               
                               
-    def __call__( self ):
-        """ Function to call the execution """
-        print 'call pipeline morphologist'
-	for pro in self.list_process_in_pipeline:
-	    if 'BiasCorrection' in str(pro):
-		print 'OK BIASS'
-		pro()     
+    #def __call__( self ):
+        #""" Function to call the execution """
+        #print 'call pipeline morphologist'
+	#for pro in self.list_process_in_pipeline:
+	    #if 'BiasCorrection' in str(pro):
+		#print 'OK BIASS'
+		#pro()     
                               
 
 

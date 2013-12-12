@@ -28,7 +28,7 @@ class SplitBrainMask( Process ):
         self.add_trait( 'split_brain', File( output=True ) )
         self.add_trait( 'fix_random_seed', Bool( False ) )
     
-    
+    def __call__( self ):     
 	command = [ 'VipSplitBrain',
 		    '-input',  self.t1mri_nobias,
 		    '-brain', self.brain_mask,

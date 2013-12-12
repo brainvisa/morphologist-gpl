@@ -5,7 +5,7 @@ except ImportError:
   from enthought.traits.api import File, Float, Int, Bool, Enum
 
 from soma.pipeline.process import Process
-
+import subprocess
 
 class BiasCorrection( Process ):
     def __init__( self, **kwargs ):
