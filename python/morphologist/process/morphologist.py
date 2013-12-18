@@ -179,23 +179,33 @@ if __name__ == '__main__':
     from soma.functiontools import SomaPartial as partial
     from soma.gui.pipeline.pipeline_gui import PipelineView
     
+    from soma.pipeline.process import Process
+    
     app = QtGui.QApplication( sys.argv )
     
-    morphologist = Morphologist()
-    morphologist.select_normalization = 'none'
+    morphologist = Process.get_instance( 'morphologist.process.morphologist' )
+    
+    for node_name, node in morphologist.nodes.iteritems():
+      print 'Node:', node_name
+      process = getattr( node, 'process', None )
+      if process:
+        for trait_name in process.user_traits():
+          trait = process.trait( trait_name )
+          print '  %s: %s %s' % ( trait_name, repr( getattr( trait, 'output', False ) ), repr( getattr( trait, 'connected_output', False ) ) )
+
     #morphologist.nodes[ 'left_grey_white' ].enabled = False
-    view1 = PipelineView( morphologist )
-    view1.show()
-    def set_morphologist_pipeline():
-        view1.set_pipeline( morphologist )
+    #view1 = PipelineView( morphologist )
+    #view1.show()
+    #def set_morphologist_pipeline():
+        #view1.set_pipeline( morphologist )
     #morphologist.nodes_activation.on_trait_change( set_morphologist_pipeline )
-    morphologist.on_trait_change( set_morphologist_pipeline, 'selection_changed' )
+    #morphologist.on_trait_change( set_morphologist_pipeline, 'selection_changed' )
     #morphologist.on_trait_change( partial( view1.set_pipeline, morphologist ), 'select_normalization' )
     #view2 = PipelineView( GreyWhite() )
     #view2.show()
     
-    cw = ControllerWidget( morphologist, live=True )
-    cw.show()
+    #cw = ControllerWidget( morphologist, live=True )
+    #cw.show()
     
     #morphologist.trait( 'nobias' ).hidden = True
     #cw.controller.user_traits_changed = True
@@ -210,9 +220,9 @@ if __name__ == '__main__':
     #view1.scene.render( painter )
     #painter.end()
     
-    app.exec_()
+    #app.exec_()
     morphologist.workflow().write( sys.stdout )
-    del view1
+    #del view1
     #del view2
     
     
