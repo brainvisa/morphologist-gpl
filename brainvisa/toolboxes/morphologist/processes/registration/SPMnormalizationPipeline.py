@@ -111,8 +111,9 @@ def initialization( self ):
   eNode.addDoubleLink( 'NormalizeSPM.anatomical_template', 'template' )
 
   # fix transformation_matrix type
+  transinf = eNode.NormalizeSPM.signature[ 'transformations_informations' ]
   eNode.ConvertSPMnormalizationToAIMS.signature[ 'read' ] = \
-    eNode.NormalizeSPM.signature[ 'transformations_informations' ]
+    ReadDiskItem( transinf.type.name, transinf.formats )
   eNode.ConvertSPMnormalizationToAIMS.signature[ 'write' ] = \
     WriteDiskItem( 'Transform Raw T1 MRI to Talairach-MNI template-SPM',
       'Transformation matrix' )
