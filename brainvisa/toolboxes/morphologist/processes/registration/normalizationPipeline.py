@@ -86,6 +86,8 @@ def initialization( self ):
   self.allow_flip_initial_MRI = False
 
   eNode = SelectionExecutionNode( self.name, parameterized=self )
+  # for "future" pipeline switch
+  eNode.selection_outputs = []
 
   if fsl:
     eNode.addChild( 'NormalizeFSL',
@@ -102,6 +104,8 @@ def initialization( self ):
     eNode.addLink( 'allow_flip_initial_MRI',
       'NormalizeFSL.allow_flip_initial_MRI' )
 
+    eNode.selection_outputs.append( 'transformation' )
+
   if spm:
     eNode.addChild( 'NormalizeSPM',
       ProcessExecutionNode( spm, selected=1 ) )
@@ -111,6 +115,8 @@ def initialization( self ):
     eNode.addDoubleLink( 'NormalizeSPM.transformation', 'transformation' )
     eNode.addDoubleLink( 'NormalizeSPM.allow_flip_initial_MRI',
       'allow_flip_initial_MRI' )
+
+    eNode.selection_outputs.append( 'transformation' )
 
   if bal:
     eNode.addChild( 'NormalizeBaladin',
@@ -127,12 +133,17 @@ def initialization( self ):
     eNode.addLink( 'allow_flip_initial_MRI',
       'NormalizeBaladin.allow_flip_initial_MRI' )
 
+    eNode.selection_outputs.append( 'transformation' )
+
   eNode.addChild( 'Normalization_AimsMIRegister',
     ProcessExecutionNode( 'normalization_aimsmiregister',
       selected=(fsl is None and spm is None and bal is None) ) )
   eNode.Normalization_AimsMIRegister.removeLink( 'transformation_to_MNI', 'anatomy_data' )
   eNode.addDoubleLink( 'Normalization_AimsMIRegister.anatomy_data', 't1mri' )
   eNode.addDoubleLink( 'Normalization_AimsMIRegister.transformation_to_MNI', 'transformation' )
+
+  eNode.selection_outputs.append( 'transformation_to_MNI' )
+  eNode.switch_output = 'transformation'
 
   self.setExecutionNode( eNode )
 

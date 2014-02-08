@@ -70,6 +70,8 @@ def initialization( self ):
   eNode1.addChild( 'markovian_recognition',
                    ProcessExecutionNode( 'spam_recognitionmarkov',
                    selected = 0 ) )
+  eNode1.selection_outputs = [ 'output_graph', 'output_graph' ]
+  eNode1.switch_output = 'output_graph'
   eNode.addChild( 'local_or_markovian', eNode1 )
 
   self.setExecutionNode( eNode )

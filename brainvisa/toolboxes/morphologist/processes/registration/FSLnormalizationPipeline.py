@@ -115,8 +115,9 @@ def initialization( self ):
   eNode.ConvertFSLnormalizationToAIMS.signature[ 'registered_volume' ] = \
     ReadDiskItem( "anatomical Template",
       ['NIFTI-1 image', 'gz compressed NIFTI-1 image'] )
+  tm = eNode.NormalizeFSL.signature[ 'transformation_matrix' ]
   eNode.ConvertFSLnormalizationToAIMS.signature[ 'read' ] = \
-    eNode.NormalizeFSL.signature[ 'transformation_matrix' ]
+    ReadDiskItem( tm.type.name, tm.formats )
   eNode.ConvertFSLnormalizationToAIMS.removeLink( 'write', 'source_volume' )
   eNode.addDoubleLink( 'ConvertFSLnormalizationToAIMS.source_volume', 't1mri' )
 

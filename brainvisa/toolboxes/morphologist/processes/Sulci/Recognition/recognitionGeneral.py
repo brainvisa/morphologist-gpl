@@ -86,5 +86,9 @@ def initialization( self ):
   # self links
   eNode.addLink( 'output_graph', 'data_graph' )
 
+  # for "future" pipelines
+  eNode.selection_outputs = [ 'output_graph', 'output_graph' ]
+  eNode.switch_output = 'output_graph'
+
   self.setExecutionNode( eNode )
 
