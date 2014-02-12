@@ -142,6 +142,10 @@ def initialization( self ):
   eNode.addDoubleLink( 'Normalization_AimsMIRegister.anatomy_data', 't1mri' )
   eNode.addDoubleLink( 'Normalization_AimsMIRegister.transformation_to_MNI', 'transformation' )
 
+  if fsl and spm:
+    eNode.addDoubleLink( 'NormalizeFSL.NormalizeFSL.init_translation_origin',
+      'NormalizeSPM.NormalizeSPM.init_translation_origin' )
+
   eNode.selection_outputs.append( 'transformation_to_MNI' )
   eNode.switch_output = 'transformation'
 

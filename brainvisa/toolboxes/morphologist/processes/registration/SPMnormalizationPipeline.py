@@ -91,6 +91,12 @@ def allowFlip( self, *args, **kwargs ):
     eNode.ReorientAnatomy.setSelected( self.allow_flip_initial_MRI )
 
 def initialization( self ):
+  # TODO:
+  #     - link NormalizeSPM.normalized_anatomy_data to
+  #       ConvertSPMnormalizationToAIMS.normalized_volume
+  #     - set an output to ReorientAnatomy, which is by default the same as
+  #       the t1mri input (at least if allow_flip_initial_MRI is set)
+
   self.linkParameters( 'transformation', 't1mri' )
   eNode = SerialExecutionNode( self.name, parameterized=self )
 
