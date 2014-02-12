@@ -76,60 +76,36 @@ def initialization( self ):
 
   self.setExecutionNode( eNode )
 
-  self.addLink( 'data_graph', 'global_recognition.data_graph' )
-  self.addLink( 'global_recognition.data_graph', 'data_graph' )
+  self.addDoubleLink( 'data_graph', 'global_recognition.data_graph' )
   eNode.global_recognition.removeLink( 'output_graph', 'data_graph' )
   self.linkParameters( 'output_graph', 'data_graph' )
-  self.addLink( 'output_graph', 'global_recognition.output_graph' )
-  self.addLink( 'global_recognition.output_graph', 'output_graph' )
+  # this link makes soma-pipeline output ambiguous
+  self.addDoubleLink( 'output_graph', 'global_recognition.output_graph' )
 
-  self.addLink( 'output_graph',
+  self.addDoubleLink( 'global_recognition.output_graph',
     'local_or_markovian.local_recognition.data_graph' )
-  self.addLink( 'local_or_markovian.local_recognition.data_graph',
-    'output_graph' )
-  self.addLink( 'global_recognition.labels_translation_map',
+  self.addDoubleLink( 'global_recognition.labels_translation_map',
     'local_or_markovian.local_recognition.labels_translation_map' )
-  self.addLink( 'local_or_markovian.local_recognition.labels_translation_map',
-    'global_recognition.labels_translation_map' )
   eNode1.local_recognition.removeLink( 'labels_priors', 'data_graph' )
-  self.addLink( 'global_recognition.labels_priors',
+  self.addDoubleLink( 'global_recognition.labels_priors',
     'local_or_markovian.local_recognition.labels_priors' )
-  self.addLink( 'local_or_markovian.local_recognition.labels_priors',
-    'global_recognition.labels_priors' )
-  self.addLink( 'global_recognition.initial_transformation',
+  self.addDoubleLink( 'global_recognition.initial_transformation',
     'local_or_markovian.local_recognition.initial_transformation' )
-  self.addLink( 'local_or_markovian.local_recognition.initial_transformation',
-    'global_recognition.initial_transformation' )
   eNode1.local_recognition.removeLink( 'global_transformation', 'data_graph' )
-  self.addLink( 'global_recognition.output_transformation',
+  self.addDoubleLink( 'global_recognition.output_transformation',
     'local_or_markovian.local_recognition.global_transformation' )
-  self.addLink( 'local_or_markovian.local_recognition.global_transformation',
-    'global_recognition.output_transformation' )
 
-  self.addLink( 'output_graph',
+  self.addDoubleLink( 'global_recognition.output_graph',
     'local_or_markovian.markovian_recognition.data_graph' )
-  self.addLink( 'local_or_markovian.markovian_recognition.data_graph',
-    'output_graph' )
-  self.addLink( 'global_recognition.labels_translation_map',
+  self.addDoubleLink( 'global_recognition.labels_translation_map',
     'local_or_markovian.markovian_recognition.labels_translation_map' )
-  self.addLink( \
-    'local_or_markovian.markovian_recognition.labels_translation_map',
-    'global_recognition.labels_translation_map' )
   eNode1.markovian_recognition.removeLink( 'labels_priors', 'data_graph' )
-  self.addLink( 'global_recognition.labels_priors',
+  self.addDoubleLink( 'global_recognition.labels_priors',
     'local_or_markovian.markovian_recognition.labels_priors' )
-  self.addLink( 'local_or_markovian.markovian_recognition.labels_priors',
-    'global_recognition.labels_priors' )
-  self.addLink( 'global_recognition.initial_transformation',
+  self.addDoubleLink( 'global_recognition.initial_transformation',
     'local_or_markovian.markovian_recognition.initial_transformation' )
-  self.addLink( \
-    'local_or_markovian.markovian_recognition.initial_transformation',
-    'global_recognition.initial_transformation' )
   eNode1.markovian_recognition.removeLink( 'global_transformation',
     'data_graph' )
-  self.addLink( 'global_recognition.output_transformation',
+  self.addDoubleLink( 'global_recognition.output_transformation',
     'local_or_markovian.markovian_recognition.global_transformation' )
-  self.addLink( \
-    'local_or_markovian.markovian_recognition.global_transformation',
-    'global_recognition.output_transformation' )
 
