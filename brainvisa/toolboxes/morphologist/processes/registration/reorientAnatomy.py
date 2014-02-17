@@ -42,7 +42,9 @@ userLevel=0
 
 
 signature = Signature(
-  't1mri', ReadDiskItem( 'Raw T1 MRI', 'Aims writable volume formats' ),
+  't1mri', ReadDiskItem( 'Raw T1 MRI', 'Aims readable volume formats' ),
+  'output_t1mri', WriteDiskItem(
+    'Raw T1 MRI', 'Aims writable volume formats' ),
   'transformation',
     ReadDiskItem( 'Transform Raw T1 MRI to Talairach-MNI template-SPM',
       'Transformation matrix' ),
@@ -53,6 +55,7 @@ signature = Signature(
 
 
 def initialization( self ):
+  self.linkParameters( 'output_t1mri', 't1mri' )
   self.linkParameters( 'transformation', 't1mri' )
   self.linkParameters( 'commissures_coordinates', 't1mri' )
   self.setOptional( 'commissures_coordinates' )
@@ -115,7 +118,7 @@ def execution( self, context ):
   context.log( 'Transformation', html = 'transformation: ' + str( R ) )
 
   context.system( 'AimsResample', '-i', self.t1mri,
-                  '-o', self.t1mri, '-m', mfile,
+                  '-o', self.output_t1mri, '-m', mfile,
                   '--sx', vs2[0], '--sy', vs2[1], '--sz', vs2[2],
                   '--dx', dims2[0], '--dy', dims2[1], '--dz', dims2[2] )
 
@@ -127,7 +130,7 @@ def execution( self, context ):
   if self.commissures_coordinates is not None:
     context.runProcess( 'transformAPC',
       Commissure_coordinates=self.commissures_coordinates,
-      destination_volume=self.t1mri,
+      destination_volume=self.output_t1mri,
       output_coordinates=self.commissures_coordinates,
       transformation=mfile )
 

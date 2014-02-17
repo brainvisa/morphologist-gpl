@@ -141,8 +141,7 @@ def initialization( self ):
     'ConvertFSLnormalizationToAIMS.read' )
 
   eNode.ReorientAnatomy.removeLink( 'transformation', 't1mri' )
-  eNode.addLink( 't1mri', 'ReorientAnatomy.t1mri' )
-  eNode.addLink( 'ReorientAnatomy.t1mri', 't1mri' )
+  eNode.addDoubleLink( 't1mri', 'ReorientAnatomy.t1mri' )
   eNode.addLink( 'transformation', 'ReorientAnatomy.transformation' )
   eNode.addLink( 'ReorientAnatomy.transformation', 'transformation' )
   eNode.addLink( 'allow_flip_initial_MRI',
