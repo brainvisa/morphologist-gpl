@@ -4,7 +4,12 @@ try:
 except ImportError:
   from enthought.traits.api import File, Float, Int, Bool, Enum
 
-from soma.process import Process
+try:
+  from capsul.process import Process
+  print '%s uses CAPSUL.' % __name__
+except:
+  from soma.process import Process
+  print '%s uses Soma.' % __name__
 import subprocess
 
 

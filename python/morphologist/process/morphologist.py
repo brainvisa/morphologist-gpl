@@ -4,9 +4,15 @@ try:
 except ImportError:
   from enthought.traits.api import File, Float, Int, Bool, Enum
 
-from soma.process import Process
+try:
+  from capsul.process import Process
+  from capsul.pipeline import Pipeline
+  print '%s uses CAPSUL.' % __name__
+except:
+  from soma.process import Process
+  from soma.pipeline import Pipeline
+  print '%s uses Soma.' % __name__
 import subprocess
-from soma.pipeline.pipeline import Pipeline
 
 
 from spm_normalization import SPMNormalization

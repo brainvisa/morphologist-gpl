@@ -5,13 +5,17 @@ try:
 except ImportError:
     from enthought.traits.api import ListStr,HasTraits,File,Float,Instance,Enum,Str,Bool
 
-from soma.process.process import Process
-from soma.controller import Controller
+try:
+  from capsul.process import Process
+  print '%s uses CAPSUL.' % __name__
+except:
+  from soma.process import Process
+  print '%s uses Soma.' % __name__
 import soma.fom
 import subprocess
-from soma.gui.pipeline.viewer import *
+#from soma.gui.pipeline.viewer import *
 
-       
+
 class SimplifiedMorphologist(Process):
     """ Definition parameters of the process with traits and execution"""
 
