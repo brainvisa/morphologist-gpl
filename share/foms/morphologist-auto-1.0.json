@@ -1,0 +1,55 @@
+{
+    "fom_name" : "morphologist-auto-1.0",
+
+    "fom_import" : [ "formats-brainvisa-1.0", "shared-brainvisa-1.0" ],
+
+    "attribute_definitions" : {
+      "acquisition" : { "default_value" : "default_acquisition" },
+      "analysis" : { "default_value" : "default_analysis" },
+      "sulci_recognition_session" :  { "default_value" : "default_session"}
+
+    },
+
+    "shared_patterns" : {
+      "acquisition" : "<center>/<subject>/t1mri/<acquisition>",
+      "analysis" : "{acquisition}/<analysis>",
+    },
+
+    "processes" : {
+        "morphologist" : {
+            "t1mri": [ [ "input:{acquisition}/<subject>", "images" ],
+                        [ "input:{acquisition}/normalized_<normalization>_<subject>", "images" ] ],
+            "t1mri_nobias": [ ["output:{analysis}/nobias_<subject>", "images" ] ],
+            "split_brain": [ ["output:{analysis}/segmentation/voronoi_<subject>","images"] ],
+            "left_graph": [ ["output:{analysis}/folds/<graph_version>/<side><subject>","Graph and data", {"side":"left","labelled":"No", "graph_version":"3.1"} ] ],
+            "left_labelled_graph": [["output:{analysis}/folds/<graph_version>/<sulci_recognition_session>_auto/<side>_<subject>_<sulci_recognition_session>_auto","Graph and data",{"side":"left","graph_version":"3.1","automatically_labelled":"Yes"}]],
+            "right_graph": [ ["output:{analysis}/folds/<graph_version>/<side><subject>","Graph and data", {"side":"right","labelled":"No", "graph_version":"3.1"}] ],
+            "right_labelled_graph": [ ["output:{analysis}/folds/<graph_version>/<sulci_recognition_session>_auto/<side>_<subject>_<sulci_recognition_session>_auto","Graph and data",{"side":"right","graph_version":"3.1","automatically_labelled":"Yes"}]],
+
+            # PrepareSubject
+
+            ### AimsMIRegister
+            "PrepareSubject_Normalization_Normalization_AimsMIRegister_anatomical_template": "{shared.anatomical_templates}",
+
+            ### NormalizeSPM
+            "PrepareSubject_Normalization_NormalizeSPM_template": "{shared.anatomical_templates}",
+            "PrepareSubject_Normalization_NormalizeSPM_spm_transformation": [["output:{acquisition}/<subject>_sn", "Matlab"]],
+            "PrepareSubject_Normalization_NormalizeSPM_normalized_t1mri": [["output:{acquisition}/normalized_<normalization>_<subject>","images", { "normalization":"SPM" }]],
+
+            #### ConvertSPMnormalizationToAIMS
+            "PrepareSubject_Normalization_NormalizeSPM_ConvertSPMnormalizationToAIMS_normalized_volume": [["output:{acquisition}/normalized_<normalization>_<subject>","images", { "normalization":"SPM" }]],
+
+            #Bias Correction
+            "BiasCorrection_field": [ ["output:{analysis}/biasfield_<subject>","images"] ],
+            "BiasCorrection_meancurvature": [ ["output:{analysis}/mean_curvature_<subject>", "images" ] ],
+        },
+
+        #Bias Correction, internal
+        "T1BiasCorrection" : {
+            "hfiltered": [ ["output:{analysis}/hfiltered_<subject>",  "images"] ],
+            "white_ridges": [ ["output:{analysis}/whiteridge_<subject>", "images"] ],
+            "variance": [ ["output:{analysis}/variance_<subject>","images"] ],
+            "edges": [ ["output:{analysis}/edges_<subject>","images"] ],
+        }
+    }
+}

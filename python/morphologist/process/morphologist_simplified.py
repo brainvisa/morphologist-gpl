@@ -20,12 +20,11 @@ class SimplifiedMorphologist(Process):
     """ Definition parameters of the process with traits and execution"""
 
     
-    def __init__(self):  
+    def __init__(self):
         super(SimplifiedMorphologist, self).__init__() 
         HasTraits.__init__(self) 
   
-    #Input/Output
-        self.name_process = 'morphologistSimp.SimplifiedMorphologist'  
+        #Input/Output
         #~ self.viewer_path = [ 'soma.gui.viewer' ]
         #add_trait('t1mri',File(output=False,viewer='soma.gui.viewer.show_volume.ShowVolume'))
 
