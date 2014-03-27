@@ -104,7 +104,7 @@ def initialization( self ):
     eNode.addLink( 'allow_flip_initial_MRI',
       'NormalizeFSL.allow_flip_initial_MRI' )
 
-    eNode.selection_outputs.append( 'transformation' )
+    eNode.selection_outputs.append( ['transformation', 'NormalizeFSL.normalized_anatomy_data'] )
 
   if spm:
     eNode.addChild( 'NormalizeSPM',
@@ -116,7 +116,7 @@ def initialization( self ):
     eNode.addDoubleLink( 'NormalizeSPM.allow_flip_initial_MRI',
       'allow_flip_initial_MRI' )
 
-    eNode.selection_outputs.append( 'transformation' )
+    eNode.selection_outputs.append( ['transformation', 'NormalizeSPM.normalized_anatomy_data'] )
 
   if bal:
     eNode.addChild( 'NormalizeBaladin',
@@ -133,7 +133,7 @@ def initialization( self ):
     eNode.addLink( 'allow_flip_initial_MRI',
       'NormalizeBaladin.allow_flip_initial_MRI' )
 
-    eNode.selection_outputs.append( 'transformation' )
+    eNode.selection_outputs.append( ['transformation', 'NormalizeBaladin.normalized_anatomy_data'] )
 
   eNode.addChild( 'Normalization_AimsMIRegister',
     ProcessExecutionNode( 'normalization_aimsmiregister',
@@ -146,8 +146,8 @@ def initialization( self ):
     eNode.addDoubleLink( 'NormalizeFSL.NormalizeFSL.init_translation_origin',
       'NormalizeSPM.NormalizeSPM.init_translation_origin' )
 
-  eNode.selection_outputs.append( 'transformation_to_MNI' )
-  eNode.switch_output = 'transformation'
+  eNode.selection_outputs.append( ['transformation_to_MNI', 'normalized_anatomy_data'] )
+  eNode.switch_output = ['transformation', 'normalized']
 
   self.setExecutionNode( eNode )
 
