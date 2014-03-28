@@ -66,6 +66,8 @@ signature = Signature(
     WriteDiskItem( 'Transform Raw T1 MRI to Talairach-MNI template-SPM',
       'Transformation matrix' ),
   'allow_flip_initial_MRI', Boolean(),
+  'commissures_coordinates', ReadDiskItem( 'Commissure Coordinates', 
+      'Commissure Coordinates' ),
   )
 
 def initialization( self ):
@@ -84,6 +86,8 @@ def initialization( self ):
 
   self.linkParameters( 'transformation', 't1mri' )
   self.allow_flip_initial_MRI = False
+  self.setOptional( 'commissures_coordinates' )
+  self.linkParameters( 'commissures_coordinates', 't1mri' )
 
   eNode = SelectionExecutionNode( self.name, parameterized=self )
   # for "future" pipeline switch
@@ -103,6 +107,11 @@ def initialization( self ):
       'allow_flip_initial_MRI' )
     eNode.addLink( 'allow_flip_initial_MRI',
       'NormalizeFSL.allow_flip_initial_MRI' )
+    eNode.NormalizeFSL.ReorientAnatomy.removeLink( 'commissures_coordinates', 
+      't1mri' )
+    eNode.addDoubleLink( 
+      'NormalizeFSL.ReorientAnatomy.commissures_coordinates', 
+      'commissures_coordinates' )
 
     eNode.selection_outputs.append( ['transformation', 'NormalizeFSL.normalized_anatomy_data'] )
 
@@ -115,6 +124,11 @@ def initialization( self ):
     eNode.addDoubleLink( 'NormalizeSPM.transformation', 'transformation' )
     eNode.addDoubleLink( 'NormalizeSPM.allow_flip_initial_MRI',
       'allow_flip_initial_MRI' )
+    eNode.NormalizeSPM.ReorientAnatomy.removeLink( 'commissures_coordinates', 
+      't1mri' )
+    eNode.addDoubleLink( 
+      'NormalizeSPM.ReorientAnatomy.commissures_coordinates', 
+      'commissures_coordinates' )
 
     eNode.selection_outputs.append( ['transformation', 'NormalizeSPM.normalized_anatomy_data'] )
 
@@ -132,6 +146,11 @@ def initialization( self ):
       'allow_flip_initial_MRI' )
     eNode.addLink( 'allow_flip_initial_MRI',
       'NormalizeBaladin.allow_flip_initial_MRI' )
+    eNode.NormalizeBaladin.ReorientAnatomy.removeLink( 
+      'commissures_coordinates', 't1mri' )
+    eNode.addDoubleLink( 
+      'NormalizeFSL.ReorientAnatomy.commissures_coordinates', 
+      'commissures_coordinates' )
 
     eNode.selection_outputs.append( ['transformation', 'NormalizeBaladin.normalized_anatomy_data'] )
 

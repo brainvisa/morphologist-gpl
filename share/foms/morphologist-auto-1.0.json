@@ -23,29 +23,44 @@
             "split_brain": [ ["output:{analysis}/segmentation/voronoi_<subject>","images"] ],
             "left_graph": [ ["output:{analysis}/folds/<graph_version>/<side><subject>","Graph and data", {"side":"left","labelled":"No", "graph_version":"3.1"} ] ],
             "left_labelled_graph": [["output:{analysis}/folds/<graph_version>/<sulci_recognition_session>_auto/<side>_<subject>_<sulci_recognition_session>_auto","Graph and data",{"side":"left","graph_version":"3.1","automatically_labelled":"Yes"}]],
-            "right_graph": [ ["output:{analysis}/folds/<graph_version>/<side><subject>","Graph and data", {"side":"right","labelled":"No", "graph_version":"3.1"}] ],
-            "right_labelled_graph": [ ["output:{analysis}/folds/<graph_version>/<sulci_recognition_session>_auto/<side>_<subject>_<sulci_recognition_session>_auto","Graph and data",{"side":"right","graph_version":"3.1","automatically_labelled":"Yes"}]],
+            "right_graph": [["output:{analysis}/folds/<graph_version>/<side><subject>","Graph and data", {"side":"right","labelled":"No", "graph_version":"3.1"}]],
+            "right_labelled_graph": [["output:{analysis}/folds/<graph_version>/<sulci_recognition_session>_auto/<side>_<subject>_<sulci_recognition_session>_auto","Graph and data",{"side":"right","graph_version":"3.1","automatically_labelled":"Yes"}]],
 
             # PrepareSubject
 
+            "PrepareSubject_Normalization_commissures_coordinates": [["input:{acquisition}/<subject>", "Commissure coordinates"]],
+            "PrepareSubject_commissure_coordinates": [["output:{acquisition}/<subject>", "Commissure coordinates"]],
+
             ### AimsMIRegister
             "PrepareSubject_Normalization_Normalization_AimsMIRegister_anatomical_template": "{shared.anatomical_templates}",
+            "PrepareSubject_Normalization_Normalization_AimsMIRegister_mni_to_acpc": "{shared.talairach_TO_spm_transform}",
 
             ### NormalizeSPM
             "PrepareSubject_Normalization_NormalizeSPM_template": "{shared.anatomical_templates}",
             "PrepareSubject_Normalization_NormalizeSPM_spm_transformation": [["output:{acquisition}/<subject>_sn", "Matlab"]],
-            "PrepareSubject_Normalization_NormalizeSPM_normalized_t1mri": [["output:{acquisition}/normalized_<normalization>_<subject>","images", { "normalization":"SPM" }]],
+            "PrepareSubject_Normalization_NormalizeSPM_normalized_t1mri": [["output:{acquisition}/normalized_<normalization>_<subject>","images", {"normalization":"SPM"}]],
 
             #### ConvertSPMnormalizationToAIMS
             "PrepareSubject_Normalization_NormalizeSPM_ConvertSPMnormalizationToAIMS_normalized_volume": [["output:{acquisition}/normalized_<normalization>_<subject>","images", { "normalization":"SPM" }]],
 
+            ### TalairachFromNormalization
+            "PrepareSubject_TalairachFromNormalization_source_referential": [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>", "Referential" ] ],
+            "PrepareSubject_TalairachFromNormalization_normalized_referential": "{shared.mni_spm_referential}",
+            "PrepareSubject_TalairachFromNormalization_acpc_referential": "{shared.acpc_referential}",
+            # "PrepareSubject_TalairachFromNormalization_transform_chain_ACPC_to_Normalized": "{shared.talairach_TO_spm_transform}",
+
             #Bias Correction
             "BiasCorrection_field": [ ["output:{analysis}/biasfield_<subject>","images"] ],
             "BiasCorrection_meancurvature": [ ["output:{analysis}/mean_curvature_<subject>", "images" ] ],
+
+            #Histogram Analysis
+            "histo": [ ["output:{analysis}/nobias_<subject>", "Histogram" ] ],
+            "histo_analysis": [ ["output:{analysis}/nobias_<subject>", "Histo Analysis"   ] ] ,
+
         },
 
         #Bias Correction, internal
-        "T1BiasCorrection" : {
+        "BiasCorrection" : {
             "hfiltered": [ ["output:{analysis}/hfiltered_<subject>",  "images"] ],
             "white_ridges": [ ["output:{analysis}/whiteridge_<subject>", "images"] ],
             "variance": [ ["output:{analysis}/variance_<subject>","images"] ],

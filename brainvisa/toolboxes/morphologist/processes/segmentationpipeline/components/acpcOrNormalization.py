@@ -77,10 +77,8 @@ def initialization( self ):
 
     eNode.addLink( 'StandardACPC.T1mri', 'T1mri' )
     eNode.addLink( 'T1mri', 'StandardACPC.T1mri' )
-    eNode.addLink( 'StandardACPC.commissure_coordinates',
+    eNode.addDoubleLink( 'StandardACPC.commissure_coordinates',
       'commissure_coordinates' )
-    eNode.addLink( 'commissure_coordinates',
-      'StandardACPC.commissure_coordinates' )
     eNode.addLink( 'StandardACPC.allow_flip_initial_MRI',
       'allow_flip_initial_MRI' )
     eNode.addLink( 'allow_flip_initial_MRI',
@@ -93,6 +91,9 @@ def initialization( self ):
     eNode1.addChild( 'TalairachFromNormalization',
       ProcessExecutionNode( 'TalairachTransformationFromNormalization' ) )
     eNode.addChild( 'Normalization', eNode1 )
+    # eNode1.Normalization.removeLink( 'commissures_coordinates', 't1mri' )
+    # eNode1.addDoubleLink( 'Normalization.commissures_coordinates', 
+    #   'TalairachFromNormalization.commissure_coordinates' )
     self.selection_outputs.append(
       'TalairachFromNormalization.commissure_coordinates' )
 
@@ -115,11 +116,9 @@ def initialization( self ):
       'Normalization.Normalization.transformation' )
     eNode.addLink( 'Normalization.Normalization.transformation',
       'Normalization.TalairachFromNormalization.normalization_transformation' )
-    eNode.addLink( \
+    eNode.addDoubleLink( \
       'Normalization.TalairachFromNormalization.commissure_coordinates',
       'commissure_coordinates' )
-    eNode.addLink( 'commissure_coordinates',
-      'Normalization.TalairachFromNormalization.commissure_coordinates' )
 
   self.setExecutionNode( eNode )
 
