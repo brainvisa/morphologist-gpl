@@ -451,6 +451,7 @@ def initialization( self ):
     leftNode.CorticalFoldsGraph.removeLink( 'roots', 'skeleton' )
     leftNode.CorticalFoldsGraph.removeLink( 'grey_white', 'skeleton' )
     leftNode.CorticalFoldsGraph.removeLink( 'hemi_cortex', 'grey_white' )
+    leftNode.CorticalFoldsGraph.removeLink( 'split_brain', 'skeleton' )
     leftNode.CorticalFoldsGraph.removeLink( 'white_mesh', 'grey_white' )
     leftNode.CorticalFoldsGraph.removeLink( 'pial_mesh', 'white_mesh' )
     leftNode.CorticalFoldsGraph.removeLink( 'commissure_coordinates', 'grey_white' )
@@ -458,6 +459,7 @@ def initialization( self ):
     rightNode.CorticalFoldsGraph.removeLink( 'roots', 'skeleton' )
     rightNode.CorticalFoldsGraph.removeLink( 'grey_white', 'skeleton' )
     rightNode.CorticalFoldsGraph.removeLink( 'hemi_cortex', 'grey_white' )
+    rightNode.CorticalFoldsGraph.removeLink( 'split_brain', 'skeleton' )
     rightNode.CorticalFoldsGraph.removeLink( 'white_mesh', 'grey_white' )
     rightNode.CorticalFoldsGraph.removeLink( 'pial_mesh', 'white_mesh' )
     rightNode.CorticalFoldsGraph.removeLink( 'commissure_coordinates', 'grey_white' )
@@ -475,6 +477,8 @@ def initialization( self ):
     eNode.addDoubleLink( \
         lhemi + '.CorticalFoldsGraph.hemi_cortex',
         lhemi + '.GreyWhiteTopology.hemi_cortex' )
+    eNode.addDoubleLink( 'split_brain', 
+        lhemi + '.CorticalFoldsGraph.split_brain' )
     eNode.addDoubleLink( \
         lhemi + '.CorticalFoldsGraph.white_mesh',
         lhemi + '.GreyWhiteMesh.white_mesh')
@@ -499,6 +503,8 @@ def initialization( self ):
     eNode.addDoubleLink( \
         rhemi + '.CorticalFoldsGraph.hemi_cortex',
         rhemi + '.GreyWhiteTopology.hemi_cortex' )
+    eNode.addDoubleLink( 'split_brain', 
+        rhemi + '.CorticalFoldsGraph.split_brain' )
     eNode.addDoubleLink( \
         rhemi + '.CorticalFoldsGraph.white_mesh',
         rhemi + '.GreyWhiteMesh.white_mesh')
