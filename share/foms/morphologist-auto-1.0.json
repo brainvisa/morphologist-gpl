@@ -16,7 +16,7 @@
     },
 
     "processes" : {
-        "morphologist" : {
+        "CustomMorphologist" : {
             "t1mri": [ [ "input:{acquisition}/<subject>", "images" ],
                         [ "input:{acquisition}/normalized_<normalization>_<subject>", "images" ] ],
             "t1mri_nobias": [ ["output:{analysis}/nobias_<subject>", "images" ] ],
@@ -51,11 +51,25 @@
 
             #Bias Correction
             "BiasCorrection_field": [ ["output:{analysis}/biasfield_<subject>","images"] ],
+            "BiasCorrection_hfiltered": [ ["output:{analysis}/hfiltered_<subject>",  "images"] ], 
+            "BiasCorrection_white_ridges": [ ["output:{analysis}/whiteridge_<subject>", "images"] ], 
+            "BiasCorrection_variance": [ ["output:{analysis}/variance_<subject>","images"] ], 
+            "BiasCorrection_edges": [ ["output:{analysis}/edges_<subject>","images"] ], 
             "BiasCorrection_meancurvature": [ ["output:{analysis}/mean_curvature_<subject>", "images" ] ],
 
             #Histogram Analysis
-            "histo": [ ["output:{analysis}/nobias_<subject>", "Histogram" ] ],
+            "HistoAnalysis_histo": [ ["output:{analysis}/nobias_<subject>", "Histogram" ] ],
             "histo_analysis": [ ["output:{analysis}/nobias_<subject>", "Histo Analysis"   ] ] ,
+
+            #Brain Mask Segmentation
+            "BrainSegmentation_brain_mask": [["output:{analysis}/segmentation/brain_<subject>","images"]],
+
+            # Split Brain
+            "SplitBrain_split_template": [["shared:hemitemplate/closedvoronoi","images"]],
+
+            #Head Mesh
+            "HeadMesh_head_mesh": [["output:{analysis}/segmentation/mesh/<subject>_head", "mesh"]],
+            "HeadMesh_head_mask": [["output:{analysis}/segmentation/head_<subject>", "images"]],
 
         },
 
