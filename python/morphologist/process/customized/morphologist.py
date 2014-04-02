@@ -60,6 +60,11 @@ class CustomMorphologist(morpho.morphologist.morphologist):
         self.add_link('allow_multithreading->CorticalFoldsGraph_1.allow_multithreading')
         self.add_link('CorticalFoldsGraph_write_cortex_mid_interface->CorticalFoldsGraph_1.write_cortex_mid_interface')
 
+        self.export_parameter('SulciRecognition',
+            'SPAM_recognition09_global_recognition_labels_translation_map',
+            'SPAM_recognition_labels_translation_map')
+        self.add_link('SPAM_recognition_labels_translation_map->SulciRecognition_1.SPAM_recognition09_global_recognition_labels_translation_map')
+
         # default settings
         self.select_Talairach = 'Normalization'
         self.PrepareSubject_Normalization_NormalizeSPM_allow_retry_initialization = True

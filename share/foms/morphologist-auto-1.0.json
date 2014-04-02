@@ -25,6 +25,7 @@
             "left_labelled_graph": [["output:{analysis}/folds/<graph_version>/<sulci_recognition_session>_auto/<side>_<subject>_<sulci_recognition_session>_auto","Graph and data",{"side":"left","graph_version":"3.1","automatically_labelled":"Yes"}]],
             "right_graph": [["output:{analysis}/folds/<graph_version>/<side><subject>","Graph and data", {"side":"right","labelled":"No", "graph_version":"3.1"}]],
             "right_labelled_graph": [["output:{analysis}/folds/<graph_version>/<sulci_recognition_session>_auto/<side>_<subject>_<sulci_recognition_session>_auto","Graph and data",{"side":"right","graph_version":"3.1","automatically_labelled":"Yes"}]],
+            "Talairach_transform": [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-ACPC","Transformation matrix"]],
 
             # PrepareSubject
 
@@ -70,6 +71,43 @@
             #Head Mesh
             "HeadMesh_head_mesh": [["output:{analysis}/segmentation/mesh/<subject>_head", "mesh"]],
             "HeadMesh_head_mask": [["output:{analysis}/segmentation/head_<subject>", "images"]],
+
+            #Grey/White Classification
+            "GreyWhiteClassification_grey_white": [["output:{analysis}/segmentation/<side>grey_white_<subject>","images",{"side":"left"}]],
+            "GreyWhiteClassification_1_grey_white": [["output:{analysis}/segmentation/<side>grey_white_<subject>","images",{"side":"right"}]],
+
+            #Grey/White Surface
+            "GreyWhiteTopology_hemi_cortex": [["output:{analysis}/segmentation/<side>cortex_<subject>","images",{"side":"left"}]],
+            "GreyWhiteTopology_1_hemi_cortex": [["output:{analysis}/segmentation/<side>cortex_<subject>","images",{"side":"right"}]],
+
+            #Grey/White Mesh
+            "GreyWhiteMesh_white_mesh": [["output:{analysis}/segmentation/mesh/<subject>_<side>white","mesh",{"side":"left"}]],
+            "GreyWhiteMesh_1_white_mesh": [["output:{analysis}/segmentation/mesh/<subject>_<side>white","mesh",{"side":"right"}]],
+
+            #Pial Mesh
+            "PialMesh_pial_mesh": [["output:{analysis}/segmentation/mesh/<subject>_<side>hemi","mesh",{"side":"left"}]],
+            "PialMesh_1_pial_mesh": [["output:{analysis}/segmentation/mesh/<subject>_<side>hemi","mesh",{"side":"right"}]],
+
+            #Sulci Skeleton
+            "SulciSkeleton_skeleton": [["output:{analysis}/segmentation/<side>skeleton_<subject>","images",{"side":"left"}]],
+            "SulciSkeleton_roots": [["output:{analysis}/segmentation/<side>roots_<subject>","images",{"side":"left"}]],
+            "SulciSkeleton_1_skeleton": [["output:{analysis}/segmentation/<side>skeleton_<subject>","images",{"side":"right"}]],
+            "SulciSkeleton_1_roots": [["output:{analysis}/segmentation/<side>roots_<subject>", "images", {"side": "right"}]],
+
+            #Cortical Folds Graph
+            "CorticalFoldsGraph_sulci_voronoi": [["output:{acquisition}/folds/<graph_version>/<side>sulcivoronoi_<subject>","images",{"side":"left","graph_version":"3.1"}],["output:{analysis}/folds/<graph_version>/<side>sulcivoronoi_<subject>", "images",{"side":"left","graph_version":"3.1"}]],
+            "CorticalFoldsGraph_cortex_mid_interface": [["output:{analysis}/segmentation/<side>gw_interface_<subject>","images",{"side":"left"}]],
+            "CorticalFoldsGraph_1_sulci_voronoi": [["output:{acquisition}/folds/<graph_version>/<side>sulcivoronoi_<subject>","images",{"side":"right","graph_version":"3.1"}],["output:{analysis}/folds/<graph_version>/<side>sulcivoronoi_<subject>", "images",{"side":"right","graph_version":"3.1"}]],
+            "CorticalFoldsGraph_1_cortex_mid_interface": [["output:{analysis}/segmentation/<side>gw_interface_<subject>","images",{ "side": "right" }] ],
+
+            #Sulci Recognition
+            ## recognition2000
+            "SulciRecognition_recognition2000_model": [["shared:{sulci_recognition_ann_model}", "Graph and data", {"side": "L", "sulci_database": "2008"}]],
+            "SulciRecognition_1_recognition2000_model": [["shared:{sulci_recognition_ann_model}", "Graph and data", {"side": "R", "sulci_database": "2008"}]],
+
+            ## recognition09
+            "SPAM_recognition_labels_translation_map": "{shared.surface_referential_translation_map}",
+
 
         },
 
