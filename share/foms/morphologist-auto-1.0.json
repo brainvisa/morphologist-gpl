@@ -6,7 +6,8 @@
     "attribute_definitions" : {
       "acquisition" : { "default_value" : "default_acquisition" },
       "analysis" : { "default_value" : "default_analysis" },
-      "sulci_recognition_session" :  { "default_value" : "default_session"}
+      "sulci_recognition_session" :  { "default_value" : "default_session"},
+      "graph_version": {"default_value": "3.1"},
 
     },
 
@@ -17,15 +18,28 @@
 
     "processes" : {
         "CustomMorphologist" : {
-            "t1mri": [ [ "input:{acquisition}/<subject>", "images" ],
-                        [ "input:{acquisition}/normalized_<normalization>_<subject>", "images" ] ],
-            "t1mri_nobias": [ ["output:{analysis}/nobias_<subject>", "images" ] ],
-            "split_brain": [ ["output:{analysis}/segmentation/voronoi_<subject>","images"] ],
-            "left_graph": [ ["output:{analysis}/folds/<graph_version>/<side><subject>","Graph and data", {"side":"left","labelled":"No", "graph_version":"3.1"} ] ],
-            "left_labelled_graph": [["output:{analysis}/folds/<graph_version>/<sulci_recognition_session>_auto/<side>_<subject>_<sulci_recognition_session>_auto","Graph and data",{"side":"left","graph_version":"3.1","automatically_labelled":"Yes"}]],
-            "right_graph": [["output:{analysis}/folds/<graph_version>/<side><subject>","Graph and data", {"side":"right","labelled":"No", "graph_version":"3.1"}]],
-            "right_labelled_graph": [["output:{analysis}/folds/<graph_version>/<sulci_recognition_session>_auto/<side>_<subject>_<sulci_recognition_session>_auto","Graph and data",{"side":"right","graph_version":"3.1","automatically_labelled":"Yes"}]],
-            "Talairach_transform": [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-ACPC","Transformation matrix"]],
+            "t1mri": [["input:{acquisition}/<subject>", "images"],
+                ["input:{acquisition}/normalized_<normalization>_<subject>", "images"]],
+            "t1mri_nobias":
+                [["output:{analysis}/nobias_<subject>", "images" ]],
+            "split_brain":
+                [["output:{analysis}/segmentation/voronoi_<subject>","images"]],
+            "left_graph":
+                [["output:{analysis}/folds/<graph_version>/<side><subject>",
+                    "Graph and data",
+                    {"side": "L", "labelled": "No"}]],
+            "left_labelled_graph":
+                [["output:{analysis}/folds/<graph_version>/<sulci_recognition_session>_auto/<side><subject>_<sulci_recognition_session>_auto",
+                    "Graph and data", {"side": "L"}]],
+            "right_graph":
+                [["output:{analysis}/folds/<graph_version>/<side><subject>",
+                    "Graph and data", {"side":"R","labelled":"No"}]],
+            "right_labelled_graph":
+                [["output:{analysis}/folds/<graph_version>/<sulci_recognition_session>_auto/<side><subject>_<sulci_recognition_session>_auto",
+                    "Graph and data", {"side": "R"}]],
+            "Talairach_transform":
+                [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-ACPC",
+                    "Transformation matrix"]],
 
             # PrepareSubject
 
@@ -95,18 +109,111 @@
             "SulciSkeleton_1_roots": [["output:{analysis}/segmentation/<side>roots_<subject>", "images", {"side": "right"}]],
 
             #Cortical Folds Graph
-            "CorticalFoldsGraph_sulci_voronoi": [["output:{acquisition}/folds/<graph_version>/<side>sulcivoronoi_<subject>","images",{"side":"left","graph_version":"3.1"}],["output:{analysis}/folds/<graph_version>/<side>sulcivoronoi_<subject>", "images",{"side":"left","graph_version":"3.1"}]],
-            "CorticalFoldsGraph_cortex_mid_interface": [["output:{analysis}/segmentation/<side>gw_interface_<subject>","images",{"side":"left"}]],
-            "CorticalFoldsGraph_1_sulci_voronoi": [["output:{acquisition}/folds/<graph_version>/<side>sulcivoronoi_<subject>","images",{"side":"right","graph_version":"3.1"}],["output:{analysis}/folds/<graph_version>/<side>sulcivoronoi_<subject>", "images",{"side":"right","graph_version":"3.1"}]],
-            "CorticalFoldsGraph_1_cortex_mid_interface": [["output:{analysis}/segmentation/<side>gw_interface_<subject>","images",{ "side": "right" }] ],
+            "CorticalFoldsGraph_sulci_voronoi":
+                [["output:{acquisition}/folds/<graph_version>/<side>sulcivoronoi_<subject>", "images", {"side": "L"}],
+                    ["output:{analysis}/folds/<graph_version>/<side>sulcivoronoi_<subject>", "images", {"side": "L"}]],
+            "CorticalFoldsGraph_cortex_mid_interface":
+                [["output:{analysis}/segmentation/<side>gw_interface_<subject>","images",{"side":"L"}]],
+            "CorticalFoldsGraph_1_sulci_voronoi":
+                [["output:{acquisition}/folds/<graph_version>/<side>sulcivoronoi_<subject>","images",{"side": "R"}],
+                    ["output:{analysis}/folds/<graph_version>/<side>sulcivoronoi_<subject>", "images",{"side":"R"}]],
+            "CorticalFoldsGraph_1_cortex_mid_interface":
+                [["output:{analysis}/segmentation/<side>gw_interface_<subject>","images",{ "side": "R" }] ],
 
             #Sulci Recognition
             ## recognition2000
-            "SulciRecognition_recognition2000_model": [["shared:{sulci_recognition_ann_model}", "Graph and data", {"side": "L", "sulci_database": "2008"}]],
-            "SulciRecognition_1_recognition2000_model": [["shared:{sulci_recognition_ann_model}", "Graph and data", {"side": "R", "sulci_database": "2008"}]],
+            "SulciRecognition_recognition2000_model":
+                [["shared:{sulci_recognition_ann_model}", "Graph and data",
+                    {"side": "L", "sulci_database": "2008"}]],
+            "SulciRecognition_recognition2000_energy_plot_file":
+                [["output:{acquisition}/folds/<graph_version>/<sulci_recognition_session>_auto/<side><subject>_<sulci_recognition_session>_auto",
+                    "Energy", {"side": "L"}]],
+            "SulciRecognition_1_recognition2000_model":
+                [["shared:{sulci_recognition_ann_model}", "Graph and data",
+                    {"side": "R", "sulci_database": "2008"}]],
+            "SulciRecognition_1_recognition2000_energy_plot_file":
+                [["output:{acquisition}/folds/<graph_version>/<sulci_recognition_session>_auto/<side><subject>_<sulci_recognition_session>_auto",
+                    "Energy", {"side": "R"}]],
 
             ## recognition09
-            "SPAM_recognition_labels_translation_map": "{shared.surface_referential_translation_map}",
+            "SPAM_recognition_labels_translation_map": "{shared.sulci_labels_translation_map}",
+            ### Global
+            "SulciRecognition_SPAM_recognition09_global_recognition_labels_priors":
+                [["shared:{spam_labels_priors}", "Text Data Table",
+                    {"sulci_database": "2008", "side": "left"}]],
+            "SulciRecognition_SPAM_recognition09_global_recognition_model":
+                [["shared:{spam_distribs}", "Text Data Table",
+                    {"sulci_database": "2008", "sulci_segments_model_type": "global_registered_spam", "side": "left"}]],
+            "SulciRecognition_SPAM_recognition09_global_recognition_posterior_probabilities":
+                [["output:{acquisition}/folds/<graph_version>/<sulci_recognition_session>_auto/<side><subject>_<sulci_recognition_session>_auto_proba",
+                    "Energy", {"side": "L"}]],
+            "SulciRecognition_SPAM_recognition09_global_recognition_output_transformation":
+                [["output:{acquisition}/folds/<graph_version>/<sulci_recognition_session>_auto/<side><subject>_<sulci_recognition_session>_auto_Tal_TO_SPAM",
+                    "Transformation matrix", {"side": "L"}]],
+            "SulciRecognition_SPAM_recognition09_global_recognition_output_t1_to_global_transformation":
+                [["output:{acquisition}/folds/<graph_version>/<sulci_recognition_session>_auto/<side><subject>_<sulci_recognition_session>_auto_T1_TO_SPAM",
+                    "Transformation matrix", {"side": "L"}]],
+            "SulciRecognition_1_SPAM_recognition09_global_recognition_labels_priors":
+                [["shared:{spam_labels_priors}", "Text Data Table",
+                    {"sulci_database": "2008", "side": "right"}]],
+            "SulciRecognition_1_SPAM_recognition09_global_recognition_model":
+                [["shared:{spam_distribs}", "Text Data Table",
+                    {"sulci_database": "2008", "sulci_segments_model_type": "global_registered_spam", "side": "right"}]],
+            "SulciRecognition_1_SPAM_recognition09_global_recognition_posterior_probabilities":
+                [["output:{acquisition}/folds/<graph_version>/<sulci_recognition_session>_auto/<side><subject>_<sulci_recognition_session>_auto_proba",
+                    "Energy", {"side": "R"}]],
+            "SulciRecognition_1_SPAM_recognition09_global_recognition_output_transformation":
+                [["output:{acquisition}/folds/<graph_version>/<sulci_recognition_session>_auto/<side><subject>_<sulci_recognition_session>_auto_Tal_TO_SPAM",
+                    "Transformation matrix", {"side": "R"}]],
+            "SulciRecognition_1_SPAM_recognition09_global_recognition_output_t1_to_global_transformation":
+                [["output:{acquisition}/folds/<graph_version>/<sulci_recognition_session>_auto/<side><subject>_<sulci_recognition_session>_auto_T1_TO_SPAM",
+                    "Transformation matrix", {"side": "R"}]],
+
+            ### Local
+            "SulciRecognition_SPAM_recognition09_local_recognition_model":
+                [["shared:{spam_distribs}", "Text Data Table",
+                    {"sulci_database": "2008", "sulci_segments_model_type": "locally_from_global_registered_spam", "side": "left"}]],
+            "SulciRecognition_SPAM_recognition09_local_recognition_local_referentials":
+                [["shared:{spam_local_referentials}", "Text Data Table",
+                    {"sulci_database": "2008", "sulci_segments_model_type": "locally_from_global_registered_spam", "side": "left"}]],
+            "SulciRecognition_SPAM_recognition09_local_recognition_direction_priors":
+                [["shared:{spam_direction_priors}", "Text Data Table",
+                    {"sulci_database": "2008", "sulci_segments_model_type": "locally_from_global_registered_spam", "side": "left"}]],
+            "SulciRecognition_SPAM_recognition09_local_recognition_angle_priors":
+                [["shared:{spam_angle_priors}", "Text Data Table",
+                    {"sulci_database": "2008", "sulci_segments_model_type": "locally_from_global_registered_spam", "side": "left"}]],
+            "SulciRecognition_SPAM_recognition09_local_recognition_translation_priors":
+                [["shared:{spam_translation_priors}", "Text Data Table",
+                    {"sulci_database": "2008", "sulci_segments_model_type": "locally_from_global_registered_spam", "side": "left"}]],
+            "SulciRecognition_1_SPAM_recognition09_local_recognition_model":
+                [["shared:{spam_distribs}", "Text Data Table",
+                    {"sulci_database": "2008", "sulci_segments_model_type": "locally_from_global_registered_spam", "side": "right"}]],
+            "SulciRecognition_1_SPAM_recognition09_local_recognition_local_referentials":
+                [["shared:{spam_local_referentials}", "Text Data Table",
+                    {"sulci_database": "2008", "sulci_segments_model_type": "locally_from_global_registered_spam", "side": "right"}]],
+            "SulciRecognition_1_SPAM_recognition09_local_recognition_direction_priors":
+                [["shared:{spam_direction_priors}", "Text Data Table",
+                    {"sulci_database": "2008", "sulci_segments_model_type": "locally_from_global_registered_spam", "side": "right"}]],
+            "SulciRecognition_1_SPAM_recognition09_local_recognition_angle_priors":
+                [["shared:{spam_angle_priors}", "Text Data Table",
+                    {"sulci_database": "2008", "sulci_segments_model_type": "locally_from_global_registered_spam", "side": "right"}]],
+            "SulciRecognition_1_SPAM_recognition09_local_recognition_translation_priors":
+                [["shared:{spam_translation_priors}", "Text Data Table",
+                    {"sulci_database": "2008", "sulci_segments_model_type": "locally_from_global_registered_spam", "side": "right"}]],
+
+            ### Markovian
+            "SulciRecognition_SPAM_recognition09_markovian_recognition_model":
+                [["shared:{spam_distribs}", "Text Data Table",
+                    {"sulci_database": "2008", "sulci_segments_model_type": "global_registered_spam", "side": "left"}]],
+            "SulciRecognition_SPAM_recognition09_markovian_recognition_segments_relations_model":
+                [["shared:{spam_segments_relations_model}", "Text Data Table",
+                    {"sulci_database": "2008", "side": "left"}]],
+            "SulciRecognition_1_SPAM_recognition09_markovian_recognition_model":
+                [["shared:{spam_distribs}", "Text Data Table",
+                    {"sulci_database": "2008", "sulci_segments_model_type": "global_registered_spam", "side": "right"}]],
+            "SulciRecognition_1_SPAM_recognition09_markovian_recognition_segments_relations_model":
+                [["shared:{spam_segments_relations_model}", "Text Data Table",
+                    {"sulci_database": "2008", "side": "right"}]],
 
 
         },
