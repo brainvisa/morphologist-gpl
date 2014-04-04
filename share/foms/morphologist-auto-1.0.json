@@ -1,19 +1,19 @@
 {
-    "fom_name" : "morphologist-auto-1.0",
+    "fom_name": "morphologist-auto-1.0",
 
-    "fom_import" : [ "formats-brainvisa-1.0", "shared-brainvisa-1.0" ],
+    "fom_import": ["formats-brainvisa-1.0", "shared-brainvisa-1.0"],
 
     "attribute_definitions" : {
-      "acquisition" : { "default_value" : "default_acquisition" },
-      "analysis" : { "default_value" : "default_analysis" },
-      "sulci_recognition_session" :  { "default_value" : "default_session"},
+      "acquisition" : {"default_value" : "default_acquisition"},
+      "analysis" : {"default_value" : "default_analysis"},
+      "sulci_recognition_session" :  {"default_value" : "default_session"},
       "graph_version": {"default_value": "3.1"},
-
     },
 
-    "shared_patterns" : {
-      "acquisition" : "<center>/<subject>/t1mri/<acquisition>",
-      "analysis" : "{acquisition}/<analysis>",
+    "shared_patterns": {
+      "acquisition": "<center>/<subject>/t1mri/<acquisition>",
+      "analysis": "{acquisition}/<analysis>",
+      "recognition_analysis": "{analysis}/folds/<graph_version>/<sulci_recognition_session>_auto",
     },
 
     "processes" : {
@@ -29,13 +29,13 @@
                     "Graph and data",
                     {"side": "L", "labelled": "No"}]],
             "left_labelled_graph":
-                [["output:{analysis}/folds/<graph_version>/<sulci_recognition_session>_auto/<side><subject>_<sulci_recognition_session>_auto",
+                [["output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto",
                     "Graph and data", {"side": "L"}]],
             "right_graph":
                 [["output:{analysis}/folds/<graph_version>/<side><subject>",
                     "Graph and data", {"side":"R","labelled":"No"}]],
             "right_labelled_graph":
-                [["output:{analysis}/folds/<graph_version>/<sulci_recognition_session>_auto/<side><subject>_<sulci_recognition_session>_auto",
+                [["output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto",
                     "Graph and data", {"side": "R"}]],
             "Talairach_transform":
                 [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-ACPC",
@@ -126,13 +126,13 @@
                 [["shared:{sulci_recognition_ann_model}", "Graph and data",
                     {"side": "L", "sulci_database": "2008"}]],
             "SulciRecognition_recognition2000_energy_plot_file":
-                [["output:{acquisition}/folds/<graph_version>/<sulci_recognition_session>_auto/<side><subject>_<sulci_recognition_session>_auto",
+                [["output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto",
                     "Energy", {"side": "L"}]],
             "SulciRecognition_1_recognition2000_model":
                 [["shared:{sulci_recognition_ann_model}", "Graph and data",
                     {"side": "R", "sulci_database": "2008"}]],
             "SulciRecognition_1_recognition2000_energy_plot_file":
-                [["output:{acquisition}/folds/<graph_version>/<sulci_recognition_session>_auto/<side><subject>_<sulci_recognition_session>_auto",
+                [["output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto",
                     "Energy", {"side": "R"}]],
 
             ## recognition09
@@ -145,13 +145,13 @@
                 [["shared:{spam_distribs}", "Text Data Table",
                     {"sulci_database": "2008", "sulci_segments_model_type": "global_registered_spam", "side": "left"}]],
             "SulciRecognition_SPAM_recognition09_global_recognition_posterior_probabilities":
-                [["output:{acquisition}/folds/<graph_version>/<sulci_recognition_session>_auto/<side><subject>_<sulci_recognition_session>_auto_proba",
-                    "Energy", {"side": "L"}]],
+                [["output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto_proba",
+                    "CSV file", {"side": "L"}]],
             "SulciRecognition_SPAM_recognition09_global_recognition_output_transformation":
-                [["output:{acquisition}/folds/<graph_version>/<sulci_recognition_session>_auto/<side><subject>_<sulci_recognition_session>_auto_Tal_TO_SPAM",
+                [["output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto_Tal_TO_SPAM",
                     "Transformation matrix", {"side": "L"}]],
             "SulciRecognition_SPAM_recognition09_global_recognition_output_t1_to_global_transformation":
-                [["output:{acquisition}/folds/<graph_version>/<sulci_recognition_session>_auto/<side><subject>_<sulci_recognition_session>_auto_T1_TO_SPAM",
+                [["output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto_T1_TO_SPAM",
                     "Transformation matrix", {"side": "L"}]],
             "SulciRecognition_1_SPAM_recognition09_global_recognition_labels_priors":
                 [["shared:{spam_labels_priors}", "Text Data Table",
@@ -160,13 +160,13 @@
                 [["shared:{spam_distribs}", "Text Data Table",
                     {"sulci_database": "2008", "sulci_segments_model_type": "global_registered_spam", "side": "right"}]],
             "SulciRecognition_1_SPAM_recognition09_global_recognition_posterior_probabilities":
-                [["output:{acquisition}/folds/<graph_version>/<sulci_recognition_session>_auto/<side><subject>_<sulci_recognition_session>_auto_proba",
-                    "Energy", {"side": "R"}]],
+                [["output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto_proba",
+                    "CSV file", {"side": "R"}]],
             "SulciRecognition_1_SPAM_recognition09_global_recognition_output_transformation":
-                [["output:{acquisition}/folds/<graph_version>/<sulci_recognition_session>_auto/<side><subject>_<sulci_recognition_session>_auto_Tal_TO_SPAM",
+                [["output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto_Tal_TO_SPAM",
                     "Transformation matrix", {"side": "R"}]],
             "SulciRecognition_1_SPAM_recognition09_global_recognition_output_t1_to_global_transformation":
-                [["output:{acquisition}/folds/<graph_version>/<sulci_recognition_session>_auto/<side><subject>_<sulci_recognition_session>_auto_T1_TO_SPAM",
+                [["output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto_T1_TO_SPAM",
                     "Transformation matrix", {"side": "R"}]],
 
             ### Local
@@ -185,6 +185,12 @@
             "SulciRecognition_SPAM_recognition09_local_recognition_translation_priors":
                 [["shared:{spam_translation_priors}", "Text Data Table",
                     {"sulci_database": "2008", "sulci_segments_model_type": "locally_from_global_registered_spam", "side": "left"}]],
+            "SulciRecognition_SPAM_recognition09_local_recognition_posterior_probabilities":
+                [["output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto_proba",
+                    "CSV file", {"side": "L"}]],
+            "SulciRecognition_SPAM_recognition09_local_recognition_output_local_transformations":
+                [["output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto_global_TO_local",
+                    "Directory", {"side": "L"}]],
             "SulciRecognition_1_SPAM_recognition09_local_recognition_model":
                 [["shared:{spam_distribs}", "Text Data Table",
                     {"sulci_database": "2008", "sulci_segments_model_type": "locally_from_global_registered_spam", "side": "right"}]],
@@ -200,6 +206,12 @@
             "SulciRecognition_1_SPAM_recognition09_local_recognition_translation_priors":
                 [["shared:{spam_translation_priors}", "Text Data Table",
                     {"sulci_database": "2008", "sulci_segments_model_type": "locally_from_global_registered_spam", "side": "right"}]],
+            "SulciRecognition_1_SPAM_recognition09_local_recognition_posterior_probabilities":
+                [["output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto_proba",
+                    "CSV file", {"side": "R"}]],
+            "SulciRecognition_1_SPAM_recognition09_local_recognition_output_local_transformations":
+                [["output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto_global_TO_local",
+                    "Directory", {"side": "R"}]],
 
             ### Markovian
             "SulciRecognition_SPAM_recognition09_markovian_recognition_model":
@@ -208,12 +220,18 @@
             "SulciRecognition_SPAM_recognition09_markovian_recognition_segments_relations_model":
                 [["shared:{spam_segments_relations_model}", "Text Data Table",
                     {"sulci_database": "2008", "side": "left"}]],
+            "SulciRecognition_SPAM_recognition09_markovian_recognition_posterior_probabilities":
+                [["output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto_proba",
+                    "CSV file", {"side": "L"}]],
             "SulciRecognition_1_SPAM_recognition09_markovian_recognition_model":
                 [["shared:{spam_distribs}", "Text Data Table",
                     {"sulci_database": "2008", "sulci_segments_model_type": "global_registered_spam", "side": "right"}]],
             "SulciRecognition_1_SPAM_recognition09_markovian_recognition_segments_relations_model":
                 [["shared:{spam_segments_relations_model}", "Text Data Table",
                     {"sulci_database": "2008", "side": "right"}]],
+            "SulciRecognition_1_SPAM_recognition09_markovian_recognition_posterior_probabilities":
+                [["output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto_proba",
+                    "CSV file", {"side": "R"}]],
 
 
         },
