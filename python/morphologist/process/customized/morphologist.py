@@ -12,7 +12,20 @@ class CustomMorphologist(morpho.morphologist.morphologist):
         # is working properly...
         self.nodes[''].plugs['PrepareSubject_TalairachFromNormalization_source_referential'].activated = True
         self.nodes[''].plugs['PrepareSubject_TalairachFromNormalization_normalized_referential'].activated = True
-
+        self.nodes[''].plugs['PrepareSubject_TalairachFromNormalization_transform_chain_ACPC_to_Normalized'].activated = True
+        self.nodes[''].plugs['BiasCorrection_field'].activated = True
+        self.nodes['BiasCorrection'].plugs['field'].activated = True
+        self.nodes[''].plugs['BiasCorrection_hfiltered'].activated = True
+        self.nodes['BiasCorrection'].plugs['hfiltered'].activated = True
+        self.nodes[''].plugs['BiasCorrection_white_ridges'].activated = True
+        self.nodes['BiasCorrection'].plugs['white_ridges'].activated = True
+        self.nodes[''].plugs['BiasCorrection_variance'].activated = True
+        self.nodes['BiasCorrection'].plugs['variance'].activated = True
+        self.nodes[''].plugs['BiasCorrection_edges'].activated = True
+        self.nodes['BiasCorrection'].plugs['edges'].activated = True
+        self.nodes[''].plugs['BiasCorrection_meancurvature'].activated = True
+        self.nodes['BiasCorrection'].plugs['meancurvature'].activated = True
+        #self.nodes[''].plugs['PrepareSubject_commissure_coordinates'].activated = True
 
     def pipeline_definition(self):
         super(CustomMorphologist, self).pipeline_definition()
@@ -24,6 +37,8 @@ class CustomMorphologist(morpho.morphologist.morphologist):
         # export output parameter
         self.export_parameter('select_Talairach', 'Talairach_transform',
             'Talairach_transform')
+        self.export_parameter('PrepareSubject', 'commissure_coordinates',
+            'commissure_coordinates')
         self.add_link('PrepareSubject.TalairachFromNormalization_Talairach_transform->select_Talairach.StandardACPC_switch_Talairach_transform')
         self.add_link('TalairachTransformation.Talairach_transform->select_Talairach.Normalization_switch_Talairach_transform')
         self.add_link('select_Talairach->PrepareSubject.select_AC_PC_Or_Normalization')

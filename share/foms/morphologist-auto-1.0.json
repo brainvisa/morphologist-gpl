@@ -18,9 +18,12 @@
 
     "processes" : {
         "CustomMorphologist" : {
-            "t1mri": [["input:{acquisition}/<subject>", "images"],
+            "t1mri": 
+                [["input:{acquisition}/<subject>", "images"],
                 # ["input:{acquisition}/normalized_<normalization>_<subject>", "images"]
-            ],
+                ],
+            "commissure_coordinates": 
+                [["output:{acquisition}/<subject>", "Commissure coordinates"]],
             "t1mri_nobias":
                 [["output:{analysis}/nobias_<subject>", "images" ]],
             "split_brain":
@@ -45,7 +48,7 @@
             # PrepareSubject
 
             "PrepareSubject_Normalization_commissures_coordinates": [["input:{acquisition}/<subject>", "Commissure coordinates"]],
-            "PrepareSubject_commissure_coordinates": [["output:{acquisition}/<subject>", "Commissure coordinates"]],
+            # "PrepareSubject_commissure_coordinates": [["output:{acquisition}/<subject>", "Commissure coordinates"]],
             "PrepareSubject_Normalization_transformation":
                 [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-MNI",
                     "Transformation matrix"]],
@@ -81,7 +84,7 @@
             "PrepareSubject_TalairachFromNormalization_source_referential": [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>", "Referential" ] ],
             "PrepareSubject_TalairachFromNormalization_normalized_referential": "{shared.mni_spm_referential}",
             "PrepareSubject_TalairachFromNormalization_acpc_referential": "{shared.acpc_referential}",
-            # "PrepareSubject_TalairachFromNormalization_transform_chain_ACPC_to_Normalized": "{shared.talairach_TO_spm_transform}",
+            "PrepareSubject_TalairachFromNormalization_transform_chain_ACPC_to_Normalized": "{shared.talairach_TO_spm_transform}",
 
             #Bias Correction
             "BiasCorrection_field": [ ["output:{analysis}/biasfield_<subject>","images"] ],
