@@ -19,7 +19,8 @@
     "processes" : {
         "CustomMorphologist" : {
             "t1mri": [["input:{acquisition}/<subject>", "images"],
-                ["input:{acquisition}/normalized_<normalization>_<subject>", "images"]],
+                # ["input:{acquisition}/normalized_<normalization>_<subject>", "images"]
+            ],
             "t1mri_nobias":
                 [["output:{analysis}/nobias_<subject>", "images" ]],
             "split_brain":
@@ -45,18 +46,36 @@
 
             "PrepareSubject_Normalization_commissures_coordinates": [["input:{acquisition}/<subject>", "Commissure coordinates"]],
             "PrepareSubject_commissure_coordinates": [["output:{acquisition}/<subject>", "Commissure coordinates"]],
+            "PrepareSubject_Normalization_transformation":
+                [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-MNI",
+                    "Transformation matrix"]],
+            "PrepareSubject_Normalization_normalized":
+                [["output:{acquisition}/normalized_<normalization>_<subject>",
+                    "images"]],
 
             ### AimsMIRegister
             "PrepareSubject_Normalization_Normalization_AimsMIRegister_anatomical_template": "{shared.anatomical_templates}",
             "PrepareSubject_Normalization_Normalization_AimsMIRegister_mni_to_acpc": "{shared.talairach_TO_spm_transform}",
+            "PrepareSubject_Normalization_Normalization_AimsMIRegister_transformation_to_ACPC":
+                [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-ACPC",
+                    "Transformation matrix"]],
 
             ### NormalizeSPM
             "PrepareSubject_Normalization_NormalizeSPM_template": "{shared.anatomical_templates}",
             "PrepareSubject_Normalization_NormalizeSPM_spm_transformation": [["output:{acquisition}/<subject>_sn", "Matlab"]],
-            "PrepareSubject_Normalization_NormalizeSPM_normalized_t1mri": [["output:{acquisition}/normalized_<normalization>_<subject>","images", {"normalization":"SPM"}]],
+            "PrepareSubject_Normalization_NormalizeSPM_NormalizeSPM_job_file": [["output:{acquisition}/<subject>_job_anat_normalization", "Matlab"]],
+            # "PrepareSubject_Normalization_NormalizeSPM_normalized_t1mri": [["output:{acquisition}/normalized_<normalization>_<subject>","images", {"normalization":"SPM"}]],
+            "PrepareSubject_Normalization_NormalizeSPM_ReorientAnatomy_output_t1mri":
+                [["output:{acquisition}/<subject>", "images"]],
 
             #### ConvertSPMnormalizationToAIMS
-            "PrepareSubject_Normalization_NormalizeSPM_ConvertSPMnormalizationToAIMS_normalized_volume": [["output:{acquisition}/normalized_<normalization>_<subject>","images", { "normalization":"SPM" }]],
+            # "PrepareSubject_Normalization_NormalizeSPM_ConvertSPMnormalizationToAIMS_normalized_volume": [["output:{acquisition}/normalized_<normalization>_<subject>","images", { "normalization":"SPM" }]],
+
+            ### NormalizeFSL
+            "PrepareSubject_Normalization_NormalizeFSL_NormalizeFSL_transformation_matrix":
+                [["output:{acquisition}/<subject>_fsl", "Matlab"]],
+            "PrepareSubject_Normalization_NormalizeFSL_ReorientAnatomy_output_t1mri":
+                [["output:{acquisition}/<subject>", "images"]],
 
             ### TalairachFromNormalization
             "PrepareSubject_TalairachFromNormalization_source_referential": [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>", "Referential" ] ],
@@ -87,26 +106,26 @@
             "HeadMesh_head_mask": [["output:{analysis}/segmentation/head_<subject>", "images"]],
 
             #Grey/White Classification
-            "GreyWhiteClassification_grey_white": [["output:{analysis}/segmentation/<side>grey_white_<subject>","images",{"side":"left"}]],
-            "GreyWhiteClassification_1_grey_white": [["output:{analysis}/segmentation/<side>grey_white_<subject>","images",{"side":"right"}]],
+            "GreyWhiteClassification_grey_white": [["output:{analysis}/segmentation/<side>grey_white_<subject>","images",{"side":"L"}]],
+            "GreyWhiteClassification_1_grey_white": [["output:{analysis}/segmentation/<side>grey_white_<subject>","images",{"side":"R"}]],
 
             #Grey/White Surface
-            "GreyWhiteTopology_hemi_cortex": [["output:{analysis}/segmentation/<side>cortex_<subject>","images",{"side":"left"}]],
-            "GreyWhiteTopology_1_hemi_cortex": [["output:{analysis}/segmentation/<side>cortex_<subject>","images",{"side":"right"}]],
+            "GreyWhiteTopology_hemi_cortex": [["output:{analysis}/segmentation/<side>cortex_<subject>","images",{"side":"L"}]],
+            "GreyWhiteTopology_1_hemi_cortex": [["output:{analysis}/segmentation/<side>cortex_<subject>","images",{"side":"R"}]],
 
             #Grey/White Mesh
-            "GreyWhiteMesh_white_mesh": [["output:{analysis}/segmentation/mesh/<subject>_<side>white","mesh",{"side":"left"}]],
-            "GreyWhiteMesh_1_white_mesh": [["output:{analysis}/segmentation/mesh/<subject>_<side>white","mesh",{"side":"right"}]],
+            "GreyWhiteMesh_white_mesh": [["output:{analysis}/segmentation/mesh/<subject>_<side>white","mesh",{"side":"L"}]],
+            "GreyWhiteMesh_1_white_mesh": [["output:{analysis}/segmentation/mesh/<subject>_<side>white","mesh",{"side":"R"}]],
 
             #Pial Mesh
-            "PialMesh_pial_mesh": [["output:{analysis}/segmentation/mesh/<subject>_<side>hemi","mesh",{"side":"left"}]],
-            "PialMesh_1_pial_mesh": [["output:{analysis}/segmentation/mesh/<subject>_<side>hemi","mesh",{"side":"right"}]],
+            "PialMesh_pial_mesh": [["output:{analysis}/segmentation/mesh/<subject>_<side>hemi","mesh",{"side":"L"}]],
+            "PialMesh_1_pial_mesh": [["output:{analysis}/segmentation/mesh/<subject>_<side>hemi","mesh",{"side":"R"}]],
 
             #Sulci Skeleton
-            "SulciSkeleton_skeleton": [["output:{analysis}/segmentation/<side>skeleton_<subject>","images",{"side":"left"}]],
-            "SulciSkeleton_roots": [["output:{analysis}/segmentation/<side>roots_<subject>","images",{"side":"left"}]],
-            "SulciSkeleton_1_skeleton": [["output:{analysis}/segmentation/<side>skeleton_<subject>","images",{"side":"right"}]],
-            "SulciSkeleton_1_roots": [["output:{analysis}/segmentation/<side>roots_<subject>", "images", {"side": "right"}]],
+            "SulciSkeleton_skeleton": [["output:{analysis}/segmentation/<side>skeleton_<subject>","images",{"side":"L"}]],
+            "SulciSkeleton_roots": [["output:{analysis}/segmentation/<side>roots_<subject>","images",{"side":"L"}]],
+            "SulciSkeleton_1_skeleton": [["output:{analysis}/segmentation/<side>skeleton_<subject>","images",{"side":"R"}]],
+            "SulciSkeleton_1_roots": [["output:{analysis}/segmentation/<side>roots_<subject>", "images", {"side": "R"}]],
 
             #Cortical Folds Graph
             "CorticalFoldsGraph_sulci_voronoi":

@@ -5,8 +5,8 @@ class CustomMorphologist(morpho.morphologist.morphologist):
 
     def __init__(self, autoexport_nodes_parameters=True, **kwargs):
         super(CustomMorphologist, self).__init__(False, **kwargs)
-        self.set_autoexport_parameters(autoexport_nodes_parameters)
-        self.export_internal_parameters()
+        if autoexport_nodes_parameters:
+            self.export_internal_parameters()
 
 
     def pipeline_definition(self):
