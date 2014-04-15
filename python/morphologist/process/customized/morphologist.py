@@ -8,6 +8,11 @@ class CustomMorphologist(morpho.morphologist.morphologist):
         if autoexport_nodes_parameters:
             self.export_internal_parameters()
 
+        # temporary tuning - should be removed when the pipeline infrastructure
+        # is working properly...
+        self.nodes[''].plugs['PrepareSubject_TalairachFromNormalization_source_referential'].activated = True
+        self.nodes[''].plugs['PrepareSubject_TalairachFromNormalization_normalized_referential'].activated = True
+
 
     def pipeline_definition(self):
         super(CustomMorphologist, self).pipeline_definition()
