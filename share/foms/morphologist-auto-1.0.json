@@ -22,8 +22,8 @@
                 [["input:{acquisition}/<subject>", "images"],
                 # ["input:{acquisition}/normalized_<normalization>_<subject>", "images"]
                 ],
-            "commissure_coordinates": 
-                [["output:{acquisition}/<subject>", "Commissure coordinates"]],
+            # "commissure_coordinates": 
+            #     [["output:{acquisition}/<subject>", "Commissure coordinates"]],
             "t1mri_nobias":
                 [["output:{analysis}/nobias_<subject>", "images" ]],
             "split_brain":
@@ -102,7 +102,7 @@
             "BrainSegmentation_brain_mask": [["output:{analysis}/segmentation/brain_<subject>","images"]],
 
             # Split Brain
-            "SplitBrain_split_template": [["shared:hemitemplate/closedvoronoi","images"]],
+            "SplitBrain_split_template": [["shared:hemitemplate/closedvoronoi","GIS"]],
 
             #Head Mesh
             "HeadMesh_head_mesh": [["output:{analysis}/segmentation/mesh/<subject>_head", "mesh"]],
@@ -264,6 +264,19 @@
             "white_ridges": [ ["output:{analysis}/whiteridge_<subject>", "images"] ],
             "variance": [ ["output:{analysis}/variance_<subject>","images"] ],
             "edges": [ ["output:{analysis}/edges_<subject>","images"] ],
+        },
+
+        "acpcOrNormalization": {
+        },
+
+        "TalairachTransformationFromNormalization": {
+            "commissure_coordinates":
+                [["output:{acquisition}/<subject>", "Commissure coordinates"]]
+        },
+
+        "preparesubject": {
+           "commissure_coordinates":
+                [["output:{acquisition}/<subject>", "Commissure coordinates"]]
         }
     }
 }

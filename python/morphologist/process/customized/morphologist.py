@@ -26,6 +26,55 @@ class CustomMorphologist(morpho.morphologist.morphologist):
         self.nodes[''].plugs['BiasCorrection_meancurvature'].activated = True
         self.nodes['BiasCorrection'].plugs['meancurvature'].activated = True
         #self.nodes[''].plugs['PrepareSubject_commissure_coordinates'].activated = True
+        self.nodes[''].plugs['HistoAnalysis_histo'].activated = True
+        self.nodes['HistoAnalysis'].plugs['histo'].activated = True
+        self.nodes[''].plugs['BrainSegmentation_brain_mask'].activated = True
+        self.nodes[''].plugs['GreyWhiteClassification_grey_white'].activated = True
+        self.nodes[''].plugs['GreyWhiteClassification_1_grey_white'].activated = True
+        self.nodes[''].plugs['GreyWhiteTopology_hemi_cortex'].activated = True
+        self.nodes[''].plugs['GreyWhiteTopology_1_hemi_cortex'].activated = True
+        self.nodes[''].plugs['GreyWhiteMesh_white_mesh'].activated = True
+        self.nodes[''].plugs['GreyWhiteMesh_1_white_mesh'].activated = True
+        self.nodes[''].plugs['SulciSkeleton_skeleton'].activated = True
+        self.nodes[''].plugs['SulciSkeleton_1_skeleton'].activated = True
+        self.nodes[''].plugs['SulciSkeleton_roots'].activated = True
+        self.nodes[''].plugs['SulciSkeleton_1_roots'].activated = True
+        self.nodes[''].plugs['PialMesh_pial_mesh'].activated = True
+        self.nodes[''].plugs['PialMesh_1_pial_mesh'].activated = True
+        self.nodes[''].plugs['CorticalFoldsGraph_sulci_voronoi'].activated \
+            = True
+        self.nodes['CorticalFoldsGraph'].plugs['sulci_voronoi'].activated \
+            = True
+        self.nodes[''].plugs['CorticalFoldsGraph_1_sulci_voronoi'].activated \
+            = True
+        self.nodes['CorticalFoldsGraph_1'].plugs['sulci_voronoi'].activated \
+            = True
+        self.nodes['HeadMesh'].activated = True
+        self.nodes[''].plugs['HeadMesh_head_mesh'].activated = True
+        self.nodes['HeadMesh'].plugs['head_mesh'].activated = True
+        self.nodes['HeadMesh'].plugs['t1mri_nobias'].activated = True
+        self.nodes['HeadMesh'].plugs['histo_analysis'].activated = True
+        self.nodes['HeadMesh'].plugs['keep_head_mask'].activated = True
+        self.nodes['HeadMesh'].plugs['remove_mask'].activated = True
+        self.nodes['HeadMesh'].plugs['first_slice'].activated = True
+        self.nodes['HeadMesh'].plugs['threshold'].activated = True
+        self.nodes['HeadMesh'].plugs['closing'].activated = True
+        self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].\
+            process.nodes['global_recognition'].\
+            plugs['posterior_probabilities'].activated = True
+        self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].\
+            process.nodes['global_recognition'].\
+            plugs['posterior_probabilities'].activated = True
+        self.nodes['SulciRecognition'].process.nodes[''].plugs['SPAM_recognition09_global_recognition_posterior_probabilities'].activated = True
+        self.nodes['SulciRecognition_1'].process.nodes[''].plugs['SPAM_recognition09_global_recognition_posterior_probabilities'].activated = True
+        self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].plugs['global_recognition_posterior_probabilities'].activated = True
+        self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].plugs['global_recognition_posterior_probabilities'].activated = True
+        self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['global_recognition_posterior_probabilities'].activated = True
+        self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['global_recognition_posterior_probabilities'].activated = True
+        self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['global_recognition_model'].activated = True
+        self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['global_recognition_model'].activated = True
+        self.nodes['SulciRecognition'].process.nodes[''].plugs['SPAM_recognition09_global_recognition_model'].activated = True
+        self.nodes['SulciRecognition_1'].process.nodes[''].plugs['SPAM_recognition09_global_recognition_model'].activated = True
 
     def pipeline_definition(self):
         super(CustomMorphologist, self).pipeline_definition()
@@ -123,3 +172,10 @@ class CustomMorphologist(morpho.morphologist.morphologist):
             'outputs': (3006.3192832000004, 1046.7175168000006),
             'select_Talairach': (1525.8988800000009, 1425.370752)}
 
+        self.nodes['PrepareSubject'].process.node_position = {
+            'Normalization': (161.36, 227.60000000000002),
+            'StandardACPC': (272.8, -169.04),
+            'TalairachFromNormalization': (684.56, 485.4),
+            'inputs': (-510.75999999999993, 14.800000000000068),
+            'outputs': (1185.3999999999999, 441.7599999999999),
+            'select_AC_PC_Or_Normalization': (925.6399999999999, 189.44000000000005)}
