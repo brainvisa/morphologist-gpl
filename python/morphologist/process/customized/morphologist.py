@@ -248,21 +248,25 @@ class CustomMorphologist(morpho.morphologist.morphologist):
             'NormalizeSPM': (-488.8, 186.8),
             'select_Normalization_pipeline': (8.6, 231.0)}
 
-        self.nodes['PrepareSubject'].process.nodes['Normalization']  \
-                .process.nodes['NormalizeFSL'].process.node_position = {
-            'ReorientAnatomy': (431.0, 179.0),
-            'outputs': (626.0, 360.0),
-            'ConvertFSLnormalizationToAIMS': (206.0, 341.0),
-            'NormalizeFSL': (-45.0, 116.0),
-            'inputs': (-492.0, 241.0)}
+        if 'NormalizeFSL' in self.nodes['PrepareSubject'].process \
+                .nodes['Normalization'].process.nodes:
+            self.nodes['PrepareSubject'].process.nodes['Normalization']  \
+                    .process.nodes['NormalizeFSL'].process.node_position = {
+                'ReorientAnatomy': (431.0, 179.0),
+                'outputs': (626.0, 360.0),
+                'ConvertFSLnormalizationToAIMS': (206.0, 341.0),
+                'NormalizeFSL': (-45.0, 116.0),
+                'inputs': (-492.0, 241.0)}
 
-        self.nodes['PrepareSubject'].process.nodes['Normalization'].process \
-                .nodes['NormalizeSPM'].process.node_position = {
-            'ReorientAnatomy': (404.0, 378.0),
-            'outputs': (627.0, 232.0),
-            'inputs': (-553.0, 218.0),
-            'ConvertSPMnormalizationToAIMS': (193.0, 200.0),
-            'NormalizeSPM': (-96.0, 365.0)}
+        if 'NormalizeSPM' in self.nodes['PrepareSubject'].process \
+                .nodes['Normalization'].process.nodes:
+            self.nodes['PrepareSubject'].process.nodes['Normalization'] \
+                    .process.nodes['NormalizeSPM'].process.node_position = {
+                'ReorientAnatomy': (404.0, 378.0),
+                'outputs': (627.0, 232.0),
+                'inputs': (-553.0, 218.0),
+                'ConvertSPMnormalizationToAIMS': (193.0, 200.0),
+                'NormalizeSPM': (-96.0, 365.0)}
 
         self.nodes['SulciRecognition'].process.node_position = {
             'SPAM_recognition09': (95.0, 340.0),
