@@ -206,55 +206,58 @@ class CustomMorphologist(morpho.morphologist.morphologist):
 
         # nodes position in Pipeline*View
         self.node_position = {
-            'BiasCorrection': (210.94167040000002, 1149.7378048),
-            'BrainSegmentation': (629.1590399999998, 1471.2065279999997),
-            'CorticalFoldsGraph': (2045.1370751999998, 615.4479360000003),
-            'CorticalFoldsGraph_1': (2021.3345536, 2705.7220864),
-            'GreyWhiteClassification': (1251.3162495999998, 595.5941632),
-            'GreyWhiteClassification_1': (1220.3473664000003, 2596.2887935999997),
-            'GreyWhiteMesh': (1820.3838719999999, 351.27974400000016),
-            'GreyWhiteMesh_1': (1796.5813503999998, 2409.3052672000003),
-            'GreyWhiteTopology': (1476.7275775999997, 412.5228800000002),
-            'GreyWhiteTopology_1': (1427.8427904, 2481.2979456000003),
-            'HeadMesh': (1394.9725439999997, 1523.9670528000001),
-            'HistoAnalysis': (428.8299776, 1199.2138495999998),
-            'PialMesh': (1830.4752895999995, 497.5320320000001),
-            'PialMesh_1': (1799.5064064, 2566.3070976),
-            'PrepareSubject': (-489.2466431999998, 431.06680319999987),
-            'SplitBrain': (933.4003455999999, 1356.2156799999996),
-            'SulciRecognition': (2445.5270656, 368.47659520000036),
-            'SulciRecognition_1': (2399.6282623999996, 2542.3582976),
-            'SulciSkeleton': (1640.8957696, 655.5210496000002),
-            'SulciSkeleton_1': (1624.2596096000002, 2699.2138496),
-            'TalairachTransformation': (1230.4752896, 1316.4716287999995),
-            'inputs': (-1335.2975103999997, 121.66361600000005),
-            'outputs': (3006.3192832000004, 1046.7175168000006),
-            'select_Talairach': (1525.8988800000009, 1425.370752)}
+            'BiasCorrection': (210.9, 1149.7),
+            'BrainSegmentation': (629.2, 1471.2),
+            'CorticalFoldsGraph': (2045.1, 615.4),
+            'CorticalFoldsGraph_1': (2021.3, 2705.7),
+            'GreyWhiteClassification': (1251.3, 595.6),
+            'GreyWhiteClassification_1': (1220.3, 2596.3),
+            'GreyWhiteMesh': (1820.4, 351.3),
+            'GreyWhiteMesh_1': (1796.6, 2409.3),
+            'GreyWhiteTopology': (1476.7, 412.5),
+            'GreyWhiteTopology_1': (1427.8, 2481.3),
+            'HeadMesh': (1395., 1523.97),
+            'HistoAnalysis': (428.8, 1199.2),
+            'PialMesh': (1830.5, 497.5),
+            'PialMesh_1': (1799.5, 2566.3),
+            'PrepareSubject': (-489.2, 431.1),
+            'SplitBrain': (933.4, 1356.2),
+            'SulciRecognition': (2445.5, 368.5),
+            'SulciRecognition_1': (2399.6, 2542.6),
+            'SulciSkeleton': (1640.9, 655.5),
+            'SulciSkeleton_1': (1624.3, 2699.2),
+            'TalairachTransformation': (1230.5, 1316.5),
+            'inputs': (-1335.3, 121.7),
+            'outputs': (3006.3, 1046.7),
+            'select_Talairach': (1525.9, 1425.4)}
 
         self.nodes['PrepareSubject'].process.node_position = {
-            'Normalization': (161.36, 227.60000000000002),
-            'StandardACPC': (272.8, -169.04),
-            'TalairachFromNormalization': (684.56, 485.4),
-            'inputs': (-510.75999999999993, 14.800000000000068),
-            'outputs': (1185.3999999999999, 441.7599999999999),
-            'select_AC_PC_Or_Normalization': (925.6399999999999, 189.44000000000005)}
+            'Normalization': (161.4, 227.6),
+            'StandardACPC': (272.8, -169.),
+            'TalairachFromNormalization': (684.6, 485.4),
+            'inputs': (-510.8, 14.8),
+            'outputs': (1185.4, 441.8),
+            'select_AC_PC_Or_Normalization': (925.6, 189.4)}
 
-        self.nodes['PrepareSubject'].process.nodes['Normalization'].process.node_position = {
+        self.nodes['PrepareSubject'].process.nodes['Normalization'] \
+                .process.node_position = {
             'inputs': (-1134.0, 129.0),
-            'Normalization_AimsMIRegister': (-410.4, 633.6000000000001),
-            'outputs': (404.79999999999995, 390.4),
-            'NormalizeFSL': (-481.59999999999997, -231.8),
-            'NormalizeSPM': (-488.8, 186.80000000000007),
-            'select_Normalization_pipeline': (8.600000000000023, 231.0)}
+            'Normalization_AimsMIRegister': (-410.4, 633.6),
+            'outputs': (404.8, 390.4),
+            'NormalizeFSL': (-481.6, -231.8),
+            'NormalizeSPM': (-488.8, 186.8),
+            'select_Normalization_pipeline': (8.6, 231.0)}
 
-        self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes['NormalizeFSL'].process.node_position = {
+        self.nodes['PrepareSubject'].process.nodes['Normalization']  \
+                .process.nodes['NormalizeFSL'].process.node_position = {
             'ReorientAnatomy': (431.0, 179.0),
             'outputs': (626.0, 360.0),
             'ConvertFSLnormalizationToAIMS': (206.0, 341.0),
             'NormalizeFSL': (-45.0, 116.0),
             'inputs': (-492.0, 241.0)}
 
-        self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes['NormalizeSPM'].process.node_position = {
+        self.nodes['PrepareSubject'].process.nodes['Normalization'].process \
+                .nodes['NormalizeSPM'].process.node_position = {
             'ReorientAnatomy': (404.0, 378.0),
             'outputs': (627.0, 232.0),
             'inputs': (-553.0, 218.0),
@@ -271,7 +274,8 @@ class CustomMorphologist(morpho.morphologist.morphologist):
         self.nodes['SulciRecognition_1'].process.node_position \
             = self.nodes['SulciRecognition'].process.node_position
 
-        self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].process.node_position = {
+        self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'] \
+                .process.node_position = {
             'inputs': (-517.0, 255.0),
             'markovian_recognition': (238.0, 72.0),
             'outputs': (652.0, 510.0),
