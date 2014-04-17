@@ -132,6 +132,9 @@ class CustomMorphologist(morpho.morphologist.morphologist):
         self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].process.nodes['local_recognition'].plugs['output_local_transformations'].activated = True
         self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].process.nodes['local_recognition'].plugs['output_local_transformations'].activated = True
 
+        # if this line is in pipeline_definition(), it has no effect...
+        self.GreyWhiteClassification_1_side = 'right'
+
     def pipeline_definition(self):
         super(CustomMorphologist, self).pipeline_definition()
 
@@ -235,3 +238,50 @@ class CustomMorphologist(morpho.morphologist.morphologist):
             'inputs': (-510.75999999999993, 14.800000000000068),
             'outputs': (1185.3999999999999, 441.7599999999999),
             'select_AC_PC_Or_Normalization': (925.6399999999999, 189.44000000000005)}
+
+        self.nodes['PrepareSubject'].process.nodes['Normalization'].process.node_position = {
+            'inputs': (-1134.0, 129.0),
+            'Normalization_AimsMIRegister': (-410.4, 633.6000000000001),
+            'outputs': (404.79999999999995, 390.4),
+            'NormalizeFSL': (-481.59999999999997, -231.8),
+            'NormalizeSPM': (-488.8, 186.80000000000007),
+            'select_Normalization_pipeline': (8.600000000000023, 231.0)}
+
+        self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes['NormalizeFSL'].process.node_position = {
+            'ReorientAnatomy': (431.0, 179.0),
+            'outputs': (626.0, 360.0),
+            'ConvertFSLnormalizationToAIMS': (206.0, 341.0),
+            'NormalizeFSL': (-45.0, 116.0),
+            'inputs': (-492.0, 241.0)}
+
+        self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes['NormalizeSPM'].process.node_position = {
+            'ReorientAnatomy': (404.0, 378.0),
+            'outputs': (627.0, 232.0),
+            'inputs': (-553.0, 218.0),
+            'ConvertSPMnormalizationToAIMS': (193.0, 200.0),
+            'NormalizeSPM': (-96.0, 365.0)}
+
+        self.nodes['SulciRecognition'].process.node_position = {
+            'SPAM_recognition09': (95.0, 340.0),
+            'outputs': (756.0, 429.0),
+            'recognition2000': (182.0, -5.0),
+            'inputs': (-508.0, 245.0),
+            'select_Sulci_Recognition': (497.0, 197.0)}
+
+        self.nodes['SulciRecognition_1'].process.node_position \
+            = self.nodes['SulciRecognition'].process.node_position
+
+        self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].process.node_position = {
+            'inputs': (-517.0, 255.0),
+            'markovian_recognition': (238.0, 72.0),
+            'outputs': (652.0, 510.0),
+            'global_recognition': (-101.0, 60.0),
+            'local_or_markovian': (456.0, 341.0),
+            'local_recognition': (155.0, 404.0)}
+
+        self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'] \
+            .process.node_position \
+            = self.nodes['SulciRecognition'].process \
+                .nodes['SPAM_recognition09'].process.node_position
+
+
