@@ -74,7 +74,7 @@ def initialization( self ):
         { 'filename_variable' : 'sulci_model_2008' } )
     self.linkParameters( 'global_transformation', 'data_graph' )
     self.linkParameters( 'segments_relations_model', 'data_graph' )
-    self.setOptional( 'segments_relations_model' )
+    # self.setOptional( 'segments_relations_model' )
     self.setOptional( 'initial_transformation' )
     self.setOptional( 'global_transformation' )
 
