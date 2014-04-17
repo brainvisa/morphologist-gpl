@@ -75,6 +75,62 @@ class CustomMorphologist(morpho.morphologist.morphologist):
         self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['global_recognition_model'].activated = True
         self.nodes['SulciRecognition'].process.nodes[''].plugs['SPAM_recognition09_global_recognition_model'].activated = True
         self.nodes['SulciRecognition_1'].process.nodes[''].plugs['SPAM_recognition09_global_recognition_model'].activated = True
+        self.nodes['SulciRecognition'].process.nodes[''].plugs['SPAM_recognition09_global_recognition_labels_priors'].activated = True
+        self.nodes['SulciRecognition_1'].process.nodes[''].plugs['SPAM_recognition09_global_recognition_labels_priors'].activated = True
+        self.nodes['SulciRecognition'].process.nodes[''].plugs['SPAM_recognition09_global_recognition_output_transformation'].activated = True
+        self.nodes['SulciRecognition_1'].process.nodes[''].plugs['SPAM_recognition09_global_recognition_output_transformation'].activated = True
+        self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].plugs['global_recognition_output_transformation'].activated = True
+        self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].plugs['global_recognition_output_transformation'].activated = True
+        self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['global_recognition_output_transformation'].activated = True
+        self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['global_recognition_output_transformation'].activated = True
+        self.nodes['SulciRecognition'].process.nodes[''].plugs['SPAM_recognition09_global_recognition_output_t1_to_global_transformation'].activated = True
+        self.nodes['SulciRecognition_1'].process.nodes[''].plugs['SPAM_recognition09_global_recognition_output_t1_to_global_transformation'].activated = True
+        self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].plugs['global_recognition_output_t1_to_global_transformation'].activated = True
+        self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].plugs['global_recognition_output_t1_to_global_transformation'].activated = True
+        self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['global_recognition_output_t1_to_global_transformation'].activated = True
+        self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['global_recognition_output_t1_to_global_transformation'].activated = True
+        self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].process.nodes['global_recognition'].plugs['output_t1_to_global_transformation'].activated = True
+        self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].process.nodes['global_recognition'].plugs['output_t1_to_global_transformation'].activated = True
+        self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['local_recognition_model'].activated = True
+        self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['local_recognition_model'].activated = True
+        self.nodes['SulciRecognition'].process.nodes[''].plugs['SPAM_recognition09_local_recognition_model'].activated = True
+        self.nodes['SulciRecognition_1'].process.nodes[''].plugs['SPAM_recognition09_local_recognition_model'].activated = True
+        self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].\
+            process.nodes['local_recognition'].\
+            plugs['posterior_probabilities'].activated = True
+        self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].\
+            process.nodes['local_recognition'].\
+            plugs['posterior_probabilities'].activated = True
+        self.nodes['SulciRecognition'].process.nodes[''].plugs['SPAM_recognition09_local_recognition_posterior_probabilities'].activated = True
+        self.nodes['SulciRecognition_1'].process.nodes[''].plugs['SPAM_recognition09_local_recognition_posterior_probabilities'].activated = True
+        self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].plugs['local_recognition_posterior_probabilities'].activated = True
+        self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].plugs['local_recognition_posterior_probabilities'].activated = True
+        self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['local_recognition_posterior_probabilities'].activated = True
+        self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['local_recognition_posterior_probabilities'].activated = True
+        self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['local_recognition_local_referentials'].activated = True
+        self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['local_recognition_local_referentials'].activated = True
+        self.nodes['SulciRecognition'].process.nodes[''].plugs['SPAM_recognition09_local_recognition_local_referentials'].activated = True
+        self.nodes['SulciRecognition_1'].process.nodes[''].plugs['SPAM_recognition09_local_recognition_local_referentials'].activated = True
+        self.nodes['SulciRecognition'].process.nodes[''].plugs['SPAM_recognition09_local_recognition_direction_priors'].activated = True
+        self.nodes['SulciRecognition_1'].process.nodes[''].plugs['SPAM_recognition09_local_recognition_direction_priors'].activated = True
+        self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['local_recognition_direction_priors'].activated = True
+        self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['local_recognition_direction_priors'].activated = True
+        self.nodes['SulciRecognition'].process.nodes[''].plugs['SPAM_recognition09_local_recognition_angle_priors'].activated = True
+        self.nodes['SulciRecognition_1'].process.nodes[''].plugs['SPAM_recognition09_local_recognition_angle_priors'].activated = True
+        self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['local_recognition_angle_priors'].activated = True
+        self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['local_recognition_angle_priors'].activated = True
+        self.nodes['SulciRecognition'].process.nodes[''].plugs['SPAM_recognition09_local_recognition_translation_priors'].activated = True
+        self.nodes['SulciRecognition_1'].process.nodes[''].plugs['SPAM_recognition09_local_recognition_translation_priors'].activated = True
+        self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['local_recognition_translation_priors'].activated = True
+        self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['local_recognition_translation_priors'].activated = True
+        self.nodes['SulciRecognition'].process.nodes[''].plugs['SPAM_recognition09_local_recognition_output_local_transformations'].activated = True
+        self.nodes['SulciRecognition_1'].process.nodes[''].plugs['SPAM_recognition09_local_recognition_output_local_transformations'].activated = True
+        self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].plugs['local_recognition_output_local_transformations'].activated = True
+        self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].plugs['local_recognition_output_local_transformations'].activated = True
+        self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['local_recognition_output_local_transformations'].activated = True
+        self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['local_recognition_output_local_transformations'].activated = True
+        self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].process.nodes['local_recognition'].plugs['output_local_transformations'].activated = True
+        self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].process.nodes['local_recognition'].plugs['output_local_transformations'].activated = True
 
     def pipeline_definition(self):
         super(CustomMorphologist, self).pipeline_definition()

@@ -126,22 +126,23 @@ def execution( self, context ):
   if self.output_transformation and self.model_type == 'Global registration':
     ref = trManager.createNewReferentialFor( self.output_graph,
       name='Global registred SPAM' )
-    if self.initial_transformation is not None:
-      context.system( 'AimsComposeTransformation', '-i',
-        self.initial_transformation, '-j', self.output_transformation, '-o',
-        self.output_t1_to_global_transformation )
-    else:
-      tmp = context.temporary( 'Transformation Matrix' )
-      context.system( 'AimsGraphExtractTransformation', '-i', self.data_graph,
-        '-o', tmp )
-      context.system( 'AimsComposeTransformation', '-i',
-        self.output_transformation, '-j', tmp, '-o',
-        self.output_t1_to_global_transformation )
-    trManager.setNewTransformationInfo(
-      self.output_t1_to_global_transformation,
-      source_referential = self.output_graph,
-      destination_referential \
-        = registration.globallyRegistredSPAMReferentialId )
+    if self.output_t1_to_global_transformation is not None:
+      if self.initial_transformation is not None:
+        context.system( 'AimsComposeTransformation', '-i',
+          self.initial_transformation, '-j', self.output_transformation, '-o',
+          self.output_t1_to_global_transformation )
+      else:
+        tmp = context.temporary( 'Transformation Matrix' )
+        context.system( 'AimsGraphExtractTransformation',
+          '-i', self.data_graph, '-o', tmp )
+        context.system( 'AimsComposeTransformation', '-i',
+          self.output_transformation, '-j', tmp, '-o',
+          self.output_t1_to_global_transformation )
+      trManager.setNewTransformationInfo(
+        self.output_t1_to_global_transformation,
+        source_referential = self.output_graph,
+        destination_referential \
+          = registration.globallyRegistredSPAMReferentialId )
     # set back standard subject ref to output_graph, until we find a better
     # solution to handle refs/transfo ambiguities
     # however the new ref / trans have been created ans can be used if needed.

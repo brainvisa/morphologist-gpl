@@ -194,19 +194,19 @@
             ### Local
             "SulciRecognition_SPAM_recognition09_local_recognition_model":
                 [["shared:{spam_distribs}", "Text Data Table",
-                    {"sulci_database": "2008", "sulci_segments_model_type": "locally_from_global_registered_spam", "side": "left"}]],
+                    {"sulci_database": "2008", "sulci_segments_model_type": "locally_from_global_registred_spam", "side": "left"}]],
             "SulciRecognition_SPAM_recognition09_local_recognition_local_referentials":
                 [["shared:{spam_local_referentials}", "Text Data Table",
-                    {"sulci_database": "2008", "sulci_segments_model_type": "locally_from_global_registered_spam", "side": "left"}]],
+                    {"sulci_database": "2008", "sulci_segments_model_type": "locally_from_global_registred_spam", "side": "left"}]],
             "SulciRecognition_SPAM_recognition09_local_recognition_direction_priors":
                 [["shared:{spam_direction_priors}", "Text Data Table",
-                    {"sulci_database": "2008", "sulci_segments_model_type": "locally_from_global_registered_spam", "side": "left"}]],
+                    {"sulci_database": "2008", "sulci_segments_model_type": "locally_from_global_registred_spam", "side": "left"}]],
             "SulciRecognition_SPAM_recognition09_local_recognition_angle_priors":
                 [["shared:{spam_angle_priors}", "Text Data Table",
-                    {"sulci_database": "2008", "sulci_segments_model_type": "locally_from_global_registered_spam", "side": "left"}]],
+                    {"sulci_database": "2008", "sulci_segments_model_type": "locally_from_global_registred_spam", "side": "left"}]],
             "SulciRecognition_SPAM_recognition09_local_recognition_translation_priors":
                 [["shared:{spam_translation_priors}", "Text Data Table",
-                    {"sulci_database": "2008", "sulci_segments_model_type": "locally_from_global_registered_spam", "side": "left"}]],
+                    {"sulci_database": "2008", "sulci_segments_model_type": "locally_from_global_registred_spam", "side": "left"}]],
             "SulciRecognition_SPAM_recognition09_local_recognition_posterior_probabilities":
                 [["output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto_proba",
                     "CSV file", {"side": "L"}]],
@@ -215,19 +215,19 @@
                     "Directory", {"side": "L"}]],
             "SulciRecognition_1_SPAM_recognition09_local_recognition_model":
                 [["shared:{spam_distribs}", "Text Data Table",
-                    {"sulci_database": "2008", "sulci_segments_model_type": "locally_from_global_registered_spam", "side": "right"}]],
+                    {"sulci_database": "2008", "sulci_segments_model_type": "locally_from_global_registred_spam", "side": "right"}]],
             "SulciRecognition_1_SPAM_recognition09_local_recognition_local_referentials":
                 [["shared:{spam_local_referentials}", "Text Data Table",
-                    {"sulci_database": "2008", "sulci_segments_model_type": "locally_from_global_registered_spam", "side": "right"}]],
+                    {"sulci_database": "2008", "sulci_segments_model_type": "locally_from_global_registred_spam", "side": "right"}]],
             "SulciRecognition_1_SPAM_recognition09_local_recognition_direction_priors":
                 [["shared:{spam_direction_priors}", "Text Data Table",
-                    {"sulci_database": "2008", "sulci_segments_model_type": "locally_from_global_registered_spam", "side": "right"}]],
+                    {"sulci_database": "2008", "sulci_segments_model_type": "locally_from_global_registred_spam", "side": "right"}]],
             "SulciRecognition_1_SPAM_recognition09_local_recognition_angle_priors":
                 [["shared:{spam_angle_priors}", "Text Data Table",
-                    {"sulci_database": "2008", "sulci_segments_model_type": "locally_from_global_registered_spam", "side": "right"}]],
+                    {"sulci_database": "2008", "sulci_segments_model_type": "locally_from_global_registred_spam", "side": "right"}]],
             "SulciRecognition_1_SPAM_recognition09_local_recognition_translation_priors":
                 [["shared:{spam_translation_priors}", "Text Data Table",
-                    {"sulci_database": "2008", "sulci_segments_model_type": "locally_from_global_registered_spam", "side": "right"}]],
+                    {"sulci_database": "2008", "sulci_segments_model_type": "locally_from_global_registred_spam", "side": "right"}]],
             "SulciRecognition_1_SPAM_recognition09_local_recognition_posterior_probabilities":
                 [["output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto_proba",
                     "CSV file", {"side": "R"}]],
