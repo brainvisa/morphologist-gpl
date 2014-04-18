@@ -22,8 +22,8 @@
                 [["input:{acquisition}/<subject>", "images"],
                 # ["input:{acquisition}/normalized_<normalization>_<subject>", "images"]
                 ],
-            # "commissure_coordinates": 
-            #     [["output:{acquisition}/<subject>", "Commissure coordinates"]],
+            "commissure_coordinates":
+                [["output:{acquisition}/<subject>", "Commissure coordinates"]],
             "t1mri_nobias":
                 [["output:{analysis}/nobias_<subject>", "images" ]],
             "split_brain":
@@ -259,7 +259,7 @@
         },
 
         #Bias Correction, internal
-        "BiasCorrection" : {
+        "CustomMorphologist.BiasCorrection" : {
             "hfiltered": [ ["output:{analysis}/hfiltered_<subject>",  "images"] ],
             "white_ridges": [ ["output:{analysis}/whiteridge_<subject>", "images"] ],
             "variance": [ ["output:{analysis}/variance_<subject>","images"] ],
