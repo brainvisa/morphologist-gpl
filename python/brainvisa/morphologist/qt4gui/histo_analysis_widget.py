@@ -10,8 +10,8 @@ import os
 import math
 import numpy
 from soma.qt_gui.qt_backend import QtGui, QtCore
-from soma.qt_gui.qt_backend import choose_matplotlib_backend
-choose_matplotlib_backend()
+from soma.qt_gui.qt_backend import init_matplotlib_backend
+init_matplotlib_backend()
 from matplotlib import pyplot
 import matplotlib.ticker
 
