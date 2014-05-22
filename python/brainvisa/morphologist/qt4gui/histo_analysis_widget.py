@@ -9,9 +9,9 @@ import re
 import os
 import math
 import numpy
-from PyQt4 import QtGui, QtCore
-from soma.gui.api import chooseMatplotlibBackend
-chooseMatplotlibBackend()
+from soma.qt_gui.qt_backend import QtGui, QtCore
+from soma.qt_gui.qt_backend import choose_matplotlib_backend
+choose_matplotlib_backend()
 from matplotlib import pyplot
 import matplotlib.ticker
 
