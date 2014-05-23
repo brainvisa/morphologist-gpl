@@ -131,6 +131,18 @@ class CustomMorphologist(morpho.morphologist.morphologist):
         #self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['local_recognition_output_local_transformations'].activated = True
         #self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].process.nodes['local_recognition'].plugs['output_local_transformations'].activated = True
         #self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].process.nodes['local_recognition'].plugs['output_local_transformations'].activated = True
+        #self.nodes['SulciRecognition'].process.nodes[''].plugs['SPAM_recognition09_markovian_recognition_model'].activated = True
+        #self.nodes['SulciRecognition_1'].process.nodes[''].plugs['SPAM_recognition09_markovian_recognition_model'].activated = True
+        #self.nodes['SulciRecognition'].process.nodes[''].plugs['SPAM_recognition09_markovian_recognition_segments_relations_model'].activated = True
+        #self.nodes['SulciRecognition_1'].process.nodes[''].plugs['SPAM_recognition09_markovian_recognition_segments_relations_model'].activated = True
+        #self.nodes['SulciRecognition'].process.nodes[''].plugs['SPAM_recognition09_markovian_recognition_posterior_probabilities'].activated = True
+        #self.nodes['SulciRecognition_1'].process.nodes[''].plugs['SPAM_recognition09_markovian_recognition_posterior_probabilities'].activated = True
+        #self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].plugs['markovian_recognition_posterior_probabilities'].activated = True
+        #self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].plugs['markovian_recognition_posterior_probabilities'].activated = True
+        #self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].process.nodes['markovian_recognition'].plugs['posterior_probabilities'].activated = True
+        #self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].process.nodes['markovian_recognition'].plugs['posterior_probabilities'].activated = True
+        #self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['markovian_recognition_posterior_probabilities'].activated = True
+        #self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['markovian_recognition_posterior_probabilities'].activated = True
 
         # if this line is in pipeline_definition(), it has no effect...
         self.GreyWhiteClassification_1_side = 'right'
