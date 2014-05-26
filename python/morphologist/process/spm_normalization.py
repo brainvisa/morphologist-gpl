@@ -4,12 +4,7 @@ try:
 except ImportError:
   from enthought.traits.api import File, Float, Int, Bool, Enum
 
-try:
-  from capsul.process import Process
-  print '%s uses CAPSUL.' % __name__
-except:
-  from soma.process import Process
-  print '%s uses Soma.' % __name__
+from capsul.process import Process
 
 class SPMNormalization( Process ):
     def __init__( self, **kwargs ):

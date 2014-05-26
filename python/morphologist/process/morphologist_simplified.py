@@ -5,12 +5,7 @@ try:
 except ImportError:
     from enthought.traits.api import ListStr,HasTraits,File,Float,Instance,Enum,Str,Bool
 
-try:
-  from capsul.process import Process
-  print '%s uses CAPSUL.' % __name__
-except:
-  from soma.process import Process
-  print '%s uses Soma.' % __name__
+from capsul.process import Process
 import soma.fom
 import subprocess
 #from soma.gui.pipeline.viewer import *
