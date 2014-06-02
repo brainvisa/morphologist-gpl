@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 try:
     from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
         List, Undefined
@@ -6,11 +8,12 @@ except ImportError:
     from enthought.traits.api import File, Directory, Float, Int, Bool, Enum, \
         Str, List, Undefined
 
-import morpho.TalairachTransformationFromNormalization
+import morphologist.capsul.TalairachTransformationFromNormalization
 
 
 class TalairachTransformationFromNormalization(
-        morpho.TalairachTransformationFromNormalization.TalairachTransformationFromNormalization):
+        morphologist.capsul.TalairachTransformationFromNormalization.\
+            TalairachTransformationFromNormalization):
     def __init__(self, **kwargs):
         super(TalairachTransformationFromNormalization, self).__init__()
         self.remove_trait('transform_chain_ACPC_to_Normalized')

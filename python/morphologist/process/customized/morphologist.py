@@ -1,7 +1,8 @@
 
-import morpho.morphologist
+from __future__ import absolute_import
+import morphologist.capsul.morphologist
 
-class CustomMorphologist(morpho.morphologist.morphologist):
+class CustomMorphologist(morphologist.capsul.morphologist.morphologist):
 
     def __init__(self, autoexport_nodes_parameters=True, **kwargs):
         super(CustomMorphologist, self).__init__(False, **kwargs)
