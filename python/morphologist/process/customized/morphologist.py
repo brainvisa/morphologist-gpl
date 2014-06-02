@@ -217,6 +217,12 @@ class CustomMorphologist(morphologist.capsul.morphologist.morphologist):
         self.cortical_graph_version = '3.1'
         self.allow_multithreading = True
 
+        self.nodes['SulciRecognition'].enabled = True
+        self.nodes['SulciRecognition_1'].enabled = True
+        self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes['NormalizeSPM'].process.nodes['ReorientAnatomy'].enabled = True
+        self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes['NormalizeFSL'].process.nodes['ReorientAnatomy'].enabled = True
+        # self.select_Talairach = 'StandardACPC'
+
         # nodes position in Pipeline*View
         self.node_position = {
             'BiasCorrection': (210.9, 1149.7),

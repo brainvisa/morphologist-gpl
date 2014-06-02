@@ -1,5 +1,7 @@
 from __future__ import absolute_import
 import sys
+from soma.qt_gui import qt_backend
+qt_backend.set_qt_backend('PyQt4')
 from PyQt4 import QtGui
 from capsul.apps_qt.base.pipeline_widgets import PipelineDevelopperView
 from morphologist.process.customized.morphologist import CustomMorphologist
