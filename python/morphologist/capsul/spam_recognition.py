@@ -78,7 +78,7 @@ class spam_recognition(Pipeline):
                         continue
                     weak_link = False
                     if plug.output:
-                        if plug.links_to or plug.links_from:
+                        if plug.links_to: # or plug.links_from:
                             # some links exist
                             if [True for x in plug.links_to \
                                     if x[0]=='' or isinstance(x[2], Switch)] \
