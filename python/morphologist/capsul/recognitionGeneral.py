@@ -12,10 +12,12 @@ from capsul.pipeline import Switch
 
 
 class recognitionGeneral(Pipeline):
-    def __init__(self, autoexport_node_parameters=True, **kwargs):
+    def __init__(self, autoexport_nodes_parameters=True, **kwargs):
+        self._autoexport_nodes_parameters = autoexport_nodes_parameters
         super(recognitionGeneral, self).__init__(False, **kwargs)
-        if autoexport_node_parameters:
-            self.export_internal_parameters()
+        del self._autoexport_nodes_parameters
+#        if autoexport_nodes_parameters:
+#            self.autoexport_nodes_parameters()
 
 
     def pipeline_definition(self):
@@ -39,10 +41,15 @@ class recognitionGeneral(Pipeline):
 
         # initialization section
         self.nodes['select_Sulci_Recognition'].switch = 'SPAM_recognition09'
+        # export orphan parameters
+        if not hasattr(self, '_autoexport_nodes_parameters') \
+                or self._autoexport_nodes_parameters:
+            self.autoexport_nodes_parameters()
 
 
-    def export_internal_parameters(self):
+    def autoexport_nodes_parameters(self):
         '''export orphan and internal output parameters'''
+        print '%s.autoexport_nodes_parameters' % self.__class__.__name__
         for node_name, node in self.nodes.iteritems():
             if node_name == '':
                 continue # skip main node

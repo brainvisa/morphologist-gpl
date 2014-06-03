@@ -32,7 +32,7 @@ class SplitBrain(Process):
         # initialization section
         self.use_ridges = True
         self.use_template = True
-        self.split_template = '/volatile/riviere/brainvisa/build-trunk-release/share/brainvisa-share-4.5/hemitemplate/closedvoronoi.ima'
+        self.split_template = '/home/riviere/build-current64/share/brainvisa-share-4.5/hemitemplate/closedvoronoi.ima'
         self.mode = 'Watershed (2011)'
         self.variant = 'GW Barycentre'
         self.bary_factor = 0.6

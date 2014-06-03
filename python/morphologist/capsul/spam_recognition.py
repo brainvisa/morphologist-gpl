@@ -12,10 +12,12 @@ from capsul.pipeline import Switch
 
 
 class spam_recognition(Pipeline):
-    def __init__(self, autoexport_node_parameters=True, **kwargs):
+    def __init__(self, autoexport_nodes_parameters=True, **kwargs):
+        self._autoexport_nodes_parameters = autoexport_nodes_parameters
         super(spam_recognition, self).__init__(False, **kwargs)
-        if autoexport_node_parameters:
-            self.export_internal_parameters()
+        del self._autoexport_nodes_parameters
+#        if autoexport_nodes_parameters:
+#            self.autoexport_nodes_parameters()
 
 
     def pipeline_definition(self):
@@ -59,10 +61,15 @@ class spam_recognition(Pipeline):
 
         # initialization section
         self.nodes['local_or_markovian'].switch = 'local_recognition'
+        # export orphan parameters
+        if not hasattr(self, '_autoexport_nodes_parameters') \
+                or self._autoexport_nodes_parameters:
+            self.autoexport_nodes_parameters()
 
 
-    def export_internal_parameters(self):
+    def autoexport_nodes_parameters(self):
         '''export orphan and internal output parameters'''
+        print '%s.autoexport_nodes_parameters' % self.__class__.__name__
         for node_name, node in self.nodes.iteritems():
             if node_name == '':
                 continue # skip main node

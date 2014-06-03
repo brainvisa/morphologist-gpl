@@ -5,9 +5,10 @@ import morphologist.capsul.morphologist
 class CustomMorphologist(morphologist.capsul.morphologist.morphologist):
 
     def __init__(self, autoexport_nodes_parameters=True, **kwargs):
-        super(CustomMorphologist, self).__init__(False, **kwargs)
-        if autoexport_nodes_parameters:
-            self.export_internal_parameters()
+        super(CustomMorphologist, self).__init__(
+            autoexport_nodes_parameters, **kwargs)
+        #if autoexport_nodes_parameters:
+            #self.export_internal_parameters()
 
         # temporary tuning - should be removed when the pipeline infrastructure
         # is working properly...
@@ -146,10 +147,14 @@ class CustomMorphologist(morphologist.capsul.morphologist.morphologist):
         #self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['markovian_recognition_posterior_probabilities'].activated = True
 
         # if this line is in pipeline_definition(), it has no effect...
-        self.GreyWhiteClassification_1_side = 'right'
+        #self.GreyWhiteClassification_1_side = 'right'
 
     def pipeline_definition(self):
+        print 'CustomMorphologist._autoexport_nodes_parameters:', self._autoexport_nodes_parameters
+        autoexport_nodes_parameters = self._autoexport_nodes_parameters
+        self._autoexport_nodes_parameters = False
         super(CustomMorphologist, self).pipeline_definition()
+        self._autoexport_nodes_parameters = autoexport_nodes_parameters
 
         self.add_switch('select_Talairach',
             ['StandardACPC', 'Normalization'],
@@ -217,11 +222,17 @@ class CustomMorphologist(morphologist.capsul.morphologist.morphologist):
         self.cortical_graph_version = '3.1'
         self.allow_multithreading = True
 
-        self.nodes['SulciRecognition'].enabled = True
-        self.nodes['SulciRecognition_1'].enabled = True
-        self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes['NormalizeSPM'].process.nodes['ReorientAnatomy'].enabled = True
-        self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes['NormalizeFSL'].process.nodes['ReorientAnatomy'].enabled = True
-        # self.select_Talairach = 'StandardACPC'
+        self.nodes_activation.SulciRecognition = True
+        self.nodes_activation.SulciRecognition_1 = True
+        if self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes.has_key('NormalizeSPM'):
+            self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes['NormalizeSPM'].process.nodes_activation.ReorientAnatomy = True
+        if self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes.has_key('NormalizeFSL'):
+            self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes['NormalizeFSL'].process.nodes_activation.ReorientAnatomy = True
+
+        if autoexport_nodes_parameters:
+            self.autoexport_nodes_parameters()
+
+        self.GreyWhiteClassification_1_side = 'right'
 
         # nodes position in Pipeline*View
         self.node_position = {
