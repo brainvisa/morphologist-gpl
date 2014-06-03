@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 import sys
+import re
 from soma.qt_gui import qt_backend
 qt_backend.set_qt_backend('PyQt4')
 from PyQt4 import QtGui
@@ -23,8 +24,10 @@ class ActivationsInspector(QtGui.QWidget):
         self.pipeline._debug_activations = self.file
         self.pipeline.update_nodes_and_plugs_activation()
         self.update()
-        self.events.activated.connect(self.update_pipeline_activation)
+        self.events.currentRowChanged.connect(self.update_pipeline_activation)
         self.btnUpdate.clicked.connect(self.update)
+        self.next.clicked.connect(self.find_next)
+        self.previous.clicked.connect(self.find_previous)
         
     def update(self):
         f = open(self.file)
@@ -42,10 +45,11 @@ class ActivationsInspector(QtGui.QWidget):
             else:
                 del current_activations['%s:%s' % (node,plug or '')]
             self.activations.append(current_activations.copy())
-            self.events.addItem('%s %s:%s' % (activation, node, plug))
-     
+            self.events.addItem('%s %s:%s' % (activation, node, plug or ''))
+        self.events.setCurrentRow(self.events.count()-1)
+    
     def update_pipeline_activation(self,index):
-        activations = self.activations[index.row()]
+        activations = self.activations[self.events.currentRow()]
         for node in self.pipeline.all_nodes():
             node_name = node.full_name
             for plug_name, plug in node.plugs.iteritems():
@@ -57,13 +61,32 @@ class ActivationsInspector(QtGui.QWidget):
             if isinstance(node, PipelineNode):
                 node.process.selection_changed = True
 
+    def find_next(self):
+        pattern = re.compile(self.pattern.text())
+        i = self.events.currentRow() + 1
+        while i < self.events.count():
+            if pattern.search(self.events.item(i).text()):
+                self.events.setCurrentRow(i)
+                break
+            i += 1
+        
+    def find_previous(self):
+        pattern = re.compile(self.pattern.text())
+        i = self.events.currentRow() - 1
+        while i > 0:
+            if pattern.search(self.events.item(i).text()):
+                self.events.setCurrentRow(i)
+                break
+            i -= 1
         
         
-        
-        
+def plug_clicked(plug_name):
+    ai.pattern.setText(plug_name)
+
 app = QtGui.QApplication(sys.argv)
 mp = CustomMorphologist()
 mpv = PipelineDevelopperView(mp, show_sub_pipelines=True, allow_open_controller=True)
+mpv.plug_clicked.connect(plug_clicked)
 ai = ActivationsInspector(mp,'/tmp/activations')
 ai.show()
 mpv.show()
