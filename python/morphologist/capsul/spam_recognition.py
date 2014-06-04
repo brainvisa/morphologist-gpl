@@ -69,7 +69,6 @@ class spam_recognition(Pipeline):
 
     def autoexport_nodes_parameters(self):
         '''export orphan and internal output parameters'''
-        print '%s.autoexport_nodes_parameters' % self.__class__.__name__
         for node_name, node in self.nodes.iteritems():
             if node_name == '':
                 continue # skip main node

@@ -150,7 +150,6 @@ class CustomMorphologist(morphologist.capsul.morphologist.morphologist):
         #self.GreyWhiteClassification_1_side = 'right'
 
     def pipeline_definition(self):
-        print 'CustomMorphologist._autoexport_nodes_parameters:', self._autoexport_nodes_parameters
         autoexport_nodes_parameters = self._autoexport_nodes_parameters
         self._autoexport_nodes_parameters = False
         super(CustomMorphologist, self).pipeline_definition()
