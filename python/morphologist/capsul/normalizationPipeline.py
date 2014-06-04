@@ -22,7 +22,9 @@ class normalizationPipeline(Pipeline):
 
     def pipeline_definition(self):
         # nodes section
-        self.add_switch('select_Normalization_pipeline', ['NormalizeSPM', 'Normalization_AimsMIRegister'], ['transformation', 'normalized'])
+        self.add_switch('select_Normalization_pipeline', ['NormalizeFSL', 'NormalizeSPM', 'Normalization_AimsMIRegister'], ['transformation', 'normalized'])
+        self.add_process('NormalizeFSL', 'morphologist.capsul.FSLnormalizationPipeline.FSLnormalizationPipeline')
+        self.nodes['NormalizeFSL']._weak_outputs = True
         self.add_process('NormalizeSPM', 'morphologist.capsul.SPMnormalizationPipeline.SPMnormalizationPipeline')
         self.nodes['NormalizeSPM']._weak_outputs = True
         self.add_process('Normalization_AimsMIRegister', 'morphologist.capsul.normalization_aimsmiregister.normalization_aimsmiregister')
@@ -30,18 +32,23 @@ class normalizationPipeline(Pipeline):
 
         # exports section
         # export input parameter
-        self.export_parameter('NormalizeSPM', 't1mri', 't1mri')
+        self.export_parameter('NormalizeFSL', 't1mri', 't1mri')
         # export output parameter
         self.export_parameter('select_Normalization_pipeline', 'transformation', 'transformation')
         # export input parameter
-        self.export_parameter('NormalizeSPM', 'allow_flip_initial_MRI', 'allow_flip_initial_MRI')
+        self.export_parameter('NormalizeFSL', 'allow_flip_initial_MRI', 'allow_flip_initial_MRI')
         # export input parameter
-        self.export_parameter('NormalizeSPM', 'ReorientAnatomy_commissures_coordinates', 'commissures_coordinates')
+        self.export_parameter('NormalizeFSL', 'ReorientAnatomy_commissures_coordinates', 'commissures_coordinates')
         # export output parameter
         self.export_parameter('select_Normalization_pipeline', 'normalized', 'normalized')
 
         # links section
+        self.add_link('t1mri->NormalizeSPM.t1mri')
         self.add_link('t1mri->Normalization_AimsMIRegister.anatomy_data')
+        self.add_link('commissures_coordinates->NormalizeSPM.ReorientAnatomy_commissures_coordinates')
+        self.add_link('allow_flip_initial_MRI->NormalizeSPM.allow_flip_initial_MRI')
+        self.add_link('NormalizeFSL.transformation->select_Normalization_pipeline.NormalizeFSL_switch_transformation')
+        self.add_link('NormalizeFSL.NormalizeFSL_normalized_anatomy_data->select_Normalization_pipeline.NormalizeFSL_switch_normalized')
         self.add_link('NormalizeSPM.transformation->select_Normalization_pipeline.NormalizeSPM_switch_transformation')
         self.add_link('NormalizeSPM.normalized_t1mri->select_Normalization_pipeline.NormalizeSPM_switch_normalized')
         self.add_link('Normalization_AimsMIRegister.transformation_to_MNI->select_Normalization_pipeline.Normalization_AimsMIRegister_switch_transformation')

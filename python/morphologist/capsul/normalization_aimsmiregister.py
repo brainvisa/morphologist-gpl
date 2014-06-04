@@ -23,8 +23,8 @@ class normalization_aimsmiregister(Process):
 
 
         # initialization section
-        self.anatomical_template = '/home/riviere/build-current64/share/brainvisa-share-4.5/anatomical_templates/MNI152_T1_2mm.nii.gz'
-        self.mni_to_acpc = '/home/riviere/build-current64/share/brainvisa-share-4.5/transformation/talairach_TO_spm_template_novoxels.trm'
+        self.anatomical_template = '/volatile/riviere/brainvisa/build-trunk-release/share/brainvisa-share-4.5/anatomical_templates/MNI152_T1_2mm.nii.gz'
+        self.mni_to_acpc = '/volatile/riviere/brainvisa/build-trunk-release/share/brainvisa-share-4.5/transformation/talairach_TO_spm_template_novoxels.trm'
         self.smoothing = 1.0
 
     def _run_process(self):

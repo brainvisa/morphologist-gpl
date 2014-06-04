@@ -23,7 +23,7 @@ class GreyWhiteClassificationHemi(Process):
 
 
         # initialization section
-        self.side = 'right'
+        self.side = 'left'
         self.fix_random_seed = False
 
     def _run_process(self):

@@ -25,7 +25,7 @@ class Normalization_SPM_reinit(Process):
 
 
         # initialization section
-        self.anatomical_template = u'/usr/local/spm8-standalone/spm8_mcr/spm8/templates/T1.nii'
+        self.anatomical_template = u'/i2bm/local/spm8-standalone/spm8_mcr/spm8/templates/T1.nii'
         self.voxel_size = '[1 1 1]'
         self.cutoff_option = 25
         self.nbiteration = 16
