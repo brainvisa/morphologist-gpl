@@ -12,8 +12,8 @@ from capsul.process import Process
 class reorientAnatomy(Process):
     def __init__(self, **kwargs):
         super(reorientAnatomy, self).__init__()
-        self.add_trait('t1mri', File(allowed_extensions=['.nii.gz', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif']))
-        self.add_trait('output_t1mri', File(allowed_extensions=['.nii.gz', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff'], output=True))
+        self.add_trait('t1mri', File(allowed_extensions=['.nii.gz', '.ima', '.dim', '.img', '.hdr', '.vimg', '.vinfo', '.vhdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif']))
+        self.add_trait('output_t1mri', File(allowed_extensions=['.nii.gz', '.ima', '.dim', '.img', '.hdr', '.vimg', '.vinfo', '.vhdr', '.v', '.i', '.mnc', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff'], output=True))
         self.add_trait('transformation', File(allowed_extensions=['.trm']))
         self.add_trait('commissures_coordinates', File(allowed_extensions=['.APC'], optional=True))
         self.add_trait('allow_flip_initial_MRI', Bool())
@@ -33,8 +33,9 @@ class reorientAnatomy(Process):
 
         axon.initializeProcesses()
 
-        kwargs = {name : getattr(self, name) for name in self.user_traits() \
-            if getattr(self, name) is not Undefined}
+        kwargs = dict([('name', getattr(self, name)) \
+            for name in self.user_traits() \
+            if getattr(self, name) is not Undefined])
 
         context = brainvisa.processes.defaultContext()
         context.runProcess(self.id.split('.')[-1], **kwargs)

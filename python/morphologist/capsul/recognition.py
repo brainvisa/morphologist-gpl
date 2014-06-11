@@ -42,8 +42,9 @@ class recognition(Process):
 
         axon.initializeProcesses()
 
-        kwargs = {name : getattr(self, name) for name in self.user_traits() \
-            if getattr(self, name) is not Undefined}
+        kwargs = dict([('name', getattr(self, name)) \
+            for name in self.user_traits() \
+            if getattr(self, name) is not Undefined])
 
         context = brainvisa.processes.defaultContext()
         context.runProcess(self.id.split('.')[-1], **kwargs)
