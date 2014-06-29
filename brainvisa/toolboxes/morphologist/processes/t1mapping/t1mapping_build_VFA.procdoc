@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<minf expander="minf_2.0">
+<d>
+  <d name="fr">
+    <xhtml name="short"/>
+    <d name="parameters">
+      <xhtml name="T1weighted_high_angle"/>
+      <xhtml name="invert"/>
+      <xhtml name="T1weighted_low_angle"/>
+      <xhtml name="output_t1_map"/>
+      <xhtml name="BAFI_amplitude_map"/>
+      <xhtml name="BAFI_phase_map"/>
+    </d>
+    <xhtml name="long"/>
+  </d>
+  <d name="en">
+    <xhtml name="short">Build quantitative T1 map from two T1-weighted and BAFI correction map.</xhtml>
+    <d name="parameters">
+      <xhtml name="T1weighted_high_angle"/>
+      <xhtml name="invert"/>
+      <xhtml name="T1weighted_low_angle"/>
+      <xhtml name="output_t1_map"/>
+      <xhtml name="BAFI_amplitude_map"/>
+      <xhtml name="BAFI_phase_map"/>
+    </d>
+    <xhtml name="long">Build quantitative T1 map from two T1-weighted and BAFI correction map (complex).
+Using the VFA method.
+The inverted map will not output the quantitative T1, but an inverted version which looks like a T1-weighted, so it can be suitable to be used as input to the Morphologist T1 pipeline. This is useful for high field MRI (7T) to replace T1 weighted images, which generally contain huge inhomogeneities and signal drifts. The quantitative T1 is (more or less) free of this bias.
+</xhtml>
+  </d>
+</d>
+</minf>
