@@ -12,7 +12,7 @@ from capsul.process import Process
 class preparesubject(Process):
     def __init__(self, **kwargs):
         super(preparesubject, self).__init__()
-        self.add_trait('T1mri', File(allowed_extensions=['.nii.gz', '.ima', '.dim', '.img', '.hdr', '.vimg', '.vinfo', '.vhdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif']))
+        self.add_trait('T1mri', File(allowed_extensions=['.nii.gz', '', '.img', '.hdr', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif']))
         self.add_trait('commissure_coordinates', File(allowed_extensions=['.APC'], output=True))
         self.add_trait('Normalised', Enum('No', 'MNI from SPM', 'MNI from Mritotal', 'Marseille from SPM'))
         self.add_trait('Anterior_Commissure', List(trait=Float(), minlen=3, maxlen=3, value=[0, 0, 0], optional=True))
@@ -40,7 +40,7 @@ class preparesubject(Process):
 
         axon.initializeProcesses()
 
-        kwargs = dict([('name', getattr(self, name)) \
+        kwargs = dict([(name, getattr(self, name)) \
             for name in self.user_traits() \
             if getattr(self, name) is not Undefined])
 

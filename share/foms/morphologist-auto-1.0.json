@@ -72,7 +72,10 @@
                 [["output:{acquisition}/<subject>", "images"]],
 
             #### ConvertSPMnormalizationToAIMS
-            # "PrepareSubject_Normalization_NormalizeSPM_ConvertSPMnormalizationToAIMS_normalized_volume": [["output:{acquisition}/normalized_<normalization>_<subject>","images", { "normalization":"SPM" }]],
+            # "PrepareSubject_Normalization_NormalizeSPM_ConvertSPMnormalizationToAIMS_normalized_volume":
+            #     [["output:{acquisition}/normalized_<normalization>_<subject>",
+            #         "images",
+            #         {"normalization": "SPM"}]],
 
             ### NormalizeFSL
             "PrepareSubject_Normalization_NormalizeFSL_NormalizeFSL_transformation_matrix":
@@ -275,8 +278,15 @@
         },
 
         "preparesubject": {
-           "commissure_coordinates":
+            "commissure_coordinates":
                 [["output:{acquisition}/<subject>", "Commissure coordinates"]]
+        },
+
+        "SPMnormalizationPipeline": {
+            "normalized_t1mri":
+                [["output:{acquisition}/normalized_<normalization>_<subject>",
+                    "images",
+                    {"normalization": "SPM"}]]
         }
     }
 }
