@@ -165,6 +165,7 @@ class CustomMorphologist(morphologist.capsul.morphologist.morphologist):
         self.export_parameter('PrepareSubject', 'commissure_coordinates',
             'commissure_coordinates')
         self.add_link('PrepareSubject.TalairachFromNormalization_Talairach_transform->select_Talairach.Normalization_switch_Talairach_transform')
+        self.nodes['PrepareSubject'].plugs['TalairachFromNormalization_Talairach_transform'].optional = True
         self.add_link('TalairachTransformation.Talairach_transform->select_Talairach.StandardACPC_switch_Talairach_transform')
         self.add_link('select_Talairach->PrepareSubject.select_AC_PC_Or_Normalization')
         self.remove_link('TalairachTransformation.Talairach_transform->CorticalFoldsGraph.talairach_transform')
