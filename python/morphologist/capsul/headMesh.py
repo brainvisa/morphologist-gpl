@@ -12,12 +12,12 @@ from capsul.process import Process
 class headMesh(Process):
     def __init__(self, **kwargs):
         super(headMesh, self).__init__()
-        self.add_trait('t1mri_nobias', File(allowed_extensions=['.nii.gz', '', '.img', '.hdr', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif']))
+        self.add_trait('t1mri_nobias', File(allowed_extensions=['.nii.gz', '', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif']))
         self.add_trait('histo_analysis', File(allowed_extensions=['.han'], optional=True))
-        self.add_trait('head_mesh', File(allowed_extensions=['.gii', '.tri', '.mesh', '.ply', '.obj'], output=True))
-        self.add_trait('head_mask', File(allowed_extensions=['.nii.gz', '', '.img', '.hdr', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff'], output=True, optional=True))
+        self.add_trait('head_mesh', File(allowed_extensions=['.gii', '.ply', '.tri', '.mesh', '.obj'], output=True))
+        self.add_trait('head_mask', File(allowed_extensions=['.nii.gz', '', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff'], output=True, optional=True))
         self.add_trait('keep_head_mask', Bool())
-        self.add_trait('remove_mask', File(allowed_extensions=['.nii.gz', '', '.img', '.hdr', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif'], optional=True))
+        self.add_trait('remove_mask', File(allowed_extensions=['.nii.gz', '', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif'], optional=True))
         self.add_trait('first_slice', Int(optional=True))
         self.add_trait('threshold', Int(optional=True))
         self.add_trait('closing', Float(optional=True))
@@ -42,7 +42,9 @@ class headMesh(Process):
 
         kwargs = dict([(name, getattr(self, name)) \
             for name in self.user_traits() \
-            if getattr(self, name) is not Undefined])
+            if getattr(self, name) is not Undefined and \
+                (not isinstance(self.user_traits()[name].trait_type, File) \
+                    or getattr(self, name) != '')])
 
         context = brainvisa.processes.defaultContext()
         context.runProcess(self.id.split('.')[-1], **kwargs)

@@ -52,9 +52,9 @@
             "PrepareSubject_Normalization_transformation":
                 [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-MNI",
                     "Transformation matrix"]],
-            "PrepareSubject_Normalization_normalized":
-                [["output:{acquisition}/normalized_<normalization>_<subject>",
-                    "images"]],
+#            "PrepareSubject_Normalization_normalized":
+#                [["output:{acquisition}/normalized_<normalization>_<subject>",
+#                    "images"]],
 
             ### AimsMIRegister
             "PrepareSubject_Normalization_Normalization_AimsMIRegister_anatomical_template": "{shared.anatomical_templates}",
@@ -282,11 +282,10 @@
                 [["output:{acquisition}/<subject>", "Commissure coordinates"]]
         },
 
-        "SPMnormalizationPipeline": {
+        "CustomMorphologist.PrepareSubject.Normalization.NormalizeSPM": {
             "normalized_t1mri":
-                [["output:{acquisition}/normalized_<normalization>_<subject>",
-                    "images",
-                    {"normalization": "SPM"}]]
+                [["output:{acquisition}/normalized_SPM_<subject>",
+                    ["NIFTI", "SPM"]]],
         }
     }
 }
