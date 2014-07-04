@@ -149,7 +149,7 @@ def initialization( self ):
     eNode.NormalizeBaladin.ReorientAnatomy.removeLink( 
       'commissures_coordinates', 't1mri' )
     eNode.addDoubleLink( 
-      'NormalizeFSL.ReorientAnatomy.commissures_coordinates', 
+      'NormalizeBaladin.ReorientAnatomy.commissures_coordinates', 
       'commissures_coordinates' )
 
     eNode.selection_outputs.append( ['transformation', 'NormalizeBaladin.normalized_anatomy_data'] )
