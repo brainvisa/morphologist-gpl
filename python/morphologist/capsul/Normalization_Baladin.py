@@ -9,21 +9,17 @@ except ImportError:
 from capsul.process import Process
 
 
-class FSLnormalizationToAims(Process):
+class Normalization_Baladin(Process):
     def __init__(self, **kwargs):
-        super(FSLnormalizationToAims, self).__init__()
-        self.add_trait('read', File(allowed_extensions=['.mat']))
-        self.add_trait('source_volume', File(allowed_extensions=['.nii.gz', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '']))
-        self.add_trait('write', File(allowed_extensions=['.trm'], output=True))
-        self.add_trait('registered_volume', File(allowed_extensions=['.nii', '.nii.gz']))
-        self.add_trait('standard_template', Enum(0))
-        self.add_trait('set_transformation_in_source_volume', Bool())
+        super(Normalization_Baladin, self).__init__()
+        self.add_trait('anatomy_data', File(allowed_extensions=['.ima', '.dim']))
+        self.add_trait('anatomical_template', File(allowed_extensions=['.ima', '.dim']))
+        self.add_trait('transformation_matrix', File(allowed_extensions=['.txt'], output=True))
+        self.add_trait('normalized_anatomy_data', File(allowed_extensions=['.ima', '.dim', '.nii', '.nii.gz'], output=True))
 
 
         # initialization section
-        self.registered_volume = '/usr/share/fsl/data/standard/MNI152_T1_1mm.nii.gz'
-        self.standard_template = 0
-        self.set_transformation_in_source_volume = True
+        self.anatomical_template = '/usr/share/fsl/data/standard/MNI152_T1_1mm.nii.gz'
 
     def _run_process(self):
         from brainvisa import axon

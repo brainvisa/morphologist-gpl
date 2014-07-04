@@ -276,6 +276,7 @@ class CustomMorphologist(morphologist.capsul.morphologist.morphologist):
             'outputs': (404.8, 390.4),
             'NormalizeFSL': (-481.6, -231.8),
             'NormalizeSPM': (-488.8, 186.8),
+            'NormalizeBaladin': (-430.384, 908.816),
             'select_Normalization_pipeline': (8.6, 231.0)}
 
         if 'NormalizeFSL' in self.nodes['PrepareSubject'].process \
@@ -297,6 +298,17 @@ class CustomMorphologist(morphologist.capsul.morphologist.morphologist):
                 'inputs': (-553.0, 218.0),
                 'ConvertSPMnormalizationToAIMS': (193.0, 200.0),
                 'NormalizeSPM': (-96.0, 365.0)}
+
+        if 'NormalizeBaladin' in self.nodes['PrepareSubject'].process \
+                .nodes['Normalization'].process.nodes:
+            self.nodes['PrepareSubject'].process.nodes['Normalization'] \
+                    .process.nodes['NormalizeBaladin'].process.node_position \
+                = {
+                    'ConvertBaladinNormalizationToAIMS': (318.0, 104.0),
+                    'NormalizeBaladin': (108.0, 393.0),
+                    'ReorientAnatomy': (435.0, 299.0),
+                    'inputs': (-208.0, 127.0),
+                    'outputs': (699.0, 241.0)}
 
         self.nodes['SulciRecognition'].process.node_position = {
             'SPAM_recognition09': (95.0, 340.0),
