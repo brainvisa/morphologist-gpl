@@ -13,9 +13,9 @@ class BaladinNormalizationToAims(Process):
     def __init__(self, **kwargs):
         super(BaladinNormalizationToAims, self).__init__()
         self.add_trait('read', File(allowed_extensions=['.txt']))
-        self.add_trait('source_volume', File(allowed_extensions=['.nii.gz', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '']))
+        self.add_trait('source_volume', File(allowed_extensions=['.nii.gz', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.img', '.hdr', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '']))
         self.add_trait('write', File(allowed_extensions=['.trm'], output=True))
-        self.add_trait('registered_volume', File(allowed_extensions=['.nii.gz', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', ''], optional=True))
+        self.add_trait('registered_volume', File(allowed_extensions=['.nii.gz', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.img', '.hdr', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', ''], optional=True))
         self.add_trait('set_transformation_in_source_volume', Bool())
 
 

@@ -49,6 +49,7 @@ class normalizationPipeline(Pipeline):
         self.add_link('t1mri->NormalizeBaladin.t1mri')
         self.add_link('t1mri->Normalization_AimsMIRegister.anatomy_data')
         self.add_link('commissures_coordinates->NormalizeSPM.ReorientAnatomy_commissures_coordinates')
+        self.add_link('commissures_coordinates->NormalizeBaladin.ReorientAnatomy_commissures_coordinates')
         self.add_link('allow_flip_initial_MRI->NormalizeSPM.allow_flip_initial_MRI')
         self.add_link('allow_flip_initial_MRI->NormalizeBaladin.allow_flip_initial_MRI')
         self.add_link('NormalizeFSL.transformation->select_Normalization_pipeline.NormalizeFSL_switch_transformation')

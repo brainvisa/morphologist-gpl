@@ -12,8 +12,8 @@ from capsul.process import Process
 class reorientAnatomy(Process):
     def __init__(self, **kwargs):
         super(reorientAnatomy, self).__init__()
-        self.add_trait('t1mri', File(allowed_extensions=['.nii.gz', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '']))
-        self.add_trait('output_t1mri', File(allowed_extensions=['.nii.gz', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', ''], output=True))
+        self.add_trait('t1mri', File(allowed_extensions=['.nii.gz', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.img', '.hdr', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '']))
+        self.add_trait('output_t1mri', File(allowed_extensions=['.nii.gz', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.img', '.hdr', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', ''], output=True))
         self.add_trait('transformation', File(allowed_extensions=['.trm']))
         self.add_trait('commissures_coordinates', File(allowed_extensions=['.APC'], optional=True))
         self.add_trait('allow_flip_initial_MRI', Bool())
