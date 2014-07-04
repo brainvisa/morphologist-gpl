@@ -7,144 +7,7 @@ class CustomMorphologist(morphologist.capsul.morphologist.morphologist):
     def __init__(self, autoexport_nodes_parameters=True, **kwargs):
         super(CustomMorphologist, self).__init__(
             autoexport_nodes_parameters, **kwargs)
-        #if autoexport_nodes_parameters:
-            #self.export_internal_parameters()
 
-        # temporary tuning - should be removed when the pipeline infrastructure
-        # is working properly...
-        #self.nodes[''].plugs['PrepareSubject_TalairachFromNormalization_source_referential'].activated = True
-        #self.nodes[''].plugs['PrepareSubject_TalairachFromNormalization_normalized_referential'].activated = True
-        #self.nodes[''].plugs['PrepareSubject_TalairachFromNormalization_transform_chain_ACPC_to_Normalized'].activated = True
-        #self.nodes[''].plugs['BiasCorrection_field'].activated = True
-        #self.nodes['BiasCorrection'].plugs['field'].activated = True
-        #self.nodes[''].plugs['BiasCorrection_hfiltered'].activated = True
-        #self.nodes['BiasCorrection'].plugs['hfiltered'].activated = True
-        #self.nodes[''].plugs['BiasCorrection_white_ridges'].activated = True
-        #self.nodes['BiasCorrection'].plugs['white_ridges'].activated = True
-        #self.nodes[''].plugs['BiasCorrection_variance'].activated = True
-        #self.nodes['BiasCorrection'].plugs['variance'].activated = True
-        #self.nodes[''].plugs['BiasCorrection_edges'].activated = True
-        #self.nodes['BiasCorrection'].plugs['edges'].activated = True
-        #self.nodes[''].plugs['BiasCorrection_meancurvature'].activated = True
-        #self.nodes['BiasCorrection'].plugs['meancurvature'].activated = True
-        ##self.nodes[''].plugs['PrepareSubject_commissure_coordinates'].activated = True
-        #self.nodes[''].plugs['HistoAnalysis_histo'].activated = True
-        #self.nodes['HistoAnalysis'].plugs['histo'].activated = True
-        #self.nodes[''].plugs['BrainSegmentation_brain_mask'].activated = True
-        #self.nodes[''].plugs['GreyWhiteClassification_grey_white'].activated = True
-        #self.nodes[''].plugs['GreyWhiteClassification_1_grey_white'].activated = True
-        #self.nodes[''].plugs['GreyWhiteTopology_hemi_cortex'].activated = True
-        #self.nodes[''].plugs['GreyWhiteTopology_1_hemi_cortex'].activated = True
-        #self.nodes[''].plugs['GreyWhiteMesh_white_mesh'].activated = True
-        #self.nodes[''].plugs['GreyWhiteMesh_1_white_mesh'].activated = True
-        #self.nodes[''].plugs['SulciSkeleton_skeleton'].activated = True
-        #self.nodes[''].plugs['SulciSkeleton_1_skeleton'].activated = True
-        #self.nodes[''].plugs['SulciSkeleton_roots'].activated = True
-        #self.nodes[''].plugs['SulciSkeleton_1_roots'].activated = True
-        #self.nodes[''].plugs['PialMesh_pial_mesh'].activated = True
-        #self.nodes[''].plugs['PialMesh_1_pial_mesh'].activated = True
-        #self.nodes[''].plugs['CorticalFoldsGraph_sulci_voronoi'].activated \
-            #= True
-        #self.nodes['CorticalFoldsGraph'].plugs['sulci_voronoi'].activated \
-            #= True
-        #self.nodes[''].plugs['CorticalFoldsGraph_1_sulci_voronoi'].activated \
-            #= True
-        #self.nodes['CorticalFoldsGraph_1'].plugs['sulci_voronoi'].activated \
-            #= True
-        #self.nodes['HeadMesh'].activated = True
-        #self.nodes[''].plugs['HeadMesh_head_mesh'].activated = True
-        #self.nodes['HeadMesh'].plugs['head_mesh'].activated = True
-        #self.nodes['HeadMesh'].plugs['t1mri_nobias'].activated = True
-        #self.nodes['HeadMesh'].plugs['histo_analysis'].activated = True
-        #self.nodes['HeadMesh'].plugs['keep_head_mask'].activated = True
-        #self.nodes['HeadMesh'].plugs['remove_mask'].activated = True
-        #self.nodes['HeadMesh'].plugs['first_slice'].activated = True
-        #self.nodes['HeadMesh'].plugs['threshold'].activated = True
-        #self.nodes['HeadMesh'].plugs['closing'].activated = True
-        #self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].\
-            #process.nodes['global_recognition'].\
-            #plugs['posterior_probabilities'].activated = True
-        #self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].\
-            #process.nodes['global_recognition'].\
-            #plugs['posterior_probabilities'].activated = True
-        #self.nodes['SulciRecognition'].process.nodes[''].plugs['SPAM_recognition09_global_recognition_posterior_probabilities'].activated = True
-        #self.nodes['SulciRecognition_1'].process.nodes[''].plugs['SPAM_recognition09_global_recognition_posterior_probabilities'].activated = True
-        #self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].plugs['global_recognition_posterior_probabilities'].activated = True
-        #self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].plugs['global_recognition_posterior_probabilities'].activated = True
-        #self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['global_recognition_posterior_probabilities'].activated = True
-        #self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['global_recognition_posterior_probabilities'].activated = True
-        #self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['global_recognition_model'].activated = True
-        #self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['global_recognition_model'].activated = True
-        #self.nodes['SulciRecognition'].process.nodes[''].plugs['SPAM_recognition09_global_recognition_model'].activated = True
-        #self.nodes['SulciRecognition_1'].process.nodes[''].plugs['SPAM_recognition09_global_recognition_model'].activated = True
-        #self.nodes['SulciRecognition'].process.nodes[''].plugs['SPAM_recognition09_global_recognition_labels_priors'].activated = True
-        #self.nodes['SulciRecognition_1'].process.nodes[''].plugs['SPAM_recognition09_global_recognition_labels_priors'].activated = True
-        #self.nodes['SulciRecognition'].process.nodes[''].plugs['SPAM_recognition09_global_recognition_output_transformation'].activated = True
-        #self.nodes['SulciRecognition_1'].process.nodes[''].plugs['SPAM_recognition09_global_recognition_output_transformation'].activated = True
-        #self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].plugs['global_recognition_output_transformation'].activated = True
-        #self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].plugs['global_recognition_output_transformation'].activated = True
-        #self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['global_recognition_output_transformation'].activated = True
-        #self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['global_recognition_output_transformation'].activated = True
-        #self.nodes['SulciRecognition'].process.nodes[''].plugs['SPAM_recognition09_global_recognition_output_t1_to_global_transformation'].activated = True
-        #self.nodes['SulciRecognition_1'].process.nodes[''].plugs['SPAM_recognition09_global_recognition_output_t1_to_global_transformation'].activated = True
-        #self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].plugs['global_recognition_output_t1_to_global_transformation'].activated = True
-        #self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].plugs['global_recognition_output_t1_to_global_transformation'].activated = True
-        #self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['global_recognition_output_t1_to_global_transformation'].activated = True
-        #self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['global_recognition_output_t1_to_global_transformation'].activated = True
-        #self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].process.nodes['global_recognition'].plugs['output_t1_to_global_transformation'].activated = True
-        #self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].process.nodes['global_recognition'].plugs['output_t1_to_global_transformation'].activated = True
-        #self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['local_recognition_model'].activated = True
-        #self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['local_recognition_model'].activated = True
-        #self.nodes['SulciRecognition'].process.nodes[''].plugs['SPAM_recognition09_local_recognition_model'].activated = True
-        #self.nodes['SulciRecognition_1'].process.nodes[''].plugs['SPAM_recognition09_local_recognition_model'].activated = True
-        #self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].\
-            #process.nodes['local_recognition'].\
-            #plugs['posterior_probabilities'].activated = True
-        #self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].\
-            #process.nodes['local_recognition'].\
-            #plugs['posterior_probabilities'].activated = True
-        #self.nodes['SulciRecognition'].process.nodes[''].plugs['SPAM_recognition09_local_recognition_posterior_probabilities'].activated = True
-        #self.nodes['SulciRecognition_1'].process.nodes[''].plugs['SPAM_recognition09_local_recognition_posterior_probabilities'].activated = True
-        #self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].plugs['local_recognition_posterior_probabilities'].activated = True
-        #self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].plugs['local_recognition_posterior_probabilities'].activated = True
-        #self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['local_recognition_posterior_probabilities'].activated = True
-        #self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['local_recognition_posterior_probabilities'].activated = True
-        #self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['local_recognition_local_referentials'].activated = True
-        #self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['local_recognition_local_referentials'].activated = True
-        #self.nodes['SulciRecognition'].process.nodes[''].plugs['SPAM_recognition09_local_recognition_local_referentials'].activated = True
-        #self.nodes['SulciRecognition_1'].process.nodes[''].plugs['SPAM_recognition09_local_recognition_local_referentials'].activated = True
-        #self.nodes['SulciRecognition'].process.nodes[''].plugs['SPAM_recognition09_local_recognition_direction_priors'].activated = True
-        #self.nodes['SulciRecognition_1'].process.nodes[''].plugs['SPAM_recognition09_local_recognition_direction_priors'].activated = True
-        #self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['local_recognition_direction_priors'].activated = True
-        #self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['local_recognition_direction_priors'].activated = True
-        #self.nodes['SulciRecognition'].process.nodes[''].plugs['SPAM_recognition09_local_recognition_angle_priors'].activated = True
-        #self.nodes['SulciRecognition_1'].process.nodes[''].plugs['SPAM_recognition09_local_recognition_angle_priors'].activated = True
-        #self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['local_recognition_angle_priors'].activated = True
-        #self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['local_recognition_angle_priors'].activated = True
-        #self.nodes['SulciRecognition'].process.nodes[''].plugs['SPAM_recognition09_local_recognition_translation_priors'].activated = True
-        #self.nodes['SulciRecognition_1'].process.nodes[''].plugs['SPAM_recognition09_local_recognition_translation_priors'].activated = True
-        #self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['local_recognition_translation_priors'].activated = True
-        #self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['local_recognition_translation_priors'].activated = True
-        #self.nodes['SulciRecognition'].process.nodes[''].plugs['SPAM_recognition09_local_recognition_output_local_transformations'].activated = True
-        #self.nodes['SulciRecognition_1'].process.nodes[''].plugs['SPAM_recognition09_local_recognition_output_local_transformations'].activated = True
-        #self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].plugs['local_recognition_output_local_transformations'].activated = True
-        #self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].plugs['local_recognition_output_local_transformations'].activated = True
-        #self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['local_recognition_output_local_transformations'].activated = True
-        #self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['local_recognition_output_local_transformations'].activated = True
-        #self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].process.nodes['local_recognition'].plugs['output_local_transformations'].activated = True
-        #self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].process.nodes['local_recognition'].plugs['output_local_transformations'].activated = True
-        #self.nodes['SulciRecognition'].process.nodes[''].plugs['SPAM_recognition09_markovian_recognition_model'].activated = True
-        #self.nodes['SulciRecognition_1'].process.nodes[''].plugs['SPAM_recognition09_markovian_recognition_model'].activated = True
-        #self.nodes['SulciRecognition'].process.nodes[''].plugs['SPAM_recognition09_markovian_recognition_segments_relations_model'].activated = True
-        #self.nodes['SulciRecognition_1'].process.nodes[''].plugs['SPAM_recognition09_markovian_recognition_segments_relations_model'].activated = True
-        #self.nodes['SulciRecognition'].process.nodes[''].plugs['SPAM_recognition09_markovian_recognition_posterior_probabilities'].activated = True
-        #self.nodes['SulciRecognition_1'].process.nodes[''].plugs['SPAM_recognition09_markovian_recognition_posterior_probabilities'].activated = True
-        #self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].plugs['markovian_recognition_posterior_probabilities'].activated = True
-        #self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].plugs['markovian_recognition_posterior_probabilities'].activated = True
-        #self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].process.nodes['markovian_recognition'].plugs['posterior_probabilities'].activated = True
-        #self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].process.nodes['markovian_recognition'].plugs['posterior_probabilities'].activated = True
-        #self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['markovian_recognition_posterior_probabilities'].activated = True
-        #self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'].process.nodes[''].plugs['markovian_recognition_posterior_probabilities'].activated = True
 
         # if this line is in pipeline_definition(), it has no effect...
         #self.GreyWhiteClassification_1_side = 'right'
@@ -232,6 +95,7 @@ class CustomMorphologist(morphologist.capsul.morphologist.morphologist):
         if autoexport_nodes_parameters:
             self.autoexport_nodes_parameters()
 
+        self.GreyWhiteClassification_side = 'left'
         self.GreyWhiteClassification_1_side = 'right'
 
         # nodes position in Pipeline*View
