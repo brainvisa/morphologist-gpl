@@ -337,7 +337,7 @@ class HistoAnalysisEditorWidget( QDialog ):
                 mode='linear_A_if_B_black', rate=0.5 )
             bb = self._mri_corrected.boundingbox()
             p = ( bb[0] + bb[1] ) / 2
-            awin.SetPosition( p, awin.getReferential() )
+            awin.setPosition( p, awin.getReferential() )
             self._fusion2d = fusion
 
     def _insert_text_editors( self, lwid ):
