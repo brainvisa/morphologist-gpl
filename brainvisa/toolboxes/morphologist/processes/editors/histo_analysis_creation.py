@@ -63,15 +63,15 @@ name = 'Create histo analysis manually'
 userLevel = 0
 
 signature = Signature(
-    'histo', WriteDiskItem( 'Histogram', 'Histogram' ),
     'mri_corrected', ReadDiskItem( 'T1 MRI bias corrected',
         'Anatomist volume formats' ),
+    'histo', WriteDiskItem( 'Histogram', 'Histogram' ),
     'histo_analysis', WriteDiskItem( 'Histo analysis', 'Histo Analysis' ),
 )
 
 
 def initialization( self ):
-    self.linkParameters('mri_corrected', 'histo')
+    self.linkParameters( 'histo', 'mri_corrected')
     self.linkParameters('histo_analysis', 'histo')
 
 
