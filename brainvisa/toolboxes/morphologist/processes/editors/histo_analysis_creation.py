@@ -63,7 +63,7 @@ name = 'Create histo analysis manually'
 userLevel = 0
 
 signature = Signature(
-    'histo', ReadDiskItem( 'Histogram', 'Histogram' ),
+    'histo', WriteDiskItem( 'Histogram', 'Histogram' ),
     'mri_corrected', ReadDiskItem( 'T1 MRI bias corrected',
         'Anatomist volume formats' ),
     'histo_analysis', WriteDiskItem( 'Histo analysis', 'Histo Analysis' ),
@@ -71,8 +71,8 @@ signature = Signature(
 
 
 def initialization( self ):
-    self.linkParameters( 'mri_corrected', 'histo' )
-    self.linkParameters( 'histo_analysis', 'histo' )
+    self.linkParameters('mri_corrected', 'histo')
+    self.linkParameters('histo_analysis', 'histo')
 
 
 def delInMainThread( lock, thing ):
@@ -88,12 +88,24 @@ def execution( self, context ):
         #histo_analysis=self.histo_analysis,
         #histo=self.histo,
         #mri_corrected=self.mri_corrected)
-    data = numpy.loadtxt(self.histo.fullPath(), dtype=int)
-    print 'data:', data
-    maxdata = data[-1, 0]
-    gmean = maxdata * 0.15
+    try:
+        data = numpy.loadtxt(self.histo.fullPath(), dtype=int)
+        maxdata = data[-1, 0]
+    except:
+        from soma import aims
+        mri = aims.read(self.mri_corrected.fullPath())
+        maxdata = numpy.max(mri)
+        mindata = numpy.min(mri)
+        his = aims.RegularBinnedHistogram_S16(int(maxdata - mindata))
+        hisdata = his.doit(mri)
+        data = numpy.zeros((his.bins(), 2), dtype=int)
+        data[:, 0] = numpy.arange(his.minDataValue(), his.maxDataValue(),
+            float(his.maxDataValue() - his.minDataValue()) / his.bins())
+        data[:, 1] = numpy.asarray(his.data().volume()).ravel()
+        numpy.savetxt(self.histo.fullPath(), data, fmt='%d')
+    gmean = maxdata * 0.2
     gsigma = maxdata * 0.02
-    wmean = maxdata * 0.3
+    wmean = maxdata * 0.35
     wsigma = maxdata * 0.02
     han = [ gmean, gsigma ], [ wmean, wsigma ]
     hdata = HistoData(self.histo.fullPath(),
