@@ -616,26 +616,46 @@ def load_histo_analysis( hanfile ):
     return [ gmean, gsigma ], [ wmean, wsigma ]
 
 
-def save_back_histo_analysis( hanfile, han ):
+def save_back_histo_analysis(hanfile, han):
     '''parse an existing histo analysis file (.han) and save back gray and
     white mean/std.
     Saves a backup file .han~
     '''
     lines = []
-    for l in open( hanfile ).xreadlines():
-        l = l.strip()
-        if l.startswith( 'gray:' ):
-            lines.append( 'gray: mean: %d sigma: %d' % \
-                ( int(round(han[0][0])), int(round(han[0][1])) ) )
-        elif l.startswith( 'white:' ):
-            lines.append( 'white: mean: %d sigma: %d' % \
-                ( int(round(han[1][0])), int(round(han[1][1])) ) )
-        else:
-            lines.append( l )
-    os.rename( hanfile, hanfile + '~' )
-    f = open( hanfile, 'w' )
+    try:
+        hanf = open(hanfile)
+    except IOError:
+        hanf = None
+    if hanf:
+        for l in hanf.xreadlines():
+            l = l.strip()
+            if l.startswith('gray:'):
+                lines.append('gray: mean: %d sigma: %d' % \
+                    (int(round(han[0][0])), int(round(han[0][1]))))
+            elif l.startswith('white:'):
+                lines.append('white: mean: %d sigma: %d' % \
+                    (int(round(han[1][0])), int(round(han[1][1]))))
+            else:
+                lines.append(l)
+        os.rename(hanfile, hanfile + '~')
+        hanf.close()
+    else:
+        lines = ['sequence: unknown',
+            'csf: mean: -1 sigma: -1',
+            'gray: mean: %d sigma: %d' \
+                % (int(round(han[0][0])), int(round(han[0][1]))),
+            'white: mean: %d sigma: %d' \
+                % (int(round(han[1][0])), int(round(han[1][1]))),
+            'candidate 0: mean: -1 sigma: -1',
+            'candidate 1: mean: -1 sigma: -1',
+            'candidate 2: mean: -1 sigma: -1',
+            'candidate 3: mean: -1 sigma: -1',
+            'candidate 4: mean: -1 sigma: -1',
+            'candidate 5: mean: -1 sigma: -1',
+            'undersampling: 8']
+    f = open(hanfile, 'w')
     for l in lines:
-        f.write( l + '\n' )
+        f.write(l + '\n')
 
 
 def load_histo_data( hanfile, hisfile=None ):
@@ -643,7 +663,8 @@ def load_histo_data( hanfile, hisfile=None ):
     HistoData object. If hisfile is not provided, it is deduced from hanfile.
     '''
     han = load_histo_analysis( hanfile )
-    hisfile = hanfile[ : -3 ] + 'his'
+    if hisfile is None:
+        hisfile = hanfile[ : -3 ] + 'his'
     data = numpy.loadtxt( hisfile, dtype=int )
     return HistoData( hisfile, hanfile, data, han )
 
