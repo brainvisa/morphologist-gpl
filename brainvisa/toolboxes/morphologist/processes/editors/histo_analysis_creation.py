@@ -71,7 +71,7 @@ signature = Signature(
 
 
 def initialization( self ):
-    self.linkParameters( 'histo', 'mri_corrected')
+    self.linkParameters('histo', 'mri_corrected')
     self.linkParameters('histo_analysis', 'histo')
 
 
