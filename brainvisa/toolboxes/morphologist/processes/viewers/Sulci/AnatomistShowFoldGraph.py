@@ -90,6 +90,7 @@ def execution( self, context ):
     a.execute( 'GraphDisplayProperties', objects=[graph],
       nomenclature_property=nomenclatureprop )
     selfdestroy.append( graph )
+    mesh = None
     if self.load_MRI == "Yes":
         if self.mri_corrected is not None:
             anat = a.loadObject( self.mri_corrected )
@@ -107,7 +108,7 @@ def execution( self, context ):
     win3.assignReferential( graphRef )
     selfdestroy.append( win3 )
     win3.addObjects( [graph], add_graph_nodes=True )
-    if self.hemi_mesh is not None:
+    if mesh is not None:
         win3.addObjects( [mesh] )
         if self.two_windows == "Yes":
             win2 = a.createWindow( '3D' )
