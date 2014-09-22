@@ -167,7 +167,7 @@ def execution( self, context ):
             ar[ ar == v ] = 0
         #context.write( 'comps:', comps )
         # distance between connected components
-        #fm = aims.FastMarching( True )
+        #fm = aims.FastMarching( '26', True )
         #dist = fm.doit( vol, [ 0 ], comps )
         #lab = fm.midInterfaceLabels()
         #context.write( 'lab:', lab )
