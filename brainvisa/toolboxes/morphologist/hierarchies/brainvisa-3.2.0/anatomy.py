@@ -38,6 +38,21 @@ import registration
 include( 'registration' )
 include( '3DT1_spm' )
 
+snap_pialmesh_content = (
+    "snapshot_left_pialmesh_{subject}_{acquisition}", SetType( 'Left Snapshot Pial Mesh'), SetWeakAttr( 'side', 'left' ),
+    "snapshot_right_pialmesh_{subject}_{acquisition}", SetType( 'Right Snapshot Pial Mesh'), SetWeakAttr( 'side', 'right' ),
+)
+snap_sulci_content = (
+    "snapshot_left_sulci_{subject}_{acquisition}", SetType( 'Left Snapshot Sulci'), SetWeakAttr( 'side', 'left' ),
+    "snapshot_right_sulci_{subject}_{acquisition}", SetType( 'Right Snapshot Sulci'), SetWeakAttr( 'side', 'right' ),
+)
+snap_whitemesh_content = (
+    "snapshot_left_whitemesh_{subject}_{acquisition}", SetType( 'Left Snapshot White Mesh'), SetWeakAttr( 'side', 'left' ),
+    "snapshot_right_whitemesh_{subject}_{acquisition}", SetType( 'Right Snapshot White Mesh'), SetWeakAttr( 'side', 'right' ),
+)
+
+
+
 mesh_content = (
     "<subject>_brain", SetType( 'Brain Mesh' ), SetWeakAttr( 'side', 'both' ),
     "<subject>_Lhemi", SetType( 'Left Hemisphere Mesh' ), SetWeakAttr( 'side', 'left' ), SetPriorityOffset( +1 ),
@@ -161,6 +176,45 @@ t1mri_acq_content = (
 apply( insert, ( '{center}/{subject}/t1mri/{acquisition}', ) + \
   t1mri_acq_content,
 )
+
+# snapshots snapbase
+
+insert('snapshots/morphologist/greywhite',
+  "snapshot_greywhite_{subject}_{acquisition}", SetType( 'Snapshot Grey White')
+)
+
+insert('snapshots/morphologist/splitbrain',
+  "snapshot_splitbrain_{subject}_{acquisition}", SetType( 'Snapshot Split Brain')
+)
+
+insert('snapshots/morphologist/meshcut',
+    "snapshot_meshcut_{subject}_{acquisition}", SetType( 'Snapshot Meshcut')
+)
+
+insert('snapshots/morphologist/brainmask',
+    "snapshot_brainmask_{subject}_{acquisition}", SetType( 'Snapshot Brain Mask')
+)
+
+insert('snapshots/morphologist/raw',
+    "snapshot_raw_{subject}_{acquisition}", SetType( 'Snapshot Raw T1')
+)
+
+insert('snapshots/morphologist/tablet',
+    "snapshot_tablet_{subject}_{acquisition}", SetType( 'Snapshot Tablet Raw T1')
+)
+
+apply( insert, ('snapshots/morphologist/pialmesh', ) + \
+  snap_pialmesh_content,
+)
+
+apply( insert, ('snapshots/morphologist/sulci', ) + \
+  snap_sulci_content,
+)
+
+apply( insert, ('snapshots/morphologist/whitemesh', ) + \
+  snap_whitemesh_content,
+)
+
 
 #----------------- Registration -------------------------
 

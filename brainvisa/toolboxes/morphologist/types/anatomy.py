@@ -192,3 +192,18 @@ FileType( 'anatomical Mask Template', '3D Volume')
 #----------- Obsololete registration ----------------------
 
 FileType( 'MINC transformation matrix', 'Any Type', 'MINC transformation matrix' )
+
+#----------- Snapshots with snapbase ----------------------
+
+FileType('Snapshot Grey White', '2D Image', 'PNG image')
+FileType('Snapshot Split Brain', '2D Image', 'PNG image')
+FileType('Snapshot Meshcut', '2D Image', 'PNG image')
+FileType('Left Snapshot Pial Mesh', '2D Image', 'PNG image')
+FileType('Right Snapshot Pial Mesh', '2D Image', 'PNG image')
+FileType('Left Snapshot Sulci', '2D Image', 'PNG image')
+FileType('Right Snapshot Sulci', '2D Image', 'PNG image')
+FileType('Left Snapshot White Mesh', '2D Image', 'PNG image')
+FileType('Right Snapshot White Mesh', '2D Image', 'PNG image')
+FileType('Snapshot Brain Mask', '2D Image', 'PNG image')
+FileType('Snapshot Raw T1', '2D Image', 'PNG image')
+FileType('Snapshot Tablet Raw T1', '2D Image', 'PNG image')
