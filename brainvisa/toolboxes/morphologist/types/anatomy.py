@@ -107,6 +107,10 @@ FileType( 'Brain Mesh', 'Mesh' )
 FileType( 'Hemisphere Hull Mesh', 'Mesh' )
 FileType( 'Brain Hull Mesh', 'Mesh' )
 FileType( 'MNI Cortex Mesh', 'Mesh' )
+# resampled mesh with a point-to-point correspondence across subject
+FileType("Resampled Hemisphere White Mesh", "Hemisphere White Mesh")
+#FileType("Template Hemisphere Spherical Mesh", "Spherical Mesh")
+
 FileType( 'Histogram', 'Any Type', 'Histogram' )
 FileType( 'Histo Analysis', 'Text File', 'Histo Analysis' )
 FileType( 'Moment Vector', 'Any Type', 'Moment Vector' )
@@ -129,6 +133,8 @@ FileType( 'Blob White Depth Texture', 'Label Texture' )
 FileType( 'Scale Space Texture', 'Texture')
 FileType( 'Scale Space White Curvature Texture', 'Scale Space Texture' )
 FileType( 'Scale Space White Depth Texture', 'Scale Space Texture' )
+
+FileType("Resampled Hemisphere Gyri Texture", "Label Texture")
 
 FileType( 'MRI Ext Edge Image',    '3D Volume' )
 FileType( 'Central Nuclei Template', '4D Volume' )

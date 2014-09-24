@@ -73,6 +73,15 @@ mesh_content = (
     "<subject>_Lconformal", SetType( 'Conformal White Mesh' ), SetWeakAttr( 'side', 'left' ),
     "<subject>_Rconformal", SetType( 'Conformal White Mesh' ), SetWeakAttr( 'side', 'right' ),
     "cortex_<subject>_mni", SetType( 'MNI Cortex Mesh' ), SetWeakAttr( 'side', 'both' ), ## utilise en lecture seulement
+    "<subject>_Lwhite_resampled", SetType("Resampled Hemisphere White Mesh"), SetWeakAttr( 'side', 'left' ),
+    "<subject>_Rwhite_resampled", SetType("Resampled Hemisphere White Mesh"), SetWeakAttr( 'side', 'right' ),
+    "<subject>_Bwhite_resampled", SetType("Resampled Hemisphere White Mesh"), SetWeakAttr( 'side', 'both' ),
+
+    "<subject>_Lwhite_sphere", SetType("Spherical Mesh"), SetWeakAttr( 'side', 'left' ),
+    "<subject>_Rwhite_sphere", SetType("Spherical Mesh"), SetWeakAttr( 'side', 'right' ),
+
+#    "template_spherical_Lwhite", SetType("Template Hemisphere Spherical Mesh"), SetWeakAttr( 'side', 'left' ),
+#    "template_spherical_Rwhite", SetType("Template Hemisphere Spherical Mesh"), SetWeakAttr( 'side', 'right' ),
     "*", SetType( 'Mesh'),
 )
 
@@ -96,6 +105,9 @@ segmentation_content = (
     "<subject>_Rwhite_curv", SetType( 'White Curvature Texture' ), SetWeakAttr( 'side', 'right' ),
     "<subject>_Lwhite_depth", SetType( 'White Depth Texture' ), SetWeakAttr( 'side', 'left' ),
     "<subject>_Rwhite_depth", SetType( 'White Depth Texture' ), SetWeakAttr( 'side', 'right' ),
+    "<subject>_Lgyri_resampled", SetType("Resampled Hemisphere Gyri Texture"), SetWeakAttr("side", "left"),
+    "<subject>_Rgyri_resampled", SetType("Resampled Hemisphere Gyri Texture"), SetWeakAttr("side", "right"),
+    "<subject>_Bgyri_resampled", SetType("Resampled Hemisphere Gyri Texture"), SetWeakAttr("side", "both"),
     "Lgw_interface_<subject>", SetType( 'Grey White Mid-Interface Volume' ),
     SetWeakAttr( 'side', 'left' ),
     "Rgw_interface_<subject>", SetType( 'Grey White Mid-Interface Volume' ),
