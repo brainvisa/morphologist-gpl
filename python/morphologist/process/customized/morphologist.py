@@ -22,6 +22,11 @@ class CustomMorphologist(morphologist.capsul.morphologist.morphologist):
             ['StandardACPC', 'Normalization'],
             ['Talairach_transform'])
 
+        self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes['Normalization_AimsMIRegister'].process.user_traits()['transformation_to_MNI'].optional = False
+        self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes['Normalization_AimsMIRegister'].process.user_traits()['normalized_anatomy_data'].optional = False
+        self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes['Normalization_AimsMIRegister'].plugs['transformation_to_MNI'].optional = False
+        self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes['Normalization_AimsMIRegister'].plugs['normalized_anatomy_data'].optional = False
+
         # export output parameter
         self.export_parameter('select_Talairach', 'Talairach_transform',
             'Talairach_transform')
