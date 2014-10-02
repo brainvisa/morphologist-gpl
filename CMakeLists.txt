@@ -28,6 +28,7 @@ BRAINVISA_COPY_DIRECTORY( "${CMAKE_CURRENT_SOURCE_DIR}/doc"
                           ${PROJECT_NAME}-usrdoc )
 
 add_test(morphologist-tests "${CMAKE_BINARY_DIR}/bin/bv_env" "${PYTHON_EXECUTABLE}" -m brainvisa.tests.test_morphologist)
+add_test(morphologist-tests "${CMAKE_BINARY_DIR}/bin/bv_env" "${PYTHON_EXECUTABLE}" -m morphologist.tests.test_morphologist_capsul)
 
 BRAINVISA_CREATE_CMAKE_CONFIG_FILES()
 

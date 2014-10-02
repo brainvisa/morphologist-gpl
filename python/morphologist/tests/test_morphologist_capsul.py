@@ -56,6 +56,8 @@ class TestMorphologistCapsul(unittest.TestCase):
             "spm_directory" : "/i2bm/local/spm8-standalone",
             "use_soma_workflow" : True,
             "use_fom" : True,
+            "volumes_format" : "NIFTI",
+            "meshes_format" : "GIFTI",
         }
 
         soma_app = Application('soma.fom', '1.0')
@@ -66,9 +68,21 @@ class TestMorphologistCapsul(unittest.TestCase):
         study_config.set_study_configuration(init_study_config)
         FomConfig.check_and_update_foms(study_config)
         mp = CustomMorphologist()
-        mp.nodes_activation.SulciRecognition = True
-        mp.nodes_activation.SulciRecognition_1 = True
+        #mp.nodes_activation.SulciRecognition = True
+        #mp.nodes_activation.SulciRecognition_1 = True
+        # until reference test is run/compared with graphs
+        mp.nodes_activation.CorticalFoldsGraph = False
+        mp.nodes_activation.CorticalFoldsGraph_1 = False
+        mp.nodes_activation.SulciRecognition = False
+        mp.nodes_activation.SulciRecognition_1 = False
+        mp.select_Talairach = 'StandardACPC'
         mp.fix_random_seed = True
+        ac = [114.864585876, 118.197914124, 88.7999954224]
+        pc = [116.197914124, 147.53125, 91.1999969482]
+        ip = [118.197914124, 99.53125, 45.6000061035]
+        mp.anterior_commissure = ac
+        mp.posterior_commissure = pc
+        mp.interhemispheric_point = ip
         pf = process_with_fom.ProcessWithFom(mp, study_config)
         pf.attributes['center'] = 'test'
         pf.attributes['subject'] = 'sujet01'
@@ -89,19 +103,25 @@ class TestMorphologistCapsul(unittest.TestCase):
 
         self.import_data()
 
+        import pickle
+        pickle.dump(wf, open('/tmp/morpho.wf', 'w'))
         controller = swclient.WorkflowController()
-        print 'submit WF...'
         wf_id = controller.submit_workflow(wf)
-        print 'running...'
+        print 'running Morphologist...'
         swclient.Helper.wait_workflow(wf_id, controller)
         print 'finished.'
         self.workflow_status = controller.workflow_status(wf_id)
-        print 'status:', self.workflow_status
+        elements_status = controller.workflow_elements_status(wf_id)
+        self.failed_jobs = [element for element in elements_status[0] \
+            if element[1] != swconstants.DONE \
+                or element[3][0] != swconstants.FINISHED_REGULARLY]
         controller.delete_workflow(wf_id)
 
     def test_pipeline_results(self):
         self.assertTrue(self.workflow_status == swconstants.WORKFLOW_DONE,
             'Workflow did not finish regularly: %s' % self.workflow_status)
+        self.assertTrue(len(self.failed_jobs) == 0,
+            'Morphologist jobs failed')
 
         ref_dir = os.path.join(self.input_dir, 'test')
         test_dir = os.path.join(
@@ -110,7 +130,8 @@ class TestMorphologistCapsul(unittest.TestCase):
           for f in filenames:
             if not f.endswith(".minf"):
               f_ref = os.path.join(dirpath, f)
-              f_test = os.path.join(test_dir, relative_path(dirpath, ref_dir), f)
+              f_test = os.path.join(test_dir, relative_path(dirpath, ref_dir),
+                                    f)
               self.assertTrue(filecmp.cmp(f_ref, f_test),
                   "The content of "+f+" in test is different from the reference results.")
 
