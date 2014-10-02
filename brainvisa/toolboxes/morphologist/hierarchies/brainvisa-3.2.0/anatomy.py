@@ -67,9 +67,9 @@ mesh_content = (
     "<subject>_Lhemi_hull", SetType( 'Hemisphere Hull Mesh' ), SetWeakAttr( 'side', 'left' ),
     "<subject>_Rhemi_hull", SetType( 'Hemisphere Hull Mesh' ), SetWeakAttr( 'side', 'right' ),
     "<subject>_Bhemi_hull", SetType( 'Hemisphere Hull Mesh' ), SetWeakAttr( 'side', 'both' ),
-    "<subject>_brain_hull", SetType( 'Brain Hull Mesh' ), SetWeakAttr( 'side', 'both' ), 
+    "<subject>_brain_hull", SetType( 'Brain Hull Mesh' ), SetWeakAttr( 'side', 'both' ),
     "<subject>_Lmedian", SetType( 'Median Mesh' ), SetWeakAttr( 'side', 'left' ),
-    "<subject>_Rmedian", SetType( 'Median Mesh' ), SetWeakAttr( 'side', 'right' ), 
+    "<subject>_Rmedian", SetType( 'Median Mesh' ), SetWeakAttr( 'side', 'right' ),
     "<subject>_Lconformal", SetType( 'Conformal White Mesh' ), SetWeakAttr( 'side', 'left' ),
     "<subject>_Rconformal", SetType( 'Conformal White Mesh' ), SetWeakAttr( 'side', 'right' ),
     "cortex_<subject>_mni", SetType( 'MNI Cortex Mesh' ), SetWeakAttr( 'side', 'both' ), ## utilise en lecture seulement
@@ -213,6 +213,10 @@ insert('snapshots/morphologist/raw',
 
 insert('snapshots/morphologist/tablet',
     "snapshot_tablet_{subject}_{acquisition}", SetType( 'Snapshot Tablet Raw T1')
+)
+
+insert('snapshots',
+    "qc_{snapshot_type}", SetType( 'Snapshots Quality Scores')
 )
 
 apply( insert, ('snapshots/morphologist/pialmesh', ) + \
