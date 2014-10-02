@@ -57,14 +57,14 @@ class TestMorphologistCapsulPerf(unittest.TestCase):
         morpho_list1 = [CustomMorphologist() for i in xrange(10)]
         t1 = time.clock()
         print 'time to instantiate 10 Morphologist pipelines: %f' % (t1 - t0)
-        nmorpho = 100
+        nmorpho = 200
         t0 = time.clock()
         mpick = cPickle.dumps(mp)
         self.morpho_list = [cPickle.loads(mpick) for i in xrange(nmorpho)]
         t1 = time.clock()
         print 'time to duplicate %d Morphologist pipelines: %f' \
             % (nmorpho, t1 - t0)
-        dur += t1 - t0
+        #dur += t1 - t0
 
         t0 = time.clock()
         pf = process_with_fom.ProcessWithFom(self.morpho, self.study_config)
