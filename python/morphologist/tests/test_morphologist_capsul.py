@@ -103,8 +103,6 @@ class TestMorphologistCapsul(unittest.TestCase):
 
         self.import_data()
 
-        import pickle
-        pickle.dump(wf, open('/tmp/morpho.wf', 'w'))
         controller = swclient.WorkflowController()
         wf_id = controller.submit_workflow(wf)
         print 'running Morphologist...'
