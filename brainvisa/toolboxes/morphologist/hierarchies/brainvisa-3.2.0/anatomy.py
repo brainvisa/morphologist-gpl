@@ -39,16 +39,16 @@ include( 'registration' )
 include( '3DT1_spm' )
 
 snap_pialmesh_content = (
-    "snapshot_left_pialmesh_{subject}_{acquisition}", SetType( 'Left Snapshot Pial Mesh'), SetWeakAttr( 'side', 'left' ),
-    "snapshot_right_pialmesh_{subject}_{acquisition}", SetType( 'Right Snapshot Pial Mesh'), SetWeakAttr( 'side', 'right' ),
+    "snapshot_left_pialmesh_{subject}_{acquisition}", SetType( 'Left Snapshot Morphologist Pial Mesh'), SetWeakAttr( 'side', 'left' ),
+    "snapshot_right_pialmesh_{subject}_{acquisition}", SetType( 'Right Snapshot Morphologist Pial Mesh'), SetWeakAttr( 'side', 'right' ),
 )
 snap_sulci_content = (
-    "snapshot_left_sulci_{subject}_{acquisition}", SetType( 'Left Snapshot Sulci'), SetWeakAttr( 'side', 'left' ),
-    "snapshot_right_sulci_{subject}_{acquisition}", SetType( 'Right Snapshot Sulci'), SetWeakAttr( 'side', 'right' ),
+    "snapshot_left_sulci_{subject}_{acquisition}", SetType( 'Left Snapshot Morphologist Sulci'), SetWeakAttr( 'side', 'left' ),
+    "snapshot_right_sulci_{subject}_{acquisition}", SetType( 'Right Snapshot Morphologist Sulci'), SetWeakAttr( 'side', 'right' ),
 )
 snap_whitemesh_content = (
-    "snapshot_left_whitemesh_{subject}_{acquisition}", SetType( 'Left Snapshot White Mesh'), SetWeakAttr( 'side', 'left' ),
-    "snapshot_right_whitemesh_{subject}_{acquisition}", SetType( 'Right Snapshot White Mesh'), SetWeakAttr( 'side', 'right' ),
+    "snapshot_left_whitemesh_{subject}_{acquisition}", SetType( 'Left Snapshot Morphologist White Mesh'), SetWeakAttr( 'side', 'left' ),
+    "snapshot_right_whitemesh_{subject}_{acquisition}", SetType( 'Right Snapshot Morphologist White Mesh'), SetWeakAttr( 'side', 'right' ),
 )
 
 
@@ -189,34 +189,29 @@ apply( insert, ( '{center}/{subject}/t1mri/{acquisition}', ) + \
   t1mri_acq_content,
 )
 
-# snapshots snapbase
-
+# snapshots snapbase morphologist
 insert('snapshots/morphologist/greywhite',
-  "snapshot_greywhite_{subject}_{acquisition}", SetType( 'Snapshot Grey White')
+  "snapshot_greywhite_{subject}_{acquisition}", SetType( 'Snapshot Morphologist Grey White')
 )
 
 insert('snapshots/morphologist/splitbrain',
-  "snapshot_splitbrain_{subject}_{acquisition}", SetType( 'Snapshot Split Brain')
+  "snapshot_splitbrain_{subject}_{acquisition}", SetType( 'Snapshot Morphologist Split Brain')
 )
 
 insert('snapshots/morphologist/meshcut',
-    "snapshot_meshcut_{subject}_{acquisition}", SetType( 'Snapshot Meshcut')
+    "snapshot_meshcut_{subject}_{acquisition}", SetType( 'Snapshot Morphologist Meshcut')
 )
 
 insert('snapshots/morphologist/brainmask',
-    "snapshot_brainmask_{subject}_{acquisition}", SetType( 'Snapshot Brain Mask')
+    "snapshot_brainmask_{subject}_{acquisition}", SetType( 'Snapshot Morphologist Brain Mask')
 )
 
 insert('snapshots/morphologist/raw',
-    "snapshot_raw_{subject}_{acquisition}", SetType( 'Snapshot Raw T1')
+    "snapshot_raw_{subject}_{acquisition}", SetType( 'Snapshot Morphologist Raw T1')
 )
 
 insert('snapshots/morphologist/tablet',
-    "snapshot_tablet_{subject}_{acquisition}", SetType( 'Snapshot Tablet Raw T1')
-)
-
-insert('snapshots',
-    "qc_{snapshot_type}", SetType( 'Snapshots Quality Scores')
+    "snapshot_tablet_{subject}_{acquisition}", SetType( 'Snapshot Morphologist Tablet Raw T1')
 )
 
 apply( insert, ('snapshots/morphologist/pialmesh', ) + \
@@ -231,6 +226,50 @@ apply( insert, ('snapshots/morphologist/whitemesh', ) + \
   snap_whitemesh_content,
 )
 
+# snapbase qc morphologist
+insert('snapshots/morphologist/greywhite',
+    "qc_greywhite", SetType( 'Snapshots Morphologist Grey White Quality Scores')
+)
+insert('snapshots/morphologist/splitbrain',
+    "qc_splitbrain", SetType( 'Snapshots Morphologist Split Brain Quality Scores')
+)
+insert('snapshots/morphologist/meshcut',
+    "qc_meshcut", SetType( 'Snapshots Morphologist Meshcut Quality Scores')
+)
+insert('snapshots/morphologist/pialmesh',
+    "qc_pialmesh", SetType( 'Snapshots Morphologist Pial Mesh Quality Scores')
+)
+insert('snapshots/morphologist/sulci',
+    "qc_sulci", SetType( 'Snapshots Morphologist Sulci Quality Scores')
+)
+insert('snapshots/morphologist/whitemesh',
+    "qc_whitemesh", SetType( 'Snapshots Morphologist White Mesh Quality Scores')
+)
+
+# snapshots snapbase spm
+insert('snapshots/spm/whiteMatter',
+  "snapshot_spm8_white_{subject}_{acquisition}", SetType('Snapshot SPM White Matter')
+)
+insert('snapshots/spm/greyMatter',
+  "snapshot_spm8_grey_{subject}_{acquisition}", SetType('Snapshot SPM Grey Matter')
+)
+insert('snapshots/spm/csf',
+  "snapshot_spm8_csf_{subject}_{acquisition}", SetType('Snapshot SPM CSF')
+)
+
+# snapbase qc spm
+insert('snapshots/spm',
+    "qc_spm", SetType( 'Snapshots SPM Quality Scores')
+)
+
+#snapshots snapbase freesurfer
+insert('snapshots/freesurfer/greywhite',
+  "snapshot_freesurfer_greywhite_{subject}_{acquisition}", SetType( 'Snapshot Freesurfer Grey White')
+)
+#snapshots qc freesurfer
+insert('snapshots/freesurfer/greywhite',
+    "qc_greywhite", SetType( 'Snapshots Freesurfer Grey White Quality Scores')
+)
 
 #----------------- Registration -------------------------
 
