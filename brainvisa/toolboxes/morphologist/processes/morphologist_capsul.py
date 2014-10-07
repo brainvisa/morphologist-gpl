@@ -9,7 +9,7 @@ signature = Signature(
     'analysis', ListOf(String()),
     'transfer_inputs', Boolean(),
     'transfer_outputs', Boolean(),
-    'workflow', WriteDiskItem('Text File', 'Text file'),
+    'workflow', WriteDiskItem('Text File', 'Soma-Workflow workflow'),
 )
 
 
@@ -20,9 +20,7 @@ def initialization(self):
 
 
 def execution(self, context):
-    import json
-    import sys
-    import cPickle
+    import time
     from soma.application import Application
     from capsul.study_config.config_modules.fom_config import FomConfig
     from capsul.study_config.study_config import StudyConfig
@@ -30,6 +28,7 @@ def execution(self, context):
     from capsul.process import process_with_fom
     from soma_workflow import client as swclient
     from soma.wip.application.api import Application as Appli2
+    import numpy as np
 
     soma_app = Application('soma.fom', '1.0')
     soma_app.plugin_modules.append('soma.fom')
@@ -49,18 +48,36 @@ def execution(self, context):
         "meshes_format" : "GIFTI",
     }
 
+    axon_to_capsul_formats = {
+        'NIFTI-1 image': "NIFTI",
+        'gz compressed NIFTI-1 image': "NIFTI gz",
+        'GIS image': "GIS",
+        'MINC image': "MINC",
+        'SPM image': "SPM",
+        'GIFTI file': "GIFTI",
+        'MESH mesh': "MESH",
+        'PLY mesh': "PLY",
+        'siRelax Fold Energy': "Energy",
+    }
+
     study_config = StudyConfig(
         modules=StudyConfig.default_modules + [FomConfig])
     study_config.set_study_configuration(init_study_config)
+
+    # formats have to be handled sorted since
+    # FomConfig.check_and_update_foms(study_config) needs to be called
+    # for a specific format
+    formats = [axon_to_capsul_formats.get(
+        t1_mri.format.name, t1_mri.format.name) for t1_mri in self.t1_mri]
+    sorted_items = np.argsort(formats)
+    old_format = formats[sorted_items[0]]
+    study_config.volumes_format = old_format
+
     FomConfig.check_and_update_foms(study_config)
     mp = CustomMorphologist()
     mp.nodes_activation.SulciRecognition = True
     mp.nodes_activation.SulciRecognition_1 = True
     pf = process_with_fom.ProcessWithFom(mp, study_config)
-    pf.attributes['center'] = self.t1_mri[0]['center']
-    pf.attributes['subject'] = self.t1_mri[0]['subject']
-    pf.attributes['acquisition'] = self.t1_mri[0]['acquisition']
-    pf.attributes['analysis'] = self.analysis[0]
 
     # workflow config
     from capsul.pipeline import pipeline_workflow
@@ -73,7 +90,11 @@ def execution(self, context):
     workflow = swclient.Workflow(name='Morphologist CAPSUL iteration', jobs=[])
     workflow.root_group = []
 
-    for i, t1_mri in enumerate(self.t1_mri):
+    context.progress(0, len(self.t1_mri), process=self)
+    for item in xrange(len(self.t1_mri)):
+        i = sorted_items[item]
+        t1_mri = self.t1_mri[i]
+        format = formats[i]
         study_config.input_directory = t1_mri['_database']
         study_config.output_directory = t1_mri['_database']
         pf.attributes['center'] = t1_mri['center']
@@ -83,6 +104,14 @@ def execution(self, context):
         if len(self.analysis) <= j:
             j = -1
         pf.attributes['analysis'] = self.analysis[j]
+        # handle input format
+        if format != old_format:
+            # need to reconfigure FOMs for this new format
+            study_config.volumes_format = format
+            old_format = format
+            FomConfig.check_and_update_foms(study_config)
+        format = axon_to_capsul_formats.get(t1_mri.format.name,
+                                            t1_mri.format.name)
         pf.create_completion()
 
         transfers = []
@@ -109,57 +138,8 @@ def execution(self, context):
                                name='Morphologist iter %i' % i)
         workflow.root_group.append(group) # += wf.root_group
         workflow.groups += [group] + wf.groups
-
-# ----
-    #pf.study_config = None
-    ##mpick = cPickle.dumps(pf)
-    ## WARNING: traits cannot be properly pickled.
-
-    #context.write('duplicating processes...')
-    ##procs = [pf] + [cPickle.loads(mpick) for i in xrange(len(self.t1_mri) - 1)]
-    #mprocs = [CustomMorphologist() for i in xrange(len(self.t1_mri) - 1)]
-    #procs = [pf] + [process_with_fom.ProcessWithFom(mp, study_config) \
-                    #for mp in mprocs]
-
-    #context.write('configuring processes...')
-    #for i, proc in enumerate(procs):
-        #proc.study_config = study_config
-        #study_config.input_directory = self.t1_mri[i]['_database']
-        #study_config.output_directory = self.t1_mri[i]['_database']
-        #proc.attributes['center'] = self.t1_mri[i]['center']
-        #proc.attributes['subject'] = self.t1_mri[i]['subject']
-        #proc.attributes['acquisition'] = self.t1_mri[i]['acquisition']
-        #j = i
-        #if len(self.analysis) <= j:
-            #j = -1
-        #proc.attributes['analysis'] = self.analysis[j]
-        #proc.create_completion()
-
-        #if self.transfer_inputs \
-                #and study_config.input_directory not in transfers:
-            #transfers.append(study_config.input_directory)
-        #if self.transfer_outputs \
-                    #and study_config.output_directory not in transfers:
-            #transfers.append(study_config.output_directory)
-
-    #if len(transfers) != 0:
-        #study_config.somaworkflow_computing_resources_config['localhost']\
-            #['transfer_paths'] = transfers
-
-    #context.write('creating workflows...')
-    #workflow = swclient.Workflow(name='Morphologist CAPSUL iteration', jobs=[])
-    #for proc in procs:
-        #print 'proc:', proc.process
-        #print 'pnode:', proc.process.pipeline_node
-        #print 'has plugs:', hasattr(proc.process.pipeline_node, 'plugs')
-        #wf = pipeline_workflow.workflow_from_pipeline(
-            #proc.process, study_config=study_config)
-        #workflow.jobs += wf.jobs
-        #workflow.dependencies += wf.dependencies
-        #workflow.root_group += wf.root_group
-        #workflow.groups += wf.groups
+        context.progress(item+1, len(self.t1_mri), process=self)
 
     context.write('jobs:', len(workflow.jobs))
-    pickle.dump(workflow, open(self.workflow.fullPath(), 'w'))
-    #swclient.Helper.serialize(self.workflow.fullPath(), workflow)
+    swclient.Helper.serialize(self.workflow.fullPath(), workflow)
 
