@@ -35,19 +35,6 @@ def execution(self, context):
     soma_app.initialize()
     configuration = Appli2().configuration
 
-    init_study_config = {
-        "input_directory" : self.t1_mri[0]['_database'],
-        "output_directory" : self.t1_mri[0]['_database'],
-        "input_fom" : "morphologist-auto-1.0",
-        "output_fom" : "morphologist-auto-1.0",
-        "shared_fom" : "shared-brainvisa-1.0",
-        "spm_directory" : configuration.SPM.spm8_standalone_path,
-        "use_soma_workflow" : True,
-        "use_fom" : True,
-        "volumes_format" : "NIFTI gz",
-        "meshes_format" : "GIFTI",
-    }
-
     axon_to_capsul_formats = {
         'NIFTI-1 image': "NIFTI",
         'gz compressed NIFTI-1 image': "NIFTI gz",
@@ -60,18 +47,38 @@ def execution(self, context):
         'siRelax Fold Energy': "Energy",
     }
 
+    # dirs and formats have to be handled sorted since
+    # FomConfig.check_and_update_foms(study_config) needs to be called
+    # for a specific dir / format
+    formats = [axon_to_capsul_formats.get(
+        t1_mri.format.name, t1_mri.format.name) for t1_mri in self.t1_mri]
+    aformats = np.array(formats)
+    dirs = np.array([t1_mri['_database'] for t1_mri in self.t1_mri])
+    items_order = np.argsort(dirs)
+    sorted_items = []
+    for d in sorted(np.unique(dirs)):
+        sub_items = np.where(dirs == d)[0]
+        sorted_items += list(sub_items[np.argsort(aformats[sub_items])])
+
+    old_database = self.t1_mri[sorted_items[0]]['_database']
+    old_format = formats[sorted_items[0]]
+
+    init_study_config = {
+        "input_directory" : old_database,
+        "output_directory" : old_database,
+        "input_fom" : "morphologist-auto-1.0",
+        "output_fom" : "morphologist-auto-1.0",
+        "shared_fom" : "shared-brainvisa-1.0",
+        "spm_directory" : configuration.SPM.spm8_standalone_path,
+        "use_soma_workflow" : True,
+        "use_fom" : True,
+        "volumes_format" : old_format,
+        "meshes_format" : "GIFTI",
+    }
+
     study_config = StudyConfig(
         modules=StudyConfig.default_modules + [FomConfig])
     study_config.set_study_configuration(init_study_config)
-
-    # formats have to be handled sorted since
-    # FomConfig.check_and_update_foms(study_config) needs to be called
-    # for a specific format
-    formats = [axon_to_capsul_formats.get(
-        t1_mri.format.name, t1_mri.format.name) for t1_mri in self.t1_mri]
-    sorted_items = np.argsort(formats)
-    old_format = formats[sorted_items[0]]
-    study_config.volumes_format = old_format
 
     FomConfig.check_and_update_foms(study_config)
     mp = CustomMorphologist()
@@ -95,8 +102,7 @@ def execution(self, context):
         i = sorted_items[item]
         t1_mri = self.t1_mri[i]
         format = formats[i]
-        study_config.input_directory = t1_mri['_database']
-        study_config.output_directory = t1_mri['_database']
+        database = t1_mri['_database']
         pf.attributes['center'] = t1_mri['center']
         pf.attributes['subject'] = t1_mri['subject']
         pf.attributes['acquisition'] = t1_mri['acquisition']
@@ -105,10 +111,13 @@ def execution(self, context):
             j = -1
         pf.attributes['analysis'] = self.analysis[j]
         # handle input format
-        if format != old_format:
-            # need to reconfigure FOMs for this new format
+        if database != old_database or format != old_format:
+            # need to reconfigure FOMs for this new dirs/format
+            study_config.input_directory = database
+            study_config.output_directory = database
             study_config.volumes_format = format
             old_format = format
+            old_database = database
             FomConfig.check_and_update_foms(study_config)
         format = axon_to_capsul_formats.get(t1_mri.format.name,
                                             t1_mri.format.name)
