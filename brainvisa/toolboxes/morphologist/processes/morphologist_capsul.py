@@ -1,5 +1,6 @@
 
 from brainvisa.processes import *
+from brainvisa.tools.mainthreadlife import MainThreadLife
 
 name = 'Morphologist CAPSUL iteration'
 
@@ -10,16 +11,47 @@ signature = Signature(
     'transfer_inputs', Boolean(),
     'transfer_outputs', Boolean(),
     'workflow', WriteDiskItem('Text File', 'Soma-Workflow workflow'),
+    'edit_one_pipeline', Boolean(),
 )
+
+
+def onEditPipeline(self, process, dummy):
+    if not neuroConfig.gui:
+        return
+    if process.edit_one_pipeline:
+        mainThreadActions().push(self.openPipeline)
+    else:
+        self._pipeline_view = None
+
+
+def openPipeline(self):
+    from capsul.qt_gui.widgets import PipelineDevelopperView
+    from morphologist.process.customized.morphologist import CustomMorphologist
+    from capsul.pipeline import Pipeline
+    Pipeline.hide_nodes_activation = False
+    if self._edited_pipeline is None:
+        self._edited_pipeline = CustomMorphologist()
+        self._edited_pipeline.nodes_activation.SulciRecognition = True
+        self._edited_pipeline.nodes_activation.SulciRecognition_1 = True
+    mpv = PipelineDevelopperView(
+      self._edited_pipeline, allow_open_controller=True,
+      show_sub_pipelines=True)
+    mpv.show()
+    self._pipeline_view = MainThreadLife(mpv)
 
 
 def initialization(self):
     self.analysis = ['default_analysis']
     self.transfer_inputs = False
     self.transfer_outputs = False
+    self.edit_one_pipeline = False
+    self._edited_pipeline = None
+    self._pipeline_view = None
+    self.linkParameters(None, 'edit_one_pipeline', self.onEditPipeline)
 
 
 def execution(self, context):
+    self._pipeline_view = None # close the GUI, if any
     import time
     from soma.application import Application
     from capsul.study_config.config_modules.fom_config import FomConfig
@@ -81,9 +113,12 @@ def execution(self, context):
     study_config.set_study_configuration(init_study_config)
 
     FomConfig.check_and_update_foms(study_config)
-    mp = CustomMorphologist()
-    mp.nodes_activation.SulciRecognition = True
-    mp.nodes_activation.SulciRecognition_1 = True
+    if self._edited_pipeline is not None:
+        mp = self._edited_pipeline
+    else:
+        mp = CustomMorphologist()
+        mp.nodes_activation.SulciRecognition = True
+        mp.nodes_activation.SulciRecognition_1 = True
     pf = process_with_fom.ProcessWithFom(mp, study_config)
 
     # workflow config
