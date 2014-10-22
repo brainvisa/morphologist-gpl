@@ -247,19 +247,19 @@ insert('snapshots/morphologist/whitemesh',
 )
 
 # snapshots snapbase spm
-insert('snapshots/spm/whiteMatter',
-  "snapshot_spm8_white_{subject}_{acquisition}", SetType('Snapshot White Matter'), SetWeakAttr('software', 'spm')
+insert('snapshots/spm8/whiteMatter',
+  "snapshot_spm8_white_{subject}_{acquisition}", SetType('Snapshot Probability Map'), SetWeakAttr('software', 'spm8', 'class', 'white')
 )
-insert('snapshots/spm/greyMatter',
-  "snapshot_spm8_grey_{subject}_{acquisition}", SetType('Snapshot Grey Matter'), SetWeakAttr('software', 'spm')
+insert('snapshots/spm8/greyMatter',
+  "snapshot_spm8_grey_{subject}_{acquisition}", SetType('Snapshot Probability Map'), SetWeakAttr('software', 'spm8', 'class', 'grey')
 )
-insert('snapshots/spm/csf',
-  "snapshot_spm8_csf_{subject}_{acquisition}", SetType('Snapshot CSF'), SetWeakAttr('software', 'spm')
+insert('snapshots/spm8/csf',
+  "snapshot_spm8_csf_{subject}_{acquisition}", SetType('Snapshot Probability Map'), SetWeakAttr('software', 'spm8', 'class', 'csf')
 )
 
 # snapbase qc spm
 insert('snapshots/spm',
-    "qc_spm", SetType( 'Snapshots SPM Quality Scores'), SetWeakAttr('software', 'spm')
+    "qc_spm", SetType( 'Snapshots SPM Quality Scores'), SetWeakAttr('software', 'spm8')
 )
 
 #----------------- Registration -------------------------
