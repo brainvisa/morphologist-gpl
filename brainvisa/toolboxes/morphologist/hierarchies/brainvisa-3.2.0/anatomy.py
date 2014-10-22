@@ -262,15 +262,6 @@ insert('snapshots/spm',
     "qc_spm", SetType( 'Snapshots SPM Quality Scores'), SetWeakAttr('software', 'spm')
 )
 
-#snapshots snapbase freesurfer
-insert('snapshots/freesurfer/greywhite',
-  "snapshot_freesurfer_greywhite_{subject}_{acquisition}", SetType( 'Snapshot Grey White'), SetWeakAttr('software', 'freesurfer')
-)
-#snapshots qc freesurfer
-insert('snapshots/freesurfer/greywhite',
-    "qc_greywhite", SetType( 'Snapshots Grey White Quality Scores'), SetWeakAttr('software', 'freesurfer')
-)
-
 #----------------- Registration -------------------------
 
 #insertFirst( '{center}/{subject}/registration',
