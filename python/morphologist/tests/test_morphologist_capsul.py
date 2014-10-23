@@ -7,6 +7,7 @@ import tempfile
 import filecmp
 from soma.application import Application
 from capsul.study_config.study_config import StudyConfig
+from capsul.study_config.config_modules.brainvisa_config import BrainVISAConfig
 from capsul.study_config.config_modules.fom_config import FomConfig
 from morphologist.process.customized.morphologist import CustomMorphologist
 from capsul.process import process_with_fom
@@ -64,7 +65,7 @@ class TestMorphologistCapsul(unittest.TestCase):
         soma_app.plugin_modules.append('soma.fom')
         soma_app.initialize()
         study_config = StudyConfig(
-            modules=StudyConfig.default_modules + [FomConfig])
+            modules=StudyConfig.default_modules + [BrainVISAConfig, FomConfig])
         study_config.set_study_configuration(init_study_config)
         FomConfig.check_and_update_foms(study_config)
         mp = CustomMorphologist()
