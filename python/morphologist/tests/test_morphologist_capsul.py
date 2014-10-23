@@ -5,73 +5,52 @@ import shutil
 import unittest
 import tempfile
 import filecmp
-from soma.application import Application
-from capsul.study_config.study_config import StudyConfig
-from capsul.study_config.config_modules.brainvisa_config import BrainVISAConfig
-from capsul.study_config.config_modules.fom_config import FomConfig
 from morphologist.process.customized.morphologist import CustomMorphologist
-from capsul.process import process_with_fom
 import soma.config as soma_config
-from capsul.pipeline import pipeline_workflow
-from soma import aims
-from soma import uuid
 import soma_workflow.client as swclient
 import soma_workflow.constants as swconstants
 from soma.path import relative_path
+import brainvisa.axon
+from brainvisa.processes import defaultContext
+from brainvisa.data.writediskitem import WriteDiskItem
+from brainvisa.configuration import neuroConfig
+from brainvisa.data import neuroHierarchy
 
 
 class TestMorphologistCapsul(unittest.TestCase):
 
-    def import_data(self):
-        subject = self.morpho_fom.attributes['subject']
-        self.subject_dir = os.path.join(
-            self.db_dir, self.morpho_fom.attributes['center'],
-            subject, 't1mri', 'default_acquisition')
+    def create_test_database(self):
+        database_settings = neuroConfig.DatabaseSettings(
+            self.db_dir)
+        database = neuroHierarchy.SQLDatabase(
+            os.path.join(self.db_dir, "database.sqlite"),
+            self.db_dir,
+            'brainvisa-3.2.0',
+            context=defaultContext(),
+            settings=database_settings)
+        neuroHierarchy.databases.add(database)
+        neuroConfig.dataPath.append(database_settings)
+        database.clear(context=defaultContext())
+        database.update(context=defaultContext())
         self.input_dir = (os.path.join(
             self.db_dir, 'test', 'sujet01', 't1mri', 'default_acquisition'))
-        if self.subject_dir != self.input_dir:
-            if os.path.exists(self.subject_dir):
-                shutil.rmtree(self.subject_dir)
-            os.makedirs(os.path.join(self.subject_dir, 'registration'))
-            vol = aims.read(os.path.join(self.input_dir, 'sujet01.nii'))
-            ref_uid = uuid.Uuid()
-            vol.header()['referential'] = str(ref_uuid)
-            aims.write(vol, os.path.join(self.subject_dir, '%s.nii' % subject ))
-            open(os.path.join(self.subject_dir,
-                'registration/RawT1-%s_default_acquisition.referential' \
-                    % subject )
-            ).write('attributes = {\'uuid\': %s}\n' % repr(ref_uuid))
+        return database
 
     def setUp(self):
+        print '* initialize brainVisa'
+        brainvisa.axon.initializeProcesses()
         tempdir = tempfile.gettempdir()
         self.tests_dir = os.path.join(tempdir, "tmp_tests_brainvisa")
         self.db_dir = os.path.join(
             self.tests_dir, "db_morphologist-%s" % soma_config.full_version)
+        print '* create database'
+        self.database = self.create_test_database()
+        self.db_name = self.database.name
 
-        init_study_config = {
-            "input_directory" : self.db_dir,
-            "output_directory" : self.db_dir,
-            "input_fom" : "morphologist-auto-1.0",
-            "output_fom" : "morphologist-auto-1.0",
-            "shared_fom" : "shared-brainvisa-1.0",
-            "spm_directory" : "/i2bm/local/spm8-standalone",
-            "use_soma_workflow" : True,
-            "use_fom" : True,
-            "volumes_format" : "NIFTI",
-            "meshes_format" : "GIFTI",
-        }
-
-        soma_app = Application('soma.fom', '1.0')
-        soma_app.plugin_modules.append('soma.fom')
-        soma_app.initialize()
-        study_config = StudyConfig(
-            modules=StudyConfig.default_modules + [BrainVISAConfig, FomConfig])
-        study_config.set_study_configuration(init_study_config)
-        FomConfig.check_and_update_foms(study_config)
+        print '* create process'
+        process = brainvisa.processes.getProcessInstance("morphologist_capsul")
         mp = CustomMorphologist()
-        #mp.nodes_activation.SulciRecognition = True
-        #mp.nodes_activation.SulciRecognition_1 = True
-        # until reference test is run/compared with graphs
+        process._edited_pipeline = mp
         mp.nodes_activation.CorticalFoldsGraph = False
         mp.nodes_activation.CorticalFoldsGraph_1 = False
         mp.nodes_activation.SulciRecognition = False
@@ -84,31 +63,34 @@ class TestMorphologistCapsul(unittest.TestCase):
         mp.anterior_commissure = ac
         mp.posterior_commissure = pc
         mp.interhemispheric_point = ip
-        pf = process_with_fom.ProcessWithFom(mp, study_config)
-        pf.attributes['center'] = 'test'
-        pf.attributes['subject'] = 'sujet01'
-        pf.attributes['analysis'] = 'capsul'
-        pf.create_completion()
 
-        # workflow
-        study_config.somaworkflow_computing_resource = 'localhost'
-        study_config.somaworkflow_computing_resources_config['localhost'] = {
-            'transfer_paths': [],
-            'path_translations' : {}}
-        wf = pipeline_workflow.workflow_from_pipeline(
-            mp, study_config=study_config)
+        t1mri = [process.signature['t1mri'].contentType.findValue(
+            {   "_database" : self.db_name,
+                "_format" : "NIFTI-1 image",
+                "center" : "test", "subject" : "sujet01"})]
+        analysis = ['capsul']
+        self.analysis = analysis
 
-        self.morpho_fom = pf
-        self.morpho = mp
-        self.study_config = study_config
+        context = defaultContext()
+        workflow_di = context.temporary('Soma-Workflow workflow')
+        process.workflow = workflow_di
 
-        self.import_data()
+        analysis_dir = os.path.join(self.db_dir, 'test', 'sujet01', 't1mri',
+                                'default_acquisition', 'capsul')
+        self.analysis_dir = analysis_dir
+        if os.path.exists(analysis_dir):
+            shutil.rmtree(analysis_dir)
+        print "* Run Morphologist_Capsul to get test results"
+        defaultContext().runProcess(process, t1mri=t1mri,
+            analysis=analysis, workflow=workflow_di)
+        print 'workflow:', workflow_di.fullPath()
+        wf = swclient.Helper.unserialize(workflow_di.fullPath())
 
         controller = swclient.WorkflowController()
         wf_id = controller.submit_workflow(wf)
-        print 'running Morphologist...'
+        print '* running Morphologist...'
         swclient.Helper.wait_workflow(wf_id, controller)
-        print 'finished.'
+        print '* finished.'
         self.workflow_status = controller.workflow_status(wf_id)
         elements_status = controller.workflow_elements_status(wf_id)
         self.failed_jobs = [element for element in elements_status[0] \
@@ -119,12 +101,15 @@ class TestMorphologistCapsul(unittest.TestCase):
     def test_pipeline_results(self):
         self.assertTrue(self.workflow_status == swconstants.WORKFLOW_DONE,
             'Workflow did not finish regularly: %s' % self.workflow_status)
+        print '** workflow status OK'
         self.assertTrue(len(self.failed_jobs) == 0,
             'Morphologist jobs failed')
+        print '** No failed jobs.'
 
         ref_dir = os.path.join(self.input_dir, 'test')
-        test_dir = os.path.join(
-            self.subject_dir, self.morpho_fom.attributes['analysis'])
+        #test_dir = os.path.join(
+            #self.subject_dir, self.morpho_fom.attributes['analysis'])
+        test_dir = self.analysis_dir
         for (dirpath, dirnames, filenames) in os.walk(ref_dir):
           for f in filenames:
             if not f.endswith(".minf"):
@@ -133,6 +118,11 @@ class TestMorphologistCapsul(unittest.TestCase):
                                     f)
               self.assertTrue(filecmp.cmp(f_ref, f_test),
                   "The content of "+f+" in test is different from the reference results.")
+              print 'file', f_test, 'OK.'
+        print '** all OK.'
+
+    def tearDown(self):
+        brainvisa.axon.cleanup()
 
 
 def test_suite():

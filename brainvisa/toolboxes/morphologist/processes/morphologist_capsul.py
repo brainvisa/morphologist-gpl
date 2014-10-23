@@ -5,7 +5,7 @@ from brainvisa.tools.mainthreadlife import MainThreadLife
 name = 'Morphologist CAPSUL iteration'
 
 signature = Signature(
-    't1_mri', ListOf(ReadDiskItem('Raw T1 MRI',
+    't1mri', ListOf(ReadDiskItem('Raw T1 MRI',
                                   'aims readable volume formats')),
     'analysis', ListOf(String()),
     'transfer_inputs', Boolean(),
@@ -54,8 +54,10 @@ def execution(self, context):
     self._pipeline_view = None # close the GUI, if any
     import time
     from soma.application import Application
-    from capsul.study_config.config_modules.fom_config import FomConfig
     from capsul.study_config.study_config import StudyConfig
+    from capsul.study_config.config_modules.fom_config import FomConfig
+    from capsul.study_config.config_modules.brainvisa_config \
+        import BrainVISAConfig
     from morphologist.process.customized.morphologist import CustomMorphologist
     from capsul.process import process_with_fom
     from soma_workflow import client as swclient
@@ -83,16 +85,16 @@ def execution(self, context):
     # FomConfig.check_and_update_foms(study_config) needs to be called
     # for a specific dir / format
     formats = [axon_to_capsul_formats.get(
-        t1_mri.format.name, t1_mri.format.name) for t1_mri in self.t1_mri]
+        t1mri.format.name, t1mri.format.name) for t1mri in self.t1mri]
     aformats = np.array(formats)
-    dirs = np.array([t1_mri['_database'] for t1_mri in self.t1_mri])
+    dirs = np.array([t1mri['_database'] for t1mri in self.t1mri])
     items_order = np.argsort(dirs)
     sorted_items = []
     for d in sorted(np.unique(dirs)):
         sub_items = np.where(dirs == d)[0]
         sorted_items += list(sub_items[np.argsort(aformats[sub_items])])
 
-    old_database = self.t1_mri[sorted_items[0]]['_database']
+    old_database = self.t1mri[sorted_items[0]]['_database']
     old_format = formats[sorted_items[0]]
 
     init_study_config = {
@@ -109,7 +111,7 @@ def execution(self, context):
     }
 
     study_config = StudyConfig(
-        modules=StudyConfig.default_modules + [FomConfig])
+        modules=StudyConfig.default_modules + [BrainVISAConfig, FomConfig])
     study_config.set_study_configuration(init_study_config)
 
     FomConfig.check_and_update_foms(study_config)
@@ -132,15 +134,15 @@ def execution(self, context):
     workflow = swclient.Workflow(name='Morphologist CAPSUL iteration', jobs=[])
     workflow.root_group = []
 
-    context.progress(0, len(self.t1_mri), process=self)
-    for item in xrange(len(self.t1_mri)):
+    context.progress(0, len(self.t1mri), process=self)
+    for item in xrange(len(self.t1mri)):
         i = sorted_items[item]
-        t1_mri = self.t1_mri[i]
+        t1mri = self.t1mri[i]
         format = formats[i]
-        database = t1_mri['_database']
-        pf.attributes['center'] = t1_mri['center']
-        pf.attributes['subject'] = t1_mri['subject']
-        pf.attributes['acquisition'] = t1_mri['acquisition']
+        database = t1mri['_database']
+        pf.attributes['center'] = t1mri['center']
+        pf.attributes['subject'] = t1mri['subject']
+        pf.attributes['acquisition'] = t1mri['acquisition']
         j = i
         if len(self.analysis) <= j:
             j = -1
@@ -154,8 +156,8 @@ def execution(self, context):
             old_format = format
             old_database = database
             FomConfig.check_and_update_foms(study_config)
-        format = axon_to_capsul_formats.get(t1_mri.format.name,
-                                            t1_mri.format.name)
+        format = axon_to_capsul_formats.get(t1mri.format.name,
+                                            t1mri.format.name)
         pf.create_completion()
 
         transfers = []
@@ -182,7 +184,7 @@ def execution(self, context):
                                name='Morphologist iter %i' % i)
         workflow.root_group.append(group) # += wf.root_group
         workflow.groups += [group] + wf.groups
-        context.progress(item+1, len(self.t1_mri), process=self)
+        context.progress(item+1, len(self.t1mri), process=self)
 
     context.write('jobs:', len(workflow.jobs))
     swclient.Helper.serialize(self.workflow.fullPath(), workflow)
