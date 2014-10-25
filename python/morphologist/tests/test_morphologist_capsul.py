@@ -82,7 +82,8 @@ class TestMorphologistCapsul(unittest.TestCase):
             shutil.rmtree(analysis_dir)
         print "* Run Morphologist_Capsul to get test results"
         defaultContext().runProcess(process, t1mri=t1mri,
-            analysis=analysis, workflow=workflow_di)
+            analysis=analysis, use_translated_shared_directory=False,
+            workflow=workflow_di)
         print 'workflow:', workflow_di.fullPath()
         wf = swclient.Helper.unserialize(workflow_di.fullPath())
 

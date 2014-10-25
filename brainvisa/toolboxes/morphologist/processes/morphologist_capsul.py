@@ -10,6 +10,7 @@ signature = Signature(
     'analysis', ListOf(String()),
     'transfer_inputs', Boolean(),
     'transfer_outputs', Boolean(),
+    'use_translated_shared_directory', Boolean(),
     'workflow', WriteDiskItem('Text File', 'Soma-Workflow workflow'),
     'edit_one_pipeline', Boolean(),
 )
@@ -44,6 +45,7 @@ def initialization(self):
     self.analysis = ['default_analysis']
     self.transfer_inputs = False
     self.transfer_outputs = False
+    self.use_translated_shared_directory = True
     self.edit_one_pipeline = False
     self._edited_pipeline = None
     self._pipeline_view = None
@@ -126,10 +128,15 @@ def execution(self, context):
     # workflow config
     from capsul.pipeline import pipeline_workflow
     study_config.somaworkflow_computing_resource = 'localhost'
-    study_config.somaworkflow_computing_resources_config['localhost'] = {
-        'path_translations' : {
-            study_config.shared_directory:
-                ('brainvisa', 'de25977f-abf5-9f1c-4384-2585338cd7af')}}
+    if self.use_translated_shared_directory:
+        path_translations = {
+            'path_translations' : {
+                study_config.shared_directory:
+                    ('brainvisa', 'de25977f-abf5-9f1c-4384-2585338cd7af')}}
+    else:
+        path_translations = {}
+    study_config.somaworkflow_computing_resources_config['localhost'] \
+        = path_translations
 
     workflow = swclient.Workflow(name='Morphologist CAPSUL iteration', jobs=[])
     workflow.root_group = []
