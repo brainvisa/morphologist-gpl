@@ -9,6 +9,7 @@ from morphologist.process.customized.morphologist import CustomMorphologist
 import soma.config as soma_config
 import soma_workflow.client as swclient
 import soma_workflow.constants as swconstants
+import soma_workflow.configuration as swconfig
 from soma.path import relative_path
 import brainvisa.axon
 from brainvisa.processes import defaultContext
@@ -87,7 +88,14 @@ class TestMorphologistCapsul(unittest.TestCase):
         print 'workflow:', workflow_di.fullPath()
         wf = swclient.Helper.unserialize(workflow_di.fullPath())
 
-        controller = swclient.WorkflowController()
+        # use a temporary sqlite database in soma-workflow to avoid concurrent
+        # access problems
+        config = swconfig.Configuration.load_from_file()
+        tmpdb = tempfile.mkstemp('.db', prefix='swf_')
+        os.close(tmpdb[0])
+        os.unlink(tmpdb[1])
+        config._database_file = tmpdb[1]
+        controller = swclient.WorkflowController(config=config)
         wf_id = controller.submit_workflow(wf)
         print '* running Morphologist...'
         swclient.Helper.wait_workflow(wf_id, controller)
@@ -98,6 +106,10 @@ class TestMorphologistCapsul(unittest.TestCase):
             if element[1] != swconstants.DONE \
                 or element[3][0] != swconstants.FINISHED_REGULARLY]
         controller.delete_workflow(wf_id)
+        # remove the temporary database
+        del controller
+        del config
+        os.unlink(tmpdb[1])
 
     def test_pipeline_results(self):
         self.assertTrue(self.workflow_status == swconstants.WORKFLOW_DONE,
