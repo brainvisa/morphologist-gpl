@@ -175,6 +175,10 @@ apply( insert, ( '{center}/{subject}/t1mri/{acquisition}', ) + \
   t1mri_acq_content,
 )
 
+#==================================================================================================================================
+# SNAPSHOTS
+#==================================================================================================================================
+
 # snapshots snapbase morphologist
 insert('snapshots/morphologist/greywhite',
       "snapshot_greywhite_{subject}_{acquisition}", SetType( 'Snapshot Grey White'), SetWeakAttr('software', 'morphologist')
@@ -260,6 +264,21 @@ insert('snapshots/spm8/csf',
 # snapbase qc spm
 insert('snapshots/spm',
     "qc_spm", SetType( 'Snapshots SPM Quality Scores'), SetWeakAttr('software', 'spm8')
+)
+
+#==================================================================================================================================
+# TABLES
+#==================================================================================================================================
+
+tables_content = (
+    "sulcalopenings_morphologist_{tableid}", SetType( 'Sulcal Openings Table'), SetWeakAttr('software', 'morphologist'),
+    "globalvolumes_morphologist_{tableid}", SetType( 'Global Volumetry Table'), SetWeakAttr('software', 'morphologist'),
+    "globalvolumes_spm8_{tableid}", SetType( 'Global Volumetry Table'), SetWeakAttr('software', 'spm8'),
+    "thicknesses_morphologist_{tableid}", SetType( 'Global Volumetry Table'), SetWeakAttr('software', 'morphologist'),
+)
+
+apply( insert, ('tables', ) + \
+  tables_content,
 )
 
 #----------------- Registration -------------------------
