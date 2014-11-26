@@ -7,8 +7,6 @@ import time
 import cPickle
 from soma.application import Application
 from capsul.study_config.study_config import StudyConfig
-from capsul.study_config.config_modules.brainvisa_config import BrainVISAConfig
-from capsul.study_config.config_modules.fom_config import FomConfig
 from morphologist.process.customized.morphologist import CustomMorphologist
 from capsul.process import process_with_fom
 import soma.config as soma_config
@@ -41,7 +39,8 @@ class TestMorphologistCapsulPerf(unittest.TestCase):
         soma_app.initialize()
         study_config = StudyConfig(
             init_config=init_study_config,
-            modules=StudyConfig.default_modules + [BrainVISAConfig, FomConfig])
+            modules=StudyConfig.default_modules \
+            + ['BrainVISAConfig', 'FomConfig'])
         self.study_config = study_config
 
     def test_morpho_perf(self):
