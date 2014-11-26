@@ -40,9 +40,8 @@ class TestMorphologistCapsulPerf(unittest.TestCase):
         soma_app.plugin_modules.append('soma.fom')
         soma_app.initialize()
         study_config = StudyConfig(
+            init_config=init_study_config,
             modules=StudyConfig.default_modules + [BrainVISAConfig, FomConfig])
-        study_config.set_study_configuration(init_study_config)
-        FomConfig.check_and_update_foms(study_config)
         self.study_config = study_config
 
     def test_morpho_perf(self):

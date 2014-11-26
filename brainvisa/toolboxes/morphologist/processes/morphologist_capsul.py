@@ -57,18 +57,15 @@ def execution(self, context):
     import time
     from soma.application import Application
     from capsul.study_config.study_config import StudyConfig
-    from capsul.study_config.config_modules.fom_config import FomConfig
-    from capsul.study_config.config_modules.brainvisa_config \
-        import BrainVISAConfig
     from morphologist.process.customized.morphologist import CustomMorphologist
     from capsul.process import process_with_fom
     from soma_workflow import client as swclient
     from soma.wip.application.api import Application as Appli2
     import numpy as np
 
-    soma_app = Application('soma.fom', '1.0')
-    soma_app.plugin_modules.append('soma.fom')
-    soma_app.initialize()
+    #soma_app = Application('soma.fom', '1.0')
+    #soma_app.plugin_modules.append('soma.fom')
+    #soma_app.initialize()
     configuration = Appli2().configuration
 
     axon_to_capsul_formats = {
@@ -113,10 +110,9 @@ def execution(self, context):
     }
 
     study_config = StudyConfig(
-        modules=StudyConfig.default_modules + [BrainVISAConfig, FomConfig])
-    study_config.set_study_configuration(init_study_config)
+        init_config=init_study_config,
+        modules=StudyConfig.default_modules + ['BrainVISAConfig', 'FomConfig'])
 
-    FomConfig.check_and_update_foms(study_config)
     if self._edited_pipeline is not None:
         mp = self._edited_pipeline
     else:
@@ -162,7 +158,7 @@ def execution(self, context):
             study_config.volumes_format = format
             old_format = format
             old_database = database
-            FomConfig.check_and_update_foms(study_config)
+            study_config.initialize_modules()
         format = axon_to_capsul_formats.get(t1mri.format.name,
                                             t1mri.format.name)
         pf.create_completion()
