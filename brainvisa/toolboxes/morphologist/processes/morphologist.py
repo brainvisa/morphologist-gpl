@@ -34,7 +34,7 @@
 from brainvisa.processes import *
 import shfjGlobals
 
-name = 'Morphologist 2013'
+name = 'Morphologist 2015'
 userLevel = 0
 
 signature = Signature(
