@@ -101,8 +101,8 @@ def execution( self, context ):
 
   context.write("Computing skeleton and buried gyrus watershed...")
   command = ["VipSkeleton", "-i", self.hemi_cortex,
-                  "-so", self.skeleton, "-vo",
-                  self.roots, "-g", braing, "-w", "t" ]
+             "-so", self.skeleton, "-vo", self.roots,
+             "-g", braing, "-ve", "1", "-w", "t" ]
   if self.fix_random_seed:
       command.extend(['-srand', 10])
   apply(context.system, command)
