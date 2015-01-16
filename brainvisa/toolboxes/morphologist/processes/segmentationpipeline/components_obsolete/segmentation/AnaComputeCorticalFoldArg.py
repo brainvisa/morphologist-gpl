@@ -111,8 +111,8 @@ def execution( self, context ):
       context.write("Computing skeleton and buried gyrus watershed...")
       context.system( "VipSkeleton", "-i", self.left_hemi_cortex,
                       "-so", self.Lskeleton, "-vo", 
-                      self.Lroots, "-g", Lbraing, "-w",
-                      "t" )
+                      self.Lroots, "-g", Lbraing,
+                      "-ve", "1", "-w", "t" )
       trManager.copyReferential( self.split_mask, self.Lroots )
       trManager.copyReferential( self.split_mask, self.Lskeleton )
 
@@ -162,7 +162,7 @@ def execution( self, context ):
       context.system( "VipSkeleton", "-i", self.right_hemi_cortex,
                       "-so", self.Rskeleton, "-vo",
                       self.Rroots, "-g", Rbraing,
-                      "-w", "t" )
+                      "-ve", "1", "-w", "t" )
       trManager.copyReferential( self.split_mask, self.Rroots )
       trManager.copyReferential( self.split_mask, self.Rskeleton )
 
