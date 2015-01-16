@@ -81,7 +81,7 @@ def execution( self, context ):
         context.write("Computing skeleton...")
         skeleton = context.temporary( 'NIFTI-1 Image' )
         roots = context.temporary( 'NIFTI-1 Image' )
-        command = ["VipSkeleton", "-i", self.left_hemi_cortex, "-so", skeleton, "-vo", roots, "-g", braing, "-w", "t"]
+        command = ["VipSkeleton", "-i", self.left_hemi_cortex, "-so", skeleton, "-vo", roots, "-g", braing, "-ve", "1", "-w", "t"]
         if self.fix_random_seed:
             command.extend(['-srand', 10]) 
         apply(context.system, command)
@@ -122,7 +122,7 @@ def execution( self, context ):
         context.write("Computing skeleton...")
         skeleton = context.temporary( 'NIFTI-1 Image' )
         roots = context.temporary( 'NIFTI-1 Image' )
-        command = ["VipSkeleton", "-i", self.right_hemi_cortex, "-so", skeleton,  "-vo", roots, "-g", braing, "-w", "t" ]
+        command = ["VipSkeleton", "-i", self.right_hemi_cortex, "-so", skeleton,  "-vo", roots, "-g", braing, "-ve", "1", "-w", "t" ]
         if self.fix_random_seed:
             command.extend(['-srand', 10])
         apply(context.system, command)
