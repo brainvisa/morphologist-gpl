@@ -82,12 +82,12 @@ def execution( self, context ):
             context.write( "Left cortex locked")
         else:
             context.write( "Detecting left spherical cortex interface..." )
-            command = ["VipHomotopic", "-i",
-                            self.mri_corrected, "-cl",
-                            self.left_grey_white, "-h",
-                            self.histo_analysis, "-o",
-                            self.left_hemi_cortex,
-                            "-m", "C", "-w", "t"]
+            command = [ "VipHomotopic",
+                        "-i", self.mri_corrected,
+                        "-cl", self.left_grey_white,
+                        "-h", self.histo_analysis,
+                        "-o", self.left_hemi_cortex,
+                        "-m", "C", "-v", '1', "-w", "t"]
             if self.fix_random_seed:     
                 command.extend(['-srand', '10'])
             context.system(*command)
@@ -120,12 +120,12 @@ def execution( self, context ):
             context.write( "Right cortex locked")
         else:
             context.write( "Detecting right spherical cortex interface..." )
-            command = ["VipHomotopic", "-i",
-                            self.mri_corrected, "-cl",
-                            self.right_grey_white, "-h",
-                            self.histo_analysis, "-o",
-                            self.right_hemi_cortex,
-                            "-m", "C", "-w", "t"]
+            command = [ "VipHomotopic",
+                        "-i", self.mri_corrected,
+                        "-cl", self.right_grey_white,
+                        "-h", self.histo_analysis,
+                        "-o", self.right_hemi_cortex,
+                        "-m", "C", "-v", '1', "-w", "t"]
             if self.fix_random_seed:     
                 command.extend(['-srand', '10'])
             context.system(*command)
