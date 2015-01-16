@@ -49,6 +49,7 @@ signature = Signature(
         'Aims writable volume formats' ),
     'roots', WriteDiskItem( 'Cortex Catchment Bassins',
         'Aims writable volume formats' ),
+    'version', Choice('1', '2'),
     'fix_random_seed', Boolean(),
 )
 
@@ -58,7 +59,9 @@ def initialization( self ):
     self.linkParameters( 't1mri_nobias', 'hemi_cortex' )
     self.linkParameters( 'skeleton', 'hemi_cortex' )
     self.linkParameters( 'roots', 'skeleton' )
+    self.signature[ 'version' ].userLevel = 3
     self.signature['fix_random_seed'].userLevel = 3
+    self.version = '2'
     self.fix_random_seed = False
 
 
@@ -77,7 +80,7 @@ def execution( self, context ):
                     "-w", "t" )
     command = [ "VipSkeleton", "-i", self.hemi_cortex,
                 "-so", self.skeleton, "-vo", self.roots,
-                "-g", braing, "-w", "t" ]
+                "-g", braing, "-ve", self.version, "-w", "t" ]
     if self.fix_random_seed:
         command.extend(['-srand', 10])
     context.system( *command )
