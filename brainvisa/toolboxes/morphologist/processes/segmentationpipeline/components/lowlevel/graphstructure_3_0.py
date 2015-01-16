@@ -88,8 +88,8 @@ def execution( self, context ):
 
   context.write("Computing skeleton and buried gyrus watershed...")
   context.system( "VipSkeleton", "-i", self.hemi_cortex,
-                  "-so", self.skeleton, "-vo",
-                  self.roots, "-g", braing, "-w", "t" )
+                  "-so", self.skeleton, "-vo", self.roots,
+                  "-g", braing, "-ve", "1", "-w", "t" )
 
   context.write("Building Attributed Relational Graph...")
   graphd = context.temporary( 'Directory' )
