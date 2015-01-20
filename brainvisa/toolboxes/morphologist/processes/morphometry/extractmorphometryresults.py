@@ -60,7 +60,6 @@ def execution(self, context):
 
 
     for f in self.morpho_stat_files:
-        print f
         #Lecture des csv
         csv = np.recfromtxt(f.fullPath(), delimiter=' ', names=True)
         subjects_list = list(csv['subject'])
@@ -76,6 +75,7 @@ def execution(self, context):
 
     Loutf = open(str(self.file_measures), "w")
     Loutf.write("subject")
+    print measures_by_sulci.keys()
     for sulcus in sorted(measures_by_sulci.keys()):
         Loutf.write(";" + sulcus)
     Loutf.write("\n")
