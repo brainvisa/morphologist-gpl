@@ -28,23 +28,23 @@ def initialization(self):
         if self.pipeline_mode:
             process = parameterized[0]
             signature = process.signature
-            self.signature['historical_file'] = \
-            WriteDiskItem('Historical Sulcal Openings Table', 'Text file',
+            self.signature['history_file'] = \
+            WriteDiskItem('History Sulcal Openings Table', 'Text file',
                           requiredAttributes={'software': 'morphologist'})
             self.signature['output_file'] = \
             WriteDiskItem('Sulcal Openings Table', 'CSV File',
                           requiredAttributes={'software': 'morphologist'})
             process.changeSignature(signature)
 
-    def link_historical_file(model, names, parameterized):
+    def link_history_file(model, names, parameterized):
         if self.pipeline_mode and self.output_file:
             database_found = self.output_file.hierarchyAttributes()['_database']
             d = {}
             d['_database'] = database_found
-            self.historical_file = self.signature['historical_file'].findValue(d)
+            self.history_file = self.signature['history_file'].findValue(d)
 
     self.addLink(None, 'pipeline_mode', link_pipeline_mode)
-    self.addLink(None, 'output_file', link_historical_file)
+    self.addLink(None, 'output_file', link_history_file)
 
 
 def execution(self, context):
@@ -91,8 +91,8 @@ def execution(self, context):
         from catidb import catidb_axon
         if need_concatenated:
             catidb_axon.concatenated_csv(context, str(self.output_file),
-                                   str(self.file_measures), str(self.historical_file))
+                                   str(self.file_measures), str(self.history_file))
             # detete tmp file measure
             os.remove(self.file_measures)
         else:
-            catidb_axon.write_historical(True, subjects_list, [], str(self.historical_file))
+            catidb_axon.write_history(True, subjects_list, [], str(self.history_file))

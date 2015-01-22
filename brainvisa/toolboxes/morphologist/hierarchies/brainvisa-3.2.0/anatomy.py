@@ -274,9 +274,9 @@ tables_content = (
     "sulcalopenings_morphologist", SetType('Sulcal Openings Table'), SetWeakAttr('software', 'morphologist'),
     "tissues_volumes_morphologist", SetType('Global Volumetry Table'), SetWeakAttr('software', 'morphologist'),
     "tissues_volumes_spm8", SetType('Global Volumetry Table'), SetWeakAttr('software', 'spm8'),
-    "historical_sulcalopenings_morphologist", SetType('Historical Sulcal Openings Table'), SetWeakAttr('software', 'morphologist'),
-    "historical_tissues_volumes_morphologist", SetType('Historical Global Volumetry Table'), SetWeakAttr('software', 'morphologist'),
-    "historical_tissues_volumes_spm8", SetType('Historical Global Volumetry Table'), SetWeakAttr('software', 'spm8')
+    "history_sulcalopenings_morphologist", SetType('History Sulcal Openings Table'), SetWeakAttr('software', 'morphologist'),
+    "history_tissues_volumes_morphologist", SetType('History Global Volumetry Table'), SetWeakAttr('software', 'morphologist'),
+    "history_tissues_volumes_spm8", SetType('History Global Volumetry Table'), SetWeakAttr('software', 'spm8')
 )
 
 apply( insert, ('tables', ) + \
