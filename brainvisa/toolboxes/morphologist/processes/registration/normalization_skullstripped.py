@@ -40,69 +40,78 @@ def validationDelayed():
   '''validation cannot be done at startup since some sub-processes may not be
 loaded yet. But this validationDelayed method can be used later.
   '''
-  p = getProcessInstance( 'NormalizationPipeline' )
+  p = getProcessInstance('NormalizationPipeline')
   p.validationDelayed()
 
 
 signature = Signature(
-    't1mri', ReadDiskItem( "Raw T1 MRI", "Aims readable volume formats" ),
-    'brain_mask', ReadDiskItem( "Brain Mask", "Aims readable volume formats" ),
-    'template', ReadDiskItem( "anatomical Template", ['NIFTI-1 image', 'MINC image', 'SPM image'], requiredAttributes={'skull_stripped':'yes'} ),
-    'skull_stripped', WriteDiskItem( '3D Volume',
-      'Aims writable volume formats' ),
-    'transformation', WriteDiskItem( \
+    't1mri', ReadDiskItem('Raw T1 MRI', 'Aims readable volume formats'),
+    'brain_mask', ReadDiskItem('Brain Mask', 'Aims readable volume formats'),
+    'template', ReadDiskItem('anatomical Template',
+        ['NIFTI-1 image', 'MINC image', 'SPM image'],
+        requiredAttributes={'skull_stripped':'yes'}),
+    'skull_stripped', WriteDiskItem('Raw T1 MRI Brain Masked',
+      'Aims writable volume formats'),
+    'transformation', WriteDiskItem(
       'Transform Raw T1 MRI to Talairach-MNI template-SPM',
-      'Transformation matrix' ),
+      'Transformation matrix'),
+    'talairach_transformation', WriteDiskItem(
+      'Transform Raw T1 MRI to Talairach-AC/PC-Anatomist',
+      'Transformation matrix'),
 )
 
 def initialization( self ):
-    self.linkParameters( "transformation", "t1mri" )
-    self.skull_stripped = defaultContext().temporary( 'NIFTI-1 image' )
-    normalized = defaultContext().temporary( 'NIFTI-1 image' )
-    self.template = self.signature['template' ].findValue( \
-        { '_database' : os.path.normpath( os.path.join( mainPath,
-            '..', 'share', 'brainvisa-share-%s.%s' \
-                % tuple(versionString().split('.')[:2] ) ) ),
-          'Size': '2 mm' } )
+    self.linkParameters('brain_mask', 't1mri')
+    self.linkParameters('transformation', 't1mri')
+    self.linkParameters('skull_stripped', 't1mri')
+    self.linkParameters('talairach_transformation', 't1mri')
+    self.template = self.signature['template'].findValue({
+        '_database' : os.path.normpath(os.path.join(mainPath, '..', 'share',
+        'brainvisa-share-%s.%s' % tuple(versionString().split('.')[:2]))),
+        'Size': '2 mm'})
 
-    eNode = SerialExecutionNode( self.name, parameterized=self )
-    eNode.addChild( 'SkullStripping',
-      ProcessExecutionNode( 'skullstripping', selected=1 ) )
-    eNode.addChild( 'Normalization',
-      ProcessExecutionNode( 'normalizationPipeline', selected=1 ) )
-    eNode.Normalization.removeLink( 'transformation', 't1mri' )
-    eNode.addDoubleLink( 'SkullStripping.t1mri', 't1mri' )
-    eNode.SkullStripping.removeLink( 'brain_mask', 't1mri' )
-    self.linkParameters( 'brain_mask', 't1mri' )
-    eNode.addDoubleLink( 'SkullStripping.brain_mask', 'brain_mask' )
-    eNode.addDoubleLink( 'SkullStripping.skull_stripped', 'skull_stripped' )
-    eNode.addDoubleLink( 'Normalization.t1mri', 'skull_stripped' )
-    eNode.addDoubleLink( 'Normalization.transformation', 'transformation' )
-    fsl = hasattr( eNode.Normalization, 'NormalizeFSL' )
-    spm = hasattr( eNode.Normalization, 'NormalizeSPM' )
-    bal = hasattr( eNode.Normalization, 'NormalizeBaladin' )
+    eNode = SerialExecutionNode(self.name, parameterized=self)
+    eNode.addChild('SkullStripping',
+        ProcessExecutionNode('skullstripping', selected=1))
+    eNode.addChild('Normalization',
+        ProcessExecutionNode('normalizationPipeline', selected=1))
+    eNode.addChild('TalairachFromNormalization',
+        ProcessExecutionNode('TalairachTransformationFromNormalization'))
+    
+    eNode.SkullStripping.removeLink('brain_mask', 't1mri')
+    eNode.addDoubleLink('SkullStripping.t1mri', 't1mri')
+    eNode.addDoubleLink('SkullStripping.brain_mask', 'brain_mask')
+    eNode.addDoubleLink('SkullStripping.skull_stripped', 'skull_stripped')
+    
+    eNode.Normalization.removeLink('transformation', 't1mri')
+    eNode.addDoubleLink('Normalization.t1mri', 'skull_stripped')
+    eNode.addDoubleLink('Normalization.transformation', 'transformation')
+    fsl = hasattr(eNode.Normalization, 'NormalizeFSL')
+    spm = hasattr(eNode.Normalization, 'NormalizeSPM')
+    bal = hasattr(eNode.Normalization, 'NormalizeBaladin')
 
-    self.setExecutionNode( eNode )
+    self.setExecutionNode(eNode)
 
     if fsl:
-        eNode.addDoubleLink( 'Normalization.NormalizeFSL.template',
-            'template' )
-        eNode.Normalization.NormalizeFSL.NormalizeFSL.removeLink( \
-            'normalized_anatomy_data', 'anatomy_data' )
-        normalizedc = defaultContext().temporary( \
-            'gz compressed NIFTI-1 image' )
-        eNode.Normalization.NormalizeFSL.NormalizeFSL.normalized_anatomy_data \
-            = normalizedc
+        eNode.addDoubleLink('Normalization.NormalizeFSL.template',
+            'template')
     if spm:
-        eNode.addDoubleLink( 'Normalization.NormalizeSPM.template',
-            'template' )
-        eNode.Normalization.NormalizeSPM.NormalizeSPM.removeLink( \
-            'normalized_anatomy_data', 'anatomy_data' )
-        eNode.Normalization.NormalizeSPM.NormalizeSPM.normalized_anatomy_data \
-            = normalized
+        eNode.addDoubleLink('Normalization.NormalizeSPM.template',
+            'template')
     if bal:
-        eNode.addDoubleLink( 'Normalization.NormalizeBaladin.template',
-            'template' )
-        eNode.Normalization.NormalizeBaladin.NormalizeBaladin.removeLink( \
-            'normalized_anatomy_data', 'anatomy_data' )
-        eNode.Normalization.NormalizeBaladin.NormalizeBaladin.normalized_anatomy_data = normalized
+        eNode.addDoubleLink('Normalization.NormalizeBaladin.template',
+            'template')
+    
+    eNode.TalairachFromNormalization.removeLink(
+        't1mri', 'commissure_coordinates')
+    eNode.TalairachFromNormalization.removeLink(
+        'Talairach_transform', 'normalization_transformation')
+    eNode.addDoubleLink(
+        'TalairachFromNormalization.normalization_transformation',
+        'transformation')
+    eNode.addDoubleLink(
+        'TalairachFromNormalization.t1mri', 't1mri')
+    eNode.addDoubleLink(
+        'TalairachFromNormalization.Talairach_transform',
+        'talairach_transformation')
+
