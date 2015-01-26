@@ -68,9 +68,11 @@ class changeTalairach:
     def __call__( self, node ):
         if node.isSelected():
             self.proc.executionNode().TalairachTransformation.setSelected( True )
+            self.proc.executionNode().Renorm.setSelected(False)
             self.proc.perform_normalization = False
         else:
             self.proc.executionNode().TalairachTransformation.setSelected( False )
+            self.proc.executionNode().Renorm.setSelected(True)
             self.proc.perform_normalization = True
 
 class linkCheckModels:
@@ -104,6 +106,7 @@ def initialization( self ):
                 y = list(eNode.PrepareSubject.executionNode().children())
                 y[0].setSelected( not self.perform_normalization )
                 y[1].setSelected( self.perform_normalization )
+                eNode.Renorm.setSelected( self.perform_normalization )
     
     def enableRecognition( enabled, names, parameterized ):
         '''Select appropriate sub-processes when recognition is switched from
@@ -128,6 +131,21 @@ def initialization( self ):
     eNode.addChild( 'BrainSegmentation',
                     ProcessExecutionNode( 'BrainSegmentation',
                                           optional = 1 ) )
+                                          
+        ## Re-Normalization
+    hasNorm = False
+    try :
+        p = getProcessInstance( 'normalization_skullstripped' )
+        if p:
+            p.validationDelayed()
+            hasNorm = True
+            print hasNorm
+    except:
+        pass
+    if hasNorm:
+        eNode.addChild( 'Renorm',
+                        ProcessExecutionNode( p, optional = 1 ) )
+                                          
     eNode.addChild( 'SplitBrain',
                     ProcessExecutionNode( 'SplitBrain',
                                           optional = 1 ) )
@@ -277,6 +295,25 @@ def initialization( self ):
     eNode.addDoubleLink( 'BrainSegmentation.edges',
                          'BiasCorrection.edges' )
     
+    ## Re-Normalization
+    if hasNorm:
+        eNode.Renorm.removeLink( 'brain_mask', 't1mri' )
+        eNode.Renorm.removeLink( 'transformation', 't1mri' )
+        eNode.Renorm.removeLink( 'talairach_transformation', 't1mri' )
+        eNode.Renorm.TalairachFromNormalization.removeLink( 
+            'commissure_coordinates', 'Talairach_transform')
+
+        eNode.addDoubleLink( 'Renorm.t1mri', 't1mri' )
+        eNode.addDoubleLink( 'Renorm.brain_mask',
+                             'BrainSegmentation.brain_mask' )
+        eNode.addDoubleLink('Renorm.transformation', 
+            'PrepareSubject.Normalization.Normalization.transformation')
+        eNode.addDoubleLink('Renorm.talairach_transformation', 
+            'PrepareSubject.Normalization.TalairachFromNormalization.Talairach_transform')
+        eNode.addDoubleLink(
+            'Renorm.TalairachFromNormalization.commissure_coordinates', 
+            'PrepareSubject.commissure_coordinates')
+
     ## Split Brain
     eNode.SplitBrain.removeLink( 't1mri_nobias', 'brain_mask' )
     eNode.SplitBrain.removeLink( 'histo_analysis', 't1mri_nobias' )
