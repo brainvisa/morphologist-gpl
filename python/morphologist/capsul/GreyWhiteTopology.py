@@ -12,14 +12,16 @@ from capsul.process import Process
 class GreyWhiteTopology(Process):
     def __init__(self, **kwargs):
         super(GreyWhiteTopology, self).__init__()
-        self.add_trait('grey_white', File(allowed_extensions=['.nii.gz', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.img', '.hdr', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '']))
-        self.add_trait('t1mri_nobias', File(allowed_extensions=['.nii.gz', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.img', '.hdr', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '']))
+        self.add_trait('grey_white', File(allowed_extensions=['.nii.gz', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '']))
+        self.add_trait('t1mri_nobias', File(allowed_extensions=['.nii.gz', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '']))
         self.add_trait('histo_analysis', File(allowed_extensions=['.han']))
-        self.add_trait('hemi_cortex', File(allowed_extensions=['.nii.gz', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.img', '.hdr', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', ''], output=True))
+        self.add_trait('hemi_cortex', File(allowed_extensions=['.nii.gz', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', ''], output=True))
+        self.add_trait('version', Enum('1', '2'))
         self.add_trait('fix_random_seed', Bool())
 
 
         # initialization section
+        self.version = '2'
         self.fix_random_seed = False
 
     def _run_process(self):

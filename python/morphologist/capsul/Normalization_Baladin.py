@@ -19,7 +19,7 @@ class Normalization_Baladin(Process):
 
 
         # initialization section
-        self.anatomical_template = '/usr/share/fsl/data/standard/MNI152_T1_1mm.nii.gz'
+        self.anatomical_template = u'/i2bm/local/fsl/data/standard/MNI152_T1_1mm.nii.gz'
 
     def _run_process(self):
         from brainvisa import axon

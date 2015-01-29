@@ -49,12 +49,14 @@
 
             "PrepareSubject_Normalization_commissures_coordinates": [["input:{acquisition}/<subject>", "Commissure coordinates"]],
             # "PrepareSubject_commissure_coordinates": [["output:{acquisition}/<subject>", "Commissure coordinates"]],
-            "PrepareSubject_Normalization_transformation":
+            "normalization_transformation":
                 [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-MNI",
                     "Transformation matrix"]],
 #            "PrepareSubject_Normalization_normalized":
 #                [["output:{acquisition}/normalized_<normalization>_<subject>",
 #                    "images"]],
+            "reoriented_t1mri":
+                [["output:{acquisition}/<subject>", "images"]],
 
             ### AimsMIRegister
             "PrepareSubject_Normalization_Normalization_AimsMIRegister_anatomical_template": "{shared.anatomical_templates}",
@@ -65,11 +67,9 @@
 
             ### NormalizeSPM
             "PrepareSubject_Normalization_NormalizeSPM_template": "{shared.anatomical_templates}",
-            "PrepareSubject_Normalization_NormalizeSPM_spm_transformation": [["output:{acquisition}/<subject>_sn", "Matlab"]],
-            "PrepareSubject_Normalization_NormalizeSPM_NormalizeSPM_job_file": [["output:{acquisition}/<subject>_job_anat_normalization", "Matlab"]],
+            "normalization_spm_native_transformation": [["output:{acquisition}/<subject>_sn", "Matlab"]],
+            "normalization_spm_native_job_file": [["output:{acquisition}/<subject>_job_anat_normalization", "Matlab"]],
             # "PrepareSubject_Normalization_NormalizeSPM_normalized_t1mri": [["output:{acquisition}/normalized_<normalization>_<subject>","images", {"normalization":"SPM"}]],
-            "PrepareSubject_Normalization_NormalizeSPM_ReorientAnatomy_output_t1mri":
-                [["output:{acquisition}/<subject>", "images"]],
 
             #### ConvertSPMnormalizationToAIMS
             # "PrepareSubject_Normalization_NormalizeSPM_ConvertSPMnormalizationToAIMS_normalized_volume":
@@ -78,10 +78,14 @@
             #         {"normalization": "SPM"}]],
 
             ### NormalizeFSL
-            "PrepareSubject_Normalization_NormalizeFSL_NormalizeFSL_transformation_matrix":
+            "normalization_fsl_native_transformation":
                 [["output:{acquisition}/<subject>_fsl", "Matlab"]],
             "PrepareSubject_Normalization_NormalizeFSL_ReorientAnatomy_output_t1mri":
                 [["output:{acquisition}/<subject>", "images"]],
+
+            ### NormalizeBaladin
+            "normalization_baladin_native_transformation":
+                [["output:{acquisition}/<subject>_baladin", "Text file"]],
 
             ### TalairachFromNormalization
             "PrepareSubject_TalairachFromNormalization_source_referential": [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>", "Referential" ] ],
@@ -103,6 +107,9 @@
 
             #Brain Mask Segmentation
             "BrainSegmentation_brain_mask": [["output:{analysis}/segmentation/brain_<subject>","images"]],
+
+            # Renorm
+            "Renorm_skull_stripped": [["output:{analysis}/segmentation/skull_stripped_<subject>","images"]],
 
             # Split Brain
             "SplitBrain_split_template": [["shared:hemitemplate/closedvoronoi","GIS"]],

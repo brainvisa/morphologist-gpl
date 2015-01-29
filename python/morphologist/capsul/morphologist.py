@@ -26,6 +26,7 @@ class morphologist(Pipeline):
         self.add_process('BiasCorrection', 'morphologist.capsul.T1BiasCorrection.T1BiasCorrection')
         self.add_process('HistoAnalysis', 'morphologist.capsul.NobiasHistoAnalysis.NobiasHistoAnalysis')
         self.add_process('BrainSegmentation', 'morphologist.capsul.BrainSegmentation.BrainSegmentation')
+        self.add_process('Renorm', 'morphologist.capsul.normalization_skullstripped.normalization_skullstripped')
         self.add_process('SplitBrain', 'morphologist.capsul.SplitBrain.SplitBrain')
         self.add_process('TalairachTransformation', 'morphologist.capsul.TalairachTransformation.TalairachTransformation')
         self.add_process('HeadMesh', 'morphologist.capsul.headMesh.headMesh')
@@ -69,15 +70,19 @@ class morphologist(Pipeline):
         self.export_parameter('SulciRecognition', 'output_graph', 'left_labelled_graph')
         # export output parameter
         self.export_parameter('SulciRecognition_1', 'output_graph', 'right_labelled_graph')
+        # export output parameter
+        self.export_parameter('Renorm', 'TalairachFromNormalization_commissure_coordinates', 'Renorm_TalairachFromNormalization_commissure_coordinates')
         # export input parameter
         self.export_parameter('CorticalFoldsGraph', 'graph_version', 'CorticalFoldsGraph_graph_version')
 
         # links section
         self.add_link('t1mri->BiasCorrection.t1mri')
+        self.add_link('t1mri->Renorm.t1mri')
         self.add_link('SplitBrain.split_brain->CorticalFoldsGraph.split_brain')
         self.add_link('SplitBrain.split_brain->CorticalFoldsGraph_1.split_brain')
         self.add_link('PrepareSubject.commissure_coordinates->BiasCorrection.commissure_coordinates')
         self.add_link('PrepareSubject.commissure_coordinates->BrainSegmentation.commissure_coordinates')
+        self.add_link('PrepareSubject.commissure_coordinates->Renorm_TalairachFromNormalization_commissure_coordinates')
         self.add_link('PrepareSubject.commissure_coordinates->SplitBrain.commissure_coordinates')
         self.add_link('PrepareSubject.commissure_coordinates->TalairachTransformation.commissure_coordinates')
         self.add_link('PrepareSubject.commissure_coordinates->GreyWhiteClassification.commissure_coordinates')
@@ -111,6 +116,7 @@ class morphologist(Pipeline):
         self.add_link('HistoAnalysis.histo_analysis->GreyWhiteClassification_1.histo_analysis')
         self.add_link('HistoAnalysis.histo_analysis->GreyWhiteTopology.histo_analysis')
         self.add_link('HistoAnalysis.histo_analysis->GreyWhiteTopology_1.histo_analysis')
+        self.add_link('BrainSegmentation.brain_mask->Renorm.brain_mask')
         self.add_link('BrainSegmentation.brain_mask->SplitBrain.brain_mask')
         self.add_link('SplitBrain.split_brain->TalairachTransformation.split_mask')
         self.add_link('SplitBrain.split_brain->GreyWhiteClassification.split_brain')

@@ -13,7 +13,7 @@ class Normalization_SPM_reinit(Process):
     def __init__(self, **kwargs):
         super(Normalization_SPM_reinit, self).__init__()
         self.add_trait('anatomy_data', File(allowed_extensions=['.nii', '.img', '.hdr']))
-        self.add_trait('anatomical_template', File(allowed_extensions=['.nii', '.mnc', '.img', '.hdr'], optional=True))
+        self.add_trait('anatomical_template', File(allowed_extensions=['.nii', '.img', '.hdr', '.mnc'], optional=True))
         self.add_trait('job_file', File(allowed_extensions=['.mat'], output=True, optional=True))
         self.add_trait('voxel_size', Enum('[1 1 1]'))
         self.add_trait('cutoff_option', Int())
@@ -25,7 +25,7 @@ class Normalization_SPM_reinit(Process):
 
 
         # initialization section
-        self.anatomical_template = u'/i2bm/local/spm8-standalone/spm8_mcr/spm8/templates/T1.nii'
+        self.anatomical_template = u'/i2bm/local/spm12-standalone/spm12_mcr/spm12/toolbox/OldNorm/T1.nii'
         self.voxel_size = '[1 1 1]'
         self.cutoff_option = 25
         self.nbiteration = 16
