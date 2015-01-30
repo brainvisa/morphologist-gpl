@@ -22,7 +22,7 @@ class normalizationPipeline(Pipeline):
 
     def pipeline_definition(self):
         # nodes section
-        self.add_switch('select_Normalization_pipeline', ['NormalizeFSL', 'NormalizeSPM', 'NormalizeBaladin', 'Normalization_AimsMIRegister'], ['transformation', 'normalized'])
+        self.add_switch('select_Normalization_pipeline', ['NormalizeFSL', 'NormalizeSPM', 'NormalizeBaladin', 'Normalization_AimsMIRegister'], ['transformation', 'normalized', 'reoriented_t1mri'])
         self.add_process('NormalizeFSL', 'morphologist.capsul.FSLnormalizationPipeline.FSLnormalizationPipeline')
         self.nodes['NormalizeFSL']._weak_outputs = True
         self.add_process('NormalizeSPM', 'morphologist.capsul.SPMnormalizationPipeline.SPMnormalizationPipeline')
@@ -43,6 +43,10 @@ class normalizationPipeline(Pipeline):
         self.export_parameter('NormalizeFSL', 'ReorientAnatomy_commissures_coordinates', 'commissures_coordinates')
         # export output parameter
         self.export_parameter('select_Normalization_pipeline', 'normalized', 'normalized')
+        # export output parameter
+        self.export_parameter('select_Normalization_pipeline', 'reoriented_t1mri', 'reoriented_t1mri')
+        # export input parameter
+        self.export_parameter('Normalization_AimsMIRegister', 'anatomy_data', 'Normalization_AimsMIRegister_anatomy_data')
 
         # links section
         self.add_link('t1mri->NormalizeSPM.t1mri')
@@ -54,12 +58,16 @@ class normalizationPipeline(Pipeline):
         self.add_link('allow_flip_initial_MRI->NormalizeBaladin.allow_flip_initial_MRI')
         self.add_link('NormalizeFSL.transformation->select_Normalization_pipeline.NormalizeFSL_switch_transformation')
         self.add_link('NormalizeFSL.NormalizeFSL_normalized_anatomy_data->select_Normalization_pipeline.NormalizeFSL_switch_normalized')
+        self.add_link('NormalizeFSL.ReorientAnatomy_output_t1mri->select_Normalization_pipeline.NormalizeFSL_switch_reoriented_t1mri')
         self.add_link('NormalizeSPM.transformation->select_Normalization_pipeline.NormalizeSPM_switch_transformation')
         self.add_link('NormalizeSPM.normalized_t1mri->select_Normalization_pipeline.NormalizeSPM_switch_normalized')
+        self.add_link('NormalizeSPM.ReorientAnatomy_output_t1mri->select_Normalization_pipeline.NormalizeSPM_switch_reoriented_t1mri')
         self.add_link('NormalizeBaladin.transformation->select_Normalization_pipeline.NormalizeBaladin_switch_transformation')
         self.add_link('NormalizeBaladin.NormalizeBaladin_normalized_anatomy_data->select_Normalization_pipeline.NormalizeBaladin_switch_normalized')
+        self.add_link('NormalizeBaladin.ReorientAnatomy_output_t1mri->select_Normalization_pipeline.NormalizeBaladin_switch_reoriented_t1mri')
         self.add_link('Normalization_AimsMIRegister.transformation_to_MNI->select_Normalization_pipeline.Normalization_AimsMIRegister_switch_transformation')
         self.add_link('Normalization_AimsMIRegister.normalized_anatomy_data->select_Normalization_pipeline.Normalization_AimsMIRegister_switch_normalized')
+        self.add_link('Normalization_AimsMIRegister_anatomy_data->select_Normalization_pipeline.Normalization_AimsMIRegister_switch_reoriented_t1mri')
 
         # initialization section
         self.nodes['select_Normalization_pipeline'].switch = 'NormalizeSPM'

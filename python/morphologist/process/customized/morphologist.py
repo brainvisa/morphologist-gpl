@@ -185,7 +185,13 @@ class CustomMorphologist(morphologist.capsul.morphologist.morphologist):
         self.nodes_activation.SulciRecognition = True
         self.nodes_activation.SulciRecognition_1 = True
 
-        self.add_trait('reoriented_t1mri', File(output=True, optional=True))
+        self.export_parameter(
+          'PrepareSubject', 'reoriented_t1mri', is_optional=True)
+        self.add_link('Renorm.Normalization_reoriented_t1mri->reoriented_t1mri')
+        self.remove_link('t1mri->BiasCorrection.t1mri')
+        self.add_link('PrepareSubject.reoriented_t1mri->BiasCorrection.t1mri')
+        self.remove_link('t1mri->Renorm.t1mri')
+        self.add_link('PrepareSubject.reoriented_t1mri->Renorm.t1mri')
 
         if self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes.has_key('NormalizeSPM'):
             self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes['NormalizeSPM'].process.nodes_activation.ReorientAnatomy = True
@@ -195,7 +201,6 @@ class CustomMorphologist(morphologist.capsul.morphologist.morphologist):
             self.add_link('Renorm.Normalization_NormalizeSPM_spm_transformation->normalization_spm_native_transformation')
             self.export_parameter('PrepareSubject', 'Normalization_NormalizeSPM_NormalizeSPM_job_file', 'normalization_spm_native_job_file')
             self.add_link('Renorm.Normalization_NormalizeSPM_NormalizeSPM_job_file->normalization_spm_native_job_file')
-            self.add_link('PrepareSubject.Normalization_NormalizeSPM_ReorientAnatomy_output_t1mri->reoriented_t1mri')
             self.do_not_export.add(('Renorm', 'Normalization_NormalizeSPM_ReorientAnatomy_output_t1mri'))
 
         if self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes.has_key('NormalizeFSL'):
@@ -204,13 +209,11 @@ class CustomMorphologist(morphologist.capsul.morphologist.morphologist):
             self.add_link('normalization_allow_retry_initialization->Renorm.Normalization_NormalizeFSL_allow_retry_initialization')
             self.export_parameter('PrepareSubject', 'Normalization_NormalizeFSL_NormalizeFSL_transformation_matrix', 'normalization_fsl_native_transformation')
             self.add_link('Renorm.Normalization_NormalizeFSL_NormalizeFSL_transformation_matrix->normalization_fsl_native_transformation')
-            self.add_link('PrepareSubject.Normalization_NormalizeFSL_ReorientAnatomy_output_t1mri->reoriented_t1mri')
             self.do_not_export.add(('Renorm', 'Normalization_NormalizeFSL_ReorientAnatomy_output_t1mri'))
 
         if self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes.has_key('NormalizeBaladin'):
             self.export_parameter('PrepareSubject', 'Normalization_NormalizeBaladin_NormalizeBaladin_transformation_matrix', 'normalization_baladin_native_transformation')
             self.add_link('Renorm.Normalization_NormalizeBaladin_NormalizeBaladin_transformation_matrix->normalization_baladin_native_transformation')
-            self.add_link('PrepareSubject.Normalization_NormalizeBaladin_ReorientAnatomy_output_t1mri->reoriented_t1mri')
             self.do_not_export.add(('Renorm', 'Normalization_NormalizeBaladin_ReorientAnatomy_output_t1mri'))
 
         if self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes.has_key('Normalization_AimsMIRegister'):

@@ -12,7 +12,7 @@ from capsul.process import Process
 class GreyWhiteMesh(Process):
     def __init__(self, **kwargs):
         super(GreyWhiteMesh, self).__init__()
-        self.add_trait('hemi_cortex', File(allowed_extensions=['.nii.gz', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '']))
+        self.add_trait('hemi_cortex', File(allowed_extensions=['.nii.gz', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.jpg', '.gif', '.png', '.mng', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '']))
         self.add_trait('white_mesh', File(allowed_extensions=['.gii', '.tri', '.mesh', '.ply', '.obj'], output=True))
 
 
