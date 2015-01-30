@@ -47,8 +47,8 @@ Ce pipeline se nomme désormais "<b>Morphologist</b>", il est le principal point
 Celui-ci constitue la seconde version de Morphologist. Les anciennes versions du pipeline sont toujours accessibles dans le répertoire <a href="categories/morphologist/segmentationpipeline/older_pipelines/category_documentation.html">"Pipeline de segmentation / Anciens pipelines"</a> et devraient en principe fonctionner comme avant.
 </p>
 
-<p id="warning"><b><font color="#b00000">Nouveautés de 2015 vs. 2013:</font></b><br/>
-Une étape optionnelle a été ajoutée dans la version 2015 du pipeline Morphologist: l'étape "<a href="bvprocess://normalization_skullstripped">Renormalisation cerveau extrait</a>". Son but est d'améliorer (ou plutôt de corriger) la normalisation initiale qui obtient parfois des résultats incorrects à cause de champs de vue trop différents entre image et template, ou d'une confusion scalp/cerveau.
+<p id="warning"><b><font color="#b00000">Nouveautés du 2012 vs. 2011:</font></b><br/>
+Dans Morphologist 2012, les premières étapes du pipeline (correction du biais, analyse de l'histogramme, segmentation du cerveau, séparation des hémisphères) ont été nettoyées pour faciliter l'utilisation du pipeline. Il n'y a maintenant plus qu'un seul choix pour chaque étapes. De plus l'interface gris/blanc a subi des améliorations notables, qui rend la surface du gris/blanc en cohérence avec la classification. Les maillages ont eux aussi été améliorés. Ils suivent plus précisement les contours du masque à mailler et possèdent plus de noeuds.
 </p>
 
 <p>
@@ -172,22 +172,6 @@ le site de Marseille à cause du biais important de leur scanner 3T: <a href="ht
 <a HREF="graphstructure_3_0.html"><img SRC="../../images/II_sulci.jpg" ALT="" border="0"/></a>
 <br/>
 Trigger all segmentation tools for T1-weighted data</xhtml>
-    <d name="parameters">
-      <xhtml name="left_labelled_graph"/>
-      <xhtml name="interhemispheric_point"/>
-      <xhtml name="t1mri"/>
-      <xhtml name="right_graph"/>
-      <xhtml name="perform_normalization"/>
-      <xhtml name="right_labelled_graph"/>
-      <xhtml name="split_brain"/>
-      <xhtml name="t1mri_nobias"/>
-      <xhtml name="perform_sulci_recognition"/>
-      <xhtml name="left_hemisphere_point"/>
-      <xhtml name="left_graph"/>
-      <xhtml name="posterior_commissure"/>
-      <xhtml name="histo_analysis"/>
-      <xhtml name="anterior_commissure"/>
-    </d>
     <xhtml name="long"><head>
 <style>
   #warning {
@@ -207,8 +191,8 @@ This pipeline is now named "<b>Morphologist</b>", and is the main entry point of
 This is the second version of Morphologist. Older versions of the pipeline are still available in the sub-directory <a href="categories/morphologist/segmentationpipeline/older_pipelines/category_documentation.html">"segmentation Pipeline / Older pipelines"</a>, and should normally work as they used to.
 </p>
 
-<p id="warning"><b><font color="#b00000">News in 2015 vs. 2013:</font></b><br/>
-A new optional step has been added in the 2015 version of the Morphologist pipeline: the "<a href="normalization_skullstripped.html">Skull-stripped renormalization</a>" step. It aims at improving (or rather, correcting) the initial normalization which sometimes get incorrect results due to too different image/template fields of view, or to scalp/brain mismatch.
+<p id="warning"><b><font color="#b00000">News in 2012 vs. 2011:</font></b><br/>
+In Morphologist 2012, the first steps of the pipeline (bias correction, histogram analysis, brain segmentation, hemispheres separation) have been clean up. Now there is only one choice for each step. Furthermore the grey/white interface has undergone significant improvements, making the grey/white surface consistent with the grey/white classification and meshes have been also improved, making them less decimated and more precise to the mask.
 </p>
 
 <p>
@@ -313,7 +297,7 @@ of the 3T large bias field: <a href="http://marspack.free.fr/">http://marspack.f
 <h1>Visual control at databases scale</h1>
 <p>After running the Morphologist pipeline on a set of subjects, it is highly recommended to visually inspect the results: a pipeline which runs to the end does not imply that it has produced good results...
 </p>
-<p>A new visual control module has been released since BrainVisa / Morphologist version 4.3: <a href="snapbase.html">SnapBase</a>. This tool allows to perform snapshots of the visualization of some data, under given points of view, on entire databases, so as to present the results for all subjects together. This allows to spot, a posteriori, very quickly and easily, some subjects for which the analysis has largely failed, amongst large amounts of subjects.
+<p>A new visual control module has been released since BrainVisa / Morphologist version 4.3: <a href="bvprocess://snapbase">SnapBase</a>. This tool allows to perform snapshots of the visualization of some data, under given points of view, on entire databases, so as to present the results for all subjects together. This allows to spot, a posteriori, very quickly and easily, some subjects for which the analysis has largely failed, amongst large amounts of subjects.
 </p>
 
 <br/>
@@ -330,6 +314,17 @@ of the 3T large bias field: <a href="http://marspack.free.fr/">http://marspack.f
 <img SRC="../../images/III_white.jpg" ALT=""/>
 <img SRC="../../images/III_sulci.jpg" ALT=""/>
 </xhtml>
+    <d name="parameters">
+      <xhtml name="Interhemispheric_Point"/>
+      <xhtml name="Normalised"/>
+      <xhtml name="mri_corrected"><a HREF="VipBiasCorrection.html"><img SRC="../../images/III_nobias.jpg" ALT="" border="0"/></a>
+</xhtml>
+      <xhtml name="perform_normalization"/>
+      <xhtml name="mri"><img SRC="../../images/III_T1mri.jpg" ALT="" border="0"/></xhtml>
+      <xhtml name="Left_Hemisphere_Point"/>
+      <xhtml name="Posterior_Commissure"/>
+      <xhtml name="Anterior_Commissure"/>
+    </d>
   </d>
 </d>
 </minf>
