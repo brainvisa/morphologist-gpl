@@ -113,7 +113,9 @@ def initialization( self ):
       'NormalizeFSL.ReorientAnatomy.commissures_coordinates', 
       'commissures_coordinates' )
 
-    eNode.selection_outputs.append( ['transformation', 'NormalizeFSL.normalized_anatomy_data'] )
+    eNode.selection_outputs.append(
+      ['transformation', 'NormalizeFSL.normalized_anatomy_data',
+       'ReorientAnatomy.output_t1mri'] )
 
   if spm:
     eNode.addChild( 'NormalizeSPM',
@@ -130,7 +132,9 @@ def initialization( self ):
       'NormalizeSPM.ReorientAnatomy.commissures_coordinates', 
       'commissures_coordinates' )
 
-    eNode.selection_outputs.append( ['transformation', 'NormalizeSPM.normalized_anatomy_data'] )
+    eNode.selection_outputs.append(
+      ['transformation', 'NormalizeSPM.normalized_anatomy_data',
+       'ReorientAnatomy.output_t1mri'])
 
   if bal:
     eNode.addChild( 'NormalizeBaladin',
@@ -152,7 +156,9 @@ def initialization( self ):
       'NormalizeBaladin.ReorientAnatomy.commissures_coordinates', 
       'commissures_coordinates' )
 
-    eNode.selection_outputs.append( ['transformation', 'NormalizeBaladin.normalized_anatomy_data'] )
+    eNode.selection_outputs.append(
+      ['transformation', 'NormalizeBaladin.normalized_anatomy_data',
+       'ReorientAnatomy.output_t1mri'])
 
   eNode.addChild( 'Normalization_AimsMIRegister',
     ProcessExecutionNode( 'normalization_aimsmiregister',
@@ -165,8 +171,9 @@ def initialization( self ):
     eNode.addDoubleLink( 'NormalizeFSL.NormalizeFSL.init_translation_origin',
       'NormalizeSPM.NormalizeSPM.init_translation_origin' )
 
-  eNode.selection_outputs.append( ['transformation_to_MNI', 'normalized_anatomy_data'] )
-  eNode.switch_output = ['transformation', 'normalized']
+  eNode.selection_outputs.append(
+    ['transformation_to_MNI', 'normalized_anatomy_data', 'anatomy_data'])
+  eNode.switch_output = ['transformation', 'normalized', 'reoriented_t1mri']
 
   self.setExecutionNode( eNode )
 

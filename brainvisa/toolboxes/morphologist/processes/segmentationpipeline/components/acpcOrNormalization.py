@@ -64,7 +64,7 @@ def initialization( self ):
 
   # for "future" pipelines
   self.selection_outputs = []
-  self.switch_output = 'commissure_coordinates'
+  self.switch_output = ['commissure_coordinates', 'reoriented_t1mri']
 
   if ps:
     if np:
@@ -73,7 +73,7 @@ def initialization( self ):
       sel = 1
     eNode.addChild( 'StandardACPC',
       ProcessExecutionNode( ps, selected=sel ) )
-    self.selection_outputs.append( 'commissure_coordinates' )
+    self.selection_outputs.append(['commissure_coordinates', 'T1mri'])
 
     eNode.addLink( 'StandardACPC.T1mri', 'T1mri' )
     eNode.addLink( 'T1mri', 'StandardACPC.T1mri' )
@@ -94,8 +94,9 @@ def initialization( self ):
     # eNode1.Normalization.removeLink( 'commissures_coordinates', 't1mri' )
     # eNode1.addDoubleLink( 'Normalization.commissures_coordinates', 
     #   'TalairachFromNormalization.commissure_coordinates' )
-    self.selection_outputs.append(
-      'TalairachFromNormalization.commissure_coordinates' )
+    self.selection_outputs.append([
+      'TalairachFromNormalization.commissure_coordinates',
+      'Normalization.reoriented_t1mri'])
 
     eNode.addLink( 'Normalization.Normalization.t1mri', 'T1mri' )
     eNode.addLink( 'T1mri', 'Normalization.Normalization.t1mri' )
