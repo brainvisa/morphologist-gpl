@@ -112,7 +112,7 @@ def initialization( self ):
 
 def execution( self, context ):
     if self.mode == 'write_all':
-        self.write_wridges = 'yes'
+        self.write_wridges = '-'
         self.write_field = 'yes'
         self.write_hfiltered = 'yes'
         self.write_variance = 'yes'
@@ -138,7 +138,8 @@ def execution( self, context ):
                         '-Kcrest', self.wridges_weight,
                         '-Grid', self.ngrid,
                         '-ZregulTuning', self.zdir_multiply_regul,
-                        '-vp', self.variance_fraction, '-e', edge,
+                        '-vp', self.variance_fraction,
+                        '-e', edge,
                         '-eWrite', self.write_edges,
                         '-ename', self.edges,
                         '-vWrite', self.write_variance,
