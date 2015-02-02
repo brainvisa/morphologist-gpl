@@ -35,14 +35,14 @@ from brainvisa.processes import *
 import shfjGlobals, registration
 
 
-name = 'Simplified Morphologist 2013'
+name = 'Simplified Morphologist 2015'
 userLevel = 0
 
 signature = Signature(
     't1mri', ReadDiskItem( 'Raw T1 MRI',
         'Aims readable volume formats' ),
     'perform_segmentation', Boolean(),
-    #Commissure Coordinates
+    #Commissures Coordinates
     'method_ACPC', Choice( 'Manually', 'With SPM Normalization', 'Already done' ),
     'commissure_coordinates', WriteDiskItem( 'Commissure coordinates',
         'Commissure coordinates' ),
@@ -50,6 +50,9 @@ signature = Signature(
     'posterior_commissure', Point3D(),
     'interhemispheric_point', Point3D(),
     'left_hemisphere_point', Point3D(),
+    'older_MNI_normalization', ReadDiskItem(
+        'Transform Raw T1 MRI to Talairach-MNI template-SPM',
+        'Transformation matrix' ),
         ##SPM Normalization
     'anatomical_template', ReadDiskItem( 'anatomical Template',
         ['NIFTI-1 image', 'MINC image', 'SPM image'] ),
@@ -58,7 +61,8 @@ signature = Signature(
         'Matlab file' ),
     'normalized_t1mri', WriteDiskItem( 'Raw T1 MRI',
         [ 'NIFTI-1 image', 'SPM image' ], {'normalization':'SPM'} ),
-    'talairach_MNI_transform', WriteDiskItem( 'Transform Raw T1 MRI to Talairach-MNI template-SPM',
+    'talairach_MNI_transform', WriteDiskItem(
+        'Transform Raw T1 MRI to Talairach-MNI template-SPM',
         'Transformation matrix', ),
         ##Talairach Transformation
     'source_referential', ReadDiskItem( 'Referential of Raw T1 MRI', 'Referential' ),
@@ -88,6 +92,11 @@ signature = Signature(
     #Brain Mask Segmentation
     'brain_mask', WriteDiskItem( 'T1 Brain Mask',
         'Aims writable volume formats' ),
+    #Re Commissures Coordinates
+    'skull_stripped', WriteDiskItem( 'Raw T1 MRI Brain Masked',
+        'Aims writable volume formats' ),
+    'anatomical_template_skull_stripped', ReadDiskItem( 'anatomical Template',
+        ['NIFTI-1 image', 'MINC image', 'SPM image'], requiredAttributes={'skull_stripped':'yes'} ),
     #Split Brain Mask
     'split_brain', WriteDiskItem( 'Split Brain Mask',
         'Aims writable volume formats' ),
@@ -229,26 +238,28 @@ class APCReader:
 
 def initialization( self ):
     self.perform_segmentation = True
-    #Commissure Coordinates
+    #Commissures Coordinates
     self.method_ACPC = 'Manually'
-    self.linkParameters( 'commissure_coordinates', 't1mri' )
+    self.linkParameters('commissure_coordinates', 't1mri')
+    self.linkParameters('anterior_commissure',
+        'commissure_coordinates', APCReader('AC'))
+    self.linkParameters('posterior_commissure',
+        'commissure_coordinates', APCReader('PC'))
+    self.linkParameters('interhemispheric_point',
+        'commissure_coordinates', APCReader('IH'))
+    self.linkParameters('older_MNI_normalization', 't1mri')
     
     self.setOptional( 'anterior_commissure' )
     self.setOptional( 'posterior_commissure' )
     self.setOptional( 'interhemispheric_point' )
     self.setOptional( 'left_hemisphere_point' )
+    self.setOptional( 'older_MNI_normalization' )
     
     self.signature[ 'anterior_commissure' ].add3DLink( self, 't1mri' )
     self.signature[ 'posterior_commissure' ].add3DLink( self, 't1mri' )
     self.signature[ 'interhemispheric_point' ].add3DLink( self, 't1mri' )
     self.signature[ 'left_hemisphere_point' ].add3DLink( self, 't1mri' )
-    
-    self.linkParameters( 'anterior_commissure',
-        'commissure_coordinates', APCReader( 'AC' ) )
-    self.linkParameters( 'posterior_commissure',
-        'commissure_coordinates', APCReader( 'PC' ) )
-    self.linkParameters( 'interhemispheric_point',
-        'commissure_coordinates', APCReader( 'IH' ) )
+    self.signature[ 'older_MNI_normalization' ].userLevel = 100
     
         ##SPM Normalization
     def linkNormRef( proc, param ):
@@ -314,6 +325,16 @@ def initialization( self ):
     
     #Brain Mask Segmentation
     self.linkParameters( 'brain_mask', 't1mri_nobias' )
+    
+    #Re Commissures Coordinates
+    self.linkParameters( 'skull_stripped', 't1mri' )
+    self.anatomical_template_skull_stripped = self.signature[
+        'anatomical_template' ].findValue({ '_ontology' : 'shared',
+        'skull_stripped' : 'yes', 'Size': '2 mm'})
+    self.setOptional( 'anatomical_template_skull_stripped' )
+    
+    self.signature[ 'skull_stripped' ].userLevel = 100
+    self.signature[ 'anatomical_template_skull_stripped' ].userLevel = 100
     
     #Split Brain Mask
     self.linkParameters( 'split_brain', 'brain_mask' )
@@ -432,7 +453,7 @@ def initialization( self ):
 
 def execution( self, context ):
     if self.perform_segmentation:
-        #Commissure Coordinates
+        #Commissures Coordinates
         context.write( '<b>' + 'Computing AC/PC Coordinates...' + '</b>' )
         if self.method_ACPC == 'Manually':
             context.runProcess('preparesubject',
@@ -442,7 +463,7 @@ def execution( self, context ):
                                 Posterior_Commissure = self.posterior_commissure,
                                 Interhemispheric_Point = self.interhemispheric_point,
                                 Left_Hemisphere_Point = self.left_hemisphere_point,
-                                older_MNI_normalization = '')
+                                older_MNI_normalization = self.older_MNI_normalization)
         elif self.method_ACPC == 'With SPM Normalization':
             context.runProcess('Normalization_SPM_reinit',
                                 anatomy_data = self.t1mri,
@@ -454,7 +475,7 @@ def execution( self, context ):
                                 read = self.transformations_information,
                                 write = self.talairach_MNI_transform,
                                 source_volume =self.t1mri,
-                                normalized_volume = '')
+                                normalized_volume = None)
             context.runProcess('TalairachTransformationFromNormalization',
                                 normalization_transformation = self.talairach_MNI_transform,
                                 Talairach_transform = self.talairach_ACPC_transform,
@@ -492,8 +513,34 @@ def execution( self, context ):
                             edges = self.edges,
                             white_ridges = self.white_ridges,
                             commissure_coordinates = self.commissure_coordinates,
-                            lesion_mask = '',
+                            lesion_mask = None,
                             brain_mask = self.brain_mask)
+        #Re Commissures Coordinates
+        if self.method_ACPC == 'With SPM Normalization':
+            context.runProcess('skullstripping',
+                                t1mri = self.t1mri,
+                                brain_mask = self.brain_mask,
+                                skull_stripped = self.skull_stripped)                                
+            context.runProcess('Normalization_SPM_reinit',
+                                anatomy_data = self.skull_stripped,
+                                anatomical_template = self.anatomical_template_skull_stripped,
+                                job_file = self.job_file,
+                                transformations_informations = self.transformations_information,
+                                normalized_anatomy_data = self.normalized_t1mri)
+            context.runProcess('SPMsn3dToAims',
+                                read = self.transformations_information,
+                                write = self.talairach_MNI_transform,
+                                source_volume =self.skull_stripped,
+                                normalized_volume = None)
+            context.runProcess('TalairachTransformationFromNormalization',
+                                normalization_transformation = self.talairach_MNI_transform,
+                                Talairach_transform = self.talairach_ACPC_transform,
+                                commissure_coordinates = self.commissure_coordinates,
+                                t1mri = self.t1mri,
+                                source_referential = self.source_referential,
+                                normalized_referential = self.normalized_referential,
+                                transform_chain_ACPC_to_Normalized = self.tal_to_normalized_transform)
+        
         #Split Brain Mask
         context.write( '<b>' + 'Computing Split Brain...' + '</b>' )
         context.runProcess('SplitBrain',
@@ -620,7 +667,7 @@ def execution( self, context ):
                             labels_translation_map = self.labels_translation_map,
                             labels_priors = self.left_labels_priors,
                             output_transformation = self.left_tal_to_global_transform,
-                            initial_transformation = '',
+                            initial_transformation = None,
                             output_t1_to_global_transformation = self.left_t1_to_global_transform)
                 ###Local
         context.runProcess('spam_recognitionlocal',
@@ -635,7 +682,7 @@ def execution( self, context ):
                             angle_priors = self.left_angle_priors,
                             translation_priors = self.left_translation_priors,
                             output_local_transformations = self.left_global_to_local_transforms,
-                            initial_transformation = '',
+                            initial_transformation = None,
                             global_transformation = self.left_tal_to_global_transform)
         
             ##Right
@@ -648,7 +695,7 @@ def execution( self, context ):
                             labels_translation_map = self.labels_translation_map,
                             labels_priors = self.right_labels_priors,
                             output_transformation = self.right_tal_to_global_transform,
-                            initial_transformation = '',
+                            initial_transformation = None,
                             output_t1_to_global_transformation = self.right_t1_to_global_transform)
                 ###Local
         context.runProcess('spam_recognitionlocal',
@@ -663,6 +710,6 @@ def execution( self, context ):
                             angle_priors = self.right_angle_priors,
                             translation_priors = self.right_translation_priors,
                             output_local_transformations = self.right_global_to_local_transforms,
-                            initial_transformation = '',
+                            initial_transformation = None,
                             global_transformation = self.right_tal_to_global_transform)
     
