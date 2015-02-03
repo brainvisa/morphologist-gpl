@@ -112,7 +112,7 @@ def initialization( self ):
 
 def execution( self, context ):
     if self.mode == 'write_all':
-        self.write_wridges = '-'
+        self.write_wridges = 'yes'
         self.write_field = 'yes'
         self.write_hfiltered = 'yes'
         self.write_variance = 'yes'
