@@ -57,6 +57,7 @@ class TestMorphologistCapsul(unittest.TestCase):
         mp.nodes_activation.SulciRecognition = False
         mp.nodes_activation.SulciRecognition_1 = False
         mp.select_Talairach = 'StandardACPC'
+        mp.perform_skull_stripped_renormalization = 'initial'
         mp.fix_random_seed = True
         ac = [114.864585876, 118.197914124, 88.7999954224]
         pc = [116.197914124, 147.53125, 91.1999969482]
