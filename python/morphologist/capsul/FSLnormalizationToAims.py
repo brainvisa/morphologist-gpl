@@ -13,7 +13,7 @@ class FSLnormalizationToAims(Process):
     def __init__(self, **kwargs):
         super(FSLnormalizationToAims, self).__init__()
         self.add_trait('read', File(allowed_extensions=['.mat']))
-        self.add_trait('source_volume', File(allowed_extensions=['.nii.gz', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.jpg', '.gif', '.png', '.mng', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '']))
+        self.add_trait('source_volume', File(allowed_extensions=['.nii.gz', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '']))
         self.add_trait('write', File(allowed_extensions=['.trm'], output=True))
         self.add_trait('registered_volume', File(allowed_extensions=['.nii', '.nii.gz']))
         self.add_trait('standard_template', Enum(0))

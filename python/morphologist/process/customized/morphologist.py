@@ -193,6 +193,8 @@ class CustomMorphologist(morphologist.capsul.morphologist.morphologist):
         self.remove_link('t1mri->Renorm.t1mri')
         self.add_link('PrepareSubject.reoriented_t1mri->Renorm.t1mri')
 
+        #self.do_not_export.add(('Renorm', 'skull_stripped'))
+
         if self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes.has_key('NormalizeSPM'):
             self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes['NormalizeSPM'].process.nodes_activation.ReorientAnatomy = True
             self.add_link('normalization_allow_retry_initialization->PrepareSubject.Normalization_NormalizeSPM_allow_retry_initialization')
