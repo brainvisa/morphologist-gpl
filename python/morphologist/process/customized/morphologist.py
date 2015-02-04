@@ -187,13 +187,15 @@ class CustomMorphologist(morphologist.capsul.morphologist.morphologist):
 
         self.export_parameter(
           'PrepareSubject', 'reoriented_t1mri', is_optional=True)
-        self.add_link('Renorm.Normalization_reoriented_t1mri->reoriented_t1mri')
+        #self.add_link('Renorm.Normalization_reoriented_t1mri->reoriented_t1mri')
         self.remove_link('t1mri->BiasCorrection.t1mri')
         self.add_link('PrepareSubject.reoriented_t1mri->BiasCorrection.t1mri')
         self.remove_link('t1mri->Renorm.t1mri')
         self.add_link('PrepareSubject.reoriented_t1mri->Renorm.t1mri')
 
-        #self.do_not_export.add(('Renorm', 'skull_stripped'))
+        self.do_not_export.add(('Renorm', 'Normalization_reoriented_t1mri'))
+        self.nodes['Renorm'].process.nodes['Normalization'].plugs['reoriented_t1mri'].optional = True
+        self.nodes['Renorm'].process.nodes['Normalization'].process.nodes['select_Normalization_pipeline'].plugs['reoriented_t1mri'].optional = True
 
         if self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes.has_key('NormalizeSPM'):
             self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes['NormalizeSPM'].process.nodes_activation.ReorientAnatomy = True
