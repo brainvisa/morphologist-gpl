@@ -172,7 +172,7 @@ def initialization( self ):
       'NormalizeSPM.NormalizeSPM.init_translation_origin' )
 
   eNode.selection_outputs.append(
-    ['transformation_to_MNI', 'normalized_anatomy_data', '/t1mri'])
+    ['transformation_to_MNI', 'normalized_anatomy_data', None])
   eNode.switch_output = ['transformation', 'normalized', 'reoriented_t1mri']
 
   self.setExecutionNode( eNode )
