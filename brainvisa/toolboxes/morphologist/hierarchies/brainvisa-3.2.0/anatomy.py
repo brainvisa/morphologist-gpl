@@ -263,7 +263,7 @@ insert('snapshots/spm8/csf',
 
 # snapbase qc spm
 insert('snapshots/spm8',
-    "qc_spm8", SetType( 'Snapshots SPM Quality Scores'), SetWeakAttr('software', 'spm8')
+    "qc_spm8", SetType( 'Snapshots Probability Map Quality Scores'), SetWeakAttr('software', 'spm8')
 )
 
 #==================================================================================================================================
