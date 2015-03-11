@@ -39,52 +39,68 @@ name = 'T1 Bias Correction'
 userLevel = 0
 
 signature = Signature(
-    't1mri', ReadDiskItem( 'Raw T1 MRI', 'Aims readable volume formats' ),
-    'commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
+    't1mri', ReadDiskItem('Raw T1 MRI', 'Aims readable volume formats'),
+    'commissure_coordinates', ReadDiskItem('Commissure coordinates',
         'Commissure coordinates'),
     'sampling', Float(),
     'field_rigidity', Float(),
     'zdir_multiply_regul',Float(),
     'wridges_weight',Float(),
     'ngrid', Integer(),
-    'delete_last_n_slices', OpenChoice('auto (AC/PC Points needed)', '0', '10', '20', '30'),
-    't1mri_nobias', WriteDiskItem( 'T1 MRI Bias Corrected',
-        'Aims writable volume formats' ),
+    'delete_last_n_slices', OpenChoice(
+        'auto (AC/PC Points needed)', '0', '10', '20', '30'),
+    't1mri_nobias', WriteDiskItem('T1 MRI Bias Corrected',
+        'Aims writable volume formats'),
     'mode', Choice('write_minimal', 'write_all',
         'delete_useless', 'write_minimal without correction'),
     'write_field', Choice('yes','no'),
-    'field', WriteDiskItem( 'T1 MRI Bias Field',
-        'Aims writable volume formats' ),
+    'field', WriteDiskItem('T1 MRI Bias Field',
+        'Aims writable volume formats'),
     'write_hfiltered', Choice('yes','no'),
-    'hfiltered', WriteDiskItem( 'T1 MRI Filtered For Histo',
+    'hfiltered', WriteDiskItem('T1 MRI Filtered For Histo',
         'Aims writable volume formats'),
     'write_wridges', Choice('yes','no','read'),
-    'white_ridges', WriteDiskItem( 'T1 MRI White Matter Ridges',
-        'Aims writable volume formats', exactType=1 ),
+    'white_ridges', WriteDiskItem('T1 MRI White Matter Ridges',
+        'Aims writable volume formats', exactType=1),
     'variance_fraction', Integer(),
     'write_variance', Choice('yes','no'),
-    'variance', WriteDiskItem( 'T1 MRI Variance',
-        'Aims writable volume formats' ),
+    'variance', WriteDiskItem('T1 MRI Variance',
+        'Aims writable volume formats'),
     'edge_mask', Choice('yes','no'),
     'write_edges', Choice('yes','no'),
-    'edges', WriteDiskItem( 'T1 MRI Edges',
-        'Aims writable volume formats' ),
+    'edges', WriteDiskItem('T1 MRI Edges',
+        'Aims writable volume formats'),
     'write_meancurvature', Choice('yes','no'),
-    'meancurvature', WriteDiskItem( 'T1 MRI Mean Curvature',
-        'Aims writable volume formats' ),
+    'meancurvature', WriteDiskItem('T1 MRI Mean Curvature',
+        'Aims writable volume formats'),
     'fix_random_seed', Boolean(),
+    'modality', Choice('T1', 'T2'),
+    'use_existing_ridges', Boolean(),
 )
+
+
+def change_wridges_io(self, use_existing_ridges):
+    if use_existing_ridges:
+        self.signature['white_ridges'] = ReadDiskItem(
+            'T1 MRI White Matter Ridges',
+            'Aims writable volume formats', exactType=1 )
+    else:
+        self.signature['white_ridges'] = WriteDiskItem(
+            'T1 MRI White Matter Ridges',
+            'Aims writable volume formats', exactType=1 )
+    self.changeSignature(self.signature)
+
 
 # Default values
 def initialization( self ):
-    self.linkParameters( 'commissure_coordinates', 't1mri' )
-    self.linkParameters( 't1mri_nobias', 't1mri' )
-    self.linkParameters( 'field', 't1mri_nobias' )
-    self.linkParameters( 'hfiltered', 'field' )
-    self.linkParameters( 'white_ridges', 'hfiltered' )
-    self.linkParameters( 'variance', 'white_ridges' )
-    self.linkParameters( 'edges', 'variance' )
-    self.linkParameters( 'meancurvature', 'edges' )
+    self.linkParameters('commissure_coordinates', 't1mri')
+    self.linkParameters('t1mri_nobias', 't1mri')
+    self.linkParameters('field', 't1mri_nobias')
+    self.linkParameters('hfiltered', 'field')
+    self.linkParameters('white_ridges', 'hfiltered')
+    self.linkParameters('variance', 'white_ridges')
+    self.linkParameters('edges', 'variance')
+    self.linkParameters('meancurvature', 'edges')
     self.setOptional('commissure_coordinates')
     
     self.signature[ 'ngrid' ].userLevel = 2
@@ -108,6 +124,11 @@ def initialization( self ):
     self.edge_mask = 'yes'
     self.delete_last_n_slices = 'auto (AC/PC Points needed)'
     self.fix_random_seed = False
+    self.modality = 'T1'
+    self.use_existing_ridges = False
+    #self.linkParameters('white_ridges', 'use_existing_ridges',
+                        #change_wridges_io)
+    self.addLink(None, 'use_existing_ridges', self.change_wridges_io)
 
 
 def execution( self, context ):
@@ -127,36 +148,41 @@ def execution( self, context ):
             context.write(self.t1mri_nobias.fullName(), ' has been locked')
             context.write('Remove', self.t1mri_nobias.fullName(), '.loc if you want to trigger a new correction')
         else:
-            command = [ 'VipT1BiasCorrection', '-i', self.t1mri,
-                        '-o', self.t1mri_nobias,
-                        '-Fwrite', self.write_field,
-                        '-field', self.field,
-                        '-Wwrite', self.write_wridges,
-                        '-wridge', self.white_ridges,
-                        '-Kregul', self.field_rigidity,
-                        '-sampling', self.sampling,
-                        '-Kcrest', self.wridges_weight,
-                        '-Grid', self.ngrid,
-                        '-ZregulTuning', self.zdir_multiply_regul,
-                        '-vp', self.variance_fraction,
-                        '-e', edge,
-                        '-eWrite', self.write_edges,
-                        '-ename', self.edges,
-                        '-vWrite', self.write_variance,
-                        '-vname', self.variance,
-                        '-mWrite', self.write_meancurvature,
-                        '-mname', self.meancurvature,
-                        '-hWrite', self.write_hfiltered,
-                        '-hname', self.hfiltered,
-                        '-Last', self.delete_last_n_slices ]
+            command = ['VipT1BiasCorrection', '-i', self.t1mri,
+                       '-o', self.t1mri_nobias,
+                       '-Fwrite', self.write_field,
+                       '-field', self.field,
+                       '-wridge', self.white_ridges,
+                       '-Kregul', self.field_rigidity,
+                       '-sampling', self.sampling,
+                       '-Kcrest', self.wridges_weight,
+                       '-Grid', self.ngrid,
+                       '-ZregulTuning', self.zdir_multiply_regul,
+                       '-vp', self.variance_fraction,
+                       '-e', edge,
+                       '-eWrite', self.write_edges,
+                       '-ename', self.edges,
+                       '-vWrite', self.write_variance,
+                       '-vname', self.variance,
+                       '-mWrite', self.write_meancurvature,
+                       '-mname', self.meancurvature,
+                       '-hWrite', self.write_hfiltered,
+                       '-hname', self.hfiltered,
+                       '-Last', self.delete_last_n_slices,
+                       '-Cw', self.modality]
             if self.commissure_coordinates is not None:
                 command += ['-Points', self.commissure_coordinates]
             if self.mode == 'write_minimal without correction':
                 command += ['-Dcorrect', 'n']
             if self.fix_random_seed:
                 command += ['-srand', '10']
+            if self.use_existing_ridges:
+                command += ['-Wwrite', 'r']
+            else:
+                command += ['-Wwrite', self.write_wridges]
+
             context.system( *command )
-            
+
             tm = registration.getTransformationManager()
             tm.copyReferential(self.t1mri, self.t1mri_nobias)
             if self.write_field:
