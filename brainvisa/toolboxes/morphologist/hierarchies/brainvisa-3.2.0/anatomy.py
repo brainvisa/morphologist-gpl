@@ -273,10 +273,12 @@ insert('snapshots/spm8',
 tables_content = (
     "sulcalopenings_morphologist", SetType('Sulcal Openings Table'), SetWeakAttr('software', 'morphologist'),
     "tissues_volumes_morphologist", SetType('Global Volumetry Table'), SetWeakAttr('software', 'morphologist'),
-    "tissues_volumes_spm8", SetType('Global Volumetry Table'), SetWeakAttr('software', 'spm8'),
     "history_sulcalopenings_morphologist", SetType('History Sulcal Openings Table'), SetWeakAttr('software', 'morphologist'),
     "history_tissues_volumes_morphologist", SetType('History Global Volumetry Table'), SetWeakAttr('software', 'morphologist'),
-    "history_tissues_volumes_spm8", SetType('History Global Volumetry Table'), SetWeakAttr('software', 'spm8')
+    "tissues_volumes_spm8", SetType('Global Volumetry Table'), SetWeakAttr('software', 'spm8'),
+    "history_tissues_volumes_spm8", SetType('History Global Volumetry Table'), SetWeakAttr('software', 'spm8'),
+    "snapshots_features_morphologist", SetType('Snapshots Features Table'), SetWeakAttr('software', 'morphologist'),
+    "snapshots_features_spm8", SetType('Snapshots Features Table'), SetWeakAttr('software', 'spm8')
 )
 
 apply( insert, ('tables', ) + \
