@@ -1,0 +1,17 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+.. raw:: html
+
+    <!-- Block section -->
+    <table border='1' class='docutils' style='width:100%'>
+    <colgroup><col width='25%'/><col width='75%'/></colgroup>
+    <tbody valign='top'>
+    <tr class='row-odd'>
+    <td><a class='reference internal' href='pipeline/morphologist.process.customized.morphologist.CustomMorphologist.html'><em>customized.morphologist.CustomMorphologist</em></a></td>
+
+    <td></td>
+    </tr>
+    </tbody>
+
+
+    </table>

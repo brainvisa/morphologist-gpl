@@ -1,0 +1,57 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+.. raw:: html
+
+    <!-- Block section -->
+    <table border='1' class='docutils' style='width:100%'>
+    <colgroup><col width='25%'/><col width='75%'/></colgroup>
+    <tbody valign='top'>
+    <tr class='row-odd'>
+    <td><a class='reference internal' href='pipeline/morphologist.capsul.BaladinNormalizationPipeline.BaladinNormalizationPipeline.html'><em>BaladinNormalizationPipeline.BaladinNormalizationPipeline</em></a></td>
+
+    <td></td>
+    </tr>
+    <tr class='row-odd'>
+    <td><a class='reference internal' href='pipeline/morphologist.capsul.FSLnormalizationPipeline.FSLnormalizationPipeline.html'><em>FSLnormalizationPipeline.FSLnormalizationPipeline</em></a></td>
+
+    <td></td>
+    </tr>
+    <tr class='row-odd'>
+    <td><a class='reference internal' href='pipeline/morphologist.capsul.SPMnormalizationPipeline.SPMnormalizationPipeline.html'><em>SPMnormalizationPipeline.SPMnormalizationPipeline</em></a></td>
+
+    <td></td>
+    </tr>
+    <tr class='row-odd'>
+    <td><a class='reference internal' href='pipeline/morphologist.capsul.acpcOrNormalization.acpcOrNormalization.html'><em>acpcOrNormalization.acpcOrNormalization</em></a></td>
+
+    <td></td>
+    </tr>
+    <tr class='row-odd'>
+    <td><a class='reference internal' href='pipeline/morphologist.capsul.morphologist.morphologist.html'><em>morphologist.morphologist</em></a></td>
+
+    <td></td>
+    </tr>
+    <tr class='row-odd'>
+    <td><a class='reference internal' href='pipeline/morphologist.capsul.normalizationPipeline.normalizationPipeline.html'><em>normalizationPipeline.normalizationPipeline</em></a></td>
+
+    <td></td>
+    </tr>
+    <tr class='row-odd'>
+    <td><a class='reference internal' href='pipeline/morphologist.capsul.normalization_skullstripped.normalization_skullstripped.html'><em>normalization_skullstripped.normalization_skullstripped</em></a></td>
+
+    <td></td>
+    </tr>
+    <tr class='row-odd'>
+    <td><a class='reference internal' href='pipeline/morphologist.capsul.recognitionGeneral.recognitionGeneral.html'><em>recognitionGeneral.recognitionGeneral</em></a></td>
+
+    <td></td>
+    </tr>
+    <tr class='row-odd'>
+    <td><a class='reference internal' href='pipeline/morphologist.capsul.spam_recognition.spam_recognition.html'><em>spam_recognition.spam_recognition</em></a></td>
+
+    <td></td>
+    </tr>
+    </tbody>
+
+
+    </table>
