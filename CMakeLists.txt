@@ -31,5 +31,9 @@ add_test(morphologist-tests "${CMAKE_BINARY_DIR}/bin/bv_env" "${PYTHON_EXECUTABL
 add_test(morphologist-test-capsul "${CMAKE_BINARY_DIR}/bin/bv_env" "${PYTHON_EXECUTABLE}" -m morphologist.tests.test_morphologist_capsul)
 set_tests_properties(morphologist-test-capsul PROPERTIES DEPENDS morphologist-tests)
 
+find_package( Sphinx )
+BRAINVISA_GENERATE_SPHINX_DOC( "sphinx"
+  "share/doc/morphologist-${BRAINVISA_PACKAGE_VERSION_MAJOR}.${BRAINVISA_PACKAGE_VERSION_MINOR}/sphinx" )
+
 BRAINVISA_CREATE_CMAKE_CONFIG_FILES()
 
