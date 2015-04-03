@@ -4,7 +4,7 @@ import re
 from soma.qt_gui import qt_backend
 qt_backend.set_qt_backend('PyQt4')
 from soma.qt_gui.qt_backend import QtGui
-from capsul.wip.qt_gui.activation_inspector import ActivationInspector
+from capsul.qt_gui.widgets.activation_inspector import ActivationInspector
 from capsul.pipeline import Pipeline
 from capsul.qt_gui.widgets import PipelineDevelopperView
 from morphologist.process.customized.morphologist import CustomMorphologist
@@ -35,7 +35,8 @@ mp = CustomMorphologist()
   ##mp = CustomMorphologist()
   #print i
 mpv = PipelineDevelopperView(mp, show_sub_pipelines=True, allow_open_controller=True)
-ai = ActivationInspector(mp,'/tmp/activations', mpv)
+ai = ActivationInspector(mp, record_file='/tmp/activations',
+                         developper_view=mpv)
 ai.show()
 mpv.show()
 app.exec_()
