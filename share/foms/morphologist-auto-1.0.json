@@ -47,7 +47,7 @@
 
             # PrepareSubject
 
-            "PrepareSubject_Normalization_commissures_coordinates": [["input:{acquisition}/<subject>", "Commissure coordinates"]],
+            # "PrepareSubject_Normalization_commissures_coordinates": [["input:{acquisition}/<subject>", "Commissure coordinates"]],
             # "PrepareSubject_commissure_coordinates": [["output:{acquisition}/<subject>", "Commissure coordinates"]],
             "normalization_transformation":
                 [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-MNI",
