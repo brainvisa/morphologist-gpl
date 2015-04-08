@@ -49,6 +49,8 @@ signature = Signature(
   'Interhemispheric_Point', Point3D(),
   'Left_Hemisphere_Point', Point3D(),
   'allow_flip_initial_MRI', Boolean(),
+  'reoriented_t1mri', WriteDiskItem('Raw T1 MRI',
+                                    'aims writable volume formats'),
   'remove_older_MNI_normalization', Boolean(),
   'older_MNI_normalization',
     ReadDiskItem( 'Transform Raw T1 MRI to Talairach-MNI template-SPM',
@@ -108,6 +110,7 @@ def initialization( self ):
                        'commissure_coordinates', APCReader( 'IH' ) )
   self.setOptional( 'Left_Hemisphere_Point' )
   self.allow_flip_initial_MRI = 0
+  self.linkParameters( 'reoriented_t1mri', 'T1mri' )
   self.linkParameters( 'Normalised', 'T1mri', linknorm )
   self.setOptional( 'older_MNI_normalization' )
   self.linkParameters( 'older_MNI_normalization', 'T1mri' )
@@ -320,7 +323,8 @@ def execution( self, context ):
                    + ', T = ' + str( flipmat[3:12:4] ) )
 
       context.system( 'AimsResample', '-i', self.T1mri.fullPath(),
-                      '-o', self.T1mri.fullPath(), '-m', mfile.fullPath(),
+                      '-o', self.reoriented_t1mri.fullPath(),
+                      '-m', mfile.fullPath(),
                       '--sx', vs2[0], '--sy', vs2[1], '--sz', vs2[2],
                       '--dx', dims4[0], '--dy', dims4[1], '--dz', dims4[2],
                       '--type', 'nearest' )
@@ -332,12 +336,14 @@ def execution( self, context ):
       context.write( 'new PC:', pcmm )
       context.write( 'new IP:', ipmm )
       vs = vs2
-      # reload image in Anatomist
-      a = anatomist.Anatomist( create=False ) # test if anatomist is started
-      if a:
-        object=a.getObject(self.T1mri.fullPath())
-        if object is not None:
-          a.reloadObjects([object])
+
+      if self.T1mri == self.reoriented_t1mri:
+        # reload image in Anatomist
+        a = anatomist.Anatomist( create=False ) # test if anatomist is started
+        if a:
+          object=a.getObject(self.T1mri.fullPath())
+          if object is not None:
+            a.reloadObjects([object])
 
     ac = [ int( acmm[0] / vs[0] +0.5 ), int( acmm[1] / vs[1] +0.5),
            int( acmm[2] / vs[2] +0.5) ]

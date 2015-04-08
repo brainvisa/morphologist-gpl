@@ -42,9 +42,11 @@ userLevel = 0
 
 signature = Signature(
   'T1mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.aimsVolumeFormats ),
-  'commissure_coordinates', WriteDiskItem( 'Commissure coordinates',
-    'Commissure coordinates'),
+  'commissure_coordinates', WriteDiskItem('Commissure coordinates',
+                                          'Commissure coordinates'),
   'allow_flip_initial_MRI', Boolean(),
+  'reoriented_t1mri', WriteDiskItem('Raw T1 MRI',
+                                    'aims writable volume formats'),
   )
 
 def initialization( self ):
@@ -75,14 +77,12 @@ def initialization( self ):
       ProcessExecutionNode( ps, selected=sel ) )
     self.selection_outputs.append(['commissure_coordinates', 'T1mri'])
 
-    eNode.addLink( 'StandardACPC.T1mri', 'T1mri' )
-    eNode.addLink( 'T1mri', 'StandardACPC.T1mri' )
-    eNode.addDoubleLink( 'StandardACPC.commissure_coordinates',
-      'commissure_coordinates' )
-    eNode.addLink( 'StandardACPC.allow_flip_initial_MRI',
-      'allow_flip_initial_MRI' )
-    eNode.addLink( 'allow_flip_initial_MRI',
-      'StandardACPC.allow_flip_initial_MRI' )
+    eNode.addDoubleLink('StandardACPC.T1mri', 'T1mri')
+    eNode.addDoubleLink('StandardACPC.commissure_coordinates',
+      'commissure_coordinates')
+    eNode.addDoubleLink('StandardACPC.allow_flip_initial_MRI',
+      'allow_flip_initial_MRI')
+    eNode.addDoubleLink('reoriented_t1mri', 'StandardACPC.reoriented_t1mri')
 
   if np:
     eNode1 = SerialExecutionNode( 'Normalization', selected=1 )
@@ -91,6 +91,7 @@ def initialization( self ):
     eNode1.addChild( 'TalairachFromNormalization',
       ProcessExecutionNode( 'TalairachTransformationFromNormalization' ) )
     eNode.addChild( 'Normalization', eNode1 )
+
     # eNode1.Normalization.removeLink( 'commissures_coordinates', 't1mri' )
     # eNode1.addDoubleLink( 'Normalization.commissures_coordinates', 
     #   'TalairachFromNormalization.commissure_coordinates' )
@@ -98,25 +99,23 @@ def initialization( self ):
       'TalairachFromNormalization.commissure_coordinates',
       'Normalization.reoriented_t1mri'])
 
-    eNode.addLink( 'Normalization.Normalization.t1mri', 'T1mri' )
-    eNode.addLink( 'T1mri', 'Normalization.Normalization.t1mri' )
-    eNode.addLink( 'Normalization.Normalization.allow_flip_initial_MRI',
+    eNode.addDoubleLink( 'Normalization.Normalization.t1mri', 'T1mri' )
+    eNode.addDoubleLink( 'Normalization.Normalization.allow_flip_initial_MRI',
       'allow_flip_initial_MRI' )
-    eNode.addLink( 'allow_flip_initial_MRI',
-      'Normalization.Normalization.allow_flip_initial_MRI' )
+    eNode.addDoubleLink('reoriented_t1mri',
+                        'Normalization.Normalization.reoriented_t1mri')
 
     if ps:
       eNode1.TalairachFromNormalization.removeLink( 'commissure_coordinates',
         'Talairach_transform' )
-    eNode1.TalairachFromNormalization.removeLink( 't1mri', 'commissure_coordinates' )
+    eNode1.TalairachFromNormalization.removeLink( 't1mri',
+                                                 'commissure_coordinates' )
 
-    eNode.addLink( 'Normalization.TalairachFromNormalization.t1mri', 'T1mri' )
-    eNode.addLink( 'T1mri', 'Normalization.TalairachFromNormalization.t1mri' )
-    eNode.addLink( \
+    eNode.addDoubleLink( 'Normalization.TalairachFromNormalization.t1mri',
+                        'reoriented_t1mri' )
+    eNode.addDoubleLink( \
       'Normalization.TalairachFromNormalization.normalization_transformation',
       'Normalization.Normalization.transformation' )
-    eNode.addLink( 'Normalization.Normalization.transformation',
-      'Normalization.TalairachFromNormalization.normalization_transformation' )
     eNode.addDoubleLink( \
       'Normalization.TalairachFromNormalization.commissure_coordinates',
       'commissure_coordinates' )

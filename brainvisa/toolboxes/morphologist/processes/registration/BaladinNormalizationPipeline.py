@@ -39,26 +39,29 @@ import types
 name = 'Baladin Normalization Pipeline'
 userLevel=1
 
-def validation():
-	import distutils.spawn
-	try:
-		from soma import aims
-	except:
-		raise ValidationError( 'aims module not here' )
-	if not distutils.spawn.find_executable('baladin'):
-		raise ValidationError(_t_("'baladin' commandline " + \
-					"could not be found in PATH"))
+#def validation():
+  #import distutils.spawn
+  #try:
+    #from soma import aims
+  #except:
+    #raise ValidationError( 'aims module not here' )
+  #if not distutils.spawn.find_executable('baladin'):
+    #raise ValidationError(_t_("'baladin' commandline " + \
+                            #"could not be found in PATH"))
+
 signature = Signature(
   't1mri', ReadDiskItem( 'Raw T1 MRI',
     ['NIFTI-1 image', 'gz compressed NIFTI-1 image'] ),
   'transformation',
     WriteDiskItem( 'Transform Raw T1 MRI to Talairach-MNI template-SPM',
-      'Transformation matrix', requiredAttributes=
-	{'destination_referential' : str(registration.talairachMNIReferentialId)} ),
+      'Transformation matrix'), #, requiredAttributes=
+	#{'destination_referential' : str(registration.talairachMNIReferentialId)} ),
   'template', ReadDiskItem( "anatomical Template",
     ['NIFTI-1 image', 'gz compressed NIFTI-1 image'] ),
   'set_transformation_in_source_volume', Boolean(),
   'allow_flip_initial_MRI', Boolean(), 
+  'reoriented_t1mri', WriteDiskItem("Raw T1 MRI",
+                                    'aims writable volume formats'),
 )
 
 
@@ -81,6 +84,7 @@ def allowFlip( self, *args, **kwargs ):
 
 def initialization( self ):
   self.linkParameters( 'transformation', 't1mri' )
+  self.linkParameters( 'reoriented_t1mri', 't1mri' )
 
   eNode = SerialExecutionNode( self.name, parameterized=self )
 
@@ -92,50 +96,43 @@ def initialization( self ):
                   ProcessExecutionNode( 'reorientAnatomy', optional=True,
                   selected=False ) )
 
-  eNode.addLink( 'NormalizeBaladin.anatomy_data', 't1mri' )
-  eNode.addLink( 't1mri', 'NormalizeBaladin.anatomy_data' )
-  eNode.addLink( 'NormalizeBaladin.anatomical_template', 'template' )
-  eNode.addLink( 'template', 'NormalizeBaladin.anatomical_template' )
-
-  eNode.addLink( 'ConvertBaladinNormalizationToAIMS.source_volume', 't1mri' )
-  eNode.addLink( 't1mri', 'ConvertBaladinNormalizationToAIMS.source_volume' )
-
   eNode.ConvertBaladinNormalizationToAIMS.removeLink( 'registered_volume',
     'read' )
   eNode.ConvertBaladinNormalizationToAIMS.removeLink( 'source_volume', 'read' )
+  eNode.ReorientAnatomy.removeLink( 'transformation', 't1mri' )
+  eNode.ReorientAnatomy.removeLink( 'output_t1mri', 't1mri' )
+  eNode.ReorientAnatomy.removeLink( 'output_transformation', 'output_t1mri' )
 
-  eNode.addLink( \
+  eNode.addDoubleLink( 'NormalizeBaladin.anatomy_data', 't1mri' )
+  eNode.addDoubleLink( 'NormalizeBaladin.anatomical_template', 'template' )
+
+  eNode.addDoubleLink( 'ConvertBaladinNormalizationToAIMS.source_volume',
+                      't1mri' )
+
+
+  eNode.addDoubleLink( \
     'ConvertBaladinNormalizationToAIMS.set_transformation_in_source_volume',
     'set_transformation_in_source_volume' )
-  eNode.addLink( 'set_transformation_in_source_volume',
-    'ConvertBaladinNormalizationToAIMS.set_transformation_in_source_volume' )
-  eNode.addLink( 'transformation', 'ConvertBaladinNormalizationToAIMS.write' )
-  eNode.addLink( 'ConvertBaladinNormalizationToAIMS.write', 'transformation' )
+  eNode.addDoubleLink('ConvertBaladinNormalizationToAIMS.write',
+                      'ReorientAnatomy.transformation')
 
-  eNode.addLink( 'template',
+  eNode.addDoubleLink( 'template',
     'ConvertBaladinNormalizationToAIMS.registered_volume' )
-  eNode.addLink( 'ConvertBaladinNormalizationToAIMS.registered_volume',
-    'template' )
-  eNode.addLink( 'NormalizeBaladin.transformation_matrix',
+  eNode.addDoubleLink( 'NormalizeBaladin.transformation_matrix',
     'ConvertBaladinNormalizationToAIMS.read' )
-  eNode.addLink( 'ConvertBaladinNormalizationToAIMS.read',
-    'NormalizeBaladin.transformation_matrix' )
 
-  eNode.ReorientAnatomy.removeLink( 'transformation', 't1mri' )
-  eNode.addLink( 't1mri', 'ReorientAnatomy.t1mri' )
-  eNode.addLink( 'ReorientAnatomy.t1mri', 't1mri' )
-  eNode.addLink( 'transformation', 'ReorientAnatomy.transformation' )
-  eNode.addLink( 'ReorientAnatomy.transformation', 'transformation' )
-  eNode.addLink( 'allow_flip_initial_MRI',
+  eNode.addDoubleLink('t1mri', 'ReorientAnatomy.t1mri')
+  eNode.addDoubleLink('transformation',
+                      'ReorientAnatomy.output_transformation')
+  eNode.addDoubleLink( 'allow_flip_initial_MRI',
     'ReorientAnatomy.allow_flip_initial_MRI' )
-  eNode.addLink( 'ReorientAnatomy.allow_flip_initial_MRI',
-    'allow_flip_initial_MRI' )
+  eNode.addDoubleLink('reoriented_t1mri', 'ReorientAnatomy.output_t1mri')
 
   # this seems not to work automatically
   self.template = eNode.child('NormalizeBaladin').anatomical_template
   self.setExecutionNode( eNode )
 
-  self.allow_flip_initial_MRI = False
+  self.allow_flip_initial_MRI = True
   self.addLink( None, 'allow_flip_initial_MRI',
     ExecutionNode.MethodCallbackProxy( self.allowFlip ) )
   x = changeAllowFlip( self )

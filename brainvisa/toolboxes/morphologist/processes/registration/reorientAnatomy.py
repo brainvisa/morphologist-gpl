@@ -48,17 +48,34 @@ signature = Signature(
   'transformation',
     ReadDiskItem( 'Transform Raw T1 MRI to Talairach-MNI template-SPM',
       'Transformation matrix' ),
+  'output_transformation',
+    WriteDiskItem( 'Transform Raw T1 MRI to Talairach-MNI template-SPM',
+      'Transformation matrix' ),
   'commissures_coordinates', ReadDiskItem( 'Commissure coordinates',
+    'Commissure coordinates'),
+  'output_commissures_coordinates', WriteDiskItem( 'Commissure coordinates',
     'Commissure coordinates'),
   'allow_flip_initial_MRI', Boolean(),
 )
 
 
+def linkCommissures(self, proc, dummy):
+  if proc.commissures_coordinates is None:
+    return None
+  return proc.signature['output_commissures_coordinates'].findValue(
+    proc.output_t1mri)
+
+
 def initialization( self ):
   self.linkParameters( 'output_t1mri', 't1mri' )
   self.linkParameters( 'transformation', 't1mri' )
+  self.linkParameters( 'output_transformation', 'output_t1mri' )
   self.linkParameters( 'commissures_coordinates', 't1mri' )
-  self.setOptional( 'commissures_coordinates' )
+  self.setOptional('commissures_coordinates',
+                   'output_commissures_coordinates')
+  self.linkParameters('output_commissures_coordinates',
+                      ('output_t1mri', 'commissures_coordinates'),
+                      self.linkCommissures)
   self.allow_flip_initial_MRI = False
 
 def execution( self, context ):
@@ -88,14 +105,34 @@ def execution( self, context ):
   if R.isIdentity():
     context.write( '<font color="#00c000">OK, the image seems to be in the ' \
       'correct orientation.</font>' )
+    if self.output_t1mri != self.t1mri:
+      context.runProcess('AimsConverter', self.t1mri, self.output_t1mri)
+    if self.commissures_coordinates is not None \
+        and self.output_commissures_coordinates is not None \
+        and self.output_commissures_coordinates \
+          != self.commissures_coordinates:
+      open(self.output_commissures_coordinates.fullPath(),
+           'w').write(open(self.commissures_coordinates.fullPath()).read())
+    if self.output_transformation != self.transformation:
+      tr = aims.read(self.transformation.fullPath())
+      aims.write(tr, self.output_transformation.fullPath())
     return
-  if not self.t1mri.isWriteable() or not self.transformation.isWriteable():
+
+  if (self.t1mri == self.output_t1mri and
+      (not self.allow_flip_initial_MRI or not self.t1mri.isWriteable())) or \
+      (self.transformation == self.output_transformation and
+       (not self.allow_flip_initial_MRI or
+        not self.transformation.isWriteable())) or \
+      (self.commissures_coordinates is not None and
+       self.commissures_coordinates == self.output_commissures_coordinates and
+       (not self.allow_flip_initial_MRI or
+        not self.commissures_coordinates.isWriteable())):
     context.write( '<b>Image needs to be flipped</b>, but it cannot be ' \
-                   'written, so it won\'t change. Expect problems in ' \
+                   'written, so it will not change. Expect problems in ' \
                    'hemispheres separation and sulci recognition.' )
     return
   context.write( '<b><font color="#c00000">WARNING:</font> Flipping and ' \
-                 're-writing source image</b>' )
+                 're-writing image</b>' )
   dims = self.t1mri.get( 'volume_dimension' )[:3]
   vs = self.t1mri.get( 'voxel_size' )[:3]
   dimm = [ x*y for x,y in zip( dims, vs ) ]
@@ -126,11 +163,12 @@ def execution( self, context ):
   Q = M * R.inverse()
   context.write( 'new normalization matrix:' )
   context.write( Q )
-  aims.write( Q, self.transformation.fullPath() )
-  if self.commissures_coordinates is not None:
+  aims.write( Q, self.output_transformation.fullPath() )
+  if self.commissures_coordinates is not None \
+      and self.output_commissures_coordinates is not None:
     context.runProcess( 'transformAPC',
-      Commissure_coordinates=self.commissures_coordinates,
+      Commissures_coordinates=self.commissures_coordinates,
       destination_volume=self.output_t1mri,
-      output_coordinates=self.commissures_coordinates,
+      output_coordinates=self.output_commissures_coordinates,
       transformation=mfile )
 

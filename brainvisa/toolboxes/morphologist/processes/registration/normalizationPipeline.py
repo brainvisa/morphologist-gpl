@@ -68,6 +68,10 @@ signature = Signature(
   'allow_flip_initial_MRI', Boolean(),
   'commissures_coordinates', ReadDiskItem( 'Commissure Coordinates', 
       'Commissure Coordinates' ),
+  'reoriented_t1mri', WriteDiskItem("Raw T1 MRI",
+                                    'aims writable volume formats'),
+  'output_commissures_coordinates', WriteDiskItem('Commissure Coordinates',
+      'Commissure Coordinates'),
   )
 
 def initialization( self ):
@@ -85,9 +89,10 @@ def initialization( self ):
     bal = None
 
   self.linkParameters( 'transformation', 't1mri' )
-  self.allow_flip_initial_MRI = False
-  self.setOptional( 'commissures_coordinates' )
-  self.linkParameters( 'commissures_coordinates', 't1mri' )
+  self.allow_flip_initial_MRI = True
+  self.setOptional('commissures_coordinates', 'output_commissures_coordinates')
+  #self.linkParameters('commissures_coordinates', 't1mri')
+  self.linkParameters('reoriented_t1mri', 't1mri')
 
   eNode = SelectionExecutionNode( self.name, parameterized=self )
   # for "future" pipeline switch
@@ -99,29 +104,28 @@ def initialization( self ):
         selected=(spm is None) ) )
 
     eNode.NormalizeFSL.removeLink( 'transformation', 't1mri' )
-    eNode.addLink( 'NormalizeFSL.t1mri', 't1mri' )
-    eNode.addLink( 't1mri', 'NormalizeFSL.t1mri' )
-    eNode.addLink( 'NormalizeFSL.transformation', 'transformation' )
-    eNode.addLink( 'transformation', 'NormalizeFSL.transformation' )
-    eNode.addLink( 'NormalizeFSL.allow_flip_initial_MRI',
+    eNode.NormalizeFSL.removeLink( 'reoriented_t1mri', 't1mri' )
+    eNode.addDoubleLink( 'NormalizeFSL.t1mri', 't1mri' )
+    eNode.addDoubleLink( 'NormalizeFSL.transformation', 'transformation' )
+    eNode.addDoubleLink( 'NormalizeFSL.allow_flip_initial_MRI',
       'allow_flip_initial_MRI' )
-    eNode.addLink( 'allow_flip_initial_MRI',
-      'NormalizeFSL.allow_flip_initial_MRI' )
     eNode.NormalizeFSL.ReorientAnatomy.removeLink( 'commissures_coordinates', 
       't1mri' )
     eNode.addDoubleLink( 
       'NormalizeFSL.ReorientAnatomy.commissures_coordinates', 
       'commissures_coordinates' )
+    eNode.addDoubleLink('reoriented_t1mri', 'NormalizeFSL.reoriented_t1mri')
 
     eNode.selection_outputs.append(
       ['transformation', 'NormalizeFSL.normalized_anatomy_data',
-       'ReorientAnatomy.output_t1mri'] )
+       'reoriented_t1mri'] )
 
   if spm:
     eNode.addChild( 'NormalizeSPM',
       ProcessExecutionNode( spm, selected=1 ) )
 
     eNode.NormalizeSPM.removeLink( 'transformation', 't1mri' )
+    eNode.NormalizeSPM.removeLink( 'reoriented_t1mri', 't1mri' )
     eNode.addDoubleLink( 'NormalizeSPM.t1mri', 't1mri' )
     eNode.addDoubleLink( 'NormalizeSPM.transformation', 'transformation' )
     eNode.addDoubleLink( 'NormalizeSPM.allow_flip_initial_MRI',
@@ -131,10 +135,12 @@ def initialization( self ):
     eNode.addDoubleLink( 
       'NormalizeSPM.ReorientAnatomy.commissures_coordinates', 
       'commissures_coordinates' )
+    eNode.addDoubleLink('reoriented_t1mri', 'NormalizeSPM.reoriented_t1mri')
 
     eNode.selection_outputs.append(
-      ['transformation', 'NormalizeSPM.normalized_anatomy_data',
-       'ReorientAnatomy.output_t1mri'])
+      ['transformation',
+       'NormalizeSPM.normalized_anatomy_data',
+       'reoriented_t1mri'])
 
   if bal:
     eNode.addChild( 'NormalizeBaladin',
@@ -142,23 +148,22 @@ def initialization( self ):
         selected=(bal is None) ) )
 
     eNode.NormalizeBaladin.removeLink( 'transformation', 't1mri' )
-    eNode.addLink( 'NormalizeBaladin.t1mri', 't1mri' )
-    eNode.addLink( 't1mri', 'NormalizeBaladin.t1mri' )
-    eNode.addLink( 'NormalizeBaladin.transformation', 'transformation' )
-    eNode.addLink( 'transformation', 'NormalizeBaladin.transformation' )
-    eNode.addLink( 'NormalizeBaladin.allow_flip_initial_MRI',
+    eNode.NormalizeBaladin.removeLink( 'reoriented_t1mri', 't1mri' )
+    eNode.addDoubleLink( 'NormalizeBaladin.t1mri', 't1mri' )
+    eNode.addDoubleLink( 'NormalizeBaladin.transformation', 'transformation' )
+    eNode.addDoubleLink( 'NormalizeBaladin.allow_flip_initial_MRI',
       'allow_flip_initial_MRI' )
-    eNode.addLink( 'allow_flip_initial_MRI',
-      'NormalizeBaladin.allow_flip_initial_MRI' )
     eNode.NormalizeBaladin.ReorientAnatomy.removeLink( 
       'commissures_coordinates', 't1mri' )
-    eNode.addDoubleLink( 
+    eNode.addDoubleLink(
       'NormalizeBaladin.ReorientAnatomy.commissures_coordinates', 
       'commissures_coordinates' )
+    eNode.addDoubleLink('reoriented_t1mri',
+                        'NormalizeBaladin.reoriented_t1mri')
 
     eNode.selection_outputs.append(
       ['transformation', 'NormalizeBaladin.normalized_anatomy_data',
-       'ReorientAnatomy.output_t1mri'])
+       'reoriented_t1mri'])
 
   eNode.addChild( 'Normalization_AimsMIRegister',
     ProcessExecutionNode( 'normalization_aimsmiregister',

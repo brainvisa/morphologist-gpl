@@ -37,11 +37,11 @@ import brainvisa.tools.aimsGlobals as shfjGlobals
 from brainvisa import registration
 import os
 
-def validation():
-	import distutils.spawn
-	if not distutils.spawn.find_executable('baladin'):
-		raise ValidationError(_t_("'baladin' commandline " + \
-					"could not be found in PATH"))
+#def validation():
+	#import distutils.spawn
+	#if not distutils.spawn.find_executable('baladin'):
+		#raise ValidationError(_t_("'baladin' commandline " + \
+					#"could not be found in PATH"))
 
 name = 'Anatomy Normalization (using Baladin)'
 userLevel = 2
