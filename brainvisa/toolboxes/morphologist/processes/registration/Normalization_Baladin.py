@@ -37,57 +37,57 @@ import brainvisa.tools.aimsGlobals as shfjGlobals
 from brainvisa import registration
 import os
 
-#def validation():
-	#import distutils.spawn
-	#if not distutils.spawn.find_executable('baladin'):
-		#raise ValidationError(_t_("'baladin' commandline " + \
-					#"could not be found in PATH"))
+def validation():
+    import distutils.spawn
+    if not distutils.spawn.find_executable('baladin'):
+        raise ValidationError(_t_("'baladin' commandline " + \
+                    "could not be found in PATH"))
 
 name = 'Anatomy Normalization (using Baladin)'
 userLevel = 2
 
 # Baladin does not accept all image format -> conversion to .ima
 signature = Signature(
-	'anatomy_data', ReadDiskItem( "Raw T1 MRI", ['GIS Image']),
-	'anatomical_template', ReadDiskItem( "anatomical Template", ['GIS Image'] ),
-	'transformation_matrix', WriteDiskItem("baladin Transformation",
-							'Text file'),
-	'normalized_anatomy_data', WriteDiskItem( "Raw T1 MRI",
-		[ 'GIS image', 'NIFTI-1 image', 'gz compressed NIFTI-1 image' ],
-		requiredAttributes={	'normalized' : 'yes',
-					'normalization' : 'baladin'}
-	),
+    'anatomy_data', ReadDiskItem( "Raw T1 MRI", ['GIS Image']),
+    'anatomical_template', ReadDiskItem( "anatomical Template", ['GIS Image'] ),
+    'transformation_matrix', WriteDiskItem("baladin Transformation",
+                            'Text file'),
+    'normalized_anatomy_data', WriteDiskItem( "Raw T1 MRI",
+        [ 'GIS image', 'NIFTI-1 image', 'gz compressed NIFTI-1 image' ],
+        requiredAttributes={    'normalized' : 'yes',
+                    'normalization' : 'baladin'}
+    ),
 )
 
 def initialization( self ):
-	self.linkParameters("transformation_matrix", "anatomy_data")
-	self.linkParameters("normalized_anatomy_data", "anatomy_data")
-	self.anatomical_template = self.signature[ 'anatomical_template' ].findValue({'database' : neuroConfig.dataPath[0], 'Size' : '1 mm', 'skull_stripped' : 'no'})
+    self.linkParameters("transformation_matrix", "anatomy_data")
+    self.linkParameters("normalized_anatomy_data", "anatomy_data")
+    self.anatomical_template = self.signature[ 'anatomical_template' ].findValue({'database' : neuroConfig.dataPath[0], 'Size' : '1 mm', 'skull_stripped' : 'no'})
 
 def execution( self, context ):
-	anat = self.anatomy_data.fullPath()
-	template = self.anatomical_template.fullPath()
-	transformation = self.transformation_matrix.fullPath()
-	normanat = self.normalized_anatomy_data.fullPath()
+    anat = self.anatomy_data.fullPath()
+    template = self.anatomical_template.fullPath()
+    transformation = self.transformation_matrix.fullPath()
+    normanat = self.normalized_anatomy_data.fullPath()
 
-	if self.normalized_anatomy_data.format != 'GIS Image':
-		normanat2 = context.temporary('GIS Image')
-	else:	normanat2 = normanat
+    if self.normalized_anatomy_data.format != 'GIS Image':
+        normanat2 = context.temporary('GIS Image')
+    else:    normanat2 = normanat
 
-	anat_dim = anat.rstrip('ima') + 'dim'
-	template_dim = template.rstrip('ima') + 'dim'
+    anat_dim = anat.rstrip('ima') + 'dim'
+    template_dim = template.rstrip('ima') + 'dim'
 
-	# Baladin registration with some tuned values to work on a template.
-	context.system( 'baladin', '-ref', template_dim, '-flo', anat_dim,
-		'-res', normanat2, '-result-real-matrix', transformation,
-		'-result-matrix', '/dev/null', '-transformation', 'affine',
-		'-pyramid-levels' ,'4', '-pyramid-finest-level', '1',
-		'-max-iterations', '10', '-command-line', '/dev/null')
+    # Baladin registration with some tuned values to work on a template.
+    context.system( 'baladin', '-ref', template_dim, '-flo', anat_dim,
+        '-res', normanat2, '-result-real-matrix', transformation,
+        '-result-matrix', '/dev/null', '-transformation', 'affine',
+        '-pyramid-levels' ,'4', '-pyramid-finest-level', '1',
+        '-max-iterations', '10', '-command-line', '/dev/null')
 
-	if self.normalized_anatomy_data.format != 'GIS Image':
-		context.system( 'AimsFileConvert', '-i', normanat2,
-							'-o', normanat)
+    if self.normalized_anatomy_data.format != 'GIS Image':
+        context.system( 'AimsFileConvert', '-i', normanat2,
+                        '-o', normanat)
 
-	tm = registration.getTransformationManager()
-	tm.copyReferential(self.anatomical_template,
-			self.normalized_anatomy_data)
+    tm = registration.getTransformationManager()
+    tm.copyReferential(self.anatomical_template,
+            self.normalized_anatomy_data)

@@ -39,15 +39,15 @@ import types
 name = 'Baladin Normalization Pipeline'
 userLevel=1
 
-#def validation():
-  #import distutils.spawn
-  #try:
-    #from soma import aims
-  #except:
-    #raise ValidationError( 'aims module not here' )
-  #if not distutils.spawn.find_executable('baladin'):
-    #raise ValidationError(_t_("'baladin' commandline " + \
-                            #"could not be found in PATH"))
+def validation():
+  import distutils.spawn
+  try:
+    from soma import aims
+  except:
+    raise ValidationError( 'aims module not here' )
+  if not distutils.spawn.find_executable('baladin'):
+    raise ValidationError(_t_("'baladin' commandline " + \
+                            "could not be found in PATH"))
 
 signature = Signature(
   't1mri', ReadDiskItem( 'Raw T1 MRI',

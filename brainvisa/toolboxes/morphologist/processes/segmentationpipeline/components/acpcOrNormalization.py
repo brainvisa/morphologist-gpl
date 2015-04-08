@@ -66,7 +66,8 @@ def initialization( self ):
 
   # for "future" pipelines
   self.selection_outputs = []
-  self.switch_output = ['commissure_coordinates', 'reoriented_t1mri']
+  self.switch_output = ['commissure_coordinates', 'reoriented_t1mri',
+                        'taialrach_transformation']
 
   if ps:
     if np:
@@ -75,7 +76,8 @@ def initialization( self ):
       sel = 1
     eNode.addChild( 'StandardACPC',
       ProcessExecutionNode( ps, selected=sel ) )
-    self.selection_outputs.append(['commissure_coordinates', 'T1mri'])
+    self.selection_outputs.append(['commissure_coordinates',
+                                   'reoriented_t1mri', None])
 
     eNode.addDoubleLink('StandardACPC.T1mri', 'T1mri')
     eNode.addDoubleLink('StandardACPC.commissure_coordinates',
@@ -97,7 +99,8 @@ def initialization( self ):
     #   'TalairachFromNormalization.commissure_coordinates' )
     self.selection_outputs.append([
       'TalairachFromNormalization.commissure_coordinates',
-      'Normalization.reoriented_t1mri'])
+      'Normalization.reoriented_t1mri',
+      'TalairachFromNormalization.Talairach_transform'])
 
     eNode.addDoubleLink( 'Normalization.Normalization.t1mri', 'T1mri' )
     eNode.addDoubleLink( 'Normalization.Normalization.allow_flip_initial_MRI',
@@ -111,8 +114,8 @@ def initialization( self ):
     eNode1.TalairachFromNormalization.removeLink( 't1mri',
                                                  'commissure_coordinates' )
 
-    eNode.addDoubleLink( 'Normalization.TalairachFromNormalization.t1mri',
-                        'reoriented_t1mri' )
+    eNode.addDoubleLink('Normalization.Normalization.reoriented_t1mri',
+                        'Normalization.TalairachFromNormalization.t1mri')
     eNode.addDoubleLink( \
       'Normalization.TalairachFromNormalization.normalization_transformation',
       'Normalization.Normalization.transformation' )
