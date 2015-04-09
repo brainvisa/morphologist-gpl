@@ -22,6 +22,8 @@
                 [["input:{acquisition}/<subject>", "images"],
                 # ["input:{acquisition}/normalized_<normalization>_<subject>", "images"]
                 ],
+            "reoriented_t1mri":
+                [["output:{acquisition}/<subject>", "images"]],
             "commissure_coordinates":
                 [["output:{acquisition}/<subject>", "Commissure coordinates"]],
             "t1mri_nobias":
@@ -55,8 +57,8 @@
 #            "PrepareSubject_Normalization_normalized":
 #                [["output:{acquisition}/normalized_<normalization>_<subject>",
 #                    "images"]],
-            "reoriented_t1mri":
-                [["output:{acquisition}/<subject>", "images"]],
+#            "reoriented_t1mri":
+#                [["output:{acquisition}/<subject>", "images"]],
 
             ### AimsMIRegister
             "PrepareSubject_Normalization_Normalization_AimsMIRegister_anatomical_template": "{shared.anatomical_templates}",
@@ -279,20 +281,45 @@
         "acpcOrNormalization": {
         },
 
-        "TalairachTransformationFromNormalization": {
-            "commissure_coordinates":
-                [["output:{acquisition}/<subject>", "Commissure coordinates"]]
-        },
+        #"TalairachTransformationFromNormalization": {
+            #"commissure_coordinates":
+                #[["output:{acquisition}/<subject>", "Commissure coordinates"]]
+        #},
 
-        "preparesubject": {
-            "commissure_coordinates":
-                [["output:{acquisition}/<subject>", "Commissure coordinates"]]
+        #"preparesubject": {
+            #"commissure_coordinates":
+                #[["output:{acquisition}/<subject>", "Commissure coordinates"]]
+        #},
+
+        "CustomMorphologist.PrepareSubject.StandardACPC": {
+            # has to be re-specified here because of a problem in
+            # switch back-propagation of output values
+            "reoriented_t1mri":
+                [["output:{acquisition}/<subject>", "images"]],
         },
 
         "CustomMorphologist.PrepareSubject.Normalization.NormalizeSPM": {
             "normalized_t1mri":
                 [["output:{acquisition}/normalized_SPM_<subject>",
                     ["NIFTI", "SPM"]]],
+            # has to be re-specified here because of a problem in
+            # switch back-propagation of output values
+            "reoriented_t1mri":
+                [["output:{acquisition}/<subject>", "images"]],
+        },
+
+        "CustomMorphologist.PrepareSubject.Normalization.NormalizeFSL": {
+            # has to be re-specified here because of a problem in
+            # switch back-propagation of output values
+            "reoriented_t1mri":
+                [["output:{acquisition}/<subject>", "images"]],
+        },
+
+        "CustomMorphologist.PrepareSubject.Normalization.NormalizeBaladin": {
+            # has to be re-specified here because of a problem in
+            # switch back-propagation of output values
+            "reoriented_t1mri":
+                [["output:{acquisition}/<subject>", "images"]],
         }
     }
 }
