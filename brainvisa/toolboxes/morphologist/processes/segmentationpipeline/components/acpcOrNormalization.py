@@ -67,7 +67,7 @@ def initialization( self ):
   # for "future" pipelines
   self.selection_outputs = []
   self.switch_output = ['commissure_coordinates', 'reoriented_t1mri',
-                        'taialrach_transformation']
+                        'talairach_transformation']
 
   if ps:
     if np:
@@ -124,5 +124,8 @@ def initialization( self ):
       'commissure_coordinates' )
 
   self.setExecutionNode( eNode )
+
+  self.capsul_do_not_export = [
+    ('Normalization', 'output_commissures_coordinates'),]
 
 

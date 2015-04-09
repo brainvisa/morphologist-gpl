@@ -304,7 +304,8 @@ def initialization( self ):
         eNode.Renorm.TalairachFromNormalization.removeLink(
             'commissure_coordinates', 'Talairach_transform')
 
-        eNode.addDoubleLink( 'Renorm.t1mri', 't1mri' )
+        eNode.addDoubleLink('Renorm.t1mri',
+                            'PrepareSubject.reoriented_t1mri')
         eNode.addDoubleLink( 'Renorm.brain_mask',
                              'BrainSegmentation.brain_mask' )
         eNode.addDoubleLink('Renorm.transformation',
@@ -598,3 +599,8 @@ def initialization( self ):
     self.setExecutionNode( eNode )
 
     eNode.TalairachTransformation.setSelected( False )
+
+    self.capsul_do_not_export = [
+        ('GreyWhiteClassification', 'side'),
+        ('GreyWhiteClassification_1', 'side'), ]
+

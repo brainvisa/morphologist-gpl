@@ -58,6 +58,8 @@ signature = Signature(
     'talairach_transformation', WriteDiskItem(
       'Transform Raw T1 MRI to Talairach-AC/PC-Anatomist',
       'Transformation matrix'),
+    'commissure_coordinates', WriteDiskItem('Commissure coordinates',
+                                            'Commissure coordinates'),
 )
 
 def initialization( self ):
@@ -114,4 +116,10 @@ def initialization( self ):
     eNode.addDoubleLink(
         'TalairachFromNormalization.Talairach_transform',
         'talairach_transformation')
+    eNode.addDoubleLink('commissure_coordinates',
+                        'TalairachFromNormalization.commissure_coordinates')
+
+    self.capsul_do_not_export = [
+        ('Normalization', 'output_commissures_coordinates'), ]
+
 

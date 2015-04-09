@@ -114,6 +114,9 @@ def initialization( self ):
     eNode.addDoubleLink( 
       'NormalizeFSL.ReorientAnatomy.commissures_coordinates', 
       'commissures_coordinates' )
+    eNode.addDoubleLink(
+      'NormalizeFSL.ReorientAnatomy.output_commissures_coordinates',
+      'output_commissures_coordinates' )
     eNode.addDoubleLink('reoriented_t1mri', 'NormalizeFSL.reoriented_t1mri')
 
     eNode.selection_outputs.append(
@@ -135,6 +138,9 @@ def initialization( self ):
     eNode.addDoubleLink( 
       'NormalizeSPM.ReorientAnatomy.commissures_coordinates', 
       'commissures_coordinates' )
+    eNode.addDoubleLink(
+      'NormalizeSPM.ReorientAnatomy.output_commissures_coordinates',
+      'output_commissures_coordinates' )
     eNode.addDoubleLink('reoriented_t1mri', 'NormalizeSPM.reoriented_t1mri')
 
     eNode.selection_outputs.append(
@@ -158,6 +164,9 @@ def initialization( self ):
     eNode.addDoubleLink(
       'NormalizeBaladin.ReorientAnatomy.commissures_coordinates', 
       'commissures_coordinates' )
+    eNode.addDoubleLink(
+      'NormalizeBaladin.ReorientAnatomy.output_commissures_coordinates',
+      'output_commissures_coordinates' )
     eNode.addDoubleLink('reoriented_t1mri',
                         'NormalizeBaladin.reoriented_t1mri')
 
@@ -181,5 +190,10 @@ def initialization( self ):
   eNode.switch_output = ['transformation', 'normalized', 'reoriented_t1mri']
 
   self.setExecutionNode( eNode )
+
+  self.capsul_do_not_export = [
+    ('NormalizeFSL', 'ConvertFSLnormalizationToAIMS_write'),
+    ('NormalizeSPM', 'ConvertSPMnormalizationToAIMS_write'),
+    ('NormalizeBaladin', 'ConvertBaladinNormalizationToAIMS_write'),]
 
 
