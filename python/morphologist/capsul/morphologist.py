@@ -71,18 +71,19 @@ class morphologist(Pipeline):
         # export output parameter
         self.export_parameter('SulciRecognition_1', 'output_graph', 'right_labelled_graph')
         # export output parameter
-        self.export_parameter('Renorm', 'TalairachFromNormalization_commissure_coordinates', 'Renorm_TalairachFromNormalization_commissure_coordinates')
+        self.export_parameter('Renorm', 'commissure_coordinates', 'Renorm_commissure_coordinates')
         # export input parameter
         self.export_parameter('CorticalFoldsGraph', 'graph_version', 'CorticalFoldsGraph_graph_version')
+        self.do_not_export.update([('GreyWhiteClassification', 'side'), ('GreyWhiteClassification_1', 'side')])
 
         # links section
-        self.add_link('t1mri->BiasCorrection.t1mri')
-        self.add_link('t1mri->Renorm.t1mri')
         self.add_link('SplitBrain.split_brain->CorticalFoldsGraph.split_brain')
         self.add_link('SplitBrain.split_brain->CorticalFoldsGraph_1.split_brain')
+        self.add_link('PrepareSubject.reoriented_t1mri->BiasCorrection.t1mri')
+        self.add_link('PrepareSubject.reoriented_t1mri->Renorm.t1mri')
         self.add_link('PrepareSubject.commissure_coordinates->BiasCorrection.commissure_coordinates')
         self.add_link('PrepareSubject.commissure_coordinates->BrainSegmentation.commissure_coordinates')
-        self.add_link('PrepareSubject.commissure_coordinates->Renorm_TalairachFromNormalization_commissure_coordinates')
+        self.add_link('PrepareSubject.commissure_coordinates->Renorm_commissure_coordinates')
         self.add_link('PrepareSubject.commissure_coordinates->SplitBrain.commissure_coordinates')
         self.add_link('PrepareSubject.commissure_coordinates->TalairachTransformation.commissure_coordinates')
         self.add_link('PrepareSubject.commissure_coordinates->GreyWhiteClassification.commissure_coordinates')

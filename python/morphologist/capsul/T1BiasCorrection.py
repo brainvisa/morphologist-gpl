@@ -37,6 +37,8 @@ class T1BiasCorrection(Process):
         self.add_trait('write_meancurvature', Enum('yes', 'no'))
         self.add_trait('meancurvature', File(allowed_extensions=['.nii.gz', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', ''], output=True))
         self.add_trait('fix_random_seed', Bool())
+        self.add_trait('modality', Enum('T1', 'T2'))
+        self.add_trait('use_existing_ridges', Bool())
 
 
         # initialization section
@@ -56,6 +58,8 @@ class T1BiasCorrection(Process):
         self.write_edges = 'yes'
         self.write_meancurvature = 'no'
         self.fix_random_seed = False
+        self.modality = 'T1'
+        self.use_existing_ridges = False
 
     def _run_process(self):
         from brainvisa import axon

@@ -20,6 +20,7 @@ class preparesubject(Process):
         self.add_trait('Interhemispheric_Point', List(trait=Float(), minlen=3, maxlen=3, value=[0, 0, 0], optional=True))
         self.add_trait('Left_Hemisphere_Point', List(trait=Float(), minlen=3, maxlen=3, value=[0, 0, 0], optional=True))
         self.add_trait('allow_flip_initial_MRI', Bool())
+        self.add_trait('reoriented_t1mri', File(allowed_extensions=['.nii.gz', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', ''], output=True))
         self.add_trait('remove_older_MNI_normalization', Bool())
         self.add_trait('older_MNI_normalization', File(allowed_extensions=['.trm'], optional=True))
 

@@ -13,7 +13,7 @@ class GreyWhiteMesh(Process):
     def __init__(self, **kwargs):
         super(GreyWhiteMesh, self).__init__()
         self.add_trait('hemi_cortex', File(allowed_extensions=['.nii.gz', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '']))
-        self.add_trait('white_mesh', File(allowed_extensions=['.gii', '.tri', '.mesh', '.ply', '.obj'], output=True))
+        self.add_trait('white_mesh', File(allowed_extensions=['.gii', '.obj', '.tri', '.mesh', '.ply'], output=True))
 
 
     def _run_process(self):

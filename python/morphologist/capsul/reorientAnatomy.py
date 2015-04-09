@@ -15,7 +15,9 @@ class reorientAnatomy(Process):
         self.add_trait('t1mri', File(allowed_extensions=['.nii.gz', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '']))
         self.add_trait('output_t1mri', File(allowed_extensions=['.nii.gz', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', ''], output=True))
         self.add_trait('transformation', File(allowed_extensions=['.trm']))
+        self.add_trait('output_transformation', File(allowed_extensions=['.trm'], output=True))
         self.add_trait('commissures_coordinates', File(allowed_extensions=['.APC'], optional=True))
+        self.add_trait('output_commissures_coordinates', File(allowed_extensions=['.APC'], output=True, optional=True))
         self.add_trait('allow_flip_initial_MRI', Bool())
 
 

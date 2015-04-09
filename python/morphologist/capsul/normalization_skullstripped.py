@@ -39,6 +39,9 @@ class normalization_skullstripped(Pipeline):
         self.export_parameter('Normalization', 'transformation', 'transformation')
         # export output parameter
         self.export_parameter('TalairachFromNormalization', 'Talairach_transform', 'talairach_transformation')
+        # export output parameter
+        self.export_parameter('TalairachFromNormalization', 'commissure_coordinates', 'commissure_coordinates')
+        self.do_not_export.update([('Normalization', 'output_commissures_coordinates')])
 
         # links section
         self.add_link('t1mri->TalairachFromNormalization.t1mri')

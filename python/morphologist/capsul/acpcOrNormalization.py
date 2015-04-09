@@ -22,7 +22,7 @@ class acpcOrNormalization(Pipeline):
 
     def pipeline_definition(self):
         # nodes section
-        self.add_switch('select_AC_PC_Or_Normalization', ['StandardACPC', 'Normalization'], ['commissure_coordinates', 'reoriented_t1mri'])
+        self.add_switch('select_AC_PC_Or_Normalization', ['StandardACPC', 'Normalization'], ['commissure_coordinates', 'reoriented_t1mri', 'talairach_transformation'])
         self.add_process('StandardACPC', 'morphologist.capsul.preparesubject.preparesubject')
         self.nodes['StandardACPC']._weak_outputs = True
         self.add_process('Normalization', 'morphologist.capsul.normalizationPipeline.normalizationPipeline')
@@ -39,15 +39,20 @@ class acpcOrNormalization(Pipeline):
         self.export_parameter('StandardACPC', 'allow_flip_initial_MRI', 'allow_flip_initial_MRI')
         # export output parameter
         self.export_parameter('select_AC_PC_Or_Normalization', 'reoriented_t1mri', 'reoriented_t1mri')
+        # export output parameter
+        self.export_parameter('select_AC_PC_Or_Normalization', 'talairach_transformation', 'talairach_transformation')
+        self.do_not_export.add(('select_AC_PC_Or_Normalization', 'StandardACPC_switch_talairach_transformation'))
+        self.do_not_export.update([('Normalization', 'output_commissures_coordinates')])
 
         # links section
         self.add_link('T1mri->Normalization.t1mri')
-        self.add_link('T1mri->TalairachFromNormalization.t1mri')
         self.add_link('allow_flip_initial_MRI->Normalization.allow_flip_initial_MRI')
         self.add_link('StandardACPC.commissure_coordinates->select_AC_PC_Or_Normalization.StandardACPC_switch_commissure_coordinates')
-        self.add_link('T1mri->select_AC_PC_Or_Normalization.StandardACPC_switch_reoriented_t1mri')
+        self.add_link('StandardACPC.reoriented_t1mri->select_AC_PC_Or_Normalization.StandardACPC_switch_reoriented_t1mri')
         self.add_link('TalairachFromNormalization.commissure_coordinates->select_AC_PC_Or_Normalization.Normalization_switch_commissure_coordinates')
         self.add_link('Normalization.reoriented_t1mri->select_AC_PC_Or_Normalization.Normalization_switch_reoriented_t1mri')
+        self.add_link('TalairachFromNormalization.Talairach_transform->select_AC_PC_Or_Normalization.Normalization_switch_talairach_transformation')
+        self.add_link('Normalization.reoriented_t1mri->TalairachFromNormalization.t1mri')
         self.add_link('Normalization.transformation->TalairachFromNormalization.normalization_transformation')
 
         # initialization section

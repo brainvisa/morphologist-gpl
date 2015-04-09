@@ -30,20 +30,22 @@ class BaladinNormalizationPipeline(Pipeline):
         # export input parameter
         self.export_parameter('NormalizeBaladin', 'anatomy_data', 't1mri')
         # export output parameter
-        self.export_parameter('ConvertBaladinNormalizationToAIMS', 'write', 'transformation')
+        self.export_parameter('ReorientAnatomy', 'output_transformation', 'transformation')
         # export input parameter
         self.export_parameter('NormalizeBaladin', 'anatomical_template', 'template')
         # export input parameter
         self.export_parameter('ConvertBaladinNormalizationToAIMS', 'set_transformation_in_source_volume', 'set_transformation_in_source_volume')
         # export input parameter
         self.export_parameter('ReorientAnatomy', 'allow_flip_initial_MRI', 'allow_flip_initial_MRI')
+        # export output parameter
+        self.export_parameter('ReorientAnatomy', 'output_t1mri', 'reoriented_t1mri')
 
         # links section
         self.add_link('t1mri->ConvertBaladinNormalizationToAIMS.source_volume')
         self.add_link('t1mri->ReorientAnatomy.t1mri')
-        self.add_link('ConvertBaladinNormalizationToAIMS.write->ReorientAnatomy.transformation')
         self.add_link('template->ConvertBaladinNormalizationToAIMS.registered_volume')
         self.add_link('NormalizeBaladin.transformation_matrix->ConvertBaladinNormalizationToAIMS.read')
+        self.add_link('ConvertBaladinNormalizationToAIMS.write->ReorientAnatomy.transformation')
 
         # initialization section
         self.nodes_activation.ReorientAnatomy = False

@@ -30,7 +30,7 @@ class SPMnormalizationPipeline(Pipeline):
         # export input parameter
         self.export_parameter('NormalizeSPM', 'anatomy_data', 't1mri')
         # export output parameter
-        self.export_parameter('ConvertSPMnormalizationToAIMS', 'write', 'transformation')
+        self.export_parameter('ReorientAnatomy', 'output_transformation', 'transformation')
         # export output parameter
         self.export_parameter('NormalizeSPM', 'transformations_informations', 'spm_transformation')
         # export output parameter
@@ -41,15 +41,16 @@ class SPMnormalizationPipeline(Pipeline):
         self.export_parameter('ReorientAnatomy', 'allow_flip_initial_MRI', 'allow_flip_initial_MRI')
         # export input parameter
         self.export_parameter('NormalizeSPM', 'allow_retry_initialization', 'allow_retry_initialization')
+        # export output parameter
+        self.export_parameter('ReorientAnatomy', 'output_t1mri', 'reoriented_t1mri')
 
         # links section
         self.add_link('t1mri->ConvertSPMnormalizationToAIMS.source_volume')
         self.add_link('t1mri->ReorientAnatomy.t1mri')
-        self.add_link('ConvertSPMnormalizationToAIMS.write->ReorientAnatomy.transformation')
         self.add_link('NormalizeSPM.transformations_informations->ConvertSPMnormalizationToAIMS.read')
+        self.add_link('ConvertSPMnormalizationToAIMS.write->ReorientAnatomy.transformation')
 
         # initialization section
-        self.nodes_activation.ReorientAnatomy = False
         # export orphan parameters
         if not hasattr(self, '_autoexport_nodes_parameters') \
                 or self._autoexport_nodes_parameters:

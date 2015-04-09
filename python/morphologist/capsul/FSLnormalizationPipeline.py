@@ -30,7 +30,7 @@ class FSLnormalizationPipeline(Pipeline):
         # export input parameter
         self.export_parameter('NormalizeFSL', 'anatomy_data', 't1mri')
         # export output parameter
-        self.export_parameter('ConvertFSLnormalizationToAIMS', 'write', 'transformation')
+        self.export_parameter('ReorientAnatomy', 'output_transformation', 'transformation')
         # export input parameter
         self.export_parameter('NormalizeFSL', 'anatomical_template', 'template')
         # export input parameter
@@ -41,13 +41,15 @@ class FSLnormalizationPipeline(Pipeline):
         self.export_parameter('ReorientAnatomy', 'allow_flip_initial_MRI', 'allow_flip_initial_MRI')
         # export input parameter
         self.export_parameter('NormalizeFSL', 'allow_retry_initialization', 'allow_retry_initialization')
+        # export output parameter
+        self.export_parameter('ReorientAnatomy', 'output_t1mri', 'reoriented_t1mri')
 
         # links section
         self.add_link('t1mri->ConvertFSLnormalizationToAIMS.source_volume')
         self.add_link('t1mri->ReorientAnatomy.t1mri')
         self.add_link('template->ConvertFSLnormalizationToAIMS.registered_volume')
-        self.add_link('ConvertFSLnormalizationToAIMS.write->ReorientAnatomy.transformation')
         self.add_link('NormalizeFSL.transformation_matrix->ConvertFSLnormalizationToAIMS.read')
+        self.add_link('ConvertFSLnormalizationToAIMS.write->ReorientAnatomy.transformation')
 
         # initialization section
         self.nodes_activation.ReorientAnatomy = False

@@ -62,7 +62,7 @@ class CustomMorphologist(morphologist.capsul.morphologist.morphologist):
         self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes['Normalization_AimsMIRegister'].plugs['transformation_to_MNI'].optional = False
         self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes['Normalization_AimsMIRegister'].plugs['normalized_anatomy_data'].optional = False
 
-        self.nodes['PrepareSubject'].plugs['TalairachFromNormalization_Talairach_transform'].optional = True
+        self.nodes['PrepareSubject'].plugs['talairach_transformation'].optional = True
         self.nodes['PrepareSubject'].process.nodes['TalairachFromNormalization'].plugs['Talairach_transform'].optional = True
         self.nodes['PrepareSubject'].process.nodes['TalairachFromNormalization'].plugs['commissure_coordinates'].optional = False
 
@@ -104,13 +104,14 @@ class CustomMorphologist(morphologist.capsul.morphologist.morphologist):
             'Talairach_transform', 'Talairach_transform')
         self.add_link('perform_skull_stripped_renormalization->select_renormalization_transform.switch')
         self.add_link('PrepareSubject.commissure_coordinates->select_renormalization_commissures.initial_switch_commissure_coordinates')
-        self.add_link('PrepareSubject.TalairachFromNormalization_Talairach_transform->select_Talairach.Normalization_switch_Talairach_transform')
+        self.add_link('PrepareSubject.talairach_transformation->select_Talairach.Normalization_switch_Talairach_transform')
         self.add_link('select_Talairach.Talairach_transform->select_renormalization_transform.initial_switch_Talairach_transform')
-        self.add_link('Renorm.TalairachFromNormalization_commissure_coordinates->select_renormalization_commissures.skull_stripped_switch_commissure_coordinates')
+        self.add_link('Renorm.commissure_coordinates->select_renormalization_commissures.skull_stripped_switch_commissure_coordinates')
         self.add_link('Renorm.talairach_transformation->select_renormalization_transform.skull_stripped_switch_Talairach_transform')
 
-        self.remove_link('Renorm.TalairachFromNormalization_commissure_coordinates->Renorm_TalairachFromNormalization_commissure_coordinates')
-        self.remove_trait('Renorm_TalairachFromNormalization_commissure_coordinates')
+        self.remove_link('Renorm.commissure_coordinates->Renorm_commissure_coordinates')
+        self.remove_trait('Renorm_commissure_coordinates')
+
         # why does this one exist ? FIXME
         #self.remove_link('PrepareSubject.commissure_coordinates->Renorm_TalairachFromNormalization_commissure_coordinates')
 
@@ -187,11 +188,13 @@ class CustomMorphologist(morphologist.capsul.morphologist.morphologist):
 
         self.export_parameter(
           'PrepareSubject', 'reoriented_t1mri', is_optional=True)
+        self.nodes['PrepareSubject'].process.nodes['select_AC_PC_Or_Normalization'].plugs['talairach_transformation'].optional = True
+
         #self.add_link('Renorm.Normalization_reoriented_t1mri->reoriented_t1mri')
-        self.remove_link('t1mri->BiasCorrection.t1mri')
-        self.add_link('PrepareSubject.reoriented_t1mri->BiasCorrection.t1mri')
-        self.remove_link('t1mri->Renorm.t1mri')
-        self.add_link('PrepareSubject.reoriented_t1mri->Renorm.t1mri')
+        #self.remove_link('t1mri->BiasCorrection.t1mri')
+        #self.add_link('PrepareSubject.reoriented_t1mri->BiasCorrection.t1mri')
+        #self.remove_link('t1mri->Renorm.t1mri')
+        #self.add_link('PrepareSubject.reoriented_t1mri->Renorm.t1mri')
 
         self.do_not_export.add(('Renorm', 'Normalization_reoriented_t1mri'))
         self.nodes['Renorm'].process.nodes['Normalization'].plugs['reoriented_t1mri'].optional = True
@@ -229,8 +232,10 @@ class CustomMorphologist(morphologist.capsul.morphologist.morphologist):
         if autoexport_nodes_parameters:
             self.autoexport_nodes_parameters()
 
-        self.GreyWhiteClassification_side = 'left'
-        self.GreyWhiteClassification_1_side = 'right'
+        self.nodes['GreyWhiteClassification'].plugs['side'].optional = True
+        self.nodes['GreyWhiteClassification'].set_plug_value('side', 'left')
+        self.nodes['GreyWhiteClassification_1'].plugs['side'].optional = True
+        self.nodes['GreyWhiteClassification_1'].set_plug_value('side', 'right')
 
         # nodes position in Pipeline*View
         self.node_position = {'BiasCorrection': (210.9, 1149.7),
@@ -343,24 +348,25 @@ class CustomMorphologist(morphologist.capsul.morphologist.morphologist):
             = self.nodes['SulciRecognition'].process \
                 .nodes['SPAM_recognition09'].process.node_position
 
-        #self.add_pipeline_step('orientation', ['PrepareSubject'])
-        #self.add_pipeline_step('bias_correction',
-                               #['BiasCorrection', 'HistoAnalysis'])
-        #self.add_pipeline_step('brain_extraction',
-                               #['BrainSegmentation'])
-        #self.add_pipeline_step('renormalization', ['Renorm'])
-        #self.add_pipeline_step('hemispheres_split',
-                               #['SplitBrain', 'TalairachTransformation'])
-        #self.add_pipeline_step('head_mesh', ['HeadMesh'])
-        #self.add_pipeline_step('grey_white_segmentation',
-                               #['GreyWhiteClassification', 'GreyWhiteTopology',
-                                #'GreyWhiteMesh', 'PialMesh',
-                                #'GreyWhiteClassification_1',
-                                #'GreyWhiteTopology_1', 'GreyWhiteMesh_1',
-                                #'PialMesh_1'])
-        #self.add_pipeline_step('sulci_graph',
-                               #['SulciSkeleton', 'CorticalFoldsGraph',
-                                #'SulciSkeleton_1', 'CorticalFoldsGraph_1'])
-        #self.add_pipeline_step('sulci_recognition',
-                               #['SulciRecognition', 'SulciRecognition_1'])
+        self.add_pipeline_step('orientation',
+                               ['PrepareSubject',  'TalairachTransformation'])
+        self.add_pipeline_step('bias_correction',
+                               ['BiasCorrection', 'HistoAnalysis'])
+        self.add_pipeline_step('brain_extraction',
+                               ['BrainSegmentation'])
+        self.add_pipeline_step('renormalization', ['Renorm'])
+        self.add_pipeline_step('hemispheres_split',
+                               ['SplitBrain'])
+        self.add_pipeline_step('head_mesh', ['HeadMesh'])
+        self.add_pipeline_step('grey_white_segmentation',
+                               ['GreyWhiteClassification', 'GreyWhiteTopology',
+                                'GreyWhiteMesh', 'PialMesh',
+                                'GreyWhiteClassification_1',
+                                'GreyWhiteTopology_1', 'GreyWhiteMesh_1',
+                                'PialMesh_1'])
+        self.add_pipeline_step('sulci_graph',
+                               ['SulciSkeleton', 'CorticalFoldsGraph',
+                                'SulciSkeleton_1', 'CorticalFoldsGraph_1'])
+        self.add_pipeline_step('sulci_recognition',
+                               ['SulciRecognition', 'SulciRecognition_1'])
 
