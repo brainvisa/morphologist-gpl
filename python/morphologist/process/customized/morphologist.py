@@ -348,25 +348,25 @@ class CustomMorphologist(morphologist.capsul.morphologist.morphologist):
             = self.nodes['SulciRecognition'].process \
                 .nodes['SPAM_recognition09'].process.node_position
 
-        self.add_pipeline_step('orientation',
-                               ['PrepareSubject',  'TalairachTransformation'])
-        self.add_pipeline_step('bias_correction',
-                               ['BiasCorrection', 'HistoAnalysis'])
-        self.add_pipeline_step('brain_extraction',
-                               ['BrainSegmentation'])
-        self.add_pipeline_step('renormalization', ['Renorm'])
-        self.add_pipeline_step('hemispheres_split',
-                               ['SplitBrain'])
-        self.add_pipeline_step('head_mesh', ['HeadMesh'])
-        self.add_pipeline_step('grey_white_segmentation',
-                               ['GreyWhiteClassification', 'GreyWhiteTopology',
-                                'GreyWhiteMesh', 'PialMesh',
-                                'GreyWhiteClassification_1',
-                                'GreyWhiteTopology_1', 'GreyWhiteMesh_1',
-                                'PialMesh_1'])
-        self.add_pipeline_step('sulci_graph',
-                               ['SulciSkeleton', 'CorticalFoldsGraph',
-                                'SulciSkeleton_1', 'CorticalFoldsGraph_1'])
-        self.add_pipeline_step('sulci_recognition',
-                               ['SulciRecognition', 'SulciRecognition_1'])
+        #self.add_pipeline_step('orientation',
+                               #['PrepareSubject',  'TalairachTransformation'])
+        #self.add_pipeline_step('bias_correction',
+                               #['BiasCorrection', 'HistoAnalysis'])
+        #self.add_pipeline_step('brain_extraction',
+                               #['BrainSegmentation'])
+        #self.add_pipeline_step('renormalization', ['Renorm'])
+        #self.add_pipeline_step('hemispheres_split',
+                               #['SplitBrain'])
+        #self.add_pipeline_step('head_mesh', ['HeadMesh'])
+        #self.add_pipeline_step('grey_white_segmentation',
+                               #['GreyWhiteClassification', 'GreyWhiteTopology',
+                                #'GreyWhiteMesh', 'PialMesh',
+                                #'GreyWhiteClassification_1',
+                                #'GreyWhiteTopology_1', 'GreyWhiteMesh_1',
+                                #'PialMesh_1'])
+        #self.add_pipeline_step('sulci_graph',
+                               #['SulciSkeleton', 'CorticalFoldsGraph',
+                                #'SulciSkeleton_1', 'CorticalFoldsGraph_1'])
+        #self.add_pipeline_step('sulci_recognition',
+                               #['SulciRecognition', 'SulciRecognition_1'])
 
