@@ -159,6 +159,17 @@ Outputs
 | | **NormalizeFSL_NormalizeFSL_transformation_matrix**: a file name            |
 | |     No description.                                                         |
 +-------------------------------------------------------------------------------+
+| | **output_commissures_coordinates**: a file name                             |
+| |     No description.                                                         |
++-------------------------------------------------------------------------------+
 | | **transformation**: any value                                               |
 | |     No description.                                                         |
 +-------------------------------------------------------------------------------+
+
+Pipeline schema
+~~~~~~~~~~~~~~~
+
+.. image:: ../schema/morphologist.capsul.normalizationPipeline.normalizationPipeline.png
+    :height: 400px
+    :align: center
+

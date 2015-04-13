@@ -193,7 +193,8 @@ Outputs
 | | **commissure_coordinates**: any value                                           |
 | |     No description.                                                             |
 +-----------------------------------------------------------------------------------+
-| | **TalairachFromNormalization_Talairach_transform**: a file name                 |
+| | **Normalization_Normalization_AimsMIRegister_transformation_to_template**: a    |
+| |      file name                                                                  |
 | |     No description.                                                             |
 +-----------------------------------------------------------------------------------+
 | | **Normalization_NormalizeBaladin_NormalizeBaladin_transformation_matrix**: a    |
@@ -210,8 +211,7 @@ Outputs
 | | **Normalization_normalized**: any value                                         |
 | |     No description.                                                             |
 +-----------------------------------------------------------------------------------+
-| | **Normalization_Normalization_AimsMIRegister_transformation_to_template**: a    |
-| |      file name                                                                  |
+| | **talairach_transformation**: any value                                         |
 | |     No description.                                                             |
 +-----------------------------------------------------------------------------------+
 | | **Normalization_NormalizeFSL_NormalizeFSL_transformation_matrix**: a file       |
@@ -221,3 +221,11 @@ Outputs
 | | **Normalization_NormalizeSPM_spm_transformation**: a file name                  |
 | |     No description.                                                             |
 +-----------------------------------------------------------------------------------+
+
+Pipeline schema
+~~~~~~~~~~~~~~~
+
+.. image:: ../schema/morphologist.capsul.acpcOrNormalization.acpcOrNormalization.png
+    :height: 400px
+    :align: center
+

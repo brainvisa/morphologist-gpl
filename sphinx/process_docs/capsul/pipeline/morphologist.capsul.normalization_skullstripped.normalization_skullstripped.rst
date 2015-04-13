@@ -70,8 +70,8 @@ Inputs
 | |      file name (['File'] - optional)                                                 |
 | |     No description.                                                                  |
 +----------------------------------------------------------------------------------------+
-| | **Normalization_NormalizeSPM_ConvertSPMnormalizationToAIMS_target**: a               |
-| |     legal value (['Enum'] - optional)                                                |
+| | **Normalization_Normalization_AimsMIRegister_mni_to_acpc**: a file name              |
+| |     (['File'] - optional)                                                            |
 | |     No description.                                                                  |
 +----------------------------------------------------------------------------------------+
 | | **Normalization_NormalizeSPM_allow_retry_initialization**: a boolean                 |
@@ -109,8 +109,8 @@ Inputs
 | |     (['Float'] - optional)                                                           |
 | |     No description.                                                                  |
 +----------------------------------------------------------------------------------------+
-| | **Normalization_Normalization_AimsMIRegister_mni_to_acpc**: a file name              |
-| |     (['File'] - optional)                                                            |
+| | **Normalization_NormalizeSPM_ConvertSPMnormalizationToAIMS_target**: a               |
+| |     legal value (['Enum'] - optional)                                                |
 | |     No description.                                                                  |
 +----------------------------------------------------------------------------------------+
 | | **TalairachFromNormalization_acpc_referential**: a file name (['File'] -             |
@@ -156,7 +156,7 @@ Outputs
 | | **Normalization_NormalizeSPM_NormalizeSPM_job_file**: a file name               |
 | |     No description.                                                             |
 +-----------------------------------------------------------------------------------+
-| | **TalairachFromNormalization_commissure_coordinates**: a file name              |
+| | **commissure_coordinates**: a file name                                         |
 | |     No description.                                                             |
 +-----------------------------------------------------------------------------------+
 | | **Normalization_reoriented_t1mri**: any value                                   |
@@ -193,3 +193,11 @@ Outputs
 | | **transformation**: any value                                                   |
 | |     No description.                                                             |
 +-----------------------------------------------------------------------------------+
+
+Pipeline schema
+~~~~~~~~~~~~~~~
+
+.. image:: ../schema/morphologist.capsul.normalization_skullstripped.normalization_skullstripped.png
+    :height: 400px
+    :align: center
+

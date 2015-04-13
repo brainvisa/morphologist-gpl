@@ -65,6 +65,9 @@ Outputs
 ~~~~~~~
 
 +----------------------------------------------+
+| | **reoriented_t1mri**: a file name          |
+| |     No description.                        |
++----------------------------------------------+
 | | **commissure_coordinates**: a file name    |
 | |     No description.                        |
 +----------------------------------------------+

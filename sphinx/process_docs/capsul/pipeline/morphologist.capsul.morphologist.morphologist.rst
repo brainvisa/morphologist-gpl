@@ -87,8 +87,7 @@ Inputs
 | |     optional)                                                                                       |
 | |     No description.                                                                                 |
 +-------------------------------------------------------------------------------------------------------+
-| | **Renorm_TalairachFromNormalization_source_referential**: a file name                               |
-| |     (['File'] - optional)                                                                           |
+| | **BiasCorrection_delete_last_n_slices**: a string (['Str'] - optional)                              |
 | |     No description.                                                                                 |
 +-------------------------------------------------------------------------------------------------------+
 | | **SulciRecognition_1_recognition2000_rate**: a float (['Float'] -                                   |
@@ -99,7 +98,8 @@ Inputs
 | |     legal value (['Enum'] - optional)                                                               |
 | |     No description.                                                                                 |
 +-------------------------------------------------------------------------------------------------------+
-| | **GreyWhiteClassification_1_side**: a legal value (['Enum'] - optional)                             |
+| | **SulciRecognition_1_SPAM_recognition09_markovian_recognition_segments_relations_model**: a         |
+| |      file name (['File'] - optional)                                                                |
 | |     No description.                                                                                 |
 +-------------------------------------------------------------------------------------------------------+
 | | **SulciRecognition_recognition2000_forbid_unknown_label**: a boolean                                |
@@ -156,6 +156,9 @@ Inputs
 | |     No description.                                                                                 |
 +-------------------------------------------------------------------------------------------------------+
 | | **BiasCorrection_fix_random_seed**: a boolean (['Bool'] - optional)                                 |
+| |     No description.                                                                                 |
++-------------------------------------------------------------------------------------------------------+
+| | **BiasCorrection_use_existing_ridges**: a boolean (['Bool'] - optional)                             |
 | |     No description.                                                                                 |
 +-------------------------------------------------------------------------------------------------------+
 | | **Renorm_Normalization_NormalizeSPM_ConvertSPMnormalizationToAIMS_target**: a                       |
@@ -332,7 +335,8 @@ Inputs
 | |      file name (['File'] - optional)                                                                |
 | |     No description.                                                                                 |
 +-------------------------------------------------------------------------------------------------------+
-| | **BiasCorrection_delete_last_n_slices**: a string (['Str'] - optional)                              |
+| | **Renorm_TalairachFromNormalization_source_referential**: a file name                               |
+| |     (['File'] - optional)                                                                           |
 | |     No description.                                                                                 |
 +-------------------------------------------------------------------------------------------------------+
 | | **HeadMesh_threshold**: an integer (['Int'] - optional)                                             |
@@ -340,6 +344,9 @@ Inputs
 +-------------------------------------------------------------------------------------------------------+
 | | **SulciRecognition_SPAM_recognition09_local_recognition_angle_priors**: a                           |
 | |     file name (['File'] - optional)                                                                 |
+| |     No description.                                                                                 |
++-------------------------------------------------------------------------------------------------------+
+| | **BiasCorrection_modality**: a legal value (['Enum'] - optional)                                    |
 | |     No description.                                                                                 |
 +-------------------------------------------------------------------------------------------------------+
 | | **PrepareSubject_Normalization_NormalizeFSL_alignment**: a legal value                              |
@@ -369,10 +376,6 @@ Inputs
 | |     No description.                                                                                 |
 +-------------------------------------------------------------------------------------------------------+
 | | **SulciRecognition_1_SPAM_recognition09_local_recognition_angle_priors**: a                         |
-| |      file name (['File'] - optional)                                                                |
-| |     No description.                                                                                 |
-+-------------------------------------------------------------------------------------------------------+
-| | **SulciRecognition_1_SPAM_recognition09_markovian_recognition_segments_relations_model**: a         |
 | |      file name (['File'] - optional)                                                                |
 | |     No description.                                                                                 |
 +-------------------------------------------------------------------------------------------------------+
@@ -530,9 +533,6 @@ Inputs
 | | **Renorm_template**: a file name (['File'] - optional)                                              |
 | |     No description.                                                                                 |
 +-------------------------------------------------------------------------------------------------------+
-| | **GreyWhiteClassification_side**: a legal value (['Enum'] - optional)                               |
-| |     No description.                                                                                 |
-+-------------------------------------------------------------------------------------------------------+
 | | **SulciRecognition_1_SPAM_recognition09_global_recognition_initial_transformation**: a              |
 | |      file name (['File'] - optional)                                                                |
 | |     No description.                                                                                 |
@@ -676,6 +676,9 @@ Outputs
 | | **SulciSkeleton_skeleton**: a file name                                                               |
 | |     No description.                                                                                   |
 +---------------------------------------------------------------------------------------------------------+
+| | **PrepareSubject_talairach_transformation**: any value                                                |
+| |     No description.                                                                                   |
++---------------------------------------------------------------------------------------------------------+
 | | **PrepareSubject_Normalization_Normalization_AimsMIRegister_transformation_to_ACPC**: a               |
 | |      file name                                                                                        |
 | |     No description.                                                                                   |
@@ -714,9 +717,6 @@ Outputs
 | |      directory name                                                                                   |
 | |     No description.                                                                                   |
 +---------------------------------------------------------------------------------------------------------+
-| | **PrepareSubject_reoriented_t1mri**: any value                                                        |
-| |     No description.                                                                                   |
-+---------------------------------------------------------------------------------------------------------+
 | | **CorticalFoldsGraph_cortex_mid_interface**: a file name                                              |
 | |     No description.                                                                                   |
 +---------------------------------------------------------------------------------------------------------+
@@ -724,7 +724,7 @@ Outputs
 | |     file name                                                                                         |
 | |     No description.                                                                                   |
 +---------------------------------------------------------------------------------------------------------+
-| | **BrainSegmentation_brain_mask**: a file name                                                         |
+| | **split_brain**: a file name                                                                          |
 | |     No description.                                                                                   |
 +---------------------------------------------------------------------------------------------------------+
 | | **GreyWhiteMesh_white_mesh**: a file name                                                             |
@@ -737,16 +737,13 @@ Outputs
 | |      file name                                                                                        |
 | |     No description.                                                                                   |
 +---------------------------------------------------------------------------------------------------------+
-| | **split_brain**: a file name                                                                          |
+| | **Renorm_commissure_coordinates**: a file name                                                        |
 | |     No description.                                                                                   |
 +---------------------------------------------------------------------------------------------------------+
 | | **BiasCorrection_hfiltered**: a file name                                                             |
 | |     No description.                                                                                   |
 +---------------------------------------------------------------------------------------------------------+
 | | **t1mri_nobias**: a file name                                                                         |
-| |     No description.                                                                                   |
-+---------------------------------------------------------------------------------------------------------+
-| | **Renorm_TalairachFromNormalization_commissure_coordinates**: a file name                             |
 | |     No description.                                                                                   |
 +---------------------------------------------------------------------------------------------------------+
 | | **CorticalFoldsGraph_1_cortex_mid_interface**: a file name                                            |
@@ -762,19 +759,18 @@ Outputs
 | |      directory name                                                                                   |
 | |     No description.                                                                                   |
 +---------------------------------------------------------------------------------------------------------+
+| | **HistoAnalysis_histo**: a file name                                                                  |
+| |     No description.                                                                                   |
++---------------------------------------------------------------------------------------------------------+
 | | **Renorm_Normalization_NormalizeFSL_NormalizeFSL_transformation_matrix**: a                           |
 | |      file name                                                                                        |
 | |     No description.                                                                                   |
 +---------------------------------------------------------------------------------------------------------+
-| | **PrepareSubject_Normalization_NormalizeFSL_NormalizeFSL_transformation_matrix**: a                   |
+| | **SulciRecognition_1_SPAM_recognition09_local_recognition_posterior_probabilities**: a                |
 | |      file name                                                                                        |
 | |     No description.                                                                                   |
 +---------------------------------------------------------------------------------------------------------+
 | | **GreyWhiteTopology_1_hemi_cortex**: a file name                                                      |
-| |     No description.                                                                                   |
-+---------------------------------------------------------------------------------------------------------+
-| | **PrepareSubject_TalairachFromNormalization_Talairach_transform**: a file                             |
-| |     name                                                                                              |
 | |     No description.                                                                                   |
 +---------------------------------------------------------------------------------------------------------+
 | | **left_labelled_graph**: any value                                                                    |
@@ -784,18 +780,17 @@ Outputs
 | |      file name                                                                                        |
 | |     No description.                                                                                   |
 +---------------------------------------------------------------------------------------------------------+
-| | **SulciRecognition_1_SPAM_recognition09_local_recognition_posterior_probabilities**: a                |
+| | **PrepareSubject_Normalization_NormalizeFSL_NormalizeFSL_transformation_matrix**: a                   |
 | |      file name                                                                                        |
 | |     No description.                                                                                   |
 +---------------------------------------------------------------------------------------------------------+
 | | **Renorm_talairach_transformation**: a file name                                                      |
 | |     No description.                                                                                   |
 +---------------------------------------------------------------------------------------------------------+
-| | **SulciRecognition_SPAM_recognition09_global_recognition_output_transformation**: a                   |
-| |      file name                                                                                        |
+| | **HeadMesh_head_mesh**: a file name                                                                   |
 | |     No description.                                                                                   |
 +---------------------------------------------------------------------------------------------------------+
-| | **HistoAnalysis_histo**: a file name                                                                  |
+| | **PialMesh_pial_mesh**: a file name                                                                   |
 | |     No description.                                                                                   |
 +---------------------------------------------------------------------------------------------------------+
 | | **GreyWhiteClassification_grey_white**: a file name                                                   |
@@ -830,7 +825,8 @@ Outputs
 | |      file name                                                                                        |
 | |     No description.                                                                                   |
 +---------------------------------------------------------------------------------------------------------+
-| | **HeadMesh_head_mesh**: a file name                                                                   |
+| | **SulciRecognition_SPAM_recognition09_global_recognition_output_transformation**: a                   |
+| |      file name                                                                                        |
 | |     No description.                                                                                   |
 +---------------------------------------------------------------------------------------------------------+
 | | **Renorm_transformation**: any value                                                                  |
@@ -862,14 +858,14 @@ Outputs
 | | **CorticalFoldsGraph_1_sulci_voronoi**: a file name                                                   |
 | |     No description.                                                                                   |
 +---------------------------------------------------------------------------------------------------------+
-| | **PialMesh_pial_mesh**: a file name                                                                   |
+| | **PialMesh_1_pial_mesh**: a file name                                                                 |
 | |     No description.                                                                                   |
 +---------------------------------------------------------------------------------------------------------+
 | | **PrepareSubject_Normalization_NormalizeBaladin_NormalizeBaladin_transformation_matrix**: a           |
 | |      file name                                                                                        |
 | |     No description.                                                                                   |
 +---------------------------------------------------------------------------------------------------------+
-| | **PialMesh_1_pial_mesh**: a file name                                                                 |
+| | **BrainSegmentation_brain_mask**: a file name                                                         |
 | |     No description.                                                                                   |
 +---------------------------------------------------------------------------------------------------------+
 | | **GreyWhiteMesh_1_white_mesh**: a file name                                                           |
@@ -881,3 +877,11 @@ Outputs
 | | **HeadMesh_head_mask**: a file name                                                                   |
 | |     No description.                                                                                   |
 +---------------------------------------------------------------------------------------------------------+
+
+Pipeline schema
+~~~~~~~~~~~~~~~
+
+.. image:: ../schema/morphologist.capsul.morphologist.morphologist.png
+    :height: 400px
+    :align: center
+

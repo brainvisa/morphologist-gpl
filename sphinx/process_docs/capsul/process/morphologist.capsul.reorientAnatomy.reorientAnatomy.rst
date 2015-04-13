@@ -49,7 +49,13 @@ Inputs
 Outputs
 ~~~~~~~
 
-+------------------------------------+
-| | **output_t1mri**: a file name    |
-| |     No description.              |
-+------------------------------------+
++------------------------------------------------------+
+| | **output_transformation**: a file name             |
+| |     No description.                                |
++------------------------------------------------------+
+| | **output_commissures_coordinates**: a file name    |
+| |     No description.                                |
++------------------------------------------------------+
+| | **output_t1mri**: a file name                      |
+| |     No description.                                |
++------------------------------------------------------+

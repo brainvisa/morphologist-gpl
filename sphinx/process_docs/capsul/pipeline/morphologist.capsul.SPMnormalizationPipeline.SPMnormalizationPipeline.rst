@@ -81,19 +81,33 @@ Inputs
 Outputs
 ~~~~~~~
 
-+----------------------------------------------------+
-| | **ReorientAnatomy_output_t1mri**: a file name    |
-| |     No description.                              |
-+----------------------------------------------------+
-| | **NormalizeSPM_job_file**: a file name           |
-| |     No description.                              |
-+----------------------------------------------------+
-| | **spm_transformation**: a file name              |
-| |     No description.                              |
-+----------------------------------------------------+
-| | **transformation**: a file name                  |
-| |     No description.                              |
-+----------------------------------------------------+
-| | **normalized_t1mri**: a file name                |
-| |     No description.                              |
-+----------------------------------------------------+
++----------------------------------------------------------------------+
+| | **spm_transformation**: a file name                                |
+| |     No description.                                                |
++----------------------------------------------------------------------+
+| | **ReorientAnatomy_output_commissures_coordinates**: a file name    |
+| |     No description.                                                |
++----------------------------------------------------------------------+
+| | **ConvertSPMnormalizationToAIMS_write**: a file name               |
+| |     No description.                                                |
++----------------------------------------------------------------------+
+| | **NormalizeSPM_job_file**: a file name                             |
+| |     No description.                                                |
++----------------------------------------------------------------------+
+| | **normalized_t1mri**: a file name                                  |
+| |     No description.                                                |
++----------------------------------------------------------------------+
+| | **transformation**: a file name                                    |
+| |     No description.                                                |
++----------------------------------------------------------------------+
+| | **reoriented_t1mri**: a file name                                  |
+| |     No description.                                                |
++----------------------------------------------------------------------+
+
+Pipeline schema
+~~~~~~~~~~~~~~~
+
+.. image:: ../schema/morphologist.capsul.SPMnormalizationPipeline.SPMnormalizationPipeline.png
+    :height: 400px
+    :align: center
+

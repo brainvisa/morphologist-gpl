@@ -38,6 +38,9 @@ Inputs
 | | **ngrid**: an integer (['Int'] - mandatory)                      |
 | |     No description.                                              |
 +--------------------------------------------------------------------+
+| | **modality**: a legal value (['Enum'] - mandatory)               |
+| |     No description.                                              |
++--------------------------------------------------------------------+
 | | **t1mri**: a file name (['File'] - mandatory)                    |
 | |     No description.                                              |
 +--------------------------------------------------------------------+
@@ -51,6 +54,9 @@ Inputs
 | |     No description.                                              |
 +--------------------------------------------------------------------+
 | | **sampling**: a float (['Float'] - mandatory)                    |
+| |     No description.                                              |
++--------------------------------------------------------------------+
+| | **use_existing_ridges**: a boolean (['Bool'] - mandatory)        |
 | |     No description.                                              |
 +--------------------------------------------------------------------+
 | | **edge_mask**: a legal value (['Enum'] - mandatory)              |

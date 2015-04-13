@@ -147,3 +147,11 @@ Outputs
 | |     file name                                                                      |
 | |     No description.                                                                |
 +--------------------------------------------------------------------------------------+
+
+Pipeline schema
+~~~~~~~~~~~~~~~
+
+.. image:: ../schema/morphologist.capsul.recognitionGeneral.recognitionGeneral.png
+    :height: 400px
+    :align: center
+

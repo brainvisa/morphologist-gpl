@@ -62,6 +62,16 @@ Inputs
 | |     mandatory)                                                                |
 | |     No description.                                                           |
 +---------------------------------------------------------------------------------+
+| | **pipeline_steps**: a Controller or None (['Instance'] - mandatory)           |
+| |     Steps are groups of pipeline nodes, which may be disabled at              |
+| |     runtime. They are normally defined in a logical order regarding           |
+| |     the workflow streams. They are different from sub-pipelines in            |
+| |     that steps are purely virtual groups, they do not have parameters.        |
+| |     To activate or diasable a step, just do:                                  |
+| |     pipeline.steps.my_step = False                                            |
+| |     To get the nodes list in a step:                                          |
+| |     pipeline.get_step_nodes("my_step")                                        |
++---------------------------------------------------------------------------------+
 | | **cortical_graph_version**: a legal value (['Enum'] - mandatory)              |
 | |     No description.                                                           |
 +---------------------------------------------------------------------------------+
@@ -164,6 +174,9 @@ Inputs
 | |     No description.                                                                                 |
 +-------------------------------------------------------------------------------------------------------+
 | | **BiasCorrection_write_edges**: a legal value (['Enum'] - optional)                                 |
+| |     No description.                                                                                 |
++-------------------------------------------------------------------------------------------------------+
+| | **BiasCorrection_use_existing_ridges**: a boolean (['Bool'] - optional)                             |
 | |     No description.                                                                                 |
 +-------------------------------------------------------------------------------------------------------+
 | | **Renorm_Normalization_NormalizeSPM_ConvertSPMnormalizationToAIMS_target**: a                       |
@@ -311,6 +324,9 @@ Inputs
 | |     file name (['File'] - optional)                                                                 |
 | |     No description.                                                                                 |
 +-------------------------------------------------------------------------------------------------------+
+| | **BiasCorrection_modality**: a legal value (['Enum'] - optional)                                    |
+| |     No description.                                                                                 |
++-------------------------------------------------------------------------------------------------------+
 | | **PrepareSubject_Normalization_NormalizeFSL_alignment**: a legal value                              |
 | |     (['Enum'] - optional)                                                                           |
 | |     No description.                                                                                 |
@@ -336,9 +352,6 @@ Inputs
 +-------------------------------------------------------------------------------------------------------+
 | | **SulciRecognition_1_SPAM_recognition09_local_recognition_angle_priors**: a                         |
 | |      file name (['File'] - optional)                                                                |
-| |     No description.                                                                                 |
-+-------------------------------------------------------------------------------------------------------+
-| | **GreyWhiteClassification_1_side**: a legal value (['Enum'] - optional)                             |
 | |     No description.                                                                                 |
 +-------------------------------------------------------------------------------------------------------+
 | | **SplitBrain_split_template**: a file name (['File'] - optional)                                    |
@@ -467,9 +480,6 @@ Inputs
 | |     No description.                                                                                 |
 +-------------------------------------------------------------------------------------------------------+
 | | **Renorm_template**: a file name (['File'] - optional)                                              |
-| |     No description.                                                                                 |
-+-------------------------------------------------------------------------------------------------------+
-| | **GreyWhiteClassification_side**: a legal value (['Enum'] - optional)                               |
 | |     No description.                                                                                 |
 +-------------------------------------------------------------------------------------------------------+
 | | **SulciRecognition_1_SPAM_recognition09_global_recognition_initial_transformation**: a              |
@@ -747,3 +757,11 @@ Outputs
 | | **HeadMesh_head_mask**: a file name                                                                   |
 | |     No description.                                                                                   |
 +---------------------------------------------------------------------------------------------------------+
+
+Pipeline schema
+~~~~~~~~~~~~~~~
+
+.. image:: ../schema/morphologist.process.customized.morphologist.CustomMorphologist.png
+    :height: 400px
+    :align: center
+

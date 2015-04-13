@@ -109,3 +109,11 @@ Outputs
 | | **local_recognition_output_local_transformations**: a directory name      |
 | |     No description.                                                       |
 +-----------------------------------------------------------------------------+
+
+Pipeline schema
+~~~~~~~~~~~~~~~
+
+.. image:: ../schema/morphologist.capsul.spam_recognition.spam_recognition.png
+    :height: 400px
+    :align: center
+

@@ -76,16 +76,30 @@ Inputs
 Outputs
 ~~~~~~~
 
-+------------------------------------------------------------+
-| | **ReorientAnatomy_output_t1mri**: a file name            |
-| |     No description.                                      |
-+------------------------------------------------------------+
-| | **transformation**: a file name                          |
-| |     No description.                                      |
-+------------------------------------------------------------+
-| | **NormalizeFSL_transformation_matrix**: a file name      |
-| |     No description.                                      |
-+------------------------------------------------------------+
-| | **NormalizeFSL_normalized_anatomy_data**: a file name    |
-| |     No description.                                      |
-+------------------------------------------------------------+
++----------------------------------------------------------------------+
+| | **ReorientAnatomy_output_commissures_coordinates**: a file name    |
+| |     No description.                                                |
++----------------------------------------------------------------------+
+| | **NormalizeFSL_normalized_anatomy_data**: a file name              |
+| |     No description.                                                |
++----------------------------------------------------------------------+
+| | **reoriented_t1mri**: a file name                                  |
+| |     No description.                                                |
++----------------------------------------------------------------------+
+| | **ConvertFSLnormalizationToAIMS_write**: a file name               |
+| |     No description.                                                |
++----------------------------------------------------------------------+
+| | **NormalizeFSL_transformation_matrix**: a file name                |
+| |     No description.                                                |
++----------------------------------------------------------------------+
+| | **transformation**: a file name                                    |
+| |     No description.                                                |
++----------------------------------------------------------------------+
+
+Pipeline schema
+~~~~~~~~~~~~~~~
+
+.. image:: ../schema/morphologist.capsul.FSLnormalizationPipeline.FSLnormalizationPipeline.png
+    :height: 400px
+    :align: center
+
