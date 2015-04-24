@@ -5,6 +5,12 @@ import shutil
 import unittest
 import tempfile
 import filecmp
+
+# set en empty temporary user dir
+# BRAINVISA_USER_DIR soult be set before neuroConfig is imported
+homedir = tempfile.mkdtemp(prefix='bv_home')
+os.environ['BRAINVISA_USER_DIR'] = homedir
+
 from morphologist.process.customized.morphologist import CustomMorphologist
 import soma.config as soma_config
 import soma_workflow.client as swclient
@@ -142,6 +148,13 @@ class TestMorphologistCapsul(unittest.TestCase):
 def test_suite():
     return unittest.TestLoader().loadTestsFromTestCase(TestMorphologistCapsul)
 
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')
+try:
+    if __name__ == '__main__':
+        unittest.main(defaultTest='test_suite')
+finally:
+    shutil.rmtree(homedir)
+    del homedir
+
+# WARNING: if this file is imported as a module, homedir will be removed,
+# and later processing will issue errors
 
