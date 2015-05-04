@@ -34,7 +34,10 @@
 from brainvisa.processes import *
 import shfjGlobals, math
 import registration
-from brainvisa import anatomist
+try:
+  from brainvisa import anatomist
+except:
+  anatomist = None
 from brainvisa import quaternion
 
 name = 'Prepare Subject for Anatomical Pipeline'
@@ -56,9 +59,6 @@ signature = Signature(
     ReadDiskItem( 'Transform Raw T1 MRI to Talairach-MNI template-SPM',
       'Transformation matrix' ),
   )
-
-def validation():
-  anatomist.validation()
 
 class APCReader:
   def __init__( self, key ):
@@ -339,11 +339,12 @@ def execution( self, context ):
 
       if self.T1mri == self.reoriented_t1mri:
         # reload image in Anatomist
-        a = anatomist.Anatomist( create=False ) # test if anatomist is started
-        if a:
-          object=a.getObject(self.T1mri.fullPath())
-          if object is not None:
-            a.reloadObjects([object])
+        if anatomist:
+          a = anatomist.Anatomist( create=False ) # test if anatomist is started
+          if a:
+            object=a.getObject(self.T1mri.fullPath())
+            if object is not None:
+              a.reloadObjects([object])
 
     ac = [ int( acmm[0] / vs[0] +0.5 ), int( acmm[1] / vs[1] +0.5),
            int( acmm[2] / vs[2] +0.5) ]
