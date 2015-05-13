@@ -180,85 +180,85 @@ apply( insert, ( '{center}/{subject}/t1mri/{acquisition}', ) + \
 #==================================================================================================================================
 
 # snapshots snapbase morphologist
-insert('snapshots/morphologist/greywhite',
-      "snapshot_greywhite_{subject}_{acquisition}", SetType( 'Snapshot Grey White'), SetWeakAttr('software', 'morphologist')
+insert('snapshots/{acquisition}/morphologist/greywhite',
+      "snapshot_greywhite_{subject}_<acquisition>", SetType( 'Snapshot Grey White'), SetWeakAttr('software', 'morphologist')
 )
 
-insert('snapshots/morphologist/splitbrain',
-  "snapshot_splitbrain_{subject}_{acquisition}", SetType( 'Snapshot Split Brain'), SetWeakAttr('software', 'morphologist')
+insert('snapshots/{acquisition}/morphologist/splitbrain',
+  "snapshot_splitbrain_{subject}_<acquisition>", SetType( 'Snapshot Split Brain'), SetWeakAttr('software', 'morphologist')
 )
 
-insert('snapshots/morphologist/meshcut',
-    "snapshot_meshcut_{subject}_{acquisition}", SetType( 'Snapshot Meshcut'), SetWeakAttr('software', 'morphologist')
+insert('snapshots/{acquisition}/morphologist/meshcut',
+    "snapshot_meshcut_{subject}_<acquisition>", SetType( 'Snapshot Meshcut'), SetWeakAttr('software', 'morphologist')
 )
 
-insert('snapshots/morphologist/brainmask',
-    "snapshot_brainmask_{subject}_{acquisition}", SetType( 'Snapshot Brain Mask'), SetWeakAttr('software', 'morphologist')
+insert('snapshots/{acquisition}/morphologist/brainmask',
+    "snapshot_brainmask_{subject}_<acquisition>", SetType( 'Snapshot Brain Mask'), SetWeakAttr('software', 'morphologist')
 )
 
-insert('snapshots/morphologist/raw',
-    "snapshot_raw_{subject}_{acquisition}", SetType( 'Snapshot Raw T1'), SetWeakAttr('software', 'morphologist')
+insert('snapshots/{acquisition}/morphologist/raw',
+    "snapshot_raw_{subject}_<acquisition>", SetType( 'Snapshot Raw T1'), SetWeakAttr('software', 'morphologist')
 )
 
-insert('snapshots/morphologist/tablet',
-    "snapshot_tablet_{subject}_{acquisition}", SetType( 'Snapshot Tablet Raw T1'), SetWeakAttr('software', 'morphologist')
+insert('snapshots/{acquisition}/morphologist/tablet',
+    "snapshot_tablet_{subject}_<acquisition>", SetType( 'Snapshot Tablet Raw T1'), SetWeakAttr('software', 'morphologist')
 )
 
 snap_pialmesh_content = (
-    "snapshot_left_pialmesh_{subject}_{acquisition}", SetType( 'Snapshot Pial Mesh'), SetWeakAttr( 'side', 'left', 'software', 'morphologist' ),
-    "snapshot_right_pialmesh_{subject}_{acquisition}", SetType( 'Snapshot Pial Mesh'), SetWeakAttr( 'side', 'right', 'software', 'morphologist'  ),
+    "snapshot_left_pialmesh_{subject}_<acquisition>", SetType( 'Snapshot Pial Mesh'), SetWeakAttr( 'side', 'left', 'software', 'morphologist' ),
+    "snapshot_right_pialmesh_{subject}_<acquisition>", SetType( 'Snapshot Pial Mesh'), SetWeakAttr( 'side', 'right', 'software', 'morphologist'  ),
 )
 snap_sulci_content = (
-    "snapshot_left_sulci_{subject}_{acquisition}", SetType( 'Snapshot Sulci'), SetWeakAttr( 'side', 'left', 'software', 'morphologist'  ),
-    "snapshot_right_sulci_{subject}_{acquisition}", SetType( 'Snapshot Sulci'), SetWeakAttr( 'side', 'right', 'software', 'morphologist'  ),
+    "snapshot_left_sulci_{subject}_<acquisition>", SetType( 'Snapshot Sulci'), SetWeakAttr( 'side', 'left', 'software', 'morphologist'  ),
+    "snapshot_right_sulci_{subject}_<acquisition>", SetType( 'Snapshot Sulci'), SetWeakAttr( 'side', 'right', 'software', 'morphologist'  ),
 )
 snap_whitemesh_content = (
-    "snapshot_left_whitemesh_{subject}_{acquisition}", SetType( 'Snapshot White Mesh'), SetWeakAttr( 'side', 'left', 'software', 'morphologist'  ),
-    "snapshot_right_whitemesh_{subject}_{acquisition}", SetType( 'Snapshot White Mesh'), SetWeakAttr( 'side', 'right', 'software', 'morphologist'  ),
+    "snapshot_left_whitemesh_{subject}_<acquisition>", SetType( 'Snapshot White Mesh'), SetWeakAttr( 'side', 'left', 'software', 'morphologist'  ),
+    "snapshot_right_whitemesh_{subject}_<acquisition>", SetType( 'Snapshot White Mesh'), SetWeakAttr( 'side', 'right', 'software', 'morphologist'  ),
 )
 
 
-apply( insert, ('snapshots/morphologist/pialmesh', ) + \
+apply( insert, ('snapshots/{acquisition}/morphologist/pialmesh', ) + \
   snap_pialmesh_content,
 )
 
-apply( insert, ('snapshots/morphologist/sulci', ) + \
+apply( insert, ('snapshots/{acquisition}/morphologist/sulci', ) + \
   snap_sulci_content,
 )
 
-apply( insert, ('snapshots/morphologist/whitemesh', ) + \
+apply( insert, ('snapshots/{acquisition}/morphologist/whitemesh', ) + \
   snap_whitemesh_content,
 )
 
 # snapbase qc morphologist
-insert('snapshots/morphologist/greywhite',
+insert('snapshots/{acquisition}/morphologist/greywhite',
     "qc_greywhite", SetType( 'Snapshots Grey White Quality Scores') , SetWeakAttr('software', 'morphologist')
 )
-insert('snapshots/morphologist/splitbrain',
+insert('snapshots/{acquisition}/morphologist/splitbrain',
     "qc_splitbrain", SetType( 'Snapshots Split Brain Quality Scores'), SetWeakAttr('software', 'morphologist')
 )
-insert('snapshots/morphologist/meshcut',
+insert('snapshots/{acquisition}/morphologist/meshcut',
     "qc_meshcut", SetType( 'Snapshots Meshcut Quality Scores'), SetWeakAttr('software', 'morphologist')
 )
-insert('snapshots/morphologist/pialmesh',
+insert('snapshots/{acquisition}/morphologist/pialmesh',
     "qc_pialmesh", SetType( 'Snapshots Pial Mesh Quality Scores'), SetWeakAttr('software', 'morphologist')
 )
-insert('snapshots/morphologist/sulci',
+insert('snapshots/{acquisition}/morphologist/sulci',
     "qc_sulci", SetType( 'Snapshots Sulci Quality Scores'), SetWeakAttr('software', 'morphologist')
 )
-insert('snapshots/morphologist/whitemesh',
+insert('snapshots/{acquisition}/morphologist/whitemesh',
     "qc_whitemesh", SetType( 'Snapshots White Mesh Quality Scores'), SetWeakAttr('software', 'morphologist')
 )
 
 # snapshots snapbase spm
-insert('snapshots/spm8/whiteMatter',
-  "snapshot_spm8_white_{subject}_{acquisition}", SetType('Snapshot Probability Map'), SetWeakAttr('software', 'spm8', 'class', 'white')
+insert('snapshots/{acquisition}/spm8/whiteMatter',
+  "snapshot_spm8_white_{subject}_<acquisition>", SetType('Snapshot Probability Map'), SetWeakAttr('software', 'spm8', 'class', 'white')
 )
-insert('snapshots/spm8/greyMatter',
-  "snapshot_spm8_grey_{subject}_{acquisition}", SetType('Snapshot Probability Map'), SetWeakAttr('software', 'spm8', 'class', 'grey')
+insert('snapshots/{acquisition}/spm8/greyMatter',
+  "snapshot_spm8_grey_{subject}_<acquisition>", SetType('Snapshot Probability Map'), SetWeakAttr('software', 'spm8', 'class', 'grey')
 )
-insert('snapshots/spm8/csf',
-  "snapshot_spm8_csf_{subject}_{acquisition}", SetType('Snapshot Probability Map'), SetWeakAttr('software', 'spm8', 'class', 'csf')
+insert('snapshots/{acquisition}/spm8/csf',
+  "snapshot_spm8_csf_{subject}_<acquisition>", SetType('Snapshot Probability Map'), SetWeakAttr('software', 'spm8', 'class', 'csf')
 )
 
 # snapbase qc spm
