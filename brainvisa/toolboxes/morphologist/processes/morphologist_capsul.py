@@ -131,7 +131,7 @@ def execution(self, context):
                     ('brainvisa', 'de25977f-abf5-9f1c-4384-2585338cd7af')}}
     else:
         path_translations = {}
-    study_config.somaworkflow_computing_resources_config['localhost'] \
+    study_config.somaworkflow_computing_resources_config.localhost \
         = path_translations
 
     workflow = swclient.Workflow(name='Morphologist CAPSUL iteration', jobs=[])
