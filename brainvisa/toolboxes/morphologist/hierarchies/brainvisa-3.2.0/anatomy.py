@@ -262,7 +262,7 @@ insert('snapshots/{acquisition}/spm8/csf',
 )
 
 # snapbase qc spm
-insert('snapshots/spm8',
+insert('snapshots/{acquisition}/spm8',
     "qc_spm8", SetType( 'Snapshots Probability Map Quality Scores'), SetWeakAttr('software', 'spm8')
 )
 
@@ -281,7 +281,7 @@ tables_content = (
     "snapshots_features_spm8", SetType('Snapshots Features Table'), SetWeakAttr('software', 'spm8')
 )
 
-apply( insert, ('tables', ) + \
+apply( insert, ('tables/{acquisition}', ) + \
   tables_content,
 )
 
