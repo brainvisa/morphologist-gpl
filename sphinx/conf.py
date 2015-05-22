@@ -50,7 +50,7 @@ try:
 except:
     aims_version = '4.5'
     aims_fullversion = '4.6.0'
-anatmist_version = aims_version
+anatomist_version = aims_version
 bv_release_version = aims_version
 bv_release_fullversion = aims_fullversion
 
