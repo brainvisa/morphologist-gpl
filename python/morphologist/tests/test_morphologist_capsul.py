@@ -12,7 +12,7 @@ homedir = tempfile.mkdtemp(prefix='bv_home')
 os.environ['BRAINVISA_USER_DIR'] = homedir
 
 from morphologist.process.customized.morphologist import CustomMorphologist
-import soma.config as soma_config
+import brainvisa.config as bv_config
 import soma_workflow.client as swclient
 import soma_workflow.constants as swconstants
 import soma_workflow.configuration as swconfig
@@ -49,7 +49,7 @@ class TestMorphologistCapsul(unittest.TestCase):
         tempdir = tempfile.gettempdir()
         self.tests_dir = os.path.join(tempdir, "tmp_tests_brainvisa")
         self.db_dir = os.path.join(
-            self.tests_dir, "db_morphologist-%s" % soma_config.full_version)
+            self.tests_dir, "db_morphologist-%s" % bv_config.full_version)
         print '* create database'
         self.database = self.create_test_database()
         self.db_name = self.database.name
