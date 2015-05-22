@@ -174,8 +174,7 @@ def execution(self, context):
         if len(transfers) != 0:
             study_config.somaworkflow_computing_resources_config.localhost \
                 .transfer_paths = transfers
-        elif study_config.somaworkflow_computing_resources_config.localhost \
-                .has_key('transfer_paths'):
+        else:
             study_config.somaworkflow_computing_resources_config.localhost \
                 .transfer_paths = []
 
