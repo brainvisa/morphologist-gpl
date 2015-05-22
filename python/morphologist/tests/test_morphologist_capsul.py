@@ -49,7 +49,7 @@ class TestMorphologistCapsul(unittest.TestCase):
         tempdir = tempfile.gettempdir()
         self.tests_dir = os.path.join(tempdir, "tmp_tests_brainvisa")
         self.db_dir = os.path.join(
-            self.tests_dir, "db_morphologist-%s" % bv_config.full_version)
+            self.tests_dir, "db_morphologist-%s" % bv_config.__version__)
         print '* create database'
         self.database = self.create_test_database()
         self.db_name = self.database.name
