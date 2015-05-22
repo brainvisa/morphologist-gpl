@@ -2,11 +2,19 @@ import unittest
 import os
 import tempfile
 import urllib
+import shutil
 from shutil import rmtree
 import filecmp
 
 from soma import zipfile
 from soma.path import relative_path
+import brainvisa.config
+
+# set en empty temporary user dir
+# BRAINVISA_USER_DIR shoult be set before neuroConfig is imported
+homedir = tempfile.mkdtemp(prefix='bv_home')
+os.environ['BRAINVISA_USER_DIR'] = homedir
+
 import brainvisa.axon
 from brainvisa.processes import defaultContext
 from brainvisa.data.writediskitem import WriteDiskItem
@@ -14,8 +22,8 @@ from brainvisa.configuration import neuroConfig
 from brainvisa.data import neuroHierarchy
 
 
-class TestMorphologistPipeline(unittest.TestCase):  
-  
+class TestMorphologistPipeline(unittest.TestCase):
+
   def download_data(self):
     if not os.path.exists(self.tests_dir):
       os.mkdir(self.tests_dir)
@@ -37,11 +45,12 @@ class TestMorphologistPipeline(unittest.TestCase):
       print "* Create test database"
       os.makedirs( self.database_directory )
     database_settings = neuroConfig.DatabaseSettings( self.database_directory )
-    database = neuroHierarchy.SQLDatabase( os.path.join(self.database_directory, "database.sqlite"), 
-                                           self.database_directory, 
-                                           'brainvisa-3.2.0',
-                                           context=defaultContext(), 
-                                           settings=database_settings )
+    database = neuroHierarchy.SQLDatabase(
+        os.path.join(self.database_directory, "database.sqlite"),
+        self.database_directory,
+        'brainvisa-3.2.0',
+        context=defaultContext(),
+        settings=database_settings )
     neuroHierarchy.databases.add( database )
     neuroConfig.dataPath.append( database_settings )
     database.clear( context=defaultContext() )
@@ -49,27 +58,28 @@ class TestMorphologistPipeline(unittest.TestCase):
     return database
 
   def import_data(self):
-    input = os.path.join(self.tests_dir, "data_unprocessed", 
+    input = os.path.join(self.tests_dir, "data_unprocessed",
                          "sujet01", "anatomy", "sujet01.ima")
     wd=WriteDiskItem("Raw T1 MRI", "NIFTI-1 image")
-    output=wd.findValue({"_database" : self.db_name, 
+    output=wd.findValue({"_database" : self.db_name,
                          "center" : "test", "subject" : "sujet01"})
     if not output.isReadable():
       print "* Import test data"
       defaultContext().runProcess('ImportT1MRI', input, output)
     return output
-    
+
   def setUp(self):
     tempdir=tempfile.gettempdir()
     self.tests_dir = os.path.join(tempdir, "tmp_tests_brainvisa")
     self.download_data()
 
     brainvisa.axon.initializeProcesses()
-    self.database_directory = os.path.join( self.tests_dir, 'db_morphologist' )
+    self.database_directory = os.path.join( self.tests_dir,
+        'db_morphologist-%s' % brainvisa.config.__version__ )
     self.database=self.create_test_database()
     self.db_name = self.database.name
     t1 = self.import_data()
-    
+
     pipeline=brainvisa.processes.getProcessInstance("morphologist")
     nodes=pipeline.executionNode()
     ac = [114.864585876, 118.197914124, 88.7999954224]
@@ -78,8 +88,10 @@ class TestMorphologistPipeline(unittest.TestCase):
     pipeline.perform_normalization = False
     nodes.child('TalairachTransformation').setSelected(0)
     nodes.child('HeadMesh').setSelected(0)
-    nodes.HemispheresProcessing.LeftHemisphere.CorticalFoldsGraph.setSelected(0)
-    nodes.HemispheresProcessing.RightHemisphere.CorticalFoldsGraph.setSelected(0)
+    nodes.HemispheresProcessing.LeftHemisphere.CorticalFoldsGraph.setSelected(
+        0)
+    nodes.HemispheresProcessing.RightHemisphere.CorticalFoldsGraph.setSelected(
+        0)
     nodes.child('BiasCorrection').fix_random_seed = True
     nodes.child('HistoAnalysis').fix_random_seed = True
     nodes.child('BrainSegmentation').fix_random_seed = True
@@ -94,13 +106,13 @@ class TestMorphologistPipeline(unittest.TestCase):
     nodes.HemispheresProcessing.RightHemisphere.PialMesh.fix_random_seed = True
     #nodes.child('CorticalFoldsGraph').fix_random_seed = True
     #nodes.child("SulciRecognition").setSelected(1)
-    
+
     wd=pipeline.signature["t1mri_nobias"]
-    self.ref_nobias = wd.findValue({"_database" : self.db_name, 
-                                    "_format" : "NIFTI-1 image", 
+    self.ref_nobias = wd.findValue({"_database" : self.db_name,
+                                    "_format" : "NIFTI-1 image",
                                     "center" : "test", "subject" : "sujet01",
                                     "analysis" : "default_analysis"})
-    # if needed, run the pipeline a first time to get reference results 
+    # if needed, run the pipeline a first time to get reference results
     # in default_analysis
     if (not self.ref_nobias.isReadable()):
       print "* Run Morphologist to get reference results"
@@ -109,8 +121,8 @@ class TestMorphologistPipeline(unittest.TestCase):
         posterior_commissure=pc, interhemispheric_point=ip)
 
     # run the pipeline a second time to get test results
-    self.test_nobias = wd.findValue({"_database" : self.db_name, 
-                                     "_format" : "NIFTI-1 image", 
+    self.test_nobias = wd.findValue({"_database" : self.db_name,
+                                     "_format" : "NIFTI-1 image",
                                      "center" : "test", "subject" : "sujet01",
                                      "analysis" : "test"})
     if self.test_nobias.isReadable():
@@ -129,14 +141,21 @@ class TestMorphologistPipeline(unittest.TestCase):
         if not f.endswith(".minf"):
           f_ref = os.path.join(dirpath, f)
           f_test = os.path.join(test_dir, relative_path(dirpath, ref_dir), f)
-          self.assertTrue(filecmp.cmp(f_ref, f_test), 
-                          "The content of "+f+" in test is different from the reference results.")
-      
+          self.assertTrue(filecmp.cmp(f_ref, f_test),
+              "The content of "+f+" in test is different from the reference results.")
+
   def tearDown(self):
     brainvisa.axon.cleanup()
-  
+
 def test_suite():
   return unittest.TestLoader().loadTestsFromTestCase(TestMorphologistPipeline)
 
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')
+try:
+    if __name__ == '__main__':
+        unittest.main(defaultTest='test_suite')
+finally:
+    shutil.rmtree(homedir)
+    del homedir
+
+# WARNING: if this file is imported as a module, homedir will be removed,
+# and later processing will issue errors
