@@ -176,8 +176,8 @@ def execution(self, context):
                 .transfer_paths = transfers
         elif study_config.somaworkflow_computing_resources_config.localhost \
                 .has_key('transfer_paths'):
-            del study_config.somaworkflow_computing_resources_config
-                .localhost.transfer_paths = []
+            study_config.somaworkflow_computing_resources_config.localhost \
+                .transfer_paths = []
 
         wf = pipeline_workflow.workflow_from_pipeline(
             pf.process, study_config=study_config)
