@@ -7,11 +7,11 @@ from shutil import rmtree
 import filecmp
 
 from soma import zipfile
-from soma import info
 from soma.path import relative_path
+import brainvisa.config
 
 # set en empty temporary user dir
-# BRAINVISA_USER_DIR soult be set before neuroConfig is imported
+# BRAINVISA_USER_DIR shoult be set before neuroConfig is imported
 homedir = tempfile.mkdtemp(prefix='bv_home')
 os.environ['BRAINVISA_USER_DIR'] = homedir
 
@@ -75,7 +75,7 @@ class TestMorphologistPipeline(unittest.TestCase):
 
     brainvisa.axon.initializeProcesses()
     self.database_directory = os.path.join( self.tests_dir,
-        'db_morphologist-%s' % info.__version__ )
+        'db_morphologist-%s' % brainvisa.config.__version__ )
     self.database=self.create_test_database()
     self.db_name = self.database.name
     t1 = self.import_data()
