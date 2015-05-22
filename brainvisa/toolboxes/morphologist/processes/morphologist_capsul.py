@@ -172,12 +172,12 @@ def execution(self, context):
             transfers.append(study_config.output_directory)
 
         if len(transfers) != 0:
-            study_config.somaworkflow_computing_resources_config['localhost']\
-                ['transfer_paths'] = transfers
-        elif study_config.somaworkflow_computing_resources_config['localhost']\
+            study_config.somaworkflow_computing_resources_config.localhost \
+                .transfer_paths = transfers
+        elif study_config.somaworkflow_computing_resources_config.localhost \
                 .has_key('transfer_paths'):
-            del study_config.somaworkflow_computing_resources_config\
-                ['localhost']['transfer_paths']
+            del study_config.somaworkflow_computing_resources_config
+                .localhost.transfer_paths = []
 
         wf = pipeline_workflow.workflow_from_pipeline(
             pf.process, study_config=study_config)
