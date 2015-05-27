@@ -48,6 +48,7 @@ signature = Signature(
     'skeleton', ReadDiskItem( 'Cortex Skeleton',
         'Aims readable volume formats' ),
     'pial_mesh', WriteDiskItem( 'Hemisphere Mesh', 'Aims mesh formats' ),
+    'version', Choice('1', '2'),
     'fix_random_seed', Boolean(),
 )
 
@@ -57,7 +58,9 @@ def initialization( self ):
     self.linkParameters( 't1mri_nobias', 'hemi_cortex' )
     self.linkParameters( 'skeleton', 'hemi_cortex' )
     self.linkParameters( 'pial_mesh', 'hemi_cortex' )
+    self.signature[ 'version' ].userLevel = 3
     self.signature['fix_random_seed'].userLevel = 3
+    self.version = '2'
     self.fix_random_seed = False
 
 
@@ -80,7 +83,9 @@ def execution( self, context ):
                 "-s", self.skeleton,
                 "-co", self.hemi_cortex,
                 "-o", hemi,
-                "-m", "H", "-w", "t" ]
+                "-m", "H",
+                "-v", self.version,
+                "-w", "t" ]
     if self.fix_random_seed:
         command.extend(['-srand', 10])
     context.system( *command )
