@@ -198,10 +198,12 @@ def initialization( self ):
                        ProcessExecutionNode( 'hemispheremesh',
                                              optional = 1,
                                              altname = _t_('Pial Mesh') ) )
+    leftNode.PialMesh.version = '1'
     rightNode.addChild( 'PialMesh',
                         ProcessExecutionNode( 'hemispheremesh',
                                              optional = 1,
                                              altname = _t_('Pial Mesh') ) )
+    rightNode.PialMesh.version = '1'
     leftNode.addChild( 'CorticalFoldsGraph',
                         ProcessExecutionNode( 'corticalfoldsgraph',
                                               optional = 1,
