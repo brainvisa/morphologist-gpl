@@ -180,7 +180,7 @@ def execution(self, context):
 
         priority = (len(self.t1mri) - item - 1) * 100
         wf = pipeline_workflow.workflow_from_pipeline(
-            pf.process, study_config=study_config, jobs_priority=priority)
+            pf.process, study_config=study_config)  #, jobs_priority=priority)
         workflow.jobs += wf.jobs
         workflow.dependencies += wf.dependencies
         group = swclient.Group(wf.root_group,
