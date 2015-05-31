@@ -61,14 +61,14 @@
 #                [["output:{acquisition}/<subject>", "images"]],
 
             ### AimsMIRegister
-            "PrepareSubject_Normalization_Normalization_AimsMIRegister_anatomical_template": "{shared.anatomical_templates}",
+            "PrepareSubject_Normalization_Normalization_AimsMIRegister_anatomical_template": "{shared.anatomical_template_t1}",
             "PrepareSubject_Normalization_Normalization_AimsMIRegister_mni_to_acpc": "{shared.talairach_TO_spm_transform}",
             "PrepareSubject_Normalization_Normalization_AimsMIRegister_transformation_to_ACPC":
                 [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-ACPC",
                     "Transformation matrix"]],
 
             ### NormalizeSPM
-            "PrepareSubject_Normalization_NormalizeSPM_template": "{shared.anatomical_templates}",
+            "PrepareSubject_Normalization_NormalizeSPM_template": "{shared.anatomical_template_t1}",
             "normalization_spm_native_transformation": [["output:{acquisition}/<subject>_sn", "Matlab"]],
             "normalization_spm_native_job_file": [["output:{acquisition}/<subject>_job_anat_normalization", "Matlab"]],
             # "PrepareSubject_Normalization_NormalizeSPM_normalized_t1mri": [["output:{acquisition}/normalized_<normalization>_<subject>","images", {"normalization":"SPM"}]],
@@ -112,6 +112,7 @@
 
             # Renorm
             "Renorm_skull_stripped": [["output:{analysis}/segmentation/skull_stripped_<subject>","images"]],
+            "Renorm_template": "{shared.anatomical_template_t1_skull_stripped}",
 
             # Split Brain
             "SplitBrain_split_template": [["shared:hemitemplate/closedvoronoi","GIS"]],
