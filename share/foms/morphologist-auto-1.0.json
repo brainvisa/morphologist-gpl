@@ -115,7 +115,7 @@
             "Renorm_template": "{shared.anatomical_template_t1_skull_stripped}",
 
             # Split Brain
-            "SplitBrain_split_template": [["shared:hemitemplate/closedvoronoi","GIS"]],
+            "SplitBrain_split_template": "{shared.split_template}",
 
             #Head Mesh
             "HeadMesh_head_mesh": [["output:{analysis}/segmentation/mesh/<subject>_head", "mesh"]],
