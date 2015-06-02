@@ -42,4 +42,4 @@ class ReorientAnatomy(Process):
                     or getattr(self, name) != '')])
 
         context = brainvisa.processes.defaultContext()
-        context.runProcess(self.id.split('.')[-1], **kwargs)
+        context.runProcess('reorientAnatomy', **kwargs)

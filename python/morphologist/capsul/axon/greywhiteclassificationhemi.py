@@ -23,7 +23,7 @@ class GreyWhiteClassificationHemi(Process):
 
 
         # initialization section
-        self.side = 'left'
+        self.side = 'right'
         self.fix_random_seed = False
 
     def _run_process(self):
@@ -44,4 +44,4 @@ class GreyWhiteClassificationHemi(Process):
                     or getattr(self, name) != '')])
 
         context = brainvisa.processes.defaultContext()
-        context.runProcess(self.id.split('.')[-1], **kwargs)
+        context.runProcess('GreyWhiteClassificationHemi', **kwargs)
