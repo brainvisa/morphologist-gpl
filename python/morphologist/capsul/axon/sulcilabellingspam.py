@@ -11,10 +11,10 @@ from capsul.pipeline import Pipeline
 from capsul.pipeline import Switch
 
 
-class spam_recognition(Pipeline):
+class SulciLabellingSPAM(Pipeline):
     def __init__(self, autoexport_nodes_parameters=True, **kwargs):
         self._autoexport_nodes_parameters = autoexport_nodes_parameters
-        super(spam_recognition, self).__init__(False, **kwargs)
+        super(SulciLabellingSPAM, self).__init__(False, **kwargs)
         del self._autoexport_nodes_parameters
 #        if autoexport_nodes_parameters:
 #            self.autoexport_nodes_parameters()
@@ -24,9 +24,9 @@ class spam_recognition(Pipeline):
         # nodes section
         self.add_process('global_recognition', 'morphologist.capsul.axon.sulcilabellingspamglobal.SulciLabellingSPAMGlobal')
         self.add_switch('local_or_markovian', ['local_recognition', 'markovian_recognition'], ['output_graph'])
-        self.add_process('local_recognition', 'morphologist.capsul.axon.spam_recognitionlocal.spam_recognitionlocal')
+        self.add_process('local_recognition', 'morphologist.capsul.axon.sulcilabellingspamlocal.SulciLabellingSPAMLocal')
         self.nodes['local_recognition']._weak_outputs = True
-        self.add_process('markovian_recognition', 'morphologist.capsul.axon.spam_recognitionmarkov.spam_recognitionmarkov')
+        self.add_process('markovian_recognition', 'morphologist.capsul.axon.sulcilabellingspammarkov.SulciLabellingSPAMMarkov')
         self.nodes['markovian_recognition']._weak_outputs = True
 
         # exports section

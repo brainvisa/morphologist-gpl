@@ -25,6 +25,7 @@ class Normalization_SPM_reinit(Process):
 
 
         # initialization section
+        self.anatomical_template = u'/i2bm/local/spm12-standalone/spm12_mcr/spm12/toolbox/OldNorm/T1.nii'
         self.voxel_size = '[1 1 1]'
         self.cutoff_option = 25
         self.nbiteration = 16

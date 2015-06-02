@@ -9,20 +9,24 @@ except ImportError:
 from capsul.process import Process
 
 
-class SulciSkeleton(Process):
+class HistoAnalysis(Process):
     def __init__(self, **kwargs):
-        super(SulciSkeleton, self).__init__()
-        self.add_trait('hemi_cortex', File(allowed_extensions=['.nii.gz', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '']))
-        self.add_trait('grey_white', File(allowed_extensions=['.nii.gz', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '']))
+        super(HistoAnalysis, self).__init__()
         self.add_trait('t1mri_nobias', File(allowed_extensions=['.nii.gz', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '']))
-        self.add_trait('skeleton', File(allowed_extensions=['.nii.gz', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', ''], output=True))
-        self.add_trait('roots', File(allowed_extensions=['.nii.gz', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', ''], output=True))
-        self.add_trait('version', Enum('1', '2'))
+        self.add_trait('use_hfiltered', Bool())
+        self.add_trait('hfiltered', File(allowed_extensions=['.nii.gz', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', ''], optional=True))
+        self.add_trait('use_wridges', Bool())
+        self.add_trait('white_ridges', File(allowed_extensions=['.nii.gz', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', ''], optional=True))
+        self.add_trait('undersampling', Enum('2', '4', '8', '16', '32', 'auto', 'iteration'))
+        self.add_trait('histo_analysis', File(allowed_extensions=['.han'], output=True))
+        self.add_trait('histo', File(output=True))
         self.add_trait('fix_random_seed', Bool())
 
 
         # initialization section
-        self.version = '2'
+        self.use_hfiltered = True
+        self.use_wridges = True
+        self.undersampling = 'iteration'
         self.fix_random_seed = False
 
     def _run_process(self):

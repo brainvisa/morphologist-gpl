@@ -24,7 +24,7 @@ class AxonMorphologist(Pipeline):
         # nodes section
         self.add_process('PrepareSubject', 'morphologist.capsul.axon.brainorientation.BrainOrientation')
         self.add_process('BiasCorrection', 'morphologist.capsul.axon.t1biascorrection.T1BiasCorrection')
-        self.add_process('HistoAnalysis', 'morphologist.capsul.axon.biascorrection.BiasCorrection')
+        self.add_process('HistoAnalysis', 'morphologist.capsul.axon.histoanalysis.HistoAnalysis')
         self.add_process('BrainSegmentation', 'morphologist.capsul.axon.brainsegmentation.BrainSegmentation')
         self.add_process('Renorm', 'morphologist.capsul.axon.normalizationskullstripped.NormalizationSkullStripped')
         self.add_process('SplitBrain', 'morphologist.capsul.axon.splitbrain.SplitBrain')

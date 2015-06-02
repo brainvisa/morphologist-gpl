@@ -25,7 +25,7 @@ class SulciLabelling(Pipeline):
         self.add_switch('select_Sulci_Recognition', ['recognition2000', 'SPAM_recognition09'], ['output_graph'])
         self.add_process('recognition2000', 'morphologist.capsul.axon.sulcilabellingann.SulciLabellingANN')
         self.nodes['recognition2000']._weak_outputs = True
-        self.add_process('SPAM_recognition09', 'morphologist.capsul.axon.spam_recognition.spam_recognition')
+        self.add_process('SPAM_recognition09', 'morphologist.capsul.axon.sulcilabellingspam.SulciLabellingSPAM')
         self.nodes['SPAM_recognition09']._weak_outputs = True
 
         # exports section
