@@ -7,7 +7,7 @@ import time
 import cPickle
 from soma.application import Application
 from capsul.study_config.study_config import StudyConfig
-from morphologist.process.customized.morphologist import CustomMorphologist
+from morphologist.capsul.morphologist import Morphologist
 from capsul.process import process_with_fom
 import soma.config as soma_config
 from capsul.pipeline import pipeline_workflow
@@ -45,7 +45,7 @@ class TestMorphologistCapsulPerf(unittest.TestCase):
 
     def test_morpho_perf(self):
         t0 = time.clock()
-        mp = CustomMorphologist()
+        mp = Morphologist()
         mp.nodes_activation.SulciRecognition = True
         mp.nodes_activation.SulciRecognition_1 = True
         t1 = time.clock()
