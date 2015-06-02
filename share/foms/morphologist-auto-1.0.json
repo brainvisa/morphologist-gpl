@@ -17,7 +17,7 @@
     },
 
     "processes" : {
-        "CustomMorphologist" : {
+        "Morphologist" : {
             "t1mri": 
                 [["input:{acquisition}/<subject>", "images"],
                 # ["input:{acquisition}/normalized_<normalization>_<subject>", "images"]
@@ -272,7 +272,7 @@
         },
 
         #Bias Correction, internal
-        "CustomMorphologist.BiasCorrection" : {
+        "Morphologist.BiasCorrection" : {
             "hfiltered": [ ["output:{analysis}/hfiltered_<subject>",  "images"] ],
             "white_ridges": [ ["output:{analysis}/whiteridge_<subject>", "images"] ],
             "variance": [ ["output:{analysis}/variance_<subject>","images"] ],
@@ -292,14 +292,14 @@
                 #[["output:{acquisition}/<subject>", "Commissure coordinates"]]
         #},
 
-        "CustomMorphologist.PrepareSubject.StandardACPC": {
+        "Morphologist.PrepareSubject.StandardACPC": {
             # has to be re-specified here because of a problem in
             # switch back-propagation of output values
             "reoriented_t1mri":
                 [["output:{acquisition}/<subject>", "images"]],
         },
 
-        "CustomMorphologist.PrepareSubject.Normalization.NormalizeSPM": {
+        "Morphologist.PrepareSubject.Normalization.NormalizeSPM": {
             "normalized_t1mri":
                 [["output:{acquisition}/normalized_SPM_<subject>",
                     ["NIFTI", "SPM"]]],
@@ -309,14 +309,14 @@
                 [["output:{acquisition}/<subject>", "images"]],
         },
 
-        "CustomMorphologist.PrepareSubject.Normalization.NormalizeFSL": {
+        "Morphologist.PrepareSubject.Normalization.NormalizeFSL": {
             # has to be re-specified here because of a problem in
             # switch back-propagation of output values
             "reoriented_t1mri":
                 [["output:{acquisition}/<subject>", "images"]],
         },
 
-        "CustomMorphologist.PrepareSubject.Normalization.NormalizeBaladin": {
+        "Morphologist.PrepareSubject.Normalization.NormalizeBaladin": {
             # has to be re-specified here because of a problem in
             # switch back-propagation of output values
             "reoriented_t1mri":

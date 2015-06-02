@@ -27,11 +27,11 @@ def onEditPipeline(self, process, dummy):
 
 def openPipeline(self):
     from capsul.qt_gui.widgets import PipelineDevelopperView
-    from morphologist.process.customized.morphologist import CustomMorphologist
+    from morphologist.capsul.morphologist import Morphologist
     from capsul.pipeline import Pipeline
     Pipeline.hide_nodes_activation = False
     if self._edited_pipeline is None:
-        self._edited_pipeline = CustomMorphologist()
+        self._edited_pipeline = Morphologist()
         self._edited_pipeline.nodes_activation.SulciRecognition = True
         self._edited_pipeline.nodes_activation.SulciRecognition_1 = True
     mpv = PipelineDevelopperView(
@@ -57,7 +57,7 @@ def execution(self, context):
     import time
     from soma.application import Application
     from capsul.study_config.study_config import StudyConfig
-    from morphologist.process.customized.morphologist import CustomMorphologist
+    from morphologist.capsul.morphologist import Morphologist
     from capsul.process import process_with_fom
     from soma_workflow import client as swclient
     from soma.wip.application.api import Application as Appli2
@@ -116,7 +116,7 @@ def execution(self, context):
     if self._edited_pipeline is not None:
         mp = self._edited_pipeline
     else:
-        mp = CustomMorphologist()
+        mp = Morphologist()
         mp.nodes_activation.SulciRecognition = True
         mp.nodes_activation.SulciRecognition_1 = True
     pf = process_with_fom.ProcessWithFom(mp, study_config)
