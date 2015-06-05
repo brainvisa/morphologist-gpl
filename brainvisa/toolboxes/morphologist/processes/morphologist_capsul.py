@@ -128,7 +128,7 @@ def execution(self, context):
         path_translations = {
             'path_translations' : {
                 study_config.shared_directory:
-                    ('brainvisa', 'de25977f-abf5-9f1c-4384-2585338cd7af')}}
+                    ['brainvisa', 'de25977f-abf5-9f1c-4384-2585338cd7af']}}
     else:
         path_translations = {}
     study_config.somaworkflow_computing_resources_config.localhost \
@@ -180,7 +180,7 @@ def execution(self, context):
 
         priority = (len(self.t1mri) - item - 1) * 100
         wf = pipeline_workflow.workflow_from_pipeline(
-            pf.process, study_config=study_config)  #, jobs_priority=priority)
+            pf.process, study_config=study_config, jobs_priority=priority)
         workflow.jobs += wf.jobs
         workflow.dependencies += wf.dependencies
         group = swclient.Group(wf.root_group,
