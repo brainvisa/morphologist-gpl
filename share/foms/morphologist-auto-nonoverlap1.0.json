@@ -52,7 +52,7 @@
 
             # PrepareSubject
 
-#            "PrepareSubject_commissure_coordinates": [["output:{acquisition}/<subject>", "Commissure coordinates"]],
+#            "PrepareSubject_commissure_coordinates": [["output:{acquisition}/<subject>_pass1", "Commissure coordinates"]],
 
             ### AimsMIRegister
             "PrepareSubject_Normalization_Normalization_AimsMIRegister_anatomical_template": "{shared.anatomical_template_t1}",
@@ -63,8 +63,8 @@
 
             ### NormalizeSPM
             "PrepareSubject_Normalization_NormalizeSPM_template": "{shared.anatomical_template_t1}",
-            "normalization_spm_native_transformation_pass1": [["output:{acquisition}/<subject>_sn", "Matlab"]],
-            "normalization_spm_native_job_file_pass1": [["output:{acquisition}/<subject>_job_anat_normalization", "Matlab"]],
+            "normalization_spm_native_transformation_pass1": [["output:{acquisition}/<subject>_sn_pass1", "Matlab"]],
+            "normalization_spm_native_job_file_pass1": [["output:{acquisition}/<subject>_job_anat_normalization_pass1", "Matlab"]],
             "normalization_spm_native_transformation": [["output:{acquisition}/<subject>_sn", "Matlab"]],
             "normalization_spm_native_job_file": [["output:{acquisition}/<subject>_job_anat_normalization", "Matlab"]],
             # "PrepareSubject_Normalization_NormalizeSPM_normalized_t1mri": [["output:{acquisition}/normalized_<normalization>_<subject>","images", {"normalization":"SPM"}]],
@@ -77,7 +77,7 @@
 
             ### NormalizeFSL
             "normalization_fsl_native_transformation_pass1":
-                [["output:{acquisition}/<subject>_fsl", "Matlab"]],
+                [["output:{acquisition}/<subject>_fsl_pass1", "Matlab"]],
             "normalization_fsl_native_transformation":
                 [["output:{acquisition}/<subject>_fsl", "Matlab"]],
             "PrepareSubject_Normalization_NormalizeFSL_ReorientAnatomy_output_t1mri":
@@ -85,7 +85,7 @@
 
             ### NormalizeBaladin
             "normalization_baladin_native_transformation_pass1":
-                [["output:{acquisition}/<subject>_baladin", "Text file"]],
+                [["output:{acquisition}/<subject>_baladin_pass1", "Text file"]],
             "normalization_baladin_native_transformation":
                 [["output:{acquisition}/<subject>_baladin", "Text file"]],
 
@@ -284,10 +284,10 @@
 
         "Morphologist.PrepareSubject": {
             "normalization_transformation":
-                [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-MNI1",
+                [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-MNI-pass1",
                     "Transformation matrix"]],
             "commissure_coordinates":
-                [["output:{acquisition}/<subject>",
+                [["output:{acquisition}/<subject>-pass1",
                     "Commissure coordinates"]],
         },
 
@@ -324,7 +324,7 @@
 
         "Morphologist.select_Talairach": {
             "Talairach_transform":
-                [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-ACPC",
+                [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-ACPC-pass1",
                     "Transformation matrix"]],
         },
 

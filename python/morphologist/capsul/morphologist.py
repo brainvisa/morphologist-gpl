@@ -23,18 +23,26 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
             ['StandardACPC', 'Normalization'],
             ['Talairach_transform'])
 
+        # WARNING: we must keep 2 switches here, otherwise we introduce a loop
+        # in the pipeline graph:
+        # - in AC/PC mode, TalairachTransform needs split, which needs
+        #   commissure coords, thus transformations are obtained 2 steps
+        #   after APC
+        # - in renormalization mode, split is using the APC from Renorm.
         self.add_switch('select_renormalization_commissures',
             ['initial', 'skull_stripped'],
             ['commissure_coordinates'], export_switch=False)
         self.add_switch('select_renormalization_transform',
             ['initial', 'skull_stripped'],
-            ['Talairach_transform'], export_switch=False)
+            ['Talairach_transform', 'MNI_transform'], export_switch=False)
 
         # fix initial values of switches: should be Undefined, not None.
         self.nodes['select_Talairach'].StandardACPC_switch_Talairach_transform = Undefined
         self.nodes['select_Talairach'].Normalization_switch_Talairach_transform = Undefined
         self.nodes['select_renormalization_transform'].skull_stripped_switch_Talairach_transform = Undefined
         self.nodes['select_renormalization_transform'].initial_switch_Talairach_transform = Undefined
+        self.nodes['select_renormalization_transform'].skull_stripped_switch_MNI_transform = Undefined
+        self.nodes['select_renormalization_transform'].initial_switch_MNI_transform = Undefined
         self.nodes['select_renormalization_commissures'].skull_stripped_switch_commissure_coordinates = Undefined
         self.nodes['select_renormalization_commissures'].initial_switch_commissure_coordinates = Undefined
 
@@ -71,9 +79,6 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
             'normalization_transformation', is_optional=True, weak_link=True)
 
         self.export_parameter(
-            'PrepareSubject', 'normalization_transformation',
-            is_optional=True, weak_link=True)
-        self.export_parameter(
             'PrepareSubject', 'Normalization_normalized', 'normalized_t1mri',
             is_optional=True, weak_link=True)
         self.add_trait('normalization_allow_retry_initialization', Bool())
@@ -87,8 +92,6 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
         self.add_link('PrepareSubject_TalairachFromNormalization_source_referential->Renorm.TalairachFromNormalization_source_referential')
         self.add_link('PrepareSubject_TalairachFromNormalization_acpc_referential->Renorm.TalairachFromNormalization_acpc_referential')
         self.add_link('PrepareSubject_TalairachFromNormalization_transform_chain_ACPC_to_Normalized->Renorm.TalairachFromNormalization_transform_chain_ACPC_to_Normalized')
-        self.add_link('Renorm.transformation->normalization_transformation',
-                      weak_link=True)
         self.add_link('Renorm.Normalization_normalized->normalized_t1mri', weak_link=True)
 
         self.add_link('TalairachTransformation.Talairach_transform->select_Talairach.StandardACPC_switch_Talairach_transform')
@@ -102,12 +105,16 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
             'commissure_coordinates', 'commissure_coordinates')
         self.export_parameter('select_renormalization_transform',
             'Talairach_transform', 'Talairach_transform')
+        self.export_parameter('select_renormalization_transform',
+            'MNI_transform', 'MNI_transform')
         self.add_link('perform_skull_stripped_renormalization->select_renormalization_transform.switch')
         self.add_link('PrepareSubject.commissure_coordinates->select_renormalization_commissures.initial_switch_commissure_coordinates')
         self.add_link('PrepareSubject.talairach_transformation->select_Talairach.Normalization_switch_Talairach_transform')
         self.add_link('select_Talairach.Talairach_transform->select_renormalization_transform.initial_switch_Talairach_transform')
         self.add_link('Renorm.commissure_coordinates->select_renormalization_commissures.skull_stripped_switch_commissure_coordinates')
         self.add_link('Renorm.talairach_transformation->select_renormalization_transform.skull_stripped_switch_Talairach_transform')
+        self.add_link('PrepareSubject.normalization_transformation->select_renormalization_transform.initial_switch_MNI_transform')
+        self.add_link('Renorm.transformation->select_renormalization_transform.skull_stripped_switch_MNI_transform')
 
         self.remove_link('Renorm.commissure_coordinates->Renorm_commissure_coordinates')
         self.remove_trait('Renorm_commissure_coordinates')
@@ -204,23 +211,45 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
             self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes['NormalizeSPM'].process.nodes_activation.ReorientAnatomy = True
             self.add_link('normalization_allow_retry_initialization->PrepareSubject.Normalization_NormalizeSPM_allow_retry_initialization')
             self.add_link('normalization_allow_retry_initialization->Renorm.Normalization_NormalizeSPM_allow_retry_initialization')
-            self.export_parameter('PrepareSubject', 'Normalization_NormalizeSPM_spm_transformation', 'normalization_spm_native_transformation')
-            self.add_link('Renorm.Normalization_NormalizeSPM_spm_transformation->normalization_spm_native_transformation')
-            self.export_parameter('PrepareSubject', 'Normalization_NormalizeSPM_NormalizeSPM_job_file', 'normalization_spm_native_job_file')
-            self.add_link('Renorm.Normalization_NormalizeSPM_NormalizeSPM_job_file->normalization_spm_native_job_file')
+            self.export_parameter(
+                'PrepareSubject',
+                'Normalization_NormalizeSPM_spm_transformation',
+                'normalization_spm_native_transformation_pass1')
+            self.export_parameter(
+                'Renorm', 'Normalization_NormalizeSPM_spm_transformation',
+                'normalization_spm_native_transformation')
+            self.export_parameter(
+                'PrepareSubject',
+                'Normalization_NormalizeSPM_NormalizeSPM_job_file',
+                'normalization_spm_native_job_file_pass1')
+            self.export_parameter(
+                'Renorm', 'Normalization_NormalizeSPM_NormalizeSPM_job_file',
+                'normalization_spm_native_job_file')
             self.do_not_export.add(('Renorm', 'Normalization_NormalizeSPM_ReorientAnatomy_output_t1mri'))
 
         if self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes.has_key('NormalizeFSL'):
             self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes['NormalizeFSL'].process.nodes_activation.ReorientAnatomy = True
             self.add_link('normalization_allow_retry_initialization->PrepareSubject.Normalization_NormalizeFSL_allow_retry_initialization')
             self.add_link('normalization_allow_retry_initialization->Renorm.Normalization_NormalizeFSL_allow_retry_initialization')
-            self.export_parameter('PrepareSubject', 'Normalization_NormalizeFSL_NormalizeFSL_transformation_matrix', 'normalization_fsl_native_transformation')
-            self.add_link('Renorm.Normalization_NormalizeFSL_NormalizeFSL_transformation_matrix->normalization_fsl_native_transformation')
+            self.export_parameter(
+                'PrepareSubject',
+                'Normalization_NormalizeFSL_NormalizeFSL_transformation_matrix',
+                'normalization_fsl_native_transformation_pass1')
+            self.export_parameter(
+                'Renorm',
+                'Normalization_NormalizeFSL_NormalizeFSL_transformation_matrix',
+                'normalization_fsl_native_transformation')
             self.do_not_export.add(('Renorm', 'Normalization_NormalizeFSL_ReorientAnatomy_output_t1mri'))
 
         if self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes.has_key('NormalizeBaladin'):
-            self.export_parameter('PrepareSubject', 'Normalization_NormalizeBaladin_NormalizeBaladin_transformation_matrix', 'normalization_baladin_native_transformation')
-            self.add_link('Renorm.Normalization_NormalizeBaladin_NormalizeBaladin_transformation_matrix->normalization_baladin_native_transformation')
+            self.export_parameter(
+                'PrepareSubject',
+                'Normalization_NormalizeBaladin_NormalizeBaladin_transformation_matrix',
+                'normalization_baladin_native_transformation_pass1')
+            self.export_parameter(
+                'Renorm',
+                'Normalization_NormalizeBaladin_NormalizeBaladin_transformation_matrix',
+                'normalization_baladin_native_transformation')
             self.do_not_export.add(('Renorm', 'Normalization_NormalizeBaladin_ReorientAnatomy_output_t1mri'))
 
         if self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes.has_key('Normalization_AimsMIRegister'):
@@ -263,7 +292,6 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
             'inputs': (-1335.3, 121.7),
             'outputs': (3629.7734591999997, 1029.50073216),
             'select_Talairach': (2231.8330662399985, 1673.9494374399999),
-            'select_renormalization': (2429.8292479999996, 1274.2534399999995),
             'select_renormalization_commissures': (1194.6271999999997,
                                                     1119.9775999999997),
             'select_renormalization_transform': (2563.670399999999, 1470.8831999999998)}
@@ -359,10 +387,11 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
         self.add_pipeline_step('head_mesh', ['HeadMesh'])
         self.add_pipeline_step('grey_white_segmentation',
                                ['GreyWhiteClassification', 'GreyWhiteTopology',
-                                'GreyWhiteMesh', 'PialMesh',
                                 'GreyWhiteClassification_1',
-                                'GreyWhiteTopology_1', 'GreyWhiteMesh_1',
-                                'PialMesh_1'])
+                                'GreyWhiteTopology_1'])
+        self.add_pipeline_step('white_mesh',
+                               ['GreyWhiteMesh', 'GreyWhiteMesh_1'])
+        self.add_pipeline_step('pial_mesh', ['PialMesh', 'PialMesh_1'])
         self.add_pipeline_step('sulci',
                                ['SulciSkeleton', 'CorticalFoldsGraph',
                                 'SulciSkeleton_1', 'CorticalFoldsGraph_1'])
