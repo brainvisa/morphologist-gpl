@@ -1,5 +1,5 @@
 {
-    "fom_name": "morphologist-auto-1.0",
+    "fom_name": "morphologist-auto-nonoverlap-1.0",
 
     "fom_import": ["formats-brainvisa-1.0", "shared-brainvisa-1.0"],
 
