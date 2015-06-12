@@ -41,15 +41,16 @@ def validation():
     anatomist.validation()
 
 signature = Signature(
-  'ridge', ReadDiskItem( 'T1 MRI White Matter Ridges',
-    'Anatomist volume formats' ),
-  'mri', ReadDiskItem( 'Raw T1 MRI', 'Anatomist volume formats' ),
+    'white_ridges', ReadDiskItem('T1 MRI White Matter Ridges',
+                                 'Anatomist volume formats'),
+    't1mri', ReadDiskItem('Raw T1 MRI', 'Anatomist volume formats',
+                          exactType = True),
 )
 
-def initialization( self ):
-  self.linkParameters( 'mri', 'ridge' )
+def initialization(self):
+    self.linkParameters('t1mri', 'white_ridges')
 
-def execution( self, context ):
+def execution(self, context):
     a = anatomist.Anatomist()
-    return a.viewMaskOnMRI( self.mri, self.ridge, a.getPalette("random"), 'linear_on_defined', 0.3 )
+    return a.viewMaskOnMRI(self.t1mri, self.white_ridges, a.getPalette("random"), 'linear_on_defined', 0.3)
 

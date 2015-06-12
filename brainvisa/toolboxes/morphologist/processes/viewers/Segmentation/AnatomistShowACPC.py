@@ -31,7 +31,6 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
-import shfjGlobals
 from brainvisa import anatomist
 
 name = 'Anatomist show Commissure coordinates'
@@ -42,57 +41,58 @@ def validation():
     anatomist.validation()
 
 signature = Signature(
-    'Commissure_coordinates', ReadDiskItem( 'Commissure coordinates', 
-                                            'Commissure coordinates' ),
-    'show_MRI', Boolean(), 
-    'T1mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.anatomistVolumeFormats ),
+    'commissure_coordinates', ReadDiskItem('Commissure coordinates', 
+                                           'Commissure coordinates'),
+    'show_t1mri', Boolean(), 
+    't1mri', ReadDiskItem('Raw T1 MRI', 'Anatomist volume formats', 
+                          exactType = True),
     'anatomist_window', anatomist.AWindowChoice(), 
 )
 
-def initialization( self ):
-    self.linkParameters( 'T1mri' , 'Commissure_coordinates' )
-    self.setOptional( 'T1mri' )
+def initialization(self):
+    self.linkParameters('t1mri' , 'commissure_coordinates')
+    self.setOptional('t1mri')
     self.anatomist_window = '<'+_t_('New window (Sagittal)')+'>'
 
-def execution( self, context ):
+def execution(self, context):
     # read APC file
-    acpos, pcpos, ippos = context.runProcess( 'readAPC',
-                                              self.Commissure_coordinates,
-                                              self.T1mri )
-    context.write( 'AC:', acpos )
-    context.write( 'PC:', pcpos )
-    context.write( 'IP:', ippos )
+    acpos, pcpos, ippos = context.runProcess('readAPC',
+                                             self.commissure_coordinates,
+                                             self.t1mri)
+    context.write('AC:', acpos)
+    context.write('PC:', pcpos)
+    context.write('IP:', ippos)
 
-    context.write( '<p>Color code:</p>' \
-                   '<table cellspacing="0"><tr bgcolor="#0000ff"><td>' \
-                   '<font color="#ffffff">Blue cross is AC: ', acpos,
-                   '</font></td></tr>' \
-                   '<tr bgcolor="#ffff00"><td>Yellow cross is PC: ', pcpos,
-                   '</td></tr>' \
-                   '<tr bgcolor="#00ff00"><td>Green cross is IH: ', ippos,
-                   '</td></tr></table>' )
+    context.write('<p>Color code:</p>' \
+                  '<table cellspacing="0"><tr bgcolor="#0000ff"><td>' \
+                  '<font color="#ffffff">Blue cross is AC: ', acpos,
+                  '</font></td></tr>' \
+                  '<tr bgcolor="#ffff00"><td>Yellow cross is PC: ', pcpos,
+                  '</td></tr>' \
+                  '<tr bgcolor="#00ff00"><td>Green cross is IH: ', ippos,
+                  '</td></tr></table>')
     # the list selfdestroy will contain all objects that must be stored until the process window is closed. Then these objects will be deleted. 
     selfdestroy = []
     a = anatomist.Anatomist()
     vs = None
     mri = None
     ref = None
-    if self.T1mri is not None:
-        if self.show_MRI:
-            mri = a.loadObject( self.T1mri )
-            selfdestroy.append( mri )
+    if self.t1mri is not None:
+        if self.show_t1mri:
+            mri = a.loadObject(self.t1mri)
+            selfdestroy.append(mri)
             ref = mri.referential
 
-    sphere = ReadDiskItem( 'Mesh', shfjGlobals.aimsMeshFormats ).findValue( \
-      { 'category': 'standardmeshes', 'filename_variable': 'cross' },
-      requiredAttributes = { 'category': 'standardmeshes',
-                             'filename_variable': 'cross' } )
+    sphere = ReadDiskItem('Mesh', 'Aims mesh formats').findValue( \
+        {'category': 'standardmeshes', 'filename_variable': 'cross'},
+        requiredAttributes = {'category': 'standardmeshes',
+                             'filename_variable': 'cross'})
     if sphere:
         sfile = sphere.fullPath()
     else:
-        context.write( 'No pre-built sphere mesh found. Building one...' )
-        cp = context.temporary( 'Config file' )
-        f = open( cp.fullPath(), 'w' )
+        context.write('No pre-built sphere mesh found. Building one...')
+        cp = context.temporary('Config file')
+        f = open(cp.fullPath(), 'w')
         print >> f, 'attributes = {'
         print >> f, "  'type' : 'cylinder',"
         print >> f, "  'point1' : [ -50, 0, 0 ],"
@@ -103,11 +103,11 @@ def execution( self, context ):
         print >> f, "  'smooth' : 1,"
         print >> f, "}"
         f.close()
-        cf = context.temporary( 'Mesh mesh' )
-        context.system( 'AimsMeshGenerate', '-i', cp.fullPath(), '-o',
-                        cf.fullPath() )
+        cf = context.temporary('Mesh mesh')
+        context.system('AimsMeshGenerate', '-i', cp.fullPath(), '-o',
+                        cf.fullPath())
 
-        f = open( cp.fullPath(), 'w' )
+        f = open(cp.fullPath(), 'w')
         print >> f, 'attributes = {'
         print >> f, "  'type' : 'cylinder',"
         print >> f, "  'point1' : [ 0, -50, 0 ],"
@@ -118,11 +118,11 @@ def execution( self, context ):
         print >> f, "  'smooth' : 1,"
         print >> f, "}"
         f.close()
-        cf2 = context.temporary( 'Mesh mesh' )
-        context.system( 'AimsMeshGenerate', '-i', cp.fullPath(), '-o',
-                        cf2.fullPath() )
+        cf2 = context.temporary('Mesh mesh')
+        context.system('AimsMeshGenerate', '-i', cp.fullPath(), '-o',
+                       cf2.fullPath())
 
-        f = open( cp.fullPath(), 'w' )
+        f = open(cp.fullPath(), 'w')
         print >> f, 'attributes = {'
         print >> f, "  'type' : 'cylinder',"
         print >> f, "  'point1' : [ 0, 0, -50 ],"
@@ -133,12 +133,12 @@ def execution( self, context ):
         print >> f, "  'smooth' : 1,"
         print >> f, "}"
         f.close()
-        cf3 = context.temporary( 'Mesh mesh' )
-        context.system( 'AimsMeshGenerate', '-i', cp.fullPath(), '-o',
-                        cf3.fullPath() )
+        cf3 = context.temporary('Mesh mesh')
+        context.system('AimsMeshGenerate', '-i', cp.fullPath(), '-o',
+                       cf3.fullPath())
 
-        context.system( 'AimsZCat', '-o', cf.fullPath(), '-i', cf.fullPath(),
-                        '-i', cf2.fullPath(), '-i', cf3.fullPath() )
+        context.system('AimsZCat', '-o', cf.fullPath(), '-i', cf.fullPath(),
+                       '-i', cf2.fullPath(), '-i', cf3.fullPath())
         del cf2, cf3
 
         sfile = cf.fullPath()

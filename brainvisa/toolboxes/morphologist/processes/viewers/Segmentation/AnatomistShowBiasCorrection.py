@@ -31,7 +31,6 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
-import shfjGlobals
 from brainvisa import anatomist
 
 name = 'Anatomist Show Bias Correction'
@@ -39,22 +38,23 @@ roles = ('viewer',)
 userLevel = 0
 
 def validation():
-  anatomist.validation()
+    anatomist.validation()
 
 signature = Signature(
-  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
-    'Aims readable volume formats' ),
-  'T1mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.anatomistVolumeFormats )
+    'mri_corrected', ReadDiskItem('T1 MRI Bias Corrected',
+                                  'Anatomist volume formats'),
+    't1mri', ReadDiskItem('Raw T1 MRI', 'Anatomist volume formats',
+                          exactType = True),
 )
 
-def initialization( self ):
-  self.linkParameters( 'T1mri' , 'mri_corrected' )
-  self.setOptional( 'T1mri' )
+def initialization(self):
+    self.linkParameters('t1mri', 'mri_corrected')
+    self.setOptional('t1mri')
 
-def execution( self, context ):
-  selfdestroy = []
-  a=anatomist.Anatomist()
-  if self.T1mri is not None:
-      selfdestroy.append( a.viewBias( self.T1mri, forceReload = 1 ) )
-  selfdestroy.append( a.viewBias( self.mri_corrected ) )
-  return selfdestroy
+def execution(self, context):
+    selfdestroy = []
+    a = anatomist.Anatomist()
+    if self.t1mri is not None:
+        selfdestroy.append(a.viewBias(self.t1mri, forceReload = 1))
+    selfdestroy.append(a.viewBias(self.mri_corrected))
+    return selfdestroy
