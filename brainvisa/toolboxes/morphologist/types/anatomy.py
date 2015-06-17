@@ -95,6 +95,11 @@ FileType( 'Right Hemisphere Mesh', 'Hemisphere Mesh' )
 FileType( 'Hemisphere White Mesh', 'Mesh' )
 FileType( 'Left Hemisphere White Mesh', 'Hemisphere White Mesh' )
 FileType( 'Right Hemisphere White Mesh', 'Hemisphere White Mesh' )
+
+FileType( 'Spherical mesh', 'Mesh' )
+FileType( 'Left spherical mesh', 'Spherical mesh')
+FileType( 'Right spherical mesh', 'Spherical mesh')
+
 FileType( 'Left Hemisphere White Spherical Mesh', 'Left Hemisphere White Mesh' )
 FileType( 'Right Hemisphere White Spherical Mesh', 'Right Hemisphere White Mesh' )
 FileType( 'Fine Hemisphere White Mesh', 'Hemisphere White Mesh' )
