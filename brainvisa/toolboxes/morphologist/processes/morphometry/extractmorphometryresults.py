@@ -24,27 +24,42 @@ def initialization(self):
     self.pipeline_mode = False
     self.signature['pipeline_mode'].userLevel = 3
 
+    def find_database():
+        #Find database and add to choice
+        databases = [None]
+        databases.extend([dbs.directory for dbs in neuroConfig.dataPath \
+                          if not dbs.builtin])
+        self.signature['database'].setChoices(*databases)
+        self.database = databases[0]
+
+
     def link_pipeline_mode(model, names, parameterized):
         if self.pipeline_mode:
             process = parameterized[0]
             signature = process.signature
-            self.signature['history_file'] = \
-            WriteDiskItem('History Sulcal Openings Table', 'Text file',
-                          requiredAttributes={'software': 'morphologist'})
-            self.signature['output_file'] = \
-            WriteDiskItem('Sulcal Openings Table', 'CSV File',
-                          requiredAttributes={'software': 'morphologist'})
+            self.signature['database'] = Choice()
+            self.signature['timepoint'] = String()
+            self.signature['history_file'] = WriteDiskItem('History Sulcal Openings Table',
+                                                           'Text file',
+                                                           requiredAttributes={'software': 'morphologist'})
+            self.signature['output_file'] = WriteDiskItem('Sulcal Openings Table',
+                                                          'CSV File',
+                                                          requiredAttributes={'software': 'morphologist'})
+            self.addLink(None, 'timepoint', link_files)
             process.changeSignature(signature)
+            find_database()
 
-    def link_history_file(model, names, parameterized):
-        if self.pipeline_mode and self.output_file:
-            database_found = self.output_file.hierarchyAttributes()['_database']
+    def link_files(model, names, parameterized):
+        if self.pipeline_mode and self.timepoint:
             d = {}
-            d['_database'] = database_found
-            self.history_file = self.signature['history_file'].findValue(d)
+            d['_database'] = self.database
+            d['acquisition'] = self.timepoint
+            self.output_file = self.signature['output_file'].findValue(d)
+            if self.output_file:
+                self.history_file = self.signature['history_file'].findValue(d)
 
     self.addLink(None, 'pipeline_mode', link_pipeline_mode)
-    self.addLink(None, 'output_file', link_history_file)
+    self.addLink(None, 'output_file', link_files)
 
 
 def execution(self, context):
