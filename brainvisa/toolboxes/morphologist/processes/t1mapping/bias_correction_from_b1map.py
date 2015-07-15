@@ -80,14 +80,10 @@ def execution(self, context):
     import numpy as np
     if self.B1_map is None:
         # build B1 map
-        BAFI_amplitude = aims.read(self.BAFI_amplitude.fullPath())
+        BAFI_amplitude = aims.read(self.BAFI_amplitude_map.fullPath())
         BAFI_phase = aims.read(self.BAFI_phase_map.fullPath())
 
         BAFI_data = t1mapping.BAFIData(BAFI_amplitude, BAFI_phase)
-        BAFI_data.prescribed_flip_angle = 60.0  # degrees
-        BAFI_data.echo_times = [3.061, 3.061, 4.5, 7.0]  # milliseconds
-        BAFI_data.TR_factor = 5.0
-        BAFI_data.tau = 1.2e-3  # RF pulse duration in seconds TODO check real value!!
 
         #B1map_array = np.abs(BAFI_data.make_B1_map())
         B1map_array = np.abs(BAFI_data.make_flip_angle_map())
@@ -101,6 +97,7 @@ def execution(self, context):
             = BAFI_amplitude.header()['transformations']
         #B1map_farray[np.asarray(BAFI_amplitude)[:,:,:,0]<50] = 1.
         B1map_farray[B1map_farray > 1.77] = 0
+        b1map = B1map_volume
 
     else:
         b1map = aims.read(self.B1_map.fullPath())
@@ -122,7 +119,7 @@ def execution(self, context):
         field_threshold = None
 
     unbiased_vol, field = t1mapping.correct_bias(
-        biased_vol, b1map, dp_gre_low_contrast=dp_gre_low_contrast,
+        biased_vol, b1map_corr, dp_gre_low_contrast=dp_gre_low_contrast,
         field_threshold=field_threshold)
 
     aims.write(unbiased_vol, self.corrected_image.fullPath())
