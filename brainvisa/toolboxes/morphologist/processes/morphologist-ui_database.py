@@ -2,11 +2,11 @@ from brainvisa.processes import *
 from brainvisa.processing.qtgui.backwardCompatibleQt import *
 
 def validation():
-  muiexe = findInPath( 'morphologist-ui.py' )
+  muiexe = findInPath( 'morphologist' )
   if not muiexe:
-    raise ValidationError( 'morphologist-ui.py program is not found' )
+    raise ValidationError( 'morphologist program is not found' )
 
-name = 'Morphologist UI 2013, run on database'
+name = 'Morphologist UI 2015, run on database'
 userLevel = 0
 
 signature = Signature(
@@ -28,8 +28,7 @@ def initialization(self):
 
 
 def runinthread( self ):
-  muiexe = os.path.join( findInPath( 'morphologist-ui.py' ), 
-    'morphologist-ui.py' )
+  muiexe = os.path.join( findInPath( 'morphologist' ), 'morphologist' )
   print self.database.directory
   print type( self.database )
   defaultContext().system( sys.executable, muiexe, 

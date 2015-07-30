@@ -2,16 +2,15 @@ from brainvisa.processes import *
 from brainvisa.processing.qtgui.backwardCompatibleQt import *
 
 def validation():
-  muiexe = findInPath( 'morphologist-ui.py' )
+  muiexe = findInPath( 'morphologist' )
   if not muiexe:
-    raise ValidationError( 'morphologist-ui.py program is not found' )
+    raise ValidationError( 'morphologist program is not found' )
 
-name = 'Morphologist UI 2013'
+name = 'Morphologist UI 2015'
 userLevel = 0
 
 def overrideGUI( self ):
-  muiexe = os.path.join( findInPath( 'morphologist-ui.py' ), 
-    'morphologist-ui.py' )
+  muiexe = os.path.join( findInPath( 'morphologist' ), 'morphologist' )
   defaultContext().system( sys.executable, muiexe )
   w = QWidget( None )
   w.setAttribute( Qt.WA_DeleteOnClose )
