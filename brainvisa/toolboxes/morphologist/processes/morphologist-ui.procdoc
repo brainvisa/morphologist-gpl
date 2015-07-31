@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <minf expander="minf_2.0">
 <d>
+  <d name="fr">
+    <xhtml name="short"/>
+    <d name="parameters">
+    </d>
+    <xhtml name="long"/>
+  </d>
   <d name="en">
     <xhtml name="short">This "fake" process opens the new Morphologist-UI with improved and simplified user interface.
-You can also run it independently of brainvisa, using the <b><tt>morphologist-ui.py</tt></b> commandline.</xhtml>
+You can also run it independently of brainvisa, using the <b><tt>morphologist</tt></b> commandline.</xhtml>
     <d name="parameters">
     </d>
     <xhtml name="long"/>

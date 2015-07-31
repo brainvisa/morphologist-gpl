@@ -126,7 +126,7 @@ class TestMorphologistCapsul(unittest.TestCase):
             'Morphologist jobs failed')
         print '** No failed jobs.'
 
-        ref_dir = os.path.join(self.input_dir, 'test')
+        ref_dir = os.path.join(self.input_dir, 'default_analysis')
         #test_dir = os.path.join(
             #self.subject_dir, self.morpho_fom.attributes['analysis'])
         test_dir = self.analysis_dir
