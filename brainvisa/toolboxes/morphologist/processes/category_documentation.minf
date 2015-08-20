@@ -4,8 +4,14 @@
 <xhtml name="en">
   <h1>Morphologist</h1>
 
-  <p>Morphologist is the new name for the toolbox including T1 anatomical MRI processing, cortical sulci extraction and identification, and morphometric applications.
+  <p>Morphologist is the name for the toolbox including T1 anatomical MRI processing, cortical sulci extraction and identification, and morphometric applications.
   </p>
+
+  <p>Morphologist has been released for many years as a toolbox for the BrainVISA software. It now has a simplified user interface: <a href="../../../../../morphologist-ui-1.0/index.html">Morphologist-UI</a>, which may be used in a much user-friendly way in many cases.
+  </p>
+  <p align="center"><a href="../../../../../morphologist-ui-1.0/index.html"><img src="../../../../../morphologist-ui-1.0/_images/morphologist-ui.jpg" width="70%" alt="Morphologist-UI" align="center" /></a>
+  </p>
+
   <p>
   Before processing T1-weighted data, it is recommended to import it in a BrainVISA database. See the following categories for more information :
   </p>
@@ -50,7 +56,15 @@
 </xhtml>
 
 <xhtml name="fr">
-  <h1>Analyse des images pondérées en T1</h1>
+  <h1>Morphologist</h1>
+
+  <p>Morphologist est le nom de la boîte à outils d'analyse d'images anatomiques T1, d'extraction de d'identification des sillons corticaux, et de leurs applications morphométriques.
+  </p>
+
+  <p>Morphologist est distribué depuis des années en tant que boîte à outil pour le logiciel BrainVISA. Il a à présent une interface graphique simplifiée: <a href="../../../../../morphologist-ui-1.0/index.html">Morphologist-UI</a>, qui est bien plus facile à utiliser dans la plupart des cas.
+  </p>
+  <p align="center"><a href="../../../../../morphologist-ui-1.0/index.html"><img src="../../../../../morphologist-ui-1.0/_images/morphologist-ui.jpg" width="70%" alt="Morphologist-UI" align="center" /></a>
+  </p>
 
   <p>
   Avant de traiter des données d'IRM T1 anatomique, il est recommandé de les importer dans une base de donnée BrainVISA. Reportez-vous aux catégories suivantes pour plus d'information :
