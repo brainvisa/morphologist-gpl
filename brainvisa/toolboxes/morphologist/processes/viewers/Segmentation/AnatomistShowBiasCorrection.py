@@ -45,16 +45,25 @@ signature = Signature(
                                   'Anatomist volume formats'),
     't1mri', ReadDiskItem('Raw T1 MRI', 'Anatomist volume formats',
                           exactType = True),
+    'histo_analysis', ReadDiskItem('Histo analysis', 'Histo analysis')
 )
 
 def initialization(self):
     self.linkParameters('t1mri', 'mri_corrected')
-    self.setOptional('t1mri')
+    self.linkParameters('histo_analysis', 'mri_corrected')
+    self.setOptional('t1mri', 'histo_analysis')
 
 def execution(self, context):
     selfdestroy = []
     a = anatomist.Anatomist()
+    block = None
     if self.t1mri is not None:
-        selfdestroy.append(a.viewBias(self.t1mri, forceReload = 1))
-    selfdestroy.append(a.viewBias(self.mri_corrected))
+        block = a.createWindowsBlock(2)
+        print 'block:', type(block), isinstance(block, a.AWindowsBlock)
+        selfdestroy.append(block)
+        selfdestroy.append(a.viewBias(self.t1mri, forceReload=1,
+                                      hanfile=self.histo_analysis,
+                                      parent=block))
+    selfdestroy.append(a.viewBias(self.mri_corrected,
+                                  hanfile=self.histo_analysis, parent=block))
     return selfdestroy
