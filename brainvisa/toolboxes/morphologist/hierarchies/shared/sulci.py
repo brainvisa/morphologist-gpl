@@ -95,6 +95,10 @@ insertFirst( 'nomenclature/hierarchy',
 )
 
 insertLast('nomenclature/translation',
+    'sulci_default_list', SetType( 'Sulci groups list' ), SetWeakAttr( 'version', 'default' ),
+)
+
+insertLast('nomenclature/translation',
   '*', SetType( "Label Translation" ),
 )
 
