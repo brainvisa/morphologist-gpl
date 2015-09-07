@@ -95,6 +95,10 @@ insertFirst( 'nomenclature/hierarchy',
 )
 
 insertLast('nomenclature/translation',
+    'sulci_default_list', SetType( 'Sulci groups list' ), SetWeakAttr( 'version', 'default' ),
+)
+
+insertLast('nomenclature/translation',
   '*', SetType( "Label Translation" ),
 )
 
@@ -115,7 +119,7 @@ insert( '',
           "Rfolds_noroots",
             SetWeakAttr( 'side', 'right', 'model', 'folds_noroots' ),
             SetContent(
-                "R*", SetType( 'Model graph' ), SetWeakAttr( 'trained', 'Yes' ),
+              "R*", SetType( 'Model graph' ), SetWeakAttr( 'trained', 'Yes' ),
               "R*", SetType( 'Data description' ),
           ),
           "Lfolds_noroots_fd4_native_2010", SetPriorityOffset( -1 ),

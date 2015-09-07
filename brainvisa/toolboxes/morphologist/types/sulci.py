@@ -31,8 +31,6 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
-import shfjGlobals
-
 include( 'builtin' )
 include( 'registration' )
 include( 'structural' )
@@ -53,7 +51,7 @@ FileType( 'Right siRelax Fold Energy', 'siRelax Fold Energy' )
 FileType( 'Sigraph Learner', 'Text file', 'Sigraph Learner' )
 FileType( 'Classifier', None, [ 'SVM classifier', # 'SVM regressor',
                                 'MLP classifier' ] )
-FileType( 'Elevation map', '2D image', shfjGlobals.aimsVolumeFormats )
+FileType( 'Elevation map', '2D image', 'Aims writable volume formats' )
 FileType( 'Sulci Segments Model', 'Any Type', 'Text Data Table' )
 FileType( 'Sulci Segments Relations Model', 'Any Type', 'Text Data Table' )
 FileType( 'Sulci Labels Segmentwise Posterior Probabilities', 'CSV file',
@@ -73,3 +71,7 @@ FileType( 'White SPAM mesh', 'Hemisphere White Mesh' )
 FileType( 'Template model', 'Any Type', 'Template model' )
 FileType( 'Template model domain', 'Any Type', 'Template model domain' )
 
+#--------------------Morphometry--------------------
+
+FileType( 'Sulci groups list', 'Any Type', 'JSON file' )
+FileType( 'Sulcal morphometry measurements', 'CSV File' )
