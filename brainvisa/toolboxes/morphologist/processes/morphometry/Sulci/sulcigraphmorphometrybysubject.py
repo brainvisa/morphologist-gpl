@@ -70,7 +70,7 @@ def initialization( self ):
     
     self.linkParameters('right_sulci_graph', 'left_sulci_graph')
     self.linkParameters('sulcal_morpho_measures', 'left_sulci_graph')
-    self.use_attribute = 'name'
+    self.use_attribute = 'label'
     self.sulci_file = self.signature['sulci_file'].findValue({'version': 'default'})
     self.linkParameters('use_attribute', 'left_sulci_graph', linkAttribute)
 
