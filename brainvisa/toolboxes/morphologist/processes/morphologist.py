@@ -95,25 +95,26 @@ class linkCheckModels:
 
 
 def initialization( self ):
-    def changeNormalize( enabled, names, parameterized ):
+    def changeNormalize(enabled, names, parameterized):
         eNode = parameterized[0].executionNode()
-        if len( list( eNode.PrepareSubject.executionNode().children() ) ) > 1:
-            if hasattr( eNode.PrepareSubject, 'StandardACPC' ):
+        if len(list(eNode.PrepareSubject.executionNode().children())) > 1:
+            if hasattr(eNode.PrepareSubject, 'StandardACPC'):
                 s = eNode.PrepareSubject.StandardACPC.isSelected()
             else:
                 s = False
             if s == parameterized[0].perform_normalization:
                 y = list(eNode.PrepareSubject.executionNode().children())
-                y[0].setSelected( not self.perform_normalization )
-                y[1].setSelected( self.perform_normalization )
-                eNode.Renorm.setSelected( self.perform_normalization )
+                y[0].setSelected(not self.perform_normalization)
+                y[1].setSelected(self.perform_normalization)
+                eNode.Renorm.setSelected(self.perform_normalization)
 
-    def enableRecognition( enabled, names, parameterized ):
+    def enableRecognition(enabled, names, parameterized):
         '''Select appropriate sub-processes when recognition is switched from
         the main pipeline option'''
-        eNode = parameterized[0].executionNode().HemispheresProcessing
-        eNode.LeftHemisphere.SulciRecognition.setSelected( enabled )
-        eNode.RightHemisphere.SulciRecognition.setSelected( enabled )
+        eNode = parameterized[0].executionNode()
+        eNode.HemispheresProcessing.LeftHemisphere.SulciRecognition.setSelected(enabled)
+        eNode.HemispheresProcessing.RightHemisphere.SulciRecognition.setSelected(enabled)
+        eNode.SulcalMorphometry.setSelected(enabled)
 
     # Architecture of the Pipeline
     eNode = SerialExecutionNode( self.name, parameterized=self )
@@ -134,8 +135,8 @@ def initialization( self ):
 
         ## Re-Normalization
     hasNorm = False
-    try :
-        p = getProcessInstance( 'normalization_skullstripped' )
+    try:
+        p = getProcessInstance('normalization_skullstripped')
         if p:
             p.validationDelayed()
             hasNorm = True
@@ -227,12 +228,15 @@ def initialization( self ):
 
     reco = getProcess('recognitionGeneral')
     if reco:
-        leftNode.addChild( 'SulciRecognition',
-                        ProcessExecutionNode( 'recognitionGeneral',
-                                              optional = 1, selected = 0 ) )
-        rightNode.addChild( 'SulciRecognition',
-                        ProcessExecutionNode( 'recognitionGeneral',
-                                              optional = 1, selected = 0 ) )
+        leftNode.addChild('SulciRecognition',
+                          ProcessExecutionNode('recognitionGeneral',
+                                               optional=1, selected=0))
+        rightNode.addChild('SulciRecognition',
+                           ProcessExecutionNode('recognitionGeneral',
+                                                optional=1, selected=0))
+        eNode.addChild('SulcalMorphometry',
+                       ProcessExecutionNode('sulcigraphmorphometrybysubject',
+                                            optional=1, selected=0))
 
     # Links
     ## Commissures Coordinates
@@ -565,42 +569,55 @@ def initialization( self ):
 
     ## Sulci Recognition
     if reco:
-        leftNode.addDoubleLink( 'SulciRecognition.data_graph', 'CorticalFoldsGraph.graph' )
-        rightNode.addDoubleLink( 'SulciRecognition.data_graph', 'CorticalFoldsGraph.graph' )
-        eNode.addDoubleLink( lhemi + '.SulciRecognition.output_graph', 'left_labelled_graph' )
-        eNode.addDoubleLink( rhemi + '.SulciRecognition.output_graph', 'right_labelled_graph' )
+        leftNode.addDoubleLink('SulciRecognition.data_graph',
+                               'CorticalFoldsGraph.graph')
+        rightNode.addDoubleLink('SulciRecognition.data_graph',
+                                'CorticalFoldsGraph.graph')
+        eNode.addDoubleLink(lhemi + '.SulciRecognition.output_graph',
+                            'left_labelled_graph')
+        eNode.addDoubleLink(rhemi + '.SulciRecognition.output_graph',
+                            'right_labelled_graph')
 
-        leftNode.SulciRecognition._selectionChange.add( linkCheckModels( self ) )
-        rightNode.SulciRecognition._selectionChange.add( linkCheckModels( self ) )
+        leftNode.SulciRecognition._selectionChange.add(linkCheckModels(self))
+        rightNode.SulciRecognition._selectionChange.add(linkCheckModels(self))
+
+        #Sulcal Morphometry
+        eNode.SulcalMorphometry.removeLink('right_sulci_graph',
+                                           'left_sulci_graph')
+        eNode.addDoubleLink('SulcalMorphometry.left_sulci_graph',
+                            lhemi + '.SulciRecognition.output_graph')
+        eNode.addDoubleLink('SulcalMorphometry.right_sulci_graph',
+                            rhemi + '.SulciRecognition.output_graph')
+
+        eNode.SulcalMorphometry._selectionChange.add(linkCheckModels(self))
 
     self.perform_sulci_recognition = False
-    self.setOptional( 'left_labelled_graph' )
-    self.setOptional( 'right_labelled_graph' )
+    self.setOptional('left_labelled_graph')
+    self.setOptional('right_labelled_graph')
 
     if reco:
-        eNode.addLink( None, 'perform_sulci_recognition', enableRecognition )
+        eNode.addLink(None, 'perform_sulci_recognition', enableRecognition)
     else:
-        self.signature[ 'perform_sulci_recognition' ].userLevel = 3
-        self.signature[ 'left_labelled_graph' ].userLevel = 3
-        self.signature[ 'right_labelled_graph' ].userLevel = 3
+        self.signature['perform_sulci_recognition'].userLevel = 3
+        self.signature['left_labelled_graph'].userLevel = 3
+        self.signature['right_labelled_graph'].userLevel = 3
 
-    if not hasattr( eNode.PrepareSubject, 'Normalization' ):
+    if not hasattr(eNode.PrepareSubject, 'Normalization'):
         self.perform_normalization = False
-        self.signature[ 'perform_normalization' ].userLevel = 3
+        self.signature['perform_normalization'].userLevel = 3
     else:
         print 'perform_normalization = True'
         self.perform_normalization = True
 
-    x = changeTalairach( self )
-    if hasattr( eNode.PrepareSubject, 'StandardACPC' ):
-        eNode.PrepareSubject.StandardACPC._selectionChange.add( x )
-    eNode.addLink( None, 'perform_normalization', changeNormalize )
+    x = changeTalairach(self)
+    if hasattr(eNode.PrepareSubject, 'StandardACPC'):
+        eNode.PrepareSubject.StandardACPC._selectionChange.add(x)
+    eNode.addLink(None, 'perform_normalization', changeNormalize)
 
-    self.setExecutionNode( eNode )
+    self.setExecutionNode(eNode)
 
-    eNode.TalairachTransformation.setSelected( False )
+    eNode.TalairachTransformation.setSelected(False)
 
     self.capsul_do_not_export = [
         ('GreyWhiteClassification', 'side'),
         ('GreyWhiteClassification_1', 'side'), ]
-
