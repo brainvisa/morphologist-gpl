@@ -272,6 +272,8 @@
           "sulcal_morpho_measures":
               [["output:{recognition_analysis}/<subject>_<sulci_recognition_session>_auto_sulcal_morphometry",
                   "CSV file"]],
+          "sulcal_morphometry_sulci_file":
+            "{shared.sulcal_morphometry_sulci_file}",
 
         },
 

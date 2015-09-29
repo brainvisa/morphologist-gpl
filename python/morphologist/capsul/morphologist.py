@@ -179,6 +179,8 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
         self.add_link('SPAM_recognition_labels_translation_map->SulciRecognition_1.SPAM_recognition09_global_recognition_labels_translation_map')
 
         self.export_parameter('SulcalMorphometry', 'sulcal_morpho_measures')
+        self.export_parameter('SulcalMorphometry', 'sulci_file',
+                              'sulcal_morphometry_sulci_file')
         self.nodes['SulcalMorphometry'].enabled = True
 
         # default settings
@@ -212,6 +214,7 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
 
         if self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes.has_key('NormalizeSPM'):
             self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes['NormalizeSPM'].process.nodes_activation.ReorientAnatomy = True
+            self.nodes['Renorm'].process.nodes['Normalization'].process.nodes['NormalizeSPM'].process.nodes_activation.ReorientAnatomy = True
             self.add_link('normalization_allow_retry_initialization->PrepareSubject.Normalization_NormalizeSPM_allow_retry_initialization')
             self.add_link('normalization_allow_retry_initialization->Renorm.Normalization_NormalizeSPM_allow_retry_initialization')
             self.export_parameter(
@@ -232,6 +235,7 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
 
         if self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes.has_key('NormalizeFSL'):
             self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes['NormalizeFSL'].process.nodes_activation.ReorientAnatomy = True
+            self.nodes['Renorm'].process.nodes['Normalization'].process.nodes['NormalizeFSL'].process.nodes_activation.ReorientAnatomy = True
             self.add_link('normalization_allow_retry_initialization->PrepareSubject.Normalization_NormalizeFSL_allow_retry_initialization')
             self.add_link('normalization_allow_retry_initialization->Renorm.Normalization_NormalizeFSL_allow_retry_initialization')
             self.export_parameter(
