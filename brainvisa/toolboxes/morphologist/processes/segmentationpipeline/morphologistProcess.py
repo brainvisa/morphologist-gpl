@@ -208,6 +208,9 @@ signature = Signature(
         'Text Data Table', requiredAttributes = {'side':'right'} ),
     'right_global_to_local_transforms', WriteDiskItem( 'Sulci Local SPAM transformations Directory',
         'Directory', requiredAttributes = {'side':'right'} ),
+    #Sulcal Morphometry
+    'sulci_file', ReadDiskItem('Sulci groups list', 'JSON file'),
+    'sulcal_morpho_measures', WriteDiskItem('Sulcal morphometry measurements', 'CSV File'),
 )
 
 
@@ -449,7 +452,10 @@ def initialization( self ):
     self.signature[ 'right_angle_priors' ].userLevel = 100
     self.signature[ 'right_translation_priors' ].userLevel = 100
     self.signature[ 'right_global_to_local_transforms' ].userLevel = 100
-
+    
+    #Sulcal Morphometry
+    self.sulci_file = self.signature['sulci_file'].findValue({'version': 'default'})
+    self.linkParameters( 'sulcal_morpho_measures', 'left_labelled_graph' )
 
 def execution( self, context ):
     if self.perform_segmentation:
@@ -712,4 +718,11 @@ def execution( self, context ):
                             output_local_transformations = self.right_global_to_local_transforms,
                             initial_transformation = None,
                             global_transformation = self.right_tal_to_global_transform)
-    
+
+        #Sulcal Morphometry
+        context.runProcess('sulcigraphmorphometrybysubject',
+                           left_sulci_graph=self.left_labelled_graph,
+                           right_sulci_graph=self.right_labelled_graph,
+                           sulci_file=self.sulci_file,
+                           use_attribute='label',
+                           sulcal_morpho_measures=self.sulcal_morpho_measures)
