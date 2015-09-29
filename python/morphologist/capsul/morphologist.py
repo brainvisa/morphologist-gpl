@@ -178,6 +178,9 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
             'SPAM_recognition_labels_translation_map')
         self.add_link('SPAM_recognition_labels_translation_map->SulciRecognition_1.SPAM_recognition09_global_recognition_labels_translation_map')
 
+        self.export_parameter('SulcalMorphometry', 'sulcal_morpho_measures')
+        self.nodes['SulcalMorphometry'].enabled = True
+
         # default settings
         self.select_Talairach = 'Normalization'
         self.PrepareSubject_Normalization_NormalizeSPM_allow_retry_initialization = True
@@ -294,7 +297,9 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
             'select_Talairach': (2231.8330662399985, 1673.9494374399999),
             'select_renormalization_commissures': (1194.6271999999997,
                                                     1119.9775999999997),
-            'select_renormalization_transform': (2563.670399999999, 1470.8831999999998)}
+            'select_renormalization_transform': (2563.670399999999, 1470.8831999999998),
+            'SulcalMorphometry': (3227.0869759999987, 1940.1278719999996),
+        }
 
         self.nodes['PrepareSubject'].process.node_position = {
             'Normalization': (161.4, 227.6),
@@ -397,4 +402,5 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
                                 'SulciSkeleton_1', 'CorticalFoldsGraph_1'])
         self.add_pipeline_step('sulci_labelling',
                                ['SulciRecognition', 'SulciRecognition_1'])
+        self.add_pipeline_step('sulcal_morphometry', ['SulcalMorphometry'])
 

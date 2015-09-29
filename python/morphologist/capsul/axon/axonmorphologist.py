@@ -30,6 +30,7 @@ class AxonMorphologist(Pipeline):
         self.add_process('SplitBrain', 'morphologist.capsul.axon.splitbrain.SplitBrain')
         self.add_process('TalairachTransformation', 'morphologist.capsul.axon.talairachtransformation.TalairachTransformation')
         self.add_process('HeadMesh', 'morphologist.capsul.axon.scalpmesh.ScalpMesh')
+        self.add_process('SulcalMorphometry', 'morphologist.capsul.axon.sulcigraphmorphometrybysubject.sulcigraphmorphometrybysubject')
         self.add_process('GreyWhiteClassification', 'morphologist.capsul.axon.greywhiteclassificationhemi.GreyWhiteClassificationHemi')
         self.add_process('GreyWhiteTopology', 'morphologist.capsul.axon.greywhitetopology.GreyWhiteTopology')
         self.add_process('GreyWhiteMesh', 'morphologist.capsul.axon.greywhitemesh.GreyWhiteMesh')
@@ -124,6 +125,8 @@ class AxonMorphologist(Pipeline):
         self.add_link('SplitBrain.split_brain->GreyWhiteClassification_1.split_brain')
         self.add_link('TalairachTransformation.Talairach_transform->CorticalFoldsGraph.talairach_transform')
         self.add_link('TalairachTransformation.Talairach_transform->CorticalFoldsGraph_1.talairach_transform')
+        self.add_link('SulciRecognition.output_graph->SulcalMorphometry.left_sulci_graph')
+        self.add_link('SulciRecognition_1.output_graph->SulcalMorphometry.right_sulci_graph')
         self.add_link('GreyWhiteClassification.grey_white->GreyWhiteTopology.grey_white')
         self.add_link('GreyWhiteClassification.grey_white->SulciSkeleton.grey_white')
         self.add_link('GreyWhiteClassification.grey_white->PialMesh.grey_white')
@@ -157,6 +160,7 @@ class AxonMorphologist(Pipeline):
 
         # initialization section
         self.nodes_activation.TalairachTransformation = False
+        self.nodes_activation.SulcalMorphometry = False
         self.nodes_activation.SulciRecognition = False
         self.nodes_activation.SulciRecognition_1 = False
         # export orphan parameters
