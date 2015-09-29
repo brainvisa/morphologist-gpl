@@ -9,13 +9,19 @@ except ImportError:
 from capsul.process import Process
 
 
-class TalairachTransformation(Process):
+class sulcigraphmorphometrybysubject(Process):
     def __init__(self, **kwargs):
-        super(TalairachTransformation, self).__init__()
-        self.add_trait('split_mask', File(allowed_extensions=['.nii.gz', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '']))
-        self.add_trait('commissure_coordinates', File(allowed_extensions=['.APC']))
-        self.add_trait('Talairach_transform', File(allowed_extensions=['.trm'], output=True))
+        super(sulcigraphmorphometrybysubject, self).__init__()
+        self.add_trait('left_sulci_graph', File(allowed_extensions=['.arg', '.data']))
+        self.add_trait('right_sulci_graph', File(allowed_extensions=['.arg', '.data']))
+        self.add_trait('sulci_file', File(allowed_extensions=['.json']))
+        self.add_trait('use_attribute', Enum('label', 'name'))
+        self.add_trait('sulcal_morpho_measures', File(allowed_extensions=['.csv'], output=True))
 
+
+        # initialization section
+        self.sulci_file = '/volatile/riviere/brainvisa/build-stable-release/share/brainvisa-share-4.5/nomenclature/translation/sulci_default_list.json'
+        self.use_attribute = 'label'
 
     def _run_process(self):
         from brainvisa import axon
@@ -35,4 +41,4 @@ class TalairachTransformation(Process):
                     or getattr(self, name) != '')])
 
         context = brainvisa.processes.defaultContext()
-        context.runProcess('TalairachTransformation', **kwargs)
+        context.runProcess('sulcigraphmorphometrybysubject', **kwargs)

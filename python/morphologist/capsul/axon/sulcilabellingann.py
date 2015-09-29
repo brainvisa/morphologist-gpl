@@ -24,7 +24,7 @@ class SulciLabellingANN(Process):
 
 
         # initialization section
-        self.model = '/volatile/riviere/brainvisa/build-trunk-release/share/brainvisa-share-4.5/models/models_2008/discriminative_models/3.0/Lfolds_noroots/Lfolds_noroots.arg'
+        self.model = '/volatile/riviere/brainvisa/build-stable-release/share/brainvisa-share-4.5/models/models_2008/discriminative_models/3.0/Lfolds_noroots/Lfolds_noroots.arg'
         self.model_hint = 0
         self.rate = 0.98
         self.stopRate = 0.05

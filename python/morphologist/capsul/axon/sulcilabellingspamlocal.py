@@ -28,7 +28,7 @@ class SulciLabellingSPAMLocal(Process):
 
 
         # initialization section
-        self.labels_translation_map = '/volatile/riviere/brainvisa/build-trunk-release/share/brainvisa-share-4.5/nomenclature/translation/sulci_model_2008.trl'
+        self.labels_translation_map = '/volatile/riviere/brainvisa/build-stable-release/share/brainvisa-share-4.5/nomenclature/translation/sulci_model_2008.trl'
 
     def _run_process(self):
         from brainvisa import axon
