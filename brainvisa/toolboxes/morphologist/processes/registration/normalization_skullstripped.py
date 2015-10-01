@@ -103,6 +103,8 @@ def initialization( self ):
     if bal:
         eNode.addDoubleLink('Normalization.NormalizeBaladin.template',
             'template')
+    eNode.addDoubleLink('Normalization.Normalization_AimsMIRegister.anatomical_template',
+			'template')
     
     eNode.TalairachFromNormalization.removeLink(
         't1mri', 'commissure_coordinates')

@@ -513,6 +513,7 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
             values = ['NormalizeSPM'] + values
         for value in values:
             if nodes[value].enabled:
+                print 'select normalization method:', value
                 self.Normalization_select_Normalization_pipeline = value
                 break
 

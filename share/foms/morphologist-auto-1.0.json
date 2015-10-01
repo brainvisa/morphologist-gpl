@@ -113,6 +113,7 @@
             # Renorm
             "Renorm_skull_stripped": [["output:{analysis}/segmentation/skull_stripped_<subject>","images"]],
             "Renorm_template": "{shared.anatomical_template_t1_skull_stripped}",
+            "Renorm_Normalization_Normalization_AimsMIRegister_mni_to_acpc": "{shared.talairach_TO_spm_transform}",
 
             # Split Brain
             "SplitBrain_split_template": "{shared.split_template}",
