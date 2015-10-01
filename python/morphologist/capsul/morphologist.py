@@ -1,5 +1,6 @@
 
 from __future__ import absolute_import
+import distutils.spawn
 import morphologist.capsul.axon.axonmorphologist
 from traits.api import Undefined, Bool, File
 
@@ -258,6 +259,10 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
                 'Normalization_NormalizeBaladin_NormalizeBaladin_transformation_matrix',
                 'normalization_baladin_native_transformation')
             self.do_not_export.add(('Renorm', 'Normalization_NormalizeBaladin_ReorientAnatomy_output_t1mri'))
+            # disable it if baladin is not in the path
+            if not distutils.spawn.find_executable('baladin'):
+                self.nodes['PrepareSubject'].process.nodes['Normalization'].\
+                    process.nodes['NormalizeBaladin'].enabled = False
 
         if self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes.has_key('Normalization_AimsMIRegister'):
             self.do_not_export.add(('PrepareSubject', 'Normalization_Normalization_AimsMIRegister_transformation_to_template'))
@@ -361,6 +366,16 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
             'inputs': (50.0, 50.0),
             'outputs': (1646.84, 315.48)}
 
+        self.nodes['Renorm'].process.nodes['Normalization'] \
+                .process.node_position = {
+            'inputs': (-1134.0, 129.0),
+            'Normalization_AimsMIRegister': (-410.4, 633.6),
+            'outputs': (404.8, 390.4),
+            'NormalizeFSL': (-481.6, -231.8),
+            'NormalizeSPM': (-488.8, 186.8),
+            'NormalizeBaladin': (-430.384, 908.816),
+            'select_Normalization_pipeline': (8.6, 231.0)}
+
         self.nodes['SulciRecognition'].process.node_position = {
             'SPAM_recognition09': (95.0, 340.0),
             'outputs': (756.0, 429.0),
@@ -407,4 +422,97 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
         self.add_pipeline_step('sulci_labelling',
                                ['SulciRecognition', 'SulciRecognition_1'])
         self.add_pipeline_step('sulcal_morphometry', ['SulcalMorphometry'])
+
+
+    def attach_config_activations(self, study_config):
+        '''
+        Set notification handlers on study_config variables use_spm, use_fsl
+        to adapt activation of SPM and FSL nodes in the normalization steps,
+        and the normalization switches values.
+        Any previous notification will be removed first.
+        '''
+        if hasattr(self, 'study_config') and self.study_config is not None:
+            self.detach_config_activation()
+        self.study_config = study_config
+        study_config.on_trait_change(self._change_spm_activation, 'use_spm')
+        study_config.on_trait_change(self._change_fsl_activation, 'use_fsl')
+        self._change_spm_activation(study_config.use_spm)
+        self._change_fsl_activation(study_config.use_fsl)
+
+
+    def detach_config_activation(self):
+        '''
+        Remove SPM and FSL notification handlers, and release the reference to
+        the study config.
+        '''
+        study_config = self.study_config
+        study_config.on_trait_change(self._change_spm_activation, 'use_spm',
+                                     remove=True)
+        study_config.on_trait_change(self._change_fsl_activation, 'use_fsl',
+                                     remove=True)
+        del self.study_config
+
+
+    def _change_spm_activation(self, dummy):
+        '''
+        Callback for study_config.use_spm state change
+        '''
+        enabled = self.study_config.use_spm
+        print 'enable spm:', enabled
+        if 'NormalizeSPM' in self.nodes['PrepareSubject'].process \
+                .nodes['Normalization'].process.nodes:
+            self.nodes['PrepareSubject'].process \
+                .nodes['Normalization'].process.nodes['NormalizeSPM'].enabled \
+                = enabled
+            self.nodes['Renorm'].process \
+                .nodes['Normalization'].process.nodes['NormalizeSPM'].enabled \
+                = enabled
+            if enabled:
+                self.Normalization_select_Normalization_pipeline \
+                    = 'NormalizeSPM'
+            else:
+                self._activate_one_normalization()
+
+
+    def _change_fsl_activation(self, dummy):
+        '''
+        Callback for study_config.use_fsl state change
+        '''
+        enabled = self.study_config.use_fsl
+        print 'enable fsl:', enabled
+        if 'NormalizeFSL' in self.nodes['PrepareSubject'].process \
+                .nodes['Normalization'].process.nodes:
+            self.nodes['PrepareSubject'].process \
+                .nodes['Normalization'].process.nodes['NormalizeFSL'].enabled \
+                = enabled
+            self.nodes['Renorm'].process \
+                .nodes['Normalization'].process.nodes['NormalizeFSL'].enabled \
+                = enabled
+            if enabled and self.Normalization_select_Normalization_pipeline \
+                    != 'NormalizeSPM':
+                self.Normalization_select_Normalization_pipeline \
+                    = 'NormalizeFSL'
+            else:
+                self._activate_one_normalization()
+
+
+    def _activate_one_normalization(self):
+        '''
+        Changes the normalization switch value to take the first allowed one.
+        SPM is the highest priority, other values are tested in the switch
+        values order.
+        '''
+        values = self.trait(
+            'Normalization_select_Normalization_pipeline').trait_type.values
+        nodes = self.nodes['PrepareSubject'].process.nodes[
+            'Normalization'].process.nodes
+        # reorder: spm first
+        if 'NormalizeSPM' in values:
+            values = list(values)
+            values.remove('NormalizeSPM')
+            values = ['NormalizeSPM'] + values
+        for value in values:
+            if nodes[value].enabled:
+                self.Normalization_select_Normalization_pipeline = value
+                break
 

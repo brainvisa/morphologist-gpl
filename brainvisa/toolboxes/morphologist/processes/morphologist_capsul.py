@@ -120,6 +120,8 @@ def execution(self, context):
         mp.nodes_activation.SulciRecognition = True
         mp.nodes_activation.SulciRecognition_1 = True
     pf = process_with_fom.ProcessWithFom(mp, study_config)
+    # activate normalization methods disabling
+    mp.attach_config_activations(study_config)
 
     # workflow config
     from capsul.pipeline import pipeline_workflow
