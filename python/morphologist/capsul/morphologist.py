@@ -278,6 +278,10 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
         self.nodes['GreyWhiteClassification_1'].plugs['side'].optional = True
         self.nodes['GreyWhiteClassification_1'].set_plug_value('side', 'right')
 
+        # check normalization type
+        self.on_trait_change(self.ensure_use_allowed_normalization,
+                             'Normalization_select_Normalization_pipeline')
+
         # nodes position in Pipeline*View
         self.node_position = {'BiasCorrection': (210.9, 1149.7),
             'BrainSegmentation': (629.2, 1471.2),
@@ -467,11 +471,10 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
             self.nodes['Renorm'].process \
                 .nodes['Normalization'].process.nodes['NormalizeSPM'].enabled \
                 = enabled
-            if enabled:
-                self.Normalization_select_Normalization_pipeline \
-                    = 'NormalizeSPM'
-            else:
-                self._activate_one_normalization()
+        if enabled:
+            self.Normalization_select_Normalization_pipeline = 'NormalizeSPM'
+        else:
+            self.ensure_use_allowed_normalization()
 
 
     def _change_fsl_activation(self, dummy):
@@ -488,24 +491,28 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
             self.nodes['Renorm'].process \
                 .nodes['Normalization'].process.nodes['NormalizeFSL'].enabled \
                 = enabled
-            if enabled and self.Normalization_select_Normalization_pipeline \
+        if enabled:
+            if self.Normalization_select_Normalization_pipeline \
                     != 'NormalizeSPM':
                 self.Normalization_select_Normalization_pipeline \
                     = 'NormalizeFSL'
-            else:
-                self._activate_one_normalization()
+        else:
+            self.ensure_use_allowed_normalization()
 
 
-    def _activate_one_normalization(self):
+    def ensure_use_allowed_normalization(self):
         '''
-        Changes the normalization switch value to take the first allowed one.
+        If the currently selected normalization method is not enabled,
+        changes the normalization switch value to take the first allowed one.
         SPM is the highest priority, other values are tested in the switch
         values order.
         '''
-        values = self.trait(
-            'Normalization_select_Normalization_pipeline').trait_type.values
         nodes = self.nodes['PrepareSubject'].process.nodes[
             'Normalization'].process.nodes
+        if nodes[self.Normalization_select_Normalization_pipeline].enabled:
+            return  # OK, nothing to change.
+        values = self.trait(
+            'Normalization_select_Normalization_pipeline').trait_type.values
         # reorder: spm first
         if 'NormalizeSPM' in values:
             values = list(values)
