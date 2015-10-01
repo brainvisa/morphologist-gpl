@@ -47,6 +47,7 @@ class NormalizationSkullStripped(Pipeline):
         self.add_link('t1mri->TalairachFromNormalization.t1mri')
         self.add_link('template->Normalization.NormalizeSPM_template')
         self.add_link('template->Normalization.NormalizeBaladin_template')
+        self.add_link('template->Normalization.Normalization_AimsMIRegister_anatomical_template')
         self.add_link('SkullStripping.skull_stripped->Normalization.t1mri')
         self.add_link('Normalization.transformation->TalairachFromNormalization.normalization_transformation')
 
