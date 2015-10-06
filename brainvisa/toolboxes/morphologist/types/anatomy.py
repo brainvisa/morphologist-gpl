@@ -151,7 +151,7 @@ FileType( 'MNI Cortex Mesh', 'Mesh' )
 
 FileType( 'Sulci White Texture', 'Label Texture' )
 FileType( 'Sulci White Texture Patch', 'Label Texture' )
-FileType( 'Gyri White Texture', 'Label Texture' )
+FileType( 'Gyri White Texture', 'ROI Texture' )
 FileType( 'Sulci To White Texture Translation', 'Text File' )
 FileType( 'Gyri To White Texture Translation', 'Text File' )
 FileType( 'Coordinate Texture', 'Texture' )
@@ -166,7 +166,7 @@ FileType( 'Scale Space Texture', 'Texture')
 FileType( 'Scale Space White Curvature Texture', 'Scale Space Texture' )
 FileType( 'Scale Space White Depth Texture', 'Scale Space Texture' )
 
-FileType( 'Resampled Hemisphere Gyri Texture', 'Label Texture' )
+FileType( 'Resampled Hemisphere Gyri Texture', 'ROI Texture' )
 
 #-------------------- Graphs --------------------
 
