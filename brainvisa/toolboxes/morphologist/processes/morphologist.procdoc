@@ -28,18 +28,7 @@ Permet de déclencher une chaîne d'analyse d'images qui extrait divers objets d
       <xhtml name="histo_analysis"/>
       <xhtml name="anterior_commissure"/>
     </d>
-    <xhtml name="long"><head>
-<style>
-  #warning {
-      background-color: #F6F6F6;
-      border: thin solid;
-      border-color: #E4E4E4;
-      padding: 1mm;
-  }
-</style>
-</head>
-
-<p>
+    <xhtml name="long"><p>
 Ce pipeline se nomme désormais "<b>Morphologist</b>", il est le principal point d'entrée de la toolbox "Morphologist" dédiée aux traitement des IRM T1. C'est l'évolution de l'ancien "Pipeline T1".
 </p>
 
@@ -47,9 +36,9 @@ Ce pipeline se nomme désormais "<b>Morphologist</b>", il est le principal point
 Celui-ci constitue la seconde version de Morphologist. Les anciennes versions du pipeline sont toujours accessibles dans le répertoire <a href="categories/morphologist/segmentationpipeline/older_pipelines/category_documentation.html">"Pipeline de segmentation / Anciens pipelines"</a> et devraient en principe fonctionner comme avant.
 </p>
 
-<p id="warning"><b><font color="#b00000">Nouveautés de 2015 vs. 2013:</font></b><br/>
-Une étape optionnelle a été ajoutée dans la version 2015 du pipeline Morphologist: l'étape "<a href="bvprocess://normalization_skullstripped">Renormalisation cerveau extrait</a>". Son but est d'améliorer (ou plutôt de corriger) la normalisation initiale qui obtient parfois des résultats incorrects à cause de champs de vue trop différents entre image et template, ou d'une confusion scalp/cerveau.
-</p>
+<div class="note"><h4>Nouveautés de 2015 vs. 2013:</h4>
+Une étape optionnelle a été ajoutée dans la version 2015 du pipeline Morphologist: l'étape "<a href="normalization_skullstripped.html">Renormalisation cerveau extrait</a>". Son but est d'améliorer (ou plutôt de corriger) la normalisation initiale qui obtient parfois des résultats incorrects à cause de champs de vue trop différents entre image et template, ou d'une confusion scalp/cerveau.
+</div>
 
 <p>
 Ce pipeline permet de générer :
@@ -207,9 +196,9 @@ This pipeline is now named "<b>Morphologist</b>", and is the main entry point of
 This is the second version of Morphologist. Older versions of the pipeline are still available in the sub-directory <a href="categories/morphologist/segmentationpipeline/older_pipelines/category_documentation.html">"segmentation Pipeline / Older pipelines"</a>, and should normally work as they used to.
 </p>
 
-<p id="warning"><b><font color="#b00000">News in 2015 vs. 2013:</font></b><br/>
+<div class="note"><h4>News in 2015 vs. 2013:</h4>
 A new optional step has been added in the 2015 version of the Morphologist pipeline: the "<a href="normalization_skullstripped.html">Skull-stripped renormalization</a>" step. It aims at improving (or rather, correcting) the initial normalization which sometimes get incorrect results due to too different image/template fields of view, or to scalp/brain mismatch.
-</p>
+</div>
 
 <p>
 This pipeline allows to compute:
