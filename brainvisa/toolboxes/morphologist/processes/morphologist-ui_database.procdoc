@@ -9,7 +9,7 @@
     <xhtml name="long"/>
   </d>
   <d name="en">
-    <xhtml name="short">This "fake" process opens the new Morphologist-UI with improved and simplified user interface.
+    <xhtml name="short">This "fake" process opens the new <a href="../../../morphologist-ui-1.0/index.html">Morphologist-UI</a> with improved and simplified user interface.
 You can also run it independently of brainvisa, using the <b><tt>morphologist</tt></b> commandline.
 This process also makes the link with an existing Brainvisa database, and opens <tt>Morphologist-UI</tt> on the selected database.</xhtml>
     <d name="parameters">
