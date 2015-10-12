@@ -31,6 +31,7 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from neuroProcesses import *
+from brainvisa import registration
 
 name = 'Concatenate both hemisphere meshes'
 userLevel = 0
@@ -51,4 +52,6 @@ def initialization(self):
 def execution(self, context):
     context.system('AimsZCat', '-i', self.left_mesh, '-i', self.right_mesh,
                    '-o', self.both_mesh)
+    tm = registration.getTransformationManager()
+    tm.copyReferential(self.left_mesh, self.both_mesh)
 
