@@ -46,9 +46,13 @@ signature = Signature(
     'right_offset', Float(),
 )
 
+
 def initialization(self):
     self.linkParameters('right_texture','left_texture' )
     self.linkParameters('both_texture','left_texture' )
+    self.left_offset = 0
+    self.right_offset = 0
+
 
 def execution(self, context):
     from soma import aims
@@ -63,11 +67,11 @@ def execution(self, context):
         if t >= len(left):
             l = np.zeros((len(left[0]), ), dtype=dtype)
         else:
-            l = left[t]
+            l = left[t].arraydata()
         if t >= len(right):
             r = np.zeros((len(right[0]), ), dtype=dtype)
         else:
-            l = right[t].arraydata()
+            r = right[t].arraydata()
 
         b = np.hstack((l + loff, r + roff))
         both[t].assign(b)
