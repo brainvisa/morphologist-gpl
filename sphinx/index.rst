@@ -4,19 +4,18 @@ Morphologist
 Morphologist pipeline, CAPSUL-based version
 -------------------------------------------
 
-Hand-written, modified processes:
-+++++++++++++++++++++++++++++++++
+High-level pipeline:
+++++++++++++++++++++
 
-:ref:`process`
+:ref:`morphologist.capsul.morphologist.Morphologist`
 
-Automatically converted from Axon processes:
-++++++++++++++++++++++++++++++++++++++++++++
+All processes and pipelines:
+++++++++++++++++++++++++++++
 
 :ref:`capsul`
 
 .. toctree::
 
-    Process
     Capsul
 
 
