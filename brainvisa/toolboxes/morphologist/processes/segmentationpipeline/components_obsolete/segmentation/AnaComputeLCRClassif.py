@@ -32,6 +32,7 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
+from brainvisa.configuration.neuroConfig import findInPath
 import os, re
 
 name = 'CSF Classif'
@@ -90,34 +91,36 @@ def execution( self, context ):
                     '-o', brainR , '-m', 'ge', '-t', '100', '-b' )
 
     #Define brain mask
-    context.system( 'AimsLinearComb', '-i', brainL , '-j', brainR , '-o', brain )
+    context.pythonSystem('cartoLinearComb.py', '-i', brainL , '-i', brainR ,
+                         '-o', brain, '-f', 'I1 + I2')
 
     #Close left and right brain
     brainR_closed = brainR
-    context.system( 'AimsClosing', '-i', brainR , '-o', brainR_closed, '-r',  '40' )
+    context.system('AimsMorphoMath', '-m', 'clo', '-i', brainR ,
+                   '-o', brainR_closed, '-r',  '40')
     brainL_closed = brainL
-    context.system( 'AimsClosing', '-i', brainL ,
-                    '-o', brainL_closed, '-r',  '40' )
-    context.system( 'AimsClosing', '-i', brain ,
-                    '-o', brain_closed, '-r',  '40' )
+    context.system('AimsMorphoMath', '-m', 'clo', '-i', brainL ,
+                   '-o', brainL_closed, '-r',  '40')
+    context.system('AimsClosing', '-m', 'clo', '-i', brain ,
+                   '-o', brain_closed, '-r',  '40' )
 
 
-    context.system( 'AimsLinearComb', '-i', brainL_closed ,
-                    '-j', brainR_closed , '-o', brainLR_closed,
-                     '-b', '32767', '-d', '32767', '-a', '2','-c','4')
- 
+    context.pythonSystem('cartoLinearComb.py', '-i', brainL_closed ,
+                         '-i', brainR_closed , '-o', brainLR_closed,
+                         '-f', 'I1 / 32767 * 2 + I2 / 32767 * 4')
+
     brain_merge = brainR_closed 
-    context.system( 'AimsLinearComb', '-i', brain_closed ,
-                    '-j', brainLR_closed , '-o', brain_merge,
-                    '-b', '32767' )
- 
+    context.pythonSystem('cartoLinearComb.py', '-i', brain_closed ,
+                         '-i', brainLR_closed, '-o', brain_merge,
+                         '-f', 'I1 / 32767 + I2')
+
     voronoi = brainLR_closed
     voronoi = self.right_csf.fullPath()
     context.system( 'AimsVoronoi', '-i', brain_merge ,
                     '-o', voronoi , '-d', '1' , '-f', '0' )
 
-    context.system( 'AimsLinearComb', '-i', voronoi ,
-                    '-j', brain , '-o', voronoi , '-d', '32767' )
+    context.pythonSystem('cartoLinearComb.py', '-i', voronoi , '-i', brain ,
+                         '-o', voronoi , '-f', 'I1 + I2 / 32767')
 
     #context.system( 'AimsLinearComb', '-i', voronoi ,
     #                '-j', brain , '-o', '/tmp/vor.ima' , '-d', '32767' )

@@ -39,117 +39,123 @@ name = 'Segmentation of Corpus Callosum'
 userLevel = 2
 
 signature = Signature(
-    'left_grey_white', ReadDiskItem( "Left Grey White Mask",
-        aimsGlobals.aimsVolumeFormats ),
-    'right_grey_white', ReadDiskItem( "Right Grey White Mask",
-        aimsGlobals.aimsVolumeFormats ),
-    'corpus_callosum_mask', WriteDiskItem( 'Corpus Callosum mask',
-        aimsGlobals.aimsVolumeFormats ),
+    'left_grey_white', ReadDiskItem("Left Grey White Mask",
+        'aims readable volume formats'),
+    'right_grey_white', ReadDiskItem("Right Grey White Mask",
+        'aims readable volume formats'),
+    'corpus_callosum_mask', WriteDiskItem('Corpus Callosum mask',
+        'aims writable volume formats'),
     'talairach_transformation', ReadDiskItem( \
         'Transform Raw T1 MRI to Talairach-AC/PC-Anatomist',
-        'Transformation matrix' ),
-  )
+        'Transformation matrix'),
+)
 
-def initialization( self ):
-    self.linkParameters( 'right_grey_white', 'left_grey_white' )
-    self.linkParameters( 'corpus_callosum_mask', 'left_grey_white' )
-    self.linkParameters( 'talairach_transformation', 'left_grey_white' )
-    self.setOptional( 'talairach_transformation' )
+def initialization(self):
+    self.linkParameters('right_grey_white', 'left_grey_white')
+    self.linkParameters('corpus_callosum_mask', 'left_grey_white')
+    self.linkParameters('talairach_transformation', 'left_grey_white')
+    self.setOptional('talairach_transformation')
 
-def execution( self, context ):
+def execution(self, context):
     minradius = 15
     maxradius = 50
     minradius *= minradius # square
     maxradius *= maxradius
-    tmp1 = context.temporary( 'NIFTI-1 image' )
+    tmp1 = context.temporary('NIFTI-1 image')
     # merge both hemispheres segmentations
-    context.system( 'cartoLinearComb.py', '-o', tmp1, '-f', 'I1+I2', '-i',
-        self.left_grey_white, '-i', self.right_grey_white )
+    context.pythonSystem('cartoLinearComb.py', '-o', tmp1, '-f', 'I1+I2',
+                         '-i', self.left_grey_white,
+                         '-i', self.right_grey_white)
     # keep white mask
-    white = context.temporary( 'NIFTI-1 image' )
-    context.system( 'AimsThreshold', '-i', tmp1, '-o', white, '-t', 200, '-m',
-        'ge' )
+    white = context.temporary('NIFTI-1 image')
+    context.system('AimsThreshold', '-i', tmp1, '-o', white, '-t', 200,
+                   '-m', 'ge')
     # keep grey mask
-    grey = context.temporary( 'NIFTI-1 image' )
-    context.system( 'AimsThreshold', '-i', tmp1, '-o', grey, '-t', 100, '-m',
-        'eq' )
+    grey = context.temporary('NIFTI-1 image')
+    context.system('AimsThreshold', '-i', tmp1, '-o', grey, '-t', 100,
+                   '-m', 'eq')
     # close white mask
-    context.system( 'AimsClosing', '-i', white, '-o', tmp1, '-r', 3 )
-    context.system( 'AimsClosing', '-i', white, '-o', '/tmp/closed.nii', '-r', 3 ) # FIXME: debug
+    context.system('AimsMorphoMath', '-m', 'clo', '-i', white, '-o', tmp1,
+                   '-r', 3 )
+    #context.system('AimsMorphoMath', '-m', 'clo', '-i', white,
+                   #'-o', '/tmp/closed.nii', '-r', 3 ) # FIXME: debug
 
     # get GM neighbouring in both hemispheres (interhemi cortex)
-    tmp2 = context.temporary( 'NIFTI-1 image' )
-    tmp3 = context.temporary( 'NIFTI-1 image' )
-    context.system( 'AimsThreshold', '-i', self.left_grey_white, '-o',
-        tmp2, '-t', 100, '-m', 'eq' )
-    context.system( 'AimsThreshold', '-i', self.right_grey_white, '-o',
-        tmp3, '-t', 100, '-m', 'eq' )
-    tmp4 = context.temporary( 'NIFTI-1 image' )
-    tmp5 = context.temporary( 'NIFTI-1 image' )
-    context.system( 'AimsDilation', '-i', tmp2, '-o', tmp4, '-e', 2 )
+    tmp2 = context.temporary('NIFTI-1 image')
+    tmp3 = context.temporary('NIFTI-1 image')
+    context.system('AimsThreshold', '-i', self.left_grey_white,
+                   '-o', tmp2, '-t', 100, '-m', 'eq')
+    context.system('AimsThreshold', '-i', self.right_grey_white,
+                   '-o', tmp3, '-t', 100, '-m', 'eq')
+    tmp4 = context.temporary('NIFTI-1 image')
+    tmp5 = context.temporary('NIFTI-1 image')
+    context.system('AimsMorphoMath', '-m', 'dil', '-i', tmp2, '-o', tmp4,
+                   '-r', 2)
     del tmp2
-    context.system( 'AimsDilation', '-i', tmp3, '-o', tmp5, '-e', 2 )
+    context.system('AimsMorphoMath', '-m', 'dil', '-i', tmp3, '-o', tmp5,
+                   '-r', 2 )
     del tmp3
-    ihc = context.temporary( 'NIFTI-1 image' )
-    context.system( 'AimsMask', '-i', tmp4, '-m', tmp5, '-o', ihc )
+    ihc = context.temporary('NIFTI-1 image')
+    context.system('AimsMask', '-i', tmp4, '-m', tmp5, '-o', ihc)
 
     # mask dilated white with interhemi cortex
-    context.system( 'AimsMask', '-i', tmp1, '-m', ihc, '-o', tmp4 )
-    context.system( 'AimsMask', '-i', tmp1, '-m', ihc, '-o', '/tmp/mask.nii' ) # FIXME: debug
+    context.system('AimsMask', '-i', tmp1, '-m', ihc, '-o', tmp4)
+    #context.system('AimsMask', '-i', tmp1, '-m', ihc, '-o', '/tmp/mask.nii') # FIXME: debug
     #context.system( 'AimsConnectComp', '-i', tmp4, '-o', tmp5, '-n', 1, '-c',
         #18 )
     del tmp5
 
-    use_talairach = ( self.talairach_transformation is not None )
+    use_talairach = (self.talairach_transformation is not None)
     if use_talairach:
         try:
             from soma import aims, aimsalgo
             import numpy
         except:
-            context.write( 'pyaims not available - not using Talairach info' )
+            context.write('pyaims not available - not using Talairach info')
             use_talairach = False
     if not use_talairach:
         # no Talairach info
         # close / dilate segmentation
         dilation_size_before_connected_component = 3
-        dilmask = context.temporary( 'NIFTI-1 image' )
-        context.system( 'AimsDilation', '-i', tmp4, '-o', dilmask, '-e',
-        dilation_size_before_connected_component )
+        dilmask = context.temporary('NIFTI-1 image')
+        context.system('AimsMorphoMath', '-m', 'dil', '-i', tmp4,
+                       '-o', dilmask,
+                       '-r', dilation_size_before_connected_component)
 
         # keep biggest connected component
-        context.system( 'AimsConnectComp', '-i', dilmask, '-o',
-            tmp4, '-c', 18, '-n', 1 )
+        context.system('AimsConnectComp', '-i', dilmask,
+                       '-o', tmp4, '-c', 18, '-n', 1)
         # erode back a little bit (trying to avoid disconnecting the
         # segmentation)
-        context.system( 'AimsClosing', '-i', tmp4, '-o', tmp1,
-            '-r', 2 )
-        context.system( 'AimsErosion', '-i', tmp1, '-o',
-            self.corpus_callosum_mask,
-            '-e', dilation_size_before_connected_component - 2 )
+        context.system('AimsMorphoMath', '-m', 'clo', '-i', tmp4, '-o', tmp1,
+                       '-r', 2 )
+        context.system('AimsErosion', '-m', 'ero', '-i', tmp1,
+                       '-o', self.corpus_callosum_mask,
+                       '-r', dilation_size_before_connected_component - 2)
     else:
         # use Talairach info
         # keep all connected components, then filter them out
-        context.system( 'AimsConnectComp', '-i', tmp4, '-o', tmp4,
-            '-c', 18, '-s', 50 )
-        vol = aims.read( tmp4.fullPath() )
-        tal = aims.read( self.talairach_transformation.fullPath() )
+        context.system('AimsConnectComp', '-i', tmp4, '-o', tmp4,
+                       '-c', 18, '-s', 50)
+        vol = aims.read(tmp4.fullPath())
+        tal = aims.read(self.talairach_transformation.fullPath())
         dvol = aims.AimsData( vol ) # still a bug in ref counting
-        ar = numpy.array( vol, copy=False )
-        roiit = aims.getRoiIterator( dvol )
+        ar = numpy.asarray(vol)
+        roiit = aims.getRoiIterator(dvol)
         todel = []
         comps = []
         #cent = tal.inverse().transform( aims.Point3df( 0, 10, 0 ) )
-        cent = aims.Point3df( 0, 10, 0 )
+        cent = aims.Point3df(0, 10, 0)
         while roiit.isValid():
             mit = roiit.maskIterator()
-            p = aims.Point3df( 0, 0, 0 )
+            p = aims.Point3df(0, 0, 0)
             n = 0
             out = 0
-            comp = int( roiit.regionName() )
+            comp = int(roiit.regionName())
             while mit.isValid():
-                q = tal.transform( mit.valueMillimeters() )
+                q = tal.transform(mit.valueMillimeters())
                 p += q
-                r = ( q - cent ).norm2()
+                r = (q - cent).norm2()
                 if r < minradius or r > maxradius:
                     out += 1
                 n += 1
@@ -158,13 +164,13 @@ def execution( self, context ):
             #context.write( roiit.regionName(), p, ', out:', out, '/', n )
             if p[2] >= -5 or p[2] <= -40 or p[1] <= -40 or p[1] >= 55 \
                 or out > 0.15 * n:
-                todel.append( comp )
+                todel.append(comp)
             else:
-                comps.append( comp )
+                comps.append(comp)
             roiit.next()
         #context.write( 'del:', todel )
         for v in todel:
-            ar[ ar == v ] = 0
+            ar[ar == v] = 0
         #context.write( 'comps:', comps )
         # distance between connected components
         #fm = aims.FastMarching( '26', True )
@@ -213,12 +219,10 @@ def execution( self, context ):
         #ar[ ar != imax ] = 0
         aims.write( vol, tmp4.fullPath() )
         # close a little bit
-        context.system( 'AimsClosing', '-i', tmp4, '-o',
-            self.corpus_callosum_mask, '-r', 2 )
+        context.system('AimsMorphoMath', '-m', 'clo', '-i', tmp4,
+                       '-o', self.corpus_callosum_mask, '-r', 2)
 
     tm = registration.getTransformationManager()
-    tm.copyReferential( self.left_grey_white, self.corpus_callosum_mask )
-
-
+    tm.copyReferential(self.left_grey_white, self.corpus_callosum_mask)
 
 
