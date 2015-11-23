@@ -276,8 +276,10 @@ def initialization( self ):
 
     eNode.addDoubleLink( 'HistoAnalysis.t1mri_nobias',
                          'BiasCorrection.t1mri_nobias' )
-    eNode.addLink( 'HistoAnalysis.hfiltered', 'BiasCorrection.hfiltered' )
-    eNode.addLink( 'HistoAnalysis.white_ridges', 'BiasCorrection.white_ridges' )
+    eNode.addDoubleLink( 'HistoAnalysis.hfiltered',
+                        'BiasCorrection.hfiltered' )
+    eNode.addDoubleLink( 'HistoAnalysis.white_ridges',
+                        'BiasCorrection.white_ridges' )
     eNode.addDoubleLink( 'HistoAnalysis.histo_analysis', 'histo_analysis' )
 
     ## Brain Segmentation
