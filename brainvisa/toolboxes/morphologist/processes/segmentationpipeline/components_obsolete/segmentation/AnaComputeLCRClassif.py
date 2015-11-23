@@ -101,8 +101,8 @@ def execution( self, context ):
     brainL_closed = brainL
     context.system('AimsMorphoMath', '-m', 'clo', '-i', brainL ,
                    '-o', brainL_closed, '-r',  '40')
-    context.system('AimsClosing', '-m', 'clo', '-i', brain ,
-                   '-o', brain_closed, '-r',  '40' )
+    context.system('AimsMorphoMath', '-m', 'clo', '-i', brain,
+                   '-o', brain_closed, '-r',  '40')
 
 
     context.pythonSystem('cartoLinearComb.py', '-i', brainL_closed ,
