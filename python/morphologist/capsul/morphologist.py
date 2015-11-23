@@ -159,8 +159,6 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
         self.add_link('fix_random_seed->SulciSkeleton_1.fix_random_seed')
         self.add_link('fix_random_seed->PialMesh_1.fix_random_seed')
 
-        self.export_parameter('CorticalFoldsGraph', 'graph_version', 
-            'cortical_graph_version')
         self.export_parameter('CorticalFoldsGraph', 'compute_fold_meshes', 
             'compute_fold_meshes')
         self.export_parameter('CorticalFoldsGraph', 'allow_multithreading', 
@@ -169,7 +167,6 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
             'write_cortex_mid_interface', 
             'CorticalFoldsGraph_write_cortex_mid_interface')
 
-        self.add_link('cortical_graph_version->CorticalFoldsGraph_1.graph_version')
         self.add_link('compute_fold_meshes->CorticalFoldsGraph_1.compute_fold_meshes')
         self.add_link('allow_multithreading->CorticalFoldsGraph_1.allow_multithreading')
         self.add_link('CorticalFoldsGraph_write_cortex_mid_interface->CorticalFoldsGraph_1.write_cortex_mid_interface')
@@ -192,7 +189,7 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
         self.HistoAnalysis_use_wridges = True
         self.SplitBrain_use_ridges = True
         self.SplitBrain_use_template = True
-        self.cortical_graph_version = '3.1'
+        self.CorticalFoldsGraph_graph_version = '3.1'
         self.allow_multithreading = True
         self.perform_skull_stripped_renormalization = 'skull_stripped'
 
