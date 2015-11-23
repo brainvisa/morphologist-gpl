@@ -129,7 +129,7 @@ def execution(self, context):
         # segmentation)
         context.system('AimsMorphoMath', '-m', 'clo', '-i', tmp4, '-o', tmp1,
                        '-r', 2 )
-        context.system('AimsErosion', '-m', 'ero', '-i', tmp1,
+        context.system('AimsMorphoMath', '-m', 'ero', '-i', tmp1,
                        '-o', self.corpus_callosum_mask,
                        '-r', dilation_size_before_connected_component - 2)
     else:
