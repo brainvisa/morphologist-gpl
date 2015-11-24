@@ -82,12 +82,14 @@
                 [["output:{acquisition}/<subject>_fsl", "Matlab"]],
             "PrepareSubject_Normalization_NormalizeFSL_ReorientAnatomy_output_t1mri":
                 [["output:{acquisition}/<subject>", "images"]],
+            "PrepareSubject_Normalization_NormalizeFSL_template": "{shared.anatomical_template_t1}",
 
             ### NormalizeBaladin
             "normalization_baladin_native_transformation_pass1":
                 [["output:{acquisition}/<subject>_baladin", "Text file"]],
             "normalization_baladin_native_transformation":
                 [["output:{acquisition}/<subject>_baladin", "Text file"]],
+            "PrepareSubject_Normalization_NormalizeBaladin_template": "{shared.anatomical_template_t1}",
 
             ### TalairachFromNormalization
             "PrepareSubject_TalairachFromNormalization_source_referential": [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>", "Referential" ] ],
