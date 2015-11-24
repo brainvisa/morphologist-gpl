@@ -39,47 +39,48 @@ name = 'White Mesh Depth Map'
 userLevel = 3
 
 signature = Signature(
-  "white_mesh", ReadDiskItem( "Hemisphere White Mesh", "Aims mesh formats" ),
-  "hemi_cortex", ReadDiskItem( "CSF+GREY Mask",
-      "Aims readable volume formats" ),
-  "depth_texture", WriteDiskItem( "White Depth Texture", "Texture" ),
-  "closing_size", Float(),
-    )
+    "white_mesh", ReadDiskItem("Hemisphere White Mesh", "Aims mesh formats"),
+    "hemi_cortex", ReadDiskItem("CSF+GREY Mask",
+        "Aims readable volume formats"),
+    "depth_texture", WriteDiskItem("White Depth Texture",
+                                   "aims Texture formats"),
+    "closing_size", Float(),
+)
 
 def initialization(self):
-  self.linkParameters( "hemi_cortex", "white_mesh" )
-  self.linkParameters( "depth_texture", "white_mesh" )
+  self.linkParameters("hemi_cortex", "white_mesh")
+  self.linkParameters("depth_texture", "white_mesh")
   self.closing_size = 10.
 
-def execution( self, context ):
-  white = context.temporary( 'GIS Image' )
+def execution(self, context):
+  white = context.temporary('GIS Image')
   # take a white mask image
-  context.system( 'AimsThreshold', self.hemi_cortex, white, '-m', 'eq', '-t',
-    0, '-b' )
-  closedwhite = context.temporary( 'GIS image' )
+  context.system('AimsThreshold', self.hemi_cortex, white, '-m', 'eq',
+                 '-t', 0, '-b')
+  closedwhite = context.temporary('GIS image')
   # severely close it to fill every sulcus and ventricle
-  context.system( 'AimsClosing', white, closedwhite, self.closing_size )
+  context.system('AimsMorphoMath', '-m', 'clo', '-i', white, '-o', closedwhite,
+                 '-r', self.closing_size)
   # erode it so that the white mesh goes out of it
-  context.system( 'AimsErosion', '-i', closedwhite, '-o', closedwhite, '-e',
-    2. )
-  hulltex = context.temporary( 'Texture' )
-  registration.getTransformationManager().copyReferential( self.white_mesh,
-    closedwhite )
+  context.system('AimsMorphoMath', '-m', 'ero', '-i', closedwhite,
+                 '-o', closedwhite, '-r', 2.)
+  hulltex = context.temporary('Texture')
+  registration.getTransformationManager().copyReferential(self.white_mesh,
+                                                          closedwhite)
   a = anatomist.Anatomist()
   # mask the white mesh with the eroded mask
   #fusion = context.runProcess( 'fusion3Dmesh', closedwhite, self.hemi_cortex,
   #  hulltex, 0 )
-  fusion = context.runProcess( 'fusion3Dmesh', closedwhite, self.white_mesh,
-    hulltex, 0 )
+  fusion = context.runProcess('fusion3Dmesh', closedwhite, self.white_mesh,
+                              hulltex, 0)
   # wait for synchronous completion from Anatomist
-  a = anatomist.Anatomist()
   a.getObjects()
   # change values to get O inside sulci and a positive value outside
-  context.system( 'AimsLinearComb', '-i', hulltex, '-o', hulltex, '-a', -1.,
-    '-e', 32767 )
+  context.pythonSystem('cartoLinearComb.py', '-i', hulltex, '-o', hulltex,
+                       '-f', '-I1 + 32767')
   # convert to a label texture (seems to be needed for meshdistance)
-  context.system( 'AimsFileConvert', hulltex, hulltex, '-t', 'S16' )
+  context.system('AimsFileConvert', hulltex, hulltex, '-t', 'S16')
   # get the distance map inside sulci as depth map
-  context.system( 'AimsMeshDistance', '-i', self.white_mesh, '-o',
-    self.depth_texture, '-t', hulltex )
+  context.system('AimsMeshDistance', '-i', self.white_mesh, '-o',
+                 self.depth_texture, '-t', hulltex)
 
