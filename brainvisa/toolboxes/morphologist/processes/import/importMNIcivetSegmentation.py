@@ -38,6 +38,7 @@ from soma import aims
 import numpy
 import glob
 import threading
+from brainvisa.tools import mainthreadlife
 
 name = 'Import MNI CIVET Segmentation'
 roles = ('importer',)
@@ -159,15 +160,6 @@ def initialization( self ):
   self.linkParameters( 'output_right_grey_white', 'output_left_grey_white' )
 
 
-def delInMainThread( lock, thing ):
-  # wait for the lock to be released in the process thread
-  lock.acquire()
-  lock.release()
-  # now the process thread should have removed its reference on thing:
-  # we can safely delete it fom here, in the main thread.
-  del thing # probably useless
-
-
 def execution( self, context ):
   pi, p = context.getProgressInfo( self )
   pi.children = [ None ] * 3
@@ -233,7 +225,7 @@ def execution( self, context ):
           context.runProcess( 'TalairachTransformationFromNormalization',
             normalization_transformation=trm,
             Talairach_transform=self.output_T1_to_Talairach_transformation,
-            Commissure_coordinates=self.output_ACPC,
+            commissure_coordinates=self.output_ACPC,
             t1mri=self.output_raw_t1_mri,
             source_referential=trManager.referential( self.output_raw_t1_mri ),
             # normalized_referential=mniDI, # why doesn't this work ??
@@ -327,35 +319,45 @@ def execution( self, context ):
 
   if mridone:
     self.output_raw_t1_mri.lockData()
-  if nobiasdone:
-    self.output_bias_corrected.lockData()
+  #if nobiasdone:
+    #self.output_bias_corrected.lockData()
   if maskdone:
     self.output_brain_mask.lockData()
 
   t1pipeline = getProcessInstance( 'morphologist' )
-  t1pipeline.mri = self.output_raw_t1_mri
-  t1pipeline.mri_corrected = self.output_bias_corrected
+  t1pipeline.t1mri = self.output_raw_t1_mri
+  t1pipeline.t1mri_nobias = self.output_bias_corrected
   enode = t1pipeline.executionNode()
   npi, proc = context.getProgressInfo( enode, parent=pi )
   context.progress()
   enode.PrepareSubject.setSelected( False )
+  enode.Renorm.setSelected( False )
   if nobiasdone:
-    enode.BiasCorrection.setSelected( False )
-    enode.BiasCorrection.write_hfiltered = 'no'
-    enode.BiasCorrection.write_wridges = 'no'
-    enode.BiasCorrection.hfiltered = None
-    enode.BiasCorrection.white_ridges = None
-    enode.HistoAnalysis.use_hfiltered = False
-    enode.HistoAnalysis.use_wridges = False
-    enode.SplitBrain.Use_ridges = False
+    #enode.BiasCorrection.setSelected( False )
+    #enode.BiasCorrection.write_hfiltered = 'no'
+    #enode.BiasCorrection.write_wridges = 'no'
+    #enode.BiasCorrection.hfiltered = None
+    #enode.BiasCorrection.white_ridges = None
+    #enode.HistoAnalysis.use_hfiltered = False
+    #enode.HistoAnalysis.use_wridges = False
+    #enode.SplitBrain.Use_ridges = False
+    enode.BiasCorrection.mode = 'write_minimal without correction'
   if maskdone:
     enode.BrainSegmentation.setSelected( False )
   enode.TalairachTransformation.setSelected( False )
-  enode.GreyWhiteClassification.setSelected( False )
-  enode.GreyWhiteSurface.setSelected( False )
-  enode.HemispheresMesh.setSelected( False )
+  enode.HemispheresProcessing.LeftHemisphere.GreyWhiteClassification.setSelected( False )
+  enode.HemispheresProcessing.RightHemisphere.GreyWhiteClassification.setSelected( False )
+  enode.HemispheresProcessing.LeftHemisphere.GreyWhiteTopology.setSelected( False )
+  enode.HemispheresProcessing.RightHemisphere.GreyWhiteTopology.setSelected( False )
+  enode.HemispheresProcessing.LeftHemisphere.GreyWhiteMesh.setSelected( False )
+  enode.HemispheresProcessing.RightHemisphere.GreyWhiteMesh.setSelected( False )
+  enode.HemispheresProcessing.LeftHemisphere.SulciSkeleton.setSelected( False )
+  enode.HemispheresProcessing.RightHemisphere.SulciSkeleton.setSelected( False )
+  enode.HemispheresProcessing.LeftHemisphere.PialMesh.setSelected( False )
+  enode.HemispheresProcessing.RightHemisphere.PialMesh.setSelected( False )
   enode.HeadMesh.setSelected( False )
-  enode.CorticalFoldsGraph.setSelected( False )
+  enode.HemispheresProcessing.LeftHemisphere.CorticalFoldsGraph.setSelected( False )
+  enode.HemispheresProcessing.RightHemisphere.CorticalFoldsGraph.setSelected( False )
 
   context.write( _t_( 'Running a first pass of the missing T1 pipeline ' \
     'steps to recover bias correction, histogram analysis, brain split.' ) )
@@ -396,7 +398,7 @@ def execution( self, context ):
       context.system( 'AimsFileConvert', '-i', self.input_grey_white,
         '-o', gw, '-t', 'S16' )
       context.system( 'AimsReplaceLevel', '-i', gw, '-o', gw,
-        '-g', 1, '-n', 0, '-g', 2, '-n', 100, '-g', 3, '-n', 200 )
+        '-g', 1, '-n', 0, '-g', 2, '-n', 100, '-g', 3, '-n', 200, '-g', 255, '-n', 200, '-g', 170, '-n', 100 )
       clgm = context.temporary( 'NIFTI-1 image', '3D Volume' )
       ## apply little closing on GM
       #context.system( 'AimsReplaceLevel', '-i', gw, '-o', clgm,
@@ -409,7 +411,7 @@ def execution( self, context ):
       mask = context.temporary( 'NIFTI-1 image' )
       if self.output_right_grey_white is not None:
         context.system( 'AimsThreshold',
-          '-i', enode.SplitBrain._process.split_mask, '-o', mask, '-t', 1,
+          '-i', enode.SplitBrain._process.split_brain, '-o', mask, '-t', 1,
           '-m', 'eq' )
         context.system( 'AimsMask', '-i', gw,
           '-o', self.output_right_grey_white, '-m', mask )
@@ -418,7 +420,7 @@ def execution( self, context ):
         self.output_right_grey_white.lockData()
       if self.output_left_grey_white is not None:
         context.system( 'AimsThreshold',
-          '-i', enode.SplitBrain._process.split_mask, '-o', mask, '-t', 2,
+          '-i', enode.SplitBrain._process.split_brain, '-o', mask, '-t', 2,
           '-m', 'eq' )
         context.system( 'AimsMask', '-i', gw,
           '-o', self.output_left_grey_white, '-m', mask )
@@ -431,19 +433,32 @@ def execution( self, context ):
   context.progress( 7, nsteps, self )
 
   context.write( _t_( 'Now run the last part of the regular T1 pipeline.' ) )
+
+  t1pipeline = getProcessInstance( 'morphologist' )
+  t1pipeline.t1mri = self.output_raw_t1_mri
+  t1pipeline.t1mri_nobias = self.output_bias_corrected
+  enode = t1pipeline.executionNode()
+
   enode.PrepareSubject.setSelected( False )
+  enode.Renorm.setSelected( False )
   enode.BiasCorrection.setSelected( False )
   enode.HistoAnalysis.setSelected( False )
   enode.BrainSegmentation.setSelected( False )
   enode.SplitBrain.setSelected( False )
   enode.TalairachTransformation.setSelected( False )
-  enode.GreyWhiteClassification.setSelected( False )
-  enode.GreyWhiteSurface.setSelected( True )
-  enode.HemispheresMesh.setSelected( True )
+  enode.HemispheresProcessing.LeftHemisphere.GreyWhiteClassification.setSelected( False )
+  enode.HemispheresProcessing.RightHemisphere.GreyWhiteClassification.setSelected( False )
+  enode.HemispheresProcessing.LeftHemisphere.GreyWhiteTopology.setSelected( True )
+  enode.HemispheresProcessing.RightHemisphere.GreyWhiteTopology.setSelected( True )
+  enode.HemispheresProcessing.LeftHemisphere.GreyWhiteMesh.setSelected( True )
+  enode.HemispheresProcessing.RightHemisphere.GreyWhiteMesh.setSelected( True )
+  enode.HemispheresProcessing.LeftHemisphere.SulciSkeleton.setSelected( True )
+  enode.HemispheresProcessing.RightHemisphere.SulciSkeleton.setSelected( True )
+  enode.HemispheresProcessing.LeftHemisphere.PialMesh.setSelected( True )
+  enode.HemispheresProcessing.RightHemisphere.PialMesh.setSelected( True )
   enode.HeadMesh.setSelected( True )
-  enode.CorticalFoldsGraph.setSelected( True )
-  # we build 3.1 graphs by default.
-  enode.CorticalFoldsGraph.CorticalFoldsGraph_3_1.setSelected( True )
+  enode.HemispheresProcessing.LeftHemisphere.CorticalFoldsGraph.setSelected( True )
+  enode.HemispheresProcessing.RightHemisphere.CorticalFoldsGraph.setSelected( True )
   context.write( _t_( 'Running a second pass of the missing T1 pipeline ' \
     'steps to recover cortex, meshes and sulci graphs.' ) )
   if self.use_t1pipeline == 0:
