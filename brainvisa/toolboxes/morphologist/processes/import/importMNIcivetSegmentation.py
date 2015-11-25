@@ -38,7 +38,7 @@ from soma import aims
 import numpy
 import glob
 import threading
-from brainvisa.tools import mainthreadlife
+from brainvisa.tools.mainthreadlife import MainThreadLife
 
 name = 'Import MNI CIVET Segmentation'
 roles = ('importer',)
@@ -331,7 +331,8 @@ def execution( self, context ):
   npi, proc = context.getProgressInfo( enode, parent=pi )
   context.progress()
   enode.PrepareSubject.setSelected( False )
-  enode.Renorm.setSelected( False )
+  if hasattr(enode, 'Renorm'):
+    enode.Renorm.setSelected( False )
   if nobiasdone:
     #enode.BiasCorrection.setSelected( False )
     #enode.BiasCorrection.write_hfiltered = 'no'
@@ -366,19 +367,10 @@ def execution( self, context ):
     r = context.ask( 'run the pipeline, then click here', 'OK', 'Abort' )
     mainThreadActions().call( pv.close )
     # the following ensures pv is deleted in the main thread, and not
-    # in the current non-GUI thread. The principle is the following:
-    # - acquire a lock
-    # - pass the pv object to something in the main thread
-    # - the main thread waits on the lock while holding a reference on pv
-    # - we delete pv in the process thread
-    # - the lock is releasd from the pv thread
-    # - now the main thread can go on, and del / release the ref on pv: it
-    #   is the last ref on pv, so it is actually deleted there.
-    lock = threading.Lock()
-    lock.acquire()
-    mainThreadActions().push( delInMainThread, lock, pv )
+    # in the current non-GUI thread.
+    mtobj = MainThreadLife(pv)
     del pv
-    lock.release()
+    del mtobj
     if r != 0:
       raise UserInterruption( 'Aborted.' )
   elif self.use_t1pipeline == 1:
@@ -440,7 +432,8 @@ def execution( self, context ):
   enode = t1pipeline.executionNode()
 
   enode.PrepareSubject.setSelected( False )
-  enode.Renorm.setSelected( False )
+  if hasattr(enode, 'Renorm'):
+    enode.Renorm.setSelected( False )
   enode.BiasCorrection.setSelected( False )
   enode.HistoAnalysis.setSelected( False )
   enode.BrainSegmentation.setSelected( False )
@@ -466,19 +459,10 @@ def execution( self, context ):
     r = context.ask( 'run the pipeline, then click here', 'OK' )
     mainThreadActions().call( pv.close )
     # the following ensures pv is deleted in the main thread, and not
-    # in the current non-GUI thread. The principle is the following:
-    # - acquire a lock
-    # - pass the pv object to something in the main thread
-    # - the main thread waits on the lock while holding a reference on pv
-    # - we delete pv in the process thread
-    # - the lock is releasd from the pv thread
-    # - now the main thread can go on, and del / release the ref on pv: it
-    #   is the last ref on pv, so it is actually deleted there.
-    lock = threading.Lock()
-    lock.acquire()
-    mainThreadActions().push( delInMainThread, lock, pv )
+    # in the current non-GUI thread.
+    mtobj = MainThreadLife(pv)
     del pv
-    lock.release()
+    del mtobj
   elif self.use_t1pipeline == 1:
     context.runProcess( t1pipeline )
   else:
