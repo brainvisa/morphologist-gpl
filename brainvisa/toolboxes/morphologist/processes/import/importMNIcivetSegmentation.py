@@ -270,7 +270,7 @@ def execution( self, context ):
       context.system( 'AimsFileConvert', '-o', self.output_brain_mask,
         '-i', self.input_grey_white, '-t', 'S16' )
       context.system( 'AimsThreshold', '-i', self.output_brain_mask,
-        '-o', self.output_brain_mask, '-t', 1, '-b' )
+        '-o', self.output_brain_mask, '-t', 150, '-b', '-m', 'ge' )
       maskdone = True
     else:
       context.write( '<font color="#a0a060">' + \
