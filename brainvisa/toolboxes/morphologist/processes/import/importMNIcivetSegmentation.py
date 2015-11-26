@@ -88,6 +88,9 @@ def initSubject( self, inp ):
   return value
 
 def initialization( self ):
+  def linknuc(self, proc):
+    if self.input_raw_t1_mri is not None:
+      return self.input_raw_t1_mri.fullName() + '_nuc.mnc'
   def linkimask( self, proc ):
     if self.input_grey_white is not None:
       # if the G/W segmentation is available, don't use the mask
@@ -115,13 +118,18 @@ def initialization( self ):
       b = os.path.dirname( self.input_raw_t1_mri.fullPath() )
       if os.path.basename( b ) == 'native':
         b = os.path.dirname( b )
-      bfinal = os.path.join( b, 'temp' )
-      gfinal = glob.glob( os.path.join( bfinal, '*_final_classify.mnc*' ) )
-      if len( gfinal ) != 0:
-        g = gfinal
-      else:
-        b = os.path.join( b, 'classify' )
+      b = os.path.join( b, 'classify' )
+      # the cls_clean image is skull-stripped, which is better
+      g = glob.glob( os.path.join( b, '*_cls_clean.mnc*' ) )
+      if len(g) == 0:
+        # the classify image is not skull-stripped, and contains grey and
+        # white matter labels in the external head parts (scalp, fat, etc)
         g = glob.glob( os.path.join( b, '*_classify.mnc*' ) )
+      if len(g) == 0:
+        bfinal = os.path.join( b, 'temp' )
+        gfinal = glob.glob( os.path.join( bfinal, '*_final_classify.mnc*' ) )
+        if len( gfinal ) != 0:
+          g = gfinal
       if len(g) == 1:
         return g[0]
   def linkitrans( self, proc ):
@@ -144,7 +152,7 @@ def initialization( self ):
     'output_right_grey_white', 'output_T1_to_Talairach_transformation',
     'output_ACPC' )
 
-  self.linkParameters( 'input_bias_corrected', 'input_raw_t1_mri' )
+  self.linkParameters( 'input_bias_corrected', 'input_raw_t1_mri', linknuc )
   self.linkParameters( 'input_grey_white', 'input_raw_t1_mri', linkigw )
   self.linkParameters( 'input_brain_mask', ( 'input_raw_t1_mri',
     'input_grey_white' ), linkimask )
@@ -270,7 +278,7 @@ def execution( self, context ):
       context.system( 'AimsFileConvert', '-o', self.output_brain_mask,
         '-i', self.input_grey_white, '-t', 'S16' )
       context.system( 'AimsThreshold', '-i', self.output_brain_mask,
-        '-o', self.output_brain_mask, '-t', 150, '-b', '-m', 'ge' )
+        '-o', self.output_brain_mask, '-t', 48, '-b', '-m', 'ge', '-p' )
       maskdone = True
     else:
       context.write( '<font color="#a0a060">' + \
@@ -372,7 +380,7 @@ def execution( self, context ):
     del pv
     del mtobj
     if r != 0:
-      raise UserInterruption( 'Aborted.' )
+      raise context.UserInterruption( 'Aborted.' )
   elif self.use_t1pipeline == 1:
     context.runProcess( t1pipeline )
   else:
