@@ -262,6 +262,8 @@ def buildGWimage(self, context, dims, input_white_mesh, input_pial_mesh,
 
 def import_t1(self, context, trManager):
 
+    mridone = False
+    t1aims2mni = None
     if self.input_raw_t1_mri is None and self.input_bias_corrected is not None:
         context.write(_t_('Taking bias corrected as raw T1 MRI.'))
         self.input_raw_t1_mri = self.input_bias_corrected
@@ -333,10 +335,16 @@ def import_t1(self, context, trManager):
 
 def import_bias_corrected(self, context):
 
+    nobiasdone = False
     if self.output_bias_corrected is not None:
         context.write('importing bias corrected MRI...')
         if self.input_bias_corrected is not None:
-            nobias = context.temporary('gz compressed NIFTI-1 image')
+            if self.output_brain_mask is not None \
+                    and (self.input_brain_mask is not None
+                        or self.input_grey_white is not None):
+                nobias = context.temporary('gz compressed NIFTI-1 image')
+            else:
+                nobias = self.output_bias_corrected
             context.system('AimsFileConvert',
                 '-i', self.input_bias_corrected,
                 '-o', nobias, '-t', 'S16',
@@ -356,6 +364,7 @@ def import_bias_corrected(self, context):
 def import_mask(self, context, t1aims2mni, mridone, nobiasdone, nobias,
                 trManager):
 
+    maskdone = False
     if self.output_brain_mask:
         context.write(_t_('importing brain mask...'))
         if self.input_brain_mask is not None:
@@ -418,8 +427,12 @@ def import_mask(self, context, t1aims2mni, mridone, nobiasdone, nobias,
                         self.output_raw_t1_mri)['voxel_size']
                     new_vs = aimsGlobals.aimsVolumeAttributes(
                         self.output_brain_mask)['voxel_size']
+                    temp = context.temporary('gz compressed NIFTI-1 image')
                     context.system(
-                        'AimsResample', '-i', self.output_raw_t1_mri,
+                        'AimsFileConvert', '-i', self.output_raw_t1_mri,
+                        '-o', temp)
+                    context.system(
+                        'AimsResample', '-i', temp,
                         '-o', self.output_raw_t1_mri, '-m', trm,
                         '-r', self.output_brain_mask)
                 # update the T1 -> ACPC transform
@@ -497,26 +510,22 @@ def import_grey_white(self, context, gw_from_meshes, t1pipeline, trManager):
 def execution( self, context ):
 
     pi, p = context.getProgressInfo(self)
-    pi.children = [None] * 3
+    #pi.children = [None] * 3
     context.progress()
 
     nsteps = 8
     self.nsteps = nsteps
-    mridone = False
-    nobiasdone = False
-    maskdone = False
-    t1aims2mni = None
     trManager = registration.getTransformationManager()
 
     mridone, t1aims2mni = self.import_t1(context, trManager)
-    context.progress(2, nsteps, self)
+    context.progress(1, nsteps, self)
 
     nobiasdone, nobias = self.import_bias_corrected(context)
-    context.progress(3, nsteps, self)
+    context.progress(2, nsteps, self)
 
     maskdone = self.import_mask(context, t1aims2mni, mridone, nobiasdone,
                                 nobias, trManager)
-    context.progress(5, nsteps, self)
+    context.progress(4, nsteps, self)
 
     if mridone:
       self.output_raw_t1_mri.lockData()
@@ -529,8 +538,8 @@ def execution( self, context ):
     t1pipeline.t1mri = self.output_raw_t1_mri
     t1pipeline.t1mri_nobias = self.output_bias_corrected
     enode = t1pipeline.executionNode()
-    npi, proc = context.getProgressInfo(enode, parent=pi)
-    context.progress()
+    #npi, proc = context.getProgressInfo(enode, parent=pi)
+    #context.progress()
     enode.PrepareSubject.setSelected(False)
     if hasattr(enode, 'Renorm'):
         enode.Renorm.setSelected(False)
@@ -569,6 +578,7 @@ def execution( self, context ):
             mni_to_t1, gw_left,
             enode.HemispheresProcessing.LeftHemisphere.GreyWhiteMesh.white_mesh,
           enode.HemispheresProcessing.LeftHemisphere.PialMesh.pial_mesh)
+        context.progress(5, nsteps, self)
         context.write('importing right hemisphere meshes')
         self.buildGWimage(
             context, dims, self.input_white_mesh_right,
@@ -644,10 +654,10 @@ def execution( self, context ):
             + _t_('Pipeline not run since the "use_t1pipeline" parameter '
                   'prevents it') + '</font>')
         context.write('OK')
-        context.progress(6, nsteps, self)
+        context.progress(5, nsteps, self)
 
         self.import_grey_white(context, gw_from_meshes, t1pipeline, trManager)
-        context.progress(7, nsteps, self)
+        context.progress(6, nsteps, self)
 
         context.write(_t_('Now run the last part of the regular T1 pipeline.'))
 
