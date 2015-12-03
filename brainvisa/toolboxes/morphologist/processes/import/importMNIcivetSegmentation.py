@@ -458,8 +458,11 @@ def import_mask(self, context, t1aims2mni, mridone, nobiasdone, nobias,
 
 def import_grey_white(self, context, gw_from_meshes, t1pipeline, trManager):
 
-    if not gw_from_meshes and (self.output_right_grey_white is not None
-                               or self.output_left_grey_white is not None):
+    have_gw = False
+    if gw_from_meshes:
+        return True
+    if self.output_right_grey_white is not None \
+            or self.output_left_grey_white is not None:
         context.write(_t_('importing grey/white segmentation...'))
         if self.input_grey_white:
             gw = context.temporary('NIFTI-1 image', '3D Volume')
@@ -501,10 +504,14 @@ def import_grey_white(self, context, gw_from_meshes, t1pipeline, trManager):
                 trManager.copyReferential(self.output_brain_mask,
                     self.output_left_grey_white)
                 self.output_left_grey_white.lockData()
+            if self.output_right_grey_white is not None \
+                    and self.output_left_grey_white is not None:
+                have_gw = True
         else:
             context.write('<font color="#a0a060">'
                 + _t_('G/W segmentation not written: no possible source')
                 + '</font>')
+    return have_gw
 
 
 def execution( self, context ):
@@ -656,7 +663,8 @@ def execution( self, context ):
         context.write('OK')
         context.progress(5, nsteps, self)
 
-        self.import_grey_white(context, gw_from_meshes, t1pipeline, trManager)
+        have_gw = self.import_grey_white(context, gw_from_meshes, t1pipeline,
+                                         trManager)
         context.progress(6, nsteps, self)
 
         context.write(_t_('Now run the last part of the regular T1 pipeline.'))
@@ -676,8 +684,9 @@ def execution( self, context ):
     enode.SplitBrain.setSelected(False)
     enode.HemispheresProcessing.setSelected(True)
     enode.TalairachTransformation.setSelected(False)
-    enode.HemispheresProcessing.LeftHemisphere.GreyWhiteClassification.setSelected(False)
-    enode.HemispheresProcessing.RightHemisphere.GreyWhiteClassification.setSelected(False)
+    if have_gw:
+        enode.HemispheresProcessing.LeftHemisphere.GreyWhiteClassification.setSelected(False)
+        enode.HemispheresProcessing.RightHemisphere.GreyWhiteClassification.setSelected(False)
     enode.HemispheresProcessing.LeftHemisphere.GreyWhiteTopology.setSelected(
         True)
     enode.HemispheresProcessing.RightHemisphere.GreyWhiteTopology.setSelected(
