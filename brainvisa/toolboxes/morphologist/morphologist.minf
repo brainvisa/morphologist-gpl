@@ -131,16 +131,6 @@
       </f>
     </l>
   </f>
-  <f type="ProcessTree">
-    <l length="1" name="content">
-      <f type="ProcessTree.Leaf">
-        <s name="id">AnaCSF_GreyMaskEditor</s>
-        <none name="name"/>
-      </f>
-    </l>
-    <s name="name">editors</s>
-    <s name="id">editors</s>
-  </f>
 
   <f type="ProcessTree">
     <s name="name">tools</s>
