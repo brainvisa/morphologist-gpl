@@ -102,6 +102,8 @@ def initialization( self ):
     self.linkParameters('edges', 'variance')
     self.linkParameters('meancurvature', 'edges')
     self.setOptional('commissure_coordinates')
+    self.setOptional('field')
+    self.setOptional('meancurvature')
     
     self.signature[ 'ngrid' ].userLevel = 2
     self.signature[ 'zdir_multiply_regul' ].userLevel = 2
