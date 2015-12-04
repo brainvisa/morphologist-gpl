@@ -59,6 +59,7 @@ signature = Signature(
         'Aims readable volume formats'),
     'input_grey_white', ReadDiskItem('Grey White Mask',
         'Aims readable volume formats'),
+    'use_civet_segmentations_in_mni_space', Boolean(),
     'input_T1_to_MNI_transformation',
       ReadDiskItem('MINC transformation matrix',
                    'MINC transformation matrix'),
@@ -70,6 +71,7 @@ signature = Signature(
                                         'aims mesh formats'),
     'input_pial_mesh_right', ReadDiskItem('Hemisphere mesh',
                                           'aims mesh formats'),
+    'grey_white_classif_from_meshes', Boolean(),
 
     'output_raw_t1_mri', WriteDiskItem('Raw T1 MRI',
         'Aims writable volume formats'),
@@ -181,6 +183,15 @@ def initialization(self):
             if len(g) != 0:
                 return g[0]
 
+    def linkusegwmeshes(self, proc):
+        if self.input_white_mesh_left is not None \
+                and self.input_white_mesh_right is not None \
+                and self.input_pial_mesh_left is not None \
+                and self.input_pial_mesh_right is not None:
+            return True
+        else:
+            return False
+
     self.setOptional('input_raw_t1_mri', 'input_bias_corrected',
         'input_brain_mask', 'input_grey_white',
         'input_T1_to_MNI_transformation',
@@ -212,6 +223,10 @@ def initialization(self):
     self.linkParameters('output_brain_mask', 'output_bias_corrected')
     self.linkParameters('output_left_grey_white', 'output_brain_mask')
     self.linkParameters('output_right_grey_white', 'output_left_grey_white')
+    self.linkParameters('grey_white_classif_from_meshes',
+                        ['input_white_mesh_left', 'input_pial_mesh_left',
+                         'input_pial_mesh_left', 'input_pial_mesh_right'],
+                        linkusegwmeshes)
     self.transform_Talairach_to_MNI \
         = signature['transform_Talairach_to_MNI'].findValue(
             {'filename_variable': 'talairach_TO_spm_template_novoxels'})
@@ -220,16 +235,23 @@ def initialization(self):
 def buildGWimage(self, context, dims, input_white_mesh, input_pial_mesh,
                  mni_to_t1, grey_white, white_mesh,
                  pial_mesh):
+    mesh_dir = os.path.dirname(white_mesh.fullPath())
+    context.write('mesh_dir:', mesh_dir)
+    if not os.path.exists(mesh_dir):
+        context.write('create dir')
+        safemkdir.makedirs(mesh_dir)
     white = aims.read(input_white_mesh.fullPath())
     aims.SurfaceManip.meshTransform(white, mni_to_t1)
     aims.write(white, white_mesh.fullPath())
     pial = aims.read(input_pial_mesh.fullPath())
     aims.SurfaceManip.meshTransform(pial, mni_to_t1)
     aims.write(pial, pial_mesh.fullPath())
+    context.write('written:', pial_mesh)
     context.write('<font color="#60ff60">'
         + _t_('White/pial meshes imported.') + '</font>')
 
-    if hasattr(aims.SurfaceManip, 'rasterizeMesh'):
+    if self.grey_white_classif_from_meshes \
+            and hasattr(aims.SurfaceManip, 'rasterizeMesh'):
         gw_vol = aims.Volume(*dims, dtype='S16')
         gw_vol.fill(32737)
         aims.SurfaceManip.rasterizeMesh(white, gw_vol, 0)
@@ -340,8 +362,9 @@ def import_bias_corrected(self, context):
         context.write('importing bias corrected MRI...')
         if self.input_bias_corrected is not None:
             if self.output_brain_mask is not None \
+                    and self.use_civet_segmentations_in_mni_space \
                     and (self.input_brain_mask is not None
-                        or self.input_grey_white is not None):
+                         or self.input_grey_white is not None):
                 nobias = context.temporary('gz compressed NIFTI-1 image')
             else:
                 nobias = self.output_bias_corrected
@@ -349,6 +372,10 @@ def import_bias_corrected(self, context):
                 '-i', self.input_bias_corrected,
                 '-o', nobias, '-t', 'S16',
                 '-r', '--omin', 0, '--omax', 4095)
+            if nobias is self.output_bias_corrected:
+                tm = registration.getTransformationManager()
+                tm.copyReferential(self.output_raw_t1_mri,
+                                   self.output_bias_corrected)
             nobiasdone = True
         else:
             context.warning(_t_('output_bias_corrected could not be written: '
@@ -385,19 +412,21 @@ def import_mask(self, context, t1aims2mni, mridone, nobiasdone, nobias,
             context.write('<font color="#a0a060">'
                 + _t_('Brain mask not written: no possible source')
                 + '</font>')
+        context.write('<font color="#60ff60">'
+            + _t_('Brain mask inserted.') + '</font>')
 
         context.progress(4, self.nsteps, self)
 
-        if maskdone:
+        mask2t1 = None
+
+        if maskdone and self.use_civet_segmentations_in_mni_space:
             # the mask is normalized, and has info to get to MNI space
             # but is resampled in a different resolution and FOV from the
             # original image. To keep the mask, we resample the T1/nobias
             # images to the mask space.
             mref = trManager.referential(self.output_raw_t1_mri)
-            tr = aims.AffineTransformation3d( aimsGlobals.aimsVolumeAttributes(
+            tr = aims.AffineTransformation3d(aimsGlobals.aimsVolumeAttributes(
                 self.output_brain_mask)['transformations'][-1])
-            context.write('<font color="#60ff60">'
-                + _t_('Brain mask inserted.') + '</font>')
             if t1aims2mni and (self.output_bias_corrected is not None \
                     or self.output_raw_t1_mri is not None):
                 # resample raw T1 and bias corrected image
@@ -453,10 +482,38 @@ def import_mask(self, context, t1aims2mni, mridone, nobiasdone, nobias,
             trManager.copyReferential(
                 self.output_raw_t1_mri, self.output_brain_mask)
 
-    return maskdone
+        elif maskdone:
+            # resample brain mask to native space
+            self.output_ACPC.lockData()
+            mref = trManager.referential(self.output_raw_t1_mri)
+            tr = aims.AffineTransformation3d(aimsGlobals.aimsVolumeAttributes(
+                self.output_brain_mask)['transformations'][-1])
+            if t1aims2mni and (self.output_bias_corrected is not None \
+                    or self.output_raw_t1_mri is not None):
+                # resample mask
+                if self.output_bias_corrected is not None:
+                    native = self.output_bias_corrected
+                else:
+                    native = self.output_raw_t1_mri
+                mask2t1 = t1aims2mni.inverse() * tr
+                trm = context.temporary('Transformation Matrix')
+                aims.write(mask2t1, trm.fullPath())
+                context.write(_t_('Resampling brain mask volume to '
+                  'native space...'))
+                context.system('AimsResample',
+                    '-i', self.output_brain_mask,
+                    '-o', self.output_brain_mask, '-m', trm,
+                    '-r', native, '-t', 'n')
+                context.write('<font color="#60ff60">'
+                    + _t_('Brain mask resampled.') + '</font>')
+        trManager.copyReferential(
+            self.output_raw_t1_mri, self.output_brain_mask)
+
+    return maskdone, mask2t1
 
 
-def import_grey_white(self, context, gw_from_meshes, t1pipeline, trManager):
+def import_grey_white(self, context, gw_from_meshes, t1pipeline, trManager,
+                      mask2t1):
 
     have_gw = False
     if gw_from_meshes:
@@ -483,6 +540,26 @@ def import_grey_white(self, context, gw_from_meshes, t1pipeline, trManager):
                 #'-o', gw, '-m', clgm, '-d', 100, '--inv' )
             mask = context.temporary('NIFTI-1 image')
             enode = t1pipeline.executionNode()
+            if mask2t1 is not None:
+                # native space transform
+                temp = context.temporary('Transformation matrix')
+                aims.write(mask2t1, temp.fullPath())
+                if mask2t1 is not None:
+                    # resample to native space
+                    context.system('AimsResample',
+                                   '-i', gw, '-o', gw,
+                                   '-m', temp, '-r', self.output_brain_mask,
+                                   '-t', 'n')
+            if self.output_left_grey_white is not None:
+                context.system(
+                    'AimsThreshold',
+                    '-i', enode.SplitBrain._process.split_brain, '-o', mask,
+                    '-t', 2, '-m', 'eq')
+                context.system('AimsMask', '-i', gw,
+                    '-o', self.output_left_grey_white, '-m', mask)
+                trManager.copyReferential(self.output_brain_mask,
+                    self.output_left_grey_white)
+                self.output_left_grey_white.lockData()
             if self.output_right_grey_white is not None:
                 context.system(
                     'AimsThreshold',
@@ -494,16 +571,6 @@ def import_grey_white(self, context, gw_from_meshes, t1pipeline, trManager):
                 trManager.copyReferential(self.output_brain_mask,
                                           self.output_right_grey_white)
                 self.output_right_grey_white.lockData()
-            if self.output_left_grey_white is not None:
-                context.system(
-                    'AimsThreshold',
-                    '-i', enode.SplitBrain._process.split_brain, '-o', mask,
-                    '-t', 2, '-m', 'eq')
-                context.system('AimsMask', '-i', gw,
-                    '-o', self.output_left_grey_white, '-m', mask)
-                trManager.copyReferential(self.output_brain_mask,
-                    self.output_left_grey_white)
-                self.output_left_grey_white.lockData()
             if self.output_right_grey_white is not None \
                     and self.output_left_grey_white is not None:
                 have_gw = True
@@ -530,8 +597,8 @@ def execution( self, context ):
     nobiasdone, nobias = self.import_bias_corrected(context)
     context.progress(2, nsteps, self)
 
-    maskdone = self.import_mask(context, t1aims2mni, mridone, nobiasdone,
-                                nobias, trManager)
+    maskdone, mask2t1 = self.import_mask(context, t1aims2mni, mridone,
+                                         nobiasdone, nobias, trManager)
     context.progress(4, nsteps, self)
 
     if mridone:
@@ -593,7 +660,8 @@ def execution( self, context ):
             mni_to_t1, gw_right,
             enode.HemispheresProcessing.RightHemisphere.GreyWhiteMesh.white_mesh,
             enode.HemispheresProcessing.RightHemisphere.PialMesh.pial_mesh)
-        if hasattr(soma.aims.SurfaceManip, 'rasterizeMesh'):
+        if self.grey_white_classif_from_meshes \
+                and hasattr(soma.aims.SurfaceManip, 'rasterizeMesh'):
             gw_from_meshes = True
             enode.SplitBrain.setSelected(False)
             split = aims.read(gw_left.fullPath())
@@ -652,7 +720,7 @@ def execution( self, context ):
             del pv
             del mtobj
             if r != 0:
-                raise context.UserInterruption( 'Aborted.' )
+                raise context.UserInterruption()
         elif self.use_t1pipeline == 1:
           context.runProcess(t1pipeline)
         else:
@@ -664,7 +732,7 @@ def execution( self, context ):
         context.progress(5, nsteps, self)
 
         have_gw = self.import_grey_white(context, gw_from_meshes, t1pipeline,
-                                         trManager)
+                                         trManager, mask2t1)
         context.progress(6, nsteps, self)
 
         context.write(_t_('Now run the last part of the regular T1 pipeline.'))
