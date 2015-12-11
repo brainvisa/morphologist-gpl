@@ -38,6 +38,18 @@
             <s name="id">morphologist</s>
             <none name="name" />
           </f>
+          <f type="ProcessTree.Leaf">
+            <s name="id">morphologist_capsul</s>
+            <none name="name" />
+          </f>
+          <f type="ProcessTree.Leaf">
+            <s name="id">morphologist-ui</s>
+            <none name="name" />
+          </f>
+          <f type="ProcessTree.Leaf">
+            <s name="id">morphologist-ui_database</s>
+            <none name="name" />
+          </f>
         </l>
       </f>
     </l>
