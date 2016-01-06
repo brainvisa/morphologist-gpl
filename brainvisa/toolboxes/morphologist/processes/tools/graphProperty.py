@@ -31,8 +31,7 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
-import os, re
-import sys
+import os
 
 try:
   from soma import aims
@@ -49,29 +48,38 @@ def validation():
 name = 'Global graph property'
 userLevel = 2
 
+
 signature = Signature(
-    'graph', ReadDiskItem( 'Graph', 'Graph',
-                          requiredAttributes = { 'graph_version' : '3.1' } ),
-    'property', String(),
-    'output_prefix', String()
+    'graph', ReadDiskItem('Graph', 'Graph',
+                          requiredAttributes = {'graph_version': '3.1'}),
+    'property', OpenChoice('brain_hull_area',
+                           'refbrain_hull_area',
+                           'brain_hull_volume',
+                           'refbrain_hull_volume',
+                           'folds_area',
+                           'reffolds_area',
+                           'total_sulci_length',
+                           'reftotal_sulci_length',
+                           'thickness_mean'),
+    'output_directory', ReadDiskItem('Directory', 'Directory'),
 )
 
-
+def initialization( self ):
+    self.property = 'brain_hull_area'
+  
 def execution( self, context ):
-
     subject = self.graph.get('subject')
     side = self.graph.get('side')
-
-    self.output=  self.output_prefix + self.property + '_' + subject + '_' + side + '.dat'
-    context.write('Output file :' , self.output)
-
+    output_file = os.path.join(self.output_directory.fullPath(),
+                               self.property + '_' + subject + '_' + side + '.csv')
+    context.write('Output file :', output_file)
+    
     reader = aims.Reader()
-    ingraph = reader.read( self.graph.fullPath() )
+    ingraph = reader.read(self.graph.fullPath())
     val = ingraph[self.property]
 
-    if self.output is not None :
-        f = open( self.output, 'w' )
-        f.write( 'subject\tside' +'\t' + self.property + '\n' )
-        f.write( subject + '\t' + side + '\t' + str(val) + '\n' )
+    if output_file is not None :
+        f = open(output_file, 'w')
+        f.write('subject;side;' + self.property + '\n')
+        f.write(subject + ';' + side + ';' + str(val) + '\n')
         f.close()
-

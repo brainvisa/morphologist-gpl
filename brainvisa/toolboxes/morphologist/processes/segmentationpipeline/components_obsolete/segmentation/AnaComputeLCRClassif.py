@@ -32,8 +32,7 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
-from brainvisa.configuration.neuroConfig import findInPath
-import os, re
+import os
 
 name = 'CSF Classif'
 userLevel = 2
@@ -48,7 +47,6 @@ signature = Signature(
     'Aims writable volume formats' ),
   'split_mask', WriteDiskItem( 'Split Brain Mask',
     'Aims writable volume formats' ),
-
 )
 
 def initialization( self ):
@@ -59,7 +57,6 @@ def initialization( self ):
 
 def execution( self, context ):
     
-
     im1 = context.temporary( 'GIS image' )
     im2 = context.temporary( 'GIS image' )
     im3 = context.temporary( 'GIS image' )
@@ -77,32 +74,36 @@ def execution( self, context ):
     brainL_closed = self.left_csf.fullPath()
 
     #Extract cerebelum mask
-    context.system( 'AimsThreshold', '-i', self.split_mask.fullPath(), '-o', cerebelum, '-m', 'eq', '-t', '3' )
-    
-    context.system( 'AimsReplaceLevel', '-i', cerebelum , '-o', cerebelum, '-g', '0','3', '-n', '1', '0')
-    context.system( 'AimsReplaceLevel', '-i', cerebelum , '-o', '/tmp/cerebelum.ima', '-g', '0','3', '-n', '1', '0')
+    context.system('AimsThreshold', '-i', self.split_mask.fullPath(),
+                   '-o', cerebelum, '-m', 'eq', '-t', '3')
+    #context.system('AimsReplaceLevel', '-i', cerebelum ,
+    #               '-o', '/tmp/cerebelum.ima', '-g', '0','3', '-n', '1', '0')
+    context.system('AimsReplaceLevel', '-i', cerebelum ,
+                   '-o', cerebelum, '-g', '0','3', '-n', '1', '0')
 
     #Extract left brain mask
-    context.system( 'AimsThreshold', '-i', self.left_grey_white.fullPath(),
-                    '-o', brainL, '-m', 'ge', '-t', '100', '-b' )
+    context.system('AimsThreshold', '-i', self.left_grey_white.fullPath(),
+                   '-o', brainL, '-m', 'ge', '-t', '100', '-b')
 
     #Extract right brain mask
-    context.system( 'AimsThreshold', '-i', self.right_grey_white.fullPath(),
-                    '-o', brainR , '-m', 'ge', '-t', '100', '-b' )
+    context.system('AimsThreshold', '-i', self.right_grey_white.fullPath(),
+                   '-o', brainR , '-m', 'ge', '-t', '100', '-b')
 
     #Define brain mask
-    context.pythonSystem('cartoLinearComb.py', '-i', brainL , '-i', brainR ,
-                         '-o', brain, '-f', 'I1 + I2')
+    #context.pythonSystem('cartoLinearComb.py', '-i', brainL , '-i', brainR ,
+                         #'-o', brain, '-f', 'I1 + I2')
+    context.system('AimsMerge', '-i', brainL, '-M', brainR,
+                   '-o', brain, '-m', 'sv')
 
     #Close left and right brain
     brainR_closed = brainR
-    context.system('AimsMorphoMath', '-m', 'clo', '-i', brainR ,
-                   '-o', brainR_closed, '-r',  '40')
+    context.system('AimsMorphoMath', '-m', 'clo', '-i', brainR,
+                   '-o', brainR_closed, '-r',  '20')
     brainL_closed = brainL
-    context.system('AimsMorphoMath', '-m', 'clo', '-i', brainL ,
-                   '-o', brainL_closed, '-r',  '40')
+    context.system('AimsMorphoMath', '-m', 'clo', '-i', brainL,
+                   '-o', brainL_closed, '-r',  '20')
     context.system('AimsMorphoMath', '-m', 'clo', '-i', brain,
-                   '-o', brain_closed, '-r',  '40')
+                   '-o', brain_closed, '-r',  '20')
 
 
     context.pythonSystem('cartoLinearComb.py', '-i', brainL_closed ,
@@ -116,8 +117,8 @@ def execution( self, context ):
 
     voronoi = brainLR_closed
     voronoi = self.right_csf.fullPath()
-    context.system( 'AimsVoronoi', '-i', brain_merge ,
-                    '-o', voronoi , '-d', '1' , '-f', '0' )
+    context.system('AimsVoronoi', '-i', brain_merge ,
+                   '-o', voronoi , '-d', '1' , '-f', '0')
 
     context.pythonSystem('cartoLinearComb.py', '-i', voronoi , '-i', brain ,
                          '-o', voronoi , '-f', 'I1 + I2 / 32767')
@@ -126,12 +127,12 @@ def execution( self, context ):
     #                '-j', brain , '-o', '/tmp/vor.ima' , '-d', '32767' )
 
     #Remove cerebelum
-    context.system( 'AimsThreshold', '-i', voronoi ,
-                    '-o', self.left_csf.fullPath() , '-m', 'eq', '-t', '3', '-b' )
-    context.system( 'AimsPowerComb', '-i',self.left_csf.fullPath()  ,
-                    '-j', cerebelum , '-o', self.left_csf.fullPath()  )
+    context.system('AimsThreshold', '-i', voronoi,
+                   '-o', self.left_csf.fullPath(), '-m', 'eq', '-t', '3', '-b')
+    context.system('AimsPowerComb', '-i',self.left_csf.fullPath(),
+                   '-j', cerebelum , '-o', self.left_csf.fullPath())
     #Remove cerebelum 
-    context.system( 'AimsThreshold', '-i', voronoi ,
-                    '-o', self.right_csf.fullPath() , '-m', 'eq', '-t', '5', '-b' )
-    context.system( 'AimsPowerComb', '-i',self.right_csf.fullPath()  ,
-                    '-j', cerebelum , '-o', self.right_csf.fullPath() )
+    context.system('AimsThreshold', '-i', voronoi,
+                   '-o', self.right_csf.fullPath(), '-m', 'eq', '-t', '5', '-b')
+    context.system('AimsPowerComb', '-i',self.right_csf.fullPath(),
+                   '-j', cerebelum , '-o', self.right_csf.fullPath())
