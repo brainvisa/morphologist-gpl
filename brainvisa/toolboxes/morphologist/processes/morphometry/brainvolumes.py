@@ -34,7 +34,7 @@ from brainvisa.processes import *
 from soma import aims
 import os
 
-name = 'Tissues Volumes'
+name = 'Brain Volumes'
 userLevel = 1
 
 signature = Signature(
@@ -49,7 +49,7 @@ signature = Signature(
     'right_csf', WriteDiskItem('Right CSF Mask',
                                     'Aims writable volume formats'),
     'subject', String(),
-    'tissues_volumes_file', WriteDiskItem('CSV file', 'CSV file'),
+    'brain_volumes_file', WriteDiskItem('Brain volumetry measurements', 'CSV file'),
 )
 
 
@@ -58,80 +58,18 @@ def initialization( self ):
         if self.split_brain is not None:
             subject = self.split_brain.get('subject')
         return subject
-    def linkvol( self, proc ):
-        if self.subject is not None:
-            return os.path.join('/neurospin/cati/Imagen/results/volumes/',
-                                'tissues_volumes_' + self.subject + '.csv')
-            #return os.path.join( neuroConfig.temporaryDirectory,
-                #'volumes_' + self.subject + '.csv' )
-        return None
-    self.linkParameters( 'left_grey_white', 'split_brain' )
-    self.linkParameters( 'right_grey_white', 'split_brain' )
-    self.linkParameters( 'left_csf', 'split_brain' )
-    self.linkParameters( 'right_csf', 'split_brain' )
-    self.linkParameters( 'subject', 'split_brain', linkSubject )
-    self.linkParameters( 'tissues_volumes_file', 'subject', linkvol )
-    
-    self.setOptional( 'tissues_volumes_file', 'subject' )
+
+    self.linkParameters('subject', 'split_brain', linkSubject)
+    self.linkParameters('left_grey_white', 'split_brain')
+    self.linkParameters('right_grey_white', 'split_brain')
+    self.linkParameters('left_csf', 'split_brain')
+    self.linkParameters('right_csf', 'split_brain')
+    self.linkParameters('brain_volumes_file', 'split_brain')
 
 
 def execution( self, context ):
-    #def massCenter( context, image ):
-        ## cmd = [ 'AimsMassCenter', image, '-b' ]
-        ## cmd = context._buildCommand( cmd ) # doesn't work for popen() on windows
-        #if type( image ) is types.StringType:
-          #cmd = 'AimsMassCenter "' + image + '" -b'
-        #else:
-          #cmd = 'AimsMassCenter "' + image.fullPath() + '" -b'
-        #f = os.popen( cmd )
-        #output = f.read()
-        #res = f.close()
-        #if res is not None and res != 0:
-          #raise RuntimeError ( 'failure in execution of command ' + cmd )
-        #r = re.compile( '^General:.*Vol: (.*)$', re.M )
-        #o = r.search( output )
-        #return float( o.group(1) )
-
-    #im1 = context.temporary( 'NIFTI-1 image' )
-    #lres = {}
-    #rres = {}
-    #white = im1.fullPath()
-
-    #subject = self.subject
-
-
-    ## white
-    #context.system( 'AimsThreshold', '-i', self.LGW_interface.fullPath(),
-                    #'-o', white, '-m', 'eq', '-t', '200' )
-    #lres[ 'white' ] = massCenter( context, white )
-    #context.write( 'Left hemisphere white matter volume: ',
-                   #lres[ 'white' ], '\n' )
-
-    #context.system( 'AimsThreshold', '-i', self.RGW_interface.fullPath(),
-                    #'-o', white, '-m', 'eq', '-t', '200' )
-    #rres[ 'white' ] = massCenter( context, white )
-    #context.write( 'Right hemisphere white matter volume: ',
-                   #rres[ 'white' ], '\n' )
-
-    ## grey
-    #grey = white
-    #context.system( 'AimsThreshold', '-i', self.LGW_interface.fullPath(),
-                    #'-o', grey, '-m', 'eq', '-t', '100' )
-    #lres[ 'grey' ] = massCenter( context, grey )
-    #context.write( 'Left hemisphere grey matter volume: ',
-                   #lres[ 'grey' ], '\n' )
-
-    #context.system( 'AimsThreshold', '-i', self.RGW_interface.fullPath(),
-                    #'-o', grey, '-m', 'eq', '-t', '100' )
-    #rres[ 'grey' ] = massCenter( context, grey )
-    #context.write( 'Right hemisphere grey matter volume: ', rres[ 'grey' ], '\n' )
-
-    #brain = grey 
-
-    #Fermeture morphologisque du cerveau pour optenir le volume de csf contenu dans le creu des sillons et ainsi calculer un TIV (ICV) approximatif.
+    #Fermeture morphologisque du cerveau pour optenir le volume de csf contenu dans les sillons et ainsi calculer un TIV (ICV) approximatif.
     brain_closed = context.temporary('NIFTI-1 Image')
-    #brain_closed = '/tmp/brain_closed.nii'
-    #brain_closed = '/tmp/brain_closed_' + self.subject + '.nii'
     context.system('AimsThreshold',
                    '-i', self.split_brain.fullPath(),
                    '-o', brain_closed,
@@ -140,7 +78,7 @@ def execution( self, context ):
                    '-i', brain_closed,
                    '-o', brain_closed,
                    '-m', 'clo', '-r', '20')
-    #On s'assure qu'il n'y a pas de trou surtout au niveau des ventricules.
+    #On s'assure qu'il n'y a pas de trous surtout au niveau des ventricules.
     context.system('AimsThreshold',
                    '-i', brain_closed,
                    '-o', brain_closed,
@@ -161,14 +99,8 @@ def execution( self, context ):
                        left_csf=self.left_csf,
                        right_csf=self.right_csf,
                        split_mask=self.split_brain)
-
-    #lres[ 'LCR' ] = massCenter( context, self.LCSF_interface )
-    #context.write( 'Left CSF volume: ', lres[ 'LCR' ], '\n' )
     
-    #rres[ 'LCR' ] = massCenter( context, self.RCSF_interface )
-    #context.write( 'Right CSF volume: ', rres[ 'LCR' ], '\n' )
-    
-    #Calcul des volumes des tissues
+    #Calcul des volumes
     if os.path.exists(self.split_brain.fullPath()) and \
     os.path.exists(self.left_grey_white.fullPath()) and \
     os.path.exists(self.right_grey_white.fullPath()) and \
@@ -236,23 +168,12 @@ def execution( self, context ):
         hemi_closed_vol = 0.
         eTIV = 0.
 
-    if self.tissues_volumes_file is not None:
-        f = open(self.tissues_volumes_file.fullPath(), 'w')
-        #res = { 'left' : lres, 'right' : rres }
-        f.write('subject;left_wm;right_wm;left_gm;right_gm;lh;rh;brain;hemi_closed;eTIV\n' )
+    if self.brain_volumes_file is not None:
+        f = open(self.brain_volumes_file.fullPath(), 'w')
+        f.write('subject;left_wm;right_wm;left_gm;right_gm;lh;rh;brain;bothhemi_closed;eTIV\n')
         f.write(self.subject+';'+str(round(lwm_vol,3))+';'+
                 str(round(rwm_vol,3))+';'+str(round(lgm_vol,3))+';'+
                 str(round(rgm_vol,3))+';'+str(round(lh_vol,3))+';'+
                 str(round(rh_vol,3))+';'+str(round(brain_vol,3))+';'+
                 str(round(hemi_closed_vol))+';'+str(round(eTIV,3)))
-        #rk = res.keys()
-        #rk.sort()
-        #for side in rk:
-            #sres = res[ side ]
-            #k = sres.keys()
-            #k.sort()
-            #for i in k:
-                #f.write( subject + '\t' + side + '\t' + i + '\t' + str( sres[i] ) + '\n' )
         f.close()
-    
-
