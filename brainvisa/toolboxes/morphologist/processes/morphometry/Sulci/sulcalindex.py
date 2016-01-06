@@ -38,40 +38,32 @@ name = 'Global Sulcal Index'
 userLevel = 1
 
 signature = Signature(
-    'graph', ListOf(ReadDiskItem('Cortical folds graph',
-                          'Graph',
-                          requiredAttributes = {'graph_version': '3.1'})),
-    'subject', ListOf(String()),
+    'graphs', ListOf(ReadDiskItem('Cortical folds graph', 'Graph',
+                     requiredAttributes = {'graph_version': '3.1'})),
+    'subjects', ListOf(String()),
     'global_sulcal_index_file', WriteDiskItem('CSV file', 'CSV file')
 )
 
-
 def link_subjects(self, proc, dummy):
     subjects = []
-    for item in self.graph:
+    for item in self.graphs:
         subjects.append(item.get('subject'))
     return subjects
 
-
 def initialization( self ):
-    self.linkParameters('subject', 'graph',
-                        self.link_subjects)
-
+    self.linkParameters('subjects', 'graphs', self.link_subjects)
 
 def execution( self, context ):
-  ng = len( self.graph )
+  ng = len(self.graphs)
   n = 0
-  f = open( self.global_sulcal_index_file.fullPath(), 'w' )
-  f.write( 'subject;side;hemi_hull_area;native_space;talairach_space\n' )
-  #itsubject = iter( self.subject )
-  #itsides = iter( self.sides )
-  for graph, sub in zip(self.graph, self.subject):
-    context.progress( n, ng, process=self )
-    #subject = itsubject.next()
+  f = open(self.global_sulcal_index_file.fullPath(), 'w')
+  f.write('subject;side;gi_native_space;gi_talairach_space\n')
+  for graph, subject in zip(self.graphs, self.subjects):
+    context.progress(n, ng, process=self)
     side = graph.get('side')
 
-    reader = aims.Reader( options={ 'subobjectsfilter' : 0 } )
-    ingraph = reader.read( graph.fullPath() )
+    reader = aims.Reader(options={'subobjectsfilter': 0})
+    ingraph = reader.read(graph.fullPath())
     rawfolds = ingraph['folds_area']
     reffolds = ingraph['reffolds_area']
     rawhull = ingraph['brain_hull_area']
@@ -80,8 +72,8 @@ def execution( self, context ):
     rawSI =  rawfolds / rawhull 
     refSI =  reffolds / refhull 
 
-    f.write( sub + ';' + side + ';' + str(rawhull) + ';' + str(rawSI) + ';' + str(refSI) + '\n' )
+    f.write(subject + ';' + side + ';' + str(rawSI) + ';' + str(refSI) + '\n')
     n += 1
   f.close()
-  context.progress( ng, ng, process=self )
+  context.progress(ng, ng, process=self)
 
