@@ -33,12 +33,10 @@
 from brainvisa.processes import *
 import os
 
-
 try:
   from soma import aims
 except:
   pass
-
 
 def validation():
   try:
@@ -53,43 +51,35 @@ userLevel = 2
 
 signature = Signature(
     'graph', ReadDiskItem('Graph', 'Graph',
-                          requiredAttributes = { 'graph_version' : '3.1' } ),
-    'property', String(),
-    'subject_name', String(),
-    'side', String(),
-    'output_prefix', WriteDiskItem( 'Data Table', 'Text Data Table' ),
+                          requiredAttributes = {'graph_version': '3.1'}),
+    'property', OpenChoice('brain_hull_area',
+                           'refbrain_hull_area',
+                           'brain_hull_volume',
+                           'refbrain_hull_volume',
+                           'folds_area',
+                           'reffolds_area',
+                           'total_sulci_length',
+                           'reftotal_sulci_length',
+                           'thickness_mean'),
+    'output_directory', ReadDiskItem('Directory', 'Directory'),
 )
 
 def initialization( self ):
-    def linkSubject( self, proc ):
-        if self.graph is not None:
-            subject = self.graph.get('subject')
-            return subject
-    def linkSide( self, proc ):
-        if self.graph is not None:
-            side = self.graph.get('side')
-            return side
-    def linkprop( self, proc ):
-        if self.subject_name is not None:
-            return os.path.join( neuroConfig.temporaryDirectory,
-                self.property + '_' + self.subject_name + '_' + self.side + '.dat' )
-        return None
-    
-    self.linkParameters( 'side', 'graph', linkSide )
-    self.linkParameters( 'subject_name', 'graph', linkSubject )
-    self.linkParameters( 'output_prefix', ('subject_name', 'side', 'property'), linkprop )
     self.property = 'brain_hull_area'
-    
-    
+  
 def execution( self, context ):
-
+    subject = self.graph.get('subject')
+    side = self.graph.get('side')
+    output_file = os.path.join(self.output_directory.fullPath(),
+                               self.property + '_' + subject + '_' + side + '.csv')
+    context.write('Output file :', output_file)
+    
     reader = aims.Reader()
-    ingraph = reader.read( self.graph.fullPath() )
+    ingraph = reader.read(self.graph.fullPath())
     val = ingraph[self.property]
 
-    if self.output_prefix is not None :
-        f = open( self.output_prefix.fullPath(), 'w' )
-        f.write( 'subject\tside' +'\t' + self.property + '\n' )
-        f.write( self.subject_name + '\t' + self.side + '\t' + str(val) + '\n' )
+    if output_file is not None :
+        f = open(output_file, 'w')
+        f.write('subject;side;' + self.property + '\n')
+        f.write(subject + ';' + side + ';' + str(val) + '\n')
         f.close()
-
