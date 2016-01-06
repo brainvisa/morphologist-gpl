@@ -37,7 +37,7 @@ name = "Surface Area and Volume"
 userLevel = 0
 
 signature = Signature(
-    'surface', ListOf(ReadDiskItem('Mesh', 'Aims mesh formats')),
+    'surfaces', ListOf(ReadDiskItem('Mesh', 'Aims mesh formats')),
     'output_csv', WriteDiskItem('CSV file', 'CSV file'),
 )
 
@@ -62,14 +62,12 @@ def execution(self, context):
     f = open(self.output_csv.fullPath(), 'w')
     f.write('subject;surface;area_mm2;volume_mm3\n')
     
-    for i in range(0, len(self.surface)):
-        subject = self.surface[i].get('subject')
-        side = self.surface[i].get('side')
-        #surf = (os.path.basename(self.surface[i].fullPath()).split('_')[-1]).split('.')[0]
-        surf = (os.path.basename(self.surface[i].fullPath()).split('.')[0]).replace(subject+"_", "")
+    for surface in self.surfaces:
+        subject = surface.get('subject')
+        side = surface.get('side')
+        surf = (os.path.basename(surface.fullPath()).split('.')[0]).replace(subject+"_", "")
         
-        [a, v] = areaVolSurface(context, self.surface[i])
+        [a, v] = areaVolSurface(context, surface)
         
         f.write(subject + ';' + surf + ';' + str(a) +';' + str(v) + '\n')
     f.close()
-      
