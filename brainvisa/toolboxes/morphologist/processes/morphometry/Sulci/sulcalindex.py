@@ -31,49 +31,44 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
-import os, re
-
 from soma import aims
-import sys
+import os
 
 name = 'Global Sulcal Index'
 userLevel = 1
 
 signature = Signature(
-    'graphs', ListOf( ReadDiskItem( 'Cortical folds graph', 'Graph',
-                      requiredAttributes = { 'graph_version' : '3.1' } ) ),
-    'subjects', ListOf( String() ),
-    'sides', ListOf( String() ),
-    'output_csv_file', WriteDiskItem( 'CSV file', 'CSV file' )
+    'graph', ListOf(ReadDiskItem('Cortical folds graph',
+                          'Graph',
+                          requiredAttributes = {'graph_version': '3.1'})),
+    'subject', ListOf(String()),
+    'global_sulcal_index_file', WriteDiskItem('CSV file', 'CSV file')
 )
 
 
+def link_subjects(self, proc, dummy):
+    subjects = []
+    for item in self.graph:
+        subjects.append(item.get('subject'))
+    return subjects
+
+
 def initialization( self ):
-  def linkSubjects( self, proc ):
-    s = []
-    for g in self.graphs:
-      s.append( g.get( 'subject' ) )
-    return s
-  def linkSides( self, proc ):
-    s = []
-    for g in self.graphs:
-      s.append( g.get( 'side' ) )
-    return s
-  self.linkParameters( 'subjects', 'graphs', linkSubjects )
-  self.linkParameters( 'sides', 'graphs', linkSides )
+    self.linkParameters('subject', 'graph',
+                        self.link_subjects)
 
 
 def execution( self, context ):
-  ng = len( self.graphs )
+  ng = len( self.graph )
   n = 0
-  f = open( self.output_csv_file.fullPath(), 'w' )
-  f.write( 'subject\tside\traw\tnormalized\n' )
-  itsubject = iter( self.subjects )
-  itsides = iter( self.sides )
-  for graph in self.graphs:
+  f = open( self.global_sulcal_index_file.fullPath(), 'w' )
+  f.write( 'subject;side;hemi_hull_area;native_space;talairach_space\n' )
+  #itsubject = iter( self.subject )
+  #itsides = iter( self.sides )
+  for graph, sub in zip(self.graph, self.subject):
     context.progress( n, ng, process=self )
-    subject = itsubject.next()
-    side = itsides.next()
+    #subject = itsubject.next()
+    side = graph.get('side')
 
     reader = aims.Reader( options={ 'subobjectsfilter' : 0 } )
     ingraph = reader.read( graph.fullPath() )
@@ -85,7 +80,7 @@ def execution( self, context ):
     rawSI =  rawfolds / rawhull 
     refSI =  reffolds / refhull 
 
-    f.write( subject + '\t' + side + '\t' + str(rawSI) + '\t' + str(refSI) + '\n' )
+    f.write( sub + ';' + side + ';' + str(rawhull) + ';' + str(rawSI) + ';' + str(refSI) + '\n' )
     n += 1
   f.close()
   context.progress( ng, ng, process=self )

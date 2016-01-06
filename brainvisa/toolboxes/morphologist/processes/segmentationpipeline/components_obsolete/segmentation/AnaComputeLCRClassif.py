@@ -80,7 +80,7 @@ def execution( self, context ):
     context.system( 'AimsThreshold', '-i', self.split_mask.fullPath(), '-o', cerebelum, '-m', 'eq', '-t', '3' )
     
     context.system( 'AimsReplaceLevel', '-i', cerebelum , '-o', cerebelum, '-g', '0','3', '-n', '1', '0')
-    context.system( 'AimsReplaceLevel', '-i', cerebelum , '-o', '/tmp/cerebelum.ima', '-g', '0','3', '-n', '1', '0')
+    #context.system( 'AimsReplaceLevel', '-i', cerebelum , '-o', '/tmp/cerebelum.ima', '-g', '0','3', '-n', '1', '0')
 
     #Extract left brain mask
     context.system( 'AimsThreshold', '-i', self.left_grey_white.fullPath(),
@@ -91,18 +91,20 @@ def execution( self, context ):
                     '-o', brainR , '-m', 'ge', '-t', '100', '-b' )
 
     #Define brain mask
-    context.pythonSystem('cartoLinearComb.py', '-i', brainL , '-i', brainR ,
-                         '-o', brain, '-f', 'I1 + I2')
+    #context.pythonSystem('cartoLinearComb.py', '-i', brainL , '-i', brainR ,
+                         #'-o', brain, '-f', 'I1 + I2')
+    context.system('AimsMerge', '-i', brainL, '-M', brainR,
+                   '-o', brain, '-m', 'sv')
 
     #Close left and right brain
     brainR_closed = brainR
-    context.system('AimsMorphoMath', '-m', 'clo', '-i', brainR ,
-                   '-o', brainR_closed, '-r',  '40')
+    context.system('AimsMorphoMath', '-m', 'clo', '-i', brainR,
+                   '-o', brainR_closed, '-r',  '20')
     brainL_closed = brainL
-    context.system('AimsMorphoMath', '-m', 'clo', '-i', brainL ,
-                   '-o', brainL_closed, '-r',  '40')
+    context.system('AimsMorphoMath', '-m', 'clo', '-i', brainL,
+                   '-o', brainL_closed, '-r',  '20')
     context.system('AimsMorphoMath', '-m', 'clo', '-i', brain,
-                   '-o', brain_closed, '-r',  '40')
+                   '-o', brain_closed, '-r',  '20')
 
 
     context.pythonSystem('cartoLinearComb.py', '-i', brainL_closed ,

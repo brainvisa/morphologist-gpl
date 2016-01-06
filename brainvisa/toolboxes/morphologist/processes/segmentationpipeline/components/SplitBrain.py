@@ -62,51 +62,44 @@ signature = Signature(
     'fix_random_seed', Boolean(),
 )
 
-def buildNewSignature(self, walgo):
-    paramSignature = [ 'brain_mask', ReadDiskItem( 'T1 Brain Mask',
-                            'Aims readable volume formats' ),
-                       't1mri_nobias', ReadDiskItem( 'T1 MRI Bias Corrected',
-                            'Aims readable volume formats' ),
-                       'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-                       'commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
-                            'Commissure coordinates'),
-                       'use_ridges', Boolean(),
-                       'white_ridges', ReadDiskItem( 'T1 MRI White Matter Ridges',
-                            'Aims readable volume formats' ),
-                       'use_template', Boolean(),
-                       'split_template', ReadDiskItem( 'Hemispheres Template',
-                            'Aims readable volume formats' ),
-                       'mode', Choice('Watershed (2011)', 'Voronoi'),
-                       'variant', Choice('regularized', 'GW Barycentre', 'WM Standard Deviation') ]
-    if walgo == 'GW Barycentre':
-        paramSignature += ['bary_factor', Choice(0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1)]
-    elif walgo == 'WM Standard Deviation':
-        paramSignature += ['mult_factor', Choice(0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4)]
-    paramSignature += ['initial_erosion', Float(),
-                       'cc_min_size', Integer(),
-                       'split_brain', WriteDiskItem( 'Split Brain Mask',
-                            'Aims writable volume formats' ),
-                       'fix_random_seed', Boolean()]
-    
-    signature = Signature( *paramSignature )
-    self.changeSignature( signature )
+def updateSignatureAboutVariant(self, proc):
+    if self.variant == 'GW Barycentre':
+        self.showAndMandadesSignatureFieldList(['bary_factor'])
+        self.hideAndMakeOptionalSignatureFieldList(['mult_factor'])
+    elif self.variant == 'WM Standard Deviation':
+        self.showAndMandadesSignatureFieldList(['mult_factor'])
+        self.hideAndMakeOptionalSignatureFieldList(['bary_factor'])
+    elif self.variant == 'regularized':
+        self.hideAndMakeOptionalSignatureFieldList(['bary_factor'])
+        self.hideAndMakeOptionalSignatureFieldList(['mult_factor'])
+
+def updateSignatureAboutRidges(self, proc):
+    if self.use_ridges == True:
+        self.showAndMandadesSignatureFieldList(['white_ridges'])
+    else:
+        self.hideAndMakeOptionalSignatureFieldList(['white_ridges'])
+
+def updateSignatureAboutTemplate(self, proc):
+    if self.use_template == True:
+        self.showAndMandadesSignatureFieldList(['split_template'])
+    else:
+        self.hideAndMakeOptionalSignatureFieldList(['split_template'])
 
 def initialization( self ):
-    self.addLink( None, 'variant', self.buildNewSignature )
-    self.linkParameters( 't1mri_nobias', 'brain_mask' )
-    self.linkParameters( 'histo_analysis', 't1mri_nobias' )
-    self.linkParameters( 'commissure_coordinates', 't1mri_nobias' )
-    self.linkParameters( 'white_ridges', 't1mri_nobias' )
-    self.linkParameters( 'split_brain', 'brain_mask' )
-    self.split_template = self.signature[ 'split_template' ].findValue( {} )
+    self.addLink(None, 'variant', self.updateSignatureAboutVariant)
+    self.addLink(None, 'use_ridges', self.updateSignatureAboutRidges)
+    self.addLink(None, 'use_template', self.updateSignatureAboutTemplate)   
+    self.linkParameters('t1mri_nobias', 'brain_mask')
+    self.linkParameters('histo_analysis', 't1mri_nobias')
+    self.linkParameters('commissure_coordinates', 't1mri_nobias')
+    self.linkParameters('white_ridges', 't1mri_nobias')
+    self.linkParameters('split_brain', 'brain_mask')
+    self.split_template = self.signature['split_template'].findValue({})
     
-    self.setOptional('commissure_coordinates')
-    self.setOptional('white_ridges')
-    self.setOptional('split_template')
+    self.signature['commissure_coordinates'].mandatory = False
+    self.signature['fix_random_seed'].userLevel = 3
     
-    self.signature[ 'fix_random_seed' ].userLevel = 3
-    
-    self.Use_ridges = 'True'
+    self.use_ridges = 'True'
     self.use_template = 'True'
     self.mode = 'Watershed (2011)'
     self.variant = 'GW Barycentre'
@@ -121,15 +114,15 @@ def execution( self, context ):
         context.write(self.split_brain.fullName(), ' has been locked')
         context.write('Remove', self.split_brain.fullName(), '.loc if you want to trigger a new segmentation')
     else:
-        command = [ 'VipSplitBrain',
-                    '-input',  self.t1mri_nobias,
-                    '-brain', self.brain_mask,
-                    '-analyse', 'r',
-                    '-hname', self.histo_analysis,
-                    '-output', self.split_brain,
-                    '-mode', self.mode,
-                    '-erosion', self.initial_erosion,
-                    '-ccsize', self.cc_min_size ]
+        command = ['VipSplitBrain',
+                   '-input',  self.t1mri_nobias,
+                   '-brain', self.brain_mask,
+                   '-analyse', 'r',
+                   '-hname', self.histo_analysis,
+                   '-output', self.split_brain,
+                   '-mode', self.mode,
+                   '-erosion', self.initial_erosion,
+                   '-ccsize', self.cc_min_size]
         if self.commissure_coordinates:
             command += ['-Points', self.commissure_coordinates]
         if self.variant == 'regularized':
@@ -147,8 +140,20 @@ def execution( self, context ):
         if self.fix_random_seed:
             command += ['-srand', '10']
 
-        context.system( *command )
+        context.system(*command)
         
         tm = registration.getTransformationManager()
         tm.copyReferential(self.t1mri_nobias, self.split_brain)
 
+
+def showAndMandadesSignatureFieldList(self, field_list):
+  for field in field_list:
+    self.signature[field].userLevel = 0
+    self.signature[field].mandatory = True
+  self.changeSignature(self.signature)
+
+def hideAndMakeOptionalSignatureFieldList(self, field_list):
+  for field in field_list:
+    self.signature[field].userLevel = 10
+    self.signature[field].mandatory = False
+  self.changeSignature(self.signature)

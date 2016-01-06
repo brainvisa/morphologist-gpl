@@ -66,8 +66,10 @@ def execution( self, context ):
     f = open(self.group_morpho_measures.fullPath(), 'w')
     for item, subject in zip(self.sulcal_morpho_measures, self.subjects):
         ifi = open(item.fullPath())
-        header = ifi.readline()
-        f.write('subject;' + header)
-        for line in ifi.xreadlines():
-            f.write(';'.join([subject, line]))
+        line = ifi.readlines()
+        f.write(line[1]+'\n')
+        #header = ifi.readline()
+        #f.write('subject;' + header)
+        #for line in ifi.xreadlines():
+            #f.write(';'.join([subject, line]))
 

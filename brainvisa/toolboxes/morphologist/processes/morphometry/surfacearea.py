@@ -33,63 +33,43 @@
 from brainvisa.processes import *
 import os
 
-
-try:
-  from soma import aims
-except:
-  pass
-
-
-def validation():
-  try:
-    from soma import aims
-  except:
-    raise ValisationError( 'no soma.aims module' )
-
-
-name = 'Global graph property'
-userLevel = 2
-
+name = "Surface Area and Volume"
+userLevel = 0
 
 signature = Signature(
-    'graph', ReadDiskItem('Graph', 'Graph',
-                          requiredAttributes = { 'graph_version' : '3.1' } ),
-    'property', String(),
-    'subject_name', String(),
-    'side', String(),
-    'output_prefix', WriteDiskItem( 'Data Table', 'Text Data Table' ),
+    'surface', ListOf(ReadDiskItem('Mesh', 'Aims mesh formats')),
+    'output_csv', WriteDiskItem('CSV file', 'CSV file'),
 )
 
-def initialization( self ):
-    def linkSubject( self, proc ):
-        if self.graph is not None:
-            subject = self.graph.get('subject')
-            return subject
-    def linkSide( self, proc ):
-        if self.graph is not None:
-            side = self.graph.get('side')
-            return side
-    def linkprop( self, proc ):
-        if self.subject_name is not None:
-            return os.path.join( neuroConfig.temporaryDirectory,
-                self.property + '_' + self.subject_name + '_' + self.side + '.dat' )
-        return None
-    
-    self.linkParameters( 'side', 'graph', linkSide )
-    self.linkParameters( 'subject_name', 'graph', linkSubject )
-    self.linkParameters( 'output_prefix', ('subject_name', 'side', 'property'), linkprop )
-    self.property = 'brain_hull_area'
-    
-    
-def execution( self, context ):
 
-    reader = aims.Reader()
-    ingraph = reader.read( self.graph.fullPath() )
-    val = ingraph[self.property]
+def initialization(self):
+    self.output_csv = os.path.join(os.getcwd(),
+        'surface_area_vol.csv')
 
-    if self.output_prefix is not None :
-        f = open( self.output_prefix.fullPath(), 'w' )
-        f.write( 'subject\tside' +'\t' + self.property + '\n' )
-        f.write( self.subject_name + '\t' + self.side + '\t' + str(val) + '\n' )
-        f.close()
 
+def execution(self, context):
+    def areaVolSurface(context, surface):
+        cmd = 'AimsMeshArea ' + surface.fullPath()
+        f = os.popen(cmd)
+        output = f.readlines()
+        res = f.close()
+        if res is not None and res!=0:
+            raise RuntimeError('failure in execution of command ' + cmd)
+        a = float(output[0].split()[1])
+        v = float(output[1].split()[1])
+        return [a, v]
+    
+    f = open(self.output_csv.fullPath(), 'w')
+    f.write('subject;surface;area_mm2;volume_mm3\n')
+    
+    for i in range(0, len(self.surface)):
+        subject = self.surface[i].get('subject')
+        side = self.surface[i].get('side')
+        #surf = (os.path.basename(self.surface[i].fullPath()).split('_')[-1]).split('.')[0]
+        surf = (os.path.basename(self.surface[i].fullPath()).split('.')[0]).replace(subject+"_", "")
+        
+        [a, v] = areaVolSurface(context, self.surface[i])
+        
+        f.write(subject + ';' + surf + ';' + str(a) +';' + str(v) + '\n')
+    f.close()
+      
