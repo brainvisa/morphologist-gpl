@@ -117,7 +117,7 @@ segmentation_content = (
     "lesiondistance_<subject>", SetType( 'Lesion distance map' ),
     "corpus_callosum_mask", SetType( 'Corpus Callosum mask' ),
     "ventricles_<subject>", SetType( 'Ventricles Mask' ),
-
+    "brain_volumes_<subject>", SetType( 'Brain volumetry measurements' ),
     'mesh',
     apply( SetContent, mesh_content),
 )
