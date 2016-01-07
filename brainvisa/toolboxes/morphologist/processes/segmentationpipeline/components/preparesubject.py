@@ -87,6 +87,11 @@ class APCReader:
               result = [ float(i) * j for i,j in zip( pos, vs ) ]
     return result
 
+def linkOldNormalization(self, proc, dummy):
+    return self.signature['older_MNI_normalization'].findValue(
+        self.T1mri,
+        requiredAttributes={'acquisition': self.T1mri.hierarchyAttributes()['acquisition']})
+
 def initialization( self ):
   def linknorm( values, process ):
     if values.T1mri and values.T1mri.get( 'normalized' ) == 'yes':
@@ -113,7 +118,7 @@ def initialization( self ):
   self.linkParameters( 'reoriented_t1mri', 'T1mri' )
   self.linkParameters( 'Normalised', 'T1mri', linknorm )
   self.setOptional( 'older_MNI_normalization' )
-  self.linkParameters( 'older_MNI_normalization', 'T1mri' )
+  self.linkParameters( 'older_MNI_normalization', 'T1mri', self.linkOldNormalization )
 
 def execution( self, context ):
   ac = []

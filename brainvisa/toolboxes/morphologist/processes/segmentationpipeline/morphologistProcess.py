@@ -238,6 +238,10 @@ class APCReader:
               result = [ float(i) * j for i,j in zip( pos, vs ) ]
     return result
 
+def linkOldNormalization(self, proc, dummy):
+    return self.signature['older_MNI_normalization'].findValue(
+        self.t1mri,
+        requiredAttributes={'acquisition': self.t1mri.hierarchyAttributes()['acquisition']})
 
 def initialization( self ):
     self.perform_segmentation = True
@@ -250,7 +254,7 @@ def initialization( self ):
         'commissure_coordinates', APCReader('PC'))
     self.linkParameters('interhemispheric_point',
         'commissure_coordinates', APCReader('IH'))
-    self.linkParameters('older_MNI_normalization', 't1mri')
+    self.linkParameters('older_MNI_normalization', 't1mri', self.linkOldNormalization)
     
     self.setOptional( 'anterior_commissure' )
     self.setOptional( 'posterior_commissure' )
