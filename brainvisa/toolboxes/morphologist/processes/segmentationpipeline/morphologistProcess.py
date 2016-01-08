@@ -239,9 +239,14 @@ class APCReader:
     return result
 
 def linkOldNormalization(self, proc, dummy):
+    # this forced acquisition is meant to avoid confusion with a different one
+    # when there is no older normalization in the same acquisition
+    required = {}
+    acquisition = self.t1mri.get('acquisition')
+    if acquisition:
+        required['acquisition'] = acquisition
     return self.signature['older_MNI_normalization'].findValue(
-        self.t1mri,
-        requiredAttributes={'acquisition': self.t1mri.hierarchyAttributes()['acquisition']})
+        self.t1mri, requiredAttributes=required)
 
 def initialization( self ):
     self.perform_segmentation = True
