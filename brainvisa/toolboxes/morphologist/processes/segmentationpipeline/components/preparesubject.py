@@ -88,9 +88,14 @@ class APCReader:
     return result
 
 def linkOldNormalization(self, proc, dummy):
+    # this forced acquisition is meant to avoid confusion with a different one
+    # when there is no older normalization in the same acquisition
+    required = {}
+    acquisition = self.T1mri.get('acquisition')
+    if acquisition:
+        required['acquisition'] = acquisition
     return self.signature['older_MNI_normalization'].findValue(
-        self.T1mri,
-        requiredAttributes={'acquisition': self.T1mri.hierarchyAttributes()['acquisition']})
+        self.T1mri, requiredAttributes=required)
 
 def initialization( self ):
   def linknorm( values, process ):
