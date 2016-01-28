@@ -1,13 +1,15 @@
 #!/usr/bin/env python
 
 import os
+import sys
 import shutil
 import unittest
 import tempfile
 import filecmp
+from argparse import ArgumentParser
 
 # set en empty temporary user dir
-# BRAINVISA_USER_DIR soult be set before neuroConfig is imported
+# BRAINVISA_USER_DIR sould be set before neuroConfig is imported
 homedir = tempfile.mkdtemp(prefix='bv_home')
 os.environ['BRAINVISA_USER_DIR'] = homedir
 
@@ -22,6 +24,8 @@ from brainvisa.processes import defaultContext
 from brainvisa.data.writediskitem import WriteDiskItem
 from brainvisa.configuration import neuroConfig
 from brainvisa.data import neuroHierarchy
+
+test_workflow_file = None
 
 
 class TestMorphologistCapsul(unittest.TestCase):
@@ -80,7 +84,12 @@ class TestMorphologistCapsul(unittest.TestCase):
         self.analysis = analysis
 
         context = defaultContext()
-        workflow_di = context.temporary('Soma-Workflow workflow')
+        if not test_workflow_file:
+            workflow_di = context.temporary('Soma-Workflow workflow')
+        else:
+            workflow_di = WriteDiskItem(
+                'Text file',
+                'Soma-Workflow workflow').findValue(test_workflow_file)
         process.workflow = workflow_di
 
         analysis_dir = os.path.join(self.db_dir, 'test', 'sujet01', 't1mri',
@@ -137,7 +146,8 @@ class TestMorphologistCapsul(unittest.TestCase):
               f_test = os.path.join(test_dir, relative_path(dirpath, ref_dir),
                                     f)
               self.assertTrue(filecmp.cmp(f_ref, f_test),
-                  "The content of "+f+" in test is different from the reference results.")
+                  "The content of "+f+" in test is different from the "
+                  "reference results.")
               print 'file', f_test, 'OK.'
         print '** all OK.'
 
@@ -150,7 +160,18 @@ def test_suite():
 
 try:
     if __name__ == '__main__':
-        unittest.main(defaultTest='test_suite')
+        parser = ArgumentParser("test Morphologist CAPSUL version")
+        parser.add_argument('-w', '--workflow',
+                            help='write the workflow in the given file. '
+                            'Default: use a temporary one')
+        parser.add_argument('options', nargs='*',
+                            help='passed to unittest options parser')
+        args = parser.parse_args()
+        if args.workflow:
+            test_workflow_file = args.workflow
+
+        unittest.main(defaultTest='test_suite',
+                      argv=[sys.argv[0]]+args.options)
 finally:
     shutil.rmtree(homedir)
     del homedir
