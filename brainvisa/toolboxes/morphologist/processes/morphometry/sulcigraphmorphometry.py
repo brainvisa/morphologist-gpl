@@ -44,7 +44,7 @@ def validation():
   try:
     from soma import aims
   except:
-    raise ValisationError( 'no soma.aims module' )
+    raise ValidationError( 'no soma.aims module' )
 
 name = 'Sulci Graph Morphometry'
 userLevel = 2
