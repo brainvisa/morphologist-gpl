@@ -91,7 +91,11 @@ del fsldir
 
 spmscript = None
 spmdir = None
-if configuration.SPM.spm8_standalone_path:
+if configuration.SPM.spm12_standalone_path:
+    spmdir = configuration.SPM.spm12_standalone_path
+elif configuration.SPM.spm12_path:
+    spmdir = configuration.SPM.spm12_path
+elif configuration.SPM.spm8_standalone_path:
     spmdir = configuration.SPM.spm8_standalone_path
 elif configuration.SPM.spm8_path:
     spmdir = configuration.SPM.spm8_path
