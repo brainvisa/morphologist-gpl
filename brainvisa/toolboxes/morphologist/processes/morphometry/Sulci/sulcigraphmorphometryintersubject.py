@@ -64,10 +64,17 @@ def execution( self, context ):
             'subjects list must be the same size as sulcal_morpho_measures')
 
     f = open(self.group_morpho_measures.fullPath(), 'w')
+    first = True
     for item, subject in zip(self.sulcal_morpho_measures, self.subjects):
         ifi = open(item.fullPath())
         header = ifi.readline()
-        f.write('subject;' + header)
+        if first:
+            f.write('subject;' + header)
+            first_header = header
+            first = False
+        elif header != first_header:
+            context.error('Subjects CSV headers do not match. First:\n%s\nSubject %s:\n%s' % (first_header, subject, header))
+            raise ValueError('subjects CSV headers do not match')
         for line in ifi.xreadlines():
-            f.write(';'.join([subject, line]))
+            f.write(';'.join([subject, line.strip()]) + '\n')
 
