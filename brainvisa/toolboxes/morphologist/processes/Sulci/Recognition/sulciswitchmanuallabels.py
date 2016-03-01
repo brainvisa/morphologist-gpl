@@ -38,51 +38,60 @@ userLevel = 1
 
 
 signature = Signature(
-  'input_graph', ReadDiskItem( "Data graph", 'Graph',
-        requiredAttributes = { 'labelled' : 'Yes' } ),
-  'output_graph', WriteDiskItem( "Data graph", 'Graph',
-        requiredAttributes = { 'labelled' : 'Yes' } ),
-  #'conversion_direction', Choice( 'Auto -> Manual', 'Manual -> Auto' ),
+    'input_graph', ReadDiskItem("Data graph", 'Graph',
+                                requiredAttributes={'labelled' : 'Yes'}),
+    'output_graph', WriteDiskItem("Data graph", 'Graph',
+                                  requiredAttributes={'labelled' : 'Yes'}),
+    'source_labeling', Choice(('Auto', 'label'), ('Manual', 'name')),
+    'destinaton_labeling', Choice(('Auto', 'label'), ('Manual', 'name')),
 )
 
 
-def initialization( self ):
-  def linkLabelAttribute( self, process ):
-    la = None
-    if self.input_graph:
-      la = self.input_graph.get( 'manually_labelled', None )
-      if la == 'Yes':
-        la = 'automatically_labelled'
-        nola = 'manually_labelled'
-      else:
-        la = self.input_graph.get( 'automatically_labelled', None )
-        if la == 'Yes':
-          la = 'manually_labelled'
-          nola = 'automatically_labelled'
+def initialization(self):
+    def linkLabelAttribute(self, process):
+        la = None
+        if self.input_graph:
+            la = self.input_graph.get('manually_labelled', None)
+            if la == 'Yes':
+                la = 'automatically_labelled'
+                nola = 'manually_labelled'
+            else:
+                la = self.input_graph.get('automatically_labelled', None)
+                if la == 'Yes':
+                    la = 'manually_labelled'
+                    nola = 'automatically_labelled'
+                else:
+                    la = None
+        if la:
+            di = WriteDiskItem("Data graph", 'Graph',
+                requiredAttributes={'labelled': 'Yes', la: 'Yes', nola: 'No'})
         else:
-          la = None
-    if la:
-      di = WriteDiskItem( "Data graph", 'Graph',
-        requiredAttributes = { 'labelled' : 'Yes', la : 'Yes', nola : 'No' } )
-    else:
-      di = WriteDiskItem( "Data graph", 'Graph',
-        requiredAttributes = { 'labelled' : 'Yes' } )
-    #print 'link:', di.findValue( self.input_graph )
-    return di.findValue( self.input_graph )
-  self.linkParameters( 'output_graph', 'input_graph', linkLabelAttribute )
+            di = WriteDiskItem("Data graph", 'Graph',
+              requiredAttributes={'labelled': 'Yes'})
+        return di.findValue(self.input_graph)
 
-def execution( self, context ):
-  la = self.input_graph.get( 'manually_labelled', None )
-  if la == 'Yes':
-    src = 'name'
-  else:
-    src = 'label'
-  la = self.output_graph.get( 'manually_labelled', None )
-  if la == 'Yes':
-    dst = 'name'
-  else:
-    dst = 'label'
-  context.system( 'AimsGraphConvert', '-i', self.input_graph, '-o',
-    self.output_graph, '-c', src, '-d', dst )
-  trManager = registration.getTransformationManager()
-  trManager.copyReferential( self.input_graph, self.output_graph )
+    def linkSourceLabeling(self, process):
+        if self.input_graph.get('manually_labelled', None) == 'Yes':
+            return 'name'
+        else:
+            return 'label'
+
+    def linkDestLabeling(self, process):
+        if self.output_graph.get('automatically_labelled', None) == 'Yes':
+            return 'label'
+        else:
+            return 'name'
+
+    self.linkParameters('output_graph', 'input_graph', linkLabelAttribute)
+    self.linkParameters('source_labeling', 'input_graph', linkSourceLabeling)
+    self.linkParameters('destinaton_labeling', 'output_graph',
+                        linkDestLabeling)
+
+
+def execution(self, context):
+    src = self.source_labeling
+    dst = self.destinaton_labeling
+    context.system('AimsGraphConvert', '-i', self.input_graph, '-o',
+                   self.output_graph, '-c', src, '-d', dst)
+    trManager = registration.getTransformationManager()
+    trManager.copyReferential(self.input_graph, self.output_graph)
