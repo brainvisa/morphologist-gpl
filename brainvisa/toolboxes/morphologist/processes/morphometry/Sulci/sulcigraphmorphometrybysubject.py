@@ -119,18 +119,11 @@ def execution( self, context ):
     
     for sulcus in (list(lgraph.vertices())+list(rgraph.vertices())):
         if (sulcus.getSyntax()=='fold') and (sulcus[self.use_attribute] in list_sulci):                                                     
-            surface_tal = 0.
-            surface_nat = 0.
-            maxdepth_tal = 0.
-            maxdepth_nat = 0.
             meandepth_tal = 0.
             meandepth_nat = 0.
-            bottom_point_number = 0.
-            length_tal = 0.
-            length_nat = 0.
+            hj_length_tal = 0.
+            hj_length_nat = 0.
             thickness_mean = 0.
-            mid_interface_voxels = 0.
-            CSF_volume = 0.
             
             ##SURFACE
             surface_tal = sulcus['refsurface_area']
@@ -142,14 +135,14 @@ def execution( self, context ):
             #Si les sillons sont trop petits, ils peuvent ne pas avoir de profondeur moyenne.
             bottom_point_number = sulcus['bottom_point_number']
             if 'refmean_depth' in sulcus.keys():
-                meandepth_tal = sulcus['refmean_depth']                
+                meandepth_tal = sulcus['refmean_depth']
             if 'mean_depth' in sulcus.keys():
-                meandepth_nat = sulcus['mean_depth']  
+                meandepth_nat = sulcus['mean_depth']
             ##LENGTH
             for rel in sulcus.edges():
                 if rel.getSyntax()=='hull_junction':
-                    length_tal = rel['reflength']
-                    length_nat = rel['length']
+                    hj_length_tal = rel['reflength']
+                    hj_length_nat = rel['length']
             ##THICKNESS
             #Si la MG est trop fine, il peut ne pas y avoir d'epaisseur moyenne.
             mid_interface_voxels = sulcus['mid_interface_voxels']
@@ -168,8 +161,8 @@ def execution( self, context ):
                 dict_morpho[mainlabel]['maxdepth_nat'].append(maxdepth_nat)
                 dict_morpho[mainlabel]['meandepth_tal'].append((meandepth_tal, bottom_point_number))
                 dict_morpho[mainlabel]['meandepth_nat'].append((meandepth_nat, bottom_point_number))
-                dict_morpho[mainlabel]['length_tal'].append(length_tal)
-                dict_morpho[mainlabel]['length_nat'].append(length_nat)
+                dict_morpho[mainlabel]['hj_length_tal'].append(hj_length_tal)
+                dict_morpho[mainlabel]['hj_length_nat'].append(hj_length_nat)
                 dict_morpho[mainlabel]['thickness'].append((thickness_mean, mid_interface_voxels))
                 dict_morpho[mainlabel]['opening'].append((CSF_volume, surface_nat))
             else:
@@ -181,46 +174,49 @@ def execution( self, context ):
                     'maxdepth_nat': [maxdepth_nat],
                     'meandepth_tal': [(meandepth_tal, bottom_point_number)],
                     'meandepth_nat': [(meandepth_nat, bottom_point_number)],
-                    'length_tal': [length_tal],
-                    'length_nat': [length_nat],
+                    'hj_length_tal': [hj_length_tal],
+                    'hj_length_nat': [hj_length_nat],
                     'thickness': [(thickness_mean, mid_interface_voxels)],
                     'opening': [(CSF_volume, surface_nat)]}
     
     f = open(self.sulcal_morpho_measures.fullPath(), 'w')
-    f.write('sulcus;label;side;surface_talairach;surface_native;maxdepth_talairach;maxdepth_native;meandepth_talairach;meandepth_native;length_talairach;length_native;GM_thickness;opening')
+    f.write('sulcus;label;side;surface_talairach;surface_native;maxdepth_talairach;maxdepth_native;meandepth_talairach;meandepth_native;hull_junction_length_talairach;hull_junction_length_native;GM_thickness;opening')
     
-    for sulcus in sorted(dict_morpho.keys()):
-        ##SURFACE
-        surface_tal = round(sum(dict_morpho[sulcus]['surface_tal']), 2)
-        surface_nat = round(sum(dict_morpho[sulcus]['surface_nat']), 2)
-        ##MAX_DEPTH
-        maxdepth_tal = round(max(dict_morpho[sulcus]['maxdepth_tal']), 2)
-        maxdepth_nat = round(max(dict_morpho[sulcus]['maxdepth_nat']), 2)
-        ##MEAN_DEPTH
-        meandepth_tal = round(weightedAverage(dict_morpho[sulcus]['meandepth_tal']), 2)
-        meandepth_nat = round(weightedAverage(dict_morpho[sulcus]['meandepth_nat']), 2)
-        ##LENGTH
-        length_tal = round(sum(dict_morpho[sulcus]['length_tal']), 2)
-        length_nat = round(sum(dict_morpho[sulcus]['length_nat']), 2)
-        ##THICKNESS
-        thickness = round(weightedAverage(dict_morpho[sulcus]['thickness']), 2)          
-        ##OPENING
-        opening = round(divSum(dict_morpho[sulcus]['opening']), 2)
+    for sulcus in sorted(sulci_sel[sulci_sel.keys()[0]].keys()):
+    #for sulcus in sorted(dict_morpho.keys()):
+        if sulcus in dict_morpho.keys():
+            ##SURFACE
+            surface_tal = round(sum(dict_morpho[sulcus]['surface_tal']), 2)
+            surface_nat = round(sum(dict_morpho[sulcus]['surface_nat']), 2)
+            ##MAX_DEPTH
+            maxdepth_tal = round(max(dict_morpho[sulcus]['maxdepth_tal']), 2)
+            maxdepth_nat = round(max(dict_morpho[sulcus]['maxdepth_nat']), 2)
+            ##MEAN_DEPTH
+            meandepth_tal = round(weightedAverage(dict_morpho[sulcus]['meandepth_tal']), 2)
+            meandepth_nat = round(weightedAverage(dict_morpho[sulcus]['meandepth_nat']), 2)
+            ##LENGTH
+            hj_length_tal = round(sum(dict_morpho[sulcus]['hj_length_tal']), 2)
+            hj_length_nat = round(sum(dict_morpho[sulcus]['hj_length_nat']), 2)
+            ##THICKNESS
+            thickness = round(weightedAverage(dict_morpho[sulcus]['thickness']), 2)          
+            ##OPENING
+            opening = round(divSum(dict_morpho[sulcus]['opening']), 2)
+        else:
+            surface_tal = float('NaN')
+            surface_nat = float('NaN')
+            maxdepth_tal = float('NaN')
+            maxdepth_nat = float('NaN')
+            meandepth_tal = float('NaN')
+            meandepth_nat = float('NaN')
+            hj_length_tal = float('NaN')
+            hj_length_nat = float('NaN')
+            thickness = float('NaN')
+            opening = float('NaN')
         
         f.write('\n' + sulcus + ';' + sulcus.split('_')[0] + ';' + sulcus.split('_')[1] + ';' +
                 str(surface_tal) + ';' + str(surface_nat) + ';' + 
                 str(maxdepth_tal) + ';' + str(maxdepth_nat) + ';' + 
                 str(meandepth_tal) + ';' + str(meandepth_nat) + ';' +
-                str(length_tal) + ';' + str(length_nat) + ';' +
+                str(hj_length_tal) + ';' + str(hj_length_nat) + ';' +
                 str(thickness) + ';' + str(opening))
     f.close()
-
-    
-    
-    
-    
-    
-    
-    
-    
-    

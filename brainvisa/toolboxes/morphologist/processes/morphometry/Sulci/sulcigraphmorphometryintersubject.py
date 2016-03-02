@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-#  This software and supporting documentation are distributed by
-#      Institut Federatif de Recherche 49
-#      CEA/NeuroSpin, Batiment 145,
-#      91191 Gif-sur-Yvette cedex
-#      France
 #
 # This software is governed by the CeCILL license version 2 under
 # French law and abiding by the rules of distribution of free software.
@@ -32,16 +26,26 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
+import numpy as np
+import os
 
 name = 'Sulci graph morphometry inter subject'
 userLevel = 0
 
 signature = Signature(
     'sulcal_morpho_measures', ListOf(ReadDiskItem(
-        'Sulcal morphometry measurements', 'CSV File')),
+        'Sulcal morphometry measurements',
+        'CSV File')),
     'subjects', ListOf(String()),
-    'group_morpho_measures',
-        WriteDiskItem('Sulcal morphometry measurements', 'CSV File')
+    'sort_by', Choice(('one file by measure', 'measure'),
+                      ('one file by sulcus', 'sulcus')),
+    'measure', OpenChoice('opening',
+                          'surface_talairach',
+                          'GM_thickness',
+                          'hull_junction_length_talairach',
+                          'meandepth_talairach',
+                          'maxdepth_talairach'),
+    'output_directory', WriteDiskItem('Directory', 'Directory'),
 )
 
 
@@ -51,30 +55,74 @@ def link_subjects(self, proc, dummy):
         subjects.append(item.get('subject'))
     return subjects
 
+def updateSignature(self, proc):
+    if self.sort_by == 'measure':
+        self.signature['measure'].userLevel = 0
+        self.signature['measure'].mandatory = True
+    elif self.sort_by == 'sulcus':
+        self.signature['measure'].userLevel = 100
+        self.signature['measure'].mandatory = False
+    self.changeSignature(self.signature)
 
-def initialization( self ):
-    self.linkParameters('subjects', 'sulcal_morpho_measures',
+def initialization(self):
+    self.linkParameters('subjects',
+                        'sulcal_morpho_measures',
                         self.link_subjects)
+    self.addLink(None, 'sort_by', self.updateSignature)
+    self.sort_by = 'measure'
+    self.measure = 'opening'
 
 
-def execution( self, context ):
-
-    if len(self.subjects) != len(self.sulcal_morpho_measures):
-        raise ValueError(
-            'subjects list must be the same size as sulcal_morpho_measures')
-
-    f = open(self.group_morpho_measures.fullPath(), 'w')
+def execution(self, context):
+    
+    if self.sort_by=='measure':
+        measure_file = self.output_directory.fullPath() + '/' + self.measure + '.csv'
+        fi = open(measure_file, 'w')
+    
+    meas_by_sulcus = {}
     first = True
     for item, subject in zip(self.sulcal_morpho_measures, self.subjects):
-        ifi = open(item.fullPath())
-        header = ifi.readline()
-        if first:
-            f.write('subject;' + header)
+        # lecture des csv
+        csv = np.recfromtxt(item.fullPath(), delimiter=';', names=True)
+        header = csv.dtype.names
+        sulci = list(csv['sulcus'])
+        sulci_arr = csv['sulcus']
+        
+        if self.sort_by=='measure' and first:
+            fi.write('subject,' + ','.join(csv['sulcus']) + '\n')
             first_header = header
+            first_sulci = sulci
+            first = False
+        elif self.sort_by=='sulcus' and first:
+            first_header = header
+            first_sulci = sulci
             first = False
         elif header != first_header:
             context.error('Subjects CSV headers do not match. First:\n%s\nSubject %s:\n%s' % (first_header, subject, header))
             raise ValueError('subjects CSV headers do not match')
-        for line in ifi.xreadlines():
-            f.write(';'.join([subject, line.strip()]) + '\n')
-
+        elif sulci != first_sulci:
+            context.error('Subjects sulci list do not match. First:\n%s\nSubject %s:\n%s' % (first_sulci, subject, sulci))
+            raise ValueError('subjects sulci list do not match')
+        
+        if self.sort_by=='measure':
+            column = [str(i) for i in csv[self.measure]]
+            fi.write(subject + ',' + ','.join(column) + '\n')
+        elif self.sort_by=='sulcus':
+            for sulcus in sulci:
+                if meas_by_sulcus.has_key(sulcus):
+                    meas_by_sulcus[sulcus][subject] = list(csv[sulci_arr==sulcus][0])[1:]
+                else:
+                    # if the sulci doesn't exist yet, we create it.
+                    meas_by_sulcus[sulcus] = {subject: list(csv[sulci_arr==sulcus][0])[1:]}
+    
+    if self.sort_by=='measure':
+        fi.close()
+    elif self.sort_by=='sulcus':
+        for sulcus in sorted(meas_by_sulcus.keys()):
+            sulci_file = self.output_directory.fullPath() + '/' + sulcus + '.csv'
+            sfi = open(sulci_file, 'w')
+            sfi.write('subject,' + ','.join(first_header[1:]) + '\n')
+            for subject in sorted(self.subjects):
+                line = [str(i) for i in meas_by_sulcus[sulcus][subject]]
+                sfi.write(subject + ',' + ','.join(line) + '\n')
+            sfi.close()

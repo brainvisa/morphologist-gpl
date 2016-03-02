@@ -37,7 +37,7 @@ import distutils.spawn
 import os
 
 name = 'Morphometry statistics'
-userLevel = 0
+userLevel = 2
 
 labelselector = distutils.spawn.find_executable(
     'AimsLabelSelector' )
