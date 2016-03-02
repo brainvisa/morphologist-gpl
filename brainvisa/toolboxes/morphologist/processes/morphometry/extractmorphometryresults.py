@@ -4,8 +4,8 @@ from brainvisa.processes import *
 import numpy as np
 import os
 
-name = 'Extract one measure from the sulcal morphometry table'
-userLevel = 1
+name = 'Extract one measure from the morphometry statistics table'
+userLevel = 2
 
 signature = Signature(
     'morpho_stat_files', ListOf(ReadDiskItem('Data Table', 'Text Data Table')),

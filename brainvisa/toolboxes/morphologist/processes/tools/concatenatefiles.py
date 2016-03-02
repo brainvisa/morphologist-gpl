@@ -33,39 +33,39 @@
 
 from brainvisa.processes import *
 
-name = 'Sulci graph morphometry inter subject'
+name = 'Create an inter subject measures file'
 userLevel = 0
 
 signature = Signature(
-    'sulcal_morpho_measures', ListOf(ReadDiskItem(
-        'Sulcal morphometry measurements', 'CSV File')),
+    'measures_by_subject', ListOf(ReadDiskItem(
+        'CSV File', 'CSV File')),
     'subjects', ListOf(String()),
-    'group_morpho_measures',
-        WriteDiskItem('Sulcal morphometry measurements', 'CSV File')
+    'group_measures',
+        WriteDiskItem('CSV File', 'CSV File')
 )
 
 
 def link_subjects(self, proc, dummy):
     subjects = []
-    for item in self.sulcal_morpho_measures:
+    for item in self.measures_by_subject:
         subjects.append(item.get('subject'))
     return subjects
 
 
 def initialization( self ):
-    self.linkParameters('subjects', 'sulcal_morpho_measures',
+    self.linkParameters('subjects', 'measures_by_subject',
                         self.link_subjects)
 
 
 def execution( self, context ):
 
-    if len(self.subjects) != len(self.sulcal_morpho_measures):
+    if len(self.subjects) != len(self.measures_by_subject):
         raise ValueError(
-            'subjects list must be the same size as sulcal_morpho_measures')
+            'subjects list must be the same size as measures_by_subject list')
 
-    f = open(self.group_morpho_measures.fullPath(), 'w')
+    f = open(self.group_measures.fullPath(), 'w')
     first = True
-    for item, subject in zip(self.sulcal_morpho_measures, self.subjects):
+    for item, subject in zip(self.measures_by_subject, self.subjects):
         ifi = open(item.fullPath())
         header = ifi.readline()
         if first:
