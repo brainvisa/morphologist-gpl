@@ -85,7 +85,7 @@ def initialization( self ):
   self.setExecutionNode( eNode )
 
 def execution( self, context ):
-  context.system( 'python',
+  context.system( 'python2',
     find_in_path( 'AimsFoldsGraphOverSegmentation.py' ), '-i',
     self.input_graph, '-o', self.output_graph, '-l', self.pieces_length,
     '-m', self.minimum_size )
