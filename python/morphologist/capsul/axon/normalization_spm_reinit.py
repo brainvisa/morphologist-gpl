@@ -6,7 +6,7 @@ except ImportError:
     from enthought.traits.api import File, Directory, Float, Int, Bool, Enum, \
         Str, List, Undefined
 
-from capsul.process import Process
+from capsul.api import Process
 
 
 class Normalization_SPM_reinit(Process):
@@ -25,7 +25,7 @@ class Normalization_SPM_reinit(Process):
 
 
         # initialization section
-        self.anatomical_template = u'/i2bm/local/spm8-standalone/spm8_mcr/spm8/templates/T1.nii'
+        self.anatomical_template = '/volatile/riviere/brainvisa/build-trunk-release/share/brainvisa-share-4.6/anatomical_templates/MNI152_T1_2mm_brain.nii'
         self.voxel_size = '[1 1 1]'
         self.cutoff_option = 25
         self.nbiteration = 16

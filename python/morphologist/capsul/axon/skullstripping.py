@@ -6,15 +6,15 @@ except ImportError:
     from enthought.traits.api import File, Directory, Float, Int, Bool, Enum, \
         Str, List, Undefined
 
-from capsul.process import Process
+from capsul.api import Process
 
 
 class skullstripping(Process):
     def __init__(self, **kwargs):
         super(skullstripping, self).__init__()
-        self.add_trait('t1mri', File(allowed_extensions=['.nii.gz', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '']))
-        self.add_trait('brain_mask', File(allowed_extensions=['.nii.gz', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '']))
-        self.add_trait('skull_stripped', File(allowed_extensions=['.nii.gz', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', ''], output=True))
+        self.add_trait('t1mri', File(allowed_extensions=['.nii.gz', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.bif', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '']))
+        self.add_trait('brain_mask', File(allowed_extensions=['.nii.gz', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.bif', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '']))
+        self.add_trait('skull_stripped', File(allowed_extensions=['.nii.gz', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', ''], output=True))
 
 
     def _run_process(self):

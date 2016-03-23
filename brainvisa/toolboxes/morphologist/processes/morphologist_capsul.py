@@ -28,7 +28,7 @@ def onEditPipeline(self, process, dummy):
 def openPipeline(self):
     from capsul.qt_gui.widgets import PipelineDevelopperView
     from morphologist.capsul.morphologist import Morphologist
-    from capsul.pipeline import Pipeline
+    from capsul.api import Pipeline
     Pipeline.hide_nodes_activation = False
     if self._edited_pipeline is None:
         self._edited_pipeline = Morphologist()
@@ -58,7 +58,7 @@ def execution(self, context):
     from soma.application import Application
     from capsul.study_config.study_config import StudyConfig
     from morphologist.capsul.morphologist import Morphologist
-    from capsul.process import process_with_fom
+    from capsul.api import process_with_fom
     from soma_workflow import client as swclient
     from soma.wip.application.api import Application as Appli2
     import numpy as np

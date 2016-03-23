@@ -6,9 +6,9 @@ except ImportError:
     from enthought.traits.api import File, Directory, Float, Int, Bool, Enum, \
         Str, List, Undefined
 
-from capsul.process import Process
-from capsul.pipeline import Pipeline
-from capsul.pipeline import Switch
+from capsul.api import Process
+from capsul.api import Pipeline
+from capsul.api import Switch
 
 
 class Normalization(Pipeline):
@@ -22,13 +22,11 @@ class Normalization(Pipeline):
 
     def pipeline_definition(self):
         # nodes section
-        self.add_switch('select_Normalization_pipeline', ['NormalizeFSL', 'NormalizeSPM', 'NormalizeBaladin', 'Normalization_AimsMIRegister'], ['transformation', 'normalized', 'reoriented_t1mri'])
+        self.add_switch('select_Normalization_pipeline', ['NormalizeFSL', 'NormalizeSPM', 'Normalization_AimsMIRegister'], ['transformation', 'normalized', 'reoriented_t1mri'])
         self.add_process('NormalizeFSL', 'morphologist.capsul.axon.fslnormalizationpipeline.FSLnormalizationPipeline')
         self.nodes['NormalizeFSL']._weak_outputs = True
         self.add_process('NormalizeSPM', 'morphologist.capsul.axon.spmnormalizationpipeline.SPMnormalizationPipeline')
         self.nodes['NormalizeSPM']._weak_outputs = True
-        self.add_process('NormalizeBaladin', 'morphologist.capsul.axon.baladinnormalizationpipeline.BaladinNormalizationPipeline')
-        self.nodes['NormalizeBaladin']._weak_outputs = True
         self.add_process('Normalization_AimsMIRegister', 'morphologist.capsul.axon.normalization_aimsmiregister.normalization_aimsmiregister')
         self.nodes['Normalization_AimsMIRegister']._weak_outputs = True
 
@@ -51,23 +49,16 @@ class Normalization(Pipeline):
 
         # links section
         self.add_link('t1mri->NormalizeSPM.t1mri')
-        self.add_link('t1mri->NormalizeBaladin.t1mri')
         self.add_link('t1mri->Normalization_AimsMIRegister.anatomy_data')
         self.add_link('commissures_coordinates->NormalizeSPM.ReorientAnatomy_commissures_coordinates')
-        self.add_link('commissures_coordinates->NormalizeBaladin.ReorientAnatomy_commissures_coordinates')
         self.add_link('NormalizeSPM.ReorientAnatomy_output_commissures_coordinates->output_commissures_coordinates')
-        self.add_link('NormalizeBaladin.ReorientAnatomy_output_commissures_coordinates->output_commissures_coordinates')
         self.add_link('allow_flip_initial_MRI->NormalizeSPM.allow_flip_initial_MRI')
-        self.add_link('allow_flip_initial_MRI->NormalizeBaladin.allow_flip_initial_MRI')
         self.add_link('NormalizeFSL.transformation->select_Normalization_pipeline.NormalizeFSL_switch_transformation')
         self.add_link('NormalizeFSL.NormalizeFSL_normalized_anatomy_data->select_Normalization_pipeline.NormalizeFSL_switch_normalized')
         self.add_link('NormalizeFSL.reoriented_t1mri->select_Normalization_pipeline.NormalizeFSL_switch_reoriented_t1mri')
         self.add_link('NormalizeSPM.transformation->select_Normalization_pipeline.NormalizeSPM_switch_transformation')
         self.add_link('NormalizeSPM.normalized_t1mri->select_Normalization_pipeline.NormalizeSPM_switch_normalized')
         self.add_link('NormalizeSPM.reoriented_t1mri->select_Normalization_pipeline.NormalizeSPM_switch_reoriented_t1mri')
-        self.add_link('NormalizeBaladin.transformation->select_Normalization_pipeline.NormalizeBaladin_switch_transformation')
-        self.add_link('NormalizeBaladin.NormalizeBaladin_normalized_anatomy_data->select_Normalization_pipeline.NormalizeBaladin_switch_normalized')
-        self.add_link('NormalizeBaladin.reoriented_t1mri->select_Normalization_pipeline.NormalizeBaladin_switch_reoriented_t1mri')
         self.add_link('Normalization_AimsMIRegister.transformation_to_MNI->select_Normalization_pipeline.Normalization_AimsMIRegister_switch_transformation')
         self.add_link('Normalization_AimsMIRegister.normalized_anatomy_data->select_Normalization_pipeline.Normalization_AimsMIRegister_switch_normalized')
         self.add_link('t1mri->select_Normalization_pipeline.Normalization_AimsMIRegister_switch_reoriented_t1mri')

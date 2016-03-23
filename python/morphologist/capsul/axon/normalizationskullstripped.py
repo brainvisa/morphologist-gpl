@@ -6,9 +6,9 @@ except ImportError:
     from enthought.traits.api import File, Directory, Float, Int, Bool, Enum, \
         Str, List, Undefined
 
-from capsul.process import Process
-from capsul.pipeline import Pipeline
-from capsul.pipeline import Switch
+from capsul.api import Process
+from capsul.api import Pipeline
+from capsul.api import Switch
 
 
 class NormalizationSkullStripped(Pipeline):
@@ -46,7 +46,6 @@ class NormalizationSkullStripped(Pipeline):
         # links section
         self.add_link('t1mri->TalairachFromNormalization.t1mri')
         self.add_link('template->Normalization.NormalizeSPM_template')
-        self.add_link('template->Normalization.NormalizeBaladin_template')
         self.add_link('template->Normalization.Normalization_AimsMIRegister_anatomical_template')
         self.add_link('SkullStripping.skull_stripped->Normalization.t1mri')
         self.add_link('Normalization.transformation->TalairachFromNormalization.normalization_transformation')

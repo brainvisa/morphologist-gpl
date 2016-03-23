@@ -6,28 +6,28 @@ except ImportError:
     from enthought.traits.api import File, Directory, Float, Int, Bool, Enum, \
         Str, List, Undefined
 
-from capsul.process import Process
+from capsul.api import Process
 
 
 class SulciGraph(Process):
     def __init__(self, **kwargs):
         super(SulciGraph, self).__init__()
-        self.add_trait('skeleton', File(allowed_extensions=['.nii.gz', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '']))
-        self.add_trait('roots', File(allowed_extensions=['.nii.gz', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '']))
-        self.add_trait('grey_white', File(allowed_extensions=['.nii.gz', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '']))
-        self.add_trait('hemi_cortex', File(allowed_extensions=['.nii.gz', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '']))
-        self.add_trait('split_brain', File(allowed_extensions=['.nii.gz', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', ''], optional=True))
-        self.add_trait('white_mesh', File(allowed_extensions=['.gii', '.obj', '.tri', '.mesh', '.ply']))
-        self.add_trait('pial_mesh', File(allowed_extensions=['.gii', '.obj', '.tri', '.mesh', '.ply']))
+        self.add_trait('skeleton', File(allowed_extensions=['.nii.gz', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.bif', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '']))
+        self.add_trait('roots', File(allowed_extensions=['.nii.gz', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.bif', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '']))
+        self.add_trait('grey_white', File(allowed_extensions=['.nii.gz', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.bif', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '']))
+        self.add_trait('hemi_cortex', File(allowed_extensions=['.nii.gz', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.bif', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '']))
+        self.add_trait('split_brain', File(allowed_extensions=['.nii.gz', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.bif', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', ''], optional=True))
+        self.add_trait('white_mesh', File(allowed_extensions=['.gii', '.tri', '.mesh', '.ply', '.obj']))
+        self.add_trait('pial_mesh', File(allowed_extensions=['.gii', '.tri', '.mesh', '.ply', '.obj']))
         self.add_trait('commissure_coordinates', File(allowed_extensions=['.APC'], optional=True))
         self.add_trait('talairach_transform', File(allowed_extensions=['.trm']))
         self.add_trait('compute_fold_meshes', Bool())
         self.add_trait('allow_multithreading', Bool())
         self.add_trait('graph_version', Enum('3.0', '3.1', '3.2'))
         self.add_trait('graph', File(allowed_extensions=['.arg', '.data'], output=True))
-        self.add_trait('sulci_voronoi', File(allowed_extensions=['.nii.gz', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', ''], output=True))
+        self.add_trait('sulci_voronoi', File(allowed_extensions=['.nii.gz', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', ''], output=True))
         self.add_trait('write_cortex_mid_interface', Bool())
-        self.add_trait('cortex_mid_interface', File(allowed_extensions=['.nii.gz', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', ''], output=True, optional=True))
+        self.add_trait('cortex_mid_interface', File(allowed_extensions=['.nii.gz', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', ''], output=True, optional=True))
 
 
         # initialization section

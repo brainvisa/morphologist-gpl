@@ -6,17 +6,17 @@ except ImportError:
     from enthought.traits.api import File, Directory, Float, Int, Bool, Enum, \
         Str, List, Undefined
 
-from capsul.process import Process
+from capsul.api import Process
 
 
 class PialMesh(Process):
     def __init__(self, **kwargs):
         super(PialMesh, self).__init__()
-        self.add_trait('hemi_cortex', File(allowed_extensions=['.nii.gz', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '']))
-        self.add_trait('grey_white', File(allowed_extensions=['.nii.gz', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '']))
-        self.add_trait('t1mri_nobias', File(allowed_extensions=['.nii.gz', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '']))
-        self.add_trait('skeleton', File(allowed_extensions=['.nii.gz', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '']))
-        self.add_trait('pial_mesh', File(allowed_extensions=['.gii', '.obj', '.tri', '.mesh', '.ply'], output=True))
+        self.add_trait('hemi_cortex', File(allowed_extensions=['.nii.gz', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.bif', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '']))
+        self.add_trait('grey_white', File(allowed_extensions=['.nii.gz', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.bif', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '']))
+        self.add_trait('t1mri_nobias', File(allowed_extensions=['.nii.gz', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.bif', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '']))
+        self.add_trait('skeleton', File(allowed_extensions=['.nii.gz', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.bif', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '']))
+        self.add_trait('pial_mesh', File(allowed_extensions=['.gii', '.tri', '.mesh', '.ply', '.obj'], output=True))
         self.add_trait('version', Enum('1', '2'))
         self.add_trait('fix_random_seed', Bool())
 

@@ -6,9 +6,9 @@ except ImportError:
     from enthought.traits.api import File, Directory, Float, Int, Bool, Enum, \
         Str, List, Undefined
 
-from capsul.process import Process
-from capsul.pipeline import Pipeline
-from capsul.pipeline import Switch
+from capsul.api import Process
+from capsul.api import Pipeline
+from capsul.api import Switch
 
 
 class SulciLabelling(Pipeline):
@@ -40,7 +40,7 @@ class SulciLabelling(Pipeline):
         self.add_link('SPAM_recognition09.output_graph->select_Sulci_Recognition.SPAM_recognition09_switch_output_graph')
 
         # initialization section
-        self.nodes['select_Sulci_Recognition'].switch = 'SPAM_recognition09'
+        self.nodes['select_Sulci_Recognition'].switch = 'recognition2000'
         # export orphan parameters
         if not hasattr(self, '_autoexport_nodes_parameters') \
                 or self._autoexport_nodes_parameters:

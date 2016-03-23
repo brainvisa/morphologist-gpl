@@ -6,9 +6,9 @@ except ImportError:
     from enthought.traits.api import File, Directory, Float, Int, Bool, Enum, \
         Str, List, Undefined
 
-from capsul.process import Process
-from capsul.pipeline import Pipeline
-from capsul.pipeline import Switch
+from capsul.api import Process
+from capsul.api import Pipeline
+from capsul.api import Switch
 
 
 class SulciLabellingSPAM(Pipeline):
@@ -61,6 +61,7 @@ class SulciLabellingSPAM(Pipeline):
 
         # initialization section
         self.nodes['local_or_markovian'].switch = 'local_recognition'
+        self.nodes_activation.local_or_markovian = False
         # export orphan parameters
         if not hasattr(self, '_autoexport_nodes_parameters') \
                 or self._autoexport_nodes_parameters:

@@ -6,7 +6,7 @@ except ImportError:
     from enthought.traits.api import File, Directory, Float, Int, Bool, Enum, \
         Str, List, Undefined
 
-from capsul.process import Process
+from capsul.api import Process
 
 
 class TalairachTransformationFromNormalization(Process):
@@ -15,7 +15,7 @@ class TalairachTransformationFromNormalization(Process):
         self.add_trait('normalization_transformation', File(allowed_extensions=['.trm']))
         self.add_trait('Talairach_transform', File(allowed_extensions=['.trm'], output=True))
         self.add_trait('commissure_coordinates', File(allowed_extensions=['.APC'], output=True, optional=True))
-        self.add_trait('t1mri', File(allowed_extensions=['.nii.gz', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', ''], optional=True))
+        self.add_trait('t1mri', File(allowed_extensions=['.nii.gz', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.bif', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', ''], optional=True))
         self.add_trait('source_referential', File())
         self.add_trait('normalized_referential', File())
         self.add_trait('transform_chain_ACPC_to_Normalized', List())
@@ -24,7 +24,7 @@ class TalairachTransformationFromNormalization(Process):
 
         # initialization section
         self.transform_chain_ACPC_to_Normalized = []
-        self.acpc_referential = '/volatile/riviere/brainvisa/build-stable-release/share/brainvisa-share-4.5/registration/Talairach-AC_PC-Anatomist.referential'
+        self.acpc_referential = '/volatile/riviere/brainvisa/build-trunk-release/share/brainvisa-share-4.6/registration/Talairach-AC_PC-Anatomist.referential'
 
     def _run_process(self):
         from brainvisa import axon
