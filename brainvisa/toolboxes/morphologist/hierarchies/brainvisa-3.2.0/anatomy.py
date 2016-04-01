@@ -269,13 +269,13 @@ insert('snapshots/{acquisition}/morphologist/whitemesh',
 
 # snapshots snapbase spm
 insert('snapshots/{acquisition}/spm8/whiteMatter',
-  "snapshot_spm8_white_{subject}_<acquisition>", SetType('Snapshot Probability Map'), SetWeakAttr('software', 'spm8', 'class', 'white')
+  "snapshot_spm8_white_{subject}_<acquisition>", SetType('Snapshot Probability Map'), SetWeakAttr('software', 'spm8', 'tissue_class', 'white')
 )
 insert('snapshots/{acquisition}/spm8/greyMatter',
-  "snapshot_spm8_grey_{subject}_<acquisition>", SetType('Snapshot Probability Map'), SetWeakAttr('software', 'spm8', 'class', 'grey')
+  "snapshot_spm8_grey_{subject}_<acquisition>", SetType('Snapshot Probability Map'), SetWeakAttr('software', 'spm8', 'tissue_class', 'grey')
 )
 insert('snapshots/{acquisition}/spm8/csf',
-  "snapshot_spm8_csf_{subject}_<acquisition>", SetType('Snapshot Probability Map'), SetWeakAttr('software', 'spm8', 'class', 'csf')
+  "snapshot_spm8_csf_{subject}_<acquisition>", SetType('Snapshot Probability Map'), SetWeakAttr('software', 'spm8', 'tissue_class', 'csf')
 )
 
 # snapbase qc spm
