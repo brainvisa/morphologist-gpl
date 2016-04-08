@@ -26,7 +26,7 @@ class TestMorphologistPipeline(unittest.TestCase):
 
   def download_data(self):
     if not os.path.exists(self.tests_dir):
-      os.mkdir(self.tests_dir)
+      os.makedirs(self.tests_dir)
     os.chdir(self.tests_dir)
     if not os.path.exists("demo_data.zip"):
       print "* Download ftp://ftp.cea.fr/pub/dsv/anatomist/data/demo_data.zip to ", self.tests_dir
@@ -69,8 +69,10 @@ class TestMorphologistPipeline(unittest.TestCase):
     return output
 
   def setUp(self):
-    tempdir=tempfile.gettempdir()
-    self.tests_dir = os.path.join(tempdir, "tmp_tests_brainvisa")
+    tests_dir = os.getenv("BRAINVISA_TESTS_DIR")
+    if not tests_dir:
+        tests_dir = tempfile.gettempdir()
+    self.tests_dir = os.path.join(tests_dir, "tmp_tests_brainvisa")
     self.download_data()
 
     brainvisa.axon.initializeProcesses()
