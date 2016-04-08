@@ -50,8 +50,10 @@ class TestMorphologistCapsul(unittest.TestCase):
     def setUp(self):
         print '* initialize brainVisa'
         brainvisa.axon.initializeProcesses()
-        tempdir = tempfile.gettempdir()
-        self.tests_dir = os.path.join(tempdir, "tmp_tests_brainvisa")
+        tests_dir = os.getenv("BRAINVISA_TESTS_DIR")
+        if not tests_dir:
+            tests_dir = tempfile.gettempdir()
+        self.tests_dir = os.path.join(tests_dir, "tmp_tests_brainvisa")
         self.db_dir = os.path.join(
             self.tests_dir, "db_morphologist-%s" % bv_config.__version__)
         print '* create database'
