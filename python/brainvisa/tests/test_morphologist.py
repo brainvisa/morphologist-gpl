@@ -1,10 +1,12 @@
 import unittest
 import os
+import sys
 import tempfile
 import urllib
 import shutil
 from shutil import rmtree
 import filecmp
+from argparse import ArgumentParser
 
 from soma import zipfile
 from soma.path import relative_path
@@ -20,6 +22,10 @@ from brainvisa.processes import defaultContext
 from brainvisa.data.writediskitem import WriteDiskItem
 from brainvisa.configuration import neuroConfig
 from brainvisa.data import neuroHierarchy
+from soma.aims.graph_comparison import same_graphs
+
+
+clear_reference = False
 
 
 class TestMorphologistPipeline(unittest.TestCase):
@@ -88,12 +94,12 @@ class TestMorphologistPipeline(unittest.TestCase):
     pc = [116.197914124, 147.53125, 91.1999969482]
     ip = [118.197914124, 99.53125, 45.6000061035]
     pipeline.perform_normalization = False
-    nodes.child('TalairachTransformation').setSelected(0)
-    nodes.child('HeadMesh').setSelected(0)
+    nodes.child('TalairachTransformation').setSelected(True)
+    #nodes.child('HeadMesh').setSelected(0)
     nodes.HemispheresProcessing.LeftHemisphere.CorticalFoldsGraph.setSelected(
-        0)
+        1)
     nodes.HemispheresProcessing.RightHemisphere.CorticalFoldsGraph.setSelected(
-        0)
+        1)
     nodes.child('BiasCorrection').fix_random_seed = True
     nodes.child('HistoAnalysis').fix_random_seed = True
     nodes.child('BrainSegmentation').fix_random_seed = True
@@ -113,7 +119,13 @@ class TestMorphologistPipeline(unittest.TestCase):
     self.ref_nobias = wd.findValue({"_database" : self.db_name,
                                     "_format" : "NIFTI-1 image",
                                     "center" : "test", "subject" : "sujet01",
-                                    "analysis" : "default_analysis"})
+                                    "analysis" : "reference"})
+
+    # if requested, clear existing reference results
+    if clear_reference and os.path.exists(self.ref_nobias.fullPath()):
+      print '* Clear reference results to build new ones'
+      rmtree(os.path.dirname(self.ref_nobias.fullPath()))
+
     # if needed, run the pipeline a first time to get reference results
     # in default_analysis
     if (not self.ref_nobias.isReadable()):
@@ -129,21 +141,32 @@ class TestMorphologistPipeline(unittest.TestCase):
                                      "analysis" : "test"})
     if self.test_nobias.isReadable():
       rmtree(os.path.dirname(self.test_nobias.fullPath()))
+    nodes.child('TalairachTransformation').setSelected(False)
     print "* Run Morphologist to get test results"
     defaultContext().runProcess(pipeline, t1mri=t1,
       t1mri_nobias=self.test_nobias, anterior_commissure=ac,
       posterior_commissure=pc, interhemispheric_point=ip)
 
 
+  def compare_files(self, ref_file, test_file):
+    if ref_file.endswith(".arg"):
+      return same_graphs(ref_file, test_file)
+    return filecmp.cmp(ref_file, test_file)
+
+
   def test_pipeline_results(self):
     ref_dir = os.path.dirname(self.ref_nobias.fullPath())
     test_dir = os.path.dirname(self.test_nobias.fullPath())
     for (dirpath, dirnames, filenames) in os.walk(ref_dir):
+      if dirpath.endswith(".data") and os.path.exists(dirpath[:-4] + "arg"):
+        # skip .data directories for graphs because their contents order is not
+        # always the same
+        continue
       for f in filenames:
         if not f.endswith(".minf"):
           f_ref = os.path.join(dirpath, f)
           f_test = os.path.join(test_dir, relative_path(dirpath, ref_dir), f)
-          self.assertTrue(filecmp.cmp(f_ref, f_test),
+          self.assertTrue(self.compare_files(f_ref, f_test),
               "The content of "+f+" in test is different from the reference results.")
 
   def tearDown(self):
@@ -154,7 +177,17 @@ def test_suite():
 
 try:
     if __name__ == '__main__':
-        unittest.main(defaultTest='test_suite')
+        parser = ArgumentParser("test Morphologist pipeline")
+        parser.add_argument('-c', '--clear-ref', action='store_true',
+                            help='clear any existing reference results. Use '
+                            'it after a known change in results.')
+        parser.add_argument('options', nargs='*',
+                            help='passed to unittest options parser')
+        args = parser.parse_args()
+        clear_reference = args.clear_ref
+
+        unittest.main(defaultTest='test_suite',
+                      argv=[sys.argv[0]]+args.options)
 finally:
     shutil.rmtree(homedir)
     del homedir
