@@ -24,6 +24,7 @@ from brainvisa.processes import defaultContext
 from brainvisa.data.writediskitem import WriteDiskItem
 from brainvisa.configuration import neuroConfig
 from brainvisa.data import neuroHierarchy
+from soma.aims.graph_comparison import same_graphs
 
 test_workflow_file = None
 
@@ -64,8 +65,8 @@ class TestMorphologistCapsul(unittest.TestCase):
         process = brainvisa.processes.getProcessInstance("morphologist_capsul")
         mp = Morphologist()
         process._edited_pipeline = mp
-        mp.nodes_activation.CorticalFoldsGraph = False
-        mp.nodes_activation.CorticalFoldsGraph_1 = False
+        #mp.nodes_activation.CorticalFoldsGraph = False
+        #mp.nodes_activation.CorticalFoldsGraph_1 = False
         mp.nodes_activation.SulciRecognition = False
         mp.nodes_activation.SulciRecognition_1 = False
         mp.select_Talairach = 'StandardACPC'
@@ -129,6 +130,13 @@ class TestMorphologistCapsul(unittest.TestCase):
         del config
         os.unlink(tmpdb[1])
 
+
+    def compare_files(self, ref_file, test_file):
+        if ref_file.endswith(".arg"):
+            return same_graphs(ref_file, test_file)
+        return filecmp.cmp(ref_file, test_file)
+
+
     def test_pipeline_results(self):
         self.assertTrue(self.workflow_status == swconstants.WORKFLOW_DONE,
             'Workflow did not finish regularly: %s' % self.workflow_status)
@@ -137,20 +145,26 @@ class TestMorphologistCapsul(unittest.TestCase):
             'Morphologist jobs failed')
         print '** No failed jobs.'
 
-        ref_dir = os.path.join(self.input_dir, 'default_analysis')
+        ref_dir = os.path.join(self.input_dir, 'reference')
         #test_dir = os.path.join(
             #self.subject_dir, self.morpho_fom.attributes['analysis'])
         test_dir = self.analysis_dir
         for (dirpath, dirnames, filenames) in os.walk(ref_dir):
-          for f in filenames:
-            if not f.endswith(".minf"):
-              f_ref = os.path.join(dirpath, f)
-              f_test = os.path.join(test_dir, relative_path(dirpath, ref_dir),
-                                    f)
-              self.assertTrue(filecmp.cmp(f_ref, f_test),
-                  "The content of "+f+" in test is different from the "
-                  "reference results.")
-              print 'file', f_test, 'OK.'
+            if dirpath.endswith(".data") \
+                    and os.path.exists(dirpath[:-4] + "arg"):
+                # skip .data directories for graphs because their contents
+                # order is not always the same
+                continue
+            for f in filenames:
+                if not f.endswith(".minf"):
+                    f_ref = os.path.join(dirpath, f)
+                    f_test = os.path.join(test_dir,
+                                          relative_path(dirpath, ref_dir),
+                                          f)
+                    self.assertTrue(self.compare_files(f_ref, f_test),
+                        "The content of "+f+" in test is different from the "
+                        "reference results.")
+                    print 'file', f_test, 'OK.'
         print '** all OK.'
 
     def tearDown(self):

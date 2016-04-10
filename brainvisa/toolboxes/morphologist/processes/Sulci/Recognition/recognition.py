@@ -53,31 +53,32 @@ signature = Signature(
     'stopRate', Float(),
     'niterBelowStopProp', Integer(),
     'forbid_unknown_label', Boolean(),
-    )
+    'fix_random_seed', Boolean(),
+)
 
 def modelValue( proc, procbis ):
-  """
-  the input graph which is linked to the model has not necessarily the same
-  graph_version but this attribute is a key for Graph data, so it will be seen
-  as a required attribute, so it is removed from the link information
-  """
-  val=None
-  if proc.data_graph:
-    val=proc.data_graph.attributes()
-    if val.has_key( 'graph_version' ):
-      del val['graph_version']
-  rdi = ReadDiskItem( 'Model graph', 'Graph',
-        requiredAttributes={'trained' : 'Yes'} )
-  mod = list( rdi._findValues( val, None, False ) )
-  db = [ x.get( 'sulci_database' ) for x in mod ]
-  dind = [ i for i in range(len(db)) if db[i] is not None ]
-  db = [ int(x) for x in db if x is not None ]
-  newind = [ dind[db.index(x)] for x in sorted( db ) ]
-  if len( mod ) == 1:
-    return val
-  if len( mod ) > proc.model_hint:
-    return mod[newind[len( mod ) - proc.model_hint - 1]]
-  return None
+    """
+    the input graph which is linked to the model has not necessarily the same
+    graph_version but this attribute is a key for Graph data, so it will be
+    seen as a required attribute, so it is removed from the link information
+    """
+    val=None
+    if proc.data_graph:
+        val=proc.data_graph.attributes()
+        if val.has_key( 'graph_version' ):
+            del val['graph_version']
+    rdi = ReadDiskItem('Model graph', 'Graph',
+                       requiredAttributes={'trained' : 'Yes'})
+    mod = list( rdi._findValues( val, None, False ) )
+    db = [ x.get( 'sulci_database' ) for x in mod ]
+    dind = [ i for i in range(len(db)) if db[i] is not None ]
+    db = [ int(x) for x in db if x is not None ]
+    newind = [ dind[db.index(x)] for x in sorted( db ) ]
+    if len( mod ) == 1:
+        return val
+    if len( mod ) > proc.model_hint:
+        return mod[newind[len( mod ) - proc.model_hint - 1]]
+    return None
 
 def initialization( self ):
     self.linkParameters( 'model', ( 'data_graph', 'model_hint' ),
@@ -93,6 +94,8 @@ def initialization( self ):
     self.parent = {}
     self.parent['manage_tasks'] = False
     self.forbid_unknown_label = False
+    self.signature['fix_random_seed'].userLevel = 3
+    self.fix_random_seed = False
 
 def getConfigFile(self, context, graphname):
     def exist(file):
@@ -144,6 +147,8 @@ def execution( self, context ):
         stream.write( 'niterBelowStopProp ' + str( self.niterBelowStopProp ) \
                       + '\n' )
         stream.write( 'extensionMode CONNECT_VOID CONNECT\n' )
+        if self.fix_random_seed:
+            stream.write('randomSeed 10\n')
         stream.write( '*END\n' )
         stream.close()
         f = open(cfgfile)
