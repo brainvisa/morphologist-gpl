@@ -21,15 +21,17 @@ class SulciLabellingANN(Process):
         self.add_trait('stopRate', Float())
         self.add_trait('niterBelowStopProp', Int())
         self.add_trait('forbid_unknown_label', Bool())
+        self.add_trait('fix_random_seed', Bool())
 
 
         # initialization section
-        self.model = '/volatile/riviere/brainvisa/build-stable-release/share/brainvisa-share-4.5/models/models_2008/discriminative_models/3.0/Lfolds_noroots/Lfolds_noroots.arg'
+        self.model = '/home/riviere/build-current64/share/brainvisa-share-4.5/models/models_2008/discriminative_models/3.0/Rfolds_noroots/Rfolds_noroots.arg'
         self.model_hint = 0
         self.rate = 0.98
         self.stopRate = 0.05
         self.niterBelowStopProp = 1
         self.forbid_unknown_label = False
+        self.fix_random_seed = False
 
     def _run_process(self):
         from brainvisa import axon
