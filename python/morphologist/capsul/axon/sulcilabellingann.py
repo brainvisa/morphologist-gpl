@@ -21,6 +21,7 @@ class SulciLabellingANN(Process):
         self.add_trait('stopRate', Float())
         self.add_trait('niterBelowStopProp', Int())
         self.add_trait('forbid_unknown_label', Bool())
+        self.add_trait('fix_random_seed', Bool())
 
 
         # initialization section
@@ -30,6 +31,7 @@ class SulciLabellingANN(Process):
         self.stopRate = 0.05
         self.niterBelowStopProp = 1
         self.forbid_unknown_label = False
+        self.fix_random_seed = False
 
     def _run_process(self):
         from brainvisa import axon

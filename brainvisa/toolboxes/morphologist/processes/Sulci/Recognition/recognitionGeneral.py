@@ -84,7 +84,7 @@ def initialization( self ):
   eNode.addLink( 'output_graph', 'recognition2000.output_graph' )
 
   # self links
-  eNode.addLink( 'output_graph', 'data_graph' )
+  self.linkParameters( 'output_graph', 'data_graph' )
 
   # for "future" pipelines
   eNode.selection_outputs = [ 'output_graph', 'output_graph' ]

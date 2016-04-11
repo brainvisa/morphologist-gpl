@@ -158,6 +158,8 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
         self.add_link('fix_random_seed->GreyWhiteTopology_1.fix_random_seed')
         self.add_link('fix_random_seed->SulciSkeleton_1.fix_random_seed')
         self.add_link('fix_random_seed->PialMesh_1.fix_random_seed')
+        self.add_link('fix_random_seed->SulciRecognition.recognition2000_fix_random_seed')
+        self.add_link('fix_random_seed->SulciRecognition_1.recognition2000_fix_random_seed')
 
         self.export_parameter('CorticalFoldsGraph', 'compute_fold_meshes', 
             'compute_fold_meshes')
