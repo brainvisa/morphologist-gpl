@@ -37,31 +37,32 @@ import registration
 
 
 signature = Signature(
-  'data_graph', ReadDiskItem( 'Cortical folds graph', 'Graph and data' ),
-  'output_graph',
-    WriteDiskItem( 'Labelled Cortical folds graph', 'Graph and data',
-                   requiredAttributes = { 'labelled' : 'Yes',
-                                          'automatically_labelled' \
-                                          : 'Yes' } ),
-  'model', ReadDiskItem( 'Sulci Segments Model', 'Text Data Table',
-      requiredAttributes={ 'sulci_segments_model_type' : \
-          'global_registered_spam' } ),
-  'posterior_probabilities',
-      WriteDiskItem( 'Sulci Labels Segmentwise Posterior Probabilities',
-          'CSV file' ),
-  'labels_translation_map',
-    ReadDiskItem( 'Label Translation',
-                  [ 'Label Translation', 'DEF Label translation' ] ),
-  'labels_priors', ReadDiskItem( 'Sulci Labels Priors', 'Text Data Table' ),
-  'segments_relations_model',
-      ReadDiskItem( 'Sulci Segments Relations Model', 'Text Data Table' ),
-  'initial_transformation', ReadDiskItem( 'Transformation matrix',
-    'Transformation matrix' ), # FIXME
-  'global_transformation',
-      ReadDiskItem( 'Sulci Talairach to Global SPAM transformation',
-          'Transformation matrix' ),
-  #'output_energy', WriteDiskItem( 'siRelax Fold Energy',
-      #'siRelax Fold Energy' ),
+    'data_graph', ReadDiskItem( 'Cortical folds graph', 'Graph and data' ),
+    'output_graph',
+      WriteDiskItem( 'Labelled Cortical folds graph', 'Graph and data',
+                    requiredAttributes = { 'labelled' : 'Yes',
+                                            'automatically_labelled' \
+                                            : 'Yes' } ),
+    'model', ReadDiskItem( 'Sulci Segments Model', 'Text Data Table',
+        requiredAttributes={ 'sulci_segments_model_type' : \
+            'global_registered_spam' } ),
+    'posterior_probabilities',
+        WriteDiskItem( 'Sulci Labels Segmentwise Posterior Probabilities',
+            'CSV file' ),
+    'labels_translation_map',
+      ReadDiskItem( 'Label Translation',
+                    [ 'Label Translation', 'DEF Label translation' ] ),
+    'labels_priors', ReadDiskItem( 'Sulci Labels Priors', 'Text Data Table' ),
+    'segments_relations_model',
+        ReadDiskItem( 'Sulci Segments Relations Model', 'Text Data Table' ),
+    'initial_transformation', ReadDiskItem( 'Transformation matrix',
+      'Transformation matrix' ), # FIXME
+    'global_transformation',
+        ReadDiskItem( 'Sulci Talairach to Global SPAM transformation',
+            'Transformation matrix' ),
+    #'output_energy', WriteDiskItem( 'siRelax Fold Energy',
+        #'siRelax Fold Energy' ),
+    'fix_random_seed', Boolean(),
 )
 
 def initialization( self ):
@@ -70,32 +71,36 @@ def initialization( self ):
     self.linkParameters( 'posterior_probabilities', 'output_graph' )
     self.linkParameters( 'labels_priors', 'data_graph' )
     self.labels_translation_map = \
-      self.signature[ 'labels_translation_map' ].findValue(
-        { 'filename_variable' : 'sulci_model_2008' } )
+        self.signature[ 'labels_translation_map' ].findValue(
+            { 'filename_variable' : 'sulci_model_2008' } )
     self.linkParameters( 'global_transformation', 'data_graph' )
     self.linkParameters( 'segments_relations_model', 'data_graph' )
     # self.setOptional( 'segments_relations_model' )
     self.setOptional( 'initial_transformation' )
     self.setOptional( 'global_transformation' )
+    self.signature['fix_random_seed'].userLevel = 3
+    self.fix_random_seed = False
 
 def execution( self, context ):
     tmpfile = context.temporary( 'Text file' )
     # find script filename (since it is not in the PATH)
     progname = os.path.join( os.path.dirname( os.path.dirname( \
-      registration.__file__ ) ), 'scripts', 'sigraph', 'annealing_tag.py' )
+        registration.__file__ ) ), 'scripts', 'sigraph', 'annealing_tag.py' )
     cmd = [ sys.executable, progname, '-i', self.data_graph, '-o',
-      self.output_graph, '-t', self.labels_translation_map, '-d', self.model,
-      '-c', self.posterior_probabilities, '-p', self.labels_priors,
-      '--distrib_relations', self.segments_relations_model, '--nrj', tmpfile,
-      '--mode', 'sa', '--init-mode', 'segments_potentials',
-      '--select-mode', 'threshold', '--init-temperature', 50,
-      '--temperature-rate', 0.995, '--stop-rate', 0.02, '--tmax', 10000,
-      '--weighting-mode', 'number', '--normalize-weights', '--init-prior',
-      self.labels_priors ]
+        self.output_graph, '-t', self.labels_translation_map, '-d', self.model,
+        '-c', self.posterior_probabilities, '-p', self.labels_priors,
+        '--distrib_relations', self.segments_relations_model, '--nrj', tmpfile,
+        '--mode', 'sa', '--init-mode', 'segments_potentials',
+        '--select-mode', 'threshold', '--init-temperature', 50,
+        '--temperature-rate', 0.995, '--stop-rate', 0.02, '--tmax', 10000,
+        '--weighting-mode', 'number', '--normalize-weights', '--init-prior',
+        self.labels_priors ]
     if self.global_transformation is not None:
-      cmd += [ '--motion', self.global_transformation ]
+        cmd += [ '--motion', self.global_transformation ]
     if self.initial_transformation is not None:
-      context.warning( 'initial_transformation is set but is not working yet: it will not be used in the Markovian recognition, and thus might produce inexpected results' )
+        context.warning( 'initial_transformation is set but is not working yet: it will not be used in the Markovian recognition, and thus might produce inexpected results' )
+    if self.fix_random_seed:
+        cmd += ['--seed', 10]
     # now run it
     context.system( *cmd )
     trManager = registration.getTransformationManager()
