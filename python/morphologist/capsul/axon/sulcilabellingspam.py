@@ -35,6 +35,8 @@ class SulciLabellingSPAM(Pipeline):
         # export output parameter
         self.export_parameter('local_or_markovian', 'output_graph', 'output_graph')
         # export input parameter
+        self.export_parameter('markovian_recognition', 'fix_random_seed', 'fix_random_seed')
+        # export input parameter
         self.export_parameter('global_recognition', 'labels_translation_map', 'global_recognition_labels_translation_map')
         # export input parameter
         self.export_parameter('global_recognition', 'initial_transformation', 'global_recognition_initial_transformation')

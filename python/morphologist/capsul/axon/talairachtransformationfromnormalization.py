@@ -15,7 +15,7 @@ class TalairachTransformationFromNormalization(Process):
         self.add_trait('normalization_transformation', File(allowed_extensions=['.trm']))
         self.add_trait('Talairach_transform', File(allowed_extensions=['.trm'], output=True))
         self.add_trait('commissure_coordinates', File(allowed_extensions=['.APC'], output=True, optional=True))
-        self.add_trait('t1mri', File(allowed_extensions=['.nii.gz', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', ''], optional=True))
+        self.add_trait('t1mri', File(allowed_extensions=['.nii.gz', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.bif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', ''], optional=True))
         self.add_trait('source_referential', File())
         self.add_trait('normalized_referential', File())
         self.add_trait('transform_chain_ACPC_to_Normalized', List())

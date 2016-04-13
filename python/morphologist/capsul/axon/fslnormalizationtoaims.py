@@ -13,7 +13,7 @@ class FSLnormalizationToAims(Process):
     def __init__(self, **kwargs):
         super(FSLnormalizationToAims, self).__init__()
         self.add_trait('read', File(allowed_extensions=['.mat']))
-        self.add_trait('source_volume', File(allowed_extensions=['.nii.gz', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '']))
+        self.add_trait('source_volume', File(allowed_extensions=['.nii.gz', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.bif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '']))
         self.add_trait('write', File(allowed_extensions=['.trm'], output=True))
         self.add_trait('registered_volume', File(allowed_extensions=['.nii', '.nii.gz']))
         self.add_trait('standard_template', Enum(0))
@@ -21,7 +21,7 @@ class FSLnormalizationToAims(Process):
 
 
         # initialization section
-        self.registered_volume = u'/i2bm/local/fsl/data/standard/MNI152_T1_1mm.nii.gz'
+        self.registered_volume = u'/i2bm/local/fsl/data/standard/MNI152_T1_2mm_brain.nii.gz'
         self.standard_template = 0
         self.set_transformation_in_source_volume = True
 

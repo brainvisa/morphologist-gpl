@@ -12,7 +12,7 @@ from capsul.process import Process
 class T1BiasCorrection(Process):
     def __init__(self, **kwargs):
         super(T1BiasCorrection, self).__init__()
-        self.add_trait('t1mri', File(allowed_extensions=['.nii.gz', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.bif', '']))
+        self.add_trait('t1mri', File(allowed_extensions=['.nii.gz', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.bif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '']))
         self.add_trait('commissure_coordinates', File(allowed_extensions=['.APC'], optional=True))
         self.add_trait('sampling', Float())
         self.add_trait('field_rigidity', Float())

@@ -33,8 +33,11 @@ class SulciLabelling(Pipeline):
         self.export_parameter('SPAM_recognition09', 'data_graph', 'data_graph')
         # export output parameter
         self.export_parameter('select_Sulci_Recognition', 'output_graph', 'output_graph')
+        # export input parameter
+        self.export_parameter('recognition2000', 'fix_random_seed', 'fix_random_seed')
 
         # links section
+        self.add_link('fix_random_seed->SPAM_recognition09.fix_random_seed')
         self.add_link('data_graph->recognition2000.data_graph')
         self.add_link('recognition2000.output_graph->select_Sulci_Recognition.recognition2000_switch_output_graph')
         self.add_link('SPAM_recognition09.output_graph->select_Sulci_Recognition.SPAM_recognition09_switch_output_graph')
