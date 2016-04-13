@@ -44,6 +44,7 @@ signature = Signature(
                    requiredAttributes = { 'labelled' : 'Yes',
                                           'automatically_labelled' \
                                           : 'Yes' } ),
+  'fix_random_seed', Boolean(),
 )
 
 def initialization( self ):
@@ -108,4 +109,10 @@ def initialization( self ):
     'data_graph' )
   self.addDoubleLink( 'global_recognition.output_transformation',
     'local_or_markovian.markovian_recognition.global_transformation' )
+
+  self.addDoubleLink(
+      'fix_random_seed',
+      'local_or_markovian.markovian_recognition.fix_random_seed')
+  self.signature['fix_random_seed'].userLevel = 3
+  self.fix_random_seed = False
 

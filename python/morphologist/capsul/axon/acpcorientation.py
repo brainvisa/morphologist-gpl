@@ -12,7 +12,7 @@ from capsul.api import Process
 class AcpcOrientation(Process):
     def __init__(self, **kwargs):
         super(AcpcOrientation, self).__init__()
-        self.add_trait('T1mri', File(allowed_extensions=['.nii.gz', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.bif', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '']))
+        self.add_trait('T1mri', File(allowed_extensions=['.nii.gz', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.bif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '']))
         self.add_trait('commissure_coordinates', File(allowed_extensions=['.APC'], output=True))
         self.add_trait('Normalised', Enum('No', 'MNI from SPM', 'MNI from Mritotal', 'Marseille from SPM'))
         self.add_trait('Anterior_Commissure', List(trait=Float(), minlen=3, maxlen=3, value=[0, 0, 0], optional=True))
@@ -20,7 +20,7 @@ class AcpcOrientation(Process):
         self.add_trait('Interhemispheric_Point', List(trait=Float(), minlen=3, maxlen=3, value=[0, 0, 0], optional=True))
         self.add_trait('Left_Hemisphere_Point', List(trait=Float(), minlen=3, maxlen=3, value=[0, 0, 0], optional=True))
         self.add_trait('allow_flip_initial_MRI', Bool())
-        self.add_trait('reoriented_t1mri', File(allowed_extensions=['.nii.gz', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', ''], output=True))
+        self.add_trait('reoriented_t1mri', File(allowed_extensions=['.nii.gz', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', ''], output=True))
         self.add_trait('remove_older_MNI_normalization', Bool())
         self.add_trait('older_MNI_normalization', File(allowed_extensions=['.trm'], optional=True))
 

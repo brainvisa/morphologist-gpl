@@ -43,6 +43,7 @@ signature = Signature(
   WriteDiskItem( 'Labelled Cortical folds graph', 'Graph',
                   requiredAttributes = { 'labelled' : 'Yes',
                                         'automatically_labelled' : 'Yes'} ),
+  'fix_random_seed', Boolean(),
 )
 
 # Default values
@@ -91,4 +92,10 @@ def initialization( self ):
   eNode.switch_output = 'output_graph'
 
   self.setExecutionNode( eNode )
+
+  self.addDoubleLink('fix_random_seed', 'recognition2000.fix_random_seed')
+  self.addDoubleLink('fix_random_seed', 'SPAM_recognition09.fix_random_seed')
+
+  self.signature['fix_random_seed'].userLevel = 3
+  self.fix_random_seed = False
 

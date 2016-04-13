@@ -21,10 +21,12 @@ class SulciLabellingSPAMMarkov(Process):
         self.add_trait('segments_relations_model', File(allowed_extensions=['.dat']))
         self.add_trait('initial_transformation', File(allowed_extensions=['.trm'], optional=True))
         self.add_trait('global_transformation', File(allowed_extensions=['.trm'], optional=True))
+        self.add_trait('fix_random_seed', Bool())
 
 
         # initialization section
         self.labels_translation_map = '/volatile/riviere/brainvisa/build-trunk-release/share/brainvisa-share-4.6/nomenclature/translation/sulci_model_2008.trl'
+        self.fix_random_seed = False
 
     def _run_process(self):
         from brainvisa import axon

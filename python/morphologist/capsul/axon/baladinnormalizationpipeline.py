@@ -6,9 +6,9 @@ except ImportError:
     from enthought.traits.api import File, Directory, Float, Int, Bool, Enum, \
         Str, List, Undefined
 
-from capsul.process import Process
-from capsul.pipeline import Pipeline
-from capsul.pipeline import Switch
+from capsul.api import Process
+from capsul.api import Pipeline
+from capsul.api import Switch
 
 
 class BaladinNormalizationPipeline(Pipeline):
@@ -48,7 +48,6 @@ class BaladinNormalizationPipeline(Pipeline):
         self.add_link('ConvertBaladinNormalizationToAIMS.write->ReorientAnatomy.transformation')
 
         # initialization section
-        self.nodes_activation.ReorientAnatomy = False
         # export orphan parameters
         if not hasattr(self, '_autoexport_nodes_parameters') \
                 or self._autoexport_nodes_parameters:
