@@ -238,7 +238,7 @@ class TestMorphologistPipeline(unittest.TestCase):
               self.database.update(context=defaultContext())
           pipeline.executionNode().child(
               'TalairachTransformation').setSelected(False)
-          if not do_spam or self.do_sulci_today():
+          if not do_spam or not self.do_sulci_today():
               pipeline.perform_sulci_recognition = False
               print '(not doing SPAM sulci recognition tests today)'
           print "* Run Morphologist to get test results"
