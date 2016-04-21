@@ -291,9 +291,9 @@ class TestMorphologistPipeline(unittest.TestCase):
             # skip .data directories for graphs because their contents order is
             # not always the same
             ".data"]
-        if not do_ann:
+        if not do_ann or not do_sulci_today():
             skipped_dirs.append('ann_auto')
-        if not do_spam:
+        if not do_spam or not do_sulci_today():
             skipped_dirs.append('default_session_auto')
         ref_dir = os.path.dirname(self.ref_nobias.fullPath())
         test_dir = os.path.dirname(self.test_nobias.fullPath())
