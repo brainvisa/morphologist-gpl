@@ -26,6 +26,48 @@ from brainvisa.configuration import neuroConfig
 from brainvisa.data import neuroHierarchy
 from soma.aims.graph_comparison import same_graphs
 
+# debugging
+try:
+    # try using rpdb2/winpdp
+    # don't start directly the embedded debugger because it seems to setup by
+    # default some breakpoints (when starting; in fork()) and hangs.
+    # so we use a signal handler (SIGUSR1) to set it up on demand:
+    # use "kill -USR1 <pid>"
+    # then connect via the winpdp client, with the password "neurospin".
+    import rpdb2
+
+    def handle_rpdb(sig, frame):
+        password='neurospin'
+        rpdb2.start_embedded_debugger(password)
+
+    import signal
+    import sys
+    signal.signal(signal.SIGUSR1, handle_rpdb)
+except ImportError:
+    # rpdb2/winpdp not installed
+    # the problem is that pydb and pdb need an interactive terminal running
+    # the current program...
+    try:
+        # try pydb
+        from pydb.sighandler import SignalManager
+        h = SignalManager()
+        h.action('SIGUSR1 stack print stop')
+    except ImportError:
+        # pydb not installed
+
+        def handle_pdb(sig, frame):
+            import pdb
+            pdb.Pdb().set_trace(frame)
+
+        try:
+            import signal
+            import sys
+            signal.signal(signal.SIGUSR1, handle_pdb)
+        except ImportError:
+            # no debugging, then.
+            pass
+
+
 test_workflow_file = None
 
 
