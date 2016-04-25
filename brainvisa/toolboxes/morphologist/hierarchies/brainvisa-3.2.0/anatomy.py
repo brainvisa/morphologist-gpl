@@ -33,8 +33,8 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
-include( 'base' )
 import registration
+include( 'base' )
 include( 'registration' )
 include( '3DT1_spm' )
 
@@ -198,40 +198,40 @@ apply( insert, ( '{center}/{subject}/t1mri/{acquisition}', ) + \
 
 # snapshots snapbase morphologist
 insert('snapshots/morphologist/{acquisition}/greywhite',
-      "snapshot_greywhite_{subject}_<acquisition>", SetType( 'Snapshot Grey White'), SetWeakAttr('software', 'morphologist')
+      "snapshot_greywhite_{subject}_<acquisition>", SetType( 'Snapshot Grey White'), SetWeakAttr('processing', 'morphologist')
 )
 
 insert('snapshots/morphologist/{acquisition}/splitbrain',
-  "snapshot_splitbrain_{subject}_<acquisition>", SetType( 'Snapshot Split Brain'), SetWeakAttr('software', 'morphologist')
+  "snapshot_splitbrain_{subject}_<acquisition>", SetType( 'Snapshot Split Brain'), SetWeakAttr('processing', 'morphologist')
 )
 
 insert('snapshots/morphologist/{acquisition}/meshcut',
-    "snapshot_meshcut_{subject}_<acquisition>", SetType( 'Snapshot Meshcut'), SetWeakAttr('software', 'morphologist')
+    "snapshot_meshcut_{subject}_<acquisition>", SetType( 'Snapshot Meshcut'), SetWeakAttr('processing', 'morphologist')
 )
 
 insert('snapshots/morphologist/{acquisition}/brainmask',
-    "snapshot_brainmask_{subject}_<acquisition>", SetType( 'Snapshot Brain Mask'), SetWeakAttr('software', 'morphologist')
+    "snapshot_brainmask_{subject}_<acquisition>", SetType( 'Snapshot Brain Mask'), SetWeakAttr('processing', 'morphologist')
 )
 
 insert('snapshots/morphologist/{acquisition}/raw',
-    "snapshot_raw_{subject}_<acquisition>", SetType( 'Snapshot Raw T1'), SetWeakAttr('software', 'morphologist')
+    "snapshot_raw_{subject}_<acquisition>", SetType( 'Snapshot Raw T1'), SetWeakAttr('processing', 'morphologist')
 )
 
 insert('snapshots/morphologist/{acquisition}/tablet',
-    "snapshot_tablet_{subject}_<acquisition>", SetType( 'Snapshot Tablet Raw T1'), SetWeakAttr('software', 'morphologist')
+    "snapshot_tablet_{subject}_<acquisition>", SetType( 'Snapshot Tablet Raw T1'), SetWeakAttr('processing', 'morphologist')
 )
 
 snap_pialmesh_content = (
-    "snapshot_left_pialmesh_{subject}_<acquisition>", SetType( 'Snapshot Pial Mesh'), SetWeakAttr( 'side', 'left', 'software', 'morphologist' ),
-    "snapshot_right_pialmesh_{subject}_<acquisition>", SetType( 'Snapshot Pial Mesh'), SetWeakAttr( 'side', 'right', 'software', 'morphologist'  ),
+    "snapshot_left_pialmesh_{subject}_<acquisition>", SetType( 'Snapshot Pial Mesh'), SetWeakAttr( 'side', 'left', 'processing', 'morphologist' ),
+    "snapshot_right_pialmesh_{subject}_<acquisition>", SetType( 'Snapshot Pial Mesh'), SetWeakAttr( 'side', 'right', 'processing', 'morphologist'  ),
 )
 snap_sulci_content = (
-    "snapshot_left_sulci_{subject}_<acquisition>", SetType( 'Snapshot Sulci'), SetWeakAttr( 'side', 'left', 'software', 'morphologist'  ),
-    "snapshot_right_sulci_{subject}_<acquisition>", SetType( 'Snapshot Sulci'), SetWeakAttr( 'side', 'right', 'software', 'morphologist'  ),
+    "snapshot_left_sulci_{subject}_<acquisition>", SetType( 'Snapshot Sulci'), SetWeakAttr( 'side', 'left', 'processing', 'morphologist'  ),
+    "snapshot_right_sulci_{subject}_<acquisition>", SetType( 'Snapshot Sulci'), SetWeakAttr( 'side', 'right', 'processing', 'morphologist'  ),
 )
 snap_whitemesh_content = (
-    "snapshot_left_whitemesh_{subject}_<acquisition>", SetType( 'Snapshot White Mesh'), SetWeakAttr( 'side', 'left', 'software', 'morphologist'  ),
-    "snapshot_right_whitemesh_{subject}_<acquisition>", SetType( 'Snapshot White Mesh'), SetWeakAttr( 'side', 'right', 'software', 'morphologist'  ),
+    "snapshot_left_whitemesh_{subject}_<acquisition>", SetType( 'Snapshot White Mesh'), SetWeakAttr( 'side', 'left', 'processing', 'morphologist'  ),
+    "snapshot_right_whitemesh_{subject}_<acquisition>", SetType( 'Snapshot White Mesh'), SetWeakAttr( 'side', 'right', 'processing', 'morphologist'  ),
 )
 
 
@@ -249,22 +249,22 @@ apply( insert, ('snapshots/morphologist/{acquisition}/whitemesh', ) + \
 
 # snapbase qc morphologist
 insert('snapshots/morphologist/{acquisition}/greywhite',
-    "qc_greywhite", SetType( 'Snapshots Grey White Quality Scores') , SetWeakAttr('software', 'morphologist')
+    "qc_greywhite", SetType( 'Snapshots Grey White Quality Scores') , SetWeakAttr('processing', 'morphologist')
 )
 insert('snapshots/morphologist/{acquisition}/splitbrain',
-    "qc_splitbrain", SetType( 'Snapshots Split Brain Quality Scores'), SetWeakAttr('software', 'morphologist')
+    "qc_splitbrain", SetType( 'Snapshots Split Brain Quality Scores'), SetWeakAttr('processing', 'morphologist')
 )
 insert('snapshots/morphologist/{acquisition}/meshcut',
-    "qc_meshcut", SetType( 'Snapshots Meshcut Quality Scores'), SetWeakAttr('software', 'morphologist')
+    "qc_meshcut", SetType( 'Snapshots Meshcut Quality Scores'), SetWeakAttr('processing', 'morphologist')
 )
 insert('snapshots/morphologist/{acquisition}/pialmesh',
-    "qc_pialmesh", SetType( 'Snapshots Pial Mesh Quality Scores'), SetWeakAttr('software', 'morphologist')
+    "qc_pialmesh", SetType( 'Snapshots Pial Mesh Quality Scores'), SetWeakAttr('processing', 'morphologist')
 )
 insert('snapshots/morphologist/{acquisition}/sulci',
-    "qc_sulci", SetType( 'Snapshots Sulci Quality Scores'), SetWeakAttr('software', 'morphologist')
+    "qc_sulci", SetType( 'Snapshots Sulci Quality Scores'), SetWeakAttr('processing', 'morphologist')
 )
 insert('snapshots/morphologist/{acquisition}/whitemesh',
-    "qc_whitemesh", SetType( 'Snapshots White Mesh Quality Scores'), SetWeakAttr('software', 'morphologist')
+    "qc_whitemesh", SetType( 'Snapshots White Mesh Quality Scores'), SetWeakAttr('processing', 'morphologist')
 )
 
 # snapshots snapbase spm
@@ -310,7 +310,7 @@ insert('snapshots/{processing}/{acquisition}/csf',
 # snapbase qc spm
 insert('snapshots/{processing}/{acquisition}',
     "qc_<processing>", SetType( 'Snapshots Probability Map Quality Scores')
-    #SetWeakAttr('software', 'spm8')
+    #SetWeakAttr('processing', 'spm8')
 )
 
 #==================================================================================================================================
@@ -320,28 +320,28 @@ insert('snapshots/{processing}/{acquisition}',
 tables_content = (
     "sulcalopenings_morphologist", 
         SetType('Sulcal Openings Table'),
-        SetWeakAttr('software', 'morphologist'),
+        SetWeakAttr('processing', 'morphologist'),
     "tissues_volumes_morphologist",
         SetType('Global Volumetry Table'),
-        SetWeakAttr('software', 'morphologist'),
+        SetWeakAttr('processing', 'morphologist'),
     "history_sulcalopenings_morphologist",
         SetType('History Sulcal Openings Table'),
-        SetWeakAttr('software', 'morphologist'),
+        SetWeakAttr('processing', 'morphologist'),
     "history_tissues_volumes_morphologist",
         SetType('History Global Volumetry Table'),
-        SetWeakAttr('software', 'morphologist'),
+        SetWeakAttr('processing', 'morphologist'),
     "tissues_volumes_{processing}", 
         SetType('Global Volumetry Table'),
-        #SetWeakAttr('software', 'spm8'),
+        #SetWeakAttr('processing', 'spm8'),
     "history_tissues_volumes_{processing}",
         SetType('History Global Volumetry Table'),
-        #SetWeakAttr('software', 'spm8'),
+        #SetWeakAttr('processing', 'spm8'),
     "snapshots_features_morphologist",
         SetType('Snapshots Features Table'),
-        SetWeakAttr('software', 'morphologist'),
+        SetWeakAttr('processing', 'morphologist'),
     "snapshots_features_{processing}",
         SetType('Snapshots Features Table'),
-        #SetWeakAttr('software', 'spm8')
+        #SetWeakAttr('processing', 'spm8')
 )
 
 apply( insert, ('tables/{acquisition}', ) + \
