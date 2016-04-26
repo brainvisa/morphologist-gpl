@@ -461,7 +461,6 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
         Callback for study_config.use_spm state change
         '''
         enabled = self.study_config.use_spm
-        print 'enable spm:', enabled
         if 'NormalizeSPM' in self.nodes['PrepareSubject'].process \
                 .nodes['Normalization'].process.nodes:
             self.nodes['PrepareSubject'].process \
@@ -481,7 +480,6 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
         Callback for study_config.use_fsl state change
         '''
         enabled = self.study_config.use_fsl
-        print 'enable fsl:', enabled
         if 'NormalizeFSL' in self.nodes['PrepareSubject'].process \
                 .nodes['Normalization'].process.nodes:
             self.nodes['PrepareSubject'].process \
@@ -519,7 +517,6 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
             values = ['NormalizeSPM'] + values
         for value in values:
             if nodes[value].enabled:
-                print 'select normalization method:', value
                 self.Normalization_select_Normalization_pipeline = value
                 break
 
