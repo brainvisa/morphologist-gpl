@@ -212,7 +212,9 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
         self.nodes['Renorm'].process.nodes['Normalization'].plugs['reoriented_t1mri'].optional = True
         self.nodes['Renorm'].process.nodes['Normalization'].process.nodes['select_Normalization_pipeline'].plugs['reoriented_t1mri'].optional = True
 
-        if self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes.has_key('NormalizeSPM'):
+        if 'NormalizeSPM' \
+                in self.nodes['PrepareSubject'].process.nodes[
+                    'Normalization'].process.nodes:
             self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes['NormalizeSPM'].process.nodes_activation.ReorientAnatomy = True
             self.nodes['Renorm'].process.nodes['Normalization'].process.nodes['NormalizeSPM'].process.nodes_activation.ReorientAnatomy = True
             self.add_link('normalization_allow_retry_initialization->PrepareSubject.Normalization_NormalizeSPM_allow_retry_initialization')
@@ -233,7 +235,9 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
                 'normalization_spm_native_job_file')
             self.do_not_export.add(('Renorm', 'Normalization_NormalizeSPM_ReorientAnatomy_output_t1mri'))
 
-        if self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes.has_key('NormalizeFSL'):
+        if 'NormalizeFSL' \
+                in self.nodes['PrepareSubject'].process.nodes[
+                    'Normalization'].process.nodes:
             self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes['NormalizeFSL'].process.nodes_activation.ReorientAnatomy = True
             self.nodes['Renorm'].process.nodes['Normalization'].process.nodes['NormalizeFSL'].process.nodes_activation.ReorientAnatomy = True
             self.add_link('normalization_allow_retry_initialization->PrepareSubject.Normalization_NormalizeFSL_allow_retry_initialization')
@@ -248,7 +252,9 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
                 'normalization_fsl_native_transformation')
             self.do_not_export.add(('Renorm', 'Normalization_NormalizeFSL_ReorientAnatomy_output_t1mri'))
 
-        if self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes.has_key('NormalizeBaladin'):
+        if 'NormalizeBaladin' \
+                in self.nodes['PrepareSubject'].process.nodes[
+                    'Normalization'].process.nodes:
             self.export_parameter(
                 'PrepareSubject',
                 'Normalization_NormalizeBaladin_NormalizeBaladin_transformation_matrix',
@@ -263,7 +269,9 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
                 self.nodes['PrepareSubject'].process.nodes['Normalization'].\
                     process.nodes['NormalizeBaladin'].enabled = False
 
-        if self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes.has_key('Normalization_AimsMIRegister'):
+        if 'Normalization_AimsMIRegister' \
+                in self.nodes['PrepareSubject'].process.nodes[
+                    'Normalization'].process.nodes:
             self.do_not_export.add(('PrepareSubject', 'Normalization_Normalization_AimsMIRegister_transformation_to_template'))
             self.do_not_export.add(('PrepareSubject', 'Normalization_Normalization_AimsMIRegister_transformation_to_ACPC'))
             self.do_not_export.add(('Renorm', 'Normalization_Normalization_AimsMIRegister_transformation_to_template'))
