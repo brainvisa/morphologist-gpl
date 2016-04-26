@@ -27,45 +27,57 @@ from brainvisa.data import neuroHierarchy
 from soma.aims.graph_comparison import same_graphs
 
 # debugging
-try:
+import signal
+import sys
+
+def handle_debugger(sig, frame):
+    # When the programs receives a signal SIGUSR2, import/start a debugging
+    # tool.
+    # Try rpdb2 first. This one allows client/server connection to a running
+    # program which has no terminal attached.
+    # However do NOT import rpdb2 from the global program since it installs
+    # import hooks that interfere with logging config.
+
     # try using rpdb2/winpdp
     # don't start directly the embedded debugger because it seems to setup by
     # default some breakpoints (when starting; in fork()) and hangs.
     # so we use a signal handler (SIGUSR1) to set it up on demand:
     # use "kill -USR1 <pid>"
     # then connect via the winpdp client, with the password "neurospin".
-    import rpdb2
+    try:
+        import rpdb2
 
-    def handle_rpdb(sig, frame):
         password='neurospin'
         rpdb2.start_embedded_debugger(password)
 
-    import signal
-    import sys
-    signal.signal(signal.SIGUSR1, handle_rpdb)
-except ImportError:
-    # rpdb2/winpdp not installed
-    # the problem is that pydb and pdb need an interactive terminal running
-    # the current program...
-    try:
-        # try pydb
-        from pydb.sighandler import SignalManager
-        h = SignalManager()
-        h.action('SIGUSR1 stack print stop')
     except ImportError:
-        # pydb not installed
 
-        def handle_pdb(sig, frame):
-            import pdb
-            pdb.Pdb().set_trace(frame)
-
+        # rpdb2/winpdp not installed
+        # the problem is that pydb and pdb need an interactive terminal running
+        # the current program...
+        # once installed a second signal, SIGUSR1, is needed to actually run
+        # the debugger.
         try:
-            import signal
-            import sys
-            signal.signal(signal.SIGUSR1, handle_pdb)
+            # try pydb
+            from pydb.sighandler import SignalManager
+            h = SignalManager()
+            h.action('SIGUSR1 stack print stop')
         except ImportError:
-            # no debugging, then.
-            pass
+            # pydb not installed
+
+            def handle_pdb(sig, frame):
+                import pdb
+                pdb.Pdb().set_trace(frame)
+
+            try:
+                import signal
+                import sys
+                signal.signal(signal.SIGUSR1, handle_pdb)
+            except ImportError:
+                # no debugging, then.
+                pass
+
+signal.signal(signal.SIGUSR2, handle_debugger)
 
 
 test_workflow_file = None
