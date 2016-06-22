@@ -7,6 +7,10 @@ name = 'Morphologist CAPSUL iteration'
 signature = Signature(
     't1mri', ListOf(ReadDiskItem('Raw T1 MRI',
                                   'aims readable volume formats')),
+    'capsul_process_type', OpenChoice(
+        ('Morphologist', 'morphologist.capsul.morphologist.Morphologist'),
+        ('Morphologist simple',
+         'morphologist.capsul.morphologist_simple.MorphologistSimple')),
     'analysis', ListOf(String()),
     'transfer_inputs', Boolean(),
     'transfer_outputs', Boolean(),
@@ -27,18 +31,26 @@ def onEditPipeline(self, process, dummy):
 
 def openPipeline(self):
     from capsul.qt_gui.widgets import PipelineDevelopperView
-    from morphologist.capsul.morphologist import Morphologist
+    from capsul.process import get_process_instance
     from capsul.pipeline import Pipeline
     Pipeline.hide_nodes_activation = False
     if self._edited_pipeline is None:
-        self._edited_pipeline = Morphologist()
-        self._edited_pipeline.nodes_activation.SulciRecognition = True
-        self._edited_pipeline.nodes_activation.SulciRecognition_1 = True
+        self._edited_pipeline = get_process_instance(self.capsul_process_type)
+        if self.capsul_process_type \
+                == 'morphologist.capsul.morphologist.Morphologist':
+            self._edited_pipeline.nodes_activation.SulciRecognition = True
+            self._edited_pipeline.nodes_activation.SulciRecognition_1 = True
     mpv = PipelineDevelopperView(
       self._edited_pipeline, allow_open_controller=True,
       show_sub_pipelines=True)
     mpv.show()
     self._pipeline_view = MainThreadLife(mpv)
+
+
+def change_process_type(self, process, dummy):
+    if self.edit_one_pipeline:
+        self.edit_one_pipeline = False
+    self._edited_pipeline = None
 
 
 def initialization(self):
@@ -50,6 +62,7 @@ def initialization(self):
     self._edited_pipeline = None
     self._pipeline_view = None
     self.linkParameters(None, 'edit_one_pipeline', self.onEditPipeline)
+    self.linkParameters(None, 'capsul_process_type', self.change_process_type)
 
 
 def execution(self, context):
@@ -57,7 +70,7 @@ def execution(self, context):
     import time
     from soma.application import Application
     from capsul.study_config.study_config import StudyConfig
-    from morphologist.capsul.morphologist import Morphologist
+    from capsul.process import get_process_instance
     from capsul.process import process_with_fom
     from soma_workflow import client as swclient
     from soma.wip.application.api import Application as Appli2
@@ -116,12 +129,15 @@ def execution(self, context):
     if self._edited_pipeline is not None:
         mp = self._edited_pipeline
     else:
-        mp = Morphologist()
-        mp.nodes_activation.SulciRecognition = True
-        mp.nodes_activation.SulciRecognition_1 = True
+        mp = get_process_instance(self.capsul_process_type)
+        if self.capsul_process_type \
+                == 'morphologist.capsul.morphologist.Morphologist':
+            mp.nodes_activation.SulciRecognition = True
+            mp.nodes_activation.SulciRecognition_1 = True
     pf = process_with_fom.ProcessWithFom(mp, study_config)
     # activate normalization methods disabling
-    mp.attach_config_activations(study_config)
+    if hasattr(mp, 'attach_config_activations'):
+        mp.attach_config_activations(study_config)
 
     # workflow config
     from capsul.pipeline import pipeline_workflow

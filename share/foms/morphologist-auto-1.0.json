@@ -349,7 +349,7 @@
                 [["output:{acquisition}/<subject>", "Commissure coordinates"]],
         },
 
-        "morphologistProcess": {
+        "MorphologistSimple": {
             "t1mri": [
                 [
                     "input:<center>/<subject>/t1mri/<acquisition>/<subject>",
@@ -455,6 +455,7 @@
                     ]
                 ]
             ],
+            "tal_to_normalized_transform": "{shared.talairach_TO_spm_transform}",
             "t1mri_nobias": [
                 [
                     "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/nobias_<subject>",
@@ -525,6 +526,7 @@
                     "Aims writable volume formats"
                 ]
             ],
+            "anatomical_template_skull_stripped": "{shared.anatomical_template_t1_skull_stripped}",
             "split_brain": [
                 [
                     "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/voronoi_<subject>",
