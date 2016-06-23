@@ -341,8 +341,12 @@ def initialization( self ):
     #Re Commissures Coordinates
     self.linkParameters( 'skull_stripped', 't1mri' )
     self.anatomical_template_skull_stripped = self.signature[
-        'anatomical_template' ].findValue({ '_ontology' : 'shared',
-        'skull_stripped' : 'yes', 'Size': '2 mm'})
+        'anatomical_template_skull_stripped'].findValue(
+            {'_ontology': 'shared',
+             'skull_stripped': 'yes', 'Size': '2 mm',
+             '_database' : os.path.normpath(os.path.join(
+                mainPath, '..', 'share', 'brainvisa-share-%s.%s'
+                % tuple(versionString().split('.')[:2])))})
     self.setOptional( 'anatomical_template_skull_stripped' )
     
     self.signature[ 'skull_stripped' ].userLevel = 100
