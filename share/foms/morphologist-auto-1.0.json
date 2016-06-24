@@ -1,7 +1,8 @@
 {
     "fom_name": "morphologist-auto-1.0",
 
-    "fom_import": ["formats-brainvisa-1.0", "shared-brainvisa-1.0"],
+    "fom_import": ["formats-brainvisa-1.0", "brainvisa-formats-3.2.0",
+                   "shared-brainvisa-1.0"],
 
     "attribute_definitions" : {
       "acquisition" : {"default_value" : "default_acquisition"},
@@ -348,5 +349,583 @@
                 [["output:{acquisition}/<subject>", "Commissure coordinates"]],
         },
 
+        "MorphologistSimple": {
+            "t1mri": [
+                [
+                    "input:<center>/<subject>/t1mri/<acquisition>/<subject>",
+                    [
+                        "gz compressed NIFTI-1 image",
+                        "NIFTI-1 image",
+                        "GIS image",
+                        "VIDA image",
+                        "ECAT i image",
+                        "Sakura svslide",
+                        "PNG image",
+                        "DICOM image",
+                        "XBM image",
+                        "MINC image",
+                        "Ventana bif",
+                        "XPM image",
+                        "gz compressed MINC image",
+                        "GIF image",
+                        "PGM image",
+                        "SPM image",
+                        "FDF image",
+                        "BMP image",
+                        "PPM image",
+                        "MNG image",
+                        "Leica scn",
+                        "Aperio svs",
+                        "TIFF image",
+                        "ECAT v image",
+                        "Zeiss czi",
+                        "TIFF(.tif) image",
+                        "PBM image",
+                        "Hamamatsu vms",
+                        "Hamamatsu ndpi",
+                        "Hamamatsu vmu",
+                        "JPEG image"
+                    ]
+                ]
+            ],
+            "commissure_coordinates": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<subject>",
+                    [
+                        "Commissure coordinates"
+                    ]
+                ]
+            ],
+            "older_MNI_normalization": [
+                [
+                    "input:<center>/<subject>/t1mri/<acquisition>/registration/RawT1-<subject>_<acquisition>_TO_Talairach-MNI",
+                    [
+                        "Transformation matrix"
+                    ]
+                ]
+            ],
+            "job_file": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<subject>_job_anat_normalization",
+                    [
+                        "Matlab file"
+                    ]
+                ]
+            ],
+            "transformations_information": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<subject>_sn",
+                    [
+                        "Matlab file"
+                    ]
+                ]
+            ],
+            "normalized_t1mri": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/normalized_<normalization>_<subject>",
+                    [
+                        "NIFTI-1 image"
+                    ],
+                    {
+                        "normalization": "SPM"
+                    }
+                ]
+            ],
+            "talairach_MNI_transform": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/registration/RawT1-<subject>_<acquisition>_TO_Talairach-MNI",
+                    [
+                        "Transformation matrix"
+                    ]
+                ]
+            ],
+            "source_referential": [
+                [
+                    "input:<center>/<subject>/t1mri/<acquisition>/registration/RawT1-<subject>_<acquisition>",
+                    [
+                        "Referential"
+                    ]
+                ]
+            ],
+            "normalized_referential": [
+                [
+                    "shared:registration/Talairach-MNI_template-SPM",
+                    [
+                        "Referential"
+                    ]
+                ]
+            ],
+            "tal_to_normalized_transform": "{shared.talairach_TO_spm_transform}",
+            "t1mri_nobias": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/nobias_<subject>",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "hfiltered": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/hfiltered_<subject>",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "white_ridges": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/whiteridge_<subject>",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "variance": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/variance_<subject>",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "edges": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/edges_<subject>",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "field": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/biasfield_<subject>",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "meancurvature": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/mean_curvature_<subject>",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "histo_analysis": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/nobias_<subject>",
+                    [
+                        "Histo Analysis"
+                    ]
+                ]
+            ],
+            "histo": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/nobias_<subject>",
+                    [
+                        "Histogram"
+                    ]
+                ]
+            ],
+            "brain_mask": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/brain_<subject>",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "skull_stripped": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/skull_stripped_<subject>",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "anatomical_template_skull_stripped": "{shared.anatomical_template_t1_skull_stripped}",
+            "split_brain": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/voronoi_<subject>",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "split_template": [
+                [
+                    "shared:hemitemplate/closedvoronoi",
+                    [
+                        "GIS image",
+                    ]
+                ]
+            ],
+            "talairach_ACPC_transform": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/registration/RawT1-<subject>_<acquisition>_TO_Talairach-ACPC",
+                    [
+                        "Transformation matrix"
+                    ]
+                ]
+            ],
+            "left_grey_white": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/Lgrey_white_<subject>",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "right_grey_white": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/Rgrey_white_<subject>",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "left_hemi_cortex": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/Lcortex_<subject>",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "right_hemi_cortex": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/Rcortex_<subject>",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "left_white_mesh": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_Lwhite",
+                    "Aims mesh formats"
+                ]
+            ],
+            "right_white_mesh": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_Rwhite",
+                    "Aims mesh formats"
+                ]
+            ],
+            "left_skeleton": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/Lskeleton_<subject>",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "left_roots": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/Lroots_<subject>",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "right_skeleton": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/Rskeleton_<subject>",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "right_roots": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/Rroots_<subject>",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "left_pial_mesh": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_Lhemi",
+                    "Aims mesh formats"
+                ]
+            ],
+            "right_pial_mesh": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_Rhemi",
+                    "Aims mesh formats"
+                ]
+            ],
+            "left_graph": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/L<subject>",
+                    [
+                        "Graph and data"
+                    ]
+                ]
+            ],
+            "left_sulci_voronoi": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/Lsulcivoronoi_<subject>",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "left_cortex_mid_interface": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/Lgw_interface_<subject>",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "right_graph": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/R<subject>",
+                    [
+                        "Graph and data"
+                    ]
+                ]
+            ],
+            "right_sulci_voronoi": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/Rsulcivoronoi_<subject>",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "right_cortex_mid_interface": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/Rgw_interface_<subject>",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "labels_translation_map": [
+                [
+                    "shared:nomenclature/translation/sulci_model_2008",
+                    [
+                        "Label Translation",
+                        "DEF Label Translation"
+                    ]
+                ]
+            ],
+            "left_labelled_graph": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/L<subject>_<sulci_recognition_session>_auto",
+                    [
+                        "Graph and data"
+                    ]
+                ]
+            ],
+            "left_posterior_probabilities": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/L<subject>_<sulci_recognition_session>_auto_proba",
+                    [
+                        "CSV file"
+                    ]
+                ]
+            ],
+            "left_labels_priors": [
+                [
+                    "shared:models/models_<sulci_database>/descriptive_models/labels_priors/frequency_segments_priors_<side>/frequency_segments_priors",
+                    [
+                        "Text Data Table"
+                    ],
+                    {
+                        "side": "left",
+                        "sulci_database": "2008"
+                    }
+                ]
+            ],
+            "left_global_model": [
+                [
+                    "shared:models/models_<sulci_database>/descriptive_models/segments/<sulci_segments_model_type>_left/spam_distribs",
+                    [
+                        "Text Data Table"
+                    ],
+                    {
+                        "sulci_segments_model_type": "global_registered_spam",
+                        "sulci_database": "2008"
+                    }
+                ]
+            ],
+            "left_tal_to_global_transform": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/L<subject>_<sulci_recognition_session>_auto_Tal_TO_SPAM",
+                    [
+                        "Transformation matrix"
+                    ]
+                ]
+            ],
+            "left_t1_to_global_transform": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/L<subject>_<sulci_recognition_session>_auto_T1_TO_SPAM",
+                    [
+                        "Transformation matrix"
+                    ]
+                ]
+            ],
+            "left_local_model": [
+                [
+                    "shared:models/models_<sulci_database>/descriptive_models/segments/<sulci_segments_model_type>_left/spam_distribs",
+                    [
+                        "Text Data Table"
+                    ],
+                    {
+                        "sulci_segments_model_type": "locally_from_global_registred_spam",
+                        "sulci_database": "2008"
+                    }
+                ]
+            ],
+            "left_local_referentials": [
+                [
+                    "shared:models/models_<sulci_database>/descriptive_models/segments/<sulci_segments_model_type>_left/local_referentials",
+                    [
+                        "Text Data Table"
+                    ],
+                    {
+                        "sulci_segments_model_type": "locally_from_global_registred_spam",
+                        "sulci_database": "2008"
+                    }
+                ]
+            ],
+            "left_direction_priors": [
+                [
+                    "shared:models/models_<sulci_database>/descriptive_models/segments/<sulci_segments_model_type>_left/bingham_direction_trm_priors",
+                    [
+                        "Text Data Table"
+                    ],
+                    {
+                        "sulci_segments_model_type": "locally_from_global_registred_spam",
+                        "sulci_database": "2008"
+                    }
+                ]
+            ],
+            "left_angle_priors": [
+                [
+                    "shared:models/models_<sulci_database>/descriptive_models/segments/<sulci_segments_model_type>_left/vonmises_angle_trm_priors",
+                    [
+                        "Text Data Table"
+                    ],
+                    {
+                        "sulci_segments_model_type": "locally_from_global_registred_spam",
+                        "sulci_database": "2008"
+                    }
+                ]
+            ],
+            "left_translation_priors": [
+                [
+                    "shared:models/models_<sulci_database>/descriptive_models/segments/<sulci_segments_model_type>_left/gaussian_translation_trm_priors",
+                    [
+                        "Text Data Table"
+                    ],
+                    {
+                        "sulci_segments_model_type": "locally_from_global_registred_spam",
+                        "sulci_database": "2008"
+                    }
+                ]
+            ],
+            "left_global_to_local_transforms": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/L<subject>_<sulci_recognition_session>_auto_global_TO_local",
+                    [
+                        "Directory"
+                    ]
+                ]
+            ],
+            "right_labelled_graph": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/R<subject>_<sulci_recognition_session>_auto",
+                    [
+                        "Graph and data"
+                    ]
+                ]
+            ],
+            "right_posterior_probabilities": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/R<subject>_<sulci_recognition_session>_auto_proba",
+                    [
+                        "CSV file"
+                    ]
+                ]
+            ],
+            "right_labels_priors": [
+                [
+                    "shared:models/models_<sulci_database>/descriptive_models/labels_priors/frequency_segments_priors_<side>/frequency_segments_priors",
+                    [
+                        "Text Data Table"
+                    ],
+                    {
+                        "side": "right",
+                        "sulci_database": "2008"
+                    }
+                ]
+            ],
+            "right_global_model": [
+                [
+                    "shared:models/models_<sulci_database>/descriptive_models/segments/<sulci_segments_model_type>_right/spam_distribs",
+                    [
+                        "Text Data Table"
+                    ],
+                    {
+                        "sulci_segments_model_type": "global_registered_spam",
+                        "sulci_database": "2008"
+                    }
+                ]
+            ],
+            "right_tal_to_global_transform": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/R<subject>_<sulci_recognition_session>_auto_Tal_TO_SPAM",
+                    [
+                        "Transformation matrix"
+                    ]
+                ]
+            ],
+            "right_t1_to_global_transform": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/R<subject>_<sulci_recognition_session>_auto_T1_TO_SPAM",
+                    [
+                        "Transformation matrix"
+                    ]
+                ]
+            ],
+            "right_local_model": [
+                [
+                    "shared:models/models_<sulci_database>/descriptive_models/segments/<sulci_segments_model_type>_right/spam_distribs",
+                    [
+                        "Text Data Table"
+                    ],
+                    {
+                        "sulci_segments_model_type": "locally_from_global_registred_spam",
+                        "sulci_database": "2008"
+                    }
+                ]
+            ],
+            "right_local_referentials": [
+                [
+                    "shared:models/models_<sulci_database>/descriptive_models/segments/<sulci_segments_model_type>_right/local_referentials",
+                    [
+                        "Text Data Table"
+                    ],
+                    {
+                        "sulci_segments_model_type": "locally_from_global_registred_spam",
+                        "sulci_database": "2008"
+                    }
+                ]
+            ],
+            "right_direction_priors": [
+                [
+                    "shared:models/models_<sulci_database>/descriptive_models/segments/<sulci_segments_model_type>_right/bingham_direction_trm_priors",
+                    [
+                        "Text Data Table"
+                    ],
+                    {
+                        "sulci_segments_model_type": "locally_from_global_registred_spam",
+                        "sulci_database": "2008"
+                    }
+                ]
+            ],
+            "right_angle_priors": [
+                [
+                    "shared:models/models_<sulci_database>/descriptive_models/segments/<sulci_segments_model_type>_right/vonmises_angle_trm_priors",
+                    [
+                        "Text Data Table"
+                    ],
+                    {
+                        "sulci_segments_model_type": "locally_from_global_registred_spam",
+                        "sulci_database": "2008"
+                    }
+                ]
+            ],
+            "right_translation_priors": [
+                [
+                    "shared:models/models_<sulci_database>/descriptive_models/segments/<sulci_segments_model_type>_right/gaussian_translation_trm_priors",
+                    [
+                        "Text Data Table"
+                    ],
+                    {
+                        "sulci_segments_model_type": "locally_from_global_registred_spam",
+                        "sulci_database": "2008"
+                    }
+                ]
+            ],
+            "right_global_to_local_transforms": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/R<subject>_<sulci_recognition_session>_auto_global_TO_local",
+                    [
+                        "Directory"
+                    ]
+                ]
+            ],
+            "sulcal_morpho_measures": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/<subject>_<sulci_recognition_session>_auto_sulcal_morphometry",
+                    [
+                        "CSV file"
+                    ]
+                ]
+            ]
+        },
     }
 }

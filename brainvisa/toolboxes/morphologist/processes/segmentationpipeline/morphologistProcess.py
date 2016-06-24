@@ -251,7 +251,7 @@ def linkOldNormalization(self, proc, dummy):
 def initialization( self ):
     self.perform_segmentation = True
     #Commissures Coordinates
-    self.method_ACPC = 'Manually'
+    self.method_ACPC = 'With SPM Normalization'
     self.linkParameters('commissure_coordinates', 't1mri')
     self.linkParameters('anterior_commissure',
         'commissure_coordinates', APCReader('AC'))
@@ -341,8 +341,12 @@ def initialization( self ):
     #Re Commissures Coordinates
     self.linkParameters( 'skull_stripped', 't1mri' )
     self.anatomical_template_skull_stripped = self.signature[
-        'anatomical_template' ].findValue({ '_ontology' : 'shared',
-        'skull_stripped' : 'yes', 'Size': '2 mm'})
+        'anatomical_template_skull_stripped'].findValue(
+            {'_ontology': 'shared',
+             'skull_stripped': 'yes', 'Size': '2 mm',
+             '_database' : os.path.normpath(os.path.join(
+                mainPath, '..', 'share', 'brainvisa-share-%s.%s'
+                % tuple(versionString().split('.')[:2])))})
     self.setOptional( 'anatomical_template_skull_stripped' )
     
     self.signature[ 'skull_stripped' ].userLevel = 100
