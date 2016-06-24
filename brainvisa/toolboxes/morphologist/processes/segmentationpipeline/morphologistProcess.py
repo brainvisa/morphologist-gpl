@@ -251,7 +251,7 @@ def linkOldNormalization(self, proc, dummy):
 def initialization( self ):
     self.perform_segmentation = True
     #Commissures Coordinates
-    self.method_ACPC = 'Manually'
+    self.method_ACPC = 'With SPM Normalization'
     self.linkParameters('commissure_coordinates', 't1mri')
     self.linkParameters('anterior_commissure',
         'commissure_coordinates', APCReader('AC'))
