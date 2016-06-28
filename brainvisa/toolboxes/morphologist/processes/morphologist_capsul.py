@@ -279,7 +279,7 @@ def execution(self, context):
         format = axon_to_capsul_formats.get(t1mri.format.name,
                                             t1mri.format.name)
         if cversion >= (2, 1):
-            pf.complete_parameters(mp, {'capsul_attributes': attributes})
+            pf.complete_parameters({'capsul_attributes': attributes})
         else:
             pf.create_completion()
 
