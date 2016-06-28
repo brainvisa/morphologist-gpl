@@ -13,7 +13,6 @@ from argparse import ArgumentParser
 homedir = tempfile.mkdtemp(prefix='bv_home')
 os.environ['BRAINVISA_USER_DIR'] = homedir
 
-from morphologist.capsul.morphologist import Morphologist
 import brainvisa.config as bv_config
 import soma_workflow.client as swclient
 import soma_workflow.constants as swconstants
@@ -124,10 +123,7 @@ class TestMorphologistCapsul(unittest.TestCase):
 
         print '* create process'
         process = brainvisa.processes.getProcessInstance("morphologist_capsul")
-        mp = Morphologist()
-        process._edited_pipeline = mp
-        #mp.nodes_activation.CorticalFoldsGraph = False
-        #mp.nodes_activation.CorticalFoldsGraph_1 = False
+        mp = process.get_edited_pipeline()
         mp.nodes_activation.SulciRecognition = True
         mp.nodes_activation.SulciRecognition_1 = True
         mp.select_Talairach = 'StandardACPC'
