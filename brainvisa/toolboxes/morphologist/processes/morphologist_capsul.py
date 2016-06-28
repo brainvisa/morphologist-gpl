@@ -96,9 +96,8 @@ def get_edited_pipeline(self):
         else:
             from capsul.process import get_process_instance
         if cversion >= (2, 1):
-            from capsul.attributes.completion_engine import CompletionEngine
-        self._edited_pipeline = get_process_instance(self.capsul_process_type)
-        self.customize_process()
+            from capsul.attributes.completion_engine \
+                import ProcessCompletionEngine
         if cversion >= (2, 1):
             from capsul.study_config.study_config import StudyConfig
             init_study_config = self.get_initial_study_config()
@@ -106,9 +105,14 @@ def get_edited_pipeline(self):
                 init_config=init_study_config,
                 modules=StudyConfig.default_modules
                     + ['BrainVISAConfig', 'FomConfig'])
-            self._edited_pipeline.set_study_config(study_config)
-            pf = CompletionEngine.get_completion_engine(self._edited_pipeline)
-            self._edited_pipeline.completion_engine = pf
+            self._edited_pipeline = get_process_instance(
+                self.capsul_process_type, study_config)
+            pf = ProcessCompletionEngine.get_completion_engine(
+                self._edited_pipeline)
+        else:
+            self._edited_pipeline = get_process_instance(
+                self.capsul_process_type)
+        self.customize_process()
 
     return self._edited_pipeline
 
@@ -120,9 +124,7 @@ def execution(self, context):
     from capsul.study_config.study_config import StudyConfig
     from capsul import info as cinfo
     cversion = (cinfo.version_major, cinfo.version_minor, cinfo.version_micro)
-    if cversion >= (2, 1):
-        from capsul.attributes.completion_model import CompletionModel
-    else:
+    if cversion < (2, 1):
         from capsul.process import process_with_fom
     from soma_workflow import client as swclient
     from soma.wip.application.api import Application as Appli2
@@ -169,24 +171,15 @@ def execution(self, context):
     old_database = self.t1mri[sorted_items[0]]['_database']
     old_format = formats[sorted_items[0]]
 
-    init_study_config = {
-        "input_directory" : old_database,
-        "output_directory" : old_database,
-        "input_fom" : "morphologist-auto-1.0",
-        "output_fom" : "morphologist-auto-1.0",
-        "shared_fom" : "shared-brainvisa-1.0",
-        "spm_directory" : configuration.SPM.spm8_standalone_path,
-        "use_soma_workflow" : True,
-        "use_fom" : True,
-        "volumes_format" : old_format,
-        "meshes_format" : "GIFTI",
-    }
+    init_study_config = self.get_initial_study_config()
+    init_study_config["input_directory"] = old_database
+    init_study_config["output_directory"] = old_database
 
     mp = self.get_edited_pipeline()
     if cversion >= (2, 1):
         study_config = mp.get_study_config()
         study_config.set_study_configuration(init_study_config)
-        pf = mp.completion_model
+        pf = mp.completion_engine
     else:
         study_config = StudyConfig(
             init_config=init_study_config,
