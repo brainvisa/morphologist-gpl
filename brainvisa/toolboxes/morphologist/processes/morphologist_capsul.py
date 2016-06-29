@@ -77,12 +77,45 @@ def get_initial_study_config(self):
         "input_fom" : "morphologist-auto-1.0",
         "output_fom" : "morphologist-auto-1.0",
         "shared_fom" : "shared-brainvisa-1.0",
-        "spm_directory" : configuration.SPM.spm8_standalone_path,
         "use_soma_workflow" : True,
         "use_fom" : True,
         "volumes_format" : 'NIFTI gz',
         "meshes_format" : "GIFTI",
     }
+    if configuration.SPM.spm12_standalone_path \
+            and configuration.SPM.spm12_standalone_command:
+        init_study_config['spm_standalone'] = True
+        init_study_config['spm_exec'] \
+            = configuration.SPM.spm12_standalone_command
+        init_study_config['spm_directory'] \
+            = configuration.SPM.spm12_standalone_path
+        init_study_config['use_spm'] = True
+    elif configuration.SPM.spm8_standalone_path \
+            and configuration.SPM.spm8_standalone_command:
+        init_study_config['spm_standalone'] = True
+        init_study_config['spm_exec'] \
+            = configuration.SPM.spm8_standalone_command
+        init_study_config['spm_directory'] \
+            = configuration.SPM.spm8_standalone_path
+        init_study_config['use_spm'] = True
+    elif configuration.Matlab.executable:
+        init_study_config['matlab_exec'] = configuration.Matlab.executable
+        init_study_config['use_matlab'] = True
+        if configuration.SPM.spm12_path:
+            init_study_config['spm_directory'] = configuration.SPM.spm12_path
+            init_study_config['use_spm'] = True
+        elif configuration.SPM.spm8_path:
+            init_study_config['spm_directory'] = configuration.SPM.spm8_path
+            init_study_config['use_spm'] = True
+        elif configuration.SPM.spm5_path:
+            init_study_config['spm_directory'] = configuration.SPM.spm5_path
+            init_study_config['use_spm'] = True
+    # I can't get FSL config to work.
+    #if configuration.FSL.fsldir:
+          #fsl = os.path.join(configuration.FSL.fsldir, 'etc/fslconf/fsl.sh')
+          #if os.path.exists(fsl):
+              #init_study_config['fsl_config'] = fsl
+              #init_study_config['use_fsl'] = True
     return init_study_config
 
 
@@ -262,6 +295,9 @@ def execution(self, context):
         workflow.groups += [group] + wf.groups
         context.progress(item+1, len(self.t1mri), process=self)
 
-    context.write('jobs:', len(workflow.jobs))
+    context.write('jobs:',
+                  len([j for j in workflow.jobs
+                       if j.__class__.__name__ == 'Job']),
+                  ' real, ', len(workflow.jobs), ' total including barriers')
     swclient.Helper.serialize(self.workflow.fullPath(), workflow)
 
