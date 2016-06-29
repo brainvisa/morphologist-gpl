@@ -115,51 +115,6 @@ def get_edited_pipeline(self):
         self.customize_process()
 
 
-def get_initial_study_config(self):
-    from soma.wip.application.api import Application as Appli2
-    configuration = Appli2().configuration
-    init_study_config = {
-        "input_directory" : '/tmp',
-        "output_directory" : '/tmp',
-        "input_fom" : "morphologist-auto-1.0",
-        "output_fom" : "morphologist-auto-1.0",
-        "shared_fom" : "shared-brainvisa-1.0",
-        "spm_directory" : configuration.SPM.spm8_standalone_path,
-        "use_soma_workflow" : True,
-        "use_fom" : True,
-        "volumes_format" : 'NIFTI gz',
-        "meshes_format" : "GIFTI",
-    }
-    return init_study_config
-
-
-def get_edited_pipeline(self):
-    if self._edited_pipeline is None:
-        from capsul import info as cinfo
-        cversion = (cinfo.version_major, cinfo.version_minor,
-                    cinfo.version_micro)
-        from capsul.api import get_process_instance
-        if cversion >= (2, 1):
-            from capsul.attributes.completion_engine \
-                import ProcessCompletionEngine
-        self._edited_pipeline = get_process_instance(
-            'morphologist.capsul.morphologist.Morphologist')
-        self._edited_pipeline.nodes_activation.SulciRecognition = True
-        self._edited_pipeline.nodes_activation.SulciRecognition_1 = True
-        if cversion >= (2, 1):
-            from capsul.study_config.study_config import StudyConfig
-            init_study_config = self.get_initial_study_config()
-            study_config = StudyConfig(
-                init_config=init_study_config,
-                modules=StudyConfig.default_modules
-                    + ['BrainVISAConfig', 'FomConfig'])
-            self._edited_pipeline.set_study_config(study_config)
-            pf = ProcessCompletionEngine.get_completion_engine(
-                self._edited_pipeline)
-
-    return self._edited_pipeline
-
-
 def execution(self, context):
     self._pipeline_view = None # close the GUI, if any
     import time
