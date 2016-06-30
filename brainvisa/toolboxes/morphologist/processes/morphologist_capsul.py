@@ -98,8 +98,8 @@ def get_initial_study_config(self):
         init_study_config['spm_directory'] \
             = configuration.SPM.spm8_standalone_path
         init_study_config['use_spm'] = True
-    elif configuration.Matlab.executable:
-        init_study_config['matlab_exec'] = configuration.Matlab.executable
+    elif configuration.matlab.executable:
+        init_study_config['matlab_exec'] = configuration.matlab.executable
         init_study_config['use_matlab'] = True
         if configuration.SPM.spm12_path:
             init_study_config['spm_directory'] = configuration.SPM.spm12_path
