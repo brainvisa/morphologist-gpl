@@ -110,12 +110,11 @@ def get_initial_study_config(self):
         elif configuration.SPM.spm5_path:
             init_study_config['spm_directory'] = configuration.SPM.spm5_path
             init_study_config['use_spm'] = True
-    # I can't get FSL config to work.
-    #if configuration.FSL.fsldir:
-          #fsl = os.path.join(configuration.FSL.fsldir, 'etc/fslconf/fsl.sh')
-          #if os.path.exists(fsl):
-              #init_study_config['fsl_config'] = fsl
-              #init_study_config['use_fsl'] = True
+    if configuration.FSL.fsldir:
+          fsl = os.path.join(configuration.FSL.fsldir, 'etc/fslconf/fsl.sh')
+          if os.path.exists(fsl):
+              init_study_config['fsl_config'] = fsl
+              init_study_config['use_fsl'] = True
     return init_study_config
 
 
@@ -146,6 +145,8 @@ def get_edited_pipeline(self):
             self._edited_pipeline = get_process_instance(
                 self.capsul_process_type)
         self.customize_process()
+
+    return self._edited_pipeline
 
 
 def execution(self, context):
@@ -220,7 +221,7 @@ def execution(self, context):
 
     # activate normalization methods disabling
     if hasattr(mp, 'attach_config_activations'):
-        mp.attach_config_activations(study_config)
+        mp.attach_config_activations()
 
     # workflow config
     from capsul.pipeline import pipeline_workflow

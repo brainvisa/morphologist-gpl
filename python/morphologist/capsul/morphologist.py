@@ -435,16 +435,15 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
         self.add_pipeline_step('sulcal_morphometry', ['SulcalMorphometry'])
 
 
-    def attach_config_activations(self, study_config):
+    def attach_config_activations(self):
         '''
         Set notification handlers on study_config variables use_spm, use_fsl
         to adapt activation of SPM and FSL nodes in the normalization steps,
         and the normalization switches values.
         Any previous notification will be removed first.
         '''
-        if hasattr(self, 'study_config') and self.study_config is not None:
-            self.detach_config_activation()
-        self.study_config = study_config
+        self.detach_config_activation()
+        study_config = self.study_config
         study_config.on_trait_change(self._change_spm_activation, 'use_spm')
         study_config.on_trait_change(self._change_fsl_activation, 'use_fsl')
         self._change_spm_activation(study_config.use_spm)
@@ -461,7 +460,6 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
                                      remove=True)
         study_config.on_trait_change(self._change_fsl_activation, 'use_fsl',
                                      remove=True)
-        del self.study_config
 
 
     def _change_spm_activation(self, dummy):
@@ -477,10 +475,7 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
             self.nodes['Renorm'].process \
                 .nodes['Normalization'].process.nodes['NormalizeSPM'].enabled \
                 = enabled
-        if enabled:
-            self.Normalization_select_Normalization_pipeline = 'NormalizeSPM'
-        else:
-            self.ensure_use_allowed_normalization()
+        self.ensure_use_allowed_normalization()
 
 
     def _change_fsl_activation(self, dummy):
@@ -496,13 +491,7 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
             self.nodes['Renorm'].process \
                 .nodes['Normalization'].process.nodes['NormalizeFSL'].enabled \
                 = enabled
-        if enabled:
-            if self.Normalization_select_Normalization_pipeline \
-                    != 'NormalizeSPM':
-                self.Normalization_select_Normalization_pipeline \
-                    = 'NormalizeFSL'
-        else:
-            self.ensure_use_allowed_normalization()
+        self.ensure_use_allowed_normalization()
 
 
     def ensure_use_allowed_normalization(self):
