@@ -477,10 +477,7 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
             self.nodes['Renorm'].process \
                 .nodes['Normalization'].process.nodes['NormalizeSPM'].enabled \
                 = enabled
-        if enabled:
-            self.Normalization_select_Normalization_pipeline = 'NormalizeSPM'
-        else:
-            self.ensure_use_allowed_normalization()
+        self.ensure_use_allowed_normalization()
 
 
     def _change_fsl_activation(self, dummy):
@@ -496,13 +493,7 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
             self.nodes['Renorm'].process \
                 .nodes['Normalization'].process.nodes['NormalizeFSL'].enabled \
                 = enabled
-        if enabled:
-            if self.Normalization_select_Normalization_pipeline \
-                    != 'NormalizeSPM':
-                self.Normalization_select_Normalization_pipeline \
-                    = 'NormalizeFSL'
-        else:
-            self.ensure_use_allowed_normalization()
+        self.ensure_use_allowed_normalization()
 
 
     def ensure_use_allowed_normalization(self):

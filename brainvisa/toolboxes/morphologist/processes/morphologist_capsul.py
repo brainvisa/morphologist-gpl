@@ -110,12 +110,11 @@ def get_initial_study_config(self):
         elif configuration.SPM.spm5_path:
             init_study_config['spm_directory'] = configuration.SPM.spm5_path
             init_study_config['use_spm'] = True
-    # I can't get FSL config to work.
-    #if configuration.FSL.fsldir:
-          #fsl = os.path.join(configuration.FSL.fsldir, 'etc/fslconf/fsl.sh')
-          #if os.path.exists(fsl):
-              #init_study_config['fsl_config'] = fsl
-              #init_study_config['use_fsl'] = True
+    if configuration.FSL.fsldir:
+          fsl = os.path.join(configuration.FSL.fsldir, 'etc/fslconf/fsl.sh')
+          if os.path.exists(fsl):
+              init_study_config['fsl_config'] = fsl
+              init_study_config['use_fsl'] = True
     return init_study_config
 
 
