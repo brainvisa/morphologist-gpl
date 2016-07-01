@@ -1,6 +1,7 @@
 
 from brainvisa.processes import *
 from brainvisa.tools.mainthreadlife import MainThreadLife
+from brainvisa.processing import capsul_process
 
 name = 'Morphologist CAPSUL iteration'
 
@@ -68,56 +69,6 @@ def customize_process(self):
         self._edited_pipeline.method_ACPC = 'With SPM Normalization'
 
 
-def get_initial_study_config(self):
-    from soma.wip.application.api import Application as Appli2
-    configuration = Appli2().configuration
-    init_study_config = {
-        "input_directory" : '/tmp',
-        "output_directory" : '/tmp',
-        "input_fom" : "morphologist-auto-1.0",
-        "output_fom" : "morphologist-auto-1.0",
-        "shared_fom" : "shared-brainvisa-1.0",
-        "use_soma_workflow" : True,
-        "use_fom" : True,
-        "volumes_format" : 'NIFTI gz',
-        "meshes_format" : "GIFTI",
-    }
-    if configuration.SPM.spm12_standalone_path \
-            and configuration.SPM.spm12_standalone_command:
-        init_study_config['spm_standalone'] = True
-        init_study_config['spm_exec'] \
-            = configuration.SPM.spm12_standalone_command
-        init_study_config['spm_directory'] \
-            = configuration.SPM.spm12_standalone_path
-        init_study_config['use_spm'] = True
-    elif configuration.SPM.spm8_standalone_path \
-            and configuration.SPM.spm8_standalone_command:
-        init_study_config['spm_standalone'] = True
-        init_study_config['spm_exec'] \
-            = configuration.SPM.spm8_standalone_command
-        init_study_config['spm_directory'] \
-            = configuration.SPM.spm8_standalone_path
-        init_study_config['use_spm'] = True
-    elif configuration.matlab.executable:
-        init_study_config['matlab_exec'] = configuration.matlab.executable
-        init_study_config['use_matlab'] = True
-        if configuration.SPM.spm12_path:
-            init_study_config['spm_directory'] = configuration.SPM.spm12_path
-            init_study_config['use_spm'] = True
-        elif configuration.SPM.spm8_path:
-            init_study_config['spm_directory'] = configuration.SPM.spm8_path
-            init_study_config['use_spm'] = True
-        elif configuration.SPM.spm5_path:
-            init_study_config['spm_directory'] = configuration.SPM.spm5_path
-            init_study_config['use_spm'] = True
-    if configuration.FSL.fsldir:
-          fsl = os.path.join(configuration.FSL.fsldir, 'etc/fslconf/fsl.sh')
-          if os.path.exists(fsl):
-              init_study_config['fsl_config'] = fsl
-              init_study_config['use_fsl'] = True
-    return init_study_config
-
-
 def get_edited_pipeline(self):
     if self._edited_pipeline is None:
         from capsul import info as cinfo
@@ -132,7 +83,7 @@ def get_edited_pipeline(self):
                 import ProcessCompletionEngine
         if cversion >= (2, 1):
             from capsul.study_config.study_config import StudyConfig
-            init_study_config = self.get_initial_study_config()
+            init_study_config = capsul_process.get_initial_study_config()
             study_config = StudyConfig(
                 init_config=init_study_config,
                 modules=StudyConfig.default_modules
@@ -203,7 +154,7 @@ def execution(self, context):
     old_database = self.t1mri[sorted_items[0]]['_database']
     old_format = formats[sorted_items[0]]
 
-    init_study_config = self.get_initial_study_config()
+    init_study_config = capsul_process.get_initial_study_config()
     init_study_config["input_directory"] = old_database
     init_study_config["output_directory"] = old_database
 
