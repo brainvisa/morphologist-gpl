@@ -152,7 +152,6 @@ def execution(self, context):
         sorted_items += list(sub_items[np.argsort(aformats[sub_items])])
 
     old_database = self.t1mri[sorted_items[0]]['_database']
-    old_format = formats[sorted_items[0]]
 
     init_study_config = capsul_process.get_initial_study_config()
     init_study_config["input_directory"] = old_database
@@ -204,13 +203,13 @@ def execution(self, context):
             j = -1
         pf.attributes['analysis'] = self.analysis[j]
         # handle input format
-        if database != old_database or format != old_format:
+        if database != study_config.input_directory \
+                or database != study_config.output_directory \
+                or format != study_config.volumes_format:
             # need to reconfigure FOMs for this new dirs/format
             study_config.input_directory = database
             study_config.output_directory = database
             study_config.volumes_format = format
-            old_format = format
-            old_database = database
             study_config.initialize_modules()
         format = axon_to_capsul_formats.get(t1mri.format.name,
                                             t1mri.format.name)
