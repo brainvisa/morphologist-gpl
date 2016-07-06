@@ -161,6 +161,18 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
         self.add_link('fix_random_seed->SulciRecognition.fix_random_seed')
         self.add_link('fix_random_seed->SulciRecognition_1.fix_random_seed')
 
+        self.export_parameter('GreyWhiteTopology', 'version',
+                              'grey_white_topology_version')
+        self.add_link('grey_white_topology_version->'
+                      'GreyWhiteTopology_1.version')
+
+        self.export_parameter('PialMesh', 'version', 'pial_mesh_version')
+        self.add_link('pial_mesh_version->PialMesh_1.version')
+
+        self.export_parameter('SulciSkeleton', 'version',
+                              'sulci_skeleton_version')
+        self.add_link('sulci_skeleton_version->SulciSkeleton_1.version')
+
         self.export_parameter('CorticalFoldsGraph', 'compute_fold_meshes', 
             'compute_fold_meshes')
         self.export_parameter('CorticalFoldsGraph', 'allow_multithreading', 
@@ -183,6 +195,43 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
         self.add_link(
             'select_sulci_recognition'
             '->SulciRecognition_1.select_Sulci_Recognition')
+        self.export_parameter('SulciRecognition',
+                              'recognition2000_forbid_unknown_label',
+                              'sulci_recognition2000_forbid_unknown_label')
+        self.add_link('sulci_recognition2000_forbid_unknown_label'
+            '->SulciRecognition_1.recognition2000_forbid_unknown_label')
+        self.export_parameter('SulciRecognition',
+                              'recognition2000_model_hint',
+                              'sulci_recognition2000_model_hint')
+        self.add_link('sulci_recognition2000_model_hint'
+            '->SulciRecognition_1.recognition2000_model_hint')
+        self.export_parameter('SulciRecognition',
+                              'recognition2000_rate',
+                              'sulci_recognition2000_rate')
+        self.add_link('sulci_recognition2000_rate'
+            '->SulciRecognition_1.recognition2000_rate')
+        self.export_parameter('SulciRecognition',
+                              'recognition2000_stopRate',
+                              'sulci_recognition2000_stop_rate')
+        self.add_link('sulci_recognition2000_stop_rate'
+            '->SulciRecognition_1.recognition2000_stopRate')
+        self.export_parameter('SulciRecognition',
+                              'recognition2000_niterBelowStopProp',
+                              'sulci_recognition2000_niter_below_stop_prop')
+        self.add_link('sulci_recognition2000_niter_below_stop_prop'
+            '->SulciRecognition_1.recognition2000_niterBelowStopProp')
+        self.export_parameter('SulciRecognition',
+                              'SPAM_recognition09_local_or_markovian',
+                              'sulci_recognition_spam_local_or_markovian')
+        self.add_link('sulci_recognition_spam_local_or_markovian'
+            '->SulciRecognition_1.SPAM_recognition09_local_or_markovian')
+        self.export_parameter(
+            'SulciRecognition',
+            'SPAM_recognition09_global_recognition_model_type',
+            'sulci_recognition_spam_global_model_type')
+        self.add_link('sulci_recognition_spam_global_model_type->'
+            'SulciRecognition_1.'
+            'SPAM_recognition09_global_recognition_model_type')
 
         self.export_parameter('SulcalMorphometry', 'sulcal_morpho_measures')
         self.export_parameter('SulcalMorphometry', 'sulci_file',
