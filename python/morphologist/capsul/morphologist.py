@@ -178,6 +178,12 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
             'SPAM_recognition_labels_translation_map')
         self.add_link('SPAM_recognition_labels_translation_map->SulciRecognition_1.SPAM_recognition09_global_recognition_labels_translation_map')
 
+        self.export_parameter('SulciRecognition', 'select_Sulci_Recognition',
+                              'select_sulci_recognition')
+        self.add_link(
+            'select_sulci_recognition'
+            '->SulciRecognition_1.select_Sulci_Recognition')
+
         self.export_parameter('SulcalMorphometry', 'sulcal_morpho_measures')
         self.export_parameter('SulcalMorphometry', 'sulci_file',
                               'sulcal_morphometry_sulci_file')
