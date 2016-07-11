@@ -13,14 +13,14 @@ class BaladinNormalizationToAims(Process):
     def __init__(self, **kwargs):
         super(BaladinNormalizationToAims, self).__init__()
         self.add_trait('read', File(allowed_extensions=['.txt']))
-        self.add_trait('source_volume', File(allowed_extensions=['.nii.gz', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.bif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '']))
+        self.add_trait('source_volume', File(allowed_extensions=['.nii.gz', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.bif', '.czi', '.mnc.gz', '.fdf', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.dcm', '.mnc', '']))
         self.add_trait('write', File(allowed_extensions=['.trm'], output=True))
-        self.add_trait('registered_volume', File(allowed_extensions=['.nii.gz', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.bif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', ''], optional=True))
+        self.add_trait('registered_volume', File(allowed_extensions=['.nii.gz', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.bif', '.czi', '.mnc.gz', '.fdf', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.dcm', '.mnc', ''], optional=True))
         self.add_trait('set_transformation_in_source_volume', Bool())
 
 
         # initialization section
-        self.registered_volume = u'/i2bm/local/fsl/data/standard/MNI152_T1_1mm.nii.gz'
+        self.registered_volume = '/usr/share/fsl/data/standard/MNI152_T1_1mm.nii.gz'
         self.set_transformation_in_source_volume = True
 
     def _run_process(self):
@@ -34,11 +34,17 @@ class BaladinNormalizationToAims(Process):
 
         axon.initializeProcesses()
 
-        kwargs = dict([(name, getattr(self, name)) \
-            for name in self.user_traits() \
-            if getattr(self, name) is not Undefined and \
-                (not isinstance(self.user_traits()[name].trait_type, File) \
-                    or getattr(self, name) != '')])
+        kwargs = {}
+        for name in self.user_traits():
+            value = getattr(self, name)
+            if value is Undefined:
+                continue
+            if isinstance(self.trait(name).trait_type, File) and value != ''                     and value is not Undefined:
+                kwargs[name] = value
+            elif isinstance(self.trait(name).trait_type, List):
+                kwargs[name] = list(value)
+            else:
+                kwargs[name] = value
 
         context = brainvisa.processes.defaultContext()
         context.runProcess('BaladinNormalizationToAims', **kwargs)

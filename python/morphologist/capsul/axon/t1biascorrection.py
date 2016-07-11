@@ -12,7 +12,7 @@ from capsul.api import Process
 class T1BiasCorrection(Process):
     def __init__(self, **kwargs):
         super(T1BiasCorrection, self).__init__()
-        self.add_trait('t1mri', File(allowed_extensions=['.nii.gz', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.bif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '']))
+        self.add_trait('t1mri', File(allowed_extensions=['.nii.gz', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.bif', '.czi', '.mnc.gz', '.fdf', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.dcm', '.mnc', '']))
         self.add_trait('commissure_coordinates', File(allowed_extensions=['.APC'], optional=True))
         self.add_trait('sampling', Float())
         self.add_trait('field_rigidity', Float())
@@ -20,22 +20,22 @@ class T1BiasCorrection(Process):
         self.add_trait('wridges_weight', Float())
         self.add_trait('ngrid', Int())
         self.add_trait('delete_last_n_slices', Str(trait=Str(), default_value='auto (AC/PC Points needed)'))
-        self.add_trait('t1mri_nobias', File(allowed_extensions=['.nii.gz', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', ''], output=True))
+        self.add_trait('t1mri_nobias', File(allowed_extensions=['.nii.gz', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.dcm', '.mnc', ''], output=True))
         self.add_trait('mode', Enum('write_minimal', 'write_all', 'delete_useless', 'write_minimal without correction'))
         self.add_trait('write_field', Enum('yes', 'no'))
-        self.add_trait('field', File(allowed_extensions=['.nii.gz', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', ''], output=True, optional=True))
+        self.add_trait('field', File(allowed_extensions=['.nii.gz', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.dcm', '.mnc', ''], output=True, optional=True))
         self.add_trait('write_hfiltered', Enum('yes', 'no'))
-        self.add_trait('hfiltered', File(allowed_extensions=['.nii.gz', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', ''], output=True))
+        self.add_trait('hfiltered', File(allowed_extensions=['.nii.gz', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.dcm', '.mnc', ''], output=True))
         self.add_trait('write_wridges', Enum('yes', 'no', 'read'))
-        self.add_trait('white_ridges', File(allowed_extensions=['.nii.gz', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', ''], output=True))
+        self.add_trait('white_ridges', File(allowed_extensions=['.nii.gz', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.dcm', '.mnc', ''], output=True))
         self.add_trait('variance_fraction', Int())
         self.add_trait('write_variance', Enum('yes', 'no'))
-        self.add_trait('variance', File(allowed_extensions=['.nii.gz', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', ''], output=True))
+        self.add_trait('variance', File(allowed_extensions=['.nii.gz', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.dcm', '.mnc', ''], output=True))
         self.add_trait('edge_mask', Enum('yes', 'no'))
         self.add_trait('write_edges', Enum('yes', 'no'))
-        self.add_trait('edges', File(allowed_extensions=['.nii.gz', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', ''], output=True))
+        self.add_trait('edges', File(allowed_extensions=['.nii.gz', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.dcm', '.mnc', ''], output=True))
         self.add_trait('write_meancurvature', Enum('yes', 'no'))
-        self.add_trait('meancurvature', File(allowed_extensions=['.nii.gz', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', ''], output=True, optional=True))
+        self.add_trait('meancurvature', File(allowed_extensions=['.nii.gz', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.dcm', '.mnc', ''], output=True, optional=True))
         self.add_trait('fix_random_seed', Bool())
         self.add_trait('modality', Enum('T1', 'T2'))
         self.add_trait('use_existing_ridges', Bool())
@@ -72,11 +72,17 @@ class T1BiasCorrection(Process):
 
         axon.initializeProcesses()
 
-        kwargs = dict([(name, getattr(self, name)) \
-            for name in self.user_traits() \
-            if getattr(self, name) is not Undefined and \
-                (not isinstance(self.user_traits()[name].trait_type, File) \
-                    or getattr(self, name) != '')])
+        kwargs = {}
+        for name in self.user_traits():
+            value = getattr(self, name)
+            if value is Undefined:
+                continue
+            if isinstance(self.trait(name).trait_type, File) and value != ''                     and value is not Undefined:
+                kwargs[name] = value
+            elif isinstance(self.trait(name).trait_type, List):
+                kwargs[name] = list(value)
+            else:
+                kwargs[name] = value
 
         context = brainvisa.processes.defaultContext()
         context.runProcess('T1BiasCorrection', **kwargs)

@@ -25,7 +25,7 @@ class SulciLabellingANN(Process):
 
 
         # initialization section
-        self.model = '/volatile/riviere/brainvisa/build-trunk-release/share/brainvisa-share-4.6/models/models_2008/discriminative_models/3.0/Lfolds_noroots/Lfolds_noroots.arg'
+        self.model = '/neurospin/brainvisa/build/Ubuntu-14.04-x86_64/trunk/share/brainvisa-share-4.6/models/models_2008/discriminative_models/3.0/Rfolds_noroots/Rfolds_noroots.arg'
         self.model_hint = 0
         self.rate = 0.98
         self.stopRate = 0.05
@@ -44,11 +44,17 @@ class SulciLabellingANN(Process):
 
         axon.initializeProcesses()
 
-        kwargs = dict([(name, getattr(self, name)) \
-            for name in self.user_traits() \
-            if getattr(self, name) is not Undefined and \
-                (not isinstance(self.user_traits()[name].trait_type, File) \
-                    or getattr(self, name) != '')])
+        kwargs = {}
+        for name in self.user_traits():
+            value = getattr(self, name)
+            if value is Undefined:
+                continue
+            if isinstance(self.trait(name).trait_type, File) and value != ''                     and value is not Undefined:
+                kwargs[name] = value
+            elif isinstance(self.trait(name).trait_type, List):
+                kwargs[name] = list(value)
+            else:
+                kwargs[name] = value
 
         context = brainvisa.processes.defaultContext()
         context.runProcess('recognition', **kwargs)

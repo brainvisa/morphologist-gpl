@@ -27,9 +27,6 @@ class SulciLabellingSPAMLocal(Process):
         self.add_trait('global_transformation', File(allowed_extensions=['.trm'], optional=True))
 
 
-        # initialization section
-        self.labels_translation_map = '/volatile/riviere/brainvisa/build-trunk-release/share/brainvisa-share-4.6/nomenclature/translation/sulci_model_2008.trl'
-
     def _run_process(self):
         from brainvisa import axon
         from brainvisa.configuration import neuroConfig
@@ -41,11 +38,17 @@ class SulciLabellingSPAMLocal(Process):
 
         axon.initializeProcesses()
 
-        kwargs = dict([(name, getattr(self, name)) \
-            for name in self.user_traits() \
-            if getattr(self, name) is not Undefined and \
-                (not isinstance(self.user_traits()[name].trait_type, File) \
-                    or getattr(self, name) != '')])
+        kwargs = {}
+        for name in self.user_traits():
+            value = getattr(self, name)
+            if value is Undefined:
+                continue
+            if isinstance(self.trait(name).trait_type, File) and value != ''                     and value is not Undefined:
+                kwargs[name] = value
+            elif isinstance(self.trait(name).trait_type, List):
+                kwargs[name] = list(value)
+            else:
+                kwargs[name] = value
 
         context = brainvisa.processes.defaultContext()
         context.runProcess('spam_recognitionlocal', **kwargs)

@@ -25,7 +25,7 @@ class Normalization_SPM_reinit(Process):
 
 
         # initialization section
-        self.anatomical_template = u'/i2bm/local/spm8-standalone/spm8_mcr/spm8/templates/T1.nii'
+        self.anatomical_template = '/usr/share/fsl/data/standard/MNI152_T1_2mm_brain.nii.gz'
         self.voxel_size = '[1 1 1]'
         self.cutoff_option = 25
         self.nbiteration = 16
@@ -43,11 +43,17 @@ class Normalization_SPM_reinit(Process):
 
         axon.initializeProcesses()
 
-        kwargs = dict([(name, getattr(self, name)) \
-            for name in self.user_traits() \
-            if getattr(self, name) is not Undefined and \
-                (not isinstance(self.user_traits()[name].trait_type, File) \
-                    or getattr(self, name) != '')])
+        kwargs = {}
+        for name in self.user_traits():
+            value = getattr(self, name)
+            if value is Undefined:
+                continue
+            if isinstance(self.trait(name).trait_type, File) and value != ''                     and value is not Undefined:
+                kwargs[name] = value
+            elif isinstance(self.trait(name).trait_type, List):
+                kwargs[name] = list(value)
+            else:
+                kwargs[name] = value
 
         context = brainvisa.processes.defaultContext()
         context.runProcess('Normalization_SPM_reinit', **kwargs)

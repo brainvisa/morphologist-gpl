@@ -12,7 +12,7 @@ from capsul.api import Process
 class AcpcOrientation(Process):
     def __init__(self, **kwargs):
         super(AcpcOrientation, self).__init__()
-        self.add_trait('T1mri', File(allowed_extensions=['.nii.gz', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.bif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '']))
+        self.add_trait('T1mri', File(allowed_extensions=['.nii.gz', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.bif', '.czi', '.mnc.gz', '.fdf', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.dcm', '.mnc', '']))
         self.add_trait('commissure_coordinates', File(allowed_extensions=['.APC'], output=True))
         self.add_trait('Normalised', Enum('No', 'MNI from SPM', 'MNI from Mritotal', 'Marseille from SPM'))
         self.add_trait('Anterior_Commissure', List(trait=Float(), minlen=3, maxlen=3, value=[0, 0, 0], optional=True))
@@ -20,7 +20,7 @@ class AcpcOrientation(Process):
         self.add_trait('Interhemispheric_Point', List(trait=Float(), minlen=3, maxlen=3, value=[0, 0, 0], optional=True))
         self.add_trait('Left_Hemisphere_Point', List(trait=Float(), minlen=3, maxlen=3, value=[0, 0, 0], optional=True))
         self.add_trait('allow_flip_initial_MRI', Bool())
-        self.add_trait('reoriented_t1mri', File(allowed_extensions=['.nii.gz', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', ''], output=True))
+        self.add_trait('reoriented_t1mri', File(allowed_extensions=['.nii.gz', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.dcm', '.mnc', ''], output=True))
         self.add_trait('remove_older_MNI_normalization', Bool())
         self.add_trait('older_MNI_normalization', File(allowed_extensions=['.trm'], optional=True))
 
@@ -41,11 +41,17 @@ class AcpcOrientation(Process):
 
         axon.initializeProcesses()
 
-        kwargs = dict([(name, getattr(self, name)) \
-            for name in self.user_traits() \
-            if getattr(self, name) is not Undefined and \
-                (not isinstance(self.user_traits()[name].trait_type, File) \
-                    or getattr(self, name) != '')])
+        kwargs = {}
+        for name in self.user_traits():
+            value = getattr(self, name)
+            if value is Undefined:
+                continue
+            if isinstance(self.trait(name).trait_type, File) and value != ''                     and value is not Undefined:
+                kwargs[name] = value
+            elif isinstance(self.trait(name).trait_type, List):
+                kwargs[name] = list(value)
+            else:
+                kwargs[name] = value
 
         context = brainvisa.processes.defaultContext()
         context.runProcess('preparesubject', **kwargs)
