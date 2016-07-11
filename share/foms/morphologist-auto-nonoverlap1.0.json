@@ -23,6 +23,10 @@
                 [["input:{acquisition}/<subject>", "images"],
                 # ["input:{acquisition}/normalized_<normalization>_<subject>", "images"]
                 ],
+            "imported_t1mri":
+                [["output:{acquisition}/<subject>", "images"]],
+            "t1mri_referential":
+                [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>", "Referential"]],
             "reoriented_t1mri":
                 [["output:{acquisition}/<subject>", "images"]],
 #            "commissure_coordinates":
@@ -94,7 +98,6 @@
             "PrepareSubject_Normalization_NormalizeBaladin_template": "{shared.anatomical_template_t1}",
 
             ### TalairachFromNormalization
-            "PrepareSubject_TalairachFromNormalization_source_referential": [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>", "Referential" ] ],
             "PrepareSubject_TalairachFromNormalization_normalized_referential": "{shared.mni_spm_referential}",
             "PrepareSubject_TalairachFromNormalization_acpc_referential": "{shared.acpc_referential}",
             "PrepareSubject_TalairachFromNormalization_transform_chain_ACPC_to_Normalized": "{shared.talairach_TO_spm_transform}",
