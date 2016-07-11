@@ -506,6 +506,26 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
                                ['SulciRecognition', 'SulciRecognition_1'])
         self.add_pipeline_step('sulcal_morphometry', ['SulcalMorphometry'])
 
+        # customize params order for nicer user GUI
+        self.reorder_traits([
+            't1mri', 'imported_t1mri', 'select_Talairach',
+            'Normalization_select_Normalization_pipeline',
+            'commissure_coordinates',
+            'anterior_commissure', 'posterior_commissure',
+            'interhemispheric_point', 'left_hemisphere_point',
+            'normalized_t1mri', 'Talairach_transform', 't1mri_nobias',
+            'histo_analysis', 'BrainSegmentation_brain_mask', 'split_brain',
+            'HeadMesh_head_mesh', 'GreyWhiteClassification_grey_white',
+            'GreyWhiteClassification_1_grey_white',
+            'GreyWhiteTopology_hemi_cortex', 'GreyWhiteTopology_1_hemi_cortex',
+            'GreyWhiteMesh_white_mesh', 'GreyWhiteMesh_1_white_mesh',
+            'SulciSkeleton_skeleton', 'SulciSkeleton_1_skeleton',
+            'PialMesh_pial_mesh', 'PialMesh_1_pial_mesh',
+            'left_graph', 'right_graph', 'left_labelled_graph',
+            'right_labelled_graph', 'sulcal_morpho_measures',
+        ])
+
+        # setup groups
         self.define_groups_as_steps()
         ungroup = ('t1mri', 'imported_t1mri', 'select_Talairach',
                    'Normalization_select_Normalization_pipeline',
