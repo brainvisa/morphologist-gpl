@@ -493,9 +493,11 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
 
         # customize params order for nicer user GUI
         self.reorder_traits([
-            't1mri', 'commissure_coordinates', 'anterior_commissure',
-            'posterior_commissure', 'interhemispheric_point',
-            'left_hemisphere_point',
+            't1mri', 'select_Talairach',
+            'Normalization_select_Normalization_pipeline',
+            'commissure_coordinates',
+            'anterior_commissure', 'posterior_commissure',
+            'interhemispheric_point', 'left_hemisphere_point',
             'normalized_t1mri', 'Talairach_transform', 't1mri_nobias',
             'histo_analysis', 'BrainSegmentation_brain_mask', 'split_brain',
             'HeadMesh_head_mesh', 'GreyWhiteClassification_grey_white',
