@@ -12,12 +12,12 @@ from capsul.process import Process
 class ScalpMesh(Process):
     def __init__(self, **kwargs):
         super(ScalpMesh, self).__init__()
-        self.add_trait('t1mri_nobias', File(allowed_extensions=['.nii.gz', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.bif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '']))
+        self.add_trait('t1mri_nobias', File(allowed_extensions=['.nii.gz', '.bif', '.czi', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.dcm', '.mnc', '.mnc.gz', '.fdf', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '']))
         self.add_trait('histo_analysis', File(allowed_extensions=['.han'], optional=True))
         self.add_trait('head_mesh', File(allowed_extensions=['.gii', '.tri', '.mesh', '.ply', '.obj'], output=True))
-        self.add_trait('head_mask', File(allowed_extensions=['.nii.gz', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', ''], output=True, optional=True))
+        self.add_trait('head_mask', File(allowed_extensions=['.nii.gz', '.ppm', '.xbm', '.xpm', '.tiff', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.dcm', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', ''], output=True, optional=True))
         self.add_trait('keep_head_mask', Bool())
-        self.add_trait('remove_mask', File(allowed_extensions=['.nii.gz', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.bif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', ''], optional=True))
+        self.add_trait('remove_mask', File(allowed_extensions=['.nii.gz', '.bif', '.czi', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.dcm', '.mnc', '.mnc.gz', '.fdf', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', ''], optional=True))
         self.add_trait('first_slice', Int(optional=True))
         self.add_trait('threshold', Int(optional=True))
         self.add_trait('closing', Float(optional=True))
@@ -40,11 +40,17 @@ class ScalpMesh(Process):
 
         axon.initializeProcesses()
 
-        kwargs = dict([(name, getattr(self, name)) \
-            for name in self.user_traits() \
-            if getattr(self, name) is not Undefined and \
-                (not isinstance(self.user_traits()[name].trait_type, File) \
-                    or getattr(self, name) != '')])
+        kwargs = {}
+        for name in self.user_traits():
+            value = getattr(self, name)
+            if value is Undefined:
+                continue
+            if isinstance(self.trait(name).trait_type, File) and value != ''                     and value is not Undefined:
+                kwargs[name] = value
+            elif isinstance(self.trait(name).trait_type, List):
+                kwargs[name] = list(value)
+            else:
+                kwargs[name] = value
 
         context = brainvisa.processes.defaultContext()
         context.runProcess('headMesh', **kwargs)

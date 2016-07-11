@@ -23,7 +23,7 @@ class SulciLabellingSPAM(Pipeline):
     def pipeline_definition(self):
         # nodes section
         self.add_process('global_recognition', 'morphologist.capsul.axon.sulcilabellingspamglobal.SulciLabellingSPAMGlobal')
-        self.add_switch('local_or_markovian', ['local_recognition', 'markovian_recognition'], ['output_graph'])
+        self.add_switch('local_or_markovian', ['local_recognition', 'markovian_recognition'], ['output_graph'], output_types=[File(allowed_extensions=['.arg', '.data'])])
         self.add_process('local_recognition', 'morphologist.capsul.axon.sulcilabellingspamlocal.SulciLabellingSPAMLocal')
         self.nodes['local_recognition']._weak_outputs = True
         self.add_process('markovian_recognition', 'morphologist.capsul.axon.sulcilabellingspammarkov.SulciLabellingSPAMMarkov')

@@ -12,11 +12,11 @@ from capsul.process import Process
 class HistoAnalysis(Process):
     def __init__(self, **kwargs):
         super(HistoAnalysis, self).__init__()
-        self.add_trait('t1mri_nobias', File(allowed_extensions=['.nii.gz', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.bif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '']))
+        self.add_trait('t1mri_nobias', File(allowed_extensions=['.nii.gz', '.bif', '.czi', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.dcm', '.mnc', '.mnc.gz', '.fdf', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '']))
         self.add_trait('use_hfiltered', Bool())
-        self.add_trait('hfiltered', File(allowed_extensions=['.nii.gz', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.bif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', ''], optional=True))
+        self.add_trait('hfiltered', File(allowed_extensions=['.nii.gz', '.bif', '.czi', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.dcm', '.mnc', '.mnc.gz', '.fdf', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', ''], optional=True))
         self.add_trait('use_wridges', Bool())
-        self.add_trait('white_ridges', File(allowed_extensions=['.nii.gz', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.bif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', ''], optional=True))
+        self.add_trait('white_ridges', File(allowed_extensions=['.nii.gz', '.bif', '.czi', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.dcm', '.mnc', '.mnc.gz', '.fdf', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', ''], optional=True))
         self.add_trait('undersampling', Enum('2', '4', '8', '16', '32', 'auto', 'iteration'))
         self.add_trait('histo_analysis', File(allowed_extensions=['.han'], output=True))
         self.add_trait('histo', File(output=True))
@@ -40,11 +40,17 @@ class HistoAnalysis(Process):
 
         axon.initializeProcesses()
 
-        kwargs = dict([(name, getattr(self, name)) \
-            for name in self.user_traits() \
-            if getattr(self, name) is not Undefined and \
-                (not isinstance(self.user_traits()[name].trait_type, File) \
-                    or getattr(self, name) != '')])
+        kwargs = {}
+        for name in self.user_traits():
+            value = getattr(self, name)
+            if value is Undefined:
+                continue
+            if isinstance(self.trait(name).trait_type, File) and value != ''                     and value is not Undefined:
+                kwargs[name] = value
+            elif isinstance(self.trait(name).trait_type, List):
+                kwargs[name] = list(value)
+            else:
+                kwargs[name] = value
 
         context = brainvisa.processes.defaultContext()
         context.runProcess('NobiasHistoAnalysis', **kwargs)

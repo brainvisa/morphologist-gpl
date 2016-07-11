@@ -22,7 +22,7 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
 
         self.add_switch('select_Talairach',
             ['StandardACPC', 'Normalization'],
-            ['Talairach_transform'])
+            ['Talairach_transform'], output_types=[File()])
 
         # WARNING: we must keep 2 switches here, otherwise we introduce a loop
         # in the pipeline graph:
@@ -32,10 +32,12 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
         # - in renormalization mode, split is using the APC from Renorm.
         self.add_switch('select_renormalization_commissures',
             ['initial', 'skull_stripped'],
-            ['commissure_coordinates'], export_switch=False)
+            ['commissure_coordinates'], export_switch=False,
+            output_types=[File()])
         self.add_switch('select_renormalization_transform',
             ['initial', 'skull_stripped'],
-            ['Talairach_transform', 'MNI_transform'], export_switch=False)
+            ['Talairach_transform', 'MNI_transform'], export_switch=False,
+            output_types=[File(), File()])
 
         # fix initial values of switches: should be Undefined, not None.
         self.nodes['select_Talairach'].StandardACPC_switch_Talairach_transform = Undefined

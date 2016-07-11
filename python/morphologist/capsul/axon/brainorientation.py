@@ -22,7 +22,7 @@ class BrainOrientation(Pipeline):
 
     def pipeline_definition(self):
         # nodes section
-        self.add_switch('select_AC_PC_Or_Normalization', ['StandardACPC', 'Normalization'], ['commissure_coordinates', 'reoriented_t1mri', 'talairach_transformation'])
+        self.add_switch('select_AC_PC_Or_Normalization', ['StandardACPC', 'Normalization'], ['commissure_coordinates', 'reoriented_t1mri', 'talairach_transformation'], output_types=[File(allowed_extensions=['.APC']), File(allowed_extensions=['.nii.gz', '.ppm', '.xbm', '.xpm', '.tiff', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.dcm', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '']), File(allowed_extensions=['.trm'])])
         self.add_process('StandardACPC', 'morphologist.capsul.axon.acpcorientation.AcpcOrientation')
         self.nodes['StandardACPC']._weak_outputs = True
         self.add_process('Normalization', 'morphologist.capsul.axon.normalization.Normalization')
