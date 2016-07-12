@@ -44,9 +44,9 @@
             "right_labelled_graph":
                 [["output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto",
                     "Graph and data", {"side": "R"}]],
-#            "Talairach_transform":
-#                [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-ACPC",
-#                    "Transformation matrix"]],
+            "Talairach_transform":
+                [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-ACPC",
+                    "Transformation matrix"]],
 #            "MNI_transform":
 #                [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-MNI",
 #                    "Transformation matrix"]],
@@ -299,6 +299,9 @@
             "commissure_coordinates":
                 [["output:{acquisition}/<subject>",
                     "Commissure coordinates"]],
+            "talairach_transformation":
+                [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-ACPC",
+                  "Transformation matrix"]],
         },
 
         "Morphologist.PrepareSubject.StandardACPC": {
@@ -332,11 +335,17 @@
                 [["output:{acquisition}/<subject>", "images"]],
         },
 
-        "Morphologist.select_Talairach": {
+        "Morphologist.TalairachTransformation": {
             "Talairach_transform":
                 [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-ACPC",
                     "Transformation matrix"]],
         },
+
+#        "Morphologist.select_Talairach": {
+#            "Talairach_transform":
+#                [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-ACPC",
+#                    "Transformation matrix"]],
+#        },
 
         "Morphologist.Renorm": {
             "transformation":
