@@ -359,6 +359,7 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
         # check normalization type
         self.on_trait_change(self.ensure_use_allowed_normalization,
                              'Normalization_select_Normalization_pipeline')
+        self.on_trait_change(self._check_renormalization, 'select_Talairach')
 
         # nodes position in Pipeline*View
         self.node_position = {'BiasCorrection': (210.9, 1149.7),
@@ -630,3 +631,7 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
                 self.Normalization_select_Normalization_pipeline = value
                 break
 
+    def _check_renormalization(self):
+        # if not using normalization renormalization should be disabled too.
+        if self.select_Talairach == 'StandardACPC':
+            self.perform_skull_stripped_renormalization = 'initial'
