@@ -38,10 +38,12 @@ userLevel = 0
 
 signature = Signature(
     'measures_by_subject', ListOf(ReadDiskItem(
-        'CSV File', 'CSV File')),
+        'Text File',
+        ['CSV File', 'Text file', 'Text Data Table'])),
     'subjects', ListOf(String()),
-    'group_measures',
-        WriteDiskItem('CSV File', 'CSV File')
+    'group_measures', WriteDiskItem(
+        'Text File',
+        ['CSV File', 'Text file', 'Text Data Table'])
 )
 
 
@@ -53,7 +55,8 @@ def link_subjects(self, proc, dummy):
 
 
 def initialization( self ):
-    self.linkParameters('subjects', 'measures_by_subject',
+    self.linkParameters('subjects',
+                        'measures_by_subject',
                         self.link_subjects)
 
 
@@ -73,8 +76,9 @@ def execution( self, context ):
             first_header = header
             first = False
         elif header != first_header:
-            context.error('Subjects CSV headers do not match. First:\n%s\nSubject %s:\n%s' % (first_header, subject, header))
-            raise ValueError('subjects CSV headers do not match')
+            context.error('CSV headers do not match. Header of the first subject:\n%s' % first_header)
+            context.error('Header of the failed subject "%s":\n%s' % (subject, header))
+            raise ValueError('CSV headers do not match')
         for line in ifi.xreadlines():
             f.write(';'.join([subject, line.strip()]) + '\n')
 
