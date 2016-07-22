@@ -46,6 +46,7 @@ def validation():
   except:
     raise ValidationError('no soma.aims module')
 
+
 name = 'Sulci graph morphometry by subject'
 userLevel = 0
 
@@ -61,7 +62,6 @@ signature = Signature(
 
 
 def initialization( self ):
-
     def linkAttribute( proc, dummy ):
         if proc.left_sulci_graph is not None :
             if proc.left_sulci_graph.get('automatically_labelled') == 'No':
@@ -74,6 +74,7 @@ def initialization( self ):
     self.sulci_file = self.signature['sulci_file'].findValue({'version': 'default'})
     self.linkParameters('use_attribute', 'left_sulci_graph', linkAttribute)
 
+
 def weightedAverage(mesureslist):
     product=0.
     weightsum=0.
@@ -83,7 +84,7 @@ def weightedAverage(mesureslist):
     if weightsum!=0.:
         result = product/weightsum
     else:
-        result = 0.
+        result = float('NaN')
     return result
     
 
@@ -96,7 +97,7 @@ def divSum(mesureslist):
     if sum2!=0.:
         result = 2.*sum1/sum2
     else:
-        result = 0.
+        result = float('NaN')
     return result
 
    
@@ -118,22 +119,34 @@ def execution( self, context ):
     rgraph = aims.read(self.right_sulci_graph.fullPath())
     
     for sulcus in (list(lgraph.vertices())+list(rgraph.vertices())):
-        if (sulcus.getSyntax()=='fold') and (sulcus[self.use_attribute] in list_sulci):                                                     
+        if (sulcus.getSyntax()=='fold') and (sulcus[self.use_attribute] in list_sulci):
+            surface_tal = 0.
+            surface_nat = 0.
+            maxdepth_tal = 0.
+            maxdepth_nat = 0.
+            bottom_point_number = 0.
             meandepth_tal = 0.
             meandepth_nat = 0.
             hj_length_tal = 0.
             hj_length_nat = 0.
+            mid_interface_voxels = 0.
             thickness_mean = 0.
+            CSF_volume = 0.
             
             ##SURFACE
-            surface_tal = sulcus['refsurface_area']
-            surface_nat = sulcus['surface_area']
+            if 'refsurface_area' in sulcus.keys():
+                surface_tal = sulcus['refsurface_area']
+            if 'surface_area' in sulcus.keys():
+                surface_nat = sulcus['surface_area']
             ##MAX_DEPTH
-            maxdepth_tal = sulcus['refmaxdepth']
-            maxdepth_nat = sulcus['maxdepth']
+            if 'refmaxdepth' in sulcus.keys():
+                maxdepth_tal = sulcus['refmaxdepth']
+            if 'maxdepth' in sulcus.keys():
+                maxdepth_nat = sulcus['maxdepth']
             ##MEAN_DEPTH
             #Si les sillons sont trop petits, ils peuvent ne pas avoir de profondeur moyenne.
-            bottom_point_number = sulcus['bottom_point_number']
+            if 'bottom_point_number' in sulcus.keys():
+                bottom_point_number = sulcus['bottom_point_number']
             if 'refmean_depth' in sulcus.keys():
                 meandepth_tal = sulcus['refmean_depth']
             if 'mean_depth' in sulcus.keys():
@@ -145,11 +158,13 @@ def execution( self, context ):
                     hj_length_nat = rel['length']
             ##THICKNESS
             #Si la MG est trop fine, il peut ne pas y avoir d'epaisseur moyenne.
-            mid_interface_voxels = sulcus['mid_interface_voxels']
+            if 'mid_interface_voxels' in sulcus.keys():
+                mid_interface_voxels = sulcus['mid_interface_voxels']
             if 'thickness_mean' in sulcus.keys():
                 thickness_mean = sulcus['thickness_mean']
             ##OPENING
-            CSF_volume = sulcus['CSF_volume']
+            if 'CSF_volume' in sulcus.keys():
+                CSF_volume = sulcus['CSF_volume']
             
             #On ecrit les valeurs dans un dictionnaire, en rangeant par sillon principal.
             mainlabel = dict_sulci_inv[sulcus[self.use_attribute]]
