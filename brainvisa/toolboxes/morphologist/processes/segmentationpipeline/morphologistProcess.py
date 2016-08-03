@@ -303,6 +303,9 @@ def initialization( self ):
     self.linkParameters( 'tal_to_normalized_transform',
         'normalized_referential', linkACPC_to_norm )
     
+    self.setOptional( 'normalized_t1mri' )
+    self.setOptional( 'source_referential' )
+    
     self.setOptional( 'anatomical_template' )
     self.setOptional( 'job_file' )
     
@@ -317,12 +320,12 @@ def initialization( self ):
     
     #Bias Correction
     self.linkParameters( 't1mri_nobias', 't1mri' )
-    self.linkParameters( 'hfiltered', 't1mri' )
-    self.linkParameters( 'white_ridges', 't1mri' )
-    self.linkParameters( 'variance', 't1mri' )
-    self.linkParameters( 'edges', 't1mri' )
-    self.linkParameters( 'field', 't1mri' )
-    self.linkParameters( 'meancurvature', 't1mri' )
+    self.linkParameters( 'hfiltered', 't1mri_nobias' )
+    self.linkParameters( 'white_ridges', 't1mri_nobias' )
+    self.linkParameters( 'variance', 't1mri_nobias' )
+    self.linkParameters( 'edges', 't1mri_nobias' )
+    self.linkParameters( 'field', 't1mri_nobias' )
+    self.linkParameters( 'meancurvature', 't1mri_nobias' )
     self.signature[ 'hfiltered' ].userLevel = 100
     self.signature[ 'white_ridges' ].userLevel = 100
     self.signature[ 'variance' ].userLevel = 100
