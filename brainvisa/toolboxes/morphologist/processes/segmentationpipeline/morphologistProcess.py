@@ -96,7 +96,9 @@ signature = Signature(
     'skull_stripped', WriteDiskItem( 'Raw T1 MRI Brain Masked',
         'Aims writable volume formats' ),
     'anatomical_template_skull_stripped', ReadDiskItem( 'anatomical Template',
-        ['NIFTI-1 image', 'MINC image', 'SPM image'], requiredAttributes={'skull_stripped':'yes'} ),
+        ['NIFTI-1 image', 'MINC image', 'SPM image'],
+        requiredAttributes={'skull_stripped': 'yes',
+                            '_ontology': 'shared'}),
     #Split Brain Mask
     'split_brain', WriteDiskItem( 'Split Brain Mask',
         'Aims writable volume formats' ),
@@ -303,6 +305,8 @@ def initialization( self ):
     self.linkParameters( 'tal_to_normalized_transform',
         'normalized_referential', linkACPC_to_norm )
     
+    self.setOptional( 'normalized_t1mri' )
+    self.setOptional( 'source_referential' )
     self.setOptional( 'anatomical_template' )
     self.setOptional( 'job_file' )
     
@@ -317,12 +321,12 @@ def initialization( self ):
     
     #Bias Correction
     self.linkParameters( 't1mri_nobias', 't1mri' )
-    self.linkParameters( 'hfiltered', 't1mri' )
-    self.linkParameters( 'white_ridges', 't1mri' )
-    self.linkParameters( 'variance', 't1mri' )
-    self.linkParameters( 'edges', 't1mri' )
-    self.linkParameters( 'field', 't1mri' )
-    self.linkParameters( 'meancurvature', 't1mri' )
+    self.linkParameters( 'hfiltered', 't1mri_nobias' )
+    self.linkParameters( 'white_ridges', 't1mri_nobias' )
+    self.linkParameters( 'variance', 't1mri_nobias' )
+    self.linkParameters( 'edges', 't1mri_nobias' )
+    self.linkParameters( 'field', 't1mri_nobias' )
+    self.linkParameters( 'meancurvature', 't1mri_nobias' )
     self.signature[ 'hfiltered' ].userLevel = 100
     self.signature[ 'white_ridges' ].userLevel = 100
     self.signature[ 'variance' ].userLevel = 100
@@ -341,12 +345,7 @@ def initialization( self ):
     #Re Commissures Coordinates
     self.linkParameters( 'skull_stripped', 't1mri' )
     self.anatomical_template_skull_stripped = self.signature[
-        'anatomical_template_skull_stripped'].findValue(
-            {'_ontology': 'shared',
-             'skull_stripped': 'yes', 'Size': '2 mm',
-             '_database' : os.path.normpath(os.path.join(
-                mainPath, '..', 'share', 'brainvisa-share-%s.%s'
-                % tuple(versionString().split('.')[:2])))})
+        'anatomical_template_skull_stripped' ].findValue({'Size': '2 mm'})
     self.setOptional( 'anatomical_template_skull_stripped' )
     
     self.signature[ 'skull_stripped' ].userLevel = 100
