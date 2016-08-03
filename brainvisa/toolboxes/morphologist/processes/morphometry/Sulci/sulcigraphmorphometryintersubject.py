@@ -89,7 +89,7 @@ def execution(self, context):
         sulci_arr = csv['sulcus']
         
         if self.sort_by=='measure' and first:
-            fi.write('subject,' + ','.join(csv['sulcus']) + '\n')
+            fi.write('subject;' + ';'.join(csv['sulcus']) + '\n')
             first_header = header
             first_sulci = sulci
             first = False
@@ -106,7 +106,7 @@ def execution(self, context):
         
         if self.sort_by=='measure':
             column = [str(i) for i in csv[self.measure]]
-            fi.write(subject + ',' + ','.join(column) + '\n')
+            fi.write(subject + ';' + ';'.join(column) + '\n')
         elif self.sort_by=='sulcus':
             for sulcus in sulci:
                 if meas_by_sulcus.has_key(sulcus):
@@ -121,8 +121,8 @@ def execution(self, context):
         for sulcus in sorted(meas_by_sulcus.keys()):
             sulci_file = self.output_directory.fullPath() + '/' + sulcus + '.csv'
             sfi = open(sulci_file, 'w')
-            sfi.write('subject,' + ','.join(first_header[1:]) + '\n')
+            sfi.write('subject;' + ';'.join(first_header[1:]) + '\n')
             for subject in sorted(self.subjects):
                 line = [str(i) for i in meas_by_sulcus[sulcus][subject]]
-                sfi.write(subject + ',' + ','.join(line) + '\n')
+                sfi.write(subject + ';' + ';'.join(line) + '\n')
             sfi.close()
