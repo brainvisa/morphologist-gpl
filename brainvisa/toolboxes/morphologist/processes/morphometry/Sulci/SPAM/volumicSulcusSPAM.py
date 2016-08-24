@@ -63,6 +63,7 @@ def initialization( self ):
      self.bucket = 'Sulci'
      self.smoothing = 'Yes'
      self.label_attributes = '(label, name)'
+     self.setOptional( 'mri' )
      self.setOptional( 'label_translation' )
      self.setOptional( 'int_to_label_translation' )
      self.setOptional( 'custom_buckets' )
@@ -72,99 +73,139 @@ def initialization( self ):
      self.smoothing_parameter = 0.25
 
 def execution( self, context ):
-     
-     NbGraph =  len( self.graphs )
-     inc = 1
-     context.write('WARNING : This process works with normalized data having the SAME SPATIAL RESOLUTION')
-     context.write('')
-     context.write('Number of graphes: ', NbGraph)
-     if NbGraph == 0:
+
+    NbGraph =  len( self.graphs )
+    inc = 1
+    context.write('Number of graphs: ', NbGraph)
+    if NbGraph == 0:
         raise Exception( _t_( 'argument <em>graph</em> should not be ' \
                               'empty' ) )
-   
-     temp = context.temporary( 'GIS Image' )
-     ok = 0
-     
-     for graph in self.graphs:
 
-          context.write( 'Subject : ', graph.get('subject'), '(', inc, '/', NbGraph, ')' )
-  
-          cmd = [ 'siGraph2Label', '-g', graph.fullPath() ]
+    temp = context.temporary( 'NIFTI-1 Image' )
+    ok = 0
+    if self.mri is not None:
+        f = aims.Finder()
+        f.check(self.mri.fullPath())
+        hdr = f.header()
+        dim = hdr['volume_dimension'][:3]
+        vs = hdr['voxel_size'][:3]
+    else:
+        dim = [256, 256, 124]
+        vs = [1., 1., 1.]
+    sizes = [x * y for x, y in zip(dim, vs)]
+    context.write('ref vol sizes:', sizes)
+    translation = aims.AffineTransformation3d()
+    translation.setTranslation([sizes[0]/2, sizes[1]/2, sizes[2]*0.75])
 
-          if self.mri is not None:
-               cmd += [ '-tv', self.mri.fullPath() ]
+    for graph in self.graphs:
 
-          if self.label_translation is not None:
-               cmd += [ '-tr', self.label_translation.fullPath() ]
+        context.write('Subject : ', graph.get('subject'), '(', inc, '/',
+                      NbGraph, ')')
 
-          if self.label_attributes == 'custom':
-               if self.custom_label_attributes:
-                    la = string.split( self.custom_label_attributes )
-               else:
-                    la = ()
-          elif self.label_attributes == '(label, name)':
-               la = ()
-          else:
-               la = ( self.label_attributes, )
-          for i in la:
-               cmd += [ '-a', i ]
+        cmd = [ 'siGraph2Label', '-g', graph.fullPath() ]
 
-          if self.int_to_label_translation is not None:
-               cmd += [ '-ot', self.int_to_label_translation.fullPath() ]
+        #if self.mri is not None:
+              #cmd += [ '-tv', self.mri.fullPath() ]
 
-          a = ()
-          if self.node_edge_types == 'custom':
-               if self.custom_node_edge_types:
-                    a = string.split( self.custom_node_edge_types )
-          elif self.node_edge_types == 'Nodes (fold, cluster, roi, nucleus)':
-               a = ( 'fold', 'cluster', 'roi', 'nucleus' )
-          elif self.node_edge_types == 'Relations (junction, cortical, etc.)':
-               a = ( 'junction', 'cortical', 'hull_junction', 'plidepassage',
-                'scalebloblink', 'blob_saddle_link', 'roi_junction', )
-          for i in a:
-               cmd += [ '-s', i ]
+        if self.label_translation is not None:
+              cmd += [ '-tr', self.label_translation.fullPath() ]
 
-          if self.label_values:
-               a = string.split( self.label_values )
-               for i in a:
-                    cmd += [ '-l', i ]
-         
-          if self.bucket == 'custom':
-               if not self.custom_buckets:
-                    raise Exception( '<em>custom_buckets</em> must be non-empty '
-                                'in custom bucket mode' )
-               cmd += ['-o', self.temp ]
-               a = string.split( self.custom_buckets )
-               for i in a:
-                    cmd += [ '-b', i ]
-               context.system( *cmd )
-          else:
-               if self.bucket in ('Sulci',):
-                    cmd += [ '-o', temp, '-b', 'aims_ss', '-b', 'aims_bottom', '-b', 'aims_other' ]
-                    context.system( *cmd )
-               if self.bucket in ('Bottoms',):
-                    cmd += [ '-o', temp, '-b', 'aims_bottom' ]
-                    context.system( *cmd )
-               if self.bucket in ('Junctions with brain hull',):
-                    cmd += [ '-o', temp, '-b',
-                             'aims_junction', '-s', 'hull_junction' ]
-                    context.system( *cmd )
-               if self.bucket in ('Simple Surfaces',):
-                    cmd += [ '-o',temp, '-b', 'aims_ss' ]
-                    context.system( *cmd )
-          context.system('AimsThreshold', '-i',temp,'-m', 'gt', '-t', '0', '-b','-o', temp  )
+        if self.label_attributes == 'custom':
+              if self.custom_label_attributes:
+                  la = string.split( self.custom_label_attributes )
+              else:
+                  la = ()
+        elif self.label_attributes == '(label, name)':
+              la = ()
+        else:
+              la = ( self.label_attributes, )
+        for i in la:
+              cmd += [ '-a', i ]
 
-          if ok == 0:
-               context.system('AimsReplaceLevel', '-o', self.SPAM.fullPath(),'-g', '32767', '-n', '1', '-i', temp )
-               ok = 1
-          else:
-               context.system('AimsReplaceLevel', '-i',temp,'-g','32767', '-n','1', '-o', temp )
-               context.system('AimsLinearComb', '-i',temp,'-j', self.SPAM.fullPath(), '-o',self.SPAM.fullPath() )
+        if self.int_to_label_translation is not None:
+              cmd += [ '-ot', self.int_to_label_translation.fullPath() ]
 
-          inc = inc + 1
+        a = ()
+        if self.node_edge_types == 'custom':
+              if self.custom_node_edge_types:
+                  a = string.split( self.custom_node_edge_types )
+        elif self.node_edge_types == 'Nodes (fold, cluster, roi, nucleus)':
+              a = ( 'fold', 'cluster', 'roi', 'nucleus' )
+        elif self.node_edge_types == 'Relations (junction, cortical, etc.)':
+              a = ( 'junction', 'cortical', 'hull_junction', 'plidepassage',
+              'scalebloblink', 'blob_saddle_link', 'roi_junction', )
+        for i in a:
+              cmd += [ '-s', i ]
 
-     context.system('AimsLinearComb', '-i',self.SPAM.fullPath(),'-b', NbGraph, '-a', '100', '-o',self.SPAM.fullPath() )
-     if self.smoothing == 'Yes' :
-          context.system('AimsFileConvert', '-i',self.SPAM.fullPath(),'-o',self.SPAM.fullPath(), '-t', 'FLOAT' )
-          context.system('AimsImageSmoothing', '-i',self.SPAM.fullPath(),'-o',self.SPAM.fullPath(), '-t', self.smoothing_parameter, '-s', '0' )
-   
+        if self.label_values:
+            a = string.split( self.label_values )
+            for i in a:
+                cmd += [ '-l', i ]
+
+        if self.bucket == 'custom':
+            if not self.custom_buckets:
+                raise Exception( '<em>custom_buckets</em> must be non-empty '
+                            'in custom bucket mode' )
+            cmd += ['-o', self.temp ]
+            a = string.split( self.custom_buckets )
+            for i in a:
+                cmd += [ '-b', i ]
+        else:
+            if self.bucket in ('Sulci',):
+                cmd += [ '-o', temp, '-b', 'aims_ss', '-b', 'aims_bottom',
+                        '-b', 'aims_other' ]
+            if self.bucket in ('Bottoms',):
+                cmd += [ '-o', temp, '-b', 'aims_bottom' ]
+            if self.bucket in ('Junctions with brain hull',):
+                cmd += [ '-o', temp, '-b',
+                          'aims_junction', '-s', 'hull_junction' ]
+            if self.bucket in ('Simple Surfaces',):
+                cmd += [ '-o',temp, '-b', 'aims_ss' ]
+        context.system( *cmd )
+        context.system('AimsThreshold', '-i',temp,'-m', 'gt', '-t', '0',
+                       '-b','-o', temp )
+        context.system('AimsReplaceLevel', '-i',temp,'-g','32767', '-n', '1',
+                       '-o', temp)
+        # Talairach transform
+        aims_graph = aims.read(graph.fullPath())
+        trans = aims.GraphManip.talairach(aims_graph)
+        trans = translation * trans
+        temp_tr = context.temporary('Transformation matrix')
+        aims.write(trans, temp_tr.fullPath())
+
+        if ok == 0:
+            context.system('AimsResample', '-i', temp,
+                           '-o', self.SPAM.fullPath(), '-m', temp_tr,
+                           '--dx', dim[0], '--dy', dim[1], '--dz', dim[2],
+                           '--sx', vs[0], '--sy', vs[1], '--sz', vs[2],
+                           '-t', 'n')
+            ok = 1
+        else:
+            context.system('AimsResample', '-i', temp,
+                           '-o', temp, '-m', temp_tr,
+                           '--dx', dim[0], '--dy', dim[1], '--dz', dim[2],
+                           '--sx', vs[0], '--sy', vs[1], '--sz', vs[2],
+                           '-t', 'n')
+            context.system('cartoLinearComb.py', '-i', temp,
+                           '-i', self.SPAM.fullPath(),
+                           '-f', 'I1+I2',
+                           '-o', self.SPAM.fullPath() )
+
+        inc = inc + 1
+
+    context.system('cartoLinearComb.py', '-i',self.SPAM.fullPath(),
+                   '-f', 'I1 * 100. / %f' % NbGraph,
+                   '-o', self.SPAM.fullPath() )
+    if self.smoothing == 'Yes' :
+        context.system('AimsFileConvert', '-i',self.SPAM.fullPath(),
+                       '-o',self.SPAM.fullPath(), '-t', 'FLOAT' )
+        context.system('AimsImageSmoothing', '-i',self.SPAM.fullPath(),
+                       '-o',self.SPAM.fullPath(),
+                       '-t', self.smoothing_parameter, '-s', '0' )
+    res_vol = aims.read(self.SPAM.fullPath())
+    res_vol.header()['referentials'] \
+        = [aims.StandardReferentials.acPcReferentialID()]
+    res_vol.header()['transformations'] \
+        = [list(translation.inverse().toVector())]
+    aims.write(res_vol, self.SPAM.fullPath())
+
