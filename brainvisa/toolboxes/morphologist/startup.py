@@ -63,7 +63,7 @@ if not fsldir and distutils.spawn.find_executable( 'fslview' ):
                 if distutils.spawn.find_executable(fsl_prefix + 'flirt'):
                     configuration.FSL.fsl_commands_prefix = fsl_prefix
             except:
-                print 'could not read FSL versions'
+                print('could not read FSL versions')
 if fsldir and os.path.exists(fsldir):
     fslshare = os.path.join(fsldir, 'data')
     if os.path.exists(fslshare):
@@ -101,10 +101,10 @@ elif configuration.SPM.spm8_path:
     spmdir = configuration.SPM.spm8_path
 elif configuration.SPM.spm5_path:
     spmdir = configuration.SPM.spm5_path
-# print '*** SPMDIR:', spmdir
+# print('*** SPMDIR:', spmdir)
 if spmdir is not None:
     spmtemplates = None
-    #print 'SPM dir:', spmdir
+    #print('SPM dir:', spmdir)
     if not os.path.isdir(os.path.join(spmdir, 'templates')) \
             and not os.path.isdir(os.path.join(spmdir, 'toolbox')):
         if os.path.isdir(os.path.join(spmdir, 'spm8_mcr', 'spm8',
@@ -115,7 +115,7 @@ if spmdir is not None:
             spmtemplates = os.path.join(spmdir, 'spm12_mcr', 'spm12')
     else:
         spmtemplates = spmdir #os.path.join( spmdir, 'templates' )
-    #print 'spmtemplates:', spmtemplates
+    #print('spmtemplates:', spmtemplates)
     if not neuroConfig.fastStart and spmtemplates and \
         not neuroHierarchy.databases.hasDatabase(spmtemplates):
         dbs = neuroConfig.DatabaseSettings(spmtemplates)
