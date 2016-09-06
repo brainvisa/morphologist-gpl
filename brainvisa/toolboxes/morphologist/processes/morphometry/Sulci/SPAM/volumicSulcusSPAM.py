@@ -95,7 +95,8 @@ def execution( self, context ):
     sizes = [x * y for x, y in zip(dim, vs)]
     context.write('ref vol sizes:', sizes)
     translation = aims.AffineTransformation3d()
-    translation.setTranslation([sizes[0]/2, sizes[1]/2, sizes[2]*0.75])
+    translation.setTranslation([float(sizes[0])/2, float(sizes[1])/2,
+                                float(sizes[2])*0.75])
 
     for graph in self.graphs:
 
