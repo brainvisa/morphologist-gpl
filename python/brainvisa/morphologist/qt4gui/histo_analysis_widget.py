@@ -4,7 +4,7 @@ HistoData objects, which binds histogram data, histogram analysis, and their
 filenames.
 '''
 
-
+from __future__ import print_function
 import re
 import os
 import math
@@ -715,5 +715,5 @@ if __name__ == '__main__':
     if app:
         app.exec_()
 
-    print 'current histo analysis is:'
-    print win.histodata.han
+    print('current histo analysis is:')
+    print(win.histodata.han)
