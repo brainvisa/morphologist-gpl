@@ -1,3 +1,4 @@
+from __future__ import print_function
 from brainvisa.processes import *
 from brainvisa.processing.qtgui.backwardCompatibleQt import *
 
@@ -30,8 +31,8 @@ def initialization(self):
 
 def runinthread(self):
     muiexe = os.path.join(findInPath('morphologist'), 'morphologist')
-    print self.database.directory
-    print type(self.database)
+    print(self.database.directory)
+    print(type(self.database))
     defaultContext().system(sys.executable, muiexe,
                             '-i', self.database.directory)
 
