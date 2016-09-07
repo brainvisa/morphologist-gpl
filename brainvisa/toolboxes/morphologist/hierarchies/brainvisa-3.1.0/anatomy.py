@@ -90,7 +90,7 @@ segmentation_content = (
     'corpus_callosum_mask', SetType( 'Corpus Callosum mask' ),
 
     'mesh',
-    apply( SetContent, mesh_content),
+    SetContent(*mesh_content),
 )
 
 t1mri_acq_content = (
@@ -131,7 +131,7 @@ t1mri_acq_content = (
         "nobias_<subject>", SetType( 'Histo Analysis' ),
 
         'segmentation',
-        apply( SetContent, segmentation_content),
+        SetContent(*segmentation_content),
 
         'folds', SetContent( # sulci, gyri
           "{graph_version}", SetDefaultAttributeValue( 'graph_version', default_graph_version ), SetContent(
@@ -159,8 +159,8 @@ t1mri_acq_content = (
     ), # analysis
 )#t1mri
 
-apply( insert, ( '{protocol}/{subject}/t1mri/{acquisition}', ) + \
-  t1mri_acq_content,
+insert('{protocol}/{subject}/t1mri/{acquisition}',
+       *t1mri_acq_content
 )
 
 #----------------- Registration -------------------------

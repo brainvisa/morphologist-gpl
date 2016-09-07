@@ -119,7 +119,7 @@ segmentation_content = (
     "ventricles_<subject>", SetType( 'Ventricles Mask' ),
     "brain_volumes_<subject>", SetType( 'Brain volumetry measurements' ),
     'mesh',
-    apply( SetContent, mesh_content),
+    SetContent(*mesh_content),
 )
 
 t1mri_acq_content = (
@@ -160,7 +160,7 @@ t1mri_acq_content = (
         "nobias_<subject>", SetType( 'Histo Analysis' ),
 
         'segmentation',
-        apply( SetContent, segmentation_content),
+        SetContent(*segmentation_content),
 
         'folds', SetContent( # sulci, gyri
           "{graph_version}", SetDefaultAttributeValue( 'graph_version', default_graph_version ), SetContent(
@@ -188,8 +188,8 @@ t1mri_acq_content = (
     ), # analysis
 )#t1mri
 
-apply( insert, ( '{center}/{subject}/t1mri/{acquisition}', ) + \
-  t1mri_acq_content,
+insert('{center}/{subject}/t1mri/{acquisition}',
+       *t1mri_acq_content
 )
 
 #==================================================================================================================================
@@ -235,17 +235,14 @@ snap_whitemesh_content = (
 )
 
 
-apply( insert, ('snapshots/morphologist/{acquisition}/pialmesh', ) + \
-  snap_pialmesh_content,
-)
+insert('snapshots/morphologist/{acquisition}/pialmesh',
+       *snap_pialmesh_content)
 
-apply( insert, ('snapshots/morphologist/{acquisition}/sulci', ) + \
-  snap_sulci_content,
-)
+insert('snapshots/morphologist/{acquisition}/sulci',
+       *snap_sulci_content)
 
-apply( insert, ('snapshots/morphologist/{acquisition}/whitemesh', ) + \
-  snap_whitemesh_content,
-)
+insert('snapshots/morphologist/{acquisition}/whitemesh',
+       *snap_whitemesh_content)
 
 # snapbase qc morphologist
 insert('snapshots/morphologist/{acquisition}/greywhite',
@@ -289,7 +286,7 @@ insert('snapshots/morphologist/{acquisition}/whitemesh',
 #)
 
 #insert('snapshots/{processing}/{acquisition}',
-       #apply(SetContent, snapshots_spm_content))
+       #SetContent(*snapshots_spm_content))
 
 insert('snapshots/spm8NewSegment/{acquisition}/whiteMatter',
     "snapshot_spm8NewSegment_white_{subject}_<acquisition>", 
@@ -347,9 +344,8 @@ tables_content = (
         SetWeakAttr('processing', 'spm8NewSegment')
 )
 
-apply( insert, ('tables/{acquisition}', ) + \
-  tables_content,
-)
+insert('tables/{acquisition}',
+       *tables_content)
 
 #----------------- Registration -------------------------
 
