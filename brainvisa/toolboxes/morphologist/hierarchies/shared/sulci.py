@@ -31,64 +31,65 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
-include( 'base' )
+include('base')
 
 #local helper
-templ_model1 = ( '*', SetType( 'Template model' ),
-                 '*', SetType( 'Template model domain' ) )
-templ_model2 = apply( SetContent, 
-                      ( 'model', apply( SetContent, templ_model1 + \
-                        ( '{model_element_type}', apply( SetContent,
-                                                         templ_model1 ) ) ),
-                        'hull_junction', SetType( 'Template model' ),
-                        SetWeakAttr( 'model_element_type', 'hull_junction' ), 
-                        'fakerel', SetType( 'Template model' ),
-                        SetWeakAttr( 'model_element_type', 'fake_relation' ),
-                        '*', SetType( 'Sigraph Learner' ), 
-                        ) )
+templ_model1 = ('*', SetType('Template model'),
+                '*', SetType('Template model domain'))
+templ_model2 = SetContent(
+    'model', SetContent(*(
+        templ_model1 + ('{model_element_type}', SetContent(*templ_model1)))),
+    'hull_junction', SetType('Template model'),
+    SetWeakAttr('model_element_type', 'hull_junction'),
+    'fakerel', SetType('Template model'),
+    SetWeakAttr('model_element_type', 'fake_relation'),
+    '*', SetType('Sigraph Learner'),
+)
 
 descriptive_models = (
-  'labels_priors',
+    'labels_priors',
     SetContent(
-      '*_priors_{side}', SetContent(
-        '*_priors', SetType( 'Sulci Labels Priors' ),
+        '*_priors_{side}',
+        SetContent(
+            '*_priors', SetType('Sulci Labels Priors'),
         ),
     ),
-  'segments', SetContent(
-# side is not defined as {side} because of ambiguities in the pattern
-# '{sulci_segments_model_type}_{side}'
-    '{sulci_segments_model_type}_left', SetWeakAttr( 'side', 'left' ),
-        SetContent(
-        '*_distribs', SetType( 'Sulci Segments Model' ),
-        '*_direction_trm_priors', SetType( 'Sulci Direction Transformation Priors' ),
-        '*_angle_trm_priors', SetType( 'Sulci Angle Transformation Priors' ),
-        '*_translation_trm_priors', SetType( 'Sulci Translation Transformation Priors' ),
-        'local_referentials', SetType( 'Sulci Local referentials' ),
-        'meshes', SetContent(
-          'Lwhite_spam', SetType( 'White SPAM mesh' ),
-          'global_SPAM', SetType( 'Referential' ),
-          'white_SPAM', SetType( 'Referential' ),
-          'Lwhite_TO_global_spam', SetType( 'Transformation' ),
-        ),
-      ),
-    '{sulci_segments_model_type}_right', SetWeakAttr( 'side', 'right' ),
-        SetContent(
-        '*_distribs', SetType( 'Sulci Segments Model' ),
-        '*_direction_trm_priors', SetType( 'Sulci Direction Transformation Priors' ),
-        '*_angle_trm_priors', SetType( 'Sulci Angle Transformation Priors' ),
-        '*_translation_trm_priors', SetType( 'Sulci Translation Transformation Priors' ),
-        'local_referentials', SetType( 'Sulci Local referentials' ),
-        'meshes', SetContent(
-          'Rwhite_spam', SetType( 'White SPAM mesh' ),
-        ),
-      ),
+    'segments',
+    SetContent(
+        # side is not defined as {side} because of ambiguities in the pattern
+        # '{sulci_segments_model_type}_{side}'
+        '{sulci_segments_model_type}_left', SetWeakAttr( 'side', 'left' ),
+            SetContent(
+            '*_distribs', SetType( 'Sulci Segments Model' ),
+            '*_direction_trm_priors', SetType( 'Sulci Direction Transformation Priors' ),
+            '*_angle_trm_priors', SetType( 'Sulci Angle Transformation Priors' ),
+            '*_translation_trm_priors', SetType( 'Sulci Translation Transformation Priors' ),
+            'local_referentials', SetType( 'Sulci Local referentials' ),
+            'meshes', SetContent(
+              'Lwhite_spam', SetType( 'White SPAM mesh' ),
+              'global_SPAM', SetType( 'Referential' ),
+              'white_SPAM', SetType( 'Referential' ),
+              'Lwhite_TO_global_spam', SetType( 'Transformation' ),
+            ),
+          ),
+        '{sulci_segments_model_type}_right', SetWeakAttr( 'side', 'right' ),
+            SetContent(
+            '*_distribs', SetType( 'Sulci Segments Model' ),
+            '*_direction_trm_priors', SetType( 'Sulci Direction Transformation Priors' ),
+            '*_angle_trm_priors', SetType( 'Sulci Angle Transformation Priors' ),
+            '*_translation_trm_priors', SetType( 'Sulci Translation Transformation Priors' ),
+            'local_referentials', SetType( 'Sulci Local referentials' ),
+            'meshes', SetContent(
+              'Rwhite_spam', SetType( 'White SPAM mesh' ),
+            ),
+          ),
     ),
-  'segments_relations', SetContent(
-    '*_relations_{side}', SetContent(
-      '*_distribs', SetType( 'Sulci Segments Relations Model' ),
-      )
+    'segments_relations', SetContent(
+        '*_relations_{side}', SetContent(
+          '*_distribs', SetType( 'Sulci Segments Relations Model' ),
+        )
     )
-  )
+)
 
 insertFirst( 'nomenclature/hierarchy',
   'sulcal_root_colors', SetPriorityOffset( +10 ), SetType( 'Nomenclature' ),
