@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 from brainvisa.processes import *
 import numpy as np
 import os
@@ -90,7 +91,7 @@ def execution(self, context):
 
     Loutf = open(str(self.file_measures), "w")
     Loutf.write("subject")
-    print measures_by_sulci.keys()
+    print(measures_by_sulci.keys())
     for sulcus in sorted(measures_by_sulci.keys()):
         Loutf.write(";" + sulcus)
     Loutf.write("\n")
@@ -106,8 +107,10 @@ def execution(self, context):
         from catidb import catidb_axon
         if need_concatenated:
             catidb_axon.concatenated_csv(context, str(self.output_file),
-                                   str(self.file_measures), str(self.history_file))
+                                   str(self.file_measures),
+                                   str(self.history_file))
             # detete tmp file measure
             os.remove(self.file_measures)
         else:
-            catidb_axon.write_history(True, subjects_list, [], str(self.history_file))
+            catidb_axon.write_history(True, subjects_list, [],
+                                      str(self.history_file))

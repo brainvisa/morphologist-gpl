@@ -43,7 +43,7 @@ def validation():
     from brainvisa import anatomist
     anatomist.validation()
     import brainvisa.morphologist.qt4gui.histo_analysis_editor
-  except Exception, e:
+  except Exception as e:
     # The new editor does not work: this one will do the job.
     return
   # if it succeeds, then the newer editor will work, and we invalidate this one

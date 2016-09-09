@@ -71,7 +71,6 @@ def NormalizeAnat(context, anat, templatet1, normAnat, norm_matrix,
       '-in', anat, '-ref', templatet1, '-omat', norm_matrix, '-bins', 1024,
       '-cost', cost, '-searchcost', searchcost ] +  s1 + [ '-dof', 12 ]
     context.system( *cmd )
-    print "Finished"
 
 
 signature = Signature(

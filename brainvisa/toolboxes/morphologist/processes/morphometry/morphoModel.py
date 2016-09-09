@@ -63,10 +63,9 @@ def initialization( self ):
     self.setOptional( 'region_type' )
     self.setOptional( 'output_prefix' )
     #    self.linkParameters( 'region', 'nomenclature', change_region )
-    
-    
+
     self.name_descriptors = 1
-    
+
 
 def execution( self, context ):
     context.write( "Morphometry statistics with model running" )
@@ -115,8 +114,8 @@ def execution( self, context ):
     context.write( 'config : ', tmp.fullPath() )
     try:
         stream = open( tmp.fullPath(), 'w' )
-    except IOError, (errno, strerror):
-        error(strerror, maker.output)
+    except IOError as e:
+        error(e.strerror, maker.output)
     else:
         stream.write( '*BEGIN TREE 1.0 siMorpho\n' )
         stream.write( 'modelFile  ' + model + "\n" )
@@ -132,14 +131,14 @@ def execution( self, context ):
         if not self.nomenclature is None:
             stream.write( 'labelsMapFile  ' + self.nomenclature.fullPath() 
                           + "\n" );
-            
+
         if self.name_descriptors:
             stream.write( 'name_descriptors 1\n' )		  
 
         subjects = map(lambda x: str(x.get('subject')),self.data_graphs)
         stream.write( 'subjects ' + string.join( subjects ) + "\n" )
 
-			  
+
         stream.write( '*END\n' )
         stream.close()
         f = open( tmp.fullPath() )

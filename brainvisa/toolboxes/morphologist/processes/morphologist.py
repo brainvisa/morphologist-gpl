@@ -31,6 +31,7 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
+from __future__ import print_function
 from brainvisa.processes import *
 import shfjGlobals
 
@@ -140,7 +141,7 @@ def initialization( self ):
         if p:
             p.validationDelayed()
             hasNorm = True
-            print hasNorm
+            #print(hasNorm)
     except:
         pass
     if hasNorm:
@@ -608,7 +609,7 @@ def initialization( self ):
         self.perform_normalization = False
         self.signature['perform_normalization'].userLevel = 3
     else:
-        print 'perform_normalization = True'
+        #print('perform_normalization = True')
         self.perform_normalization = True
 
     x = changeTalairach(self)

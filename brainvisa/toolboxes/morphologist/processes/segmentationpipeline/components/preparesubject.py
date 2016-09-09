@@ -391,7 +391,7 @@ def execution( self, context ):
         ip = [ int( ipmm[0] / vs[0] ), int( ipmm[1] / vs[1] ),
                int( ipmm[2] / vs[2] ) ]
         autonorm = True
-      except Exception, e:
+      except Exception as e:
         context.warning( e )
 
     if not autonorm:

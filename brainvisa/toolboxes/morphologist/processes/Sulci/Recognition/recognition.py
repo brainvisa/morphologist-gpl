@@ -65,7 +65,7 @@ def modelValue( proc, procbis ):
     val=None
     if proc.data_graph:
         val=proc.data_graph.attributes()
-        if val.has_key( 'graph_version' ):
+        if 'graph_version' in val:
             del val['graph_version']
     rdi = ReadDiskItem('Model graph', 'Graph',
                        requiredAttributes={'trained' : 'Yes'})
@@ -133,8 +133,8 @@ def execution( self, context ):
     context.write( 'config : ', cfgfile)
     try:
         stream = open(cfgfile, 'w' )
-    except IOError, (errno, strerror):
-        error(strerror, maker.output)
+    except IOError as e:
+        error(e.strerror, maker.output)
     else:
         stream.write( '*BEGIN TREE 1.0 siRelax\n' )
         stream.write( 'modelFile ' + self.model.fullPath() + '\n' )

@@ -80,8 +80,8 @@ def execution( self, context ):
         context.write( str(x), ': ', g, '\n' )
         try:
            stream = open( config, 'w' )
-        except IOError, (errno, strerror):
-           error(strerror, maker.output)
+        except IOError as e:
+           error(e.strerror, maker.output)
         else:
            mpath = self.model.fullPath()
            dpath = self.data_graph.fullPath()

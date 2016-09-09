@@ -33,6 +33,14 @@
 
 from brainvisa.processes import *
 import shfjGlobals
+import sys
+
+if sys.version_info[0] >= 3:
+    def next(iterator):
+        return iterator.__next__()
+else:
+    def next(iterator):
+        return iterator.next()
 
 name = 'Sulci Recognition'
 userLevel = 0
@@ -57,7 +65,7 @@ def initialization( self ):
       'global_registered_spam' },
       requiredAttributes = None, write = False )
   try:
-    spammodels.next()
+    next(spammodels)
     usespam = 1
   except StopIteration:
     usespam = 0

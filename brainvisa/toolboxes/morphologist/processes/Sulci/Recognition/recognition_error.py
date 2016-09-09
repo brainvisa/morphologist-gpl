@@ -31,6 +31,7 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
+from __future__ import print_function
 from brainvisa.processes import *
 name = 'Recognition Error'
 userLevel = 1
@@ -44,77 +45,77 @@ userLevel = 1
 # 3) enlever les ambiguites possibles dans la hierarchie (grace a un .minf sur
 #    le fichier de traduction par exemple)
 signature = Signature(
-	'model', ReadDiskItem( 'Model graph', 'Graph' ),
-	'labels_translation', ReadDiskItem('Label translation',
-	[ 'Label translation', 'DEF Label translation' ] ),
-	'base_graph', ReadDiskItem('Labelled Cortical folds graph',
-                                      'Graph', 
-                         requiredAttributes = { 'labelled' :'Yes' }),
-	'labeled_graph', ReadDiskItem('Labelled Cortical folds graph',
-                                      'Graph', 
-                         requiredAttributes = { 'labelled' :'Yes',
-                                                'automatically_labelled' \
-                                                             : 'Yes' }),
-        'error_file', WriteDiskItem( 'Text File', 'Text File' ),
-        )
+    'model', ReadDiskItem( 'Model graph', 'Graph' ),
+    'labels_translation', ReadDiskItem('Label translation',
+    [ 'Label translation', 'DEF Label translation' ] ),
+    'base_graph', ReadDiskItem('Labelled Cortical folds graph',
+                                  'Graph',
+                      requiredAttributes = { 'labelled' :'Yes' }),
+    'labeled_graph', ReadDiskItem('Labelled Cortical folds graph',
+                                  'Graph',
+                      requiredAttributes = { 'labelled' :'Yes',
+                                            'automatically_labelled' \
+                                                          : 'Yes' }),
+    'error_file', WriteDiskItem( 'Text File', 'Text File' ),
+)
 
 # FIXME : l'ideal serait que la commande siError ait le fichier de traduction
 # comme parametre optionnel car elle connait le chemin shared de sigraph.
 def get_sigraph_path():
-	p = os.popen('siError --info')
-	lines = p.readlines()
-	r = [l for l in lines if l.startswith('sigraph base path')][0]
-	path = r[r.find('/'):-1]
-	return path
-	
+    p = os.popen('siError --info')
+    lines = p.readlines()
+    r = [l for l in lines if l.startswith('sigraph base path')][0]
+    path = r[r.find('/'):-1]
+    return path
+
 
 def initialization(self):
-	self.linkParameters('labeled_graph', 'base_graph')
-	self.labels_translation = \
-            self.signature[ 'labels_translation' ].findValue(
-                { 'filename_variable' : 'sulci_model_noroots' } )
-	self.signature['labels_translation'].userLevel = 2
-	self.parent = {}
-	self.parent['manage_tasks'] = False
-	self.setOptional( 'error_file' )
+    self.linkParameters('labeled_graph', 'base_graph')
+    self.labels_translation = \
+        self.signature[ 'labels_translation' ].findValue(
+            { 'filename_variable' : 'sulci_model_noroots' } )
+    self.signature['labels_translation'].userLevel = 2
+    self.parent = {}
+    self.parent['manage_tasks'] = False
+    self.setOptional( 'error_file' )
 
 def execution(self, context):
-	import os
-	context.write('...')
-	if self.parent['manage_tasks']:
-		package = self.parent['self'].package
-		if package == 'default':
-			progname = distutils.spawn.find_executable(
-					'siErrorLightWrapper.py')
-		else:	progname = os.path.join(self.parent['package_dir'],
-					package,'bin', 'siErrorLightWrapper.py')
-		graphname = self.labeled_graph.get('subject')
-		args = [progname, '-m', self.model.fullPath(),
-			'-l', self.labeled_graph.fullPath(),
-			'-t', self.labels_translation.fullPath(),
-			'-b', self.base_graph.fullPath(), 
-			'-c', self.parent['self'].Output.fullPath(),
-			'-n', graphname]
-		cmd = ' '.join(args)
-		self.parent['tasks'].append(cmd)
-	else:
-		import sigraph.error as sierror
-                # reload( sierror )
-		import sigraph.nrj as sinrj
-		error_rate = str(sierror.computeErrorRates(
-                                self.base_graph.fullPath(),
-				self.labeled_graph.fullPath(),
-				self.labels_translation.fullPath()
-				))
-		nrj = str(sinrj.computeNrj(self.model.fullPath(),
-				self.labeled_graph.fullPath(),
-				self.labels_translation.fullPath()))
-		self.parent['error_rate'] = error_rate
-		self.parent['nrj'] = nrj
-		context.write('Error rate = ' + error_rate + '%')
-		context.write('Energy = ' + nrj)
-                if self.error_file is not None:
-                    f = open( self.error_file.fullPath(), 'w' )
-                    print >> f, 'error_rate =', error_rate
-                    print >> f, 'energy =', nrj
-                    f.close()
+    import os
+    context.write('...')
+    if self.parent['manage_tasks']:
+        package = self.parent['self'].package
+        if package == 'default':
+                progname = distutils.spawn.find_executable(
+                                'siErrorLightWrapper.py')
+        else:	progname = os.path.join(self.parent['package_dir'],
+                                package,'bin', 'siErrorLightWrapper.py')
+        graphname = self.labeled_graph.get('subject')
+        args = [progname, '-m', self.model.fullPath(),
+                '-l', self.labeled_graph.fullPath(),
+                '-t', self.labels_translation.fullPath(),
+                '-b', self.base_graph.fullPath(),
+                '-c', self.parent['self'].Output.fullPath(),
+                '-n', graphname]
+        cmd = ' '.join(args)
+        self.parent['tasks'].append(cmd)
+    else:
+        import sigraph.error as sierror
+        # reload( sierror )
+        import sigraph.nrj as sinrj
+        error_rate = str(sierror.computeErrorRates(
+                        self.base_graph.fullPath(),
+                        self.labeled_graph.fullPath(),
+                        self.labels_translation.fullPath()
+                        ))
+        nrj = str(sinrj.computeNrj(self.model.fullPath(),
+                        self.labeled_graph.fullPath(),
+                        self.labels_translation.fullPath()))
+        self.parent['error_rate'] = error_rate
+        self.parent['nrj'] = nrj
+        context.write('Error rate = ' + error_rate + '%')
+        context.write('Energy = ' + nrj)
+        if self.error_file is not None:
+            f = open( self.error_file.fullPath(), 'w' )
+            print('error_rate =', error_rate, file=f)
+            print('energy =', nrj, file=f)
+            f.close()

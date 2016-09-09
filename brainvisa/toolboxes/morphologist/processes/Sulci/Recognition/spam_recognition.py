@@ -32,9 +32,18 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
+import registration
+import sys
+
+if sys.version_info[0] >= 3:
+    def next(iterator):
+        return iterator.__next__()
+else:
+    def next(iterator):
+        return iterator.next()
+
 name = 'Sulci Recognition with SPAM'
 userLevel = 0
-import registration
 
 
 signature = Signature(
@@ -59,7 +68,7 @@ def initialization( self ):
       'locally_from_global_registred_spam' },
       requiredAttributes = None, write = False )
   try:
-    spammodels.next()
+    next(spammodels)
     uselocalspam = 1
   except StopIteration:
     uselocalspam = 0
