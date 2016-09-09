@@ -36,11 +36,8 @@ from brainvisa.validation import ValidationError
 from brainvisa import shelltools
 import brainvisa.tools.spm_run as spm
 from brainvisa.tools import spm_registration
-#from numpy import *
-import commands
 import distutils.spawn
 import os, sys
-#import registration
 
 from soma.wip.application.api import Application
 import subprocess
