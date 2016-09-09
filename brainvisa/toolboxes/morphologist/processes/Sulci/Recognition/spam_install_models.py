@@ -32,7 +32,8 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
-import urllib, os
+import os
+import sys
 try:
   from soma import zipfile
 except:
@@ -42,6 +43,11 @@ from brainvisa.data.neuroHierarchy import databases
 from brainvisa.configuration import neuroConfig
 from soma.wip.application.api import Application
 from brainvisa.configuration import databases_configuration as dbconf
+
+if sys.version_info[0] >= 3:
+    from six.moves.urllib import request as urllib2
+else:
+    import urllib2
 
 name = 'SPAM models installation'
 userLevel = 0
@@ -59,7 +65,6 @@ signature = Signature(
 
 def initialization( self ):
   def linkDB( self, proc ):
-    print 'linkDB'
     if self.destination_database_directory is not None:
       return -1
     chc = self.signature[ 'install_in_compatible_database' ].values
@@ -138,10 +143,10 @@ def execution( self, context ):
   for fname in files:
     context.write( 'downloading', fname, '...' )
     context.progress( pgs, pnum, self )
-    ftp = urllib.urlopen( self.download_url + '/' + fname )
+    ftp = urllib2.urlopen( self.download_url + '/' + fname )
     tzf = context.temporary( 'zip file' )
     f = open( tzf.fullPath(), 'wb' )
-    fsize = long( ftp.headers.get( 'content-length' ) )
+    fsize = int( ftp.headers.get( 'content-length' ) )
     chunksize = 100000
     fread = 0
     while fread < fsize:

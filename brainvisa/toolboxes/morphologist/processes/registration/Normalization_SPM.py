@@ -92,7 +92,7 @@ def execution( self, context ):
         spm.validation(configuration)
         use_spm8 = True
     except:
-        print 'spm8 invalid!'
+        context.warning('spm8 invalid!')
         use_spm8 = False
    #if configuration.SPM.spm8_standalone_command \
         #and (configuration.SPM.spm8_standalone_mcr_path or (sys.platform == "win32")):
@@ -173,7 +173,6 @@ def execution( self, context ):
         mat_file.write('jobs{1}.spatial{1}.normalise{1}.estwrite.eoptions.cutoff = %d\n' % self.cutoff_option)
         mat_file.write('jobs{1}.spatial{1}.normalise{1}.estwrite.eoptions.nits = %i\n' % self.nbiteration)
         for i, anat in enumerate([self.anatomy_data]):
-            #print i, anat
             anat_paths = [ path for path in anat.fullPaths() if path[-4:] == '.img' or path[-4:] == '.ima' or path[-4:] == '.nii' or path.endswith( '.nii.gz' ) ]
             mat_file.write("anat_ref = { '%s'\n" % anat_paths[0])
             for path in anat_paths[1:-1]:
@@ -198,7 +197,6 @@ def execution( self, context ):
         mexe = distutils.spawn.find_executable( configuration.matlab.executable )
         pd = os.getcwd()
         #context.write(matfileDI.fullPath())
-        #print matfileDI.fullPath()
         os.chdir( os.path.dirname(matfileDI.fullPath() ))
         cmd = [ mexe ] + configuration.matlab.options.split() + [ '-r', os.path.basename( matfileDI.fullName() ) ]
         context.write( 'running matlab command:', cmd )

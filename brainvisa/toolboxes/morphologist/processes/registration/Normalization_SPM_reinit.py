@@ -34,11 +34,8 @@
 from brainvisa.processes import *
 from brainvisa.validation import ValidationError
 from brainvisa import shelltools
-#from numpy import *
-import commands
 import distutils.spawn
 import os
-#import registration
 
 from soma.wip.application.api import Application
 import subprocess

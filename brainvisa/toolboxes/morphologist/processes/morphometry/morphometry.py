@@ -140,8 +140,8 @@ def execution( self, context ):
                               'empty' ) )
     try:
         stream = open( tmp.fullPath(), 'w' )
-    except IOError, (errno, strerror):
-        error(strerror, maker.output)
+    except IOError as e:
+        error(e.strerror, maker.output)
     stream.write( '*BEGIN TREE 1.0 siMorpho\n' )
     stream.write( 'modelFile  ' + self.model.fullPath() + "\n" )
     stream.write( 'graphFiles  "' + \
@@ -227,8 +227,8 @@ def execution( self, context ):
             subjectsFile = context.temporary('Config file')
             try:
                 f = open( subjectsFile.fullPath(), 'w' )
-            except IOError, (errno, strerror):
-                error(strerror, maker.output)
+            except IOError as e:
+                error(e.strerror, maker.output)
             else:
                 f.write('subject\n')
                 for subject in subjects : f.write(subject+'\n')

@@ -218,7 +218,7 @@ class GridParallelTaskManager(ParallelTaskManager):
 		stream.write('#!/bin/bash\n\n')
 		stream.write("python2 %s  --host ~/neurospin-distcc-hosts --tasks %s --log %s --timeslot -" % (distcmd, self.name, self.name + '.log'))
 		stream.close()
-		os.chmod(scriptname, 0750)
+		os.chmod(scriptname, 0o750)
 
 
 class DuchParallelTaskManager(ParallelTaskManager):
@@ -251,7 +251,7 @@ class DuchParallelTaskManager(ParallelTaskManager):
 		stream.write("python2 %s -l 1 -v ~/hosts '%s' '%s'" % \
 			(distcmd, self.name, self.name + '.log'))
 		stream.close()
-		os.chmod(scriptname, 0750)
+		os.chmod(scriptname, 0o750)
 	
 	
 class LocalParallelTaskManager(ParallelTaskManager):

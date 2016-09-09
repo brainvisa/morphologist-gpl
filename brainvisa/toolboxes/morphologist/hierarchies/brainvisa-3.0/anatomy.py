@@ -200,16 +200,22 @@ deepnuclei_content = (
 
 insert( '{protocol}/{subject}',
   'anatomy', SetWeakAttr( 'acquisition', '' ),
-    apply( SetContent, anatomy_content + ( '{acquisition}', apply( SetContent, anatomy_content ), ) ),
+    SetContent(*(anatomy_content
+                 + ('{acquisition}', SetContent(*anatomy_content),))),
   'segment', SetWeakAttr( 'acquisition', '' ),
-    apply( SetContent, segment_content + ( '{acquisition}', apply( SetContent, segment_content ), ) ),
-  'tri', SetWeakAttr( 'acquisition', '' ), SetPriorityOffset( -10 ), apply( SetContent, mesh_content ),
+    SetContent(*(segment_content
+                 + ('{acquisition}', SetContent(*segment_content),))),
+  'tri', SetWeakAttr( 'acquisition', '' ), SetPriorityOffset( -10 ),
+      SetContent(*mesh_content),
   'mesh', SetWeakAttr( 'acquisition', '' ),
-    apply( SetContent, mesh_content + ( '{acquisition}', apply( SetContent, mesh_content ), ) ),
+    SetContent(*(mesh_content
+                 + ('{acquisition}', SetContent(*mesh_content),))),
   'graphe', SetWeakAttr( 'acquisition', '' ), SetWeakAttr( 'sulci_recognition_session', 'default' ), SetWeakAttr( 'graph_version', '3.0' ), SetPriorityOffset( +2 ),
-    apply( SetContent, graph_content + ( '{acquisition}', apply( SetContent, graph_content ), ) ),
+    SetContent(*(graph_content
+                 + ('{acquisition}', SetContent(*graph_content),))),
   'deepnuclei', SetWeakAttr( 'acquisition', '' ),
-    apply( SetContent, deepnuclei_content + ( '{acquisition}', apply( SetContent, deepnuclei_content ), ) ),
+    SetContent(*(deepnuclei_content
+                 + ('{acquisition}', SetContent(*deepnuclei_content),))),
 )
 
 #----------------- Registration -------------------------

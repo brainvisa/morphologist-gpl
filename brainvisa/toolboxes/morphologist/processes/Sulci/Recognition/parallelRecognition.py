@@ -106,7 +106,6 @@ def inlineGUI( self, proc, procview, externalRunButton = True ):
     # rebind the _iterateAccept method of this Process class (defined here in
     # this source) to the process view instance
     procview._iterateAccept = self.__class__._iterateAccept.__get__( procview )
-    print procview._iterateAccept
     return gui
 
 

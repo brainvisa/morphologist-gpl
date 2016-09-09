@@ -35,7 +35,6 @@ from brainvisa.processes import *
 import shfjGlobals
 import registration
 import os
-import commands
 from soma.wip.application.api import Application
 
 def validation():

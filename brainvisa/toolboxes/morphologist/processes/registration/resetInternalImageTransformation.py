@@ -37,7 +37,7 @@ import subprocess, re
 def validation():
     try:
         from soma import aims
-    except Exception, e:
+    except Exception as e:
         raise ValidationError( _t_( 'soma.aims module cannot be imported: ' ) \
             +  str(e) )
 

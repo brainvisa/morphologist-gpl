@@ -88,25 +88,21 @@ def initialization( self ):
 def execution( self, context ):
   from soma import aims
   from soma import aimsalgo
-  
 
   trans = aims.read( self.talairach_transform.fullPath() ) # read a Motion object
   transInv= trans.inverse()
   coords = transInv.transform( self.point )
-  
-
 
   reader = aims.Reader()
   reader.mapType( 'Volume', 'AimsData' )
   data = reader.read( self.t1mri.fullPath() )
-  print data
   dx = data.dimX()
   dy = data.dimY()
   dz = data.dimZ()
   sx = data.sizeX()
   sy = data.sizeY()
   sz = data.sizeZ()
-  
+
   ima=aims.AimsData_FLOAT(dx, dy, dz, 1)
   ima.setSizeX(sx)
   ima.setSizeY(sy)
@@ -115,9 +111,7 @@ def execution( self, context ):
 
   context.write('Talairach : ', self.point)
   context.write('Voxel : (', int(coords[0]/sx), ',', int(coords[1]/sy), ',', int(coords[2]/sz), ')')
-  print self.point
-  print coords
-  
+
   context.write('Creating functional image of size', dx, 'x', dy, 'x', dz)
   #for z in xrange( dz ):
     #for y in xrange( dy ):
