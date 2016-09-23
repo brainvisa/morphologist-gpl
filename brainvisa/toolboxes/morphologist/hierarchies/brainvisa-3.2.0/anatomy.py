@@ -288,29 +288,25 @@ insert('snapshots/morphologist/{acquisition}/whitemesh',
 #insert('snapshots/{processing}/{acquisition}',
        #SetContent(*snapshots_spm_content))
 
-insert('snapshots/spm8NewSegment/{acquisition}/whiteMatter',
-    "snapshot_spm8NewSegment_white_{subject}_<acquisition>", 
+insert('snapshots/{processing}/{acquisition}/whiteMatter',
+    "snapshot_<processing>_white_{subject}_<acquisition>", 
         SetType('Snapshot Probability Map'),
-        SetWeakAttr('tissue_class', 'white',
-                    'processing', 'spm8NewSegment')
+        SetWeakAttr('tissue_class', 'white')
 )
-insert('snapshots/spm8NewSegment/{acquisition}/greyMatter',
-    "snapshot_spm8NewSegment_grey_{subject}_<acquisition>",
+insert('snapshots/{processing}/{acquisition}/greyMatter',
+    "snapshot_<processing>_grey_{subject}_<acquisition>",
         SetType('Snapshot Probability Map'),
-        SetWeakAttr('tissue_class', 'grey',
-                    'processing', 'spm8NewSegment')
+        SetWeakAttr('tissue_class', 'grey')
 )
-insert('snapshots/spm8NewSegment/{acquisition}/csf',
-    "snapshot_spm8NewSegment_csf_{subject}_<acquisition>", 
+insert('snapshots/{processing}/{acquisition}/csf',
+    "snapshot_<processing>_csf_{subject}_<acquisition>", 
         SetType('Snapshot Probability Map'),
-        SetWeakAttr('tissue_class', 'csf',
-                    'processing', 'spm8NewSegment')
+        SetWeakAttr('tissue_class', 'csf')
 )
 
 # snapbase qc spm
-insert('snapshots/spm8NewSegment/{acquisition}',
-       "qc_spm8NewSegment", SetType( 'Snapshots Probability Map Quality Scores'),
-       SetWeakAttr('processing', 'spm8NewSegment')
+insert('snapshots/{processing}/{acquisition}',
+    "qc_<processing>", SetType('Snapshots Probability Map Quality Scores'),
 )
 
 #==================================================================================================================================
@@ -330,18 +326,15 @@ tables_content = (
     "history_tissues_volumes_morphologist",
         SetType('History Global Volumetry Table'),
         SetWeakAttr('processing', 'morphologist'),
-    "tissues_volumes_spm8NewSegment", 
+    "tissues_volumes_{processing}", 
         SetType('Global Volumetry Table'),
-        SetWeakAttr('processing', 'spm8NewSegment'),
-    "history_tissues_volumes_spm8NewSegment",
+    "history_tissues_volumes_{processing}",
         SetType('History Global Volumetry Table'),
-        SetWeakAttr('processing', 'spm8NewSegment'),
     "snapshots_features_morphologist",
         SetType('Snapshots Features Table'),
         SetWeakAttr('processing', 'morphologist'),
-    "snapshots_features_spm8NewSegment",
+    "snapshots_features_{processing}",
         SetType('Snapshots Features Table'),
-        SetWeakAttr('processing', 'spm8NewSegment')
 )
 
 insert('tables/{acquisition}',
