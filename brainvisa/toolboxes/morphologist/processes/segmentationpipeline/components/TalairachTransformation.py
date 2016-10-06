@@ -33,17 +33,19 @@
 
 from brainvisa.processes import *
 import registration
-name = 'Talairach Transformation'
+name = 'Talairach transformation from manual AC/PC'
 userLevel = 2
 
 signature = Signature(
-  'split_mask', ReadDiskItem( 'Split Brain Mask',
-      'Aims readable volume formats' ),
-  'commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
-                                          'Commissure coordinates'), 
-  'Talairach_transform',
-  WriteDiskItem( 'Transform Raw T1 MRI to Talairach-AC/PC-Anatomist',
-                 'Transformation matrix' ), 
+  'split_mask', ReadDiskItem(
+      'Split Brain Mask',
+      'Aims readable volume formats'),
+  'commissure_coordinates', ReadDiskItem(
+      'Commissure coordinates',
+      'Commissure coordinates'), 
+  'Talairach_transform', WriteDiskItem(
+      'Transform Raw T1 MRI to Talairach-AC/PC-Anatomist',
+      'Transformation matrix'), 
 )
 
 
