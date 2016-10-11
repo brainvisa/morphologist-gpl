@@ -30,9 +30,9 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
-from neuroProcesses import *
+from brainvisa.processes import *
 from brainvisa import shelltools
-import registration
+from brainvisa import registration
 
 name = '5 - Compute Grey white Interface Mesh'
 userLevel = 2
