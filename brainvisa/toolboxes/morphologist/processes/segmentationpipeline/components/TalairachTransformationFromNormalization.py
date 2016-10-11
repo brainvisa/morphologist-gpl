@@ -31,6 +31,7 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
+from __future__ import print_function
 from brainvisa.processes import *
 import registration
 import shfjGlobals
@@ -156,14 +157,14 @@ def execution( self, context ):
     context.write( 'PC:', pc, ', mm:', list( pcmm ) )
     context.write( 'IP:', ip, ', mm:', list( ipmm ) )
     apc = open( self.commissure_coordinates.fullPath(), 'w' )
-    print >> apc, 'AC:', ' '.join( [ str(x) for x in ac ] )
-    print >> apc, 'PC:', ' '.join( [ str(x) for x in pc ] )
-    print >> apc, 'IH:', ' '.join( [ str(x) for x in ip ] )
-    print >> apc, 'The previous coordinates, used by the system, are ' \
-      'defined in voxels'
-    print >> apc, 'They stem from the following coordinates in millimeters:'
-    print >> apc, 'ACmm:', ' '.join( [ str(x) for x in acmm ] )
-    print >> apc, 'PCmm:', ' '.join( [ str(x) for x in pcmm ] )
-    print >> apc, 'IHmm:', ' '.join( [ str(x) for x in ipmm ] )
+    print('AC:', ' '.join( [ str(x) for x in ac ] ), file=apc)
+    print('PC:', ' '.join( [ str(x) for x in pc ] ), file=apc)
+    print('IH:', ' '.join( [ str(x) for x in ip ] ), file=apc)
+    print('The previous coordinates, used by the system, are ' \
+      'defined in voxels', file=apc)
+    print('They stem from the following coordinates in millimeters:', file=apc)
+    print('ACmm:', ' '.join( [ str(x) for x in acmm ] ), file=apc)
+    print('PCmm:', ' '.join( [ str(x) for x in pcmm ] ), file=apc)
+    print('IHmm:', ' '.join( [ str(x) for x in ipmm ] ), file=apc)
     apc.close()
 

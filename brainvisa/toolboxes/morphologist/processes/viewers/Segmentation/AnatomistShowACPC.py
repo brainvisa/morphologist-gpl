@@ -30,6 +30,7 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
+from __future__ import print_function
 from brainvisa.processes import *
 from brainvisa import anatomist
 
@@ -93,45 +94,45 @@ def execution(self, context):
         context.write('No pre-built sphere mesh found. Building one...')
         cp = context.temporary('Config file')
         f = open(cp.fullPath(), 'w')
-        print >> f, 'attributes = {'
-        print >> f, "  'type' : 'cylinder',"
-        print >> f, "  'point1' : [ -50, 0, 0 ],"
-        print >> f, "  'point2' : [ 50, 0, 0 ],"
-        print >> f, "  'radius' : 0.5,"
-        print >> f, "  'closed' : 1,"
-        print >> f, "  'facets' : 4,"
-        print >> f, "  'smooth' : 1,"
-        print >> f, "}"
+        print('attributes = {', file=f)
+        print("  'type' : 'cylinder',", file=f)
+        print("  'point1' : [ -50, 0, 0 ],", file=f)
+        print("  'point2' : [ 50, 0, 0 ],", file=f)
+        print("  'radius' : 0.5,", file=f)
+        print("  'closed' : 1,", file=f)
+        print("  'facets' : 4,", file=f)
+        print("  'smooth' : 1,", file=f)
+        print("}", file=f)
         f.close()
         cf = context.temporary('Mesh mesh')
         context.system('AimsMeshGenerate', '-i', cp.fullPath(), '-o',
                         cf.fullPath())
 
         f = open(cp.fullPath(), 'w')
-        print >> f, 'attributes = {'
-        print >> f, "  'type' : 'cylinder',"
-        print >> f, "  'point1' : [ 0, -50, 0 ],"
-        print >> f, "  'point2' : [ 0, 50, 0 ],"
-        print >> f, "  'radius' : 0.5,"
-        print >> f, "  'closed' : 1,"
-        print >> f, "  'facets' : 4,"
-        print >> f, "  'smooth' : 1,"
-        print >> f, "}"
+        print('attributes = {', file=f)
+        print("  'type' : 'cylinder',", file=f)
+        print("  'point1' : [ 0, -50, 0 ],", file=f)
+        print("  'point2' : [ 0, 50, 0 ],", file=f)
+        print("  'radius' : 0.5,", file=f)
+        print("  'closed' : 1,", file=f)
+        print("  'facets' : 4,", file=f)
+        print("  'smooth' : 1,", file=f)
+        print("}", file=f)
         f.close()
         cf2 = context.temporary('Mesh mesh')
         context.system('AimsMeshGenerate', '-i', cp.fullPath(), '-o',
                        cf2.fullPath())
 
         f = open(cp.fullPath(), 'w')
-        print >> f, 'attributes = {'
-        print >> f, "  'type' : 'cylinder',"
-        print >> f, "  'point1' : [ 0, 0, -50 ],"
-        print >> f, "  'point2' : [ 0, 0, 50 ],"
-        print >> f, "  'radius' : 0.5,"
-        print >> f, "  'closed' : 1,"
-        print >> f, "  'facets' : 4,"
-        print >> f, "  'smooth' : 1,"
-        print >> f, "}"
+        print('attributes = {', file=f)
+        print("  'type' : 'cylinder',", file=f)
+        print("  'point1' : [ 0, 0, -50 ],", file=f)
+        print("  'point2' : [ 0, 0, 50 ],", file=f)
+        print("  'radius' : 0.5,", file=f)
+        print("  'closed' : 1,", file=f)
+        print("  'facets' : 4,", file=f)
+        print("  'smooth' : 1,", file=f)
+        print("}", file=f)
         f.close()
         cf3 = context.temporary('Mesh mesh')
         context.system('AimsMeshGenerate', '-i', cp.fullPath(), '-o',
