@@ -31,15 +31,15 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
-from neuroProcesses import *
-import shfjGlobals, math
+from brainvisa.processes import *
+import math
 from brainvisa import anatomist
 
 name = 'View in hippocampic referential'
 userLevel = 0
 
 signature = Signature(
-  'T1mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.vipVolumeFormats ),  
+  'T1mri', ReadDiskItem( "Raw T1 MRI", "aims readable volume formats" ),
   'Transformation_to_hippocamic_ref', WriteDiskItem( 'Transformation matrix', 'Transformation matrix' ),
   'Commissure_coordinates', WriteDiskItem( 'Commissure coordinates','Commissure coordinates'),
   'Normalised',Choice('No','SHFJ from SPM','MNI from Mritotal', 'Marseille from SPM'),

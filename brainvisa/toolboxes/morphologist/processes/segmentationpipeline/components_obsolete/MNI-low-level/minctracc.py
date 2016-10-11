@@ -31,8 +31,7 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 #
-from neuroProcesses import *
-import shfjGlobals     
+from brainvisa.processes import *
 
 name = 'Minctracc'
 userLevel = 1

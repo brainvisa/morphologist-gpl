@@ -30,8 +30,7 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
-from neuroProcesses import *
-import shfjGlobals
+from brainvisa.processes import *
 from brainvisa import shelltools
 from brainvisa.processing.qtgui.backwardCompatibleQt import *
 from brainvisa import anatomist
@@ -43,16 +42,16 @@ def validation():
   anatomist.validation()
 
 signature = Signature(
-  'activations', ReadDiskItem( 'fMRI activations', shfjGlobals.anatomistVolumeFormats ),
+  'activations', ReadDiskItem( 'fMRI activations', 'anatomist Volume Formats' ),
   'threshold', Number(),
   'minimumSize', Integer(),
-  'mri', ReadDiskItem( 'T1 MRI',  shfjGlobals.anatomistVolumeFormats ),
+  'mri', ReadDiskItem( 'T1 MRI',  'anatomist Volume Formats' ),
   'show_mri', Choice("Yes","No"),
   'fmriTOmri', ReadDiskItem( 'Transformation matrix', 'Transformation matrix' ),
   'activ_transparency', Number(),
-  'head_mesh', ReadDiskItem( 'Head mesh', shfjGlobals.anatomistMeshFormats ),
+  'head_mesh', ReadDiskItem( 'Head mesh', 'anatomist Mesh Formats' ),
   'head_transparency', Number(),
-  'brain_mesh', ReadDiskItem( 'Brain mesh', shfjGlobals.anatomistMeshFormats ),
+  'brain_mesh', ReadDiskItem( 'Brain mesh', 'anatomist Mesh Formats' ),
   'brain_transparency', Number(),
 )
 

@@ -32,10 +32,8 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
-import shfjGlobals
-from brainvisa import shelltools
+from brainvisa.processes import *
 
-from neuroProcesses import *
 name = 'Volumic Average'
 userLevel = 2
 

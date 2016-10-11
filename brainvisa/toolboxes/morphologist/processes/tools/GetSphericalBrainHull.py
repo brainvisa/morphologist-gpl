@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from neuroProcesses import *
-import shfjGlobals, registration
+from brainvisa.processes import *
+from brainvisa import registration
 
 name = 'Get Spherical Brain Hull'
 userLevel = 0

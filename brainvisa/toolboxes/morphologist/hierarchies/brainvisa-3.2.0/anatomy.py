@@ -33,7 +33,7 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
-import registration
+from brainvisa import registration
 include( 'base' )
 include( 'registration' )
 include( '3DT1_spm' )
