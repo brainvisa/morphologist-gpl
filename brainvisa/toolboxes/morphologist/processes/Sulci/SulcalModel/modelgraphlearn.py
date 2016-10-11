@@ -31,6 +31,7 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
+from __future__ import print_function
 from brainvisa.processes import *
 from brainvisa import shelltools
 import os, string, stat
@@ -233,9 +234,9 @@ def execution( self, context ):
                      "datamind/gui/bin/distributed_computing.py'")
        return
     fd = open(scriptout, 'w')
-    print >> fd, "#!/bin/bash\n"
-    print >> fd, "python %s -l 1 -v ~/hosts '%s' '%s'" % \
-          (distcmd, batchout, batchout + '.log')
+    print("#!/bin/bash\n", file=fd)
+    print("python %s -l 1 -v ~/hosts '%s' '%s'" % \
+          (distcmd, batchout, batchout + '.log'), file=fd)
     fd.close()
     os.chmod(scriptout, 0750)
   elif self.parallelism_mode == 'grid':
@@ -254,8 +255,8 @@ def execution( self, context ):
                      "'//depot/parallel-version/bin/grid.py")
        return
     fd = open(scriptout, 'w')
-    print >> fd, "#!/bin/bash\n"
-    print >> fd, "python %s  --host ~/neurospin-distcc-hosts --tasks %s --log %s --timeslot -" % (distcmd, batchout, batchout + '.log')
+    print("#!/bin/bash\n", file=fd)
+    print("python %s  --host ~/neurospin-distcc-hosts --tasks %s --log %s --timeslot -" % (distcmd, batchout, batchout + '.log'), file=fd)
     fd.close()
     os.chmod(scriptout, 0750)
   elif self.parallelism_mode == 'LSF':

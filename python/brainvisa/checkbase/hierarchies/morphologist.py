@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 import os
 from brainvisa.checkbase.hierarchies import *
 from brainvisa.checkbase.hierarchies.checkbase import Checkbase
@@ -127,7 +128,7 @@ class MorphologistCheckbase(Checkbase):
        if not hasattr(self, 'existingfiles'): self.check_database_for_existing_files()
        self.volumes = {}
        for subject in self.get_flat_subjects():
-          print subject
+          print(subject)
           self.volumes[subject] = {}
           spm_wc_vols = ['spm_greymap_warped', 'spm_whitemap_warped', 'spm_csfmap_warped',
                 'spm_greymap_modulated', 'spm_whitemap_modulated', 'spm_csfmap_modulated']

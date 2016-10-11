@@ -1,4 +1,5 @@
 #!/usr/bin/python
+from __future__ import print_function
 from __future__ import with_statement # allow python 2.5 to work
 import pyinotify
 import sys, os
@@ -13,7 +14,7 @@ def process_module(c):
    from inspect import getmembers, isfunction, getdoc, ismethod, isclass, ismodule
    import imp, sys
    imp.reload(c)
-   print c.__name__
+   print(c.__name__)
 
    functions_html = '<h3>%s</h3><br/>'%c.__name__
    for each in getmembers(c, isfunction):
@@ -26,7 +27,7 @@ def process_module(c):
    classes_html = ''
    for each_class in classes:
     if not each_class[0] in read_modules:
-      print each_class[0], read_modules
+      print(each_class[0], read_modules)
       read_modules.append(each_class[0])
       methods = {}
       classes_html += '<h3>%s</h3><br/>'%each_class[0]
@@ -48,7 +49,7 @@ def process_module(c):
    return html
 
 def update(ev):
-   print ev
+   print(ev)
    global html_pathname, template_pathname, read_modules
    read_modules = []
 
@@ -78,7 +79,7 @@ def update(ev):
    with open('/tmp/report.txt', 'rb') as f:
       t=f.readlines()
       nb_pages = int(t[-1].rstrip('\n').split(' ')[1])
-      print nb_pages, 'pages'
+      print(nb_pages, 'pages')
 
    import math
    p = pdf.PDFReportPrinter('/tmp/report_tmp.pdf', html=html, doc_height = math.exp(-1/float(nb_pages)) * 70.0 / 0.24)
@@ -94,13 +95,13 @@ def update(ev):
    os.system("montage /tmp/pg*.jpg -geometry +0+0 -tile x1 /tmp/report.pdf")
    os.chdir(old_dir)
 
-   print 'done'
+   print('done')
 
 
 if __name__ == '__main__':
    global template_pathname, html_pathname, cbdir
    if len(sys.argv) < 4:
-      print "usage : monitor.py checkbase_directory template_file html_file [loop]"
+      print("usage : monitor.py checkbase_directory template_file html_file [loop]")
       exit(0)
    cbdir = sys.argv[1]
    template_pathname = sys.argv[2]
@@ -115,7 +116,7 @@ if __name__ == '__main__':
    for root, dirs, files in os.walk(cbdir):
       if '.svn' in string.split(root, os.path.sep): continue
       directories.append(root)
-   print directories
+   print(directories)
 
    update(None)
 

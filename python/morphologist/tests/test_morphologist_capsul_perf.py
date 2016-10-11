@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 import os
 import unittest
 import tempfile
@@ -50,26 +51,26 @@ class TestMorphologistCapsulPerf(unittest.TestCase):
         mp.nodes_activation.SulciRecognition_1 = True
         t1 = time.clock()
         dur = t1 - t0
-        print 'time to instantiate one Morphologist pipeline: %f' % (t1 - t0)
+        print('time to instantiate one Morphologist pipeline: %f' % (t1 - t0))
         self.morpho = mp
         t0 = time.clock()
         morpho_list1 = [CustomMorphologist() for i in xrange(10)]
         t1 = time.clock()
-        print 'time to instantiate 10 Morphologist pipelines: %f' % (t1 - t0)
+        print('time to instantiate 10 Morphologist pipelines: %f' % (t1 - t0))
         nmorpho = 200
         t0 = time.clock()
         mpick = cPickle.dumps(mp)
         self.morpho_list = [cPickle.loads(mpick) for i in xrange(nmorpho)]
         t1 = time.clock()
-        print 'time to duplicate %d Morphologist pipelines: %f' \
-            % (nmorpho, t1 - t0)
+        print('time to duplicate %d Morphologist pipelines: %f' \
+            % (nmorpho, t1 - t0))
         #dur += t1 - t0
 
         t0 = time.clock()
         pf = process_with_fom.ProcessWithFom(self.morpho, self.study_config)
         t1 = time.clock()
-        print 'time to instantiate ProcessWithFom for Morphologist: %f' \
-            % (t1 - t0)
+        print('time to instantiate ProcessWithFom for Morphologist: %f' \
+            % (t1 - t0))
         dur += t1 - t0
         pf.attributes['center'] = 'test'
         pf.attributes['analysis'] = 'capsul'
@@ -79,8 +80,8 @@ class TestMorphologistCapsulPerf(unittest.TestCase):
             = [process_with_fom.ProcessWithFom(mp, self.study_config)
                 for mp in self.morpho_list]
         t1 = time.clock()
-        print 'time to instantiate %d process_with_fom: %f' \
-            % (len(self.morpho_fom_list), t1 - t0)
+        print('time to instantiate %d process_with_fom: %f' \
+            % (len(self.morpho_fom_list), t1 - t0))
         t0 = time.clock()
         self.morpho_fom.study_config = None
         mfompick = cPickle.dumps(self.morpho_fom)
@@ -90,15 +91,15 @@ class TestMorphologistCapsulPerf(unittest.TestCase):
         for pf in self.morpho_fom_list:
             pf.study_config = self.study_config
         t1 = time.clock()
-        print 'time to duplicate %d process_with_fom: %f' \
-            % (len(self.morpho_fom_list), t1 - t0)
+        print('time to duplicate %d process_with_fom: %f' \
+            % (len(self.morpho_fom_list), t1 - t0))
         dur += t1 - t0
 
         self.morpho_fom.attributes['subject'] = 'sujet01'
         t0 = time.clock()
         self.morpho_fom.create_completion()
         t1 = time.clock()
-        print 'time to complete Morphologist parameters: %f' % (t1 - t0)
+        print('time to complete Morphologist parameters: %f' % (t1 - t0))
         subjects = ['subject%03d' % i \
                     for i in xrange(len(self.morpho_fom_list))]
         t0 = time.clock()
@@ -108,8 +109,8 @@ class TestMorphologistCapsulPerf(unittest.TestCase):
             pf.attributes['subject'] = subject
             pf.create_completion()
         t1 = time.clock()
-        print 'time to complete %d Morphologist completions: %f' \
-            % (len(self.morpho_fom_list), t1 - t0)
+        print('time to complete %d Morphologist completions: %f' \
+            % (len(self.morpho_fom_list), t1 - t0))
         dur += t1 - t0
 
         pf = self.morpho_fom_list[12]
@@ -135,16 +136,16 @@ class TestMorphologistCapsulPerf(unittest.TestCase):
         wf = pipeline_workflow.workflow_from_pipeline(
             self.morpho, study_config=self.study_config)
         t1 = time.clock()
-        print 'time to build a Morphologist workflow: %f' % (t1 - t0)
+        print('time to build a Morphologist workflow: %f' % (t1 - t0))
         t0 = time.clock()
         wf_list = [pipeline_workflow.workflow_from_pipeline(
             mp, study_config=self.study_config) for mp in self.morpho_list]
         t1 = time.clock()
-        print 'time to build %d Morphologist workflows: %f' \
-            % (len(wf_list), t1 - t0)
+        print('time to build %d Morphologist workflows: %f' \
+            % (len(wf_list), t1 - t0))
         dur += t1 - t0
-        print 'time to build the complete %d workflows from the beginning ' \
-            'using duplication: %f' % (len(wf_list), dur)
+        print('time to build the complete %d workflows from the beginning ' \
+              'using duplication: %f' % (len(wf_list), dur))
 
 
 

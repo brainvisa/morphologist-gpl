@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 from brainvisa.checkbase.check import studies_list, users_dict
 
 def get_size(directory = '.', fastmode=True):
@@ -80,36 +81,36 @@ def check_disk_usage(directory, get_sizes = True, studies_list = studies_list, u
          all_studies_list.pop(all_studies_list.index(each))
 
    # processing users folders
-   if verbose: print 'Processing users...'
+   if verbose: print('Processing users...')
    for user in all_users_list:
-       if verbose: print user, 'in progress'
+       if verbose: print(user, 'in progress')
        if user in users_list:
             s = 0
             if get_sizes: s = get_size(os.path.join(users_dir, user))
             users_space[user] = s
-            if verbose: print user, users_space[user], 'identified', time.time() - start_time
+            if verbose: print(user, users_space[user], 'identified', time.time() - start_time)
        else:
             if not process_undeclared: continue
             s = 0
             if get_sizes: s = get_size(os.path.join(users_dir, user))
             other_users[user] = s
-            if verbose: print user, other_users[user], 'undeclared', time.time() - start_time
+            if verbose: print(user, other_users[user], 'undeclared', time.time() - start_time)
 
    # processing studies folders
-   if verbose: print 'Processing studies...'
+   if verbose: print('Processing studies...')
    for study in all_studies_list:
-       if verbose: print study, 'in progress'
+       if verbose: print(study, 'in progress')
        if study in studies_list:
            s = 0
            if get_sizes: s = get_size(os.path.join(directory, study))
            studies_space[study] = s
-           if verbose: print study, studies_space[study], 'identified', time.time() - start_time
+           if verbose: print(study, studies_space[study], 'identified', time.time() - start_time)
        else:
            if not process_undeclared: continue
            s = 0
            if get_sizes: s = get_size(os.path.join(directory, study))
            other_studies[study] = s
-           if verbose: print study, other_studies[study], 'undeclared', time.time() - start_time
+           if verbose: print(study, other_studies[study], 'undeclared', time.time() - start_time)
 
    # compiling results as attributes of an object
    database_checker = DatabaseChecker()

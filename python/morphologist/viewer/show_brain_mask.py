@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 import os
 try:
     from traits.api import ListStr,HasTraits,File,Float,Instance,Enum,Str
@@ -11,7 +12,7 @@ import anatomist.api as ana
 
 class ShowBrainMask(Controller):
     name='ShowBrainMask'
-    print 'classshow brain mask'   
+    print('classshow brain mask')
     def __init__(self,*args,**kwargs):
         HasTraits.__init__(self)
 	add_trait(self,'mask',File(exists=True))
@@ -29,7 +30,7 @@ class ShowBrainMask(Controller):
         return a    
     
     def mask_on_mri(self,palette,mode,rate,wintype="Axial"):
-	print 'function mask_on_mri'
+	print('function mask_on_mri')
 	a=self.anatomist_instance()
 	mri= a.loadObject(self.mri_corrected )
 	mri.takeAppRef()
@@ -54,5 +55,5 @@ class ShowBrainMask(Controller):
     
     def __call__( self):
         """ Function to call the execution """ 
-	print 'here call show volume'
+	print('here call show volume')
 	self.command()

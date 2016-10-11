@@ -31,6 +31,7 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
+from __future__ import print_function
 from brainvisa.processes import *
 import shfjGlobals
 from brainvisa import anatomist
@@ -117,12 +118,13 @@ def execution( self, context ):
   # load a python script into the running BV anatomist
   pyscript = context.temporary( 'Python Script' )
   pys = open( pyscript.fullPath(), 'w' )
-  print >> pys, 'import imp'
-  print >> pys, 'anasul = imp.find_module( "anaSulciSnapshot", [ "' \
-    + os.path.dirname( find_in_path( 'anaSulciSnapshot.py' ) ) + '" ] )'
-  print >> pys, 'anaSulciSnapshot = imp.load_module( "anaSulciSnapshot", ' \
-    'anasul[0], anasul[1], anasul[2] )'
-  print >> pys, 'anasul[0].close()'
+  print('import imp', file=pys)
+  print('anasul = imp.find_module( "anaSulciSnapshot", [ "' \
+    + os.path.dirname( find_in_path( 'anaSulciSnapshot.py' ) ) + '" ] )', 
+    file=pys)
+  print('anaSulciSnapshot = imp.load_module( "anaSulciSnapshot", ' \
+    'anasul[0], anasul[1], anasul[2] )', file=pys)
+  print('anasul[0].close()', file=pys)
   pys.close()
   from brainvisa import anatomist
   a = anatomist.Anatomist()
@@ -164,14 +166,14 @@ def execution( self, context ):
     # load command into anatomist
     pycom = context.temporary( 'Python Script' )
     pyc = open( pycom.fullPath(), 'w' )
-    print >> pyc, 'import anaSulciSnapshot'
-    print >> pyc, 'res = anaSulciSnapshot.main(', cmd, ')'
+    print('import anaSulciSnapshot', file=pys)
+    print('res = anaSulciSnapshot.main(', cmd, ')', file=pys)
     pyc.close()
     a.loadObject( pycom.fullPath() )
     scripts.append( pycom )
 
     #mainThreadActions().call( anasulci.main, cmd )
-    #print >> pin, 'anasulci.main( ' + str( cmd ) + ' )'
+    #print('anasulci.main( ' + str( cmd ) + ' )', file=pin)
     #pin.flush()
     #context.write( 'anasulci.main( ' + str( cmd ) + ' )' )
     #context.write( 'sent' )
@@ -203,12 +205,12 @@ def execution( self, context ):
 
   #pycom = context.temporary( 'Python Script' )
   #pyc = open( pycom.fullPath(), 'w' )
-  #print >> pyc, 'anasulci.a.close(', cmd, ')'
+  #print('anasulci.a.close(', cmd, ')', file=pyc)
   #pyc.close()
   #a.loadObject( pycom.fullPath() )
 
   #anasulci.a.execute( 'Exit' )
-  #print >> pin, 'sys.exit(0)'
+  #print('sys.exit(0)', file=pin)
   #pin.close()
   #context.write( pout.read() )
   #context.warning( perr.read() )

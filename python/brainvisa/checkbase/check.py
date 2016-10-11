@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 from __future__ import with_statement # allow python 2.5 to work
 
 users_dir = 'Users'
@@ -486,7 +487,7 @@ def run_disk_check(directory = '/neurospin/cati', logdir = '/neurospin/cati/User
     if len(users_list) == 0: users_dir = ''
     assert(os.path.exists(logdir))
 
-    if verbose: print 'Checking free disk............................................'
+    if verbose: print('Checking free) disk............................................'
     database_checker = check_disk_usage(directory, get_sizes = get_sizes, studies_list = studies_list, users_dir = users_dir, users_list = users_list, verbose = verbose, process_undeclared = True)
 
     datetime_string = str(time.strftime('%d%m%Y-%H%M%S', time.gmtime()))
@@ -496,7 +497,7 @@ def run_disk_check(directory = '/neurospin/cati', logdir = '/neurospin/cati/User
           save_csv(database_checker, logdir, datetime_string = datetime_string)
           save_action_diskusage(database_checker, os.path.join(logdir, 'json', 'diskusage'), datetime_string = datetime_string)
     except Exception as e:
-       if verbose: print e
+       if verbose: print(e)
        pass
 
     # generating report
@@ -603,11 +604,11 @@ def run_hierarchies_check(directory = '/neurospin/cati', logdir = '/neurospin/ca
     start_time = time.time()
 
     # processing users folders
-    if verbose: print 'Processing directories...'
+    if verbose: print('Processing directories...')
     directories = [os.path.join(directory, each) for each in studies_list]
     #directories = []
     directories.extend([os.path.join(directory, users_dir, each) for each in users_list])
-    print directories
+    print(directories)
     dbfile = json.load(open(os.path.join(logdir, 'json', dbindexfile), 'rb'))
     dbj = dbfile['index']
     dbdirs = [each['directory'] for each in dbj]
@@ -617,7 +618,7 @@ def run_hierarchies_check(directory = '/neurospin/cati', logdir = '/neurospin/ca
        h[each['directory']] = each['hierarchy_type']
 
     #for db_dir in directories:
-       #if verbose: print db_dir, 'in progress'
+       #if verbose: print(db_dir, 'in progress')
        #h = c.detect_hierarchies(db_dir, maxdepth=3)
 
     number_of_identified_files = 0
@@ -636,7 +637,7 @@ def run_hierarchies_check(directory = '/neurospin/cati', logdir = '/neurospin/ca
             #action_json = hierarchies_to_action(dir_checks)
             # save tables
             json_file = os.path.join(logdir, 'json', 'databases', 'db_%s.json'%h_index)
-            print 'writing', json_file
+            print('writing', json_file)
             #json.dump(action_json, open(json_file, 'wb'))
             action_json = json.load(open(json_file, 'rb'))
 
@@ -656,14 +657,14 @@ def run_hierarchies_check(directory = '/neurospin/cati', logdir = '/neurospin/ca
             # simple json existing files
             ej = jsons_for_web(action_json, _type='existence')
             ejfile = os.path.join(logdir, 'json', 'json_for_web', 'existing_%s.json'%h_index)
-            print 'writing', ejfile
+            print('writing', ejfile)
             json.dump(ej, open(ejfile, 'wb'))
             #ej = json.load(open(ejfile, 'rb'))
 
             # dates json
             dj = jsons_for_web(action_json, _type='dates')
             djfile = os.path.join(logdir, 'json', 'json_for_web', 'dates_%s.json'%h_index)
-            print 'writing', djfile
+            print('writing', djfile)
             json.dump(dj, open(djfile, 'wb'))
             #dj = json.load(open(djfile, 'rb'))
 
@@ -683,5 +684,5 @@ def run_hierarchies_check(directory = '/neurospin/cati', logdir = '/neurospin/ca
     countfile = os.path.join(logdir, 'json', 'counters.json')
     j = json.load(open(countfile, 'rb'))
     j['counters'].update({'identified_items': number_of_identified_files, 'unidentified_items' : number_of_unidentified_files, 'unique_subjects': len(set(unique_subjects))})
-    print 'writing', countfile
+    print('writing', countfile)
     json.dump(j, open(countfile, 'wb'))

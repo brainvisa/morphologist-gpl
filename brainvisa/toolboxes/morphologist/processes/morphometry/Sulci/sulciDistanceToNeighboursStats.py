@@ -119,7 +119,6 @@ def execution( self, context ):
       l = f.readline() # skip header line
       l[:-1] # force using iterator
     rem = f.read()
-    # print rem
     of.write( rem )
     of.close()
     f.close()

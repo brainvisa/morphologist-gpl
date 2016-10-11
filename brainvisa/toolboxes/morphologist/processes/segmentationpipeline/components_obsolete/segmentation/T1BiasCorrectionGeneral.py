@@ -52,7 +52,6 @@ signature = Signature(
 
 
 def selected( self, subproc ):
-  # print 'selected:', subproc, subproc._selected
   if subproc._selected:
     self._executionNode.addLink( 'BiasCorrection05.write_hfiltered',
                   'write_hfiltered' )

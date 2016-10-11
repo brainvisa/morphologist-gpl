@@ -131,7 +131,6 @@ def initialization( self ):
 
 def execution( self, context ):
     context.write( "Morphometry statistics running" )
-    # print self.region.value
     progname = 'siMorpho'
     tmp = context.temporary( 'Config file' )
     context.write( 'config : ', tmp.fullPath() )

@@ -54,7 +54,6 @@ signature = Signature(
 
 def initialization( self ):
     def change_meshes( self, proc ):
-#yann#  print 'change_meshes', self
         meshes = []
         m = ReadDiskItem( 'Hemisphere mesh', 
                           shfjGlobals.anatomistMeshFormats ). \

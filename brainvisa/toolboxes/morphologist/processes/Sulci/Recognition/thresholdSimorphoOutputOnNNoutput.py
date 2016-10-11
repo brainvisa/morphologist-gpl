@@ -30,6 +30,7 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
+from __future__ import print_function
 from brainvisa.processes import *
 import re, os, os.path, glob, string
 name = 'Select folds & relations with good recognition percentage'
@@ -95,7 +96,7 @@ def filter(srcdir, destdir, prop,remove_non_valid,select_all_descriptors,selecte
     # where line are valid => put everything in outLines
     nbNeg=0
     for i in xrange(1, len(lines)) :
-##      print '\nline',i,'--',
+##      print('\nline',i,'--', end='')
       strLineOut=''
       items = lines[i].split()
       nnout=float(items[nnoutCol])
@@ -107,7 +108,7 @@ def filter(srcdir, destdir, prop,remove_non_valid,select_all_descriptors,selecte
           strLineOut=items[subjectCol]
           for j in selectedDesciptorsIndex:
             strLineOut+=' '+items[j]
-##        print strLineOut
+##        print(strLineOut)
         outLines.append(strLineOut+'\n')
       
     propNeg=float(nbNeg)/float(nbSubjects)
@@ -116,12 +117,12 @@ def filter(srcdir, destdir, prop,remove_non_valid,select_all_descriptors,selecte
       destFile=os.path.join(destdir,os.path.basename(f))
       fo=open(destFile,'w')
       for line in outLines:
-##        print '\n print line -----------------------'
-##        print line
+##        print('\n print line -----------------------')
+##        print(line)
         fo.write(line)
       fo.close()
     else :
-      print 'Dont select',f,'Because less than ',prop,' of neural output are negative'
+      print('Dont select',f,'Because less than ',prop,' of neural output are negative')
       
 signature=Signature(
   'input_directory', ReadDiskItem( 'Directory', 'Directory' ),
@@ -142,7 +143,7 @@ def initialization( self ):
 
 def execution( self, context ):
   selectedDesciptors=self.sulci_descriptors+self.relations_descriptors
-  print selectedDesciptors
+  print(selectedDesciptors)
   filter(srcdir                     = self.input_directory.fullPath(),
          destdir                    = self.output_directory.fullPath(),
          prop                       = self.good_regonition_percentage,
