@@ -1,5 +1,6 @@
 #!/usr/bin/env python2
 
+from __future__ import print_function
 import os
 import sys
 import shutil
@@ -102,7 +103,7 @@ class TestMorphologistCapsul(unittest.TestCase):
         return database
 
     def setUp(self):
-        print '* initialize brainVisa'
+        print('* initialize brainVisa')
         brainvisa.axon.initializeProcesses()
         tests_dir = os.getenv("BRAINVISA_TESTS_DIR")
         if not tests_dir:
@@ -115,7 +116,7 @@ class TestMorphologistCapsul(unittest.TestCase):
             os.makedirs(self.db_dir)
         except OSError:
             pass
-        print '* create database'
+        print('* create database')
         self.database = self.create_test_database()
         self.db_name = self.database.name
 
@@ -126,7 +127,7 @@ class TestMorphologistCapsul(unittest.TestCase):
                 "test first, using the following command: "
                 "python2 -m brainvisa.tests.test_morphologist")
 
-        print '* create process'
+        print('* create process')
         process = brainvisa.processes.getProcessInstance("morphologist_capsul")
         mp = process.get_edited_pipeline()
         mp.nodes_activation.SulciRecognition = True
@@ -162,11 +163,11 @@ class TestMorphologistCapsul(unittest.TestCase):
         self.analysis_dir = analysis_dir
         if os.path.exists(analysis_dir):
             shutil.rmtree(analysis_dir)
-        print "* Run Morphologist_Capsul to get test results"
+        print("* Run Morphologist_Capsul to get test results")
         defaultContext().runProcess(process, t1mri=t1mri,
             analysis=analysis, use_translated_shared_directory=False,
             workflow=workflow_di)
-        print 'workflow:', workflow_di.fullPath()
+        print('workflow:', workflow_di.fullPath())
         wf = swclient.Helper.unserialize(workflow_di.fullPath())
 
         # use a temporary sqlite database in soma-workflow to avoid concurrent
@@ -178,9 +179,9 @@ class TestMorphologistCapsul(unittest.TestCase):
         config._database_file = tmpdb[1]
         controller = swclient.WorkflowController(config=config)
         wf_id = controller.submit_workflow(wf)
-        print '* running Morphologist...'
+        print('* running Morphologist...')
         swclient.Helper.wait_workflow(wf_id, controller)
-        print '* finished.'
+        print('* finished.')
         self.workflow_status = controller.workflow_status(wf_id)
         elements_status = controller.workflow_elements_status(wf_id)
         self.failed_jobs = [element for element in elements_status[0] \
@@ -229,10 +230,10 @@ class TestMorphologistCapsul(unittest.TestCase):
     def test_pipeline_results(self):
         self.assertTrue(self.workflow_status == swconstants.WORKFLOW_DONE,
             'Workflow did not finish regularly: %s' % self.workflow_status)
-        print '** workflow status OK'
+        print('** workflow status OK')
         self.assertTrue(len(self.failed_jobs) == 0,
             'Morphologist jobs failed')
-        print '** No failed jobs.'
+        print('** No failed jobs.')
 
         skipped_dirs = [
             "_global_TO_local",
@@ -253,8 +254,8 @@ class TestMorphologistCapsul(unittest.TestCase):
                 self.assertTrue(self.compare_files(f_ref, f_test),
                     "The content of "+f+" in test is different from the "
                     "reference results.")
-                #print 'file', f_test, 'OK.'
-        print '** all OK.'
+                #print('file', f_test, 'OK.')
+        print('** all OK.')
 
     def tearDown(self):
         brainvisa.axon.cleanup()

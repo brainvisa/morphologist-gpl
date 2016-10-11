@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
+
 
 class Checkbase():
     def __init__(self, directory):
@@ -146,10 +148,10 @@ class Checkbase():
        from brainvisa.checkbase.hierarchies import getfilepath, parsefilepath
        items = {}
        globitems = []
-       print patterns
+       print(patterns)
        for each in patterns.keys():
            globitems = glob(getfilepath(each, attributes, patterns))
-           print globitems
+           print(globitems)
            for item in globitems:
               res = parsefilepath(item, patterns)
               if not res is None and res[0] == each:

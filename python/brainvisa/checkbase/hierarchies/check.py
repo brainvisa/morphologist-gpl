@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 from brainvisa.checkbase.check import studies_list, users_dict, users_dir
 
 def perform_checks_hierarchy(directory, hierarchy_type = 'Morphologist'):
@@ -87,7 +88,7 @@ def _check_directories(rootdirectory, dirlist, verbose = True):
 
    for eachdir in dirlist:
        # process each directory
-       if verbose: print eachdir, 'in progress'
+       if verbose: print(eachdir, 'in progress')
        db_dir = os.path.join(rootdirectory, eachdir)
        h = c.detect_hierarchies(db_dir, maxdepth=3)
        assert(not hierarchies.has_key(eachdir))
@@ -117,11 +118,11 @@ def check_hierarchies(input_dir, studies_list = studies_list, users_dir = users_
    start_time = time.time()
 
    # processing users folders
-   if verbose: print 'Processing users...'
+   if verbose: print('Processing users...')
    users_checks, users_hierarchies = _check_directories(users_dir, users_list, verbose = verbose)
 
    # processing studies folders
-   if verbose: print 'Processing studies...'
+   if verbose: print('Processing studies...')
    studies_checks, studies_hierarchies = _check_directories(input_dir, studies_list, verbose = verbose)
 
    # update big dictionary

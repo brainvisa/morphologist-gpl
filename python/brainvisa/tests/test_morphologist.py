@@ -1,3 +1,4 @@
+from __future__ import print_function
 import unittest
 import os
 import sys
@@ -42,7 +43,7 @@ class TestMorphologistPipeline(unittest.TestCase):
             os.makedirs(self.tests_dir)
         os.chdir(self.tests_dir)
         if not os.path.exists("demo_data.zip"):
-            print "* Download ftp://ftp.cea.fr/pub/dsv/anatomist/data/demo_data.zip to ", self.tests_dir
+            print("* Download ftp://ftp.cea.fr/pub/dsv/anatomist/data/demo_data.zip to ", self.tests_dir)
             urllib.urlretrieve(
                 "ftp://ftp.cea.fr/pub/dsv/anatomist/data/demo_data.zip",
                 "demo_data.zip")
@@ -56,7 +57,7 @@ class TestMorphologistPipeline(unittest.TestCase):
 
     def create_test_database(self):
         if not os.path.exists(self.database_directory):
-            print "* Create test database"
+            print("* Create test database")
             os.makedirs(self.database_directory)
         database_settings = neuroConfig.DatabaseSettings(
             self.database_directory)
@@ -80,7 +81,7 @@ class TestMorphologistPipeline(unittest.TestCase):
         output=wd.findValue({"_database" : self.db_name,
                             "center" : "test", "subject" : "sujet01"})
         if not output.isReadable():
-            print "* Import test data"
+            print("* Import test data")
             defaultContext().runProcess('ImportT1MRI', input, output)
         return output
 
@@ -194,7 +195,7 @@ class TestMorphologistPipeline(unittest.TestCase):
 
       # if requested, clear existing reference results
       if clear_reference and os.path.exists(self.ref_nobias.fullPath()):
-          print '* Clear reference results to build new ones'
+          print('* Clear reference results to build new ones')
           rmtree(os.path.dirname(self.ref_nobias.fullPath()))
           self.database.clear(context=defaultContext())
           self.database.update(context=defaultContext())
@@ -202,11 +203,11 @@ class TestMorphologistPipeline(unittest.TestCase):
       # if needed, run the pipeline a first time to get reference results
       # in default_analysis
       if not self.ref_nobias.isReadable():
-          print "* Run Morphologist to get reference results"
+          print("* Run Morphologist to get reference results")
           defaultContext().runProcess(pipeline, t1mri=t1,
               t1mri_nobias=self.ref_nobias, anterior_commissure=ac,
               posterior_commissure=pc, interhemispheric_point=ip)
-          print "* Run ANN recognition to get reference results"
+          print("* Run ANN recognition to get reference results")
           defaultContext().runProcess(ann_pipeline, t1mri=t1,
               t1mri_nobias=self.ref_nobias, anterior_commissure=ac,
               posterior_commissure=pc, interhemispheric_point=ip,
@@ -240,20 +241,20 @@ class TestMorphologistPipeline(unittest.TestCase):
               'TalairachTransformation').setSelected(False)
           if not do_spam or not self.do_sulci_today():
               pipeline.perform_sulci_recognition = False
-              print '(not doing SPAM sulci recognition tests today)'
-          print "* Run Morphologist to get test results"
+              print('(not doing SPAM sulci recognition tests today)')
+          print("* Run Morphologist to get test results")
           defaultContext().runProcess(pipeline, t1mri=t1,
               t1mri_nobias=self.test_nobias, anterior_commissure=ac,
               posterior_commissure=pc, interhemispheric_point=ip)
           if do_ann and self.do_sulci_today():
-              print "* Run ANN recognition to get test results"
+              print("* Run ANN recognition to get test results")
               defaultContext().runProcess(ann_pipeline, t1mri=t1,
                   t1mri_nobias=self.test_nobias, anterior_commissure=ac,
                   posterior_commissure=pc, interhemispheric_point=ip,
                   left_labelled_graph=test_left_ann_graph,
                   right_labelled_graph=test_right_ann_graph)
           else:
-              print '(not doing ANN sulci recognition today)'
+              print('(not doing ANN sulci recognition today)')
 
 
     def compare_files(self, ref_file, test_file):

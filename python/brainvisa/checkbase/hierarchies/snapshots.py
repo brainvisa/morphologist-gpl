@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 import os
 from brainvisa.checkbase.hierarchies import *
 from brainvisa.checkbase.hierarchies.checkbase import Checkbase
@@ -36,7 +37,7 @@ class SnapshotsCheckbase(Checkbase):
        for each in files:
             each = os.path.join(self.directory, each)
             m = parsefilepath(each, snap.patterns)
-            print m
+            print(m)
             if m:
               datatype, attributes = m
               subject = attributes['subject']

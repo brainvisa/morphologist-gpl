@@ -30,6 +30,7 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
+from __future__ import print_function
 from brainvisa.processes import *
 import shfjGlobals
 
@@ -47,13 +48,13 @@ def initialization( self ):
 def genmesh( self, out, p1, p2, context ):
     param = out + ".cfg"
     f = open( param, "w" )
-    print >> f, "attributes = "
+    print("attributes = ", file=f)
     par = { 'type': 'cylinder',
             'point1': p1,
             'point2' : p2,
             'radius' : 0.5,
             'facets' : self.cylinder_facets }
-    print >> f, str( par )
+    print(str( par ), file=f)
     f.close()
     context.system( 'AimsMeshGenerate', '-i', param, '-o', out + '.mesh' )
 

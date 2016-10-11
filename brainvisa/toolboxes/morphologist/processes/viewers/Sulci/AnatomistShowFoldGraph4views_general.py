@@ -36,6 +36,7 @@
 # using original file "AnatomistShowFoldGraph.py" #
 ###################################################
 
+from __future__ import print_function
 from brainvisa.processes import *
 import shfjGlobals
 from brainvisa import anatomist
@@ -357,8 +358,8 @@ def shape_ratio(n, bb, ratio):
         else: break
         h += 1
     w, h = wmin, hmin
-    print "size = ", bbx * w, bby * h
-    print "ratio = ", float(bbx * w) / float(bby * h)
+    print("size = ", bbx * w, bby * h)
+    print("ratio = ", float(bbx * w) / float(bby * h))
     return w, h
 
 
@@ -375,14 +376,14 @@ def mosaic(images, output):
     if page_n * number < global_n: page_n += 1
     offset = 0
     for i, page in enumerate(range(number)):
-        print "**** page ****"
+        print("**** page ****")
         offset_high = min(global_n + 1, offset + page_n)
         page_images = images[offset:offset_high]
-        print page_images, offset, offset_high, page_n
+        print(page_images, offset, offset_high, page_n)
         sizes, bb = compute_bb(page_images)
         nx, ny = shape_ratio(offset_high - offset, bb, float(ratio))
-        print "bb = ", bb
-        print "mosaic shape : ", (nx, ny)
+        print("bb = ", bb)
+        print("mosaic shape : ", (nx, ny))
 
         args = create_cmd(page_images, (nx, ny), sizes, bb)
         # plop.ext -> plop_N.ext
@@ -390,7 +391,7 @@ def mosaic(images, output):
             ind = output.rfind('.')
             output = output[:ind] + ('_%d' % i) + output[ind:]
         cmd = "convert " + args + " -mosaic %s" % output
-        print "cmd = ", cmd
+        print("cmd = ", cmd)
         os.system(cmd)
         offset += page_n
 

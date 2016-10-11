@@ -59,7 +59,6 @@ def execution(self, context):
     block = None
     if self.t1mri is not None:
         block = a.createWindowsBlock(2)
-        print 'block:', type(block), isinstance(block, a.AWindowsBlock)
         selfdestroy.append(block)
         selfdestroy.append(a.viewBias(self.t1mri, forceReload=1,
                                       hanfile=self.histo_analysis,

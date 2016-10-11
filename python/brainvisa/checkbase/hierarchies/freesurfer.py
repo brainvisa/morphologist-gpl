@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 import os
 from brainvisa.checkbase.hierarchies import *
 from brainvisa.checkbase.hierarchies.checkbase import Checkbase
@@ -172,7 +173,7 @@ class FreeSurferCheckbase(Checkbase):
         if not hasattr(self, 'subjects'): self.get_subjects()
         if not hasattr(self, 'existingfiles'):
             if fastmode:
-               print 'get_files_of_type'
+               print('get_files_of_type')
                files = self.get_files_of_type(['left_aparc_stats', 'right_aparc_stats'])
             else:
                self.check_database_for_existing_files()

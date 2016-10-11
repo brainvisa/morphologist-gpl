@@ -555,7 +555,6 @@ def initialization( self ):
         self.perform_normalization = False
         self.signature[ 'perform_normalization' ].userLevel = 3
     else:
-        print 'perform_normalization = True'
         self.perform_normalization = True
     
     x = changeTalairach( self )

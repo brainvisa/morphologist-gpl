@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 import os
 try:
     from traits.api import ListStr,HasTraits,File,Float,Instance,Enum,Str,Int
@@ -10,7 +11,7 @@ import subprocess
 import anatomist.api as ana
 
 class ShowWhiteRidges(Controller):
-    print 'viewer show white ridges'
+    print('viewer show white ridges')
     name='ShowWhiteRidges'
     def __init__(self,white_ridges,t1mri,palette="random",mode="linear_on_defined",rate=0.3,wintype="Axial"):
         HasTraits.__init__(self)
@@ -21,9 +22,9 @@ class ShowWhiteRidges(Controller):
 	add_trait(self,'palette',Str(palette))
 	add_trait(self,'mode',Str(mode))
 	add_trait(self,'rate',Int(rate))
-	print 'win',wintype
+	print('win',wintype)
 	add_trait(self,'wintype',Str(wintype))
-	print 'wintype',self.wintype
+	print('wintype',self.wintype)
     
     def anatomist_instance(self):
         a=ana.Anatomist()   
@@ -35,7 +36,7 @@ class ShowWhiteRidges(Controller):
 	
 	
     def mask_on_mri(self):
-	print 'function mask_on_mri'
+	print('function mask_on_mri')
 	a=self.anatomist_instance()
 	volume= a.loadObject(self.t1mri )
 	duplicate=False
@@ -45,7 +46,7 @@ class ShowWhiteRidges(Controller):
 	mask.setPalette( self.palette )
 	fusion = a.fusionObjects( [volume, mask], method='Fusion2DMethod' )
 	a.execute("Fusion2DParams", object=fusion, mode=self.mode, rate = self.rate, reorder_objects = [ volume, mask ] )
-	print 'wintype here',self.wintype
+	print('wintype here',self.wintype)
 	window = a.createWindow( self.wintype )
 	window.assignReferential( volume.referential )
 	window.addObjects( [fusion] )
@@ -54,7 +55,7 @@ class ShowWhiteRidges(Controller):
 	
 
     def command(self):
-	print 'function show white ridges'
+	print('function show white ridges')
 	#controller_widget._viewer_objects=
 	return self.mask_on_mri()
     

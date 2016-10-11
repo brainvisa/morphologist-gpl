@@ -56,7 +56,6 @@ if morphologist is not None:
             if os.path.isdir( p ) and 'morphologist' in os.listdir( p ) \
                     and os.path.join( p, 'morphologist' ) != dirn:
                 toadd.append( os.path.join( p, 'morphologist' ) )
-        #print 'toadd:', toadd
         if len( toadd ) != 0:
             morphologist.__path__ = toadd
         del toadd

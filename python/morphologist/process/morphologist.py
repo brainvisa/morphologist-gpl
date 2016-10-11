@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 try:
   from traits.api import File, Float, Int, Bool, Enum
 except ImportError:
@@ -7,6 +8,7 @@ except ImportError:
 from capsul.process import Process
 from capsul.pipeline import Pipeline
 import subprocess
+import six
 
 
 from spm_normalization import SPMNormalization
@@ -64,7 +66,7 @@ from head_mesh import HeadMesh
 
 class Morphologist( Pipeline ):
     def __init__(self):  
-        print '__initt'
+        print('__initt')
         super(Morphologist, self).__init__() 
         self.name_process = 'Morphologist'
 
@@ -164,10 +166,10 @@ class Morphologist( Pipeline ):
                               
     #def __call__( self ):
         #""" Function to call the execution """
-        #print 'call pipeline morphologist'
+        #print('call pipeline morphologist')
 	#for pro in self.list_process_in_pipeline:
 	    #if 'BiasCorrection' in str(pro):
-		#print 'OK BIASS'
+		#print('OK BIASS')
 		#pro()     
                               
 
@@ -185,13 +187,13 @@ if __name__ == '__main__':
     
     morphologist = Process.get_instance( 'morphologist.process.morphologist' )
     
-    for node_name, node in morphologist.nodes.iteritems():
-      print 'Node:', node_name
+    for node_name, node in six.iteritems(morphologist.nodes):
+      print('Node:', node_name)
       process = getattr( node, 'process', None )
       if process:
         for trait_name in process.user_traits():
           trait = process.trait( trait_name )
-          print '  %s: %s %s' % ( trait_name, repr( getattr( trait, 'output', False ) ), repr( getattr( trait, 'connected_output', False ) ) )
+          print('  %s: %s %s' % ( trait_name, repr( getattr( trait, 'output', False ) ), repr( getattr( trait, 'connected_output', False ) ) ))
 
     #morphologist.nodes[ 'left_grey_white' ].enabled = False
     #view1 = PipelineView( morphologist )

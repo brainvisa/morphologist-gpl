@@ -37,6 +37,7 @@
 # je m'en suis servi pour les experiences sur les invariants et la colab avec
 # Pascal Cathier
 
+from __future__ import print_function
 from brainvisa.processes import *
 from brainvisa.data.labelSelection import LabelSelection
 import registration
@@ -175,7 +176,7 @@ def execution( self, context ):
   ks.sort()
   if dolesionsize:
     of = open( self.lesions_sizes.fullPath(), 'w' )
-    print >> of, 'subject\tlesion_size'
+    print('subject\tlesion_size', file=of)
     del of
   for s in ks:
     sdat = subjects[ s ]
@@ -213,7 +214,7 @@ def execution( self, context ):
         vs = vol.header()[ 'voxel_size' ]
         lvol = nvox * vs[0] * vs[1] * vs[2]
         of = open( self.lesions_sizes.fullPath(), 'a' )
-        print >> of, s, lvol
+        print(s, lvol, file=of)
         del of
     n += 1
 
