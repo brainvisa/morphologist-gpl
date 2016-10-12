@@ -34,7 +34,6 @@
 
 
 from brainvisa.processes import *
-import shfjGlobals
 from brainvisa.data.qtgui import neuroDataGUI
 from brainvisa import registration
 from brainvisa import anatomist
@@ -71,11 +70,11 @@ name = 'Localize Talairach Coordinate'
 userLevel = 0
 
 signature = Signature(
-  't1mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.vipVolumeFormats ),
+  't1mri', ReadDiskItem( "Raw T1 MRI", 'aims readable Volume Formats' ),
   'talairach_transform', ReadDiskItem( 'Transform Raw T1 MRI to Talairach-AC/PC-Anatomist',
                  'Transformation matrix' ), 
   #'hemi_mesh', ReadDiskItem('Hemisphere Mesh', 'MESH mesh' ),
-  'localised', WriteDiskItem( '3D Volume', shfjGlobals.aimsWriteVolumeFormats ),
+  'localised', WriteDiskItem( '3D Volume', 'aims Writable Volume Formats' ),
   'point', TalairachPoint3D()
   )
 

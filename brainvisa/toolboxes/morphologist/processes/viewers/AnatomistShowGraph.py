@@ -32,7 +32,6 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
-import shfjGlobals
 from brainvisa import anatomist
 
 name = 'Anatomist Show Graph'
@@ -45,18 +44,18 @@ def validation():
 signature = Signature(
     'graph', ReadDiskItem( 'Data Graph', 'Graph' ),
     'nomenclature', ReadDiskItem( 'Nomenclature', 'Hierarchy' ), 
-    'anatomy', ReadDiskItem( 'T1 MRI', shfjGlobals.anatomistVolumeFormats ),
+    'anatomy', ReadDiskItem( 'T1 MRI', 'anatomist Volume Formats' ),
     'meshes', ListOf( ReadDiskItem( 'Mesh',
-                                    shfjGlobals.anatomistMeshFormats ) ),
+                                    'anatomist Mesh Formats' ) ),
     'head_mesh', ReadDiskItem( 'Head mesh', 
-                               shfjGlobals.anatomistMeshFormats ), 
+                               'anatomist Mesh Formats' ), 
     )
 
 def initialization( self ):
     def change_meshes( self, proc ):
         meshes = []
         m = ReadDiskItem( 'Hemisphere mesh', 
-                          shfjGlobals.anatomistMeshFormats ). \
+                          'anatomist Mesh Formats' ). \
                           findValue( self.graph )
         if m is not None:
             meshes.append( m )

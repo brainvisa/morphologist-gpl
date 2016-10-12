@@ -31,7 +31,6 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
-import shfjGlobals
 try:
   from soma import aims
 except:
@@ -45,7 +44,7 @@ userLevel = 2
 signature = Signature(
   'classifier', ReadDiskItem( 'Classifier', [ 'SVM classifier' ] ), 
   'output_classifier', WriteDiskItem( 'Classifier', [ 'SVM classifier' ] ), 
-  'input_data', ReadDiskItem( '2D image', shfjGlobals.aimsVolumeFormats ),
+  'input_data', ReadDiskItem( '2D image', 'aims readable Volume Formats' ),
   'svm_mode', Choice( 'classifier', 'probability', 'regression', 'quality',
                       'decision', 'one_class' ),
   'sigma', Float(),

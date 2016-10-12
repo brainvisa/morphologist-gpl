@@ -32,7 +32,6 @@
 
 from brainvisa.processes import *
 from brainvisa import shelltools
-import shfjGlobals
 try:
   from soma import aims
 except:
@@ -46,7 +45,7 @@ userLevel = 2
 signature = Signature(
   'classifier', ReadDiskItem( 'Classifier', [ 'MLP classifier' ] ), 
   'output_classifier', WriteDiskItem( 'Classifier', [ 'MLP classifier' ] ), 
-  'input_data', ReadDiskItem( '2D image', shfjGlobals.aimsVolumeFormats ),
+  'input_data', ReadDiskItem( '2D image', 'aims readable Volume Formats' ),
   'cycles', Integer(),
   'learn_factor', Float(), 
   )

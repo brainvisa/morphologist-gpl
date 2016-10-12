@@ -33,7 +33,6 @@
 from brainvisa.processes import *
 
 from brainvisa import shelltools
-import shfjGlobals
 
 name = 'Validation_1 Bias Correction from T1 MRI'
 userLevel = 0
@@ -41,7 +40,7 @@ userLevel = 0
 signature = Signature(
   'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
     'Aims readable volume formats' ),
-  'T1mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.vipVolumeFormats ),
+  'T1mri', ReadDiskItem( "Raw T1 MRI", 'aims readable Volume Formats' ),
 #  'validation', Choice("Visualise","Lock","Unlock","Delete","Compress","Uncompress"),
   'validation', Choice("Visualise","Lock","Unlock"),
 )

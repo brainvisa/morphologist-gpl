@@ -32,13 +32,12 @@
 
 from __future__ import print_function
 from brainvisa.processes import *
-import shfjGlobals
 
 name = 'Talairach grid mesh generator'
 userLevel = 2
 
 signature = Signature(
-    'output_grid', WriteDiskItem( 'Mesh', shfjGlobals.aimsMeshFormats ),
+    'output_grid', WriteDiskItem( 'Mesh', 'aims Mesh Formats' ),
     'cylinder_facets', Integer()
 )
 

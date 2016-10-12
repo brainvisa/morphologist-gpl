@@ -34,7 +34,6 @@ from brainvisa.processes import *
 
 
 from brainvisa import shelltools
-import shfjGlobals     
 
 name = 'Validation_0 Commissure Coordinates'
 userLevel = 0
@@ -42,7 +41,7 @@ userLevel = 0
 signature = Signature(
   'Commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
                                           'Commissure coordinates' ),
-  'T1mri', ReadDiskItem( "T1 MRI", shfjGlobals.vipVolumeFormats ),   
+  'T1mri', ReadDiskItem( "T1 MRI", 'aims readable Volume Formats' ),   
   'validation', Choice("Visualise","Lock","Unlock"),
 )
 

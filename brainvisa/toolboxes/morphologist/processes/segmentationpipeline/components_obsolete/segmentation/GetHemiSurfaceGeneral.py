@@ -31,18 +31,17 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
-import shfjGlobals
-
 from brainvisa.processes import *
+
 name ='Get Hemi Surface'
 userLevel = 2
 
 signature = Signature(
   'Side', Choice("Both","Left","Right"),
   'mri_corrected', ReadDiskItem( "T1 MRI Bias Corrected",
-      shfjGlobals.vipVolumeFormats ),
+      'aims readable Volume Formats' ),
   'split_mask', ReadDiskItem( 'Split Brain Mask',
-      shfjGlobals.vipVolumeFormats ),
+      'aims readable Volume Formats' ),
   'left_hemi_cortex', ReadDiskItem( 'Left CSF+GREY Mask',
       'Aims writable volume formats' ),
   'right_hemi_cortex', ReadDiskItem( 'Right CSF+GREY Mask',

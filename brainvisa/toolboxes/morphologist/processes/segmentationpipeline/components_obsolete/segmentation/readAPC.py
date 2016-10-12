@@ -31,7 +31,7 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
-import shfjGlobals
+from brainvisa.tools import aimsGlobals
 
 name = 'Read and complete AC-PC files'
 userLevel = 2
@@ -39,7 +39,7 @@ userLevel = 2
 signature = Signature(
     'Commissure_coordinates',
     ReadDiskItem( 'Commissure coordinates','Commissure coordinates'),
-    'T1mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.vipVolumeFormats ), 
+    'T1mri', ReadDiskItem( "Raw T1 MRI", 'aims readable volume Formats' ), 
 )
 
 
@@ -84,7 +84,7 @@ def execution( self, context ):
         raise 'AC/PC positions in mm are not recorded. You must specify a ' \
               'T1 MRI for voxel sizes'
 
-    vs = shfjGlobals.aimsVolumeAttributes( self.T1mri )[ 'voxel_size' ]
+    vs = aimsGlobals.aimsVolumeAttributes( self.T1mri )[ 'voxel_size' ]
     wa = 0
     wp = 0
     wi = 0

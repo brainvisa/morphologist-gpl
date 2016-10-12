@@ -33,7 +33,6 @@
 
 
 from brainvisa.processes import *
-import shfjGlobals
 
 name = 'Sulci Recognition (both hemispheres)'
 userLevel = 0

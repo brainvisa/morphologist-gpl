@@ -30,14 +30,13 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
-import shfjGlobals
-
 from brainvisa.processes import *
+
 name = 'Correction Brain Mask from T1 MRI'
 userLevel = 0
 
 signature = Signature(
-  'mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.vipVolumeFormats ),
+  'mri', ReadDiskItem( "Raw T1 MRI", 'aims readable Volume Formats' ),
   'brain_mask', WriteDiskItem( 'T1 Brain Mask',
     'Aims writable volume formats' ),
   'variant', Choice("Standard + (iterative erosion from 2mm)",
@@ -72,7 +71,7 @@ signature = Signature(
   'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
   'Commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
     'Commissure coordinates'),
-  'lesion_mask', ReadDiskItem( '3D Volume', shfjGlobals.vipVolumeFormats),
+  'lesion_mask', ReadDiskItem( '3D Volume', 'aims readable Volume Formats'),
   'first_slice', Integer(),
   'last_slice', Integer(),
 )

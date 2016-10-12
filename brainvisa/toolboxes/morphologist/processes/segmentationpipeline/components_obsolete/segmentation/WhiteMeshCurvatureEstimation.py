@@ -34,7 +34,6 @@
 # MeshCurvatureEstimation process declaration
 #
 from brainvisa.processes import *
-import shfjGlobals     
 
 name = 'White Mesh Curvature Estimation'
 userLevel = 2
@@ -43,8 +42,8 @@ userLevel = 2
 signature = Signature(
      'Side', Choice("Both","Left","Right"),
      'Method',Choice("fem","barycenter","boix"),
-     'left_white_mesh',ReadDiskItem( 'Left Hemisphere White Mesh' , shfjGlobals.aimsMeshFormats),
-     'right_white_mesh',ReadDiskItem( 'Right Hemisphere White Mesh' , shfjGlobals.aimsMeshFormats),
+     'left_white_mesh',ReadDiskItem( 'Left Hemisphere White Mesh' , 'aims Mesh Formats'),
+     'right_white_mesh',ReadDiskItem( 'Right Hemisphere White Mesh' , 'aims Mesh Formats'),
      'left_white_curvature', WriteDiskItem( 'White Curvature Texture', 'Texture',requiredAttributes={ 'side': 'left' } ), 
      'right_white_curvature', WriteDiskItem( 'White Curvature Texture', 'Texture',requiredAttributes={ 'side': 'right' }),
      'Threshold_ratio',Float()

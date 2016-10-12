@@ -31,23 +31,22 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
-import shfjGlobals
-
 from brainvisa.processes import *
+
 name = 'Brain Mask Segmentation'
 userLevel = 2
 
 signature = Signature(
   'mri_corrected', ReadDiskItem( "T1 MRI Bias Corrected",
-      shfjGlobals.vipVolumeFormats ),
+      'aims readable Volume Formats' ),
   'brain_mask', WriteDiskItem( 'T1 Brain Mask',
-      shfjGlobals.aimsWriteVolumeFormats ),
+      'aims Writable Volume Formats' ),
   'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
   'Commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
       'Commissure coordinates'),
-  'lesion_mask', ReadDiskItem( 'Lesion Mask', shfjGlobals.vipVolumeFormats ),
+  'lesion_mask', ReadDiskItem( 'Lesion Mask', 'aims readable Volume Formats' ),
   'white_ridges', ReadDiskItem( "T1 MRI White Matter Ridges",
-      shfjGlobals.aimsWriteVolumeFormats ),
+      'aims Writable Volume Formats' ),
 )
 
 def initialization( self ):
