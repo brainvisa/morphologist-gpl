@@ -31,9 +31,11 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
-import shfjGlobals
-import registration
-import types
+from brainvisa import registration
+import sys
+
+if sys.version_info[0] >= 3:
+  basestring = str
 
 name = 'FSL Normalization to AIMS converter'
 userLevel=0
@@ -48,10 +50,10 @@ signature = Signature(
   'read', ReadDiskItem( 'FSL Transformation', 'Matlab file',
                         enableConversion = 0 ),
   'source_volume', ReadDiskItem( '4D Volume',
-                                 shfjGlobals.aimsVolumeFormats ),
+                                 'aims readable Volume Formats' ),
   'write', WriteDiskItem( 'Transform Raw T1 MRI to Talairach-MNI template-SPM', 'Transformation matrix' ),
   'registered_volume', ReadDiskItem( '4D Volume',
-    shfjGlobals.aimsVolumeFormats,
+    'aims readable Volume Formats',
     requiredAttributes={ 'normalized' : 'yes' } ),
   'standard_template', Choice( ( 'FSL 182x218x218, 1x1x1 mm', 0 ),
     ( 'FSL 91x109x91, 2x2x2 mm', 1 ),
@@ -115,7 +117,7 @@ def execution( self, context ):
   # 1. first try o get direct transformation info in the template image header
   aimsToMni = None
   outref = None
-  if type( tmplimg ) in types.StringTypes:
+  if isinstance( tmplimg, basestring ):
     tmplimg = neuroDiskItems.aimsFileInfo( self.registered_volume.fullPath() )
     refs = tmplimg.get( 'referentials' )
     trans = tmplimg.get( 'transformations' )

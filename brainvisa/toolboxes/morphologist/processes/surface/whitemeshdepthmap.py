@@ -33,7 +33,7 @@
 from brainvisa.processes import *
 import os
 from brainvisa import anatomist
-import registration
+from brainvisa import registration
 
 name = 'White Mesh Depth Map'
 userLevel = 3

@@ -32,8 +32,8 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
-import shfjGlobals
-import registration
+from brainvisa.tools import aimsGlobals
+from brainvisa import registration
 
 name = 'Ana Get Spherical Cortical Surface'
 userLevel = 2
@@ -80,7 +80,7 @@ def execution( self, context ):
      over_nobias = self.mri_corrected
      over_split = self.split_mask
   else:
-     attrs = shfjGlobals.aimsVolumeAttributes( self.mri_corrected,
+     attrs = aimsGlobals.aimsVolumeAttributes( self.mri_corrected,
                                                forceFormat=1 )
      dimx = attrs[ 'volume_dimension' ][ 0 ]
      dimy = attrs[ 'volume_dimension' ][ 1 ]

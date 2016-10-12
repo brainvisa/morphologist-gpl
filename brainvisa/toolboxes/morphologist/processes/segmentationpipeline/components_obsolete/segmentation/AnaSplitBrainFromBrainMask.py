@@ -32,7 +32,7 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
-import registration
+from brainvisa import registration
 
 name = 'Ana Split Brain from Brain Mask'
 userLevel = 2

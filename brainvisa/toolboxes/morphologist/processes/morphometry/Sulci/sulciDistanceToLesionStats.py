@@ -40,7 +40,7 @@
 from __future__ import print_function
 from brainvisa.processes import *
 from brainvisa.data.labelSelection import LabelSelection
-import registration
+from brainvisa import registration
 
 name = 'Sulci Distance to Lesion Stats'
 userLevel = 2

@@ -32,8 +32,8 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
-import shfjGlobals, math
-import registration
+import math
+from brainvisa import registration
 from brainvisa import anatomist
 from brainvisa import quaternion
 
@@ -61,7 +61,7 @@ loaded yet. But this validationDelayed method can be used later.
   return fsl, spm, bal
 
 signature = Signature(
-  't1mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.aimsVolumeFormats ),
+  't1mri', ReadDiskItem( "Raw T1 MRI", 'aims readable Volume Formats' ),
   'transformation',
     WriteDiskItem( 'Transform Raw T1 MRI to Talairach-MNI template-SPM',
       'Transformation matrix' ),

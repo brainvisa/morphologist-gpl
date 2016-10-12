@@ -33,8 +33,8 @@
 
 from __future__ import print_function
 from brainvisa.processes import *
-import registration
-import shfjGlobals
+from brainvisa import registration
+from brainvisa.tools import aimsGlobals
 
 name = 'Talairach Transformation From Normalization'
 userLevel = 2
@@ -144,7 +144,7 @@ def execution( self, context ):
       context.warning( 't1mri parameter is not set. Cannot write ' \
         'commissure_coordinates output' )
       return
-    va = shfjGlobals.aimsVolumeAttributes( self.t1mri )
+    va = aimsGlobals.aimsVolumeAttributes( self.t1mri )
     vs = va.get( 'voxel_size', [ 1., 1., 1. ] )
     trinv = t1toACPC.inverse()
     acmm = trinv.transform( [ 0, 0, 0 ] )

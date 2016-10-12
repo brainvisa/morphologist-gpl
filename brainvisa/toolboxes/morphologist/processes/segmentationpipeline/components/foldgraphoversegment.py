@@ -30,10 +30,8 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
-import shfjGlobals
 from brainvisa.processes import *
-from soma.path import find_in_path
-import registration
+from brainvisa import registration
 
 name = 'Folds graph over-segmentation'
 userLevel = 2
@@ -42,7 +40,7 @@ signature = Signature(
   'input_graph', ReadDiskItem( 'Cortical Folds Graph', 'Graph' ),
   'graph_version', OpenChoice( '3.2', ),
   'output_graph', WriteDiskItem( 'Cortical Folds Graph', 'Graph' ),
-  'skeleton', ReadDiskItem( 'Cortex Skeleton', shfjGlobals.aimsVolumeFormats ),
+  'skeleton', ReadDiskItem('Cortex Skeleton', 'aims readable Volume Formats'),
   'pieces_length', Float(),
   'minimum_size', Integer(),
 )
@@ -85,8 +83,7 @@ def initialization( self ):
   self.setExecutionNode( eNode )
 
 def execution( self, context ):
-  context.system( 'python2',
-    find_in_path( 'AimsFoldsGraphOverSegmentation.py' ), '-i',
+  context.pythonSystem('AimsFoldsGraphOverSegmentation.py', '-i',
     self.input_graph, '-o', self.output_graph, '-l', self.pieces_length,
     '-m', self.minimum_size )
   tm = registration.getTransformationManager()

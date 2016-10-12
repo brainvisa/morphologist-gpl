@@ -32,7 +32,7 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
-import registration
+from brainvisa import registration
 from brainvisa.tools import aimsGlobals
 from soma import aims
 from soma.aims import apctools

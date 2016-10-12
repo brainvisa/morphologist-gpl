@@ -33,7 +33,7 @@
 
 from brainvisa.processes import *
 from soma import aims
-import registration
+from brainvisa import registration
 
 name = 'Grey White Surface 2012'
 userLevel = 2

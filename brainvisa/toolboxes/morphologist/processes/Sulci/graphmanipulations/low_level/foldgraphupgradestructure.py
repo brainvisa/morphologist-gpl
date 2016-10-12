@@ -32,8 +32,7 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
-import shfjGlobals
-import registration
+from brainvisa import registration
 
 name = 'Cortical Fold Graph Upgrade Structure'
 userLevel = 2
@@ -41,7 +40,7 @@ userLevel = 2
 # Argument declaration
 signature = Signature(
   'old_graph', ReadDiskItem( 'Cortical folds graph', 'Graph' ),
-  'skeleton', ReadDiskItem( 'Cortex Skeleton', shfjGlobals.aimsVolumeFormats ),
+  'skeleton', ReadDiskItem('Cortex Skeleton', 'aims readable Volume Formats'),
   'graph_version', OpenChoice( '3.1', '3.3' ),
   'graph', WriteDiskItem( 'Cortical folds graph', 'Graph' ),
   'commissure_coordinates', ReadDiskItem( 'Commissure coordinates',

@@ -32,16 +32,12 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
-import shfjGlobals, math
-import registration
-from brainvisa import anatomist
-from brainvisa import quaternion
 
 name = 'AC/PC Or Normalization'
 userLevel = 0
 
 signature = Signature(
-  'T1mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.aimsVolumeFormats ),
+  'T1mri', ReadDiskItem( "Raw T1 MRI", 'aims readable Volume Formats' ),
   'commissure_coordinates', WriteDiskItem('Commissure coordinates',
                                           'Commissure coordinates'),
   'allow_flip_initial_MRI', Boolean(),

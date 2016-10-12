@@ -32,8 +32,9 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
-import shfjGlobals, math
-import registration
+import math
+from brainvisa.tools import aimsGlobals
+from brainvisa import registration
 try:
   from brainvisa import anatomist
 except:
@@ -44,7 +45,7 @@ name = 'Prepare Subject for Anatomical Pipeline'
 userLevel = 0
 
 signature = Signature(
-  'T1mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.vipVolumeFormats ),  
+  'T1mri', ReadDiskItem( "Raw T1 MRI", 'aims readable Volume Formats' ),  
   'commissure_coordinates', WriteDiskItem( 'Commissure coordinates','Commissure coordinates'),
   'Normalised',Choice('No','MNI from SPM','MNI from Mritotal', 'Marseille from SPM'),
   'Anterior_Commissure', Point3D(), 
@@ -134,7 +135,7 @@ def execution( self, context ):
   pcmm = self.Posterior_Commissure
   ipmm = self.Interhemispheric_Point
   if self.Normalised == 'No':
-    atts = shfjGlobals.aimsVolumeAttributes( self.T1mri )
+    atts = aimsGlobals.aimsVolumeAttributes( self.T1mri )
     vs = atts[ 'voxel_size' ]
     #context.write( 'voxel size: ', vs )
     ac = self.Anterior_Commissure
@@ -365,7 +366,7 @@ def execution( self, context ):
 
   # normalized case
   else:
-    atts = shfjGlobals.aimsVolumeAttributes( self.T1mri )
+    atts = aimsGlobals.aimsVolumeAttributes( self.T1mri )
     refs = atts.get( 'referentials' )
     trans = atts.get( 'transformations' )
     vs = atts[ 'voxel_size' ]
