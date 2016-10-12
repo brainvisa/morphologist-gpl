@@ -32,7 +32,7 @@
 
 from brainvisa.processes import *
 from brainvisa.data.labelSelection import LabelSelection
-import registration
+from brainvisa import registration
 
 name = 'Sulci Distance to Neighbours Stats'
 userLevel = 0

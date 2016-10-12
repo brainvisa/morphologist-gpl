@@ -34,8 +34,8 @@
 
 from brainvisa.processes import *
 from soma.path import find_in_path
-import shfjGlobals
-import registration
+from brainvisa.tools import aimsGlobals
+from brainvisa import registration
 
 name = 'Hemisphere Sulci Voronoi'
 userLevel = 2
@@ -59,7 +59,7 @@ def initialization( self ):
     if format is None:
       return self.signature['sulci_voronoi'].findValue( self.graph )
     di = WriteDiskItem( 'Sulci Voronoi',
-      [ str( format ) ] + shfjGlobals.aimsWriteVolumeFormats )
+      [ str( format ) ] + aimsGlobals.aimsWriteVolumeFormats )
     return di.findValue( self.graph )
   self.linkParameters( 'hemi_cortex', 'graph' )
   self.linkParameters( 'sulci_voronoi', ( 'graph', 'hemi_cortex' ),

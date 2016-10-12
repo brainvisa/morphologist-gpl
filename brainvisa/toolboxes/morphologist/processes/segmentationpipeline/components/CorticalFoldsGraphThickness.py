@@ -32,8 +32,7 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
-from soma.path import find_in_path
-import registration
+from brainvisa import registration
 
 name = 'Hemisphere Sulci Thickness and Volumes'
 userLevel = 2
@@ -69,14 +68,14 @@ def initialization( self ):
 
 
 def execution( self, context ):
-  cmd = [ sys.executable, find_in_path( 'AimsFoldsGraphThickness.py' ),
+  cmd = [ 'AimsFoldsGraphThickness.py',
     '-i', self.graph, '-c', self.hemi_cortex, '-g', self.GW_interface,
     '-w', self.white_mesh, '-l', self.hemi_mesh, '-o', self.output_graph ]
   if self.write_mid_interface is not None:
     cmd += [ '-m', self.output_mid_interface ]
   if self.sulci_voronoi is not None:
     cmd += [ '-v', self.sulci_voronoi ]
-  context.system( *cmd )
+  context.pythonSystem( *cmd )
   trManager = registration.getTransformationManager()
   trManager.copyReferential( self.graph, self.output_graph )
   if self.write_mid_interface is not None:

@@ -1,6 +1,6 @@
 from brainvisa.processes import *
 from brainvisa.data.labelSelection import LabelSelection
-import registration
+from brainvisa import registration
 
 name = 'Sulci Distance to Lesion'
 userLevel = 2

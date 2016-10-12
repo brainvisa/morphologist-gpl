@@ -32,9 +32,7 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
-import shfjGlobals
-import registration
-import types
+from brainvisa import registration
 
 name = 'FSL Normalization Pipeline'
 userLevel=1

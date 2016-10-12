@@ -34,7 +34,7 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 include( 'base' )
-import registration
+from brainvisa import registration
 include( 'registration' )
 include( '3DT1_spm' )
 

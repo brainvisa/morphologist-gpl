@@ -32,9 +32,10 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
+from brainvisa import registration
+
 name = 'Transfer Sulci Labels'
 userLevel = 0
-import registration
 
 
 signature = Signature(

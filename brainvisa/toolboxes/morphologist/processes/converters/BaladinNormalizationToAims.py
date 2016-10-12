@@ -32,9 +32,7 @@
 
 from brainvisa.processes import *
 from soma import uuid
-import shfjGlobals
-import registration
-import types
+from brainvisa import registration
 import numpy
 
 name = 'Baladin Normalization to AIMS converter'
@@ -49,10 +47,10 @@ def validation():
 signature = Signature(
   'read', ReadDiskItem( 'Baladin Transformation', 'Text file'),
   'source_volume', ReadDiskItem( '4D Volume',
-                                 shfjGlobals.aimsVolumeFormats ),
+                                 'aims readable Volume Formats' ),
   'write', WriteDiskItem( 'Transform Raw T1 MRI to Talairach-MNI template-SPM', 'Transformation matrix' ),
 'registered_volume', ReadDiskItem( '4D Volume',
-    shfjGlobals.aimsVolumeFormats,
+    'aims readable Volume Formats',
     requiredAttributes={ 'normalized' : 'yes' } ),
   'set_transformation_in_source_volume', Boolean(),
 )

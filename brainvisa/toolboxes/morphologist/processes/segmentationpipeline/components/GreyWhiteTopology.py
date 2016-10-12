@@ -32,8 +32,7 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
-from soma import aims
-import registration
+from brainvisa import registration
 
 name = 'Hemisphere Grey White Topological Correction'
 userLevel = 0

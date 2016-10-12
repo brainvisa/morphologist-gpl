@@ -32,7 +32,6 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
-import registration
 import sys
 
 if sys.version_info[0] >= 3:

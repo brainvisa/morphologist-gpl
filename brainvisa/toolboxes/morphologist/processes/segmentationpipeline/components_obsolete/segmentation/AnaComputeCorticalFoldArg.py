@@ -34,7 +34,7 @@
 from brainvisa.processes import *
 from brainvisa import shelltools
 import  os
-import registration
+from brainvisa import registration
 
 name = 'Cortical Fold Arg (3.0)'
 userLevel = 2

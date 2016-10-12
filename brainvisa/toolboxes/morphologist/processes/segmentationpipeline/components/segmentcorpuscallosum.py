@@ -33,7 +33,7 @@
 
 from brainvisa.processes import *
 from brainvisa.tools import aimsGlobals
-import registration
+from brainvisa import registration
 
 name = 'Segmentation of Corpus Callosum'
 userLevel = 2

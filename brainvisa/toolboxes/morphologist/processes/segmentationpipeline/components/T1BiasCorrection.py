@@ -33,7 +33,7 @@
 
 
 from brainvisa.processes import *
-import registration
+from brainvisa import registration
 
 name = 'T1 Bias Correction'
 userLevel = 0
