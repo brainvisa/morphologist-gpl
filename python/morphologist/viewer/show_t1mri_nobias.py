@@ -9,7 +9,6 @@ from soma.controller import Controller,add_trait
 import anatomist.api as ana
 
 class ShowT1mriNobias(Controller):
-    print 'class t1mri nobias'
     name='ShowT1mriNobias'
     def __init__(self,*args,**kwargs):
         HasTraits.__init__(self)
