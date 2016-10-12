@@ -35,15 +35,15 @@
 # VipBiasCorrection
 #
 from brainvisa.processes import *
-import shfjGlobals, registration
+from brainvisa import registration
 
 name = 'Vip Bias Correction'
 userLevel = 2
 
 signature = Signature(
-  'mri', ReadDiskItem( "T1 MRI", shfjGlobals.vipVolumeFormats ),
+  'mri', ReadDiskItem( "T1 MRI", 'aims readable Volume Formats' ),
   'mri_corrected', WriteDiskItem( "T1 MRI Bias Corrected",
-      shfjGlobals.aimsWriteVolumeFormats ),
+      'aims Writable Volume Formats' ),
   #'coil',Choice('volumic','surface'),
   'field_rigidity', Float(),
   'write_field', Choice('Yes','No'),

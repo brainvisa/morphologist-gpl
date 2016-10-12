@@ -32,7 +32,7 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
-import shfjGlobals, registration
+from brainvisa import registration
 
 
 name = 'Simplified Morphologist 2015'

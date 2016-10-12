@@ -32,9 +32,9 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
-import shfjGlobals
 from brainvisa import anatomist
-import glob, registration
+import glob
+from brainvisa import registration
 
 name = 'Anatomist Show Descriptive Model'
 userLevel = 0

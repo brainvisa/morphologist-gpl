@@ -38,7 +38,6 @@
 
 from __future__ import print_function
 from brainvisa.processes import *
-import shfjGlobals
 from brainvisa import anatomist
 import numpy, os
 try:

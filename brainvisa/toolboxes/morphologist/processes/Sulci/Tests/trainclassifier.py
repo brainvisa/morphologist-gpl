@@ -31,7 +31,6 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
-import shfjGlobals
 
 name = 'Train classifier'
 userLevel = 2
@@ -43,7 +42,7 @@ signature = Signature(
     'output_classifier', WriteDiskItem( 'Classifier',
                                         [ 'SVM classifier',
                                           'MLP classifier' ] ),
-    'input_data', ReadDiskItem( '2D image', shfjGlobals.aimsVolumeFormats ),
+    'input_data', ReadDiskItem( '2D image', 'aims readable Volume Formats' ),
     )
 
 

@@ -32,13 +32,12 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
-import shfjGlobals
 
 name = 'Morphologist 2011'
 userLevel = 2
 
 signature = Signature(
-  'mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.vipVolumeFormats ),
+  'mri', ReadDiskItem( "Raw T1 MRI", 'aims readable Volume Formats' ),
   'mri_corrected', WriteDiskItem( "T1 MRI Bias Corrected",
       'Aims writable volume formats' ),
   'perform_normalization', Boolean(),

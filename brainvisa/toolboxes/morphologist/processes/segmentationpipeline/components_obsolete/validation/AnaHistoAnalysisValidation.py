@@ -33,7 +33,6 @@
 from brainvisa.processes import *
 
 from brainvisa import shelltools
-import shfjGlobals
 
 name = 'Validation_2 Nobias Histo analysis'
 userLevel = 0

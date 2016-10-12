@@ -35,7 +35,7 @@
 # Brain segmentation process declaration
 #
 from brainvisa.processes import *
-import shfjGlobals, registration
+from brainvisa import registration
 
 name = 'Vip Get Brain'
 userLevel = 2
@@ -43,20 +43,20 @@ userLevel = 2
 # Argument declaration
 signature = Signature(
   'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
-      shfjGlobals.aimsVolumeFormats ),
+      'aims readable Volume Formats' ),
   'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
   'mode',
     Choice("standard+iterative","standard","robust+iterative","robust","fast"),
   'Commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
       'Commissure coordinates'),
   'brain_mask', WriteDiskItem( "T1 Brain Mask",
-      shfjGlobals.aimsWriteVolumeFormats ),
+      'aims Writable Volume Formats' ),
   'regularization', Boolean(),
   'erosion_size', Float(),
   'layer', Choice("0","1","2","3","4","5"),
   'first_slice', Integer(),
   'last_slice', Integer(),
-  'lesion_mask', ReadDiskItem( 'Lesion Mask', shfjGlobals.vipVolumeFormats),
+  'lesion_mask', ReadDiskItem( 'Lesion Mask', 'aims readable volume Formats'),
 )
 
 # Default values

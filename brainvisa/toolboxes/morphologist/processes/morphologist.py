@@ -33,7 +33,6 @@
 
 from __future__ import print_function
 from brainvisa.processes import *
-import shfjGlobals
 
 name = 'Morphologist 2015'
 userLevel = 0

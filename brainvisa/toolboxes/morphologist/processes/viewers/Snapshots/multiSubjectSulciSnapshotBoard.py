@@ -33,7 +33,6 @@
 
 from __future__ import print_function
 from brainvisa.processes import *
-import shfjGlobals
 from brainvisa import anatomist
 import time
 
@@ -57,7 +56,7 @@ from soma.path import find_in_path
 signature = Signature(
     'graphs', ListOf( ReadDiskItem( 'Cortical Folds Graph', 'Graph' ) ),
     'meshes', ListOf( ReadDiskItem( 'Hemisphere White Mesh', \
-      shfjGlobals.anatomistMeshFormats ) ),
+      'anatomist Mesh Formats' ) ),
     'transformations', ListOf( ReadDiskItem( 'Transform Raw T1 MRI to ' \
       'Talairach-AC/PC-Anatomist', 'Transformation matrix' ) ),
     'nomenclature', ReadDiskItem( 'Nomenclature', 'Hierarchy' ),
@@ -68,7 +67,7 @@ signature = Signature(
     'orientation', Choice( 'left', 'right', 'top', 'bottom' ),
     'label_attribute', Choice( 'name', 'label' ),
     'output_image', WriteDiskItem( '2D Image',
-                                    shfjGlobals.aimsImageFormats ),
+                                    'aims Image Formats' ),
     'pages_number', Integer(),
     'rows', Integer(),
     'columns', Integer(),

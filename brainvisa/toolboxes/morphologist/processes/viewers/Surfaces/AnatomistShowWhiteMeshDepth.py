@@ -31,7 +31,6 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
-import shfjGlobals
 from brainvisa import anatomist
 
 name = 'Anatomist Show White Mesh Depth'
@@ -44,7 +43,7 @@ def validation():
 signature = Signature(
   'depth_texture', ReadDiskItem( 'White Depth Texture', 'Texture' ),
   'Triangulation', ReadDiskItem( 'Hemisphere White Mesh', \
-    shfjGlobals.anatomistMeshFormats ),
+    'anatomist Mesh Formats' ),
 )
 
 def initialization( self ):

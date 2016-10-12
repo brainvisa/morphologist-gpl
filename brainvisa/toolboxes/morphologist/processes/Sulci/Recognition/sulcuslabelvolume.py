@@ -32,21 +32,20 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
-import shfjGlobals
+from brainvisa.processes import *
 from brainvisa import shelltools
 
-from brainvisa.processes import *
 name = 'Create Sulcus Label Volume'
 userLevel = 2
 
 signature = Signature(
     'graph', ReadDiskItem( 'Cortical folds graph', 'Graph' ),
     'mri', ReadDiskItem( 'T1 MRI Bias Corrected',
-      shfjGlobals.aimsVolumeFormats ),
+      'aims readable Volume Formats' ),
     'transformation_matrix', ReadDiskItem( 'Transformation matrix',
       'Transformation matrix' ),
     'transformation_template', ReadDiskItem(  '3D Volume',
-      shfjGlobals.anatomistVolumeFormats),
+      'aims readable Volume Formats'),
     'transformation',Choice('No','Yes'),
     'binarize',Choice('No','Yes'),
     'sulci', WriteDiskItem( 'Sulci Volume', 'Aims writable volume formats' ),

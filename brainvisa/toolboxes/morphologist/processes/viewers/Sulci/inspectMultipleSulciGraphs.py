@@ -32,17 +32,15 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
-import shfjGlobals
 
 name = 'Inspect Multiple Sulci Graphs'
 userLevel = 0
 
 signature = Signature(
-    'graphs', ListOf( ReadDiskItem( 'Labelled Cortical folds graph',
-        'Graph and Data' ) ),
-    )
+    'graphs', ListOf(ReadDiskItem('Labelled Cortical folds graph',
+                                  'Graph and Data')),
+)
 
-def execution( self, context ):
-    context.runProcess( 'inspectMultipleData',
-        items=self.graphs )
+def execution(self, context):
+    context.runProcess('inspectMultipleData', items=self.graphs)
 

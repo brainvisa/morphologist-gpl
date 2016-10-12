@@ -34,7 +34,6 @@
 from brainvisa.processes import *
 
 from brainvisa import shelltools
-import shfjGlobals
 from brainvisa import anatomist
 
 name = 'Validation Pipeline'
@@ -44,7 +43,7 @@ def validation():
     anatomist.validation()
 
 signature = Signature(
-  'T1mri', ReadDiskItem( "Raw T1 MRI", shfjGlobals.vipVolumeFormats ),
+  'T1mri', ReadDiskItem( "Raw T1 MRI", 'aims readable Volume Formats' ),
 #  'validation_total', Choice("Visualise","Lock","Unlock","Delete","Compress","Uncompress","Itemwise"),
   'validation_total', Choice("Visualise","Lock","Unlock","Itemwise"),
   'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',

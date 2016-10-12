@@ -31,18 +31,17 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
-import shfjGlobals
 
 name = 'Classifier tests'
 userLevel = 2
 
 
 signature = Signature(
-  'input_data', ReadDiskItem( '2D image', shfjGlobals.aimsVolumeFormats ),
+  'input_data', ReadDiskItem( '2D image', 'aims readable Volume Formats' ),
   'classifier', WriteDiskItem( 'Classifier',
                                [ 'SVM classifier', 'MLP classifier' ] ), 
   'output_image', WriteDiskItem( 'Elevation map',
-                                 shfjGlobals.aimsVolumeFormats ),
+                                 'aims writable Volume Formats' ),
   )
 
 def initialization( self ):

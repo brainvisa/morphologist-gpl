@@ -31,7 +31,6 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
-import shfjGlobals
 from brainvisa import anatomist
 
 name = 'Anatomist Show Elevation Map'
@@ -42,7 +41,7 @@ def validation():
     anatomist.validation()
 
 signature = Signature(
-    'read', ReadDiskItem( 'Elevation map', shfjGlobals.aimsVolumeFormats ), 
+    'read', ReadDiskItem( 'Elevation map', 'aims readable Volume Formats' ), 
     'scale', Float(), 
     )
 
