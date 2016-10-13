@@ -487,7 +487,7 @@ def run_disk_check(directory = '/neurospin/cati', logdir = '/neurospin/cati/User
     if len(users_list) == 0: users_dir = ''
     assert(os.path.exists(logdir))
 
-    if verbose: print('Checking free) disk............................................'
+    if verbose: print('Checking free disk............................................')
     database_checker = check_disk_usage(directory, get_sizes = get_sizes, studies_list = studies_list, users_dir = users_dir, users_list = users_list, verbose = verbose, process_undeclared = True)
 
     datetime_string = str(time.strftime('%d%m%Y-%H%M%S', time.gmtime()))
