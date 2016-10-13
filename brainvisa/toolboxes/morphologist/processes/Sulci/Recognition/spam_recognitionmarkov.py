@@ -85,8 +85,10 @@ def initialization( self ):
 def execution( self, context ):
     tmpfile = context.temporary( 'Text file' )
     # find script filename (since it is not in the PATH)
-    progname = os.path.join( os.path.dirname( os.path.dirname( \
-        registration.__file__ ) ), 'scripts', 'sigraph', 'annealing_tag.py' )
+    import brainvisa
+    progname = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname( \
+        brainvisa.__file__))), 'scripts', 'sigraph', 'sulci_registration',
+        'annealing_tag.py')
     cmd = [ sys.executable, progname, '-i', self.data_graph, '-o',
         self.output_graph, '-t', self.labels_translation_map, '-d', self.model,
         '-c', self.posterior_probabilities, '-p', self.labels_priors,
