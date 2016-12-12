@@ -121,7 +121,7 @@ class TestMorphologistCapsul(unittest.TestCase):
             raise RuntimeError(
                 "Reference results do not exist. Please Run the Morphologist "
                 "test first, using the following command: "
-                "python2 -m brainvisa.tests.test_morphologist")
+                "python -m brainvisa.tests.test_morphologist")
 
         print('* create process')
         process = brainvisa.processes.getProcessInstance("morphologist_capsul")
