@@ -30,8 +30,8 @@ BRAINVISA_COPY_DIRECTORY( "${CMAKE_CURRENT_SOURCE_DIR}/doc"
                           "share/doc/morphologist-${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}"
                           ${PROJECT_NAME}-usrdoc )
 
-add_test(morphologist-tests "${CMAKE_BINARY_DIR}/bin/bv_env_test" "${PYTHON_EXECUTABLE}" -m brainvisa.tests.test_morphologist --sparse)
-add_test(morphologist-test-capsul "${CMAKE_BINARY_DIR}/bin/bv_env_test" "${PYTHON_EXECUTABLE}" -m morphologist.tests.test_morphologist_capsul)
+brainvisa_add_test(morphologist-tests "${TARGET_PYTHON_EXECUTABLE_NAME}" -m brainvisa.tests.test_morphologist --no-ann)
+brainvisa_add_test(morphologist-test-capsul "${TARGET_PYTHON_EXECUTABLE_NAME}" -m morphologist.tests.test_morphologist_capsul)
 set_tests_properties(morphologist-test-capsul PROPERTIES DEPENDS morphologist-tests)
 
 find_package( Sphinx )
