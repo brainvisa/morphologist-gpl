@@ -1,6 +1,6 @@
 
 from __future__ import absolute_import
-from capsul.process import Process
+from capsul.process.process import Process
 from traits.api import Undefined, Bool, File
 
 
