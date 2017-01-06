@@ -86,22 +86,40 @@ test_workflow_file = None
 
 class TestMorphologistCapsul(unittest.TestCase):
 
-    def create_test_database(self):
+    def create_test_database(self, database_directory=None, allow_ro=False):
+        if not database_directory:
+            database_directory = self.db_dir
+        print('* create database', database_directory)
         database_settings = neuroConfig.DatabaseSettings(
-            self.db_dir)
+            database_directory)
         database = neuroHierarchy.SQLDatabase(
-            os.path.join(self.db_dir, "database.sqlite"),
-            self.db_dir,
+            os.path.join(database_directory, "database.sqlite"),
+            database_directory,
             'brainvisa-3.2.0',
             context=defaultContext(),
             settings=database_settings)
         neuroHierarchy.databases.add(database)
         neuroConfig.dataPath.append(database_settings)
-        database.clear(context=defaultContext())
-        database.update(context=defaultContext())
+        try:
+            database.clear(context=defaultContext())
+            database.update(context=defaultContext())
+        except:
+            if not allow_ro:
+                raise
         self.input_dir = (os.path.join(
-            self.db_dir, 'test', 'sujet01', 't1mri', 'default_acquisition'))
+            database_directory, 'test', 'sujet01', 't1mri',
+            'default_acquisition'))
         return database
+
+
+    def create_ref_database(self):
+        if self.ref_db_dir == self.db_dir:
+            print('* Comparing to reference in the same data dir')
+            return self.database
+        print('* Comparing to reference data from directory:',
+              self.ref_db_dir)
+        return self.create_test_database(self.ref_db_dir, allow_ro=True)
+
 
     def setUp(self):
         print('* initialize brainVisa')
@@ -109,12 +127,17 @@ class TestMorphologistCapsul(unittest.TestCase):
         tests_dir = os.getenv("BRAINVISA_TESTS_DIR")
         if not tests_dir:
             tests_dir = tempfile.gettempdir()
+        ref_tests_dir = os.environ.get('BRAINVISA_REF_TESTS_DIR', tests_dir)
         self.tests_dir = os.path.join(tests_dir, "tmp_tests_brainvisa")
+        self.ref_tests_dir = os.path.join(ref_tests_dir, "tmp_tests_brainvisa")
         self.db_dir = os.path.join(
             self.tests_dir, "db_morphologist-%s" % bv_config.__version__)
-        print('* create database')
+        self.ref_db_dir = os.path.join(
+            self.ref_tests_dir, "db_morphologist-%s" % bv_config.__version__)
         self.database = self.create_test_database()
         self.db_name = self.database.name
+        self.ref_database = self.create_ref_database()
+        self.ref_db_name = self.ref_database.name
 
         ref_dir = os.path.join(self.input_dir, 'reference')
         if not os.path.isdir(ref_dir):
@@ -196,11 +219,6 @@ class TestMorphologistCapsul(unittest.TestCase):
         del config
         os.unlink(tmpdb[1])
 
-
-    def compare_files(self, ref_file, test_file):
-        if ref_file.endswith(".arg"):
-            return same_graphs(ref_file, test_file)
-        return filecmp.cmp(ref_file, test_file)
 
     def compare_files(self, ref_file, test_file):
         skipped_ends = [
