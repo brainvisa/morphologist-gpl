@@ -55,23 +55,39 @@ class TestMorphologistPipeline(unittest.TestCase):
         zf.extractall()
 
 
-    def create_test_database(self):
-        if not os.path.exists(self.database_directory):
+    def create_test_database(self, database_directory=None, allow_ro=False):
+        if not database_directory:
+            database_directory = self.database_directory
+        if not os.path.exists(database_directory):
             print("* Create test database")
-            os.makedirs(self.database_directory)
+            os.makedirs(database_directory)
         database_settings = neuroConfig.DatabaseSettings(
-            self.database_directory)
+            database_directory)
         database = neuroHierarchy.SQLDatabase(
-            os.path.join(self.database_directory, "database.sqlite"),
-            self.database_directory,
+            os.path.join(database_directory, "database.sqlite"),
+            database_directory,
             'brainvisa-3.2.0',
             context=defaultContext(),
             settings=database_settings)
         neuroHierarchy.databases.add(database)
         neuroConfig.dataPath.append(database_settings)
-        database.clear(context=defaultContext())
-        database.update(context=defaultContext())
+        try:
+            database.clear(context=defaultContext())
+            database.update(context=defaultContext())
+        except:
+            if not allow_ro:
+                raise
         return database
+
+
+    def create_ref_database(self):
+        if self.ref_database_directory == self.database_directory:
+            print('* Comparing to reference in the same data dir')
+            return self.database
+        print('* Comparing to reference data from directory:',
+              self.ref_database_directory)
+        return self.create_test_database(self.ref_database_directory,
+                                         allow_ro=True)
 
 
     def import_data(self):
@@ -153,108 +169,120 @@ class TestMorphologistPipeline(unittest.TestCase):
 
 
     def setUp(self):
-      tests_dir = os.getenv("BRAINVISA_TESTS_DIR")
-      if not tests_dir:
-          tests_dir = tempfile.gettempdir()
-      self.tests_dir = os.path.join(tests_dir, "tmp_tests_brainvisa")
-      self.download_data()
+        tests_dir = os.getenv("BRAINVISA_TESTS_DIR")
+        if not tests_dir:
+            tests_dir = tempfile.gettempdir()
+        ref_tests_dir = os.environ.get('BRAINVISA_REF_TESTS_DIR', tests_dir)
+        self.tests_dir = os.path.join(tests_dir, "tmp_tests_brainvisa")
+        self.ref_tests_dir = os.path.join(ref_tests_dir, "tmp_tests_brainvisa")
+        self.download_data()
+        if not os.path.exists(self.ref_tests_dir):
+            print('reference data in %s do not exist. Using test dir in %s'
+                  % (self.ref_tests_dir, self.tests_dir))
+            self.ref_tests_dir = self.ref_tests_dir
 
-      brainvisa.axon.initializeProcesses()
-      self.database_directory = os.path.join( self.tests_dir,
-          'db_morphologist-%s' % brainvisa.config.__version__ )
-      self.database=self.create_test_database()
-      self.db_name = self.database.name
-      t1 = self.import_data()
+        brainvisa.axon.initializeProcesses()
+        self.database_directory = os.path.join(self.tests_dir,
+            'db_morphologist-%s' % brainvisa.config.__version__)
+        self.ref_database_directory = os.path.join(self.ref_tests_dir,
+            'db_morphologist-%s' % brainvisa.config.__version__)
+        self.database = self.create_test_database()
+        self.ref_database = self.create_ref_database()
+        self.db_name = self.database.name
+        self.ref_db_name = self.ref_database.name
+        t1 = self.import_data()
 
-      ac = [114.864585876, 118.197914124, 88.7999954224]
-      pc = [116.197914124, 147.53125, 91.1999969482]
-      ip = [118.197914124, 99.53125, 45.6000061035]
+        ac = [114.864585876, 118.197914124, 88.7999954224]
+        pc = [116.197914124, 147.53125, 91.1999969482]
+        ip = [118.197914124, 99.53125, 45.6000061035]
 
-      pipeline = self.get_pipeline()
-      ann_pipeline = self.get_ann_pipeline()
+        pipeline = self.get_pipeline()
+        ann_pipeline = self.get_ann_pipeline()
 
-      wd = pipeline.signature["t1mri_nobias"]
-      self.ref_nobias = wd.findValue({"_database" : self.db_name,
-                                      "_format" : "NIFTI-1 image",
-                                      "center" : "test", "subject" : "sujet01",
-                                      "analysis" : "reference"})
-      glwd = pipeline.signature["left_labelled_graph"]
-      ref_left_ann_graph = glwd.findValue(
-          self.ref_nobias,
-          requiredAttributes={"sulci_recognition_session" : "ann",
-                              "graph_version": "3.1",
-                              "manually_labelled": "No",
-                              "side": "left"})
-      grwd = pipeline.signature["left_labelled_graph"]
-      ref_right_ann_graph = grwd.findValue(
-          self.ref_nobias,
-          requiredAttributes={"sulci_recognition_session" : "ann",
-                              "graph_version": "3.1",
-                              "manually_labelled": "No",
-                              "side": "right"})
+        wd = pipeline.signature["t1mri_nobias"]
+        self.ref_nobias = wd.findValue({"_database" : self.ref_db_name,
+                                        "_format" : "NIFTI-1 image",
+                                        "center" : "test",
+                                        "subject" : "sujet01",
+                                        "analysis" : "reference"})
+        glwd = pipeline.signature["left_labelled_graph"]
+        ref_left_ann_graph = glwd.findValue(
+            self.ref_nobias,
+            requiredAttributes={"sulci_recognition_session" : "ann",
+                                "graph_version": "3.1",
+                                "manually_labelled": "No",
+                                "side": "left"})
+        grwd = pipeline.signature["left_labelled_graph"]
+        ref_right_ann_graph = grwd.findValue(
+            self.ref_nobias,
+            requiredAttributes={"sulci_recognition_session" : "ann",
+                                "graph_version": "3.1",
+                                "manually_labelled": "No",
+                                "side": "right"})
 
-      # if requested, clear existing reference results
-      if clear_reference and os.path.exists(self.ref_nobias.fullPath()):
-          print('* Clear reference results to build new ones')
-          rmtree(os.path.dirname(self.ref_nobias.fullPath()))
-          self.database.clear(context=defaultContext())
-          self.database.update(context=defaultContext())
+        # if requested, clear existing reference results
+        if clear_reference and os.path.exists(self.ref_nobias.fullPath()):
+            print('* Clear reference results to build new ones')
+            rmtree(os.path.dirname(self.ref_nobias.fullPath()))
+            self.database.clear(context=defaultContext())
+            self.database.update(context=defaultContext())
 
-      # if needed, run the pipeline a first time to get reference results
-      # in default_analysis
-      if not self.ref_nobias.isReadable():
-          print("* Run Morphologist to get reference results")
-          defaultContext().runProcess(pipeline, t1mri=t1,
-              t1mri_nobias=self.ref_nobias, anterior_commissure=ac,
-              posterior_commissure=pc, interhemispheric_point=ip)
-          print("* Run ANN recognition to get reference results")
-          defaultContext().runProcess(ann_pipeline, t1mri=t1,
-              t1mri_nobias=self.ref_nobias, anterior_commissure=ac,
-              posterior_commissure=pc, interhemispheric_point=ip,
-              left_labelled_graph=ref_left_ann_graph,
-              right_labelled_graph=ref_right_ann_graph)
+        # if needed, run the pipeline a first time to get reference results
+        # in default_analysis
+        if not self.ref_nobias.isReadable():
+            print("* Run Morphologist to get reference results")
+            defaultContext().runProcess(pipeline, t1mri=t1,
+                t1mri_nobias=self.ref_nobias, anterior_commissure=ac,
+                posterior_commissure=pc, interhemispheric_point=ip)
+            print("* Run ANN recognition to get reference results")
+            defaultContext().runProcess(ann_pipeline, t1mri=t1,
+                t1mri_nobias=self.ref_nobias, anterior_commissure=ac,
+                posterior_commissure=pc, interhemispheric_point=ip,
+                left_labelled_graph=ref_left_ann_graph,
+                right_labelled_graph=ref_right_ann_graph)
 
-      # run the pipeline a second time to get test results
-      self.test_nobias = wd.findValue({"_database" : self.db_name,
-                                      "_format" : "NIFTI-1 image",
-                                      "center" : "test", "subject" : "sujet01",
-                                      "analysis" : "test"})
-      test_left_ann_graph = glwd.findValue(
-          self.test_nobias,
-          requiredAttributes={"sulci_recognition_session" : "ann",
-                              "graph_version": "3.1",
-                              "manually_labelled": "No",
-                              "side": "left"})
-      test_right_ann_graph = grwd.findValue(
-          self.test_nobias,
-          requiredAttributes={"sulci_recognition_session" : "ann",
-                              "graph_version": "3.1",
-                              "manually_labelled": "No",
-                              "side": "right"})
+        # run the pipeline a second time to get test results
+        self.test_nobias = wd.findValue({"_database" : self.db_name,
+                                        "_format" : "NIFTI-1 image",
+                                        "center" : "test",
+                                        "subject" : "sujet01",
+                                        "analysis" : "test"})
+        test_left_ann_graph = glwd.findValue(
+            self.test_nobias,
+            requiredAttributes={"sulci_recognition_session" : "ann",
+                                "graph_version": "3.1",
+                                "manually_labelled": "No",
+                                "side": "left"})
+        test_right_ann_graph = grwd.findValue(
+            self.test_nobias,
+            requiredAttributes={"sulci_recognition_session" : "ann",
+                                "graph_version": "3.1",
+                                "manually_labelled": "No",
+                                "side": "right"})
 
-      if not test_only:
-          if self.test_nobias.isReadable():
-              rmtree(os.path.dirname(self.test_nobias.fullPath()))
-              self.database.clear(context=defaultContext())
-              self.database.update(context=defaultContext())
-          pipeline.executionNode().child(
-              'TalairachTransformation').setSelected(False)
-          if not do_spam or not self.do_sulci_today():
-              pipeline.perform_sulci_recognition = False
-              print('(not doing SPAM sulci recognition tests today)')
-          print("* Run Morphologist to get test results")
-          defaultContext().runProcess(pipeline, t1mri=t1,
-              t1mri_nobias=self.test_nobias, anterior_commissure=ac,
-              posterior_commissure=pc, interhemispheric_point=ip)
-          if do_ann and self.do_sulci_today():
-              print("* Run ANN recognition to get test results")
-              defaultContext().runProcess(ann_pipeline, t1mri=t1,
-                  t1mri_nobias=self.test_nobias, anterior_commissure=ac,
-                  posterior_commissure=pc, interhemispheric_point=ip,
-                  left_labelled_graph=test_left_ann_graph,
-                  right_labelled_graph=test_right_ann_graph)
-          else:
-              print('(not doing ANN sulci recognition today)')
+        if not test_only:
+            if self.test_nobias.isReadable():
+                rmtree(os.path.dirname(self.test_nobias.fullPath()))
+                self.database.clear(context=defaultContext())
+                self.database.update(context=defaultContext())
+            pipeline.executionNode().child(
+                'TalairachTransformation').setSelected(False)
+            if not do_spam or not self.do_sulci_today():
+                pipeline.perform_sulci_recognition = False
+                print('(not doing SPAM sulci recognition tests today)')
+            print("* Run Morphologist to get test results")
+            defaultContext().runProcess(pipeline, t1mri=t1,
+                t1mri_nobias=self.test_nobias, anterior_commissure=ac,
+                posterior_commissure=pc, interhemispheric_point=ip)
+            if do_ann and self.do_sulci_today():
+                print("* Run ANN recognition to get test results")
+                defaultContext().runProcess(ann_pipeline, t1mri=t1,
+                    t1mri_nobias=self.test_nobias, anterior_commissure=ac,
+                    posterior_commissure=pc, interhemispheric_point=ip,
+                    left_labelled_graph=test_left_ann_graph,
+                    right_labelled_graph=test_right_ann_graph)
+            else:
+                print('(not doing ANN sulci recognition today)')
 
 
     def compare_files(self, ref_file, test_file):
@@ -320,6 +348,14 @@ def test_suite():
 try:
     if __name__ == '__main__':
         parser = ArgumentParser("test Morphologist pipeline.\n"
+            "Tests are performed in a directory given by the env variable "
+            "BRAINVISA_TESTS_DIR. If not specified, use the temp directory.\n"
+            "Tests may be compared to a different reference directory. In "
+            "such a case, the reference may be given by the env variable "
+            "BRAINVISA_REF_TESTS_DIR. If not specified, the test directory "
+            "will be used. This ref data directory is only useful when testing "
+            "from a non-standard configuration, typically from a virtual "
+            "or docker machine.\n\n"
             "To get uniitest help, use:\n"
             "%s -- -h\n" % sys.argv[0])
         parser.add_argument('-c', '--clear-ref', action='store_true',
