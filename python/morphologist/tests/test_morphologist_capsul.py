@@ -286,8 +286,8 @@ class TestMorphologistCapsul(unittest.TestCase):
                 f_test = os.path.join(test_dir,
                                       relative_path(dirpath, ref_dir), f)
                 self.assertTrue(self.compare_files(f_ref, f_test),
-                    "The content of "+f+" in test is different from the "
-                    "reference results.")
+                    "The content of " + f_test + " in test is different from "
+                    "the reference results " + f_ref + ".")
                 #print('file', f_test, 'OK.')
         print('** all OK.')
 
