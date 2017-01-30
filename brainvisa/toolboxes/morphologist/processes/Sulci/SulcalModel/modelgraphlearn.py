@@ -34,7 +34,7 @@
 from __future__ import print_function
 from brainvisa.processes import *
 from brainvisa import shelltools
-import os, string, stat
+import os, string, stat, sys
 
 name = 'Sulcal Model Graph Learning'
 userLevel = 2
@@ -216,7 +216,7 @@ def execution( self, context ):
     
   if self.parallelism_mode == 'local':
     context.write( 'local learning mode' )
-    context.system( 'python2', silcmd, conf )
+    context.pythonSystem( silcmd, conf )
   elif self.parallelism_mode == 'duch':
     context.write( 'Duch parallelism mode' )
     sglt = distutils.spawn.find_executable( 'siGenerateLearningTasks.py' )
@@ -235,8 +235,8 @@ def execution( self, context ):
        return
     fd = open(scriptout, 'w')
     print("#!/bin/bash\n", file=fd)
-    print("python %s -l 1 -v ~/hosts '%s' '%s'" % \
-          (distcmd, batchout, batchout + '.log'), file=fd)
+    print("%s %s -l 1 -v ~/hosts '%s' '%s'" % \
+          (os.path.basename(sys.executable), distcmd, batchout, batchout + '.log'), file=fd)
     fd.close()
     os.chmod(scriptout, 0750)
   elif self.parallelism_mode == 'grid':
@@ -244,8 +244,8 @@ def execution( self, context ):
     sglt = distutils.spawn.find_executable( 'siGenerateLearningTasks.py' )
     batchname = 'siLearn-' + self.learning_mode + '-grid_batch'
     batchout = os.path.join(odir, batchname)
-    context.system( 'python2', sglt, '-m', self.model_graph, '-o', batchout,
-                    '-p', 'grid', '-c', conf, '-b', silcmd)
+    context.pythonSystem( sglt, '-m', self.model_graph, '-o', batchout,
+                          '-p', 'grid', '-c', conf, '-b', silcmd)
     scriptname = 'siLearn-' + self.learning_mode + '-grid.sh'
     scriptout = os.path.join(odir, scriptname)
     distcmd = distutils.spawn.find_executable( 'grid.py' )
@@ -256,22 +256,23 @@ def execution( self, context ):
        return
     fd = open(scriptout, 'w')
     print("#!/bin/bash\n", file=fd)
-    print("python %s  --host ~/neurospin-distcc-hosts --tasks %s --log %s --timeslot -" % (distcmd, batchout, batchout + '.log'), file=fd)
+    print("%s %s  --host ~/neurospin-distcc-hosts --tasks %s --log %s --timeslot -" % \
+          (os.path.basename(sys.executable), distcmd, batchout, batchout + '.log'), file=fd)
     fd.close()
     os.chmod(scriptout, 0750)
   elif self.parallelism_mode == 'LSF':
     context.write( 'LSF (CCRT) mode' )
     sglt = distutils.spawn.find_executable( 'siGenerateLearningTasks.py' )
     out = os.path.join(odir, 'siLearn-' + self.learning_mode +'-LSF_batch')
-    context.system( 'python2', sglt, '-m', self.model_graph, '-o', out,
-                    '-p', 'LSF', '-c', conf, '-b', silcmd,
-                    '-t', self.time, '-e', self.email)
+    context.pythonSystem( sglt, '-m', self.model_graph, '-o', out,
+                          '-p', 'LSF', '-c', conf, '-b', silcmd,
+                          '-t', self.time, '-e', self.email)
   elif self.parallelism_mode == 'soma.workflow':
     context.write( 'Lag (soma.workflow/Laguitton) mode' )
     sglt = distutils.spawn.find_executable( 'siGenerateLearningTasks.py' )
     out = os.path.join(odir, 'siLearn-' + self.learning_mode +'-somaworkflow_batch')
-    context.system( 'python2', sglt, '-m', self.model_graph, '-o', out,
-                    '-p', 'somaworkflow', '-c', conf, '-b', silcmd )
+    context.pythonSystem( sglt, '-m', self.model_graph, '-o', out,
+                          '-p', 'somaworkflow', '-c', conf, '-b', silcmd )
   else:
     raise RuntimeError( 'Mode ' + self.parallelism_mode \
                         + ' is not implemented yet' )
