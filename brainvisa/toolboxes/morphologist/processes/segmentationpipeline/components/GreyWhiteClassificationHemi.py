@@ -39,18 +39,31 @@ userLevel = 0
 
 # Argument declaration
 signature = Signature(
-    'side', Choice( 'left', 'right' ),
-    't1mri_nobias', ReadDiskItem( 'T1 MRI Bias Corrected',
-        'Aims readable volume formats' ),
-    'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-    'split_brain', ReadDiskItem( 'Split Brain Mask',
-        'Aims readable volume formats' ),
-    'edges', ReadDiskItem( 'T1 MRI Edges',
-        'Aims readable volume formats' ),
-    'commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
+    'side', Choice('left', 'right'),
+    't1mri_nobias', ReadDiskItem(
+        'T1 MRI Bias Corrected',
+        'Aims readable volume formats'),
+    'histo_analysis', ReadDiskItem(
+        'Histo Analysis',
+        'Histo Analysis'),
+    'split_brain', ReadDiskItem(
+        'Split Brain Mask',
+        'Aims readable volume formats'),
+    'edges', ReadDiskItem(
+        'T1 MRI Edges',
+        'Aims readable volume formats'),
+    'commissure_coordinates', ReadDiskItem(
+        'Commissure coordinates',
         'Commissure coordinates'),
-    'grey_white', WriteDiskItem( 'Morphologist Grey White Mask',
-        'Aims writable volume formats' ),
+    'lesion_mask', ReadDiskItem(
+        'Lesion Mask',
+        'Aims readable volume formats'),
+    'lesion_mask_mode', Choice(('Exclude the lesion mask', 'e'),
+                               ('Include the lesion mask as WM', 'w'),
+                               ('Include the lesion mask as GM', 'g')),
+    'grey_white', WriteDiskItem(
+        'Morphologist Grey White Mask',
+        'Aims writable volume formats'),
     'fix_random_seed', Boolean(),
 )
 
@@ -58,14 +71,19 @@ signature = Signature(
 def initialization( self ):
     def linkGW( self, dummy ):
         if self.t1mri_nobias is not None:
-            return self.signature[ 'grey_white' ].findValue( self.t1mri_nobias, requiredAttributes={ 'side': self.side } )
-    self.linkParameters( 'histo_analysis', 't1mri_nobias' )
-    self.linkParameters( 'grey_white', ( 't1mri_nobias', 'side' ), linkGW )
-    self.linkParameters( 'split_brain', 't1mri_nobias' )
-    self.linkParameters( 'edges', 't1mri_nobias' )
-    self.linkParameters( 'commissure_coordinates', 't1mri_nobias' )
+            return self.signature[ 'grey_white' ].findValue( self.t1mri_nobias, requiredAttributes={'side': self.side})
+    self.linkParameters('histo_analysis', 't1mri_nobias')
+    self.linkParameters('grey_white',
+                        ('t1mri_nobias', 'side'),
+                        linkGW)
+    self.linkParameters('split_brain', 't1mri_nobias')
+    self.linkParameters('edges', 't1mri_nobias')
+    self.linkParameters('commissure_coordinates', 't1mri_nobias')
     self.signature[ 'fix_random_seed' ].userLevel = 3
     self.fix_random_seed = False
+    self.setOptional('lesion_mask')
+    self.lesion_mask_mode = 'e'
+    
 
 
 def execution( self, context ):
@@ -86,6 +104,9 @@ def execution( self, context ):
                     self.commissure_coordinates, '-o',
                     self.grey_white, '-l', sideval,
                     '-w', 't', '-a', 'N' ]
+        if self.lesion_mask is not None:
+            command += ['-patho', self.lesion_mask,
+                        '-pmode', self.lesion_mask_mode]
         if self.fix_random_seed:
             command += ['-srand', '10']
         context.system( *command )
