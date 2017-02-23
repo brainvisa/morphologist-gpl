@@ -7,6 +7,7 @@ import shutil
 import unittest
 import tempfile
 import filecmp
+import platform
 from argparse import ArgumentParser
 
 # set en empty temporary user dir
@@ -77,7 +78,9 @@ def handle_debugger(sig, frame):
                 # no debugging, then.
                 pass
 
-signal.signal(signal.SIGUSR2, handle_debugger)
+# Windows platform does not support the SIGUSR2 signal
+if platform.system() != 'Windows':
+    signal.signal(signal.SIGUSR2, handle_debugger)
 
 
 test_workflow_file = None
