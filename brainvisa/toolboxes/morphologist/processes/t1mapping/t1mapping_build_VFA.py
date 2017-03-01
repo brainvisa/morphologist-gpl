@@ -49,11 +49,13 @@ signature = Signature(
     'output_t1_map',
         WriteDiskItem('Raw T1 MRI', 'aims writable volume formats'),
     'invert', Boolean(),
+    'BAFI_smoothing', Float(),
 )
 
 
 def initialization(self):
     self.invert = True # can be discussed...
+    self.BAFI_smoothing = 0
 
 
 def execution(self, context):
@@ -65,6 +67,7 @@ def execution(self, context):
         '-a', self.BAFI_amplitude_map,
         '-p', self.BAFI_phase_map,
         '-o', self.output_t1_map,
+        '-g', self.BAFI_smoothing,
         '-s', 'median']
     if self.invert:
         command.append('--inv')
