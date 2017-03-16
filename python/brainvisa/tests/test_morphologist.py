@@ -179,7 +179,7 @@ class TestMorphologistPipeline(unittest.TestCase):
         if not os.path.exists(self.ref_tests_dir):
             print('reference data in %s do not exist. Using test dir in %s'
                   % (self.ref_tests_dir, self.tests_dir))
-            self.ref_tests_dir = self.ref_tests_dir
+            self.ref_tests_dir = self.tests_dir
 
         brainvisa.axon.initializeProcesses()
         self.database_directory = os.path.join(self.tests_dir,
