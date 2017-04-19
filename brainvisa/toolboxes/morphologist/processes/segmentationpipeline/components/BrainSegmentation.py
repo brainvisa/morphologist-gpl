@@ -39,35 +39,46 @@ userLevel = 0
 
 # Argument declaration
 signature = Signature(
-    't1mri_nobias', ReadDiskItem( 'T1 MRI Bias Corrected',
-        'Aims readable volume formats' ),
-    'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-    'variance', ReadDiskItem( 'T1 MRI Variance',
-        'Aims readable volume formats' ),
-    'edges', ReadDiskItem( 'T1 MRI Edges',
-        'Aims readable volume formats' ),
-    'white_ridges', ReadDiskItem( 'T1 MRI White Matter Ridges',
-        'Aims readable volume formats' ),
-    'commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
+    't1mri_nobias', ReadDiskItem(
+        'T1 MRI Bias Corrected',
+        'Aims readable volume formats'),
+    'histo_analysis', ReadDiskItem(
+        'Histo Analysis',
+        'Histo Analysis'),
+    'variance', ReadDiskItem(
+        'T1 MRI Variance',
+        'Aims readable volume formats'),
+    'edges', ReadDiskItem(
+        'T1 MRI Edges',
+        'Aims readable volume formats'),
+    'white_ridges', ReadDiskItem(
+        'T1 MRI White Matter Ridges',
+        'Aims readable volume formats'),
+    'commissure_coordinates', ReadDiskItem(
+        'Commissure coordinates',
         'Commissure coordinates'),
-    'lesion_mask', ReadDiskItem( 'Lesion Mask',
-        'Aims readable volume formats' ),
-    'variant', Choice( '2010',
-                       '2005 based on white ridge',
-                       'Standard + (iterative erosion)',
-                       'Standard + (selected erosion)',
-                       'Standard + (iterative erosion) without regularisation',
-                       'Robust + (iterative erosion)',
-                       'Robust + (selected erosion)',
-                       'Robust + (iterative erosion) without regularisation',
-                       'Fast (selected erosion)' ),
-    'erosion_size', OpenChoice( 1, 1.5, 1.8, 2, 2.5, 3, 3.5 ,4 ),
+    'lesion_mask', ReadDiskItem(
+        'Lesion Mask',
+        'Aims readable volume formats'),
+    'lesion_mask_mode', Choice(('Exclude the lesion mask', 'e'),
+                               ('Include the lesion mask', 'i')),
+    'variant', Choice('2010',
+                      '2005 based on white ridge',
+                      'Standard + (iterative erosion)',
+                      'Standard + (selected erosion)',
+                      'Standard + (iterative erosion) without regularisation',
+                      'Robust + (iterative erosion)',
+                      'Robust + (selected erosion)',
+                      'Robust + (iterative erosion) without regularisation',
+                      'Fast (selected erosion)'),
+    'erosion_size', OpenChoice(1, 1.5, 1.8, 2, 2.5, 3, 3.5 ,4),
     'visu', Choice('No', 'Yes'),
     'layer', Choice(0, 1, 2, 3, 4, 5),
     'first_slice', Integer(),
     'last_slice', Integer(),
-    'brain_mask', WriteDiskItem( 'T1 Brain Mask',
-        'Aims writable volume formats' ),
+    'brain_mask', WriteDiskItem(
+        'T1 Brain Mask',
+        'Aims writable volume formats'),
     'fix_random_seed', Boolean(),
 )
 
@@ -89,6 +100,7 @@ def initialization( self ):
     self.variant = '2010'
     self.visu = 'No'
     self.layer = '0'
+    self.lesion_mask_mode = 'e'
     self.fix_random_seed = False
 
 
@@ -108,10 +120,12 @@ def execution( self, context ):
         if self.commissure_coordinates is not None:
             command += ['-Points', self.commissure_coordinates]
         if self.lesion_mask is not None:
-            command += ['-patho', self.lesion_mask]
+            command += ['-patho', self.lesion_mask,
+                        '-pmode', self.lesion_mask_mode]
         
         if self.variant == '2010':
-            command += ['-m', 'V', '-Variancename', self.variance,
+            command += ['-m', 'V',
+                        '-Variancename', self.variance,
                         '-Edgesname', self.edges,
                         '-Ridge', self.white_ridges]
         elif self.variant == '2005 based on white ridge':
