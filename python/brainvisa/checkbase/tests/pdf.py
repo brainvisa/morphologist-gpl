@@ -1,5 +1,5 @@
 
-from PyQt4.Qt import QPrinter, QTextDocument, QSizeF
+from soma.qt_gui.qt_backend.Qt import QPrinter, QTextDocument, QSizeF
 
 class PDFReportPrinter():
     '''

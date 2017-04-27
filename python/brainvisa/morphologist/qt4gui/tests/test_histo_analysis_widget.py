@@ -13,7 +13,7 @@ sip.setapi( 'QDateTime', 2 )
 sip.setapi( 'QTextStream', 2 )
 sip.setapi( 'QTime', 2 )
 sip.setapi( 'QUrl', 2 )
-from PyQt4 import QtGui, QtCore, QtTest
+from soma.qt_gui.qt_backend import QtGui, QtCore, QtTest
 from morphologist.tests.gui import TestGui
 from morphologist.core.study import Study
 from morphologist.intra_analysis import IntraAnalysis

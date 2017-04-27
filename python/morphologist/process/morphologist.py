@@ -176,7 +176,7 @@ class Morphologist( Pipeline ):
 
 if __name__ == '__main__':
     import sys
-    from PyQt4 import QtGui
+    from soma.qt_gui.qt_backend import QtGui
     from soma.gui.widget_controller_creation import ControllerWidget
     from soma.functiontools import SomaPartial as partial
     from soma.gui.pipeline.pipeline_gui import PipelineView
