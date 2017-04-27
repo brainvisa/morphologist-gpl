@@ -110,7 +110,7 @@ if __name__ == '__main__':
    assert(os.path.exists(template_pathname))
    directories = []
    import string, sys
-   from PyQt4 import Qt
+   from soma.qt_gui.qt_backend import Qt
    qt_app = Qt.QApplication(sys.argv)
 
    for root, dirs, files in os.walk(cbdir):

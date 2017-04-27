@@ -32,7 +32,7 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
-from PyQt4 import QtGui
+from soma.qt_gui.qt_backend import QtGui
 
 try:
     from brainvisa.morphologist.qt4gui import histo_analysis_widget

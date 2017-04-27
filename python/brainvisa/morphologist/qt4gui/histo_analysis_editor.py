@@ -41,13 +41,14 @@ import anatomist.api as anatomist
 # anatomist may be replaced by another implementation (brainvisa.anatomist)
 import numpy
 from brainvisa.morphologist.qt4gui import histo_analysis_widget
-from PyQt4.QtGui import QDialog, QWidget, QVBoxLayout, QHBoxLayout, \
+from soma.qt_gui.qt_backend.QtGui import QDialog, QWidget, QVBoxLayout, \
+    QHBoxLayout, \
     QGridLayout, QPushButton, QLabel, QLineEdit, QDoubleValidator, QSlider, \
     QPixmap, QImage, QColor, QPalette, QSplitter
-from PyQt4 import QtCore
-from PyQt4.QtCore import Qt
-from PyQt4.QtCore import pyqtSignal as qtSignal
-from PyQt4.QtCore import pyqtSlot as qtSlot
+from soma.qt_gui.qt_backend import QtCore
+from soma.qt_gui.qt_backend.QtCore import Qt
+from soma.qt_gui.qt_backend.QtCore import pyqtSignal as qtSignal
+from soma.qt_gui.qt_backend.QtCore import pyqtSlot as qtSlot
 
 
 class HistoAnalysisEditorWidget( QDialog ):
