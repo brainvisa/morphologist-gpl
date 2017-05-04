@@ -107,7 +107,7 @@ class HistoAnalysisWidget(QtGui.QWidget):
 
         # combine matplotlib / Qt
         lay = QtGui.QVBoxLayout(self)
-        lay.setMargin(0)
+        lay.setContentsMargins(0, 0, 0, 0)
         lay.setSpacing(0)
         self.mfig = pyplot.figure()
         if parent is not None:
@@ -128,7 +128,7 @@ class HistoAnalysisWidget(QtGui.QWidget):
         statusbar.setFont(font)
 
     # emitted whenever the histo analysis is modified interactively by the user
-    histo_analysis_changed = QtCore.pyqtSignal(float, float, float, float)
+    histo_analysis_changed = QtCore.Signal(float, float, float, float)
 
     def setPalette(self, palette):
         '''reimplemented from QWidget to handle matplotlib widget and
@@ -177,8 +177,9 @@ class HistoAnalysisWidget(QtGui.QWidget):
         orig_bin_size = data[1, 0] - data[0, 0]
         bins = [(i * float(dlen) / nbins) for i in xrange(nbins)]
         bins.append(-1)
-        self.bdata = [numpy.sum(data[bins[i] / orig_bin_size:
-                                     bins[i + 1] / orig_bin_size, 1]) for i in xrange(len(bins) - 1)]
+        self.bdata = [numpy.sum(data[int(bins[i] / orig_bin_size):
+                                     int(bins[i + 1] / orig_bin_size), 1])
+                      for i in xrange(len(bins) - 1)]
         self.bins = bins[: -1]
 
     def set_histo_analysis(self, han):
