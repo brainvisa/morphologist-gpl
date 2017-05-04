@@ -41,12 +41,12 @@ import anatomist.api as anatomist
 # anatomist may be replaced by another implementation (brainvisa.anatomist)
 import numpy
 from brainvisa.morphologist.qt4gui import histo_analysis_widget
+from soma.qt_gui.qt_backend import Qt
 from soma.qt_gui.qt_backend.QtGui import QDialog, QWidget, QVBoxLayout, \
     QHBoxLayout, \
     QGridLayout, QPushButton, QLabel, QLineEdit, QDoubleValidator, QSlider, \
     QPixmap, QImage, QColor, QPalette, QSplitter
 from soma.qt_gui.qt_backend import QtCore
-from soma.qt_gui.qt_backend.QtCore import Qt
 from soma.qt_gui.qt_backend.QtCore import pyqtSignal as qtSignal
 from soma.qt_gui.qt_backend.QtCore import pyqtSlot as qtSlot
 
@@ -276,29 +276,33 @@ class HistoAnalysisEditorWidget( QDialog ):
             self._colormap_widget.setFixedHeight( 10 )
             self._colormap_widget.setScaledContents( True )
 
-    def _insert_ana_window( self, fwid ):
+    def _insert_ana_window(self, fwid):
         '''Builds the Anatomist axial view with color overlays. A slider
         allows to change the overlay mixing rate.s
         '''
         a = anatomist.Anatomist()
-        if fwid.findChild( QWidget, 'corrected_mri_view' ):
-            awin = fwid.findChild( QWidget, 'awindow_for_corr' )
-            awin = a.AWindow( a, awin, refType='WeakShared' )
+        if fwid.findChild(QWidget, 'corrected_mri_view'):
+            awin = fwid.findChild(QWidget, 'awindow_for_corr')
+            awin = a.AWindow(a, awin, refType='WeakShared')
         else:
-            wid = QWidget( fwid )
-            wid.setObjectName( 'corrected_mri_view' )
-            if fwid.layout() is not None:
-              fwid.layout().addWidget( wid )
-            lay = QVBoxLayout( wid )
-            awin = a.createWindow( 'Axial' )
-            awin.setObjectName( 'awindow_for_corr' )
-            awin.setParent( wid )
-            lay.addWidget( awin.getInternalRep() )
+            wid = QWidget()
+            wid.setObjectName('corrected_mri_view')
+            if isinstance(fwid, Qt.QSplitter):
+                fwid.addWidget(wid)
+            else:
+                if fwid.layout() is None:
+                    fwid.setLayout(QVBoxLayout())
+                fwid.layout().addWidget(wid)
+            lay = QVBoxLayout()
+            wid.setLayout(lay)
+            awin = a.createWindow('Axial')
+            awin.setObjectName('awindow_for_corr')
+            lay.addWidget(awin.getInternalRep())
             # avoid referential button to become the default button in dialog
-            rbut = awin.findChildren( QPushButton )
+            rbut = awin.findChildren(QPushButton)
             for but in rbut:
-                but.setAutoDefault( False )
-                but.setDefault( False )
+                but.setAutoDefault(False)
+                but.setDefault(False)
             # colormap
             self._colormap_widget = QLabel( wid )
             lay.addWidget( self._colormap_widget )
@@ -307,7 +311,7 @@ class HistoAnalysisEditorWidget( QDialog ):
             lay.addWidget( bwid )
             hlay = QHBoxLayout( bwid )
             hlay.addWidget( QLabel( 'Mixing:', bwid ) )
-            self._color_slider = QSlider( Qt.Horizontal, bwid )
+            self._color_slider = QSlider( Qt.Qt.Horizontal, bwid )
             hlay.addWidget( self._color_slider )
             self._color_slider.setRange( 0, 100 )
             self._color_slider.setSliderPosition( 50 )
