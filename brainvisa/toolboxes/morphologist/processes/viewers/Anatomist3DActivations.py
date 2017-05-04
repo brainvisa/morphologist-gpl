@@ -78,7 +78,7 @@ class UpdateActivation3D( QWidget ):
     btn.setSizePolicy( QSizePolicy( QSizePolicy.Fixed, QSizePolicy.Fixed ) )
     self._context = context
     self._values = values
-    QObject.connect( btn, SIGNAL( 'clicked()' ), self.update3D )
+    btn.clicked.connect(self.update3D)
     self._executed = 0
     self.setSizePolicy( QSizePolicy( QSizePolicy.Minimum, QSizePolicy.Minimum ) )
 
