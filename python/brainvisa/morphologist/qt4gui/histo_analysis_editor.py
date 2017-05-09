@@ -295,7 +295,7 @@ class HistoAnalysisEditorWidget( QDialog ):
                 fwid.layout().addWidget(wid)
             lay = QVBoxLayout()
             wid.setLayout(lay)
-            awin = a.createWindow('Axial')
+            awin = a.createWindow('Axial', options={'hidden': 1})
             awin.setObjectName('awindow_for_corr')
             lay.addWidget(awin.getInternalRep())
             # avoid referential button to become the default button in dialog
