@@ -505,8 +505,8 @@ class HistoAnalysisWidget(QtGui.QWidget):
         # disambiguate in case both the mean line and the stdev polygon
         # can be selected here
         tolerance = self.histodata.han[1][0] * 0.015
-        if artist == self._histo_plots[ artist ][1][1] and \
-                abs( self._init_pos - self._histo_plots[ artist ][0][0] ) \
+        if not isinstance(artist, pyplot.Line2D) and \
+                abs(self._init_pos - self._histo_plots[artist][0][0]) \
                 < tolerance:
             # discard this event: another one will be fired for the mean line
             return
