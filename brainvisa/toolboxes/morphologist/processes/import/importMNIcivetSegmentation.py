@@ -39,7 +39,7 @@ from soma.aims import apctools
 import numpy
 import glob
 import threading
-from brainvisa.tools.mainthreadlife import MainThreadLife
+from soma.qt_gui.qtThread import MainThreadLife
 try:
     from soma.utils.functiontools import partial
 except ImportError:
