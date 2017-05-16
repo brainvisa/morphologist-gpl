@@ -147,10 +147,10 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
             os.makedirs(dir_)
         os.chdir(dir_)
         if not os.path.exists("demo_data.zip"):
-            print("* Download file:///home/mathieu/Desktop/demo_data.zip to",
+            print("* Download ftp://ftp.cea.fr/pub/dsv/anatomist/data/demo_data.zip to",
                   dir_)
             urllib.urlretrieve(
-                "file:///home/mathieu/Desktop/demo_data.zip",
+                "ftp://ftp.cea.fr/pub/dsv/anatomist/data/demo_data.zip",
                 "demo_data.zip")
         if os.path.exists("data_for_anatomist"):
             rmtree("data_for_anatomist")
