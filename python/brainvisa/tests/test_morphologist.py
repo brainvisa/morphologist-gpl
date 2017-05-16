@@ -356,7 +356,7 @@ try:
             "will be used. This ref data directory is only useful when testing "
             "from a non-standard configuration, typically from a virtual "
             "or docker machine.\n\n"
-            "To get uniitest help, use:\n"
+            "To get unittest help, use:\n"
             "%s -- -h\n" % sys.argv[0])
         parser.add_argument('-c', '--clear-ref', action='store_true',
                             help='clear any existing reference results. Use '
@@ -373,8 +373,8 @@ try:
             '--sparse', action='store_true',
             help='sparsely perform tests: segmentation is tested every time, '
             'sulci recognition only if the date matches certain criteria '
-            '(typically for daily tests, avoid them being to long every '
-            'day). Currently: if the day of monthh can divide by 5.')
+            '(it\'s usually too long for daily tests) '
+            'currently if the day of month is a multiple of 5.')
         parser.add_argument('options', nargs=argparse.REMAINDER,
                             help='passed to unittest options parser')
         args = parser.parse_args()

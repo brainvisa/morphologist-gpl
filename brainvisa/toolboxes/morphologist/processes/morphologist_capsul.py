@@ -1,6 +1,6 @@
 
 from brainvisa.processes import *
-from brainvisa.tools.mainthreadlife import MainThreadLife
+from soma.qt_gui.qtThread import MainThreadLife
 from brainvisa.processing import capsul_process
 
 name = 'Morphologist CAPSUL iteration'
