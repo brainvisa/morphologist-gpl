@@ -1,14 +1,25 @@
+"""
+Test morphologist pipeline. The test works by downloading data, constructing a
+database and launching several pipelines. The machine specific database is
+created in ref mode. In run mode, we create a new DB and compare the data to 
+the reference DB.
+
+Note that we clean the run database at the begining of each run (not at the end
+because we want to keep the data to inspect problems) except if we pass the
+option --test-only (this is used for debugging).
+The reference database is recreated at each run in ref mode. This DB is reused
+in other tests.
+
+There are a few more options for to tune the behaviour of the test.
+"""
 from __future__ import print_function
 import unittest
 import os
 import sys
 import tempfile
 import urllib
-import shutil
 from shutil import rmtree
 import filecmp
-import argparse
-from argparse import ArgumentParser
 import time
 import numpy as np
 
@@ -16,8 +27,11 @@ from soma import zipfile
 from soma.path import relative_path
 import brainvisa.config
 
-# set en empty temporary user dir
-# BRAINVISA_USER_DIR shoult be set before neuroConfig is imported
+# BRAINVISA_USER_DIR should be set before neuroConfig is imported so we set it
+# to an empty temporary directory to not mess up with the real user directory.
+# This could be done as part of the test case setUpClass (instead of the
+# initialization of the module) which would allow to suppress it in
+# tearDownClass.
 homedir = tempfile.mkdtemp(prefix='bv_home')
 os.environ['BRAINVISA_USER_DIR'] = homedir
 
@@ -27,82 +41,48 @@ from brainvisa.data.writediskitem import WriteDiskItem
 from brainvisa.configuration import neuroConfig
 from brainvisa.data import neuroHierarchy
 from soma.aims.graph_comparison import same_graphs
+import soma.test_utils
+
+# This could be part of setUpClass (but we need to do so before constructing
+# the pipelines which is possible if the pipelines are constructed in a class
+# method after __init__).
+brainvisa.axon.initializeProcesses()
 
 
-clear_reference = False
-do_spam = True
-do_ann = True
-day_filter = False
-test_only = True
+class MorphologistTestLoader(soma.test_utils.SomaTestLoader):
+    parser = soma.test_utils.SomaTestLoader.parser
+    parser.add_argument('--no-ann', action='store_true',
+                        help='do not perform ANN sulci recognition test.')
+    parser.add_argument('--no-spam', action='store_true',
+                        help='do not perform SPAM sulci recognition test.')
+    parser.add_argument(
+        '-t', '--test-only', action='store_true',
+        help='only perform comprison of results, assuming processing has '
+        'already been done and results written.')
+    parser.add_argument(
+        '--sparse', action='store_true',
+        help='sparsely perform tests: segmentation is tested every time, '
+        'sulci recognition only if the date matches certain criteria '
+        '(it\'s usually too long for daily tests) '
+        'currently if the day of month is a multiple of 5.')
 
 
-class TestMorphologistPipeline(unittest.TestCase):
+# Some methods could be transformed to class method
+class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
+    private_dir = "test_morphologist_pipeline"
 
-    def download_data(self):
-        if not os.path.exists(self.tests_dir):
-            os.makedirs(self.tests_dir)
-        os.chdir(self.tests_dir)
-        if not os.path.exists("demo_data.zip"):
-            print("* Download ftp://ftp.cea.fr/pub/dsv/anatomist/data/demo_data.zip to ", self.tests_dir)
-            urllib.urlretrieve(
-                "ftp://ftp.cea.fr/pub/dsv/anatomist/data/demo_data.zip",
-                "demo_data.zip")
-        if os.path.exists("data_for_anatomist"):
-            rmtree("data_for_anatomist")
-        if os.path.exists("data_unprocessed"):
-            rmtree("data_unprocessed")
-        zf = zipfile.ZipFile("demo_data.zip")
-        zf.extractall()
+    def __init__(self, testName):
+        super(TestMorphologistPipeline, self).__init__(testName)
+        # Set some internal variables (the functions were coded with those)
+        self.do_spam = not self.no_spam
+        self.do_ann = not self.no_ann
+        self.day_filter = self.sparse
+        # Create the pipelines (we need them to query the databases)
+        self.pipeline = self.create_spam_pipeline()
+        self.ann_pipeline = self.create_ann_pipeline()
 
-
-    def create_test_database(self, database_directory=None, allow_ro=False):
-        if not database_directory:
-            database_directory = self.database_directory
-        if not os.path.exists(database_directory):
-            print("* Create test database")
-            os.makedirs(database_directory)
-        database_settings = neuroConfig.DatabaseSettings(
-            database_directory)
-        database = neuroHierarchy.SQLDatabase(
-            os.path.join(database_directory, "database.sqlite"),
-            database_directory,
-            'brainvisa-3.2.0',
-            context=defaultContext(),
-            settings=database_settings)
-        neuroHierarchy.databases.add(database)
-        neuroConfig.dataPath.append(database_settings)
-        try:
-            database.clear(context=defaultContext())
-            database.update(context=defaultContext())
-        except:
-            if not allow_ro:
-                raise
-        return database
-
-
-    def create_ref_database(self):
-        if self.ref_database_directory == self.database_directory:
-            print('* Comparing to reference in the same data dir')
-            return self.database
-        print('* Comparing to reference data from directory:',
-              self.ref_database_directory)
-        return self.create_test_database(self.ref_database_directory,
-                                         allow_ro=True)
-
-
-    def import_data(self):
-        input = os.path.join(self.tests_dir, "data_unprocessed",
-                            "sujet01", "anatomy", "sujet01.ima")
-        wd=WriteDiskItem("Raw T1 MRI", "NIFTI-1 image")
-        output=wd.findValue({"_database" : self.db_name,
-                            "center" : "test", "subject" : "sujet01"})
-        if not output.isReadable():
-            print("* Import test data")
-            defaultContext().runProcess('ImportT1MRI', input, output)
-        return output
-
-
-    def get_pipeline(self):
+    @staticmethod
+    def create_spam_pipeline():
         pipeline = brainvisa.processes.getProcessInstance("morphologist")
         nodes = pipeline.executionNode()
         pipeline.perform_normalization = False
@@ -132,9 +112,9 @@ class TestMorphologistPipeline(unittest.TestCase):
 
         return pipeline
 
-
-    def get_ann_pipeline(self):
-        pipeline = self.get_pipeline()
+    @staticmethod
+    def create_ann_pipeline():
+        pipeline = TestMorphologistPipeline.create_spam_pipeline()
         nodes = pipeline.executionNode()
         nodes.PrepareSubject.setSelected(0)
         nodes.BiasCorrection.setSelected(0)
@@ -161,129 +141,168 @@ class TestMorphologistPipeline(unittest.TestCase):
 
         return pipeline
 
+    @staticmethod
+    def download_data(dir_):
+        if not os.path.exists(dir_):
+            os.makedirs(dir_)
+        os.chdir(dir_)
+        if not os.path.exists("demo_data.zip"):
+            print("* Download ftp://ftp.cea.fr/pub/dsv/anatomist/data/demo_data.zip to",
+                  dir_)
+            urllib.urlretrieve(
+                "ftp://ftp.cea.fr/pub/dsv/anatomist/data/demo_data.zip",
+                "demo_data.zip")
+        if os.path.exists("data_for_anatomist"):
+            rmtree("data_for_anatomist")
+        if os.path.exists("data_unprocessed"):
+            rmtree("data_unprocessed")
+        zf = zipfile.ZipFile("demo_data.zip")
+        zf.extractall()
+
+    @staticmethod
+    def create_database(database_directory, allow_ro=False):
+        if not os.path.exists(database_directory):
+            print("* Create test database")
+            os.makedirs(database_directory)
+        database_settings = neuroConfig.DatabaseSettings(
+            database_directory)
+        database = neuroHierarchy.SQLDatabase(
+            os.path.join(database_directory, "database.sqlite"),
+            database_directory,
+            'brainvisa-3.2.0',
+            context=defaultContext(),
+            settings=database_settings)
+        neuroHierarchy.databases.add(database)
+        neuroConfig.dataPath.append(database_settings)
+        try:
+            database.clear(context=defaultContext())
+            database.update(context=defaultContext())
+        except:
+            if not allow_ro:
+                raise
+        return database
+
+    @staticmethod
+    def import_data(dir_, db_name):
+        input = os.path.join(dir_, "data_unprocessed",
+                             "sujet01", "anatomy", "sujet01.ima")
+        wd = WriteDiskItem("Raw T1 MRI", "NIFTI-1 image")
+        output = wd.findValue({"_database": db_name,
+                               "center": "test", "subject": "sujet01"})
+        if not output.isReadable():
+            print("* Import test data")
+            defaultContext().runProcess('ImportT1MRI', input, output)
+        return output
 
     def do_sulci_today(self):
-        if day_filter and time.localtime(time.time()).tm_mday % 5 != 0:
+        if self.day_filter and time.localtime(time.time()).tm_mday % 5 != 0:
             return False
         return True
 
+    def get_data(self, database):
+        wd = WriteDiskItem("Raw T1 MRI", "NIFTI-1 image")
+        t1 = wd.findValue({"_database": database.name,
+                           "center": "test", "subject": "sujet01"})
+        nbwd = self.pipeline.signature["t1mri_nobias"]
+        t1_nobias = nbwd.findValue({"_database": database.name,
+                                    "_format": "NIFTI-1 image",
+                                    "center": "test",
+                                    "subject": "sujet01"})
+        glwd = self.pipeline.signature["left_labelled_graph"]
+        left_ann_graph = glwd.findValue(
+            t1_nobias,
+            requiredAttributes={"sulci_recognition_session": "ann",
+                                "graph_version": "3.1",
+                                "manually_labelled": "No",
+                                "side": "left"})
+        grwd = self.pipeline.signature["left_labelled_graph"]
+        right_ann_graph = grwd.findValue(
+            t1_nobias,
+            requiredAttributes={"sulci_recognition_session": "ann",
+                                "graph_version": "3.1",
+                                "manually_labelled": "No",
+                                "side": "right"})
+        return t1, t1_nobias, left_ann_graph, right_ann_graph
 
-    def setUp(self):
-        tests_dir = os.getenv("BRAINVISA_TESTS_DIR")
-        if not tests_dir:
-            tests_dir = tempfile.gettempdir()
-        ref_tests_dir = os.environ.get('BRAINVISA_REF_TESTS_DIR', tests_dir)
-        self.tests_dir = os.path.join(tests_dir, "tmp_tests_brainvisa")
-        self.ref_tests_dir = os.path.join(ref_tests_dir, "tmp_tests_brainvisa")
-        self.download_data()
-        if not os.path.exists(self.ref_tests_dir):
-            print('reference data in %s do not exist. Using test dir in %s'
-                  % (self.ref_tests_dir, self.tests_dir))
-            self.ref_tests_dir = self.tests_dir
-
-        brainvisa.axon.initializeProcesses()
-        self.database_directory = os.path.join(self.tests_dir,
-            'db_morphologist-%s' % brainvisa.config.__version__)
-        self.ref_database_directory = os.path.join(self.ref_tests_dir,
-            'db_morphologist-%s' % brainvisa.config.__version__)
-        self.database = self.create_test_database()
-        self.ref_database = self.create_ref_database()
-        self.db_name = self.database.name
-        self.ref_db_name = self.ref_database.name
-        t1 = self.import_data()
-
+    def run_pipelines(self, database, skip_ann=False):
+        # Constants
         ac = [114.864585876, 118.197914124, 88.7999954224]
         pc = [116.197914124, 147.53125, 91.1999969482]
         ip = [118.197914124, 99.53125, 45.6000061035]
+        # Get data
+        t1, t1_nobias, left_ann_graph, right_ann_graph = \
+            self.get_data(database)
+        # Run pipelines
+        print("* Run Morphologist")
+        defaultContext().runProcess(
+            self.pipeline, t1mri=t1, t1mri_nobias=t1_nobias,
+            anterior_commissure=ac, posterior_commissure=pc,
+            interhemispheric_point=ip)
+        if not skip_ann:
+            print("* Run ANN recognition")
+            defaultContext().runProcess(
+                self.ann_pipeline, t1mri=t1, t1mri_nobias=t1_nobias,
+                anterior_commissure=ac, posterior_commissure=pc,
+                interhemispheric_point=ip, left_labelled_graph=left_ann_graph,
+                right_labelled_graph=right_ann_graph)
 
-        pipeline = self.get_pipeline()
-        ann_pipeline = self.get_ann_pipeline()
+    def setUp_ref_mode(self):
+        # ref mode ignores option test_only, no_ann and no_spam
+        ref_data_dir = self.private_ref_data_dir()
+        ref_database_dir = os.path.join(
+            ref_data_dir, 'db_morphologist-%s' % brainvisa.config.__version__
+        )
+        # Remove the old database
+        if os.path.exists(ref_database_dir):
+            rmtree(ref_database_dir)
+        # Create the ref database
+        TestMorphologistPipeline.download_data(ref_data_dir)
+        self.ref_database = TestMorphologistPipeline.create_database(
+            ref_database_dir
+        )
+        TestMorphologistPipeline.import_data(ref_data_dir,
+                                             self.ref_database.name)
+        # Run the pipelines (always use ANN)
+        self.run_pipelines(self.ref_database)
 
-        wd = pipeline.signature["t1mri_nobias"]
-        self.ref_nobias = wd.findValue({"_database" : self.ref_db_name,
-                                        "_format" : "NIFTI-1 image",
-                                        "center" : "test",
-                                        "subject" : "sujet01",
-                                        "analysis" : "reference"})
-        glwd = pipeline.signature["left_labelled_graph"]
-        ref_left_ann_graph = glwd.findValue(
-            self.ref_nobias,
-            requiredAttributes={"sulci_recognition_session" : "ann",
-                                "graph_version": "3.1",
-                                "manually_labelled": "No",
-                                "side": "left"})
-        grwd = pipeline.signature["left_labelled_graph"]
-        ref_right_ann_graph = grwd.findValue(
-            self.ref_nobias,
-            requiredAttributes={"sulci_recognition_session" : "ann",
-                                "graph_version": "3.1",
-                                "manually_labelled": "No",
-                                "side": "right"})
-
-        # if requested, clear existing reference results
-        if clear_reference and os.path.exists(self.ref_nobias.fullPath()):
-            print('* Clear reference results to build new ones')
-            rmtree(os.path.dirname(self.ref_nobias.fullPath()))
-            self.database.clear(context=defaultContext())
-            self.database.update(context=defaultContext())
-
-        # if needed, run the pipeline a first time to get reference results
-        # in default_analysis
-        if not self.ref_nobias.isReadable():
-            print("* Run Morphologist to get reference results")
-            defaultContext().runProcess(pipeline, t1mri=t1,
-                t1mri_nobias=self.ref_nobias, anterior_commissure=ac,
-                posterior_commissure=pc, interhemispheric_point=ip)
-            print("* Run ANN recognition to get reference results")
-            defaultContext().runProcess(ann_pipeline, t1mri=t1,
-                t1mri_nobias=self.ref_nobias, anterior_commissure=ac,
-                posterior_commissure=pc, interhemispheric_point=ip,
-                left_labelled_graph=ref_left_ann_graph,
-                right_labelled_graph=ref_right_ann_graph)
-
-        # run the pipeline a second time to get test results
-        self.test_nobias = wd.findValue({"_database" : self.db_name,
-                                        "_format" : "NIFTI-1 image",
-                                        "center" : "test",
-                                        "subject" : "sujet01",
-                                        "analysis" : "test"})
-        test_left_ann_graph = glwd.findValue(
-            self.test_nobias,
-            requiredAttributes={"sulci_recognition_session" : "ann",
-                                "graph_version": "3.1",
-                                "manually_labelled": "No",
-                                "side": "left"})
-        test_right_ann_graph = grwd.findValue(
-            self.test_nobias,
-            requiredAttributes={"sulci_recognition_session" : "ann",
-                                "graph_version": "3.1",
-                                "manually_labelled": "No",
-                                "side": "right"})
-
-        if not test_only:
-            if self.test_nobias.isReadable():
-                rmtree(os.path.dirname(self.test_nobias.fullPath()))
-                self.database.clear(context=defaultContext())
-                self.database.update(context=defaultContext())
-            pipeline.executionNode().child(
-                'TalairachTransformation').setSelected(False)
-            if not do_spam or not self.do_sulci_today():
-                pipeline.perform_sulci_recognition = False
-                print('(not doing SPAM sulci recognition tests today)')
-            print("* Run Morphologist to get test results")
-            defaultContext().runProcess(pipeline, t1mri=t1,
-                t1mri_nobias=self.test_nobias, anterior_commissure=ac,
-                posterior_commissure=pc, interhemispheric_point=ip)
-            if do_ann and self.do_sulci_today():
-                print("* Run ANN recognition to get test results")
-                defaultContext().runProcess(ann_pipeline, t1mri=t1,
-                    t1mri_nobias=self.test_nobias, anterior_commissure=ac,
-                    posterior_commissure=pc, interhemispheric_point=ip,
-                    left_labelled_graph=test_left_ann_graph,
-                    right_labelled_graph=test_right_ann_graph)
-            else:
-                print('(not doing ANN sulci recognition today)')
-
+    def setUp_run_mode(self):
+        # Get the ref database
+        ref_data_dir = self.private_ref_data_dir()
+        ref_database_dir = os.path.join(
+            ref_data_dir, 'db_morphologist-%s' % brainvisa.config.__version__
+        )
+        self.ref_database = TestMorphologistPipeline.create_database(
+            ref_database_dir, allow_ro=True
+        )
+        # Location of run database
+        run_data_dir = self.private_run_data_dir()
+        run_database_dir = os.path.join(
+            run_data_dir, 'db_morphologist-%s' % brainvisa.config.__version__
+        )
+        # Remove the run database
+        if os.path.exists(run_database_dir) and not self.test_only:
+            rmtree(run_database_dir)
+        # Create the run database and import data. If test_only, return a
+        # read-only database
+        TestMorphologistPipeline.download_data(run_data_dir)
+        self.run_database = TestMorphologistPipeline.create_database(
+            run_database_dir,
+            self.test_only
+        )
+        if self.test_only:
+            return
+        TestMorphologistPipeline.import_data(run_data_dir,
+                                             self.run_database.name)
+        # Run the pipelines (conditionnaly).
+        if not self.do_spam or not self.do_sulci_today():
+            self.pipeline.perform_sulci_recognition = False
+            print('(not doing SPAM sulci recognition tests today)')
+        if not self.do_ann or not self.do_sulci_today():
+            print('(not doing ANN sulci recognition tests today)')
+            skip_ann = True
+        else:
+            skip_ann = False
+        self.run_pipelines(self.run_database, skip_ann)
 
     def compare_files(self, ref_file, test_file):
         skipped_ends = [
@@ -313,19 +332,24 @@ class TestMorphologistPipeline(unittest.TestCase):
         # no match
         return False
 
-
     def test_pipeline_results(self):
+        if self.test_mode == soma.test_utils.ref_mode:
+            self.assert_(True)
+            return
         skipped_dirs = [
             "_global_TO_local",
             # skip .data directories for graphs because their contents order is
             # not always the same
             ".data"]
-        if not do_ann or not self.do_sulci_today():
+        if not self.do_ann or not self.do_sulci_today():
             skipped_dirs.append('ann_auto')
-        if not do_spam or not self.do_sulci_today():
+        if not self.do_spam or not self.do_sulci_today():
             skipped_dirs.append('default_session_auto')
-        ref_dir = os.path.dirname(self.ref_nobias.fullPath())
-        test_dir = os.path.dirname(self.test_nobias.fullPath())
+        # Get data
+        _, ref_t1_nobias, _, _ = self.get_data(self.ref_database)
+        _, run_t1_nobias, _, _ = self.get_data(self.run_database)
+        ref_dir = os.path.dirname(ref_t1_nobias.fullPath())
+        test_dir = os.path.dirname(run_t1_nobias.fullPath())
         for (dirpath, dirnames, filenames) in os.walk(ref_dir):
             if len([1 for ext in skipped_dirs if dirpath.endswith(ext)]) != 0:
                 continue
@@ -333,7 +357,8 @@ class TestMorphologistPipeline(unittest.TestCase):
                 f_ref = os.path.join(dirpath, f)
                 f_test = os.path.join(test_dir,
                                       relative_path(dirpath, ref_dir), f)
-                self.assertTrue(self.compare_files(f_ref, f_test),
+                self.assertTrue(
+                    self.compare_files(f_ref, f_test),
                     "The content of " + f_test + " in test is different from "
                     "the reference results " + f_ref + ".")
 
@@ -345,52 +370,22 @@ def test_suite():
     return unittest.TestLoader().loadTestsFromTestCase(
         TestMorphologistPipeline)
 
-try:
-    if __name__ == '__main__':
-        parser = ArgumentParser("test Morphologist pipeline.\n"
-            "Tests are performed in a directory given by the env variable "
-            "BRAINVISA_TESTS_DIR. If not specified, use the temp directory.\n"
-            "Tests may be compared to a different reference directory. In "
-            "such a case, the reference may be given by the env variable "
-            "BRAINVISA_REF_TESTS_DIR. If not specified, the test directory "
-            "will be used. This ref data directory is only useful when testing "
-            "from a non-standard configuration, typically from a virtual "
-            "or docker machine.\n\n"
-            "To get unittest help, use:\n"
-            "%s -- -h\n" % sys.argv[0])
-        parser.add_argument('-c', '--clear-ref', action='store_true',
-                            help='clear any existing reference results. Use '
-                            'it after a known change in results.')
-        parser.add_argument('--no-ann', action='store_true',
-                            help='do not perform ANN sulci recognition test.')
-        parser.add_argument('--no-spam', action='store_true',
-                            help='do not perform SPAM sulci recognition test.')
-        parser.add_argument(
-            '-t', '--test-only', action='store_true',
-            help='only perform results tests, assuming processing has already '
-            'been done and results written.')
-        parser.add_argument(
-            '--sparse', action='store_true',
-            help='sparsely perform tests: segmentation is tested every time, '
-            'sulci recognition only if the date matches certain criteria '
-            '(it\'s usually too long for daily tests) '
-            'currently if the day of month is a multiple of 5.')
-        parser.add_argument('options', nargs=argparse.REMAINDER,
-                            help='passed to unittest options parser')
-        args = parser.parse_args()
-        clear_reference = args.clear_ref
-        do_spam = not args.no_spam
-        do_ann = not args.no_ann
-        day_filter = args.sparse
-        test_only = args.test_only
-        if len(args.options) != 0 and args.options[0] == '--':
-            del args.options[0]
 
-        unittest.main(defaultTest='test_suite',
-                      argv=[sys.argv[0]]+args.options)
-finally:
-    shutil.rmtree(homedir)
-    del homedir
+def test(argv):
+    """
+    Function to execute unitest
+    """
+    loader = soma.test_utils.SomaTestLoader()
+    suite = loader.loadTestsFromTestCase(TestMorphologistPipeline, argv)
+    runtime = unittest.TextTestRunner(verbosity=2).run(suite)
+    return runtime.wasSuccessful()
 
-# WARNING: if this file is imported as a module, homedir will be removed,
-# and later processing will issue errors
+
+if __name__ == "__main__":
+    print(sys.argv)
+    ret = test(sys.argv[1:])
+    print("RETURNCODE: ", ret)
+    if ret:
+        sys.exit(os.EX_OK)
+    else:
+        sys.exit(os.EX_SOFTWARE)
