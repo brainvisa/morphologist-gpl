@@ -1,4 +1,9 @@
 #!/usr/bin/env python2
+"""
+Test the morphologist capsul pipeline.
+
+This test uses the reference database created in test_morphologist.
+"""
 
 from __future__ import print_function
 import os
@@ -9,6 +14,8 @@ import tempfile
 import filecmp
 import platform
 from argparse import ArgumentParser
+
+import numpy as np
 
 # set en empty temporary user dir
 # BRAINVISA_USER_DIR sould be set before neuroConfig is imported
@@ -29,7 +36,7 @@ from soma.aims.graph_comparison import same_graphs
 
 # debugging
 import signal
-import sys
+
 
 def handle_debugger(sig, frame):
     # When the programs receives a signal SIGUSR2, import/start a debugging
@@ -48,7 +55,7 @@ def handle_debugger(sig, frame):
     try:
         import rpdb2
 
-        password='neurospin'
+        password = 'neurospin'
         rpdb2.start_embedded_debugger(password)
 
     except ImportError:
@@ -72,7 +79,6 @@ def handle_debugger(sig, frame):
 
             try:
                 import signal
-                import sys
                 signal.signal(signal.SIGUSR1, handle_pdb)
             except ImportError:
                 # no debugging, then.
@@ -113,7 +119,6 @@ class TestMorphologistCapsul(unittest.TestCase):
             'default_acquisition'))
         return database
 
-
     def create_ref_database(self):
         if self.ref_db_dir == self.db_dir:
             print('* Comparing to reference in the same data dir')
@@ -121,7 +126,6 @@ class TestMorphologistCapsul(unittest.TestCase):
         print('* Comparing to reference data from directory:',
               self.ref_db_dir)
         return self.create_test_database(self.ref_db_dir, allow_ro=True)
-
 
     def setUp(self):
         print('* initialize brainVisa')
@@ -168,9 +172,12 @@ class TestMorphologistCapsul(unittest.TestCase):
         mp.interhemispheric_point = ip
 
         t1mri = [process.signature['t1mri'].contentType.findValue(
-            {   "_database" : self.db_name,
-                "_format" : "NIFTI-1 image",
-                "center" : "test", "subject" : "sujet01"})]
+            {"_database": self.db_name,
+             "_format": "NIFTI-1 image",
+             "center": "test",
+             "subject": "sujet01"
+             }
+        )]
         analysis = ['capsul']
         self.analysis = analysis
 
@@ -184,14 +191,16 @@ class TestMorphologistCapsul(unittest.TestCase):
         process.workflow = workflow_di
 
         analysis_dir = os.path.join(self.db_dir, 'test', 'sujet01', 't1mri',
-                                'default_acquisition', 'capsul')
+                                    'default_acquisition', 'capsul')
         self.analysis_dir = analysis_dir
         if os.path.exists(analysis_dir):
             shutil.rmtree(analysis_dir)
         print("* Run Morphologist_Capsul to get test results")
-        defaultContext().runProcess(process, t1mri=t1mri,
+        defaultContext().runProcess(
+            process, t1mri=t1mri,
             analysis=analysis, use_translated_shared_directory=False,
-            workflow=workflow_di)
+            workflow=workflow_di
+        )
         print('workflow:', workflow_di.fullPath())
         wf = swclient.Helper.unserialize(workflow_di.fullPath())
 
@@ -209,19 +218,18 @@ class TestMorphologistCapsul(unittest.TestCase):
         print('* finished.')
         self.workflow_status = controller.workflow_status(wf_id)
         elements_status = controller.workflow_elements_status(wf_id)
-        self.failed_jobs = [element for element in elements_status[0] \
-            if element[1] != swconstants.DONE
-                or element[3][0] != swconstants.FINISHED_REGULARLY
-                or element[3][1] != 0]
+        self.failed_jobs = [element for element in elements_status[0]
+                            if element[1] != swconstants.DONE
+                            or element[3][0] != swconstants.FINISHED_REGULARLY
+                            or element[3][1] != 0]
         self.failed_jobs_info = controller.jobs(
-            [element[0] for element in self.failed_jobs 
+            [element[0] for element in self.failed_jobs
              if element[3][0] != swconstants.EXIT_NOTRUN])
         controller.delete_workflow(wf_id)
         # remove the temporary database
         del controller
         del config
         os.unlink(tmpdb[1])
-
 
     def compare_files(self, ref_file, test_file):
         skipped_ends = [
@@ -247,13 +255,14 @@ class TestMorphologistCapsul(unittest.TestCase):
             arr2 = np.genfromtxt(test_file)
             if len(arr2.shape) >= 2 and np.any(np.isnan(arr2[0, :])):
                 arr2 = arr2[1:, :]
-            return np.max(np.abs(a2 - a1)) <= 1e-5
+            return np.max(np.abs(arr2 - arr1)) <= 1e-5
         return filecmp.cmp(ref_file, test_file)
 
-
     def test_pipeline_results(self):
-        self.assertTrue(self.workflow_status == swconstants.WORKFLOW_DONE,
-            'Workflow did not finish regularly: %s' % self.workflow_status)
+        self.assertTrue(
+            self.workflow_status == swconstants.WORKFLOW_DONE,
+            'Workflow did not finish regularly: %s' % self.workflow_status
+        )
         print('** workflow status OK')
         if len(self.failed_jobs) != 0:
             # failure
@@ -264,12 +273,12 @@ class TestMorphologistCapsul(unittest.TestCase):
                 if element[3][0] != swconstants.EXIT_NOTRUN:
                     job = self.failed_jobs_info[element[0]]
                     print('+ job:', job[0], ', status:', element[1],
-                          ', exit:', element[3][0], ', value:', element[3][1], 
+                          ', exit:', element[3][0], ', value:', element[3][1],
                           file=sys.stderr)
                     print('  commandline:', file=sys.stderr)
                     print(job[1], file=sys.stderr)
         self.assertTrue(len(self.failed_jobs) == 0,
-            'Morphologist jobs failed')
+                        'Morphologist jobs failed')
         print('** No failed jobs.')
 
         skipped_dirs = [
@@ -278,7 +287,7 @@ class TestMorphologistCapsul(unittest.TestCase):
             # not always the same
             ".data",
             # skip ANN recognition results (not run in this test)
-            "ann_auto",]
+            "ann_auto"]
         ref_dir = os.path.join(self.input_dir, 'reference')
         test_dir = self.analysis_dir
         for (dirpath, dirnames, filenames) in os.walk(ref_dir):
@@ -288,9 +297,11 @@ class TestMorphologistCapsul(unittest.TestCase):
                 f_ref = os.path.join(dirpath, f)
                 f_test = os.path.join(test_dir,
                                       relative_path(dirpath, ref_dir), f)
-                self.assertTrue(self.compare_files(f_ref, f_test),
+                self.assertTrue(
+                    self.compare_files(f_ref, f_test),
                     "The content of " + f_test + " in test is different from "
-                    "the reference results " + f_ref + ".")
+                    "the reference results " + f_ref + "."
+                )
                 #print('file', f_test, 'OK.')
         print('** all OK.')
 
@@ -321,4 +332,3 @@ finally:
 
 # WARNING: if this file is imported as a module, homedir will be removed,
 # and later processing will issue errors
-
