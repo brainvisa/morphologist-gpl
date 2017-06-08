@@ -1,7 +1,7 @@
 """
 Test morphologist pipeline. The test works by downloading data, constructing a
 database and launching several pipelines. The machine specific database is
-created in ref mode. In run mode, we create a new DB and compare the data to 
+created in ref mode. In run mode, we create a new DB and compare the data to
 the reference DB.
 
 Note that we clean the run database at the begining of each run (not at the end
@@ -50,21 +50,26 @@ brainvisa.axon.initializeProcesses()
 
 
 class MorphologistTestLoader(soma.test_utils.SomaTestLoader):
-    parser = soma.test_utils.SomaTestLoader.parser
-    parser.add_argument('--no-ann', action='store_true',
-                        help='do not perform ANN sulci recognition test.')
-    parser.add_argument('--no-spam', action='store_true',
-                        help='do not perform SPAM sulci recognition test.')
-    parser.add_argument(
-        '-t', '--test-only', action='store_true',
-        help='only perform comprison of results, assuming processing has '
-        'already been done and results written.')
-    parser.add_argument(
-        '--sparse', action='store_true',
-        help='sparsely perform tests: segmentation is tested every time, '
-        'sulci recognition only if the date matches certain criteria '
-        '(it\'s usually too long for daily tests) '
-        'currently if the day of month is a multiple of 5.')
+
+    def __init__(self):
+        super(MorphologistTestLoader, self).__init__()
+        self.parser.description = "Morphologist test program."
+        self.parser.add_argument(
+            '--no-ann', action='store_true',
+            help='do not perform ANN sulci recognition test.')
+        self.parser.add_argument(
+            '--no-spam', action='store_true',
+            help='do not perform SPAM sulci recognition test.')
+        self.parser.add_argument(
+            '-t', '--test-only', action='store_true',
+            help='only perform comparison of results, assuming processing has '
+                  'already been done and results written.')
+        self.parser.add_argument(
+            '--sparse', action='store_true',
+            help='sparsely perform tests: segmentation is tested every time, '
+                 'sulci recognition only if the date matches certain criteria '
+                 '(it\'s usually too long for daily tests) '
+                 'currently if the day of month is a multiple of 5.')
 
 
 # Some methods could be transformed to class method
@@ -73,7 +78,8 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
 
     def __init__(self, testName):
         super(TestMorphologistPipeline, self).__init__(testName)
-        # Set some internal variables (the functions were coded with those)
+        # Set some internal variables from CLI arguments (the functions were
+        # coded with those variables)
         self.do_spam = not self.no_spam
         self.do_ann = not self.no_ann
         self.day_filter = self.sparse
@@ -363,19 +369,15 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
                     "the reference results " + f_ref + ".")
 
     def tearDown(self):
+        super(TestMorphologistPipeline, self).tearDown()
         brainvisa.axon.cleanup()
-
-
-def test_suite():
-    return unittest.TestLoader().loadTestsFromTestCase(
-        TestMorphologistPipeline)
 
 
 def test(argv):
     """
     Function to execute unitest
     """
-    loader = soma.test_utils.SomaTestLoader()
+    loader = MorphologistTestLoader()
     suite = loader.loadTestsFromTestCase(TestMorphologistPipeline, argv)
     runtime = unittest.TextTestRunner(verbosity=2).run(suite)
     return runtime.wasSuccessful()
