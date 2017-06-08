@@ -43,11 +43,6 @@ from brainvisa.data import neuroHierarchy
 from soma.aims.graph_comparison import same_graphs
 import soma.test_utils
 
-# This could be part of setUpClass (but we need to do so before constructing
-# the pipelines which is possible if the pipelines are constructed in a class
-# method after __init__).
-brainvisa.axon.initializeProcesses()
-
 
 class MorphologistTestLoader(soma.test_utils.SomaTestLoader):
 
@@ -78,6 +73,9 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
 
     def __init__(self, testName):
         super(TestMorphologistPipeline, self).__init__(testName)
+        # Must be called before pipeline construction. As we construct them
+        # __init__ it should work.
+        brainvisa.axon.initializeProcesses()
         # Set some internal variables from CLI arguments (the functions were
         # coded with those variables)
         self.do_spam = not self.no_spam
@@ -156,7 +154,7 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
             print("* Download ftp://ftp.cea.fr/pub/dsv/anatomist/data/demo_data.zip to",
                   dir_)
             urllib.urlretrieve(
-                "ftp://ftp.cea.fr/pub/dsv/anatomist/data/demo_data.zip",
+                "file:///home/mathieu/Desktop/demo_data.zip",
                 "demo_data.zip")
         if os.path.exists("data_for_anatomist"):
             rmtree("data_for_anatomist")
@@ -369,8 +367,8 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
                     "the reference results " + f_ref + ".")
 
     def tearDown(self):
-        super(TestMorphologistPipeline, self).tearDown()
         brainvisa.axon.cleanup()
+        super(TestMorphologistPipeline, self).tearDown()
 
 
 def test(argv):
