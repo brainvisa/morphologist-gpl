@@ -1,11 +1,22 @@
 from brainvisa.processes import ReadDiskItem, WriteDiskItem, ListOf, \
     Signature, String, Choice, Boolean
 from soma import aims
-import pandas
 import numpy as np
+try:
+    import pandas
+except ImportError:
+    pandas = None
 
 name = 'Sulci labeling differences across subjects'
 userLevel = 1
+
+
+def validation():
+    try:
+        import pandas
+    except ImportError as e:
+        raise ValidationError('pandas module is not available')
+
 
 signature = Signature(
     'sulci1', ListOf(ReadDiskItem('Labelled cortical folds graph', 'Graph and data')),

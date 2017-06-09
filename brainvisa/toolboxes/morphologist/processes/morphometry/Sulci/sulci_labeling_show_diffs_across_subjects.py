@@ -1,11 +1,26 @@
 from __future__ import print_function
 from brainvisa.processes import ReadDiskItem, ListOf, Signature, String
 from soma.qt_gui import qtThread
-import pandas
 import numpy as np
+try:
+    import pandas
+except ImportError:
+    pandas = None
 
 name = 'Sulci labeling show differences across subjects'
 userLevel = 1
+
+
+def validation():
+    try:
+        import pandas
+    except ImportError as e:
+        raise ValidationError('pandas module is not available')
+    try:
+        import matplotlib
+    except ImportError as e:
+        raise ValidationError('matplotlib module is not available')
+
 
 signature = Signature(
     'diff_tables', ListOf(ReadDiskItem('CSV file', 'CSV file')),
