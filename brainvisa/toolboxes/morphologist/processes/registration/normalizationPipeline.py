@@ -36,6 +36,7 @@ import math
 from brainvisa import registration
 from brainvisa import anatomist
 from brainvisa import quaternion
+from brainvisa.configuration.neuroConfig import findInPath
 
 name = 'Normalization pipeline'
 userLevel = 0
@@ -56,7 +57,8 @@ loaded yet. But this validationDelayed method can be used later.
     bal = getProcess( 'BaladinNormalizationPipeline' )
   except:
     bal = None
-  if not fsl and not spm and not bal:
+  mireg = findInPath('AimsMIRegister')
+  if not fsl and not spm and not bal and not mireg:
     raise ValidationError( 'No normalization process could be found working' )
   return fsl, spm, bal
 
