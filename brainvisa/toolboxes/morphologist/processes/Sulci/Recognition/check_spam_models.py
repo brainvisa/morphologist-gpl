@@ -38,38 +38,46 @@ from brainvisa.configuration import neuroConfig
 name = 'Check SPAM models installation'
 userLevel = 2
 
-def execution( self, context ):
-  ap = Application()
-  if not ap.configuration.sulci.check_spam_models:
-    return None # don't check, do nothing.
+signature = Signature(
+    'auto_install', Boolean(),
+)
 
-  models = list( ReadDiskItem( 'Sulci Segments Model',
-    'Text Data Table' )._findValues( {}, None, False ) )
-  context.write( 'models:', len( models ) )
-  if len( models ) == 0:
-    context.warning( _t_( 'SPAM models have not be installed yet.' ) )
-    gui = neuroConfig.gui
-    #gui = False
-    #try:
-      #import neuroProcessesGUI
-      #if isinstance( context, neuroProcessesGUI.ProcessView ):
-        #gui = True
-    #except:
-      #pass
-    if gui:
-      inst = context.ask( _t_( 'Do you want to download and install the SPAM ' \
-        'models for sulci identification ?' ),
-        _t_( 'Yes' ), _t_( 'No' ), _t_( 'Don\'t ask again' ) )
-      if inst == 0:
-        mainThreadActions().call( showProcess, 'spam_install_models' )
-        context.warning( _t_( 'You should stop and re-open the current ' \
-          'pipeline (if any) after installing models, to take modifications '
-          'into account.' ) )
-      elif inst == 2:
-        ap.configuration.sulci.check_spam_models = False
-        ap.configuration.save( neuroConfig.userOptionFile )
-    return False
-  else:
-    context.write( _t_( 'SPAM models are present.' ) )
-    return True
+
+def initialization(self):
+    self.auto_install = False
+
+
+def execution(self, context):
+    ap = Application()
+    if not ap.configuration.sulci.check_spam_models:
+        return None # don't check, do nothing.
+
+    models = list(ReadDiskItem(
+        'Sulci Segments Model',
+        'Text Data Table' )._findValues({}, None, False))
+    context.write('models:', len(models))
+    if len(models) == 0:
+        context.warning(_t_('SPAM models have not be installed yet.'))
+        gui = neuroConfig.gui
+        if self.auto_install:
+            context.runProcess(spam_install_models)
+        elif gui:
+            inst = context.ask(_t_('Do you want to download and install '
+                                   'the SPAM models for sulci '
+                                   'identification ?'),
+                               _t_('Yes'), _t_('No'), _t_('Don\'t ask again'))
+            if inst == 0:
+                mainThreadActions().call(showProcess, 'spam_install_models')
+                context.warning(_t_('You should stop and re-open the '
+                                    'current pipeline (if any) after '
+                                    'installing models, to take '
+                                    'modifications into account.'))
+            elif inst == 2:
+                ap.configuration.sulci.check_spam_models = False
+                ap.configuration.save(neuroConfig.userOptionFile)
+
+        return False
+    else:
+        context.write(_t_('SPAM models are present.'))
+        return True
 

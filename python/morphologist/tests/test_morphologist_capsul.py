@@ -153,6 +153,12 @@ class TestMorphologistCapsul(unittest.TestCase):
                 "test first, using the following command: "
                 "python -m brainvisa.tests.test_morphologist")
 
+        print("* Check SPAM models installation")
+        # warning: models install needs write permissions to the shared
+        # database. If not, and if models are not already here, this will
+        # make the test fail. But it is more or less what we want.
+        defaultContext().runProcess("check_spam_models", auto_install=True)
+
         print('* create process')
         process = brainvisa.processes.getProcessInstance("morphologist_capsul")
         mp = Morphologist()
