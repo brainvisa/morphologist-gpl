@@ -154,7 +154,7 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
             print("* Download ftp://ftp.cea.fr/pub/dsv/anatomist/data/demo_data.zip to",
                   dir_)
             urllib.urlretrieve(
-                "file:///home/mathieu/Desktop/demo_data.zip",
+                "ftp://ftp.cea.fr/pub/dsv/anatomist/data/demo_data.zip",
                 "demo_data.zip")
         if os.path.exists("data_for_anatomist"):
             rmtree("data_for_anatomist")
@@ -237,6 +237,11 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
         t1, t1_nobias, left_ann_graph, right_ann_graph = \
             self.get_data(database)
         # Run pipelines
+        print("* Check SPAM models installation")
+        # warning: models install needs write permissions to the shared
+        # database. If not, and if models are not already here, this will
+        # make the test fail. But it is more or less what we want.
+        defaultContext().runProcess("check_spam_models", auto_install=True)
         print("* Run Morphologist")
         defaultContext().runProcess(
             self.pipeline, t1mri=t1, t1mri_nobias=t1_nobias,
