@@ -225,7 +225,6 @@ FileType( 'SPM segmentation parameters', 'SPM2 parameters', 'XML' )
 #------------------ Templates -------------------
 
 FileType( 'Hemispheres Template', '3D Volume' )
-FileType( 'anatomical Mask Template', '3D Volume' )
 FileType( 'Central Nuclei Template', '4D Volume' )
 
 #----------- Obsololete registration ------------
