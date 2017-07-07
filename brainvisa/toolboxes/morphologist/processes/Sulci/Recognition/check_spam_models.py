@@ -60,7 +60,7 @@ def execution(self, context):
         context.warning(_t_('SPAM models have not be installed yet.'))
         gui = neuroConfig.gui
         if self.auto_install:
-            context.runProcess(spam_install_models)
+            context.runProcess('spam_install_models')
         elif gui:
             inst = context.ask(_t_('Do you want to download and install '
                                    'the SPAM models for sulci '
