@@ -59,7 +59,7 @@ def execution(self, context):
     if len(models) == 0:
         # try upating the shared databases and retry
         for directory, db in databases._databases.items():
-            if db.fso.nqme == 'shared':
+            if db.fso.name == 'shared':
                 try:
                     db.clear()
                     db.update()
