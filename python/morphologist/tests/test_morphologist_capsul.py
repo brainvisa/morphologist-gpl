@@ -131,10 +131,11 @@ class TestMorphologistCapsul(unittest.TestCase):
     def setUp(self):
         print('* initialize brainVisa')
         brainvisa.axon.initializeProcesses()
-        tests_dir = os.getenv("BRAINVISA_TESTS_DIR")
+        tests_dir = os.getenv("BRAINVISA_TEST_RUN_DATA_DIR")
         if not tests_dir:
             tests_dir = tempfile.gettempdir()
-        ref_tests_dir = os.environ.get('BRAINVISA_REF_TESTS_DIR', tests_dir)
+        ref_tests_dir = os.environ.get('BRAINVISA_TEST_REF_DATA_DIR',
+                                       tests_dir)
         self.tests_dir = os.path.join(tests_dir, "tmp_tests_brainvisa")
         self.ref_tests_dir = os.path.join(ref_tests_dir, "tmp_tests_brainvisa")
         self.db_dir = os.path.join(
