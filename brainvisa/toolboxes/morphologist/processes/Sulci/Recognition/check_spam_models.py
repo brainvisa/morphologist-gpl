@@ -34,6 +34,7 @@
 from brainvisa.processes import *
 from soma.wip.application.api import Application
 from brainvisa.configuration import neuroConfig
+from brainvisa.data.neuroHierarchy import databases
 
 name = 'Check SPAM models installation'
 userLevel = 2
@@ -53,6 +54,18 @@ def execution(self, context):
         return None # don't check, do nothing.
 
     models = list(ReadDiskItem(
+        'Sulci Segments Model',
+        'Text Data Table' )._findValues({}, None, False))
+    if len(models) == 0:
+        # try upating the shared databases and retry
+        for directory, db in databases._databases.items():
+            if db.fso.nqme == 'shared':
+                try:
+                    db.clear()
+                    db.update()
+                except:
+                    pass # could not update
+        models = list(ReadDiskItem(
         'Sulci Segments Model',
         'Text Data Table' )._findValues({}, None, False))
     context.write('models:', len(models))
