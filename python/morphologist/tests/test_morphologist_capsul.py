@@ -149,7 +149,7 @@ class TestMorphologistCapsul(unittest.TestCase):
         self.ref_db_name = self.ref_database.name
 
         ref_dir = os.path.join(self.ref_db_dir, 'test', 'sujet01', 't1mri',
-                               'default_analysis')
+                               'default_acquisition', 'default_analysis')
         if not os.path.isdir(ref_dir):
             raise RuntimeError(
                 "Reference results do not exist in %s. Please Run the "
@@ -300,7 +300,8 @@ class TestMorphologistCapsul(unittest.TestCase):
             ".data",
             # skip ANN recognition results (not run in this test)
             "ann_auto"]
-        ref_dir = os.path.join(self.input_dir, 'reference')
+        ref_dir = os.path.join(self.ref_db_dir, 'test', 'sujet01', 't1mri',
+                               'default_acquisition', 'default_analysis')
         test_dir = self.analysis_dir
         for (dirpath, dirnames, filenames) in os.walk(ref_dir):
             if len([1 for ext in skipped_dirs if dirpath.endswith(ext)]) != 0:
