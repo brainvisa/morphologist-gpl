@@ -148,13 +148,14 @@ class TestMorphologistCapsul(unittest.TestCase):
         self.ref_database = self.create_ref_database()
         self.ref_db_name = self.ref_database.name
 
-        ref_dir = os.path.join(self.ref_tests_dir, 'test', 'sujet01', 't1mri',
+        ref_dir = os.path.join(self.ref_db_dir, 'test', 'sujet01', 't1mri',
                                'reference')
         if not os.path.isdir(ref_dir):
             raise RuntimeError(
-                "Reference results do not exist. Please Run the Morphologist "
-                "test first, using the following command: "
-                "python -m brainvisa.tests.test_morphologist")
+                "Reference results do not exist in %s. Please Run the "
+                "Morphologist test first, using the following command: "
+                "python -m brainvisa.tests.test_morphologist"
+                % self.ref_db_dir)
         if not os.path.isdir(self.db_dir):
             os.makedirs(self.db_dir)
 
