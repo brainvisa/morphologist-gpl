@@ -149,7 +149,7 @@ class TestMorphologistCapsul(unittest.TestCase):
         self.ref_db_name = self.ref_database.name
 
         ref_dir = os.path.join(self.ref_db_dir, 'test', 'sujet01', 't1mri',
-                               'reference')
+                               'default_analysis')
         if not os.path.isdir(ref_dir):
             raise RuntimeError(
                 "Reference results do not exist in %s. Please Run the "
