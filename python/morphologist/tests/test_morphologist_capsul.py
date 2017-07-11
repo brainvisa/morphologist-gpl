@@ -135,8 +135,9 @@ class TestMorphologistCapsul(unittest.TestCase):
             tests_dir = tempfile.gettempdir()
         ref_tests_dir = os.environ.get('BRAINVISA_TEST_REF_DATA_DIR',
                                        tests_dir)
-        self.tests_dir = os.path.join(tests_dir, "tmp_tests_brainvisa")
-        self.ref_tests_dir = os.path.join(ref_tests_dir, "tmp_tests_brainvisa")
+        self.tests_dir = os.path.join(tests_dir, "test_morphologist_pipeline")
+        self.ref_tests_dir = os.path.join(ref_tests_dir,
+                                          "test_morphologist_pipeline")
         self.db_dir = os.path.join(
             self.tests_dir, "db_morphologist-%s" % bv_config.__version__)
         self.ref_db_dir = os.path.join(
@@ -150,12 +151,15 @@ class TestMorphologistCapsul(unittest.TestCase):
         self.ref_database = self.create_ref_database()
         self.ref_db_name = self.ref_database.name
 
-        ref_dir = os.path.join(self.input_dir, 'reference')
+        ref_dir = os.path.join(self.ref_tests_dir, 'test', 'sujet01', 't1mri',
+                               'reference')
         if not os.path.isdir(ref_dir):
             raise RuntimeError(
                 "Reference results do not exist. Please Run the Morphologist "
                 "test first, using the following command: "
                 "python -m brainvisa.tests.test_morphologist")
+        if not os.path.isdir(self.db_dir):
+            os.makedirs(self.db_dir)
 
         print("* Check SPAM models installation")
         # warning: models install needs write permissions to the shared
