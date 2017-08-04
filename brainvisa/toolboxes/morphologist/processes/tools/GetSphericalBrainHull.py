@@ -39,17 +39,9 @@ def execution( self, context ):
     context.write( "Extracting left hemisphere hull...")
     Lhull = context.temporary( 'NIFTI-1 Image' )
     
-    context.system( "VipSingleThreshold",
+    context.system( "AimsThreshold",
                     "-i", self.left_hemi_cortex, "-o", Lhull,
-                    "-t", "11", "-m", "eq",
-                    "-c", "b", "-w", "t" )
-    context.system( "VipTopoClassification",
-                    "-i", Lhull, "-o", Lhull,
-                    "-l", "0", "-w", "t" )
-    context.system( "VipSingleThreshold",
-                    "-i", Lhull, "-o", Lhull,
-                    "-t", "10", "-m", "gt",
-                    "-c", "b", "-w", "t" )
+                    "-t", "11", "-m", "eq", "-b")
     
     context.system( "AimsMeshBrain",
                     "-i", Lhull, "-o", self.left_hemi_hull,
@@ -66,17 +58,9 @@ def execution( self, context ):
     context.write( "Extracting right hemisphere hull...")
     Rhull = context.temporary( 'NIFTI-1 Image' )
     
-    context.system( "VipSingleThreshold",
+    context.system( "AimsThreshold",
                     "-i", self.right_hemi_cortex, "-o", Rhull,
-                    "-t", "11", "-m", "eq",
-                    "-c", "b", "-w", "t" )
-    context.system( "VipTopoClassification",
-                    "-i", Rhull, "-o", Rhull,
-                    "-l", "0", "-w", "t" )
-    context.system( "VipSingleThreshold",
-                    "-i", Rhull, "-o", Rhull,
-                    "-t", "10", "-m", "gt",
-                    "-c", "b", "-w", "t" )
+                    "-t", "11", "-m", "eq", "-b")
     
     context.system( "AimsMeshBrain",
                     "-i", Rhull, "-o", self.right_hemi_hull,
