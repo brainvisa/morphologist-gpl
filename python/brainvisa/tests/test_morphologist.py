@@ -291,15 +291,15 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
         # Remove the run database
         if os.path.exists(run_database_dir) and not self.test_only:
             rmtree(run_database_dir)
-        # Create the run database and import data. If test_only, return a
-        # read-only database
-        TestMorphologistPipeline.download_data(run_data_dir)
+        # Create the run database. If test_only, return a read-only database.
         self.run_database = TestMorphologistPipeline.create_database(
             run_database_dir,
             self.test_only
         )
         if self.test_only:
             return
+        # Import data
+        TestMorphologistPipeline.download_data(run_data_dir)
         TestMorphologistPipeline.import_data(run_data_dir,
                                              self.run_database.name)
         # Run the pipelines (conditionnaly).
