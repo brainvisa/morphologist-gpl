@@ -73,7 +73,7 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
 
     def __init__(self, testName):
         super(TestMorphologistPipeline, self).__init__(testName)
-        # Must be called before pipeline construction. As we construct them
+        # Must be called before pipeline construction. As we construct them in
         # __init__ it should work.
         brainvisa.axon.initializeProcesses()
         # Set some internal variables from CLI arguments (the functions were
@@ -256,7 +256,7 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
                 right_labelled_graph=right_ann_graph)
 
     def setUp_ref_mode(self):
-        # ref mode ignores option test_only, no_ann and no_spam
+        # ref mode ignores options test_only, no_ann and no_spam
         ref_data_dir = self.private_ref_data_dir()
         ref_database_dir = os.path.join(
             ref_data_dir, 'db_morphologist-%s' % brainvisa.config.__version__
@@ -291,15 +291,15 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
         # Remove the run database
         if os.path.exists(run_database_dir) and not self.test_only:
             rmtree(run_database_dir)
-        # Create the run database and import data. If test_only, return a
-        # read-only database
-        TestMorphologistPipeline.download_data(run_data_dir)
+        # Create the run database. If test_only, return a read-only database.
         self.run_database = TestMorphologistPipeline.create_database(
             run_database_dir,
             self.test_only
         )
         if self.test_only:
             return
+        # Import data
+        TestMorphologistPipeline.download_data(run_data_dir)
         TestMorphologistPipeline.import_data(run_data_dir,
                                              self.run_database.name)
         # Run the pipelines (conditionnaly).

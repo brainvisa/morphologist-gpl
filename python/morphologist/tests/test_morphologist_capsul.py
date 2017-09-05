@@ -3,6 +3,10 @@
 Test the morphologist capsul pipeline.
 
 This test uses the reference database created in test_morphologist.
+
+TODO:
+  - test only mode
+  - pass arguments to unittest
 """
 
 from __future__ import print_function
@@ -13,7 +17,6 @@ import unittest
 import tempfile
 import filecmp
 import platform
-from argparse import ArgumentParser
 
 import numpy as np
 
@@ -22,7 +25,6 @@ import numpy as np
 homedir = tempfile.mkdtemp(prefix='bv_home')
 os.environ['BRAINVISA_USER_DIR'] = homedir
 
-import brainvisa.config as bv_config
 import soma_workflow.client as swclient
 import soma_workflow.constants as swconstants
 import soma_workflow.configuration as swconfig
@@ -30,9 +32,10 @@ from soma.path import relative_path
 import brainvisa.axon
 from brainvisa.processes import defaultContext
 from brainvisa.data.writediskitem import WriteDiskItem
-from brainvisa.configuration import neuroConfig
-from brainvisa.data import neuroHierarchy
 from soma.aims.graph_comparison import same_graphs
+import soma.test_utils
+
+from brainvisa.tests.test_morphologist import TestMorphologistPipeline
 
 # debugging
 import signal
@@ -89,85 +92,128 @@ if platform.system() != 'Windows':
     signal.signal(signal.SIGUSR2, handle_debugger)
 
 
-test_workflow_file = None
+class MorphologistCapsulTestLoader(soma.test_utils.SomaTestLoader):
+
+    def __init__(self):
+        super(MorphologistCapsulTestLoader, self).__init__()
+        self.parser.add_argument(
+            '-t', '--test-only', action='store_true',
+            help='only perform comparison of results, assuming processing has '
+                  'already been done and results written.')
+        self.parser.add_argument('-w', '--workflow',
+                                 help='write the workflow in the given file. '
+                                      'Default: use a temporary one')
+        self.parser.add_argument('options', nargs='*',
+                                 help='passed to unittest options parser')
 
 
-class TestMorphologistCapsul(unittest.TestCase):
+#
+# We want to use the reference data of TestMorphologistPipeline. To do so, we
+# override the private_ref_data_dir method to get private reference data
+#
+# In ref mode we just check that ref database exists.
+#
+class TestMorphologistCapsul(soma.test_utils.SomaTestCase):
+    private_dir = "test_morphologist_capsul"
 
-    def create_test_database(self, database_directory=None, allow_ro=False):
-        if not database_directory:
-            database_directory = self.db_dir
-        print('* create database', database_directory)
-        database_settings = neuroConfig.DatabaseSettings(
-            database_directory)
-        database = neuroHierarchy.SQLDatabase(
-            os.path.join(database_directory, "database.sqlite"),
-            database_directory,
-            'brainvisa-3.2.0',
-            context=defaultContext(),
-            settings=database_settings)
-        neuroHierarchy.databases.add(database)
-        neuroConfig.dataPath.append(database_settings)
-        try:
-            database.clear(context=defaultContext())
-            database.update(context=defaultContext())
-        except:
-            if not allow_ro:
-                raise
-        self.input_dir = (os.path.join(
-            database_directory, 'test', 'sujet01', 't1mri',
-            'default_acquisition'))
-        return database
+    @classmethod
+    def private_ref_data_dir(cls):
+        # We can't call TestMorphologistPipeline.private_ref_data_dir() because
+        # private_ref_data_dir is not loaded through the overloaded laoders so
+        # base_ref_data_dir and co. are not set.
+        path = os.path.join(cls.base_ref_data_dir,
+                            TestMorphologistPipeline.private_dir)
+        return path
 
-    def create_ref_database(self):
-        if self.ref_db_dir == self.db_dir:
-            print('* Comparing to reference in the same data dir')
-            return self.database
-        print('* Comparing to reference data from directory:',
-              self.ref_db_dir)
-        return self.create_test_database(self.ref_db_dir, allow_ro=True)
-
-    def setUp(self):
-        print('* initialize brainVisa')
+    def __init__(self, testName):
+        super(TestMorphologistCapsul, self).__init__(testName)
+        # Set some internal variables from CLI arguments (the functions were
+        # coded with those variables)
+        self.test_workflow_file = self.workflow
+        # Must be called before pipeline construction. As we construct them in
+        # __init__ it should work.
+        print('* initialize BrainVisa')
         brainvisa.axon.initializeProcesses()
-        tests_dir = os.getenv("BRAINVISA_TEST_RUN_DATA_DIR")
-        if not tests_dir:
-            tests_dir = tempfile.gettempdir()
-        ref_tests_dir = os.environ.get('BRAINVISA_TEST_REF_DATA_DIR',
-                                       tests_dir)
-        self.tests_dir = os.path.join(tests_dir, "test_morphologist_pipeline")
-        self.ref_tests_dir = os.path.join(ref_tests_dir,
-                                          "test_morphologist_pipeline")
-        self.db_dir = os.path.join(
-            self.tests_dir, "db_morphologist-%s" % bv_config.__version__)
-        self.ref_db_dir = os.path.join(
-            self.ref_tests_dir, "db_morphologist-%s" % bv_config.__version__)
         try:
             os.makedirs(self.db_dir)
         except OSError:
             pass
-        self.database = self.create_test_database()
-        self.db_name = self.database.name
-        self.ref_database = self.create_ref_database()
-        self.ref_db_name = self.ref_database.name
-
-        ref_dir = os.path.join(self.ref_db_dir, 'test', 'sujet01', 't1mri',
-                               'default_acquisition', 'default_analysis')
-        if not os.path.isdir(ref_dir):
-            raise RuntimeError(
-                "Reference results do not exist in %s. Please Run the "
-                "Morphologist test first, using the following command: "
-                "python -m brainvisa.tests.test_morphologist"
-                % self.ref_db_dir)
-        if not os.path.isdir(self.db_dir):
-            os.makedirs(self.db_dir)
-
         print("* Check SPAM models installation")
         # warning: models install needs write permissions to the shared
         # database. If not, and if models are not already here, this will
         # make the test fail. But it is more or less what we want.
         defaultContext().runProcess("check_spam_models", auto_install=True)
 
+    def setUp_ref_mode(self):
+        ref_data_dir = self.private_ref_data_dir()
+        self.ref_database_dir = os.path.join(
+            ref_data_dir, 'db_morphologist-%s' % brainvisa.config.__version__
+        )
+
+    def setUp_run_mode(self):
+        # Location of the ref database
+        self.setUp_ref_mode()
+        # Location of run database
+        run_data_dir = self.private_run_data_dir()
+        self.run_database_dir = os.path.join(
+            run_data_dir, 'db_morphologist-%s' % brainvisa.config.__version__
+        )
+        # Remove the run database
+        if os.path.exists(self.run_database_dir) and not self.test_only:
+            shutil.rmtree(self.run_database_dir)
+        # Create the run database. If test_only, return a read-only database.
+        self.run_database = TestMorphologistPipeline.create_database(
+            self.run_database_dir, self.test_only)
+        if self.test_only:
+            return
+         # Import data
+        TestMorphologistPipeline.download_data(run_data_dir)
+        TestMorphologistPipeline.import_data(run_data_dir,
+                                             self.run_database.name)
+        self.input_dir = (os.path.join(
+            self.run_database_dir, 'test', 'sujet01', 't1mri',
+            'default_acquisition'))
+
+    def compare_files(self, ref_file, test_file):
+        skipped_ends = [
+            ".minf",
+            # SPAM probas differ up tp 0.15 in energy and I don't know why, so
+            # skip the test
+            "_proba.csv",
+            # this .dat file contains full paths of filenames
+            "_global_TO_local.dat",
+            # referentials with registration are allocated differently (uuids)
+            "_auto.referential"]
+        for ext in skipped_ends:
+            if ref_file.endswith(ext):
+                return True
+        if ref_file.endswith(".arg"):
+            return same_graphs(ref_file, test_file)
+        elif ref_file.endswith(".csv"):
+            if filecmp.cmp(ref_file, test_file):
+                return True
+            arr1 = np.genfromtxt(ref_file)
+            if len(arr1.shape) >= 2 and np.any(np.isnan(arr1[0, :])):
+                arr1 = arr1[1:, :]
+            arr2 = np.genfromtxt(test_file)
+            if len(arr2.shape) >= 2 and np.any(np.isnan(arr2[0, :])):
+                arr2 = arr2[1:, :]
+            return np.max(np.abs(arr2 - arr1)) <= 1e-5
+        return filecmp.cmp(ref_file, test_file)
+
+    def test_pipeline_results(self):
+        if self.test_mode == soma.test_utils.ref_mode:
+            # In ref mode we just check that ref database exists (this could be
+            # done in setUp_ref_mode too)
+            self.assert_(
+                os.path.isdir(self.ref_database_dir),
+                msg="Reference results do not exist in %s. Please run the "
+                    "Morphologist test in ref mode first"
+                    % self.ref_database_dir
+            )
+            return
+
+        # In run mode we create and launch the process
         print('* create process')
         process = brainvisa.processes.getProcessInstance("morphologist_capsul")
         mp = process.get_edited_pipeline()
@@ -184,7 +230,7 @@ class TestMorphologistCapsul(unittest.TestCase):
         mp.interhemispheric_point = ip
 
         t1mri = [process.signature['t1mri'].contentType.findValue(
-            {"_database": self.db_name,
+            {"_database": self.run_database.name,
              "_format": "NIFTI-1 image",
              "center": "test",
              "subject": "sujet01"
@@ -194,16 +240,16 @@ class TestMorphologistCapsul(unittest.TestCase):
         self.analysis = analysis
 
         context = defaultContext()
-        if not test_workflow_file:
+        if not self.test_workflow_file:
             workflow_di = context.temporary('Soma-Workflow workflow')
         else:
             workflow_di = WriteDiskItem(
                 'Text file',
-                'Soma-Workflow workflow').findValue(test_workflow_file)
+                'Soma-Workflow workflow').findValue(self.test_workflow_file)
         process.workflow = workflow_di
 
-        analysis_dir = os.path.join(self.db_dir, 'test', 'sujet01', 't1mri',
-                                    'default_acquisition', 'capsul')
+        analysis_dir = os.path.join(self.run_database_dir, 'test', 'sujet01',
+                                    't1mri', 'default_acquisition', 'capsul')
         self.analysis_dir = analysis_dir
         if os.path.exists(analysis_dir):
             shutil.rmtree(analysis_dir)
@@ -243,34 +289,6 @@ class TestMorphologistCapsul(unittest.TestCase):
         del config
         os.unlink(tmpdb[1])
 
-    def compare_files(self, ref_file, test_file):
-        skipped_ends = [
-            ".minf",
-            # SPAM probas differ up tp 0.15 in energy and I don't know why, so
-            # skip the test
-            "_proba.csv",
-            # this .dat file contains full paths of filenames
-            "_global_TO_local.dat",
-            # referentials with registration are allocated differently (uuids)
-            "_auto.referential"]
-        for ext in skipped_ends:
-            if ref_file.endswith(ext):
-                return True
-        if ref_file.endswith(".arg"):
-            return same_graphs(ref_file, test_file)
-        elif ref_file.endswith(".csv"):
-            if filecmp.cmp(ref_file, test_file):
-                return True
-            arr1 = np.genfromtxt(ref_file)
-            if len(arr1.shape) >= 2 and np.any(np.isnan(arr1[0, :])):
-                arr1 = arr1[1:, :]
-            arr2 = np.genfromtxt(test_file)
-            if len(arr2.shape) >= 2 and np.any(np.isnan(arr2[0, :])):
-                arr2 = arr2[1:, :]
-            return np.max(np.abs(arr2 - arr1)) <= 1e-5
-        return filecmp.cmp(ref_file, test_file)
-
-    def test_pipeline_results(self):
         self.assertTrue(
             self.workflow_status == swconstants.WORKFLOW_DONE,
             'Workflow did not finish regularly: %s' % self.workflow_status
@@ -300,8 +318,9 @@ class TestMorphologistCapsul(unittest.TestCase):
             ".data",
             # skip ANN recognition results (not run in this test)
             "ann_auto"]
-        ref_dir = os.path.join(self.ref_db_dir, 'test', 'sujet01', 't1mri',
-                               'default_acquisition', 'default_analysis')
+        ref_dir = os.path.join(self.ref_database_dir, 'test', 'sujet01',
+                               't1mri', 'default_acquisition',
+                               'default_analysis')
         test_dir = self.analysis_dir
         for (dirpath, dirnames, filenames) in os.walk(ref_dir):
             if len([1 for ext in skipped_dirs if dirpath.endswith(ext)]) != 0:
@@ -319,29 +338,50 @@ class TestMorphologistCapsul(unittest.TestCase):
         print('** all OK.')
 
     def tearDown(self):
+        super(TestMorphologistCapsul, self).tearDown()
         brainvisa.axon.cleanup()
 
 
-def test_suite():
-    return unittest.TestLoader().loadTestsFromTestCase(TestMorphologistCapsul)
+#def test_suite():
+#    return unittest.TestLoader().loadTestsFromTestCase(TestMorphologistCapsul)
+#
+#try:
+#    if __name__ == '__main__':
+#        parser = ArgumentParser("test Morphologist CAPSUL version")
+#        parser.add_argument('-w', '--workflow',
+#                            help='write the workflow in the given file. '
+#                            'Default: use a temporary one')
+#        parser.add_argument('options', nargs='*',
+#                            help='passed to unittest options parser')
+#        args = parser.parse_args()
+#        if args.workflow:
+#            test_workflow_file = args.workflow
+#
+#        unittest.main(defaultTest='test_suite',
+#                      argv=[sys.argv[0]]+args.options)
+#finally:
+#    shutil.rmtree(homedir)
+#    del homedir
 
-try:
-    if __name__ == '__main__':
-        parser = ArgumentParser("test Morphologist CAPSUL version")
-        parser.add_argument('-w', '--workflow',
-                            help='write the workflow in the given file. '
-                            'Default: use a temporary one')
-        parser.add_argument('options', nargs='*',
-                            help='passed to unittest options parser')
-        args = parser.parse_args()
-        if args.workflow:
-            test_workflow_file = args.workflow
 
-        unittest.main(defaultTest='test_suite',
-                      argv=[sys.argv[0]]+args.options)
-finally:
-    shutil.rmtree(homedir)
-    del homedir
+def test(argv):
+    """
+    Function to execute unitest
+    """
+    loader = MorphologistCapsulTestLoader()
+    suite = loader.loadTestsFromTestCase(TestMorphologistCapsul, argv)
+    runtime = unittest.TextTestRunner(verbosity=2).run(suite)
+    return runtime.wasSuccessful()
+
+
+if __name__ == "__main__":
+    print(sys.argv)
+    ret = test(sys.argv[1:])
+    print("RETURNCODE: ", ret)
+    if ret:
+        sys.exit(0)
+    else:
+        sys.exit(1)
 
 # WARNING: if this file is imported as a module, homedir will be removed,
 # and later processing will issue errors
