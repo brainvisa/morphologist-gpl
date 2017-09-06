@@ -31,6 +31,9 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
+import os
+import sys
+
 from brainvisa.processes import *
 from brainvisa.data import neuroData
 name = 'Automatic recognition iterator'
@@ -216,7 +219,8 @@ class GridParallelTaskManager(ParallelTaskManager):
 		scriptname = os.path.join(self.dir, 'siRelax-grid.sh')
 		stream = open(scriptname, 'w')
 		stream.write('#!/bin/bash\n\n')
-		stream.write("python %s  --host ~/neurospin-distcc-hosts --tasks %s --log %s --timeslot -" % (distcmd, self.name, self.name + '.log'))
+		stream.write("%s %s  --host ~/neurospin-distcc-hosts --tasks %s --log %s --timeslot -" \
+                     % (os.path.basename(sys.executable), distcmd, self.name, self.name + '.log'))
 		stream.close()
 		os.chmod(scriptname, 0o750)
 
@@ -248,8 +252,8 @@ class DuchParallelTaskManager(ParallelTaskManager):
 		scriptname = os.path.join(self.dir, 'siRelax-duch.sh')
 		stream = open(scriptname, 'w')
 		stream.write('#!/bin/bash\n\n')
-		stream.write("python %s -l 1 -v ~/hosts '%s' '%s'" % \
-			(distcmd, self.name, self.name + '.log'))
+		stream.write("%s %s -l 1 -v ~/hosts '%s' '%s'" % \
+			(os.path.basename(sys.executable), distcmd, self.name, self.name + '.log'))
 		stream.close()
 		os.chmod(scriptname, 0o750)
 	

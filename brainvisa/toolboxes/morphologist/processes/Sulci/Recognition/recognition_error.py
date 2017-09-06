@@ -85,9 +85,10 @@ def execution(self, context):
     if self.parent['manage_tasks']:
         package = self.parent['self'].package
         if package == 'default':
-                progname = distutils.spawn.find_executable(
+            progname = distutils.spawn.find_executable(
                                 'siErrorLightWrapper.py')
-        else:	progname = os.path.join(self.parent['package_dir'],
+        else:
+            progname = os.path.join(self.parent['package_dir'],
                                 package,'bin', 'siErrorLightWrapper.py')
         graphname = self.labeled_graph.get('subject')
         args = [progname, '-m', self.model.fullPath(),

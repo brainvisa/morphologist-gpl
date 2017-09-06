@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import os
+import os, sys
 try:
     from traits.api import ListStr,HasTraits,File,Float,Instance,Enum,Str,Bool
 except ImportError:
@@ -223,7 +223,7 @@ class SimplifiedMorphologist(Process):
     def command( self ):
         """ Function to execute the process"""     
         list_params=[name+'='+str(getattr(self,name)) for name, trait in self.user_traits().iteritems()]
-        args= ['python', '-m', 'brainvisa.axon.runprocess','morphologistProcess']      
+        args= [os.path.basename(sys.executable), '-m', 'brainvisa.axon.runprocess','morphologistProcess']
         str_args=[str(x) for x in args]
         str_args=str_args+list_params
         return str_args

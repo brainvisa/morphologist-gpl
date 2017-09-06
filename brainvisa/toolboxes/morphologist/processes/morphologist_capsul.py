@@ -32,7 +32,7 @@ def onEditPipeline(self, process, dummy):
 
 def openPipeline(self):
     from capsul.qt_gui.widgets import PipelineDevelopperView
-    from capsul.pipeline import Pipeline
+    from capsul.api import Pipeline
     Pipeline.hide_nodes_activation = False
     mpv = PipelineDevelopperView(
       self.get_edited_pipeline(), allow_open_controller=True,
@@ -171,7 +171,7 @@ def execution(self, context):
 
     # activate normalization methods disabling
     if hasattr(mp, 'attach_config_activations'):
-        mp.attach_config_activations(study_config)
+        mp.attach_config_activations()
 
     # workflow config
     from capsul.pipeline import pipeline_workflow
@@ -195,13 +195,17 @@ def execution(self, context):
         t1mri = self.t1mri[i]
         format = formats[i]
         database = t1mri['_database']
-        pf.attributes['center'] = t1mri['center']
-        pf.attributes['subject'] = t1mri['subject']
-        pf.attributes['acquisition'] = t1mri['acquisition']
+        if cversion >= (2, 1):
+            attributes = {}
+        else:
+            attributes = pf.attributes
+        attributes['center'] = t1mri['center']
+        attributes['subject'] = t1mri['subject']
+        attributes['acquisition'] = t1mri['acquisition']
         j = i
         if len(self.analysis) <= j:
             j = -1
-        pf.attributes['analysis'] = self.analysis[j]
+        attributes['analysis'] = self.analysis[j]
         # handle input format
         if database != study_config.input_directory \
                 or database != study_config.output_directory \

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 """
 Test the morphologist capsul pipeline.
 
@@ -25,7 +25,6 @@ import numpy as np
 homedir = tempfile.mkdtemp(prefix='bv_home')
 os.environ['BRAINVISA_USER_DIR'] = homedir
 
-from morphologist.capsul.morphologist import Morphologist
 import soma_workflow.client as swclient
 import soma_workflow.constants as swconstants
 import soma_workflow.configuration as swconfig
@@ -135,6 +134,10 @@ class TestMorphologistCapsul(soma.test_utils.SomaTestCase):
         # __init__ it should work.
         print('* initialize BrainVisa')
         brainvisa.axon.initializeProcesses()
+        try:
+            os.makedirs(self.db_dir)
+        except OSError:
+            pass
         print("* Check SPAM models installation")
         # warning: models install needs write permissions to the shared
         # database. If not, and if models are not already here, this will
@@ -213,10 +216,7 @@ class TestMorphologistCapsul(soma.test_utils.SomaTestCase):
         # In run mode we create and launch the process
         print('* create process')
         process = brainvisa.processes.getProcessInstance("morphologist_capsul")
-        mp = Morphologist()
-        process._edited_pipeline = mp
-        #mp.nodes_activation.CorticalFoldsGraph = False
-        #mp.nodes_activation.CorticalFoldsGraph_1 = False
+        mp = process.get_edited_pipeline()
         mp.nodes_activation.SulciRecognition = True
         mp.nodes_activation.SulciRecognition_1 = True
         mp.select_Talairach = 'StandardACPC'

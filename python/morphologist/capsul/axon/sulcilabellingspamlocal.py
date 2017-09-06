@@ -6,7 +6,7 @@ except ImportError:
     from enthought.traits.api import File, Directory, Float, Int, Bool, Enum, \
         Str, List, Undefined
 
-from capsul.process import Process
+from capsul.api import Process
 
 
 class SulciLabellingSPAMLocal(Process):
@@ -26,9 +26,6 @@ class SulciLabellingSPAMLocal(Process):
         self.add_trait('initial_transformation', File(allowed_extensions=['.trm'], optional=True))
         self.add_trait('global_transformation', File(allowed_extensions=['.trm'], optional=True))
 
-
-        # initialization section
-        self.labels_translation_map = '/volatile/riviere/brainvisa/build-stable-release/share/brainvisa-share-4.5/nomenclature/translation/sulci_model_2008.trl'
 
     def _run_process(self):
         from brainvisa import axon

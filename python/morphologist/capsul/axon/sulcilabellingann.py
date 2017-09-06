@@ -6,7 +6,7 @@ except ImportError:
     from enthought.traits.api import File, Directory, Float, Int, Bool, Enum, \
         Str, List, Undefined
 
-from capsul.process import Process
+from capsul.api import Process
 
 
 class SulciLabellingANN(Process):
@@ -25,7 +25,7 @@ class SulciLabellingANN(Process):
 
 
         # initialization section
-        self.model = '/volatile/riviere/brainvisa/build-stable-release/share/brainvisa-share-4.5/models/models_2008/discriminative_models/3.0/Lfolds_noroots/Lfolds_noroots.arg'
+        self.model = '/neurospin/brainvisa/build/Ubuntu-14.04-x86_64/trunk/share/brainvisa-share-4.6/models/models_2008/discriminative_models/3.0/Rfolds_noroots/Rfolds_noroots.arg'
         self.model_hint = 0
         self.rate = 0.98
         self.stopRate = 0.05

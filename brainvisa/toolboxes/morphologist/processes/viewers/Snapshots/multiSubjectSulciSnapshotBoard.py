@@ -160,7 +160,7 @@ def execution( self, context ):
     if self.sulci_name:
       cmd += [ '-s', self.sulci_name ]
 
-    #context.system( 'python', find_in_path( 'anaSulciSnapshot.py' ), *cmd )
+    #context.system( 'python2', find_in_path( 'anaSulciSnapshot.py' ), *cmd )
 
     # load command into anatomist
     pycom = context.temporary( 'Python Script' )

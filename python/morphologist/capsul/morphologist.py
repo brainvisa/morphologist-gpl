@@ -2,7 +2,8 @@
 from __future__ import absolute_import
 import distutils.spawn
 import morphologist.capsul.axon.axonmorphologist
-from traits.api import Undefined, Bool, File
+from traits.api import Undefined, Bool, File, Set
+import six
 
 class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
 
@@ -17,8 +18,10 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
     def pipeline_definition(self):
         autoexport_nodes_parameters = self._autoexport_nodes_parameters
         self._autoexport_nodes_parameters = False
+        self.add_process('importation',
+                         'morphologist.capsul.axon.importt1mri.ImportT1MRI')
         super(Morphologist, self).pipeline_definition()
-        self._autoexport_nodes_parameters = autoexport_nodes_parameters
+
 
         self.add_switch('select_Talairach',
             ['StandardACPC', 'Normalization'],
@@ -39,6 +42,15 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
             ['Talairach_transform', 'MNI_transform'], export_switch=False,
             output_types=[File(), File()])
 
+        self.remove_link('t1mri->PrepareSubject.T1mri')
+        self.add_link('t1mri->importation.input')
+        self.export_parameter('importation', 'output', 'imported_t1mri')
+        self.export_parameter('importation', 'referential',
+                              't1mri_referential')
+        self.add_link('importation.output->PrepareSubject.T1mri')
+
+        self._autoexport_nodes_parameters = autoexport_nodes_parameters
+
         # fix initial values of switches: should be Undefined, not None.
         self.nodes['select_Talairach'].StandardACPC_switch_Talairach_transform = Undefined
         self.nodes['select_Talairach'].Normalization_switch_Talairach_transform = Undefined
@@ -55,10 +67,12 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
             'PrepareSubject',
             'TalairachFromNormalization_normalized_referential',
             'PrepareSubject_TalairachFromNormalization_normalized_referential')
-        self.export_parameter(
-            'PrepareSubject',
-            'TalairachFromNormalization_source_referential',
-            'PrepareSubject_TalairachFromNormalization_source_referential')
+        self.add_link(
+            'importation.referential->'
+            'PrepareSubject.TalairachFromNormalization_source_referential')
+            #'PrepareSubject',
+            #'TalairachFromNormalization_source_referential',
+            #'PrepareSubject_TalairachFromNormalization_source_referential')
         self.export_parameter(
             'PrepareSubject',
             'TalairachFromNormalization_acpc_referential',
@@ -92,7 +106,7 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
         self.add_link('allow_flip_initial_MRI->Renorm.Normalization_allow_flip_initial_MRI')
         self.add_link('Normalization_select_Normalization_pipeline->Renorm.Normalization_select_Normalization_pipeline')
         self.add_link('PrepareSubject_TalairachFromNormalization_normalized_referential->Renorm.TalairachFromNormalization_normalized_referential')
-        self.add_link('PrepareSubject_TalairachFromNormalization_source_referential->Renorm.TalairachFromNormalization_source_referential')
+        self.add_link('importation.referential->Renorm.TalairachFromNormalization_source_referential')
         self.add_link('PrepareSubject_TalairachFromNormalization_acpc_referential->Renorm.TalairachFromNormalization_acpc_referential')
         self.add_link('PrepareSubject_TalairachFromNormalization_transform_chain_ACPC_to_Normalized->Renorm.TalairachFromNormalization_transform_chain_ACPC_to_Normalized')
         self.add_link('Renorm.Normalization_normalized->normalized_t1mri', weak_link=True)
@@ -469,6 +483,7 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
             = self.nodes['SulciRecognition'].process \
                 .nodes['SPAM_recognition09'].process.node_position
 
+        self.add_pipeline_step('importation', ['importation'])
         self.add_pipeline_step('orientation',
                                ['PrepareSubject', 'TalairachTransformation'])
         self.add_pipeline_step('bias_correction', ['BiasCorrection'])
@@ -494,7 +509,7 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
 
         # customize params order for nicer user GUI
         self.reorder_traits([
-            't1mri', 'select_Talairach',
+            't1mri', 'imported_t1mri', 'select_Talairach',
             'Normalization_select_Normalization_pipeline',
             'commissure_coordinates',
             'anterior_commissure', 'posterior_commissure',
@@ -511,17 +526,38 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
             'right_labelled_graph', 'sulcal_morpho_measures',
         ])
 
+        # setup groups
+        self.define_groups_as_steps()
+        ungroup = ('t1mri', 'imported_t1mri', 'select_Talairach',
+                   'Normalization_select_Normalization_pipeline',
+                   'allow_flip_initial_MRI', 'fix_random_seed',
+                   't1mri_nobias', 'histo_analysis',
+                   'BrainSegmentation_brain_mask', 'split_brain',
+                   'GreyWhiteClassification_grey_white',
+                   'GreyWhiteClassification_1_grey_white',
+                   'GreyWhiteTopology_hemi_cortex',
+                   'GreyWhiteTopology_1_hemi_cortex',
+                   'PialMesh_pial_mesh', 'PialMesh_1_pial_mesh',
+                   'GreyWhiteMesh_white_mesh', 'GreyWhiteMesh_1_white_mesh',
+                   'HeadMesh_head_mesh',
+                   'left_graph', 'right_graph', 'left_labelled_graph',
+                   'right_labelled_graph', 'select_sulci_recognition',
+                   'sulcal_morpho_measures')
+        for param in ungroup:
+            del self.trait(param).groups
+        self.trait('grey_white_topology_version').groups = ['segmentation']
+        self.trait('pial_mesh_version').groups = ['segmentation']
 
-    def attach_config_activations(self, study_config):
+
+    def attach_config_activations(self):
         '''
         Set notification handlers on study_config variables use_spm, use_fsl
         to adapt activation of SPM and FSL nodes in the normalization steps,
         and the normalization switches values.
         Any previous notification will be removed first.
         '''
-        if hasattr(self, 'study_config') and self.study_config is not None:
-            self.detach_config_activation()
-        self.study_config = study_config
+        study_config = self.get_study_config()
+        self.detach_config_activation()
         study_config.on_trait_change(self._change_spm_activation, 'use_spm')
         study_config.on_trait_change(self._change_fsl_activation, 'use_fsl')
         self._change_spm_activation(study_config.use_spm)
@@ -538,7 +574,6 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
                                      remove=True)
         study_config.on_trait_change(self._change_fsl_activation, 'use_fsl',
                                      remove=True)
-        del self.study_config
 
 
     def _change_spm_activation(self, dummy):

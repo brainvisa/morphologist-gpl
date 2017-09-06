@@ -6,16 +6,16 @@ except ImportError:
     from enthought.traits.api import File, Directory, Float, Int, Bool, Enum, \
         Str, List, Undefined
 
-from capsul.process import Process
+from capsul.api import Process
 
 
 class normalization_aimsmiregister(Process):
     def __init__(self, **kwargs):
         super(normalization_aimsmiregister, self).__init__()
-        self.add_trait('anatomy_data', File(allowed_extensions=['.nii.gz', '.bif', '.czi', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.dcm', '.mnc', '.mnc.gz', '.fdf', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '']))
-        self.add_trait('anatomical_template', File(allowed_extensions=['.nii.gz', '.bif', '.czi', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.dcm', '.mnc', '.mnc.gz', '.fdf', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '']))
+        self.add_trait('anatomy_data', File(allowed_extensions=['.nii.gz', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.bif', '.czi', '.mnc.gz', '.fdf', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.dcm', '.mnc', '']))
+        self.add_trait('anatomical_template', File(allowed_extensions=['.nii.gz', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.bif', '.czi', '.mnc.gz', '.fdf', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.dcm', '.mnc', '']))
         self.add_trait('transformation_to_template', File(allowed_extensions=['.trm'], output=True, optional=True))
-        self.add_trait('normalized_anatomy_data', File(allowed_extensions=['.nii.gz', '.ppm', '.xbm', '.xpm', '.tiff', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.dcm', '.mnc', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', ''], output=True, optional=True))
+        self.add_trait('normalized_anatomy_data', File(allowed_extensions=['.nii.gz', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.dcm', '.mnc', ''], output=True, optional=True))
         self.add_trait('transformation_to_MNI', File(allowed_extensions=['.trm'], output=True, optional=True))
         self.add_trait('transformation_to_ACPC', File(allowed_extensions=['.trm'], output=True, optional=True))
         self.add_trait('mni_to_acpc', File(allowed_extensions=['.trm'], optional=True))
@@ -23,8 +23,8 @@ class normalization_aimsmiregister(Process):
 
 
         # initialization section
-        self.anatomical_template = '/volatile/riviere/brainvisa/build-stable-release/share/brainvisa-share-4.5/anatomical_templates/MNI152_T1_2mm.nii.gz'
-        self.mni_to_acpc = '/volatile/riviere/brainvisa/build-stable-release/share/brainvisa-share-4.5/transformation/talairach_TO_spm_template_novoxels.trm'
+        self.anatomical_template = '/neurospin/brainvisa/build/Ubuntu-14.04-x86_64/trunk/share/brainvisa-share-4.6/anatomical_templates/MNI152_T1_2mm.nii.gz'
+        self.mni_to_acpc = '/neurospin/brainvisa/build/Ubuntu-14.04-x86_64/trunk/share/brainvisa-share-4.6/transformation/talairach_TO_spm_template_novoxels.trm'
         self.smoothing = 1.0
 
     def _run_process(self):

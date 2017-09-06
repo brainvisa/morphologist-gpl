@@ -96,9 +96,7 @@ signature = Signature(
     'skull_stripped', WriteDiskItem( 'Raw T1 MRI Brain Masked',
         'Aims writable volume formats' ),
     'anatomical_template_skull_stripped', ReadDiskItem( 'anatomical Template',
-        ['NIFTI-1 image', 'MINC image', 'SPM image'],
-        requiredAttributes={'skull_stripped': 'yes',
-                            '_ontology': 'shared'}),
+        ['NIFTI-1 image', 'MINC image', 'SPM image'], requiredAttributes={'skull_stripped':'yes'} ),
     #Split Brain Mask
     'split_brain', WriteDiskItem( 'Split Brain Mask',
         'Aims writable volume formats' ),
@@ -307,6 +305,7 @@ def initialization( self ):
     
     self.setOptional( 'normalized_t1mri' )
     self.setOptional( 'source_referential' )
+    
     self.setOptional( 'anatomical_template' )
     self.setOptional( 'job_file' )
     
@@ -345,7 +344,12 @@ def initialization( self ):
     #Re Commissures Coordinates
     self.linkParameters( 'skull_stripped', 't1mri' )
     self.anatomical_template_skull_stripped = self.signature[
-        'anatomical_template_skull_stripped' ].findValue({'Size': '2 mm'})
+        'anatomical_template_skull_stripped'].findValue(
+            {'_ontology': 'shared',
+             'skull_stripped': 'yes', 'Size': '2 mm',
+             '_database' : os.path.normpath(os.path.join(
+                mainPath, '..', 'share', 'brainvisa-share-%s.%s'
+                % tuple(versionString().split('.')[:2])))})
     self.setOptional( 'anatomical_template_skull_stripped' )
     
     self.signature[ 'skull_stripped' ].userLevel = 100

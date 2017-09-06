@@ -9,9 +9,8 @@ name = 'Extract one measure from the morphometry statistics table'
 userLevel = 2
 
 signature = Signature(
-    'morpho_stat_files', ListOf(ReadDiskItem('Data Table', 'Text Data Table')),
-    'measures', OpenChoice(('opening', 'fold_opening_full'),
-                           'GM_thickness', 'surface',
+    'morpho_stat_files', ListOf(ReadDiskItem('CSV File', 'CSV File')),
+    'measures', OpenChoice('opening', 'GM_thickness', 'surface_native',
                            ('length', 'hullJunctionsLength'),
                            ('depthMean', 'geodesicDepthMean'),
                            ('depthMax', 'geodesicDepthMax')),
@@ -74,34 +73,39 @@ def execution(self, context):
         self.file_measures = self.output_file
         need_concatenated = False
 
-
+    sub_list_global = []
     for f in self.morpho_stat_files:
         #Lecture des csv
-        csv = np.recfromtxt(f.fullPath(), delimiter=' ', names=True)
+        csv = np.recfromtxt(f.fullPath(), delimiter=';', names=True, dtype='S12,S32,S6,f8,f8,f8,f8,f8,f8,f8,f8,f8,f8')
         subjects_list = list(csv['subject'])
         subject_arr = csv['subject']
 
         measures_by_sub = {}
         for sub in subjects_list:
+            if sub not in sub_list_global:
+                sub_list_global.append(sub)
             meas = csv[subject_arr == sub][self.measures][0]
             measures_by_sub[sub] = meas
         sulcus = os.path.basename(f.fullPath()).split('_')[-2] + '_' + \
                             os.path.basename(f.fullPath()).split('_')[-1][:-4]
         measures_by_sulci[sulcus] = measures_by_sub
 
-    Loutf = open(str(self.file_measures), "w")
-    Loutf.write("subject")
+    outf = open(str(self.file_measures), "w")
+    outf.write("subject")
     print(measures_by_sulci.keys())
     for sulcus in sorted(measures_by_sulci.keys()):
-        Loutf.write(";" + sulcus)
-    Loutf.write("\n")
+        outf.write(";" + sulcus)
+    outf.write("\n")
 
-    for sub in subjects_list:
-        Loutf.write(str(sub))
+    for sub in sub_list_global:
+        outf.write(str(sub))
         for sulcus in sorted(measures_by_sulci.keys()):
-            Loutf.write(";" + str(measures_by_sulci[sulcus][sub]))
-        Loutf.write("\n")
-    Loutf.close()
+            if sub in measures_by_sulci[sulcus].keys():
+                outf.write(";" + str(measures_by_sulci[sulcus][sub]))
+            else:
+                outf.write(";X")
+        outf.write("\n")
+    outf.close()
 
     if self.pipeline_mode:
         from catidb import catidb_axon
