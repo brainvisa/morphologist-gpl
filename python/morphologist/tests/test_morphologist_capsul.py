@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 """
 Test the morphologist capsul pipeline.
 
@@ -134,10 +134,6 @@ class TestMorphologistCapsul(soma.test_utils.SomaTestCase):
         # __init__ it should work.
         print('* initialize BrainVisa')
         brainvisa.axon.initializeProcesses()
-        try:
-            os.makedirs(self.db_dir)
-        except OSError:
-            pass
         print("* Check SPAM models installation")
         # warning: models install needs write permissions to the shared
         # database. If not, and if models are not already here, this will
