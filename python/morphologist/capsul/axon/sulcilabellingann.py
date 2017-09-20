@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 try:
     from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
-        List, Undefined
+        List, Any, Undefined
 except ImportError:
     from enthought.traits.api import File, Directory, Float, Int, Bool, Enum, \
-        Str, List, Undefined
+        Str, List, Any, Undefined
 
 from capsul.api import Process
+import six
 
 
 class SulciLabellingANN(Process):
@@ -25,7 +26,7 @@ class SulciLabellingANN(Process):
 
 
         # initialization section
-        self.model = '/neurospin/brainvisa/build/Ubuntu-14.04-x86_64/trunk/share/brainvisa-share-4.6/models/models_2008/discriminative_models/3.0/Rfolds_noroots/Rfolds_noroots.arg'
+        self.model = '/volatile/riviere/brainvisa/build-stable-qt5/share/brainvisa-share-4.6/models/models_2008/discriminative_models/3.0/Rfolds_noroots/Rfolds_noroots.arg'
         self.model_hint = 0
         self.rate = 0.98
         self.stopRate = 0.05

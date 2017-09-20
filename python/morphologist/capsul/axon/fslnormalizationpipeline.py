@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 try:
     from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
-        List, Undefined
+        List, Any, Undefined
 except ImportError:
     from enthought.traits.api import File, Directory, Float, Int, Bool, Enum, \
-        Str, List, Undefined
+        Str, List, Any, Undefined
 
 from capsul.api import Process
+import six
 from capsul.api import Pipeline
 from capsul.api import Switch
 
@@ -52,7 +53,6 @@ class FSLnormalizationPipeline(Pipeline):
         self.add_link('ConvertFSLnormalizationToAIMS.write->ReorientAnatomy.transformation')
 
         # initialization section
-        self.nodes_activation.ReorientAnatomy = False
         # export orphan parameters
         if not hasattr(self, '_autoexport_nodes_parameters') \
                 or self._autoexport_nodes_parameters:
@@ -61,7 +61,7 @@ class FSLnormalizationPipeline(Pipeline):
 
     def autoexport_nodes_parameters(self):
         '''export orphan and internal output parameters'''
-        for node_name, node in self.nodes.iteritems():
+        for node_name, node in six.iteritems(self.nodes):
             if node_name == '':
                 continue # skip main node
             if hasattr(node, '_weak_outputs'):

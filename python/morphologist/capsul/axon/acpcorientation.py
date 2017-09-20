@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
 try:
     from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
-        List, Undefined
+        List, Any, Undefined
 except ImportError:
     from enthought.traits.api import File, Directory, Float, Int, Bool, Enum, \
-        Str, List, Undefined
+        Str, List, Any, Undefined
 
 from capsul.api import Process
+import six
 
 
 class AcpcOrientation(Process):
     def __init__(self, **kwargs):
         super(AcpcOrientation, self).__init__()
-        self.add_trait('T1mri', File(allowed_extensions=['.nii.gz', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.bif', '.czi', '.mnc.gz', '.fdf', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.dcm', '.mnc', '']))
+        self.add_trait('T1mri', File(allowed_extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg', '.scn', '.mnc', '.mng', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz']))
         self.add_trait('commissure_coordinates', File(allowed_extensions=['.APC'], output=True))
         self.add_trait('Normalised', Enum('No', 'MNI from SPM', 'MNI from Mritotal', 'Marseille from SPM'))
         self.add_trait('Anterior_Commissure', List(trait=Float(), minlen=3, maxlen=3, value=[0, 0, 0], optional=True))
@@ -20,7 +21,7 @@ class AcpcOrientation(Process):
         self.add_trait('Interhemispheric_Point', List(trait=Float(), minlen=3, maxlen=3, value=[0, 0, 0], optional=True))
         self.add_trait('Left_Hemisphere_Point', List(trait=Float(), minlen=3, maxlen=3, value=[0, 0, 0], optional=True))
         self.add_trait('allow_flip_initial_MRI', Bool())
-        self.add_trait('reoriented_t1mri', File(allowed_extensions=['.nii.gz', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.dcm', '.mnc', ''], output=True))
+        self.add_trait('reoriented_t1mri', File(allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.gif', '.ima', '.dim', '.jpg', '.mnc', '.mng', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'], output=True))
         self.add_trait('remove_older_MNI_normalization', Bool())
         self.add_trait('older_MNI_normalization', File(allowed_extensions=['.trm'], optional=True))
 

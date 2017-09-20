@@ -74,6 +74,8 @@ signature = Signature(
                                     'aims writable volume formats'),
   'output_commissures_coordinates', WriteDiskItem('Commissure Coordinates',
       'Commissure Coordinates'),
+  'init_translation_origin', Choice(('Center of the image', 0 ),
+                                    ('Gravity center', 1)),
   )
 
 def initialization( self ):
@@ -120,6 +122,8 @@ def initialization( self ):
       'NormalizeFSL.ReorientAnatomy.output_commissures_coordinates',
       'output_commissures_coordinates' )
     eNode.addDoubleLink('reoriented_t1mri', 'NormalizeFSL.reoriented_t1mri')
+    eNode.addDoubleLink('init_translation_origin',
+                        'NormalizeFSL.NormalizeFSL.init_translation_origin')
 
     eNode.selection_outputs.append(
       ['transformation', 'NormalizeFSL.normalized_anatomy_data',
@@ -144,10 +148,12 @@ def initialization( self ):
       'NormalizeSPM.ReorientAnatomy.output_commissures_coordinates',
       'output_commissures_coordinates' )
     eNode.addDoubleLink('reoriented_t1mri', 'NormalizeSPM.reoriented_t1mri')
+    eNode.addDoubleLink('init_translation_origin',
+                        'NormalizeSPM.init_translation_origin')
 
     eNode.selection_outputs.append(
       ['transformation',
-       'NormalizeSPM.normalized_anatomy_data',
+       'normalized_t1mri',
        'reoriented_t1mri'])
 
   if bal:
@@ -183,10 +189,6 @@ def initialization( self ):
   eNode.addDoubleLink( 'Normalization_AimsMIRegister.anatomy_data', 't1mri' )
   eNode.addDoubleLink( 'Normalization_AimsMIRegister.transformation_to_MNI', 'transformation' )
 
-  if fsl and spm:
-    eNode.addDoubleLink( 'NormalizeFSL.NormalizeFSL.init_translation_origin',
-      'NormalizeSPM.init_translation_origin' )
-
   eNode.selection_outputs.append(
     ['transformation_to_MNI', 'normalized_anatomy_data', '/t1mri'])
   eNode.switch_output = ['transformation', 'normalized', 'reoriented_t1mri']
@@ -195,7 +197,6 @@ def initialization( self ):
 
   self.capsul_do_not_export = [
     ('NormalizeFSL', 'ConvertFSLnormalizationToAIMS_write'),
-    ('NormalizeSPM', 'ConvertSPMnormalizationToAIMS_write'),
     ('NormalizeBaladin', 'ConvertBaladinNormalizationToAIMS_write'),]
 
 

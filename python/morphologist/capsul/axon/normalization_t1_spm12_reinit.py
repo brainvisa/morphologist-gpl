@@ -10,25 +10,26 @@ from capsul.api import Process
 import six
 
 
-class Normalization_FSL_reinit(Process):
+class normalization_t1_spm12_reinit(Process):
     def __init__(self, **kwargs):
-        super(Normalization_FSL_reinit, self).__init__()
-        self.add_trait('anatomy_data', File(allowed_extensions=['.nii', '.nii.gz']))
-        self.add_trait('anatomical_template', File(allowed_extensions=['.nii', '.nii.gz']))
-        self.add_trait('Alignment', Enum('Already Virtualy Aligned', 'Not Aligned but Same Orientation', 'Incorrectly Oriented'))
-        self.add_trait('transformation_matrix', File(allowed_extensions=['.mat'], output=True))
-        self.add_trait('normalized_anatomy_data', File(allowed_extensions=['.nii.gz'], output=True))
-        self.add_trait('cost_function', Enum('corratio', 'mutualinfo', 'normcorr', 'normmi', 'leastsq', 'labeldiff'))
-        self.add_trait('search_cost_function', Enum('corratio', 'mutualinfo', 'normcorr', 'normmi', 'leastsq', 'labeldiff'))
+        super(normalization_t1_spm12_reinit, self).__init__()
+        self.add_trait('anatomy_data', File(allowed_extensions=['.nii', '.img', '.hdr']))
+        self.add_trait('anatomical_template', File(allowed_extensions=['.nii', '.mnc', '.img', '.hdr'], optional=True))
+        self.add_trait('job_file', File(allowed_extensions=['.mat'], output=True, optional=True))
+        self.add_trait('voxel_size', Enum('[1 1 1]'))
+        self.add_trait('cutoff_option', Int())
+        self.add_trait('nbiteration', Int())
+        self.add_trait('transformations_informations', File(allowed_extensions=['.mat'], output=True))
+        self.add_trait('normalized_anatomy_data', File(allowed_extensions=['.nii', '.img', '.hdr'], output=True))
         self.add_trait('allow_retry_initialization', Bool())
         self.add_trait('init_translation_origin', Enum(0, 1))
 
 
         # initialization section
         self.anatomical_template = u'/i2bm/local/fsl/data/standard/MNI152_T1_2mm_brain.nii.gz'
-        self.Alignment = 'Not Aligned but Same Orientation'
-        self.cost_function = 'corratio'
-        self.search_cost_function = 'corratio'
+        self.voxel_size = '[1 1 1]'
+        self.cutoff_option = 25
+        self.nbiteration = 16
         self.allow_retry_initialization = True
         self.init_translation_origin = 0
 
@@ -56,4 +57,4 @@ class Normalization_FSL_reinit(Process):
                 kwargs[name] = value
 
         context = brainvisa.processes.defaultContext()
-        context.runProcess('Normalization_FSL_reinit', **kwargs)
+        context.runProcess('normalization_t1_spm12_reinit', **kwargs)
