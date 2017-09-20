@@ -1,19 +1,20 @@
 # -*- coding: utf-8 -*-
 try:
     from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
-        List, Undefined
+        List, Any, Undefined
 except ImportError:
     from enthought.traits.api import File, Directory, Float, Int, Bool, Enum, \
-        Str, List, Undefined
+        Str, List, Any, Undefined
 
 from capsul.api import Process
+import six
 
 
 class FSLnormalizationToAims(Process):
     def __init__(self, **kwargs):
         super(FSLnormalizationToAims, self).__init__()
         self.add_trait('read', File(allowed_extensions=['.mat']))
-        self.add_trait('source_volume', File(allowed_extensions=['.nii.gz', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.bif', '.czi', '.mnc.gz', '.fdf', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.dcm', '.mnc', '']))
+        self.add_trait('source_volume', File(allowed_extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg', '.scn', '.mnc', '.mng', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz']))
         self.add_trait('write', File(allowed_extensions=['.trm'], output=True))
         self.add_trait('registered_volume', File(allowed_extensions=['.nii', '.nii.gz']))
         self.add_trait('standard_template', Enum(0))
@@ -21,7 +22,7 @@ class FSLnormalizationToAims(Process):
 
 
         # initialization section
-        self.registered_volume = '/usr/share/fsl/data/standard/MNI152_T1_2mm_brain.nii.gz'
+        self.registered_volume = u'/i2bm/local/fsl/data/standard/MNI152_T1_2mm_brain.nii.gz'
         self.standard_template = 0
         self.set_transformation_in_source_volume = True
 

@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 try:
     from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
-        List, Undefined
+        List, Any, Undefined
 except ImportError:
     from enthought.traits.api import File, Directory, Float, Int, Bool, Enum, \
-        Str, List, Undefined
+        Str, List, Any, Undefined
 
 from capsul.api import Process
+import six
 from capsul.api import Pipeline
 from capsul.api import Switch
 
@@ -22,7 +23,7 @@ class BrainOrientation(Pipeline):
 
     def pipeline_definition(self):
         # nodes section
-        self.add_switch('select_AC_PC_Or_Normalization', ['StandardACPC', 'Normalization'], ['commissure_coordinates', 'reoriented_t1mri', 'talairach_transformation'], output_types=[File(allowed_extensions=['.APC']), File(allowed_extensions=['.nii.gz', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.dcm', '.mnc', '']), File(allowed_extensions=['.trm'])])
+        self.add_switch('select_AC_PC_Or_Normalization', ['StandardACPC', 'Normalization'], ['commissure_coordinates', 'reoriented_t1mri', 'talairach_transformation'], output_types=[File(allowed_extensions=['.APC']), File(allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.gif', '.ima', '.dim', '.jpg', '.mnc', '.mng', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz']), File(allowed_extensions=['.trm'])])
         self.add_process('StandardACPC', 'morphologist.capsul.axon.acpcorientation.AcpcOrientation')
         self.nodes['StandardACPC']._weak_outputs = True
         self.add_process('Normalization', 'morphologist.capsul.axon.normalization.Normalization')
@@ -65,7 +66,7 @@ class BrainOrientation(Pipeline):
 
     def autoexport_nodes_parameters(self):
         '''export orphan and internal output parameters'''
-        for node_name, node in self.nodes.iteritems():
+        for node_name, node in six.iteritems(self.nodes):
             if node_name == '':
                 continue # skip main node
             if hasattr(node, '_weak_outputs'):

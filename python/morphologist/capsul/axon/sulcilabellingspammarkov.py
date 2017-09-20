@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 try:
     from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
-        List, Undefined
+        List, Any, Undefined
 except ImportError:
     from enthought.traits.api import File, Directory, Float, Int, Bool, Enum, \
-        Str, List, Undefined
+        Str, List, Any, Undefined
 
 from capsul.api import Process
+import six
 
 
 class SulciLabellingSPAMMarkov(Process):
@@ -25,6 +26,7 @@ class SulciLabellingSPAMMarkov(Process):
 
 
         # initialization section
+        self.labels_translation_map = '/volatile/riviere/brainvisa/build-stable-qt5/share/brainvisa-share-4.6/nomenclature/translation/sulci_model_2008.trl'
         self.fix_random_seed = False
 
     def _run_process(self):

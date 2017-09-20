@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 try:
     from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
-        List, Undefined
+        List, Any, Undefined
 except ImportError:
     from enthought.traits.api import File, Directory, Float, Int, Bool, Enum, \
-        Str, List, Undefined
+        Str, List, Any, Undefined
 
 from capsul.api import Process
+import six
 from capsul.api import Pipeline
 from capsul.api import Switch
 
@@ -22,10 +23,10 @@ class Normalization(Pipeline):
 
     def pipeline_definition(self):
         # nodes section
-        self.add_switch('select_Normalization_pipeline', ['NormalizeFSL', 'NormalizeSPM', 'NormalizeBaladin', 'Normalization_AimsMIRegister'], ['transformation', 'normalized', 'reoriented_t1mri'], output_types=[File(allowed_extensions=['.trm']), File(allowed_extensions=['.nii.gz']), File(allowed_extensions=['.nii.gz', '.mnc.gz', '.nii', '.jpg', '.gif', '.png', '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.dcm', '.mnc', ''])])
+        self.add_switch('select_Normalization_pipeline', ['NormalizeFSL', 'NormalizeSPM', 'NormalizeBaladin', 'Normalization_AimsMIRegister'], ['transformation', 'normalized', 'reoriented_t1mri'], output_types=[File(allowed_extensions=['.trm']), File(allowed_extensions=['.nii.gz']), File(allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.gif', '.ima', '.dim', '.jpg', '.mnc', '.mng', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'])])
         self.add_process('NormalizeFSL', 'morphologist.capsul.axon.fslnormalizationpipeline.FSLnormalizationPipeline')
         self.nodes['NormalizeFSL']._weak_outputs = True
-        self.add_process('NormalizeSPM', 'morphologist.capsul.axon.spmnormalizationpipeline.SPMnormalizationPipeline')
+        self.add_process('NormalizeSPM', 'morphologist.capsul.spmnormalization.SPMNormalization')
         self.nodes['NormalizeSPM']._weak_outputs = True
         self.add_process('NormalizeBaladin', 'morphologist.capsul.axon.baladinnormalizationpipeline.BaladinNormalizationPipeline')
         self.nodes['NormalizeBaladin']._weak_outputs = True
@@ -45,14 +46,17 @@ class Normalization(Pipeline):
         self.export_parameter('select_Normalization_pipeline', 'reoriented_t1mri', 'reoriented_t1mri')
         # export output parameter
         self.export_parameter('NormalizeFSL', 'ReorientAnatomy_output_commissures_coordinates', 'output_commissures_coordinates')
+        # export input parameter
+        self.export_parameter('NormalizeFSL', 'NormalizeFSL_init_translation_origin', 'init_translation_origin')
         # export output parameter
         self.export_parameter('select_Normalization_pipeline', 'normalized', 'normalized')
-        self.do_not_export.update([('NormalizeFSL', 'ConvertFSLnormalizationToAIMS_write'), ('NormalizeSPM', 'ConvertSPMnormalizationToAIMS_write'), ('NormalizeBaladin', 'ConvertBaladinNormalizationToAIMS_write')])
+        self.do_not_export.update([('NormalizeFSL', 'ConvertFSLnormalizationToAIMS_write'), ('NormalizeBaladin', 'ConvertBaladinNormalizationToAIMS_write')])
 
         # links section
         self.add_link('t1mri->NormalizeSPM.t1mri')
         self.add_link('t1mri->NormalizeBaladin.t1mri')
         self.add_link('t1mri->Normalization_AimsMIRegister.anatomy_data')
+        self.add_link('init_translation_origin->NormalizeSPM.init_translation_origin')
         self.add_link('commissures_coordinates->NormalizeSPM.ReorientAnatomy_commissures_coordinates')
         self.add_link('commissures_coordinates->NormalizeBaladin.ReorientAnatomy_commissures_coordinates')
         self.add_link('NormalizeSPM.ReorientAnatomy_output_commissures_coordinates->output_commissures_coordinates')
@@ -82,7 +86,7 @@ class Normalization(Pipeline):
 
     def autoexport_nodes_parameters(self):
         '''export orphan and internal output parameters'''
-        for node_name, node in self.nodes.iteritems():
+        for node_name, node in six.iteritems(self.nodes):
             if node_name == '':
                 continue # skip main node
             if hasattr(node, '_weak_outputs'):

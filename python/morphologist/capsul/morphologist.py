@@ -299,10 +299,10 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
                 'normalization_spm_native_transformation')
             self.export_parameter(
                 'PrepareSubject',
-                'Normalization_NormalizeSPM_NormalizeSPM_job_file',
+                'Normalization_NormalizeSPM_job_file',
                 'normalization_spm_native_job_file_pass1')
             self.export_parameter(
-                'Renorm', 'Normalization_NormalizeSPM_NormalizeSPM_job_file',
+                'Renorm', 'Normalization_NormalizeSPM_job_file',
                 'normalization_spm_native_job_file')
             self.do_not_export.add(('Renorm', 'Normalization_NormalizeSPM_ReorientAnatomy_output_t1mri'))
 

@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 try:
     from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
-        List, Undefined
+        List, Any, Undefined
 except ImportError:
     from enthought.traits.api import File, Directory, Float, Int, Bool, Enum, \
-        Str, List, Undefined
+        Str, List, Any, Undefined
 
 from capsul.api import Process
+import six
 
 
 class sulcigraphmorphometrybysubject(Process):
@@ -20,6 +21,7 @@ class sulcigraphmorphometrybysubject(Process):
 
 
         # initialization section
+        self.sulci_file = '/volatile/riviere/brainvisa/build-stable-qt5/share/brainvisa-share-4.6/nomenclature/translation/sulci_default_list.json'
         self.use_attribute = 'label'
 
     def _run_process(self):

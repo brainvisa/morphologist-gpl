@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 try:
     from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
-        List, Undefined
+        List, Any, Undefined
 except ImportError:
     from enthought.traits.api import File, Directory, Float, Int, Bool, Enum, \
-        Str, List, Undefined
+        Str, List, Any, Undefined
 
 from capsul.api import Process
+import six
 from capsul.api import Pipeline
 from capsul.api import Switch
 
@@ -52,7 +53,7 @@ class SulciLabelling(Pipeline):
 
     def autoexport_nodes_parameters(self):
         '''export orphan and internal output parameters'''
-        for node_name, node in self.nodes.iteritems():
+        for node_name, node in six.iteritems(self.nodes):
             if node_name == '':
                 continue # skip main node
             if hasattr(node, '_weak_outputs'):

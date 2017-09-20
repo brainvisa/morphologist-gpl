@@ -80,6 +80,9 @@ signature = Signature(
                                       'aims writable volume formats'),
     'init_translation_origin', Choice(('Center of the image', 0 ),
                                       ('Gravity center', 1)),
+    'voxel_size', Choice('[1 1 1]'),
+    'cutoff_option', Integer(),
+    'nbiteration', Integer(),
 )
 
 
@@ -131,7 +134,7 @@ def initialization( self ):
     self.linkParameters('transformation', 't1mri')
     self.linkParameters('reoriented_t1mri', 't1mri')
 
-    eNode = SerialExecutionNode( self.name, parameterized=self )
+    eNode = SerialExecutionNode(self.name, parameterized=self)
 
     possible_procs = ['normalization_t1_spm12_reinit',
                       'normalization_t1_spm8_reinit',
@@ -140,31 +143,47 @@ def initialization( self ):
     sel_node = SelectionExecutionNode('NormalizeSPM', expandedInGui=True)
     eNode.addChild('NormalizeSPM', sel_node)
     transproc = None
+    sel_node.selection_outputs = []
     for pname in possible_procs:
         proc = getProcess(pname)
         if proc is not None:
-            sel_node.addChild(proc.name,
+            sel_node.addChild(pname,
                               ProcessExecutionNode(proc,
-                                                  selected=transproc is None))
-            eNode.addDoubleLink('NormalizeSPM.%s.anatomy_data' % proc.name,
+                                                   selected=transproc is None))
+            eNode.addDoubleLink('NormalizeSPM.%s.anatomy_data' % pname,
                                 't1mri')
             eNode.addDoubleLink(
-                'NormalizeSPM.%s.allow_retry_initialization' % proc.name,
+                'NormalizeSPM.%s.allow_retry_initialization' % pname,
                 'allow_retry_initialization')
             eNode.addDoubleLink(
-                'NormalizeSPM.%s.transformations_informations' % proc.name,
+                'NormalizeSPM.%s.transformations_informations' % pname,
                 'spm_transformation')
             eNode.addDoubleLink(
-                'NormalizeSPM.%s.normalized_anatomy_data' % proc.name,
+                'NormalizeSPM.%s.normalized_anatomy_data' % pname,
                 'normalized_t1mri')
             eNode.addDoubleLink(
-                'NormalizeSPM.%s.anatomical_template' % proc.name,
+                'NormalizeSPM.%s.anatomical_template' % pname,
                 'template' )
             eNode.addDoubleLink(
-                'NormalizeSPM.%s.init_translation_origin' % proc.name,
+                'NormalizeSPM.%s.init_translation_origin' % pname,
                 'init_translation_origin' )
+            eNode.addDoubleLink(
+                'NormalizeSPM.%s.cutoff_option' % pname,
+                'cutoff_option' )
+            eNode.addDoubleLink(
+                'NormalizeSPM.%s.nbiteration' % pname,
+                'nbiteration' )
+            eNode.addDoubleLink(
+                'NormalizeSPM.%s.voxel_size' % pname,
+                'voxel_size' )
             if transproc is None:
-                transproc = getattr(sel_node, proc.name)
+                transproc = getattr(sel_node, pname)
+            sel_node.selection_outputs.append(['transformations_informations',
+                                               'normalized_anatomy_data',
+                                               'job_file'])
+
+    sel_node.switch_output = ['spm_transformation', 'normalized_t1mri',
+                              'job_file']
 
     eNode.addChild('ConvertSPMnormalizationToAIMS',
                    ProcessExecutionNode('SPMsn3dToAims'))
@@ -195,7 +214,7 @@ def initialization( self ):
 
 
     eNode.addDoubleLink(
-        'NormalizeSPM.%s.transformations_informations' % transproc.name(),
+        'NormalizeSPM.%s.transformations_informations' % transproc.id(),
         'ConvertSPMnormalizationToAIMS.read')
     eNode.addDoubleLink('ConvertSPMnormalizationToAIMS.source_volume', 't1mri')
     eNode.addDoubleLink('ConvertSPMnormalizationToAIMS.write',
@@ -221,4 +240,8 @@ def initialization( self ):
     x = changeAllowFlip(self)
     eNode.ReorientAnatomy._selectionChange.add(x)
     self.allow_retry_initialization = True
+    self.cutoff_option = 25
+    self.nbiteration = 16
+
+    self.capsul_do_not_export = [('ConvertSPMnormalizationToAIMS', 'write')]
 

@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 try:
     from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
-        List, Undefined
+        List, Any, Undefined
 except ImportError:
     from enthought.traits.api import File, Directory, Float, Int, Bool, Enum, \
-        Str, List, Undefined
+        Str, List, Any, Undefined
 
 from capsul.api import Process
+import six
 
 
 class Normalization_Baladin(Process):
@@ -19,7 +20,7 @@ class Normalization_Baladin(Process):
 
 
         # initialization section
-        self.anatomical_template = '/usr/share/fsl/data/standard/MNI152_T1_2mm_brain.nii.gz'
+        self.anatomical_template = u'/i2bm/local/fsl/data/standard/MNI152_T1_1mm.nii.gz'
 
     def _run_process(self):
         from brainvisa import axon
