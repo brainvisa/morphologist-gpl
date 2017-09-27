@@ -3,7 +3,7 @@ from __future__ import absolute_import
 import sys
 import re
 from soma.qt_gui import qt_backend
-qt_backend.set_qt_backend('PyQt4')
+qt_backend.set_qt_backend(compatible_qt5=True)
 from soma.qt_gui.qt_backend import QtGui
 from capsul.qt_gui.widgets.activation_inspector import ActivationInspector
 from capsul.pipeline import Pipeline

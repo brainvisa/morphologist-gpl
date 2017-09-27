@@ -23,7 +23,7 @@ class SPMnormalizationPipeline(Pipeline):
 
     def pipeline_definition(self):
         # nodes section
-        self.add_switch('NormalizeSPM', ['normalization_t1_spm12_reinit', 'normalization_t1_spm8_reinit'], ['spm_transformation', 'normalized_t1mri', 'job_file'], output_types=[File(allowed_extensions=['.mat']), File(allowed_extensions=['.nii', '.img', '.hdr']), File(allowed_extensions=['.mat'], optional=True)])
+        self.add_switch('NormalizeSPM', ['normalization_t1_spm12_reinit', 'normalization_t1_spm8_reinit'], ['spm_transformation', 'normalized_t1mri'], output_types=[File(allowed_extensions=['.mat']), File(allowed_extensions=['.nii', '.img', '.hdr'])])
         self.add_process('ConvertSPMnormalizationToAIMS', 'morphologist.capsul.axon.spmsn3dtoaims.SPMsn3dToAims')
         self.add_process('ReorientAnatomy', 'morphologist.capsul.axon.reorientanatomy.ReorientAnatomy')
         self.add_process('normalization_t1_spm12_reinit', 'morphologist.capsul.axon.normalization_t1_spm12_reinit.normalization_t1_spm12_reinit')
@@ -56,8 +56,6 @@ class SPMnormalizationPipeline(Pipeline):
         self.export_parameter('normalization_t1_spm12_reinit', 'cutoff_option', 'cutoff_option')
         # export input parameter
         self.export_parameter('normalization_t1_spm12_reinit', 'nbiteration', 'nbiteration')
-        # export output parameter
-        self.export_parameter('NormalizeSPM', 'job_file', 'job_file')
         self.do_not_export.update([('ConvertSPMnormalizationToAIMS', 'write')])
 
         # links section
@@ -72,15 +70,14 @@ class SPMnormalizationPipeline(Pipeline):
         self.add_link('cutoff_option->normalization_t1_spm8_reinit.cutoff_option')
         self.add_link('normalization_t1_spm12_reinit.transformations_informations->NormalizeSPM.normalization_t1_spm12_reinit_switch_spm_transformation')
         self.add_link('normalization_t1_spm12_reinit.normalized_anatomy_data->NormalizeSPM.normalization_t1_spm12_reinit_switch_normalized_t1mri')
-        self.add_link('normalization_t1_spm12_reinit.job_file->NormalizeSPM.normalization_t1_spm12_reinit_switch_job_file')
         self.add_link('normalization_t1_spm8_reinit.transformations_informations->NormalizeSPM.normalization_t1_spm8_reinit_switch_spm_transformation')
         self.add_link('normalization_t1_spm8_reinit.normalized_anatomy_data->NormalizeSPM.normalization_t1_spm8_reinit_switch_normalized_t1mri')
-        self.add_link('normalization_t1_spm8_reinit.job_file->NormalizeSPM.normalization_t1_spm8_reinit_switch_job_file')
         self.add_link('normalization_t1_spm12_reinit.transformations_informations->ConvertSPMnormalizationToAIMS.read')
         self.add_link('ConvertSPMnormalizationToAIMS.write->ReorientAnatomy.transformation')
 
         # initialization section
         self.nodes['NormalizeSPM'].switch = 'normalization_t1_spm12_reinit'
+        self.nodes_activation.ReorientAnatomy = False
         # export orphan parameters
         if not hasattr(self, '_autoexport_nodes_parameters') \
                 or self._autoexport_nodes_parameters:
