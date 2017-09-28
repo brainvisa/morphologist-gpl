@@ -86,7 +86,11 @@ def initialization( self ):
 def execution( self, context ):
     vs = [float(x) for x in self.voxel_size[1:-1].split(' ')]
     matfileDI = context.temporary( 'Matlab script' )
-    context.runProcess('SPM8NormaliseEandW_generic',
+    # we must instantiate SPM8NormaliseEandW_generic and change the type of
+    # its sn_mat parameter
+    p = getProcessInstance('SPM8NormaliseEandW_generic')
+    p.signature['sn_mat'] = self.signature['transformations_informations']
+    context.runProcess(p,
                        source=self.anatomy_data,
                        images_to_write=[self.anatomy_data],
                        template=self.anatomical_template,

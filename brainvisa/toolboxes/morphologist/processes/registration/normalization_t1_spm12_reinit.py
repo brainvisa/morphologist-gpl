@@ -100,12 +100,16 @@ def execution( self, context ):
         if not self.allow_retry_initialization:
             raise
     if failed:
-        context.write( _t_( '1st pass failed, changing internal transformation initialization' ) )
+        context.write(_t_(
+            '1st pass failed, changing internal transformation initialization'))
         if not self.allow_retry_initialization:
-            raise RuntimeError( 'Normalization failed' )
-        context.runProcess( 'resetInternalImageTransformation',
+            raise RuntimeError('Normalization failed')
+        context.runProcess('resetInternalImageTransformation',
             input_image=self.anatomy_data, output_image=self.anatomy_data,
-            origin=self.init_translation_origin )
-        context.write( _t_( 'Retrying normalization after changing initialization...' ) )
-        context.runProcess( 'normalization_t1_SPM12', **normproc )
+            origin=self.init_translation_origin)
+        context.write(_t_(
+            'Retrying normalization after changing initialization...'))
+        context.runProcess('normalization_t1_SPM12', **normproc)
+        if not os.path.exists(self.transformations_informations.fullPath()):
+            raise RuntimeError('Normalization has failed.')
 
