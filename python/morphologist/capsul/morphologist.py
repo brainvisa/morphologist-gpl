@@ -254,21 +254,6 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
                               'sulcal_morphometry_sulci_file')
         self.nodes['SulcalMorphometry'].enabled = True
 
-        # default settings
-        self.select_Talairach = 'Normalization'
-        self.PrepareSubject_Normalization_NormalizeSPM_allow_retry_initialization = True
-        self.compute_fold_meshes = True
-        self.HistoAnalysis_use_hfiltered = True
-        self.HistoAnalysis_use_wridges = True
-        self.SplitBrain_use_ridges = True
-        self.SplitBrain_use_template = True
-        self.CorticalFoldsGraph_graph_version = '3.1'
-        self.allow_multithreading = True
-        self.perform_skull_stripped_renormalization = 'skull_stripped'
-
-        self.nodes_activation.SulciRecognition = True
-        self.nodes_activation.SulciRecognition_1 = True
-
         self.export_parameter(
           'PrepareSubject', 'reoriented_t1mri', is_optional=True)
         self.nodes['PrepareSubject'].process.nodes['select_AC_PC_Or_Normalization'].plugs['talairach_transformation'].optional = True
@@ -297,14 +282,12 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
             self.export_parameter(
                 'Renorm', 'Normalization_NormalizeSPM_spm_transformation',
                 'normalization_spm_native_transformation')
-            self.export_parameter(
-                'PrepareSubject',
-                'Normalization_NormalizeSPM_job_file',
-                'normalization_spm_native_job_file_pass1')
-            self.export_parameter(
-                'Renorm', 'Normalization_NormalizeSPM_job_file',
-                'normalization_spm_native_job_file')
             self.do_not_export.add(('Renorm', 'Normalization_NormalizeSPM_ReorientAnatomy_output_t1mri'))
+            self.export_parameter('PrepareSubject',
+                                  'Normalization_NormalizeSPM_NormalizeSPM',
+                                  'spm_normalization_version')
+            self.add_link('spm_normalization_version->'
+                          'Renorm.Normalization_NormalizeSPM_NormalizeSPM')
 
         if 'NormalizeFSL' \
                 in self.nodes['PrepareSubject'].process.nodes[
@@ -360,6 +343,21 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
         self.on_trait_change(self.ensure_use_allowed_normalization,
                              'Normalization_select_Normalization_pipeline')
         self.on_trait_change(self._check_renormalization, 'select_Talairach')
+
+        # default settings
+        self.select_Talairach = 'Normalization'
+        self.normalization_allow_retry_initialization = True
+        self.compute_fold_meshes = True
+        self.HistoAnalysis_use_hfiltered = True
+        self.HistoAnalysis_use_wridges = True
+        self.SplitBrain_use_ridges = True
+        self.SplitBrain_use_template = True
+        self.CorticalFoldsGraph_graph_version = '3.1'
+        self.allow_multithreading = True
+        self.perform_skull_stripped_renormalization = 'skull_stripped'
+
+        self.nodes_activation.SulciRecognition = True
+        self.nodes_activation.SulciRecognition_1 = True
 
         # nodes position in Pipeline*View
         self.node_position = {'BiasCorrection': (210.9, 1149.7),

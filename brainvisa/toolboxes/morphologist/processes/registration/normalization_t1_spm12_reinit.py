@@ -55,7 +55,6 @@ userLevel = 0
 signature = Signature(
     'anatomy_data', ReadDiskItem( "Raw T1 MRI", ['NIFTI-1 image', 'SPM image' ]),
     'anatomical_template', ReadDiskItem( "anatomical Template", ['NIFTI-1 image', 'MINC image', 'SPM image'] ),
-    'job_file', WriteDiskItem("SPM2 parameters", 'Matlab file'),
     'voxel_size', Choice('[1 1 1]'),
     'cutoff_option', Integer(),
     'nbiteration', Integer(),
@@ -73,9 +72,7 @@ def initialization( self ):
     self.cutoff_option = "25"
     self.nbiteration = 16
     self.setOptional("anatomical_template")
-    self.setOptional( 'job_file' )
     # Link parameters
-    self.linkParameters( "job_file", "anatomy_data" )
     self.anatomical_template = self.signature[ 'anatomical_template' ].findValue( { 'databasename' : 'spm',
             'skull_stripped' : 'no' } )
     self.allow_retry_initialization = False
@@ -88,7 +85,6 @@ def execution( self, context ):
     failed = False
     normproc = { 'anatomy_data' : self.anatomy_data,
         'anatomical_template' : self.anatomical_template,
-        'job_file' : self.job_file,
         'voxel_size' : self.voxel_size,
         'cutoff_option' : self.cutoff_option,
         'nbiteration' : self.nbiteration,

@@ -179,11 +179,9 @@ def initialization( self ):
             if transproc is None:
                 transproc = getattr(sel_node, pname)
             sel_node.selection_outputs.append(['transformations_informations',
-                                               'normalized_anatomy_data',
-                                               'job_file'])
+                                               'normalized_anatomy_data'])
 
-    sel_node.switch_output = ['spm_transformation', 'normalized_t1mri',
-                              'job_file']
+    sel_node.switch_output = ['spm_transformation', 'normalized_t1mri']
 
     eNode.addChild('ConvertSPMnormalizationToAIMS',
                    ProcessExecutionNode('SPMsn3dToAims'))

@@ -5,7 +5,7 @@ import anatomist.capsul as acap
 import math
 
 
-class MorphologistView(acap.AnatimistMultipleViewsProcess):
+class MorphologistView(acap.AnatomistMultipleViewsProcess):
 
     t1mri = traits.File(
         allowed_extensions=['.nii.gz', '.mnc.gz', '.nii', '.ima', '.dim',

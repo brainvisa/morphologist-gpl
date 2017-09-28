@@ -15,7 +15,6 @@ class normalization_t1_spm8_reinit(Process):
         super(normalization_t1_spm8_reinit, self).__init__()
         self.add_trait('anatomy_data', File(allowed_extensions=['.nii', '.img', '.hdr']))
         self.add_trait('anatomical_template', File(allowed_extensions=['.nii', '.mnc', '.img', '.hdr'], optional=True))
-        self.add_trait('job_file', File(allowed_extensions=['.mat'], output=True, optional=True))
         self.add_trait('voxel_size', Enum('[1 1 1]'))
         self.add_trait('cutoff_option', Int())
         self.add_trait('nbiteration', Int())
@@ -26,7 +25,7 @@ class normalization_t1_spm8_reinit(Process):
 
 
         # initialization section
-        self.anatomical_template = u'/i2bm/local/spm12-standalone/spm12_mcr/spm12/toolbox/OldNorm/T1.nii'
+        self.anatomical_template = u'/i2bm/local/fsl/data/standard/MNI152_T1_2mm_brain.nii.gz'
         self.voxel_size = '[1 1 1]'
         self.cutoff_option = 25
         self.nbiteration = 16
