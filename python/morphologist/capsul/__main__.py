@@ -8,7 +8,7 @@ from soma.qt_gui.qt_backend import QtGui
 from capsul.qt_gui.widgets.activation_inspector import ActivationInspector
 from capsul.pipeline import Pipeline
 from capsul.qt_gui.widgets import PipelineDevelopperView
-from morphologist.process.customized.morphologist import CustomMorphologist
+from morphologist.capsul.morphologist import Morphologist
 
 Pipeline.hide_nodes_activation = False
 
@@ -27,7 +27,7 @@ app = QtGui.QApplication(sys.argv)
 #p = pstats.Stats('/tmp/stats')
 #p.sort_stats('time').print_stats(4)
 
-mp = CustomMorphologist()
+mp = Morphologist()
 #import pickle
 #print(mp)
 #pickled = pickle.dumps(mp)
@@ -35,7 +35,8 @@ mp = CustomMorphologist()
   #mp = pickle.loads(pickled)
   ##mp = CustomMorphologist()
   #print(i)
-mpv = PipelineDevelopperView(mp, show_sub_pipelines=True, allow_open_controller=True)
+mpv = PipelineDevelopperView(mp, show_sub_pipelines=True,
+                             allow_open_controller=True, enable_edition=True)
 ai = ActivationInspector(mp, record_file='/tmp/activations',
                          developper_view=mpv)
 ai.show()

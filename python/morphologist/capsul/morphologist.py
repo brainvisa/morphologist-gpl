@@ -362,34 +362,32 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
         # nodes position in Pipeline*View
         self.node_position = {'BiasCorrection': (210.9, 1149.7),
             'BrainSegmentation': (629.2, 1471.2),
-            'CorticalFoldsGraph': (2608.3760217599993, 589.6010982399999),
-            'CorticalFoldsGraph_1': (2571.6765708800003, 2731.49890176),
-            'GreyWhiteClassification': (1775.8776691199998, 565.50128128),
-            'GreyWhiteClassification_1': (1663.1811468799995, 2716.6948748799996),
-            'GreyWhiteMesh': (2405.1751065599997, 347.00018303999997),
-            'GreyWhiteMesh_1': (2278.17949952, 2409.2999999999997),
-            'GreyWhiteTopology': (1992.6780352, 369.50183039999996),
-            'GreyWhiteTopology_1': (1866.3813299199999, 2481.2999999999997),
-            'HeadMesh': (1885.17913344, 1867.2387206399999),
+            'CorticalFoldsGraph': (2608., 589.),
+            'CorticalFoldsGraph_1': (2571., 2731.),
+            'GreyWhiteClassification': (1775., 565.),
+            'GreyWhiteClassification_1': (1663.0, 2716.0),
+            'GreyWhiteMesh': (2405., 347.),
+            'GreyWhiteMesh_1': (2278., 2409.),
+            'GreyWhiteTopology': (1992., 369.),
+            'GreyWhiteTopology_1': (1866., 2481.),
+            'HeadMesh': (1885., 1867.),
             'HistoAnalysis': (428.8, 1199.2),
-            'PialMesh': (2393.77602176, 523.2989017600001),
-            'PialMesh_1': (2289.6791334399995, 2557.7003660800005),
+            'PialMesh': (2393., 523.),
+            'PialMesh_1': (2289., 2557.),
             'PrepareSubject': (-489.2, 431.1),
-            'Renorm': (845.0725406719996, 62.38973235200024),
-            'SplitBrain': (1477.767001599999, 1248.3938124799995),
-            'SulciRecognition': (2918.4798655999994, 347.0009151999998),
-            'SulciRecognition_1': (2902.67858432, 2615.6968883199993),
-            'SulciSkeleton': (2169.7774860799996, 668.39945088),
-            'SulciSkeleton_1': (2075.7807808, 2737.89835264),
-            'TalairachTransformation': (1961.4688831999997, 1273.5018304),
+            'Renorm': (845., 62.),
+            'SplitBrain': (1477., 1248.),
+            'SulcalMorphometry': (3227., 1940.),
+            'SulciRecognition': (2918., 347.),
+            'SulciRecognition_1': (2902., 2615.),
+            'SulciSkeleton': (2169., 668.),
+            'SulciSkeleton_1': (2075., 2737.),
+            'TalairachTransformation': (1961., 1273.),
             'inputs': (-1335.3, 121.7),
-            'outputs': (3629.7734591999997, 1029.50073216),
-            'select_Talairach': (2231.8330662399985, 1673.9494374399999),
-            'select_renormalization_commissures': (1194.6271999999997,
-                                                    1119.9775999999997),
-            'select_renormalization_transform': (2563.670399999999, 1470.8831999999998),
-            'SulcalMorphometry': (3227.0869759999987, 1940.1278719999996),
-        }
+            'outputs': (3629., 1029.),
+            'select_Talairach': (2231., 1673.),
+            'select_renormalization_commissures': (1194., 1119.),
+            'select_renormalization_transform': (2563.0, 1470.0)}
 
         self.nodes['PrepareSubject'].process.node_position = {
             'Normalization': (161.4, 227.6),
@@ -401,33 +399,13 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
 
         self.nodes['PrepareSubject'].process.nodes['Normalization'] \
                 .process.node_position = {
-            'inputs': (-1134.0, 129.0),
-            'Normalization_AimsMIRegister': (-410.4, 633.6),
-            'outputs': (404.8, 390.4),
-            'NormalizeFSL': (-481.6, -231.8),
-            'NormalizeSPM': (-488.8, 186.8),
-            'NormalizeBaladin': (-430.384, 908.816),
-            'select_Normalization_pipeline': (8.6, 231.0)}
-
-        if 'NormalizeFSL' in self.nodes['PrepareSubject'].process \
-                .nodes['Normalization'].process.nodes:
-            self.nodes['PrepareSubject'].process.nodes['Normalization']  \
-                    .process.nodes['NormalizeFSL'].process.node_position = {
-                'ReorientAnatomy': (431.0, 179.0),
-                'outputs': (626.0, 360.0),
-                'ConvertFSLnormalizationToAIMS': (206.0, 341.0),
-                'NormalizeFSL': (-45.0, 116.0),
-                'inputs': (-492.0, 241.0)}
-
-        if 'NormalizeSPM' in self.nodes['PrepareSubject'].process \
-                .nodes['Normalization'].process.nodes:
-            self.nodes['PrepareSubject'].process.nodes['Normalization'] \
-                    .process.nodes['NormalizeSPM'].process.node_position = {
-                'ReorientAnatomy': (404.0, 378.0),
-                'outputs': (627.0, 232.0),
-                'inputs': (-553.0, 218.0),
-                'ConvertSPMnormalizationToAIMS': (193.0, 200.0),
-                'NormalizeSPM': (-96.0, 365.0)}
+            'Normalization_AimsMIRegister': (538., 1375.),
+            'NormalizeBaladin': (479., 1041.),
+            'NormalizeFSL': (475., 0.0),
+            'NormalizeSPM': (479., 489.5),
+            'inputs': (0.0, 660.),
+            'outputs': (1212., 855.),
+            'select_Normalization_pipeline': (846., 764.)}
 
         if 'NormalizeBaladin' in self.nodes['PrepareSubject'].process \
                 .nodes['Normalization'].process.nodes:
@@ -448,14 +426,9 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
             'outputs': (1646.84, 315.48)}
 
         self.nodes['Renorm'].process.nodes['Normalization'] \
-                .process.node_position = {
-            'inputs': (-1134.0, 129.0),
-            'Normalization_AimsMIRegister': (-410.4, 633.6),
-            'outputs': (404.8, 390.4),
-            'NormalizeFSL': (-481.6, -231.8),
-            'NormalizeSPM': (-488.8, 186.8),
-            'NormalizeBaladin': (-430.384, 908.816),
-            'select_Normalization_pipeline': (8.6, 231.0)}
+                .process.node_position \
+            = self.nodes['PrepareSubject'].process.nodes['Normalization'] \
+                .process.node_position
 
         self.nodes['SulciRecognition'].process.node_position = {
             'SPAM_recognition09': (95.0, 340.0),
