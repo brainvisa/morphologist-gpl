@@ -24,7 +24,7 @@ class Normalization(Pipeline):
     def pipeline_definition(self):
         # nodes section
         self.add_switch('select_Normalization_pipeline', ['NormalizeFSL', 'NormalizeSPM', 'NormalizeBaladin', 'Normalization_AimsMIRegister'], ['transformation', 'normalized', 'reoriented_t1mri'], output_types=[File(allowed_extensions=['.trm']), File(allowed_extensions=['.nii.gz']), File(allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.gif', '.ima', '.dim', '.jpg', '.mnc', '.mng', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'])])
-        self.add_process('NormalizeFSL', 'morphologist.capsul.axon.fslnormalizationpipeline.FSLnormalizationPipeline')
+        self.add_process('NormalizeFSL', 'morphologist.capsul.fslnormalization.FSLNormalization')
         self.nodes['NormalizeFSL']._weak_outputs = True
         self.add_process('NormalizeSPM', 'morphologist.capsul.spmnormalization.SPMNormalization')
         self.nodes['NormalizeSPM']._weak_outputs = True

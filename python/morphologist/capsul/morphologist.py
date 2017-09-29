@@ -360,12 +360,13 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
         self.nodes_activation.SulciRecognition_1 = True
 
         # nodes position in Pipeline*View
-        self.node_position = {'BiasCorrection': (210.9, 1149.7),
+        self.node_position = {
+            'BiasCorrection': (210.9, 1149.7),
             'BrainSegmentation': (629.2, 1471.2),
             'CorticalFoldsGraph': (2608.3760217599993, 589.6010982399999),
             'CorticalFoldsGraph_1': (2571.6765708800003, 2731.49890176),
             'GreyWhiteClassification': (1775.8776691199998, 565.50128128),
-            'GreyWhiteClassification_1': (1663.1811468799995, 2716.6948748799996),
+            'GreyWhiteClassification_1': (1663., 2716.),
             'GreyWhiteMesh': (2405.1751065599997, 347.00018303999997),
             'GreyWhiteMesh_1': (2278.17949952, 2409.2999999999997),
             'GreyWhiteTopology': (1992.6780352, 369.50183039999996),
@@ -377,6 +378,7 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
             'PrepareSubject': (-489.2, 431.1),
             'Renorm': (845.0725406719996, 62.38973235200024),
             'SplitBrain': (1477.767001599999, 1248.3938124799995),
+            'SulcalMorphometry': (3227.0869759999987, 1940.1278719999996),
             'SulciRecognition': (2918.4798655999994, 347.0009151999998),
             'SulciRecognition_1': (2902.67858432, 2615.6968883199993),
             'SulciSkeleton': (2169.7774860799996, 668.39945088),
@@ -387,9 +389,7 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
             'select_Talairach': (2231.8330662399985, 1673.9494374399999),
             'select_renormalization_commissures': (1194.6271999999997,
                                                     1119.9775999999997),
-            'select_renormalization_transform': (2563.670399999999, 1470.8831999999998),
-            'SulcalMorphometry': (3227.0869759999987, 1940.1278719999996),
-        }
+            'select_renormalization_transform': (2563., 1470.)}
 
         self.nodes['PrepareSubject'].process.node_position = {
             'Normalization': (161.4, 227.6),

@@ -23,7 +23,7 @@ class ReorientAnatomy(Process):
 
 
         # initialization section
-        self.allow_flip_initial_MRI = True
+        self.allow_flip_initial_MRI = False
 
     def _run_process(self):
         from brainvisa import axon
