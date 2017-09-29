@@ -57,14 +57,14 @@ class SPMNormalization(SPMnormalizationPipeline):
                 self.NormalizeSPM = 'normalization_t1_spm8_reinit'
 
         self.node_position = {
-            'ConvertSPMnormalizationToAIMS': (1302., 99.),
-            'NormalizeSPM': (863., 195.),
-            'ReorientAnatomy': (1587., 9.),
-            'converter': (417., 206.),
+            'ConvertSPMnormalizationToAIMS': (1179.07095, 117.05630000000008),
+            'NormalizeSPM': (789.94195, 219.44370000000004),
+            'ReorientAnatomy': (1441.4117, 20.306299999999965),
+            'converter': (377.5439, 228.88740000000007),
             'inputs': (0.0, 0.0),
-            'normalization_t1_spm12_reinit': (598., 172.),
-            'normalization_t1_spm8_reinit': (599., 424.),
-            'outputs': (1876., 153.)}
+            'normalization_t1_spm12_reinit': (549.6002, 193.44370000000004),
+            'normalization_t1_spm8_reinit': (549.6002, 475.3998),
+            'outputs': (1703.7257, 179.375)}
 
     def change_flip(self, value):
         self.nodes_activation.ReorientAnatomy = value
