@@ -6,12 +6,18 @@ enable_testing()
 BRAINVISA_FIND_PACKAGE( axon REQUIRED )
 BRAINVISA_FIND_PACKAGE( morphologist-private QUIET )
 BRAINVISA_FIND_PACKAGE( aims-til QUIET )
-BRAINVISA_DEPENDENCY( RUN DEPENDS "axon" RUN ">= ${axon_VERSION_MAJOR}.${axon_VERSION_MINOR}" )
-BRAINVISA_DEPENDENCY( RUN RECOMMENDS "morphologist-private" RUN ">= ${morphologist-private_VERSION_MAJOR}.${morphologist-private_VERSION_MINOR}" )
+BRAINVISA_DEPENDENCY( RUN DEPENDS "axon" RUN
+                      ">= ${axon_VERSION_MAJOR}.${axon_VERSION_MINOR}" )
+BRAINVISA_DEPENDENCY( RUN RECOMMENDS "morphologist-private" RUN
+                      ">= ${morphologist-private_VERSION_MAJOR}.${morphologist-private_VERSION_MINOR}" )
 BRAINVISA_DEPENDENCY( RUN RECOMMENDS "aims-til" RUN "= ${aims-til_VERSION}" )
-BRAINVISA_DEPENDENCY( RUN RECOMMENDS "anatomist-gpl" RUN "= ${anatomist-gpl_VERSION}" )
+BRAINVISA_DEPENDENCY( RUN RECOMMENDS "anatomist-gpl" RUN
+                      "= ${anatomist-gpl_VERSION}" )
 BRAINVISA_DEPENDENCY( DEV RECOMMENDS "aims-til" DEV "= ${aims-til_VERSION}" )
-BRAINVISA_DEPENDENCY( DEV RECOMMENDS "anatomist-gpl" DEV "= ${anatomist-gpl_VERSION}" )
+BRAINVISA_DEPENDENCY( DEV RECOMMENDS "anatomist-gpl" DEV
+                      "= ${anatomist-gpl_VERSION}" )
+BRAINVISA_DEPENDENCY( RUN DEPENDS "spm" RUN
+                      ">= ${spm_VERSION_MAJOR}.${spm_VERSION_MINOR}" )
 
 BRAINVISA_COPY_PYTHON_DIRECTORY( "${CMAKE_CURRENT_SOURCE_DIR}/brainvisa"
                                  ${PROJECT_NAME} )
