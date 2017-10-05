@@ -144,12 +144,18 @@ def initialization( self ):
     eNode.addChild('NormalizeSPM', sel_node)
     transproc = None
     sel_node.selection_outputs = []
+    first_node = True
     for pname in possible_procs:
         proc = getProcess(pname)
         if proc is not None:
             sel_node.addChild(pname,
                               ProcessExecutionNode(proc,
                                                    selected=transproc is None))
+            if first_node:
+                first_node = False
+            else:
+                getattr(eNode.NormalizeSPM, pname).removeLink(
+                    'normalized_anatomy_data', 'anatomy_data')
             eNode.addDoubleLink('NormalizeSPM.%s.anatomy_data' % pname,
                                 't1mri')
             eNode.addDoubleLink(
