@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<minf expander="minf_2.0">
+<d>
+  <d name="en">
+    <xhtml name="short">Morphologist pipeline outputs QC table: display present and missing data.</xhtml>
+    <d name="parameters">
+      <xhtml name="graph_version">Restrict the table to a single <tt>graph_version</tt> value</xhtml>
+      <xhtml name="database">Database to be displayed</xhtml>
+      <xhtml name="keys">Keys are used to sort and display data. One data line will be created for a single keys values combination.</xhtml>
+      <xhtml name="analysis">Restrict the table to a single <tt>analysis</tt> value</xhtml>
+      <xhtml name="data_filters">Additional data filters, see the <a href="bvprocess://database_qc_table">Database QC table</a> process for details.</xhtml>
+      <xhtml name="acquisition">Restrict the table to a single <tt>acquisition</tt> value</xhtml>
+    </d>
+    <xhtml name="long">See the <a href="bvprocess://database_qc_table">Database QC table</a> process for details.</xhtml>
+  </d>
+</d>
+</minf>
