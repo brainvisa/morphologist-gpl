@@ -41,6 +41,23 @@ def execution(self, context):
               'Labelled Cortical folds graph', 'Labelled Cortical folds graph',
               'Sulcal morphometry measurements']
 
+    tlabels = ['Raw T1 MRI', 'Bias Corrected', 'Histo Analysis',
+              'Brain Mask', 'Hemispheres Split', 'Head Mesh',
+              'Left Grey White Mask', 'Right Grey White Mask',
+              'Left CSF+GREY Mask', 'Right CSF+GREY Mask',
+              'Left Hemisphere White Mesh', 'Right Hemisphere White Mesh',
+              'Left Cortex Skeleton', 'Right Cortex Skeleton',
+              'Left Hemisphere Mesh', 'Right Hemisphere Mesh',
+              'Left Cortical Sulci', 'Right Cortical Sulci',
+              'Left Labelled Sulci', 'Right Labelled Cortical Sulci',
+              'Sulcal morphometry measurements']
+
+    custom_filt = [eval(filt) for filt in self.data_filters]
+    if len(custom_filt) == 1:
+        custom_filt = custom_filt * len(dtypes)
+    if len(custom_filt) < len(dtypes):
+        custom_filt = custom_filt + [{}] * (len(dtypes) - len(custom_filt))
+
     filter1 = {}
     if self.acquisition:
         filter1.update({'acquisition': self.acquisition})
@@ -66,12 +83,14 @@ def execution(self, context):
                filter3_l, filter3_r, filter3_l, filter3_r, filter3_l,
                filter3_r, filter3_l, filter3_r, filter3_l, filter3_r,
                filter4_l, filter4_r, filter4_l, filter4_r, filter5]
+    for filt, custfilt in zip(filters, custom_filt):
+        filt.update(custfilt)
     filters = [repr(filt) for filt in filters]
 
-    context.write('filters:', filters)
     self.proc = getProcessInstance('database_qc_table')
     return context.runProcess(self.proc, database=self.database,
                               data_types=dtypes,
                               data_filters=filters,
-                              keys=self.keys)
+                              keys=self.keys,
+                              type_labels=tlabels)
 
