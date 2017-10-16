@@ -17,10 +17,11 @@ signature = Signature(
 def initialization(self):
     # list of possible databases, while respecting the ontology
     # ontology: brainvisa-3.2.0
-    databases = [h.name for h in neuroHierarchy.hierarchies()]
+    databases = [h.name for h in neuroHierarchy.hierarchies()
+                 if h.fso.name == "brainvisa-3.2.0"]
     self.signature["database"].setChoices(*databases)
-    if len(databases) >= 2:
-        self.database = databases[1]
+    if len(databases) >= 1:
+        self.database = databases[0]
     else:
         self.signature["database"] = OpenChoice()
 
