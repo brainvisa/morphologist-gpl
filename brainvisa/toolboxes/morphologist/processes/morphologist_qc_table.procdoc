@@ -1,12 +1,26 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <minf expander="minf_2.0">
 <d>
+  <d name="fr">
+    <xhtml name="short"/>
+    <d name="parameters">
+      <xhtml name="graph_version"/>
+      <xhtml name="database"/>
+      <xhtml name="keys"/>
+      <xhtml name="output_file"/>
+      <xhtml name="analysis"/>
+      <xhtml name="data_filters"/>
+      <xhtml name="acquisition"/>
+    </d>
+    <xhtml name="long"/>
+  </d>
   <d name="en">
     <xhtml name="short">Morphologist pipeline outputs QC table: display present and missing data.</xhtml>
     <d name="parameters">
       <xhtml name="graph_version">Restrict the table to a single <tt>graph_version</tt> value</xhtml>
       <xhtml name="database">Database to be displayed</xhtml>
       <xhtml name="keys">Keys are used to sort and display data. One data line will be created for a single keys values combination.</xhtml>
+      <xhtml name="output_file">Allows to save the QC table as a HTML file (maybe also PDF in the future). If this parameter is filled, then the process will not open the Qt GUI and will run in batch mode.</xhtml>
       <xhtml name="analysis">Restrict the table to a single <tt>analysis</tt> value</xhtml>
       <xhtml name="data_filters">Additional data filters, see the <a href="bvprocess://database_qc_table">Database QC table</a> process for details.</xhtml>
       <xhtml name="acquisition">Restrict the table to a single <tt>acquisition</tt> value</xhtml>
