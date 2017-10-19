@@ -90,7 +90,8 @@ mesh_content = (
 
 segmentation_content = (
     "brain_<subject>", SetType( 'T1 Brain Mask' ), SetWeakAttr( 'side', 'both' ),
-    "skull_stripped_<subject>", SetType( 'Raw T1 MRI Brain Masked' ), SetWeakAttr( 'side', 'both'),
+    "skull_stripped_<subject>", SetType('Raw T1 MRI Brain Masked'), SetWeakAttr('side', 'both',
+                                                                                'skull_stripped', 'yes'),
     "Rgrey_white_<subject>", SetType( 'Right Grey White Mask' ), SetWeakAttr( 'side', 'right' ),
     "Lgrey_white_<subject>", SetType( 'Left Grey White Mask' ), SetWeakAttr( 'side', 'left' ),
     "cortex_<subject>", SetType( 'Both CSF+GREY Mask' ), SetWeakAttr( 'side', 'both' ),
@@ -118,8 +119,8 @@ segmentation_content = (
     "corpus_callosum_mask", SetType( 'Corpus Callosum mask' ),
     "ventricles_<subject>", SetType( 'Ventricles Mask' ),
     "brain_volumes_<subject>", SetType( 'Brain volumetry measurements' ),
-    'mesh',
-    SetContent(*mesh_content),
+    
+    'mesh', SetContent(*mesh_content),
 )
 
 t1mri_acq_content = (
@@ -134,21 +135,18 @@ t1mri_acq_content = (
     "lesion_<subject>", SetType( 'Lesion Mask' ), SetPriorityOffset( +1 ), SetWeakAttr( 'normalized', 'no' ),
     "lesion_normalized_{normalization}_<subject>", SetType( 'Lesion Mask' ), SetWeakAttr( 'normalized', 'yes' ),
 
-    #      "r<subject>", SetType( 'Registered Raw T1 MRI with fMRI' ), SetWeakAttr( 'fMRI_register', 'Yes' ),
-    #    "wr<subject>", SetType( 'Registered Raw T1 MRI with fMRI' ), SetWeakAttr( 'fMRI_register', 'Yes' ),
+    # "r<subject>", SetType( 'Registered Raw T1 MRI with fMRI' ), SetWeakAttr( 'fMRI_register', 'Yes' ),
+    # "wr<subject>", SetType( 'Registered Raw T1 MRI with fMRI' ), SetWeakAttr( 'fMRI_register', 'Yes' ),
     'registration', SetContent(
-      'RawT1-<subject>_<acquisition>_TO_unknown_atlas_WITH_bal', SetType("baladin Transformation"),
-      'RawT1-<subject>_<acquisition>', SetType( 'Referential of Raw T1 MRI' ),
-      'RawT1-<subject>_<acquisition>_TO_Talairach-ACPC', SetType( 'Transform Raw T1 MRI to Talairach-AC/PC-Anatomist' ),
-      'RawT1-<subject>_<acquisition>_TO_Talairach-MNI', SetType( 'Transform Raw T1 MRI to Talairach-MNI template-SPM'),
+        'RawT1-<subject>_<acquisition>_TO_unknown_atlas_WITH_bal', SetType("baladin Transformation"),
+        'RawT1-<subject>_<acquisition>', SetType( 'Referential of Raw T1 MRI' ),
+        'RawT1-<subject>_<acquisition>_TO_Talairach-ACPC', SetType( 'Transform Raw T1 MRI to Talairach-AC/PC-Anatomist' ),
+        'RawT1-<subject>_<acquisition>_TO_Talairach-MNI', SetType( 'Transform Raw T1 MRI to Talairach-MNI template-SPM'),
 
-      'RawT1-<subject>_<acquisition>_TO_Scanner_Based', SetType( 'Transformation to Scanner Based Referential' ),
-      'RawT1-<subject>_<acquisition>_Scanner_Based', SetType( 'Scanner Based Referential' ),
-
-      SetWeakAttr('destination_referential', str(registration.talairachMNIReferentialId)),
+        'RawT1-<subject>_<acquisition>_TO_Scanner_Based', SetType( 'Transformation to Scanner Based Referential' ),
+        'RawT1-<subject>_<acquisition>_Scanner_Based', SetType( 'Scanner Based Referential' ), SetWeakAttr('destination_referential', str(registration.talairachMNIReferentialId)),
     ),
-    "{analysis}",
-      SetContent( # processing results in analysis
+    "{analysis}", SetContent( # processing results in analysis
         #"nobias_<subject>", SetType( 'T1 MRI Bias Corrected' ),
         "biasfield_<subject>", SetType( 'T1 MRI Bias Field' ),
         "whiteridge_<subject>", SetType( 'T1 MRI White Matter Ridges' ),
@@ -159,34 +157,34 @@ t1mri_acq_content = (
         "nobias_<subject>", SetType( 'Histogram' ),
         "nobias_<subject>", SetType( 'Histo Analysis' ),
 
-        'segmentation',
-        SetContent(*segmentation_content),
+        'segmentation', SetContent(*segmentation_content),
 
         'folds', SetContent( # sulci, gyri
-          "{graph_version}", SetDefaultAttributeValue( 'graph_version', default_graph_version ), SetContent(
-          "L<subject>", SetType( 'Left Cortical folds graph' ), SetWeakAttr( 'side', 'left', 'labelled', 'No', 'manually_labelled', 'No', 'automatically_labelled', 'No',  ),
-          "R<subject>", SetType( 'Right Cortical folds graph' ), SetWeakAttr( 'side', 'right',  'labelled', 'No' ),
-          "Lsulcivoronoi_<subject>", SetType( 'Sulci Voronoi' ),
-            SetWeakAttr( 'side', 'left' ),
-          "Rsulcivoronoi_<subject>", SetType( 'Sulci Voronoi' ),
-            SetWeakAttr( 'side', 'right' ),
-          )
-        ),
+            "{graph_version}",
+              SetDefaultAttributeValue('graph_version', default_graph_version),
+              SetContent(
+                "L<subject>", SetType('Cortical folds graph'), SetWeakAttr('side', 'left',
+                                                                           'labelled', 'No'),
+                "R<subject>", SetType('Cortical folds graph'), SetWeakAttr('side', 'right',
+                                                                           'labelled', 'No'),
+                "Lsulcivoronoi_<subject>", SetType('Sulci Voronoi'), SetWeakAttr('side', 'left'),
+                "Rsulcivoronoi_<subject>", SetType('Sulci Voronoi'), SetWeakAttr('side', 'right'),
+            )
+        ), # folds
 
-        ## existe-t-il un rapport avec nuclear imaging? nuclei doit il etre dans t1mri ? :
-        'nuclei', #SetWeakAttr( 'category', 'nuclei' ), #SetWeakAttr( 'category', 'deepnuclei' ),
-        SetContent(
-          ## ces types ne sont utilises dans aucun process
-          #  '<subject>_deep_nuclei_mask', SetType( 'Deep Nuclei Mask' ),
-          #  '<subject>_deep_nuclei_graph', SetType( 'Deep Nuclei Graph' ),
-          ## type Nucleus graph utilie par un process AnatomistShowNucleusGraph (viewer), entree, pas de writer
-          "<subject>_deep_nuclei",SetType( 'Deep Nuclei Graph' ),SetWeakAttr( 'graph_type', 'NucleusArg')
-          #"<subject>-nucleus",SetType( 'Nucleus graph' ),SetWeakAttr( 'graph_type', 'NucleusArg') # -> Deep Nuclei Graph
-        ),
+        'nuclei', SetContent( #SetWeakAttr( 'category', 'nuclei' ), #SetWeakAttr( 'category', 'deepnuclei' ),
+            ## ces types ne sont utilises dans aucun process
+            #  '<subject>_deep_nuclei_mask', SetType( 'Deep Nuclei Mask' ),
+            #  '<subject>_deep_nuclei_graph', SetType( 'Deep Nuclei Graph' ),
+            ## type Nucleus graph utilie par un process AnatomistShowNucleusGraph (viewer), entree, pas de writer
+            "<subject>_deep_nuclei", SetType('Deep Nuclei Graph'), SetWeakAttr('graph_type', 'NucleusArg')
+            #"<subject>-nucleus",SetType( 'Nucleus graph' ),SetWeakAttr( 'graph_type', 'NucleusArg') # -> Deep Nuclei Graph
+        ), # nuclei
 
-      'ROI', SetContent(),
+        'ROI', SetContent(),
+      
     ), # analysis
-)#t1mri
+) # t1mri
 
 insert('{center}/{subject}/t1mri/{acquisition}',
        *t1mri_acq_content

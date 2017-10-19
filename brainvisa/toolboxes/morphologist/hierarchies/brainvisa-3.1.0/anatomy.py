@@ -135,13 +135,13 @@ t1mri_acq_content = (
 
         'folds', SetContent( # sulci, gyri
           "{graph_version}", SetDefaultAttributeValue( 'graph_version', default_graph_version ), SetContent(
-          "L<subject>", SetType( 'Left Cortical folds graph' ), SetWeakAttr( 'side', 'left', 'labelled', 'No', 'manually_labelled', 'No', 'automatically_labelled', 'No',  ),
-          "R<subject>", SetType( 'Right Cortical folds graph' ), SetWeakAttr( 'side', 'right',  'labelled', 'No' ),
-          "Lsulcivoronoi_<subject>", SetType( 'Sulci Voronoi' ),
-            SetWeakAttr( 'side', 'left' ),
-          "Rsulcivoronoi_<subject>", SetType( 'Sulci Voronoi' ),
-            SetWeakAttr( 'side', 'right' ),
-          )
+            "L<subject>", SetType( 'Cortical folds graph' ), SetWeakAttr( 'side', 'left', 'labelled', 'No' ),
+            "R<subject>", SetType( 'Cortical folds graph' ), SetWeakAttr( 'side', 'right',  'labelled', 'No' ),
+            "Lsulcivoronoi_<subject>", SetType( 'Sulci Voronoi' ),
+              SetWeakAttr( 'side', 'left' ),
+            "Rsulcivoronoi_<subject>", SetType( 'Sulci Voronoi' ),
+              SetWeakAttr( 'side', 'right' ),
+            )
         ),
 
         ## existe-t-il un rapport avec nuclear imaging? nuclei doit il etre dans t1mri ? :
