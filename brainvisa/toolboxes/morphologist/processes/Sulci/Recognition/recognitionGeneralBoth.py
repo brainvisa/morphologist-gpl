@@ -43,16 +43,16 @@ spam_model = 'Statistical Parametric Anatomy Map (SPAM)'
 desync_msg = 'desynchronized between left and right side'
 
 signature = Signature(
-    'side', Choice( 'left', 'right', 'both', 'none' ),
-    'model', Choice( ann_model, ann_model_2001, spam_model, desync_msg),
-    'left_data_graph', ReadDiskItem( 'Left Cortical Folds Graph',
-      'Graph and Data' ),
-    'left_output_graph', WriteDiskItem( 'Labelled Cortical Folds Graph',
-      'Graph and Data', requiredAttributes={ 'side': 'left' } ),
-    'right_data_graph', ReadDiskItem( 'Right Cortical Folds Graph',
-      'Graph and Data' ),
-    'right_output_graph', WriteDiskItem( 'Labelled Cortical Folds Graph',
-      'Graph and Data', requiredAttributes={ 'side': 'right' } ),
+    'side', Choice('left', 'right', 'both', 'none'),
+    'model', Choice(ann_model, ann_model_2001, spam_model, desync_msg),
+    'left_data_graph', ReadDiskItem('Cortical Folds Graph',
+        'Graph and Data', requiredAttributes={'side': 'left'}),
+    'left_output_graph', WriteDiskItem('Labelled Cortical Folds Graph',
+        'Graph and Data', requiredAttributes={'side': 'left'}),
+    'right_data_graph', ReadDiskItem('Cortical Folds Graph',
+        'Graph and Data', requiredAttributes={'side': 'right'}),
+    'right_output_graph', WriteDiskItem('Labelled Cortical Folds Graph',
+        'Graph and Data', requiredAttributes={'side': 'right'}),
 )
 
 #import neuroConfig

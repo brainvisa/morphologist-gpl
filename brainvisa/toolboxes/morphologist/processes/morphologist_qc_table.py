@@ -39,7 +39,7 @@ def execution(self, context):
               'Left Hemisphere White Mesh', 'Right Hemisphere White Mesh',
               'Left Cortex Skeleton', 'Right Cortex Skeleton',
               'Left Hemisphere Mesh', 'Right Hemisphere Mesh',
-              'Left Cortical folds graph', 'Right Cortical folds graph',
+              'Cortical folds graph', 'Cortical folds graph',
               'Labelled Cortical folds graph', 'Labelled Cortical folds graph',
               'Sulcal morphometry measurements']
 
