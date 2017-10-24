@@ -12,8 +12,7 @@ signature = Signature(
     'analysis', String(),
     'graph_version', String(),
     'data_filters', ListOf(String()),
-    'output_file', WriteDiskItem(
-        'Text File', getProcessInstance('database_qc_table').export_formats),
+    'output_file', WriteDiskItem('Text File', 'HTML PDF'),
 )
 
 
