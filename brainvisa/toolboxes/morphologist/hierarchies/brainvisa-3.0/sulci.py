@@ -47,9 +47,9 @@ templ_sulci1 = (
 
 templ_sulci2 = (
     "L<subject>", SetType( 'Cortical folds graph' ), SetWeakAttr( 'side', 'left', 'labelled', 'No' ),
-    "L<subject>Base", SetType( 'Base Cortical folds graph' ), SetWeakAttr( 'side', 'left', 'labelled', 'Yes', 'manually_labelled', 'Yes', 'automatically_labelled', 'No' ),
+    "L<subject>Base", SetType( 'Labelled Cortical folds graph' ), SetWeakAttr( 'side', 'left', 'labelled', 'Yes', 'manually_labelled', 'Yes', 'automatically_labelled', 'No' ),
     "R<subject>", SetType( 'Cortical folds graph' ), SetWeakAttr( 'side', 'right',  'labelled', 'No' ),
-    "R<subject>Base", SetType( 'Base Cortical folds graph' ), SetWeakAttr( 'side', 'right', 'labelled', 'Yes', 'manually_labelled', 'Yes', 'automatically_labelled', 'No' ),
+    "R<subject>Base", SetType( 'Labelled Cortical folds graph' ), SetWeakAttr( 'side', 'right', 'labelled', 'Yes', 'manually_labelled', 'Yes', 'automatically_labelled', 'No' ),
     '*.data', 
 
     'default', SetWeakAttr( 'sulci_recognition_session', 'default' ),
