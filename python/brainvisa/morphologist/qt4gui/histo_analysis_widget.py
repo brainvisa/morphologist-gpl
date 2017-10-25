@@ -130,6 +130,13 @@ class HistoAnalysisWidget(QtGui.QWidget):
     # emitted whenever the histo analysis is modified interactively by the user
     histo_analysis_changed = QtCore.Signal(float, float, float, float)
 
+
+    def __del__(self):
+        del self.mwidget
+        pyplot.close(self.mfig)
+        del self.mfig
+
+
     def setPalette(self, palette):
         '''reimplemented from QWidget to handle matplotlib widget and
         mainwindow status bar

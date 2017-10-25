@@ -33,6 +33,7 @@
 
 from brainvisa.processes import *
 from soma.qt_gui.qt_backend import QtGui
+from soma.qt_gui.qtThread import MainThreadLife
 
 try:
     from brainvisa.morphologist.qt4gui import histo_analysis_widget
@@ -75,7 +76,7 @@ def create_histo_widget( self, hdata ):
       hwid ) )
     hwid.draw_histo()
     hwid.show()
-    return hwid
+    return MainThreadLife(hwid)
 
 def execution( self, context ):
     hdata = histo_analysis_widget.load_histo_data(
