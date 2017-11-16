@@ -91,7 +91,8 @@ def initialization( self ):
     fsl = hasattr(eNode.Normalization, 'NormalizeFSL')
     spm = hasattr(eNode.Normalization, 'NormalizeSPM')
     bal = hasattr(eNode.Normalization, 'NormalizeBaladin')
-
+    eNode.Normalization.allow_flip_initial_MRI = False
+    
     self.setExecutionNode(eNode)
 
     if fsl:
