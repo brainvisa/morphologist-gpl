@@ -23,7 +23,7 @@ import filecmp
 import time
 import numpy as np
 
-from soma import zipfile
+import zipfile
 from soma.path import relative_path
 import brainvisa.config
 

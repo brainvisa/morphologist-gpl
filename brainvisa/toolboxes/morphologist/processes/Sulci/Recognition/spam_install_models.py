@@ -34,10 +34,7 @@
 from brainvisa.processes import *
 import os
 import sys
-try:
-  from soma import zipfile
-except:
-  import zipfile
+import zipfile
 from brainvisa.data import neuroHierarchy
 from brainvisa.data.neuroHierarchy import databases
 from brainvisa.configuration import neuroConfig
