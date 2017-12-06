@@ -38,6 +38,7 @@
 import sip
 sip.setapi('QString', 2)
 import anatomist.api as anatomist
+from soma import aims
 # anatomist may be replaced by another implementation (brainvisa.anatomist)
 import numpy
 from brainvisa.morphologist.qt4gui import histo_analysis_widget
@@ -337,7 +338,8 @@ class HistoAnalysisEditorWidget(QDialog):
             awin.addObjects(fusion)
             a.execute('TexturingParams', objects=[fusion], texture_index=1,
                       mode='linear_A_if_B_black', rate=0.5)
-            bb = self._mri_corrected.boundingbox()
+            bb = [aims.Point3df(x[:3])
+                  for x in self._mri_corrected.boundingbox()]
             p = (bb[0] + bb[1]) / 2
             awin.setPosition(p, awin.getReferential())
             self._fusion2d = fusion

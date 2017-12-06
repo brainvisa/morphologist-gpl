@@ -275,7 +275,8 @@ class MorphologistView(acap.AnatomistMultipleViewsProcess):
 
         wpos = (0.5, 0.33, 0.5)
         pos = [(b[0] * b[2] + b[1] * (1. - b[2]))
-                                  for b in zip(*(t1mri.boundingbox()
+                                  for b in zip(*([x[:3]
+                                                  for x in t1mri.boundingbox()]
                                                   + (wpos,)))]
         wins[0].moveLinkedCursor(pos)
 
