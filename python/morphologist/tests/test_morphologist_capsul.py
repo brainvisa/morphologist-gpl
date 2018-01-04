@@ -364,10 +364,14 @@ def test(argv):
     """
     Function to execute unitest
     """
-    loader = MorphologistCapsulTestLoader()
-    suite = loader.loadTestsFromTestCase(TestMorphologistCapsul, argv)
-    runtime = unittest.TextTestRunner(verbosity=2).run(suite)
-    return runtime.wasSuccessful()
+    try:
+        loader = MorphologistCapsulTestLoader()
+        suite = loader.loadTestsFromTestCase(TestMorphologistCapsul, argv)
+        runtime = unittest.TextTestRunner(verbosity=2).run(suite)
+        return runtime.wasSuccessful()
+    finally:
+        if os.path.isdir(homedir):
+            shutil.rmtree(homedir)
 
 
 if __name__ == "__main__":

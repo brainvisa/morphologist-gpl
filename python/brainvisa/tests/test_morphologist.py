@@ -380,10 +380,14 @@ def test(argv):
     """
     Function to execute unitest
     """
-    loader = MorphologistTestLoader()
-    suite = loader.loadTestsFromTestCase(TestMorphologistPipeline, argv)
-    runtime = unittest.TextTestRunner(verbosity=2).run(suite)
-    return runtime.wasSuccessful()
+    try:
+        loader = MorphologistTestLoader()
+        suite = loader.loadTestsFromTestCase(TestMorphologistPipeline, argv)
+        runtime = unittest.TextTestRunner(verbosity=2).run(suite)
+        return runtime.wasSuccessful()
+    finally:
+        if os.path.isdir(homedir):
+            rmtree(homedir)
 
 
 if __name__ == "__main__":
