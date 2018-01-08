@@ -16,8 +16,9 @@ BRAINVISA_DEPENDENCY( RUN RECOMMENDS "anatomist-gpl" RUN
 BRAINVISA_DEPENDENCY( DEV RECOMMENDS "aims-til" DEV "= ${aims-til_VERSION}" )
 BRAINVISA_DEPENDENCY( DEV RECOMMENDS "anatomist-gpl" DEV
                       "= ${anatomist-gpl_VERSION}" )
-BRAINVISA_DEPENDENCY( RUN DEPENDS "spm" RUN
-                      ">= ${spm_VERSION_MAJOR}.${spm_VERSION_MINOR}" )
+BRAINVISA_DEPENDENCY(
+    RUN DEPENDS "brainvisa_spm" RUN
+    ">= ${brainvisa_spm_VERSION_MAJOR}.${brainvisa_spm_VERSION_MINOR}" )
 
 BRAINVISA_COPY_PYTHON_DIRECTORY( "${CMAKE_CURRENT_SOURCE_DIR}/brainvisa"
                                  ${PROJECT_NAME} )
