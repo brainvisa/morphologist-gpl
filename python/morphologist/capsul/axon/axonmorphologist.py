@@ -162,7 +162,9 @@ class AxonMorphologist(Pipeline):
         # initialization section
         self.nodes_activation.TalairachTransformation = False
         self.nodes_activation.SulcalMorphometry = False
+        self.nodes['GreyWhiteClassification'].side = 'left'
         self.nodes_activation.SulciRecognition = False
+        self.nodes['GreyWhiteClassification_1'].side = 'right'
         self.nodes_activation.SulciRecognition_1 = False
         # export orphan parameters
         if not hasattr(self, '_autoexport_nodes_parameters') \

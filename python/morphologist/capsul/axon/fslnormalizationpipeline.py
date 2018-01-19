@@ -53,6 +53,8 @@ class FSLnormalizationPipeline(Pipeline):
         self.add_link('ConvertFSLnormalizationToAIMS.write->ReorientAnatomy.transformation')
 
         # initialization section
+        self.nodes['ReorientAnatomy'].allow_flip_initial_MRI = False
+        self.nodes_activation.ReorientAnatomy = False
         # export orphan parameters
         if not hasattr(self, '_autoexport_nodes_parameters') \
                 or self._autoexport_nodes_parameters:

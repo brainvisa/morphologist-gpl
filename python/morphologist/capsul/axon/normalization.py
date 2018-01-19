@@ -23,7 +23,7 @@ class Normalization(Pipeline):
 
     def pipeline_definition(self):
         # nodes section
-        self.add_switch('select_Normalization_pipeline', ['NormalizeFSL', 'NormalizeSPM', 'NormalizeBaladin', 'Normalization_AimsMIRegister'], ['transformation', 'normalized', 'reoriented_t1mri'], output_types=[File(allowed_extensions=['.trm']), File(allowed_extensions=['.nii.gz']), File(allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.gif', '.ima', '.dim', '.jpg', '.mnc', '.mng', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'])])
+        self.add_switch('select_Normalization_pipeline', ['NormalizeFSL', 'NormalizeSPM', 'NormalizeBaladin', 'Normalization_AimsMIRegister'], ['transformation', 'normalized', 'reoriented_t1mri'], output_types=[File(optional=True, allowed_extensions=['.trm']), File(optional=True, allowed_extensions=['.nii.gz', '.nii', '.img', '.hdr', '.ima', '.dim', '.bmp', '.dcm', '', '.i', '.v', '.gif', '.jpg', '.mnc', '.mng', '.pbm', '.pgm', '.png', '.ppm', '.tiff', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz']), File(allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.gif', '.ima', '.dim', '.jpg', '.mnc', '.mng', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz', '.svs', '.fdf', '.ndpi', '.vms', '.vmu', '.scn', '.svslide', '.tif', '.bif', '.czi'])])
         self.add_process('NormalizeFSL', 'morphologist.capsul.fslnormalization.FSLNormalization')
         self.nodes['NormalizeFSL']._weak_outputs = True
         self.add_process('NormalizeSPM', 'morphologist.capsul.spmnormalization.SPMNormalization')

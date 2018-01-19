@@ -22,7 +22,7 @@ class FSLnormalizationToAims(Process):
 
 
         # initialization section
-        self.registered_volume = u'/i2bm/local/fsl/data/standard/MNI152_T1_1mm.nii.gz'
+        self.registered_volume = '/usr/share/fsl/data/standard/MNI152_T1_2mm_brain.nii.gz'
         self.standard_template = 0
         self.set_transformation_in_source_volume = True
 
