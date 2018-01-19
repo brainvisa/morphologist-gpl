@@ -53,6 +53,7 @@ class NormalizationSkullStripped(Pipeline):
         self.add_link('Normalization.transformation->TalairachFromNormalization.normalization_transformation')
 
         # initialization section
+        self.nodes['Normalization'].allow_flip_initial_MRI = False
         # export orphan parameters
         if not hasattr(self, '_autoexport_nodes_parameters') \
                 or self._autoexport_nodes_parameters:

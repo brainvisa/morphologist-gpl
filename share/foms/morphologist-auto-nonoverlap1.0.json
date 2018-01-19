@@ -317,8 +317,8 @@
 
         "Morphologist.PrepareSubject.Normalization.NormalizeSPM": {
             "normalized_t1mri":
-                [["output:{acquisition}/normalized_SPM_<subject>",
-                    ["NIFTI", "SPM"]]],
+                [["output:{acquisition}/normalized_<normalization>_<subject>",
+                    ["NIFTI", "SPM"], {"normalization": "SPM"}]],
             # has to be re-specified here because of a problem in
             # switch back-propagation of output values
             "reoriented_t1mri":
@@ -326,6 +326,9 @@
         },
 
         "Morphologist.PrepareSubject.Normalization.NormalizeFSL": {
+            "NormalizeFSL_normalized_anatomy_data":
+                [["output:{acquisition}/normalized_<normalization>_<subject>",
+                    ["NIFTI", "SPM"], {"normalization": "FSL"}]],
             # has to be re-specified here because of a problem in
             # switch back-propagation of output values
             "reoriented_t1mri":
@@ -333,10 +336,19 @@
         },
 
         "Morphologist.PrepareSubject.Normalization.NormalizeBaladin": {
+            "NormalizeBaladin_normalized_anatomy_data":
+                [["output:{acquisition}/normalized_<normalization>_<subject>",
+                    ["NIFTI", "SPM"], {"normalization": "Baladin"}]],
             # has to be re-specified here because of a problem in
             # switch back-propagation of output values
             "reoriented_t1mri":
                 [["output:{acquisition}/<subject>", "images"]],
+        },
+
+        "Morphologist.PrepareSubject.Normalization.Normalization_AimsMIRegister": {
+          "normalized_anatomy_data":
+              [["output:{acquisition}/normalized_<normalization>_<subject>",
+                    ["NIFTI", "SPM"], {"normalization": "AimsMIRegister"}]],
         },
 
         "Morphologist.TalairachTransformation": {
