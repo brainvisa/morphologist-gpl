@@ -518,6 +518,9 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
             del self.trait(param).groups
         self.trait('grey_white_topology_version').groups = ['segmentation']
         self.trait('pial_mesh_version').groups = ['segmentation']
+        self.on_trait_change(self._change_graph_version,
+                             'CorticalFoldsGraph_graph_version')
+        self._change_graph_version(self.CorticalFoldsGraph_graph_version)
 
 
     def attach_config_activations(self):
@@ -606,3 +609,18 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
         # if not using normalization renormalization should be disabled too.
         if self.select_Talairach == 'StandardACPC':
             self.perform_skull_stripped_renormalization = 'initial'
+
+    def _change_graph_version(self, value):
+        try:
+            from capsul.attributes.completion_engine \
+                import ProcessCompletionEngine
+        except ImportError:
+            return
+        compl = ProcessCompletionEngine.get_completion_engine(self)
+        if compl is not None:
+            attributes = compl.get_attribute_values()
+            if attributes.trait('graph_version') is not None \
+                    and attributes.graph_version != value:
+                attributes.graph_version = value
+                compl.complete_parameters()
+
