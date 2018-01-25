@@ -80,15 +80,15 @@ signature = Signature(
 
 def initialization( self ):
   try:
-    fsl = getProcess( 'FSLnormalizationPipeline' )
+    fsl = getProcessInstance( 'FSLnormalizationPipeline' )
   except:
     fsl = None
   try:
-    spm = getProcess( 'SPMnormalizationPipeline' )
+    spm = getProcessInstance( 'SPMnormalizationPipeline' )
   except:
     spm = None
   try:
-    bal = getProcess( 'BaladinNormalizationPipeline' )
+    bal = getProcessInstance( 'BaladinNormalizationPipeline' )
   except:
     bal = None
 
