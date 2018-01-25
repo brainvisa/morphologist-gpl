@@ -45,8 +45,8 @@ signature = Signature(
   'left_csf', WriteDiskItem( 'Left CSF Mask', 'Aims writable volume formats' ),
   'right_csf', WriteDiskItem( 'Right CSF Mask',
     'Aims writable volume formats' ),
-  'split_mask', WriteDiskItem( 'Split Brain Mask',
-    'Aims writable volume formats' ),
+  'split_mask', ReadDiskItem( 'Split Brain Mask',
+    'Aims readable volume formats' ),
 )
 
 def initialization( self ):
