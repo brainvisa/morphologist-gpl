@@ -39,13 +39,18 @@ name = 'Simplified Morphologist 2015'
 userLevel = 0
 
 signature = Signature(
-    't1mri', ReadDiskItem( 'Raw T1 MRI',
-        'Aims readable volume formats' ),
+    't1mri', ReadDiskItem(
+        'Raw T1 MRI',
+        'Aims readable volume formats'),
     'perform_segmentation', Boolean(),
     #Commissures Coordinates
-    'method_ACPC', Choice( 'Manually', 'With SPM Normalization', 'Already done' ),
-    'commissure_coordinates', WriteDiskItem( 'Commissure coordinates',
-        'Commissure coordinates' ),
+    'method_ACPC', Choice('Manually',
+                          'With SPM8 Normalization',
+                          'With SPM12 Normalization',
+                          'Already done'),
+    'commissure_coordinates', WriteDiskItem(
+        'Commissure coordinates',
+        'Commissure coordinates'),
     'anterior_commissure', Point3D(),
     'posterior_commissure', Point3D(),
     'interhemispheric_point', Point3D(),
@@ -54,13 +59,16 @@ signature = Signature(
         'Transform Raw T1 MRI to Talairach-MNI template-SPM',
         'Transformation matrix' ),
         ##SPM Normalization
-    'anatomical_template', ReadDiskItem( 'anatomical Template',
-        ['NIFTI-1 image', 'MINC image', 'SPM image'] ),
-    'job_file', WriteDiskItem( 'SPM2 parameters', 'Matlab file' ),
-    'transformations_information', WriteDiskItem( 'SPM2 normalization matrix',
-        'Matlab file' ),
-    'normalized_t1mri', WriteDiskItem( 'Raw T1 MRI',
-        [ 'NIFTI-1 image', 'SPM image' ], {'normalization':'SPM'} ),
+    'anatomical_template', ReadDiskItem(
+        'anatomical Template',
+        ['NIFTI-1 image', 'MINC image', 'SPM image']),
+    #'job_file', WriteDiskItem( 'SPM2 parameters', 'Matlab file' ),
+    'transformations_information', WriteDiskItem(
+        'SPM2 normalization matrix',
+        'Matlab file'),
+    'normalized_t1mri', WriteDiskItem(
+        'Raw T1 MRI',
+        ['NIFTI-1 image', 'SPM image'], {'normalization':'SPM'}),
     'talairach_MNI_transform', WriteDiskItem(
         'Transform Raw T1 MRI to Talairach-MNI template-SPM',
         'Transformation matrix', ),
@@ -251,7 +259,7 @@ def linkOldNormalization(self, proc, dummy):
 def initialization( self ):
     self.perform_segmentation = True
     #Commissures Coordinates
-    self.method_ACPC = 'With SPM Normalization'
+    self.method_ACPC = 'With SPM8 Normalization'
     self.linkParameters('commissure_coordinates', 't1mri')
     self.linkParameters('anterior_commissure',
         'commissure_coordinates', APCReader('AC'))
@@ -292,7 +300,7 @@ def initialization( self ):
                 return []
     self.anatomical_template = self.signature[ 'anatomical_template' ].findValue(
         { 'databasename' : 'spm', 'skull_stripped' : 'no' } )
-    self.linkParameters( 'job_file', 't1mri' )
+    #self.linkParameters( 'job_file', 't1mri' )
     self.linkParameters( 'transformations_information', 't1mri' )
     self.linkParameters( 'normalized_t1mri', 't1mri' )
     self.linkParameters( 'talairach_MNI_transform', 'transformations_information' )
@@ -307,10 +315,10 @@ def initialization( self ):
     self.setOptional( 'source_referential' )
     
     self.setOptional( 'anatomical_template' )
-    self.setOptional( 'job_file' )
+    #self.setOptional( 'job_file' )
     
     self.signature[ 'anatomical_template' ].userLevel = 100
-    self.signature[ 'job_file' ].userLevel = 100
+    #self.signature[ 'job_file' ].userLevel = 100
     self.signature[ 'transformations_information' ].userLevel = 100
     self.signature[ 'normalized_t1mri' ].userLevel = 100
     self.signature[ 'talairach_MNI_transform' ].userLevel = 100
@@ -486,17 +494,25 @@ def execution( self, context ):
                                 Interhemispheric_Point = self.interhemispheric_point,
                                 Left_Hemisphere_Point = self.left_hemisphere_point,
                                 older_MNI_normalization = self.older_MNI_normalization)
-        elif self.method_ACPC == 'With SPM Normalization':
-            context.runProcess('Normalization_SPM_reinit',
-                                anatomy_data = self.t1mri,
-                                anatomical_template = self.anatomical_template,
-                                job_file = self.job_file,
-                                transformations_informations = self.transformations_information,
-                                normalized_anatomy_data = self.normalized_t1mri)
+        elif self.method_ACPC == 'With SPM8 Normalization' or self.method_ACPC == 'With SPM12 Normalization':
+            if self.method_ACPC == 'With SPM8 Normalization':
+                context.runProcess('normalization_t1_spm8_reinit',
+                                    anatomy_data = self.t1mri,
+                                    anatomical_template = self.anatomical_template,
+                                    transformations_informations = self.transformations_information,
+                                    normalized_anatomy_data = self.normalized_t1mri,
+                                    allow_retry_initialization = True)
+            elif self.method_ACPC == 'With SPM12 Normalization':
+                context.runProcess('normalization_t1_spm12_reinit',
+                                    anatomy_data = self.t1mri,
+                                    anatomical_template = self.anatomical_template,
+                                    transformations_informations = self.transformations_information,
+                                    normalized_anatomy_data = self.normalized_t1mri,
+                                    allow_retry_initialization = True)
             context.runProcess('SPMsn3dToAims',
                                 read = self.transformations_information,
                                 write = self.talairach_MNI_transform,
-                                source_volume =self.t1mri,
+                                source_volume = self.t1mri,
                                 normalized_volume = None)
             context.runProcess('TalairachTransformationFromNormalization',
                                 normalization_transformation = self.talairach_MNI_transform,
@@ -538,21 +554,27 @@ def execution( self, context ):
                             lesion_mask = None,
                             brain_mask = self.brain_mask)
         #Re Commissures Coordinates
-        if self.method_ACPC == 'With SPM Normalization':
+        if self.method_ACPC == 'With SPM8 Normalization' or self.method_ACPC == 'With SPM12 Normalization':
             context.runProcess('skullstripping',
                                 t1mri = self.t1mri,
                                 brain_mask = self.brain_mask,
-                                skull_stripped = self.skull_stripped)                                
-            context.runProcess('Normalization_SPM_reinit',
-                                anatomy_data = self.skull_stripped,
-                                anatomical_template = self.anatomical_template_skull_stripped,
-                                job_file = self.job_file,
-                                transformations_informations = self.transformations_information,
-                                normalized_anatomy_data = self.normalized_t1mri)
+                                skull_stripped = self.skull_stripped)
+            if self.method_ACPC == 'With SPM8 Normalization':
+                context.runProcess('normalization_t1_spm8_reinit',
+                                    anatomy_data = self.skull_stripped,
+                                    anatomical_template = self.anatomical_template_skull_stripped,
+                                    transformations_informations = self.transformations_information,
+                                    normalized_anatomy_data = self.normalized_t1mri)
+            elif self.method_ACPC == 'With SPM12 Normalization':
+                context.runProcess('normalization_t1_spm12_reinit',
+                                    anatomy_data = self.skull_stripped,
+                                    anatomical_template = self.anatomical_template_skull_stripped,
+                                    transformations_informations = self.transformations_information,
+                                    normalized_anatomy_data = self.normalized_t1mri)   
             context.runProcess('SPMsn3dToAims',
                                 read = self.transformations_information,
                                 write = self.talairach_MNI_transform,
-                                source_volume =self.skull_stripped,
+                                source_volume = self.skull_stripped,
                                 normalized_volume = None)
             context.runProcess('TalairachTransformationFromNormalization',
                                 normalization_transformation = self.talairach_MNI_transform,
@@ -574,7 +596,7 @@ def execution( self, context ):
                             split_template = self.split_template,
                             split_brain = self.split_brain)
         #Talairach Transformation
-        if self.method_ACPC != 'With SPM Normalization':
+        if self.method_ACPC == 'Manually' or self.method_ACPC == 'Already done':
             context.write( '<b>' + 'Computing Talairach Transformation...' + '</b>' )
             context.runProcess('TalairachTransformation',
                                 split_mask = self.split_brain,

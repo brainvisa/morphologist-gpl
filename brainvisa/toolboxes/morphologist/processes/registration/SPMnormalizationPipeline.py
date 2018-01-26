@@ -146,7 +146,10 @@ def initialization( self ):
     sel_node.selection_outputs = []
     first_node = True
     for pname in possible_procs:
-        proc = getProcess(pname)
+        try:
+            proc = getProcess(pname)
+        except ValidationError:
+            proc = None
         if proc is not None:
             sel_node.addChild(pname,
                               ProcessExecutionNode(proc,
@@ -186,6 +189,11 @@ def initialization( self ):
                 transproc = getattr(sel_node, pname)
             sel_node.selection_outputs.append(['transformations_informations',
                                                'normalized_anatomy_data'])
+
+    if transproc is None:
+        raise ValidationError('No SPM process usable: please check if SPM, '
+            'the SPM toolbox for BrainVisa are installed, and SPM paths '
+            'configured in the preferences.')
 
     sel_node.switch_output = ['spm_transformation', 'normalized_t1mri']
 
