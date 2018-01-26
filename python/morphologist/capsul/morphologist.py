@@ -521,6 +521,7 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
         self.on_trait_change(self._change_graph_version,
                              'CorticalFoldsGraph_graph_version')
         self._change_graph_version(self.CorticalFoldsGraph_graph_version)
+        self.visible_groups = set()
 
 
     def attach_config_activations(self):
