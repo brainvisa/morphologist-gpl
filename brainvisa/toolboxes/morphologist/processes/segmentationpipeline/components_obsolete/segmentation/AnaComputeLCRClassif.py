@@ -49,11 +49,18 @@ signature = Signature(
     'Aims readable volume formats' ),
 )
 
+def link_split(self, proc, dummy):
+    if self.left_grey_white is not None:
+        atts = self.left_grey_white.hierarchyAttributes()
+        if 'side' in atts:
+            del atts['side']
+        return proc.signature['split_mask'].findValue(atts)
+
 def initialization( self ):
     self.linkParameters( 'right_grey_white', 'left_grey_white' )
     self.linkParameters( 'left_csf', 'left_grey_white' )
     self.linkParameters( 'right_csf', 'right_grey_white' )
-    self.linkParameters( 'split_mask', 'left_grey_white' )
+    self.linkParameters( 'split_mask', 'left_grey_white', self.link_split )
 
 def execution( self, context ):
     
