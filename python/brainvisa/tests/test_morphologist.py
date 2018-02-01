@@ -271,8 +271,19 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
         )
         TestMorphologistPipeline.import_data(ref_data_dir,
                                              self.ref_database.name)
+        
+        # Run the pipelines (conditionnaly).
+        if not self.do_spam:
+            self.pipeline.perform_sulci_recognition = False
+            print('(not doing SPAM sulci recognition tests)')
+        if not self.do_ann:
+            print('(not doing ANN sulci recognition tests)')
+            skip_ann = True
+        else:
+            skip_ann = False
+
         # Run the pipelines (always use ANN)
-        self.run_pipelines(self.ref_database)
+        self.run_pipelines(self.ref_database, skip_ann)
 
     def setUp_run_mode(self):
         # Get the ref database
