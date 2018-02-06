@@ -36,7 +36,7 @@
 include( 'base' )
 from brainvisa import registration
 include( 'registration' )
-include( '3DT1_spm' )
+include( 'raw_data' )
 
 mesh_content = (
     "<subject>_brain", SetType( 'Brain Mesh' ), SetWeakAttr( 'side', 'both' ),
