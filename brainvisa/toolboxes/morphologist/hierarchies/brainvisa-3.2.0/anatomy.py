@@ -36,7 +36,7 @@
 from brainvisa import registration
 include( 'base' )
 include( 'registration' )
-include( '3DT1_spm' )
+include( 'raw_data' )
 
 
 mesh_content = (
