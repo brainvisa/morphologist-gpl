@@ -38,12 +38,13 @@ userLevel = 0
 
 signature = Signature(
     'measures_by_subject', ListOf(ReadDiskItem(
-        'Text File',
-        ['CSV File', 'Text file', 'Text Data Table'])),
+        'Text file',
+        ['Text file', 'CSV file', 'Text Data Table'])),
     'subjects', ListOf(String()),
+    'measures_files_without_header', Boolean(),
     'group_measures', WriteDiskItem(
-        'Text File',
-        ['CSV File', 'Text file', 'Text Data Table'])
+        'Text file',
+        ['Text file', 'CSV file', 'Text Data Table'])
 )
 
 
@@ -58,10 +59,10 @@ def initialization( self ):
     self.linkParameters('subjects',
                         'measures_by_subject',
                         self.link_subjects)
+    self.measures_files_without_header = False
 
 
 def execution( self, context ):
-
     if len(self.subjects) != len(self.measures_by_subject):
         raise ValueError(
             'subjects list must be the same size as measures_by_subject list')
@@ -70,15 +71,16 @@ def execution( self, context ):
     first = True
     for item, subject in zip(self.measures_by_subject, self.subjects):
         ifi = open(item.fullPath())
-        header = ifi.readline()
-        if first:
-            f.write('subject;' + header)
-            first_header = header
-            first = False
-        elif header != first_header:
-            context.error('CSV headers do not match. Header of the first subject:\n%s' % first_header)
-            context.error('Header of the failed subject "%s":\n%s' % (subject, header))
-            raise ValueError('CSV headers do not match')
+        if not self.measures_files_without_header:
+            header = ifi.readline()
+            if first:
+                f.write('subject;' + header)
+                first_header = header
+                first = False
+            elif header != first_header:
+                context.error('CSV headers do not match. Header of the first subject:\n%s' % first_header)
+                context.error('Header of the failed subject "%s":\n%s' % (subject, header))
+                raise ValueError('CSV headers do not match')
         for line in ifi.xreadlines():
             f.write(';'.join([subject, line.strip()]) + '\n')
 
