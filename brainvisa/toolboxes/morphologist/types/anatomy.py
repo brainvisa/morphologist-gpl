@@ -48,7 +48,7 @@ Format( 'Gyri Model', "f|*.gyr" )
 
 FileType( 'Registered Raw T1 MRI with fMRI', 'Raw T1 MRI' )
 FileType( 'Commissure coordinates', 'Any Type', 'Commissure coordinates')
-FileType( 'T1 MRI Bias Corrected', 'T1 MRI' )
+#FileType( 'T1 MRI Bias Corrected', 'T1 MRI' ) # already in 'builtin'
 FileType( 'T1 MRI White Matter Ridges', 'Label Volume' )
 FileType( 'T1 MRI Filtered For Histo', 'Label Volume' )
 FileType( 'T1 MRI Bias Field', 'Rainbow 3D Volume' )

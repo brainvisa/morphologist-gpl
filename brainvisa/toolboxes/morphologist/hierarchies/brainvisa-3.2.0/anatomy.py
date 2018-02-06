@@ -147,7 +147,7 @@ t1mri_acq_content = (
         'RawT1-<subject>_<acquisition>_Scanner_Based', SetType( 'Scanner Based Referential' ), SetWeakAttr('destination_referential', str(registration.talairachMNIReferentialId)),
     ),
     "{analysis}", SetContent( # processing results in analysis
-        #"nobias_<subject>", SetType( 'T1 MRI Bias Corrected' ),
+        "nobias_<subject>", SetType( 'T1 MRI Bias Corrected' ),
         "biasfield_<subject>", SetType( 'T1 MRI Bias Field' ),
         "whiteridge_<subject>", SetType( 'T1 MRI White Matter Ridges' ),
         "variance_<subject>", SetType( 'T1 MRI Variance' ),
