@@ -35,6 +35,7 @@ from brainvisa.processes import Signature
 from brainvisa.processes import ReadDiskItem, Boolean, Float, Choice, String
 from brainvisa.processes import WriteDiskItem
 from brainvisa.processes import ValidationError
+import six
 
 # Try to import numpy
 try:
@@ -219,7 +220,7 @@ def execution(self, context):
     properties = {"filter_sulci": "prop_sulci",
                   "filter_subjects": "prop_subjects",
                   "replace_missing": "replace_method"}
-    for condition, threshold in properties.iteritems():
+    for condition, threshold in six.iteritems(properties):
         d[condition] = self.__dict__[condition]
         if d[condition]:
             d[threshold] = self.__dict__[threshold]

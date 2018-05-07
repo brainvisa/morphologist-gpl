@@ -50,7 +50,7 @@ def execution( self, context ):
   try:
     f = open( self.classifier.fullPath(), 'w' )
     f.close()
-  except Exception, e:
+  except Exception as e:
     context.ask( 'Error: ' + str(e), 'OK' )
     raise
 
