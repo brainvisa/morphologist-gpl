@@ -162,7 +162,7 @@ nstats_normal 1
     w = aims.Writer()
     w.write( im2, self.output_image.fullPath() )
 
-  except Exception, e:
+  except Exception as e:
     context.ask( 'Error: ' + str(e), 'OK' )
     raise
 

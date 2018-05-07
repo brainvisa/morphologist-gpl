@@ -166,7 +166,7 @@ nstats_normal 1
     else:
       return [ imdim[0] * imvs[0], imdim[1] * imvs[1], 0, 1 ]
 
-  except Exception, e:
+  except Exception as e:
     context.ask( 'Error: ' + str(e), 'OK' )
     raise
 
