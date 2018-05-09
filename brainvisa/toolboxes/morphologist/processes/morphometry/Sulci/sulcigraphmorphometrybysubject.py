@@ -110,8 +110,8 @@ def execution( self, context ):
     list_sulci = []
     dict_sulci_inv = {}
     
-    for sulcus in sulci_sel[sulci_sel.keys()[0]]:
-        for ss_sulcus in sulci_sel[sulci_sel.keys()[0]][sulcus]:
+    for sulcus in sulci_sel[next(iter(sulci_sel.keys()))]:
+        for ss_sulcus in sulci_sel[next(iter(sulci_sel.keys()))][sulcus]:
             list_sulci.append(ss_sulcus)
             dict_sulci_inv[ss_sulcus] = sulcus
     
@@ -168,7 +168,7 @@ def execution( self, context ):
             
             #On ecrit les valeurs dans un dictionnaire, en rangeant par sillon principal.
             mainlabel = dict_sulci_inv[sulcus[self.use_attribute]]
-            if dict_morpho.has_key(mainlabel):
+            if mainlabel in dict_morpho:
                 #Si le sillon existe deja on ajoute les mesures.
                 dict_morpho[mainlabel]['surface_tal'].append(surface_tal)
                 dict_morpho[mainlabel]['surface_nat'].append(surface_nat)
@@ -197,7 +197,7 @@ def execution( self, context ):
     f = open(self.sulcal_morpho_measures.fullPath(), 'w')
     f.write('sulcus;label;side;surface_talairach;surface_native;maxdepth_talairach;maxdepth_native;meandepth_talairach;meandepth_native;hull_junction_length_talairach;hull_junction_length_native;GM_thickness;opening')
     
-    for sulcus in sorted(sulci_sel[sulci_sel.keys()[0]].keys()):
+    for sulcus in sorted(sulci_sel[next(iter(sulci_sel.keys()))].keys()):
     #for sulcus in sorted(dict_morpho.keys()):
         if sulcus in dict_morpho.keys():
             ##SURFACE

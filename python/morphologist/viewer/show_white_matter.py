@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
+
 import os
 try:
     from traits.api import ListStr,HasTraits,File,Float,Instance,Enum,Str
@@ -11,7 +13,7 @@ import anatomist.api as ana
 
 class ShowWhiteMatter(Controller):
     name='ShowWhiteMatter'
-    print 'classshow brain mask'   
+    print('classshow brain mask'   )
     def __init__(self,*args,**kwargs):
         HasTraits.__init__(self)
 	add_trait(self,'white_mesh',File(exists=True))
@@ -45,9 +47,9 @@ class ShowWhiteMatter(Controller):
 	if self.side == 'right':
 	    win3.camera( view_quaternion=[0.5, -0.5, -0.5, 0.5] )
 	
-	print 'corredt',self.mri_corrected
+	print('corredt',self.mri_corrected)
 	if self.mri_corrected:
-	    print 'ok mri corrected'
+	    print('ok mri corrected')
 	    anat = a.loadObject( self.mri_corrected )
 	    anat.takeAppRef()
 	    win3.addObjects( [anat] )
@@ -57,7 +59,7 @@ class ShowWhiteMatter(Controller):
     
     def __call__( self):
         """ Function to call the execution """ 
-	print 'here call show volume'
+	print('here call show volume')
 	self.command()
   
   

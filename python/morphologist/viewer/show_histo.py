@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
+
 import os
 try:
     from traits.api import ListStr,HasTraits,File,Float,Instance,Enum,Str
@@ -11,7 +13,7 @@ from soma.controller import Controller,add_trait
 
   
 class ShowHisto(Controller):
-    print 'class show histo'
+    print('class show histo')
     name='ShowHisto'
     def __init__(self,*args,**kwargs):
         HasTraits.__init__(self)
@@ -58,7 +60,7 @@ class ShowHisto(Controller):
 
     def __call__( self):
         """ Function to call the execution """ 
-        print 'here call show volume'
+        print('here call show volume')
         self.command()
 
     
