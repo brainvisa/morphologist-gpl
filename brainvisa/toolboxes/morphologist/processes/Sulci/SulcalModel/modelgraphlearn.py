@@ -238,7 +238,7 @@ def execution( self, context ):
     print("%s %s -l 1 -v ~/hosts '%s' '%s'" % \
           (os.path.basename(sys.executable), distcmd, batchout, batchout + '.log'), file=fd)
     fd.close()
-    os.chmod(scriptout, 0750)
+    os.chmod(scriptout, 0o0750)
   elif self.parallelism_mode == 'grid':
     context.write( 'Grid (Matthieu) parallelism mode' )
     sglt = distutils.spawn.find_executable( 'siGenerateLearningTasks.py' )
@@ -259,7 +259,7 @@ def execution( self, context ):
     print("%s %s  --host ~/neurospin-distcc-hosts --tasks %s --log %s --timeslot -" % \
           (os.path.basename(sys.executable), distcmd, batchout, batchout + '.log'), file=fd)
     fd.close()
-    os.chmod(scriptout, 0750)
+    os.chmod(scriptout, 0o0750)
   elif self.parallelism_mode == 'LSF':
     context.write( 'LSF (CCRT) mode' )
     sglt = distutils.spawn.find_executable( 'siGenerateLearningTasks.py' )

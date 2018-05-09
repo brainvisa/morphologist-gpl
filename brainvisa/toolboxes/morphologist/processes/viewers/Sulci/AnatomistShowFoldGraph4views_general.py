@@ -311,7 +311,9 @@ def execution( self, context ):
 
 ########################################################################################
 
-def create_cmd(images, (nx, ny), sizes, (bbx, bby)):
+def create_cmd(images, size, sizes, bbox):
+    nx, ny = size
+    bbx, bby = bbox
     args = ''
     px = 0
     ind = 0
