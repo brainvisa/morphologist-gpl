@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
+
 import os
 try:
     from traits.api import ListStr,HasTraits,File,Float,Instance,Enum,Str
@@ -56,7 +58,7 @@ class ShowHemi(Controller):
     
     def __call__( self):
         """ Function to call the execution """ 
-	print 'here call show volume'
+	print('here call show volume')
 	self.command()
   
   

@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
+
 import os
 try:
     from traits.api import ListStr,HasTraits,File,Float,Instance,Enum,Str
@@ -10,14 +12,14 @@ import soma.fom
 import anatomist.api as ana
 
 class ShowVolume(Controller):
-    print 'class show volume'
+    print('class show volume')
     name='ShowVolume'
     def __init__(self,*args,**kwargs):
         HasTraits.__init__(self)
         add_trait(self,'volume',File(exists=True))
 	#add_trait(self,'t1mri',Str)
 	self.volume=args[0]
-	#print 't1mri',self.t1mri
+	#print('t1mri',self.t1mri)
 
     
     def anatomist_instance(self):
@@ -46,6 +48,6 @@ class ShowVolume(Controller):
     
     def __call__( self):
         """ Function to call the execution """ 
-	print 'here call show volume'
+	print('here call show volume')
 	self.command()
         #subprocess.check_call( self.command() )    

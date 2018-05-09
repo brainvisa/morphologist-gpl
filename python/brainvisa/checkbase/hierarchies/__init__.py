@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
+
 image_extensions = '(nii.gz|nii|ima|ima.gz)$'
 mesh_extensions = '(gii|mesh)$'
 
@@ -71,7 +73,7 @@ def processregexp(regexp, attributes, wildcards = True):
         m = re.match('^[=<](?P<field>\w+)', each)
         if m:
             field = m.groupdict()['field']
-            #print field, attributes[field], each[_findmatchingparenthesis(each)+1:]
+            #print(field, attributes[field], each[_findmatchingparenthesis(each)+1:])
             if wildcards:
                if not attributes.has_key(field):
                   attributes[field] = '*'
