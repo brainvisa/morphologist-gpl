@@ -7,9 +7,9 @@
 #
 # This software is governed by the CeCILL license version 2 under
 # French law and abiding by the rules of distribution of free software.
-# You can  use, modify and/or redistribute the software under the 
+# You can  use, modify and/or redistribute the software under the
 # terms of the CeCILL license version 2 as circulated by CEA, CNRS
-# and INRIA at the following URL "http://www.cecill.info". 
+# and INRIA at the following URL "http://www.cecill.info".
 #
 # As a counterpart to the access to the source code and  rights to copy,
 # modify and redistribute granted by the license, users are provided only
@@ -24,8 +24,8 @@
 # therefore means  that it is reserved for developers  and  experienced
 # professionals having in-depth computer knowledge. Users are therefore
 # encouraged to load and test the software's suitability as regards their
-# requirements in conditions enabling the security of their systems and/or 
-# data to be ensured and,  more generally, to use and operate it in the 
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
 # same conditions as regards security.
 #
 # The fact that you are presently reading this means that you have had
@@ -38,8 +38,10 @@ name = 'Anatomist Show Fold Graph'
 roles = ('viewer',)
 userLevel = 0
 
+
 def validation():
     anatomist.validation()
+
 
 signature = Signature(
     'graph', ReadDiskItem('Cortical folds graph', 'Graph'),
@@ -48,13 +50,14 @@ signature = Signature(
     # the SPAM model mesh when the subject does not have an associated mesh.
     # It's quite a shameful solution, but...
     'white_mesh', ReadDiskItem('Hemisphere White Mesh',
-        'Anatomist mesh formats', requiredAttributes={'modality': 't1mri'}),
+                               'Anatomist mesh formats', requiredAttributes={'modality': 't1mri'}),
     'hemi_mesh', ReadDiskItem('Hemisphere Mesh', 'Anatomist mesh formats'),
-    'load_MRI', Choice("Yes","No"),
-    'two_windows', Choice("Yes","No"),
+    'load_MRI', Choice("Yes", "No"),
+    'two_windows', Choice("Yes", "No"),
     'mri_corrected', ReadDiskItem('T1 MRI Bias Corrected',
-        'Anatomist volume formats')
-    )
+                                  'Anatomist volume formats')
+)
+
 
 def initialization(self):
     self.setOptional('nomenclature')
@@ -67,6 +70,7 @@ def initialization(self):
     self.linkParameters('hemi_mesh', 'graph')
     self.linkParameters('mri_corrected', 'graph')
     self.nomenclature = self.signature['nomenclature'].findValue({})
+
 
 def execution(self, context):
     a = anatomist.Anatomist()
@@ -90,7 +94,7 @@ def execution(self, context):
     graph = a.loadObject(self.graph)
     context.write('nomenclature_property:', nomenclatureprop)
     a.execute('GraphDisplayProperties', objects=[graph],
-        nomenclature_property=nomenclatureprop)
+              nomenclature_property=nomenclatureprop)
     selfdestroy.append(graph)
     mesh = None
     if self.load_MRI == "Yes":
@@ -106,7 +110,7 @@ def execution(self, context):
         selfdestroy.append(mesh)
         mesh.setMaterial(a.Material(diffuse=[0.8, 0.8, 0.8, 0.5]))
     win3 = a.createWindow('3D')
-    graphRef=graph.referential
+    graphRef = graph.referential
     win3.assignReferential(graphRef)
     selfdestroy.append(win3)
     win3.addObjects([graph], add_graph_nodes=True)
@@ -117,17 +121,16 @@ def execution(self, context):
             win2.assignReferential(graphRef)
             selfdestroy.append(win2)
             win2.addObjects([graph])
-        else :
+        else:
             win2 = win3
     else:
         win2 = win3
     if self.load_MRI == "Yes":
         if self.mri_corrected is not None:
             win2.addObjects([anat])
-    #if self.nomenclature is not None:
+    # if self.nomenclature is not None:
         #wg= a.getDefaultWindowsGroup()
-        ## to see the graph elements, we have to select them. After that they remain visible even if they are deselected
+        # to see the graph elements, we have to select them. After that they remain visible even if they are deselected
         #wg.setSelectionByNomenclature(hie, ["unknown", "brain"])
         #wg.toggleSelectionByNomenclature(hie, ["unknown", "brain"])
     return selfdestroy
-

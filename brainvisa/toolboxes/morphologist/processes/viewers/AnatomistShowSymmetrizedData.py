@@ -42,90 +42,91 @@ name = 'Anatomist Show Symmetrized data'
 #roles = ('viewer',)
 userLevel = 2
 
+
 def validation():
     anatomist.validation()
 
+
 signature = Signature(
- 'data_type', Choice( 'Any Type' ),
- 'items', ListOf( ReadDiskItem( 'Any Type', getAllFormats() ) ),
+    'data_type', Choice('Any Type'),
+    'items', ListOf(ReadDiskItem('Any Type', getAllFormats())),
 )
 
 
 def dataTypeChanged(self, dataType):
-  if dataType:
-    formats=list(databases.getTypesFormats(dataType))
-    if not formats:
-      formats=getAllFormats()
-    self.signature['items'] = ListOf( ReadDiskItem( dataType, formats ) )
-    self.signatureChangeNotifier.notify(self)
+    if dataType:
+        formats = list(databases.getTypesFormats(dataType))
+        if not formats:
+            formats = getAllFormats()
+        self.signature['items'] = ListOf(ReadDiskItem(dataType, formats))
+        self.signatureChangeNotifier.notify(self)
 
 
-def initialization( self ):
-  possibleTypes = [ t.name for t in getAllDiskItemTypes() ]
-  self.signature[ 'data_type' ].setChoices(*sorted(possibleTypes))
-  self.data_type='Any Type'
-  self.addLink( 'items', 'data_type' , self.dataTypeChanged )
+def initialization(self):
+    possibleTypes = [t.name for t in getAllDiskItemTypes()]
+    self.signature['data_type'].setChoices(*sorted(possibleTypes))
+    self.data_type = 'Any Type'
+    self.addLink('items', 'data_type', self.dataTypeChanged)
 
 
-def execution( self, context ):
-  a = anatomist.Anatomist()
-  alive = []
-  objs = []
-  reftable = {}
-  tm = registration.getTransformationManager()
-  acpc = tm.referential( registration.talairachACPCReferentialId )
-  mni = tm.referential( registration.talairachMNIReferentialId )
-  for data in self.items:
-    ad = a.loadObject( data, forceReload=True )
-    alive.append( ad )
-    ref = tm.referential( data )
-    if ref is None:
-      context.write( 'Warning: no referential on data %s, assuming ACPC ref.' \
-        % data.fullPath() )
-      ref = acpc
-    oref = reftable.get( ref )
-    if oref:
-      ad.assignReferential( oref )
-      continue
-    pr = aims.AffineTransformation3d()
-    pth = tm.findPaths( ref.uuid(), acpc.uuid() )
-    dest = a.centralRef
-    for pt in pth:
-      break
-    else:
-      pth = tm.findPaths( ref.uuid(), mni.uuid() )
-      for pt in pth:
-        dest = a.mniTemplateRef
-        break
-      else:
-        context.write( 'no path.' )
-        pt = []
-    for p in pt:
-      pr2 = aims.read( p.fullPath() )
-      pr = pr2 * pr
-    if dest == a.mniTemplateRef:
-      pth = tm.findPaths( acpc.uuid(), mni.uuid() )
-      for pt in pth:
-        break
-      for p in pt:
-        pr2 = aims.read( p.fullPath() )
-        pr = pr2.inverse() * pr
-      dest = a.centralRef
-    inv = aims.Motion( [ -1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1 ] )
-    pr = inv * pr
-    trans = list( pr.translation() ) + list( numpy.array( \
-      pr.rotation().volume(), copy=False ).ravel() )
-    trans = [ float( x ) for x in trans ]
-    oref = a.createReferential()
-    newid = a.newId()
-    a.execute( 'LoadTransformation', origin=oref, destination=dest,
-      matrix=trans, res_pointer=newid )
-    ad.setMaterial( front_face="counterclockwise" )
-    reftable[ ref ] = oref
-    ad.assignReferential( oref )
-  if len( alive ) != 0:
-    w = a.createWindow( '3D' )
-    w.addObjects( alive )
-    alive.append( w )
-  return alive
-
+def execution(self, context):
+    a = anatomist.Anatomist()
+    alive = []
+    objs = []
+    reftable = {}
+    tm = registration.getTransformationManager()
+    acpc = tm.referential(registration.talairachACPCReferentialId)
+    mni = tm.referential(registration.talairachMNIReferentialId)
+    for data in self.items:
+        ad = a.loadObject(data, forceReload=True)
+        alive.append(ad)
+        ref = tm.referential(data)
+        if ref is None:
+            context.write('Warning: no referential on data %s, assuming ACPC ref.'
+                          % data.fullPath())
+            ref = acpc
+        oref = reftable.get(ref)
+        if oref:
+            ad.assignReferential(oref)
+            continue
+        pr = aims.AffineTransformation3d()
+        pth = tm.findPaths(ref.uuid(), acpc.uuid())
+        dest = a.centralRef
+        for pt in pth:
+            break
+        else:
+            pth = tm.findPaths(ref.uuid(), mni.uuid())
+            for pt in pth:
+                dest = a.mniTemplateRef
+                break
+            else:
+                context.write('no path.')
+                pt = []
+        for p in pt:
+            pr2 = aims.read(p.fullPath())
+            pr = pr2 * pr
+        if dest == a.mniTemplateRef:
+            pth = tm.findPaths(acpc.uuid(), mni.uuid())
+            for pt in pth:
+                break
+            for p in pt:
+                pr2 = aims.read(p.fullPath())
+                pr = pr2.inverse() * pr
+            dest = a.centralRef
+        inv = aims.Motion([-1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1])
+        pr = inv * pr
+        trans = list(pr.translation()) + list(numpy.array(
+            pr.rotation().volume(), copy=False).ravel())
+        trans = [float(x) for x in trans]
+        oref = a.createReferential()
+        newid = a.newId()
+        a.execute('LoadTransformation', origin=oref, destination=dest,
+                  matrix=trans, res_pointer=newid)
+        ad.setMaterial(front_face="counterclockwise")
+        reftable[ref] = oref
+        ad.assignReferential(oref)
+    if len(alive) != 0:
+        w = a.createWindow('3D')
+        w.addObjects(alive)
+        alive.append(w)
+    return alive

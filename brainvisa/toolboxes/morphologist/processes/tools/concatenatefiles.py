@@ -55,14 +55,14 @@ def link_subjects(self, proc, dummy):
     return subjects
 
 
-def initialization( self ):
+def initialization(self):
     self.linkParameters('subjects',
                         'measures_by_subject',
                         self.link_subjects)
     self.measures_files_without_header = False
 
 
-def execution( self, context ):
+def execution(self, context):
     if len(self.subjects) != len(self.measures_by_subject):
         raise ValueError(
             'subjects list must be the same size as measures_by_subject list')
@@ -78,9 +78,10 @@ def execution( self, context ):
                 first_header = header
                 first = False
             elif header != first_header:
-                context.error('CSV headers do not match. Header of the first subject:\n%s' % first_header)
-                context.error('Header of the failed subject "%s":\n%s' % (subject, header))
+                context.error(
+                    'CSV headers do not match. Header of the first subject:\n%s' % first_header)
+                context.error(
+                    'Header of the failed subject "%s":\n%s' % (subject, header))
                 raise ValueError('CSV headers do not match')
         for line in ifi.xreadlines():
             f.write(';'.join([subject, line.strip()]) + '\n')
-

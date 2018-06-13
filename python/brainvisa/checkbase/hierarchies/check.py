@@ -3,7 +3,8 @@
 from __future__ import print_function
 from brainvisa.checkbase.check import studies_list, users_dict, users_dir
 
-def perform_checks_hierarchy(directory, hierarchy_type = 'Morphologist'):
+
+def perform_checks_hierarchy(directory, hierarchy_type='Morphologist'):
     ''' Runs a series of tests on a given dictionary returned from
     checkbase.detect_hierarchies. These tests are performed according to the
     type of the hierarchy.
@@ -55,7 +56,7 @@ def perform_checks_hierarchy(directory, hierarchy_type = 'Morphologist'):
     return m
 
 
-#def extract_results(db, checkbase):
+# def extract_results(db, checkbase):
 #     from brainvisa.checkbase.hierarchies import morphologist as morpho
 #     from brainvisa.checkbase.hierarchies import freesurfer as free
 #     from brainvisa.checkbase.hierarchies import snapshots as snap
@@ -80,73 +81,77 @@ def perform_checks_hierarchy(directory, hierarchy_type = 'Morphologist'):
 #     return checks
 
 
-def _check_directories(rootdirectory, dirlist, verbose = True):
-   from brainvisa import checkbase as c
-   import os
-   checks = {}
-   hierarchies = {}
+def _check_directories(rootdirectory, dirlist, verbose=True):
+    from brainvisa import checkbase as c
+    import os
+    checks = {}
+    hierarchies = {}
 
-   for eachdir in dirlist:
-       # process each directory
-       if verbose: print(eachdir, 'in progress')
-       db_dir = os.path.join(rootdirectory, eachdir)
-       h = c.detect_hierarchies(db_dir, maxdepth=3)
-       assert(not hierarchies.has_key(eachdir))
-       hierarchies[eachdir] = h
-       dir_checks = perform_checks_hierarchy(h)
+    for eachdir in dirlist:
+        # process each directory
+        if verbose:
+            print(eachdir, 'in progress')
+        db_dir = os.path.join(rootdirectory, eachdir)
+        h = c.detect_hierarchies(db_dir, maxdepth=3)
+        assert(not hierarchies.has_key(eachdir))
+        hierarchies[eachdir] = h
+        dir_checks = perform_checks_hierarchy(h)
 
-       # update big directory
-       for each in dir_checks.keys():
-          checks.setdefault(each, {})
-          for db, res in dir_checks[each].items():
-             checks[each].setdefault(db, {})
-          checks[each].update(dir_checks[each])
-   return checks, hierarchies
-
-
-def check_hierarchies(input_dir, studies_list = studies_list, users_dir = users_dir, users_list = users_dict.keys(), verbose = True):
-
-   from brainvisa.checkbase import DatabaseChecker
-   import os, time
-
-   # build a list of directories contained in '/neurospin/cati'
-   # with "users" (in './Users/') and studies (in '.')
-   users_dir = os.path.join(input_dir, users_dir)
-
-   checks = {}
-   hierarchies = {}
-   start_time = time.time()
-
-   # processing users folders
-   if verbose: print('Processing users...')
-   users_checks, users_hierarchies = _check_directories(users_dir, users_list, verbose = verbose)
-
-   # processing studies folders
-   if verbose: print('Processing studies...')
-   studies_checks, studies_hierarchies = _check_directories(input_dir, studies_list, verbose = verbose)
-
-   # update big dictionary
-   for each in users_checks.keys():
-       checks.setdefault(each, {})
-       for db, res in users_checks[each].items():
-          checks[each].setdefault(db, {})
-       checks[each].update(users_checks[each])
-   for each in studies_checks.keys():
-       checks.setdefault(each, {})
-       for db, res in studies_checks[each].items():
-          checks[each].setdefault(db, {})
-       checks[each].update(studies_checks[each])
-
-   # update hierarchies
-   hierarchies.update(users_hierarchies)
-   hierarchies.update(studies_hierarchies)
-
-   # compiling results as attributes of an object
-   database_checker = DatabaseChecker()
-   database_checker.rootdirectory = input_dir
-   database_checker.hierarchies =  hierarchies
-   database_checker.checks = checks
-   database_checker.execution_time = time.time() - start_time
-   return database_checker
+        # update big directory
+        for each in dir_checks.keys():
+            checks.setdefault(each, {})
+            for db, res in dir_checks[each].items():
+                checks[each].setdefault(db, {})
+            checks[each].update(dir_checks[each])
+    return checks, hierarchies
 
 
+def check_hierarchies(input_dir, studies_list=studies_list, users_dir=users_dir, users_list=users_dict.keys(), verbose=True):
+
+    from brainvisa.checkbase import DatabaseChecker
+    import os
+    import time
+
+    # build a list of directories contained in '/neurospin/cati'
+    # with "users" (in './Users/') and studies (in '.')
+    users_dir = os.path.join(input_dir, users_dir)
+
+    checks = {}
+    hierarchies = {}
+    start_time = time.time()
+
+    # processing users folders
+    if verbose:
+        print('Processing users...')
+    users_checks, users_hierarchies = _check_directories(
+        users_dir, users_list, verbose=verbose)
+
+    # processing studies folders
+    if verbose:
+        print('Processing studies...')
+    studies_checks, studies_hierarchies = _check_directories(
+        input_dir, studies_list, verbose=verbose)
+
+    # update big dictionary
+    for each in users_checks.keys():
+        checks.setdefault(each, {})
+        for db, res in users_checks[each].items():
+            checks[each].setdefault(db, {})
+        checks[each].update(users_checks[each])
+    for each in studies_checks.keys():
+        checks.setdefault(each, {})
+        for db, res in studies_checks[each].items():
+            checks[each].setdefault(db, {})
+        checks[each].update(studies_checks[each])
+
+    # update hierarchies
+    hierarchies.update(users_hierarchies)
+    hierarchies.update(studies_hierarchies)
+
+    # compiling results as attributes of an object
+    database_checker = DatabaseChecker()
+    database_checker.rootdirectory = input_dir
+    database_checker.hierarchies = hierarchies
+    database_checker.checks = checks
+    database_checker.execution_time = time.time() - start_time
+    return database_checker

@@ -39,7 +39,7 @@
 from __future__ import absolute_import
 
 try:
-    import morphologist # is it enough ? Here it is not the BV toolbox.
+    import morphologist  # is it enough ? Here it is not the BV toolbox.
 except:
     # no module morphologist at all
     morphologist = None
@@ -50,15 +50,14 @@ if morphologist is not None:
     except:
         import sys
         import morphologist
-        dirn = os.path.dirname( morphologist.__file__ )
+        dirn = os.path.dirname(morphologist.__file__)
         toadd = []
         for p in sys.path:
-            if os.path.isdir( p ) and 'morphologist' in os.listdir( p ) \
-                    and os.path.join( p, 'morphologist' ) != dirn:
-                toadd.append( os.path.join( p, 'morphologist' ) )
-        if len( toadd ) != 0:
+            if os.path.isdir(p) and 'morphologist' in os.listdir(p) \
+                    and os.path.join(p, 'morphologist') != dirn:
+                toadd.append(os.path.join(p, 'morphologist'))
+        if len(toadd) != 0:
             morphologist.__path__ = toadd
         del toadd
         del p
         del dirn
-

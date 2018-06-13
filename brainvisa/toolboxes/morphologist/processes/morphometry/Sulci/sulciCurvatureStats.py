@@ -35,108 +35,107 @@ from brainvisa.processes import *
 from brainvisa import registration
 from brainvisa.data.labelSelection import LabelSelection
 try:
-  import soma.workflow.client as sw
-  import pickle
+    import soma.workflow.client as sw
+    import pickle
 except:
-  sw = None
+    sw = None
 
 name = 'Sulci Curvature Stats'
 userLevel = 0
 
 signature = Signature(
-  'graphs', ListOf( ReadDiskItem( 'Labelled Cortical Folds Graph',
-    'Graph and data' ) ),
-  'output_csv', WriteDiskItem( 'CSV file', 'CSV file' ),
-  'include_nodewise', Boolean(),
-  'nomenclature', ReadDiskItem( 'Nomenclature', 'Hierarchy' ),
-  'model', ReadDiskItem( 'Model graph', 'Graph' ),
-  'region_selection', LabelSelection(),
-  'label_attribute', Choice( 'auto', 'label', 'name' ),
-  'mode', Choice( ( _t_( 'Run now' ), 0 ),
-    ( _t_( 'build soma-workflow' ), 1 ) ),
-  'workflow_file',  WriteDiskItem( 'Text file', 'Text file' ),
+    'graphs', ListOf(ReadDiskItem('Labelled Cortical Folds Graph',
+                                  'Graph and data')),
+    'output_csv', WriteDiskItem('CSV file', 'CSV file'),
+    'include_nodewise', Boolean(),
+    'nomenclature', ReadDiskItem('Nomenclature', 'Hierarchy'),
+    'model', ReadDiskItem('Model graph', 'Graph'),
+    'region_selection', LabelSelection(),
+    'label_attribute', Choice('auto', 'label', 'name'),
+    'mode', Choice((_t_('Run now'), 0),
+                   (_t_('build soma-workflow'), 1)),
+    'workflow_file',  WriteDiskItem('Text file', 'Text file'),
 )
 
 
-def initialization( self ):
-  def change_region( self, proc ):
-    if self.model:
-      mod = self.model.fullPath()
+def initialization(self):
+    def change_region(self, proc):
+        if self.model:
+            mod = self.model.fullPath()
+        else:
+            mod = None
+        if self.nomenclature:
+            nom = self.nomenclature.fullPath()
+        else:
+            nom = None
+        sel = self.region_selection
+        if sel is None:
+            sel = LabelSelection(mod, nom)
+        else:
+            sel.value['model'] = mod
+            sel.value['nomenclature'] = nom
+        return sel
+
+    def linkModel(self, proc):
+        if self.graphs is not None and len(self.graphs) != 0:
+            return self.signature['model'].findValue(self.graphs[0])
+        return None
+
+    self.include_nodewise = False
+    self.nomenclature = self.signature['nomenclature'].findValue({})
+    self.setOptional('model', 'nomenclature', 'region_selection')
+    self.linkParameters('model', 'graphs', linkModel)
+    self.linkParameters('region_selection', ('model', 'nomenclature'),
+                        change_region)
+    self.setOptional('workflow_file')
+
+
+def execution(self, context):
+    self.region_selection.writeSelection(context)
+    if self.region_selection.isValid():
+        sfile = self.region_selection.file
     else:
-      mod = None
-    if self.nomenclature:
-      nom = self.nomenclature.fullPath()
-    else:
-      nom = None
-    sel = self.region_selection
-    if sel is None:
-      sel = LabelSelection( mod, nom )
-    else:
-      sel.value[ 'model' ] = mod
-      sel.value[ 'nomenclature' ] = nom
-    return sel
+        sfile = None
+    if self.mode == 1 and sw is None:
+        context.write('sorry, soma-workflow is not working. Running locally.')
+        self.mode = 0
+    if self.mode == 1:
+        jobs = []
+    ns = len(self.graphs)
+    n = 0
+    for g in self.graphs:
+        subject = g.get('subject', None)
+        cmd = ['sulciCurvature.py', '-i', g.fullPath(),
+               '-o', self.output_csv.fullPath(), '-a']
+        if subject:
+            cmd += ['-s', subject]
+        if self.label_attribute == 'auto':
+            if g.get('manually_labelled', 'No') == 'Yes':
+                cmd += ['-l', 'name']
+            else:
+                cmd += ['-l', 'label']
+        else:
+            cmd += ['-l', self.label_attribute]
+        if self.include_nodewise:
+            cmd.append('-n')
+        if sfile is not None:
+            cmd += ['-t', sfile.fullPath()]
+        elif self.nomenclature is not None and self.model is not None:
+            cmd += ['-t', self.nomenclature.fullPath()]
+            if self.model is not None:
+                cmd += ['--modeltrans', self.model.fullPath()]
+        context.progress(n, ns, process=self)
+        context.write('processing subject', n+1, '/', ns, ':', g, '...')
+        if self.mode == 0:
+            context.system(*cmd)
+        else:
+            jobs.append(sw.Job(command=cmd, name='subject %d' % n))
+        n += 1
 
-  def linkModel( self, proc ):
-    if self.graphs is not None and len( self.graphs ) != 0:
-      return self.signature[ 'model' ].findValue( self.graphs[0] )
-    return None
+        context.progress(ns, ns, process=self)
 
-  self.include_nodewise = False
-  self.nomenclature = self.signature[ 'nomenclature' ].findValue( {} )
-  self.setOptional( 'model', 'nomenclature', 'region_selection' )
-  self.linkParameters( 'model', 'graphs', linkModel )
-  self.linkParameters( 'region_selection', ( 'model', 'nomenclature' ),
-    change_region )
-  self.setOptional( 'workflow_file' )
-
-
-def execution( self, context ):
-  self.region_selection.writeSelection( context )
-  if self.region_selection.isValid():
-    sfile = self.region_selection.file
-  else:
-    sfile = None
-  if self.mode == 1 and sw is None:
-    context.write( 'sorry, soma-workflow is not working. Running locally.' )
-    self.mode = 0
-  if self.mode == 1:
-    jobs = []
-  ns = len( self.graphs )
-  n = 0
-  for g in self.graphs:
-    subject = g.get( 'subject', None )
-    cmd = [ 'sulciCurvature.py', '-i', g.fullPath(),
-      '-o', self.output_csv.fullPath(), '-a' ]
-    if subject:
-      cmd += [ '-s', subject ]
-    if self.label_attribute == 'auto':
-      if g.get( 'manually_labelled', 'No' ) == 'Yes':
-        cmd += [ '-l', 'name' ]
-      else:
-        cmd += [ '-l', 'label' ]
-    else:
-      cmd += [ '-l', self.label_attribute ]
-    if self.include_nodewise:
-      cmd.append( '-n' )
-    if sfile is not None:
-      cmd += [ '-t', sfile.fullPath() ]
-    elif self.nomenclature is not None and self.model is not None:
-      cmd += [ '-t', self.nomenclature.fullPath() ]
-      if self.model is not None:
-        cmd += [ '--modeltrans', self.model.fullPath() ]
-    context.progress( n, ns, process=self )
-    context.write( 'processing subject', n+1, '/', ns, ':', g, '...' )
-    if self.mode == 0:
-      context.system( *cmd )
-    else:
-      jobs.append( sw.Job( command=cmd, name='subject %d' %n ) )
-    n += 1
-
-    context.progress( ns, ns, process=self )
-
-  if self.mode == 1:
-    if self.workflow_file is None:
-      raise ValueError( 'workflow_file is not specified' )
-    wf = sw.Workflow( jobs=jobs, dependencies=[] )
-    sw.Helper.serialize( self.workflow_file.fullPath(), wf )
-
+    if self.mode == 1:
+        if self.workflow_file is None:
+            raise ValueError('workflow_file is not specified')
+        wf = sw.Workflow(jobs=jobs, dependencies=[])
+        sw.Helper.serialize(self.workflow_file.fullPath(), wf)

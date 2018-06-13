@@ -6,9 +6,9 @@
 #
 # This software is governed by the CeCILL license version 2 under
 # French law and abiding by the rules of distribution of free software.
-# You can  use, modify and/or redistribute the software under the 
+# You can  use, modify and/or redistribute the software under the
 # terms of the CeCILL license version 2 as circulated by CEA, CNRS
-# and INRIA at the following URL "http://www.cecill.info". 
+# and INRIA at the following URL "http://www.cecill.info".
 #
 # As a counterpart to the access to the source code and  rights to copy,
 # modify and redistribute granted by the license, users are provided only
@@ -23,8 +23,8 @@
 # therefore means  that it is reserved for developers  and  experienced
 # professionals having in-depth computer knowledge. Users are therefore
 # encouraged to load and test the software's suitability as regards their
-# requirements in conditions enabling the security of their systems and/or 
-# data to be ensured and,  more generally, to use and operate it in the 
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
 # same conditions as regards security.
 #
 # The fact that you are presently reading this means that you have had
@@ -33,48 +33,47 @@
 from brainvisa.processes import *
 from brainvisa import shelltools
 try:
-  from soma import aims
+    from soma import aims
 except:
-  def validation():
-    raise RuntimeError( _t_( 'module <em>aims</em> not available' ) )
+    def validation():
+        raise RuntimeError(_t_('module <em>aims</em> not available'))
 
 name = 'Train MLP'
 userLevel = 2
 
 
 signature = Signature(
-  'classifier', ReadDiskItem( 'Classifier', [ 'MLP classifier' ] ), 
-  'output_classifier', WriteDiskItem( 'Classifier', [ 'MLP classifier' ] ), 
-  'input_data', ReadDiskItem( '2D image', 'aims readable Volume Formats' ),
-  'cycles', Integer(),
-  'learn_factor', Float(), 
-  )
+    'classifier', ReadDiskItem('Classifier', ['MLP classifier']),
+    'output_classifier', WriteDiskItem('Classifier', ['MLP classifier']),
+    'input_data', ReadDiskItem('2D image', 'aims readable Volume Formats'),
+    'cycles', Integer(),
+    'learn_factor', Float(),
+)
 
 
-def initialization( self ):
-  self.linkParameters( 'output_classifier', 'classifier' )
-  self.cycles = 1000
-  self.learn_factor = 0.15
+def initialization(self):
+    self.linkParameters('output_classifier', 'classifier')
+    self.cycles = 1000
+    self.learn_factor = 0.15
 
 
-def execution( self, context ):
-  r = aims.Reader( {} )
-  im = r.read( self.input_data.fullPath() )
-  input = context.temporary( 'Text file' )
-  f = open( input.fullPath(), 'w' )
-  for y in xrange( im.getSizeY() ):
-    for x in xrange( im.getSizeX() ):
-      val = im.value( x, y )
-      if val:
-        f.write( '%d\t%f\t%f\n' % \
-                 ( val-1, float(x)/im.getSizeX(),
-                   float(y)/im.getSizeY() ) )
-  f.close()
-  pat = context.temporary( 'SNNS pattern' )
-  context.system( 'neurpatimport', input, pat )
-  if self.output_classifier != self.classifier:
-    shelltools.cp( self.classifier.fullPath(),
-                   self.output_classifier.fullPath() )
-  context.system( 'neurlearn', '-r', self.output_classifier, pat,
-                  self.cycles )
-
+def execution(self, context):
+    r = aims.Reader({})
+    im = r.read(self.input_data.fullPath())
+    input = context.temporary('Text file')
+    f = open(input.fullPath(), 'w')
+    for y in xrange(im.getSizeY()):
+        for x in xrange(im.getSizeX()):
+            val = im.value(x, y)
+            if val:
+                f.write('%d\t%f\t%f\n' %
+                        (val-1, float(x)/im.getSizeX(),
+                         float(y)/im.getSizeY()))
+    f.close()
+    pat = context.temporary('SNNS pattern')
+    context.system('neurpatimport', input, pat)
+    if self.output_classifier != self.classifier:
+        shelltools.cp(self.classifier.fullPath(),
+                      self.output_classifier.fullPath())
+    context.system('neurlearn', '-r', self.output_classifier, pat,
+                   self.cycles)

@@ -32,53 +32,54 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
-import subprocess, re
+import subprocess
+import re
+
 
 def validation():
     try:
         from soma import aims
     except Exception as e:
-        raise ValidationError( _t_( 'soma.aims module cannot be imported: ' ) \
-            +  str(e) )
+        raise ValidationError(_t_('soma.aims module cannot be imported: ')
+                              + str(e))
+
 
 name = 'Reset internal image transformation'
 userLevel = 1
 
 signature = Signature(
-    'input_image', ReadDiskItem( "4D Volume",
-        'aims readable volume formats' ),
-    'output_image', WriteDiskItem( "4D Volume",
-        'aims writable volume formats' ),
-    'origin', Choice( ( 'Center of the image', 0 ), ( 'Gravity center', 1 ) ),
+    'input_image', ReadDiskItem("4D Volume",
+                                'aims readable volume formats'),
+    'output_image', WriteDiskItem("4D Volume",
+                                  'aims writable volume formats'),
+    'origin', Choice(('Center of the image', 0), ('Gravity center', 1)),
 )
 
 
-def initialization( self ):
-    self.linkParameters( 'output_image', 'input_image' )
+def initialization(self):
+    self.linkParameters('output_image', 'input_image')
 
 
-def execution( self, context ):
+def execution(self, context):
     from soma import aims
-    vol = aims.read( self.input_image.fullPath() )
+    vol = aims.read(self.input_image.fullPath())
     h = vol.header()
-    refs = [ 'Scanner-based anatomical coordinates' ]
-    vs = h[ 'voxel_size' ][:3]
+    refs = ['Scanner-based anatomical coordinates']
+    vs = h['voxel_size'][:3]
     tr = -aims.AffineTransformation3d()
     if self.origin == 0:
-        tr.setTranslation( [ vol.getSizeX() * vs[0] / 2,
-            vol.getSizeY() * vs[1] / 2, vol.getSizeZ() * vs[2] / 2,  ] )
+        tr.setTranslation([vol.getSizeX() * vs[0] / 2,
+                           vol.getSizeY() * vs[1] / 2, vol.getSizeZ() * vs[2] / 2, ])
     else:
-        p = subprocess.Popen( [ 'AimsMassCenter',
-            self.input_image.fullPath() ], stdout=subprocess.PIPE,
-            shell=False )
+        p = subprocess.Popen(['AimsMassCenter',
+                              self.input_image.fullPath()], stdout=subprocess.PIPE,
+                             shell=False)
         pout = p.communicate()[0]
         if p.returncode != 0:
-            raise RuntimeError( 'AimsMassCenter failed' )
-        m = re.search( '^General:\t([^\t]+)\t([^\t]+)\t([^\t]+)', pout, re.M )
-        tr.setTranslation( [ float(x) * v for x,v in zip( m.groups(), vs ) ] )
-    trans = [ tr.toVector() ]
-    h[ 'referentials' ] = refs
-    h[ 'transformations' ] = trans
-    aims.write( vol, self.output_image.fullPath() )
-
-
+            raise RuntimeError('AimsMassCenter failed')
+        m = re.search('^General:\t([^\t]+)\t([^\t]+)\t([^\t]+)', pout, re.M)
+        tr.setTranslation([float(x) * v for x, v in zip(m.groups(), vs)])
+    trans = [tr.toVector()]
+    h['referentials'] = refs
+    h['transformations'] = trans
+    aims.write(vol, self.output_image.fullPath())

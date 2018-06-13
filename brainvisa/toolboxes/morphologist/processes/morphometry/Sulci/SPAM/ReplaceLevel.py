@@ -8,9 +8,9 @@
 #
 # This software is governed by the CeCILL license version 2 under
 # French law and abiding by the rules of distribution of free software.
-# You can  use, modify and/or redistribute the software under the 
+# You can  use, modify and/or redistribute the software under the
 # terms of the CeCILL license version 2 as circulated by CEA, CNRS
-# and INRIA at the following URL "http://www.cecill.info". 
+# and INRIA at the following URL "http://www.cecill.info".
 #
 # As a counterpart to the access to the source code and  rights to copy,
 # modify and redistribute granted by the license, users are provided only
@@ -25,8 +25,8 @@
 # therefore means  that it is reserved for developers  and  experienced
 # professionals having in-depth computer knowledge. Users are therefore
 # encouraged to load and test the software's suitability as regards their
-# requirements in conditions enabling the security of their systems and/or 
-# data to be ensured and,  more generally, to use and operate it in the 
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
 # same conditions as regards security.
 #
 # The fact that you are presently reading this means that you have had
@@ -38,21 +38,22 @@ name = 'Threshold and Normalize'
 userLevel = 2
 
 signature = Signature(
-    'Image', ReadDiskItem( '3D Volume', 'Aims readable volume formats' ),
-    'Method', Choice('gt' ,'le', 'lt', 'ge', 'eq', 'di', 'be', 'ou'),
-    'Normalize', Choice('yes' ,'no'),
+    'Image', ReadDiskItem('3D Volume', 'Aims readable volume formats'),
+    'Method', Choice('gt', 'le', 'lt', 'ge', 'eq', 'di', 'be', 'ou'),
+    'Normalize', Choice('yes', 'no'),
     'Threshold', Float(),
- )
-
-def initialization( self ):
-     self.Thresholded = 0
-
-def execution( self, context ):
+)
 
 
-     context.system('AimsThreshold', '-o', self.Image.fullPath(),'-m',
-                    self.method, '-t', self.Threshold, '-b', '-i', self.Image.fullPath() )
+def initialization(self):
+    self.Thresholded = 0
 
-     if self.Normalize == 'yes':
-          context.system('AimsReplaceLevel', '-i',self.Image.fullPath(),
-                         '-g','32767', '-n','1', '-o',self.Image.fullPath()  )
+
+def execution(self, context):
+
+    context.system('AimsThreshold', '-o', self.Image.fullPath(), '-m',
+                   self.method, '-t', self.Threshold, '-b', '-i', self.Image.fullPath())
+
+    if self.Normalize == 'yes':
+        context.system('AimsReplaceLevel', '-i', self.Image.fullPath(),
+                       '-g', '32767', '-n', '1', '-o', self.Image.fullPath())

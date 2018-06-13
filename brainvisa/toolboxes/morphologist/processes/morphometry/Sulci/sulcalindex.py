@@ -6,9 +6,9 @@
 #
 # This software is governed by the CeCILL license version 2 under
 # French law and abiding by the rules of distribution of free software.
-# You can  use, modify and/or redistribute the software under the 
+# You can  use, modify and/or redistribute the software under the
 # terms of the CeCILL license version 2 as circulated by CEA, CNRS
-# and INRIA at the following URL "http://www.cecill.info". 
+# and INRIA at the following URL "http://www.cecill.info".
 #
 # As a counterpart to the access to the source code and  rights to copy,
 # modify and redistribute granted by the license, users are provided only
@@ -23,8 +23,8 @@
 # therefore means  that it is reserved for developers  and  experienced
 # professionals having in-depth computer knowledge. Users are therefore
 # encouraged to load and test the software's suitability as regards their
-# requirements in conditions enabling the security of their systems and/or 
-# data to be ensured and,  more generally, to use and operate it in the 
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
 # same conditions as regards security.
 #
 # The fact that you are presently reading this means that you have had
@@ -39,10 +39,11 @@ userLevel = 1
 
 signature = Signature(
     'graphs', ListOf(ReadDiskItem('Cortical folds graph', 'Graph',
-                     requiredAttributes = {'graph_version': '3.1'})),
+                                  requiredAttributes={'graph_version': '3.1'})),
     'subjects', ListOf(String()),
     'global_sulcal_index_file', WriteDiskItem('CSV file', 'CSV file')
 )
+
 
 def link_subjects(self, proc, dummy):
     subjects = []
@@ -50,30 +51,32 @@ def link_subjects(self, proc, dummy):
         subjects.append(item.get('subject'))
     return subjects
 
-def initialization( self ):
+
+def initialization(self):
     self.linkParameters('subjects', 'graphs', self.link_subjects)
 
-def execution( self, context ):
-  ng = len(self.graphs)
-  n = 0
-  f = open(self.global_sulcal_index_file.fullPath(), 'w')
-  f.write('subject;side;gi_native_space;gi_talairach_space\n')
-  for graph, subject in zip(self.graphs, self.subjects):
-    context.progress(n, ng, process=self)
-    side = graph.get('side')
 
-    reader = aims.Reader(options={'subobjectsfilter': 0})
-    ingraph = reader.read(graph.fullPath())
-    rawfolds = ingraph['folds_area']
-    reffolds = ingraph['reffolds_area']
-    rawhull = ingraph['brain_hull_area']
-    refhull = ingraph['refbrain_hull_area']
+def execution(self, context):
+    ng = len(self.graphs)
+    n = 0
+    f = open(self.global_sulcal_index_file.fullPath(), 'w')
+    f.write('subject;side;gi_native_space;gi_talairach_space\n')
+    for graph, subject in zip(self.graphs, self.subjects):
+        context.progress(n, ng, process=self)
+        side = graph.get('side')
 
-    rawSI =  rawfolds / rawhull 
-    refSI =  reffolds / refhull 
+        reader = aims.Reader(options={'subobjectsfilter': 0})
+        ingraph = reader.read(graph.fullPath())
+        rawfolds = ingraph['folds_area']
+        reffolds = ingraph['reffolds_area']
+        rawhull = ingraph['brain_hull_area']
+        refhull = ingraph['refbrain_hull_area']
 
-    f.write(subject + ';' + side + ';' + str(rawSI) + ';' + str(refSI) + '\n')
-    n += 1
-  f.close()
-  context.progress(ng, ng, process=self)
+        rawSI = rawfolds / rawhull
+        refSI = reffolds / refhull
 
+        f.write(subject + ';' + side + ';' +
+                str(rawSI) + ';' + str(refSI) + '\n')
+        n += 1
+    f.close()
+    context.progress(ng, ng, process=self)

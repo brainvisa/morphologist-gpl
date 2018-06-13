@@ -38,8 +38,8 @@ userLevel = 0
 signature = Signature(
     'left_texture', ReadDiskItem('Texture', 'aims texture formats',
                                  requiredAttributes={'side': 'left'}),
-    'right_texture',ReadDiskItem('Texture', 'aims texture formats',
-                                 requiredAttributes={'side': 'right'}),
+    'right_texture', ReadDiskItem('Texture', 'aims texture formats',
+                                  requiredAttributes={'side': 'right'}),
     'both_texture', WriteDiskItem('Texture', 'aims texture formats',
                                   requiredAttributes={'side': 'both'}),
     'left_offset', Float(),
@@ -48,8 +48,8 @@ signature = Signature(
 
 
 def initialization(self):
-    self.linkParameters('right_texture','left_texture' )
-    self.linkParameters('both_texture','left_texture' )
+    self.linkParameters('right_texture', 'left_texture')
+    self.linkParameters('both_texture', 'left_texture')
     self.left_offset = 0
     self.right_offset = 0
 
@@ -76,5 +76,3 @@ def execution(self, context):
         b = np.hstack((l + loff, r + roff))
         both[t].assign(b)
     aims.write(both, self.both_texture.fullPath())
-
-

@@ -40,105 +40,107 @@ name = 'Anatomy Normalization (using AimsMIRegister)'
 userLevel = 2
 
 signature = Signature(
-  'anatomy_data', ReadDiskItem( "Raw T1 MRI", 'aims readable volume formats' ),
-  'anatomical_template', ReadDiskItem( "anatomical Template",
-    'aims readable volume formats' ),
-  'transformation_to_template', WriteDiskItem( "Transformation matrix",
-    'Transformation matrix' ),
-  'normalized_anatomy_data', WriteDiskItem( "Raw T1 MRI",
-    'aims writable volume formats'),
-  'transformation_to_MNI', WriteDiskItem(
-    "Transform Raw T1 MRI to Talairach-MNI template-SPM",
-    'Transformation matrix' ),
-  'transformation_to_ACPC', WriteDiskItem(
-    "Transform Raw T1 MRI to Talairach-AC/PC-Anatomist",
-    'Transformation matrix' ),
-  'mni_to_acpc', ReadDiskItem( "Transformation matrix",
-    'Transformation matrix' ),
-  'smoothing', Float(),
+    'anatomy_data', ReadDiskItem("Raw T1 MRI", 'aims readable volume formats'),
+    'anatomical_template', ReadDiskItem("anatomical Template",
+                                        'aims readable volume formats'),
+    'transformation_to_template', WriteDiskItem("Transformation matrix",
+                                                'Transformation matrix'),
+    'normalized_anatomy_data', WriteDiskItem("Raw T1 MRI",
+                                             'aims writable volume formats'),
+    'transformation_to_MNI', WriteDiskItem(
+        "Transform Raw T1 MRI to Talairach-MNI template-SPM",
+        'Transformation matrix'),
+    'transformation_to_ACPC', WriteDiskItem(
+        "Transform Raw T1 MRI to Talairach-AC/PC-Anatomist",
+        'Transformation matrix'),
+    'mni_to_acpc', ReadDiskItem("Transformation matrix",
+                                'Transformation matrix'),
+    'smoothing', Float(),
 )
 
-def initialization( self ):
-  def anat2results(self, process):
-    if self.anatomy_data != None:
-      process.signature["normalized_anatomy_data"].requiredAttributes["normalized"] = "yes"
-      process.signature["normalized_anatomy_data"].requiredAttributes["normalization"] = "AimsMIRegister"
-    return self.anatomy_data
-  self.linkParameters("transformation_to_template", "anatomy_data")
-  self.linkParameters("normalized_anatomy_data", "anatomy_data", anat2results)
-  self.linkParameters("transformation_to_MNI", "anatomy_data")
-  self.linkParameters("transformation_to_ACPC", "anatomy_data")
-  tplval = { 'skull_stripped' : 'no', 'Size' : '2 mm' }
-  if len( neuroHierarchy.databases._databases ) != 0:
-    tplval[ '_database' ] = neuroHierarchy.databases._databases.keys()[0]
-  self.anatomical_template = self.signature[ 'anatomical_template' ].findValue(
-    tplval )
-  try:
-    self.mni_to_acpc = neuroHierarchy.databases.getDiskItemFromUuid(
-      '9b26135b-e608-041a-9e2c-d66043f797cc' )
-  except:
-    self.mni_to_acpc = None
-  self.smoothing = 1.
-  self.setOptional( 'normalized_anatomy_data' )
-  self.setOptional( 'transformation_to_template' )
-  self.setOptional( 'transformation_to_MNI' )
-  self.setOptional( 'transformation_to_ACPC' )
-  self.setOptional( 'mni_to_acpc' )
 
-def execution( self, context ):
-  smoothanat = self.anatomy_data
-  if self.smoothing != 0:
-    context.write( 'smoothing anatomy_data...' )
-    smoothanat = context.temporary( 'GIS image' )
-    context.system( 'AimsGaussianSmoothing', '-i', self.anatomy_data,
-      '-o', smoothanat, '-x', self.smoothing, '-y', self.smoothing,
-      '-z', self.smoothing )
-  invtrans = context.temporary( 'Transformation matrix' )
-  if self.transformation_to_template is None:
-    totemplate = context.temporary( 'Transformation matrix' )
-  else:
-    totemplate = self.transformation_to_template
-  context.write( 'Registering to the template...' )
-  context.runProcess( 'Register3DMutualInformation',
-    source_image=smoothanat, reference_image=self.anatomical_template,
-    source_to_reference=totemplate,
-    reference_to_source=invtrans,
-    resampled_image=self.normalized_anatomy_data )
-  context.write( 'Managing transformations chain...' )
-  tm = registration.getTransformationManager()
-  tomni = self.transformation_to_MNI
-  if self.transformation_to_ACPC is not None and tomni is None:
-    tomni = context.temporary( 'Transformation matrix' )
-  if tomni is not None:
-    atts = aimsGlobals.aimsVolumeAttributes( self.anatomical_template )
-    trs = atts.get( 'transformations' )
-    if not trs:
-      raise ValueError( 'The template has no transformation information.' )
-    tplToMni = aims.AffineTransformation3d( trs[-1] )
-    anatToTpl = aims.read( totemplate.fullPath() )
-    anatToMni = tplToMni * anatToTpl
-    aims.write( anatToMni, tomni.fullPath() )
-    tm.setNewTransformationInfo( tomni, source_referential=self.anatomy_data,
-      destination_referential=tm.referential(
-        registration.talairachMNIReferentialId ),
-      description = 'Normalized using AimsMIRegister' )
-    if self.transformation_to_ACPC is not None \
-        and self.mni_to_acpc is not None:
-      acpcToMni = aims.read( self.mni_to_acpc.fullPath() )
-      anattoAcpc = acpcToMni.inverse() * anatToMni
-      aims.write( anattoAcpc, self.transformation_to_ACPC.fullPath() )
-      tm.setNewTransformationInfo( self.transformation_to_ACPC,
-        source_referential=self.anatomy_data,
-        destination_referential=tm.referential(
-          registration.talairachACPCReferentialId ),
-        description = 'Normalized using AimsMIRegister' )
-  if self.transformation_to_template is not None:
-    tm.setNewTransformationInfo( self.transformation_to_template,
-      source_referential=self.anatomy_data,
-      destination_referential=self.anatomical_template,
-      description = 'Normalized using AimsMIRegister' )
-  if self.normalized_anatomy_data is not None:
-    tm.copyReferential( self.anatomical_template,
-      self.normalized_anatomy_data )
-  context.write( 'done.' )
+def initialization(self):
+    def anat2results(self, process):
+        if self.anatomy_data != None:
+            process.signature["normalized_anatomy_data"].requiredAttributes["normalized"] = "yes"
+            process.signature["normalized_anatomy_data"].requiredAttributes["normalization"] = "AimsMIRegister"
+        return self.anatomy_data
+    self.linkParameters("transformation_to_template", "anatomy_data")
+    self.linkParameters("normalized_anatomy_data",
+                        "anatomy_data", anat2results)
+    self.linkParameters("transformation_to_MNI", "anatomy_data")
+    self.linkParameters("transformation_to_ACPC", "anatomy_data")
+    tplval = {'skull_stripped': 'no', 'Size': '2 mm'}
+    if len(neuroHierarchy.databases._databases) != 0:
+        tplval['_database'] = neuroHierarchy.databases._databases.keys()[0]
+    self.anatomical_template = self.signature['anatomical_template'].findValue(
+        tplval)
+    try:
+        self.mni_to_acpc = neuroHierarchy.databases.getDiskItemFromUuid(
+            '9b26135b-e608-041a-9e2c-d66043f797cc')
+    except:
+        self.mni_to_acpc = None
+    self.smoothing = 1.
+    self.setOptional('normalized_anatomy_data')
+    self.setOptional('transformation_to_template')
+    self.setOptional('transformation_to_MNI')
+    self.setOptional('transformation_to_ACPC')
+    self.setOptional('mni_to_acpc')
 
+
+def execution(self, context):
+    smoothanat = self.anatomy_data
+    if self.smoothing != 0:
+        context.write('smoothing anatomy_data...')
+        smoothanat = context.temporary('GIS image')
+        context.system('AimsGaussianSmoothing', '-i', self.anatomy_data,
+                       '-o', smoothanat, '-x', self.smoothing, '-y', self.smoothing,
+                       '-z', self.smoothing)
+    invtrans = context.temporary('Transformation matrix')
+    if self.transformation_to_template is None:
+        totemplate = context.temporary('Transformation matrix')
+    else:
+        totemplate = self.transformation_to_template
+    context.write('Registering to the template...')
+    context.runProcess('Register3DMutualInformation',
+                       source_image=smoothanat, reference_image=self.anatomical_template,
+                       source_to_reference=totemplate,
+                       reference_to_source=invtrans,
+                       resampled_image=self.normalized_anatomy_data)
+    context.write('Managing transformations chain...')
+    tm = registration.getTransformationManager()
+    tomni = self.transformation_to_MNI
+    if self.transformation_to_ACPC is not None and tomni is None:
+        tomni = context.temporary('Transformation matrix')
+    if tomni is not None:
+        atts = aimsGlobals.aimsVolumeAttributes(self.anatomical_template)
+        trs = atts.get('transformations')
+        if not trs:
+            raise ValueError('The template has no transformation information.')
+        tplToMni = aims.AffineTransformation3d(trs[-1])
+        anatToTpl = aims.read(totemplate.fullPath())
+        anatToMni = tplToMni * anatToTpl
+        aims.write(anatToMni, tomni.fullPath())
+        tm.setNewTransformationInfo(tomni, source_referential=self.anatomy_data,
+                                    destination_referential=tm.referential(
+                                        registration.talairachMNIReferentialId),
+                                    description='Normalized using AimsMIRegister')
+        if self.transformation_to_ACPC is not None \
+                and self.mni_to_acpc is not None:
+            acpcToMni = aims.read(self.mni_to_acpc.fullPath())
+            anattoAcpc = acpcToMni.inverse() * anatToMni
+            aims.write(anattoAcpc, self.transformation_to_ACPC.fullPath())
+            tm.setNewTransformationInfo(self.transformation_to_ACPC,
+                                        source_referential=self.anatomy_data,
+                                        destination_referential=tm.referential(
+                                            registration.talairachACPCReferentialId),
+                                        description='Normalized using AimsMIRegister')
+    if self.transformation_to_template is not None:
+        tm.setNewTransformationInfo(self.transformation_to_template,
+                                    source_referential=self.anatomy_data,
+                                    destination_referential=self.anatomical_template,
+                                    description='Normalized using AimsMIRegister')
+    if self.normalized_anatomy_data is not None:
+        tm.copyReferential(self.anatomical_template,
+                           self.normalized_anatomy_data)
+    context.write('done.')

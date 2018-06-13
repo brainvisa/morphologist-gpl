@@ -46,7 +46,7 @@ def plot(self, context, table, labels, legend=None, out_filename=None):
     x = np.arange(nitem)
     cols = ['blue', 'red', 'green', 'gold', 'darkchid', 'orange', 'darkcyan']
     for i in range(n):
-        ax.barh(x + float(i) / (n+1) , table[:, i], 1. / (n+1),
+        ax.barh(x + float(i) / (n+1), table[:, i], 1. / (n+1),
                 color=cols[i % len(cols)])
     ax.set_yticks(x)
     sz = 10

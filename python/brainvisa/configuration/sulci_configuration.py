@@ -43,10 +43,12 @@ from soma.configuration import ConfigurationGroup
 from soma.signature.api import Signature, Boolean
 
 #------------------------------------------------------------------------------
-class SulciConfiguration( ConfigurationGroup ):
-  label = 'Sulci toolbox'
-  icon = 'sulci.png'
-  signature = Signature(
-    'check_spam_models', Boolean(), { 'defaultValue' : True,
-      'doc' : 'Check presence of SPAM identification models, and ask whether to install them' },
-  )
+
+
+class SulciConfiguration(ConfigurationGroup):
+    label = 'Sulci toolbox'
+    icon = 'sulci.png'
+    signature = Signature(
+        'check_spam_models', Boolean(), {'defaultValue': True,
+                                         'doc': 'Check presence of SPAM identification models, and ask whether to install them'},
+    )

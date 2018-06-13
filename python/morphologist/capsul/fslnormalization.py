@@ -5,6 +5,7 @@ from morphologist.capsul.axon.fslnormalizationpipeline \
 from traits.api import Undefined, Bool, File, Set
 import six
 
+
 class FSLNormalization(FSLnormalizationPipeline):
 
     def pipeline_definition(self):
@@ -27,7 +28,8 @@ class FSLNormalization(FSLnormalizationPipeline):
         self.nodes['converter'].process.trait('removeSource').optional = True
         self.nodes['converter'].process.trait('ascii').optional = True
         self.nodes['converter'].process.trait('rescaleDynamic').optional = True
-        self.nodes['converter'].process.trait('useInputTypeLimits').optional = True
+        self.nodes['converter'].process.trait(
+            'useInputTypeLimits').optional = True
         self.nodes['converter'].plugs['removeSource'].optional = True
         self.nodes['converter'].plugs['ascii'].optional = True
         self.nodes['converter'].plugs['rescaleDynamic'].optional = True
@@ -43,4 +45,3 @@ class FSLNormalization(FSLnormalizationPipeline):
 
     def change_flip(self, value):
         self.nodes_activation.ReorientAnatomy = value
-

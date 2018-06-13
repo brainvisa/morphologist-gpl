@@ -42,72 +42,75 @@ userLevel = 2
 
 # Argument declaration
 signature = Signature(
-  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
-      'aims readable Volume Formats' ),
-  'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-  'mode',
-    Choice("standard+iterative","standard","robust+iterative","robust","fast"),
-  'Commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
-      'Commissure coordinates'),
-  'brain_mask', WriteDiskItem( "T1 Brain Mask",
-      'aims Writable Volume Formats' ),
-  'regularization', Boolean(),
-  'erosion_size', Float(),
-  'layer', Choice("0","1","2","3","4","5"),
-  'first_slice', Integer(),
-  'last_slice', Integer(),
-  'lesion_mask', ReadDiskItem( 'Lesion Mask', 'aims readable volume Formats'),
+    'mri_corrected', ReadDiskItem('T1 MRI Bias Corrected',
+                                  'aims readable Volume Formats'),
+    'histo_analysis', ReadDiskItem('Histo Analysis', 'Histo Analysis'),
+    'mode',
+    Choice("standard+iterative", "standard",
+           "robust+iterative", "robust", "fast"),
+    'Commissure_coordinates', ReadDiskItem('Commissure coordinates',
+                                           'Commissure coordinates'),
+    'brain_mask', WriteDiskItem("T1 Brain Mask",
+                                'aims Writable Volume Formats'),
+    'regularization', Boolean(),
+    'erosion_size', Float(),
+    'layer', Choice("0", "1", "2", "3", "4", "5"),
+    'first_slice', Integer(),
+    'last_slice', Integer(),
+    'lesion_mask', ReadDiskItem('Lesion Mask', 'aims readable volume Formats'),
 )
 
 # Default values
-def initialization( self ):
-  self.linkParameters( 'histo_analysis', 'mri_corrected' )
-  self.linkParameters( 'brain_mask', 'mri_corrected' )
-  self.mode = "standard+iterative"
-  self.linkParameters( 'Commissure_coordinates', 'mri_corrected' )
-  self.setOptional('Commissure_coordinates')
-  self.regularization = 1
-  self.erosion_size = 2.1
-  self.first_slice = 1
-  self.last_slice = 3
-  self.setOptional('lesion_mask')
-  self.layer = "0"
 
 
-def execution( self, context ):
+def initialization(self):
+    self.linkParameters('histo_analysis', 'mri_corrected')
+    self.linkParameters('brain_mask', 'mri_corrected')
+    self.mode = "standard+iterative"
+    self.linkParameters('Commissure_coordinates', 'mri_corrected')
+    self.setOptional('Commissure_coordinates')
+    self.regularization = 1
+    self.erosion_size = 2.1
+    self.first_slice = 1
+    self.last_slice = 3
+    self.setOptional('lesion_mask')
+    self.layer = "0"
+
+
+def execution(self, context):
     if os.path.exists(self.brain_mask.fullName() + '.loc'):
-      context.write(self.brain_mask.fullName(), ' has been locked')
-      context.write('Remove',self.brain_mask.fullName(),'.loc if you want to trigger a new segmentation')
+        context.write(self.brain_mask.fullName(), ' has been locked')
+        context.write('Remove', self.brain_mask.fullName(),
+                      '.loc if you want to trigger a new segmentation')
     else:
-      option_list = []
-      if self.Commissure_coordinates is not None:
-        option_list += ['-Points', self.Commissure_coordinates.fullPath()]
-      if self.lesion_mask is not None:
-        option_list += ['-patho', self.lesion_mask.fullPath()]
-      if self.regularization is not 1:
-        option_list += ['-niter', 0]
-      if self.mode=="standard+iterative":
-        themode="Standard"
-      elif self.mode=="standard":
-        themode="standard"
-      elif self.mode=="robust+iterative":
-        themode="Robust"
-      elif self.mode=="robust":
-        themode="robust"
-      elif self.mode=="fast":
-        themode="fast"
-      call_list = ['VipGetBrain',
-                   '-m', themode,
-                   '-i',self.mri_corrected.fullPath(),
-                   '-analyse', 'r', '-hname',  self.histo_analysis.fullPath(),
-                   '-bname', self.brain_mask.fullPath(),
-                   '-berosion',self.erosion_size,
-                   '-First',self.first_slice,
-                   '-Last', self.last_slice,
-		   '-layer', self.layer]
-      apply( context.system, call_list+option_list )
+        option_list = []
+        if self.Commissure_coordinates is not None:
+            option_list += ['-Points', self.Commissure_coordinates.fullPath()]
+        if self.lesion_mask is not None:
+            option_list += ['-patho', self.lesion_mask.fullPath()]
+        if self.regularization is not 1:
+            option_list += ['-niter', 0]
+        if self.mode == "standard+iterative":
+            themode = "Standard"
+        elif self.mode == "standard":
+            themode = "standard"
+        elif self.mode == "robust+iterative":
+            themode = "Robust"
+        elif self.mode == "robust":
+            themode = "robust"
+        elif self.mode == "fast":
+            themode = "fast"
+        call_list = ['VipGetBrain',
+                     '-m', themode,
+                     '-i', self.mri_corrected.fullPath(),
+                     '-analyse', 'r', '-hname',  self.histo_analysis.fullPath(),
+                     '-bname', self.brain_mask.fullPath(),
+                     '-berosion', self.erosion_size,
+                     '-First', self.first_slice,
+                     '-Last', self.last_slice,
+                     '-layer', self.layer]
+        apply(context.system, call_list+option_list)
 
-      # manage referentials
-      tm = registration.getTransformationManager()
-      tm.copyReferential(self.mri_corrected, self.brain_mask)
-
+        # manage referentials
+        tm = registration.getTransformationManager()
+        tm.copyReferential(self.mri_corrected, self.brain_mask)

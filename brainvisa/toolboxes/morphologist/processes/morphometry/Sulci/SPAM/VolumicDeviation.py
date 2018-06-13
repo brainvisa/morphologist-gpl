@@ -8,9 +8,9 @@
 #
 # This software is governed by the CeCILL license version 2 under
 # French law and abiding by the rules of distribution of free software.
-# You can  use, modify and/or redistribute the software under the 
+# You can  use, modify and/or redistribute the software under the
 # terms of the CeCILL license version 2 as circulated by CEA, CNRS
-# and INRIA at the following URL "http://www.cecill.info". 
+# and INRIA at the following URL "http://www.cecill.info".
 #
 # As a counterpart to the access to the source code and  rights to copy,
 # modify and redistribute granted by the license, users are provided only
@@ -25,8 +25,8 @@
 # therefore means  that it is reserved for developers  and  experienced
 # professionals having in-depth computer knowledge. Users are therefore
 # encouraged to load and test the software's suitability as regards their
-# requirements in conditions enabling the security of their systems and/or 
-# data to be ensured and,  more generally, to use and operate it in the 
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
 # same conditions as regards security.
 #
 # The fact that you are presently reading this means that you have had
@@ -39,65 +39,70 @@ name = 'Volumic Deviation'
 userLevel = 2
 
 signature = Signature(
-    'Images', ListOf( ReadDiskItem( '3D Volume',
-      'Aims readable volume formats' ) ),
-    'Reference', ReadDiskItem( '3D Volume', 'Aims readable volume formats' ),
-    'Deviation', WriteDiskItem( '3D Volume', 'Aims writable volume formats' ),
-    'data_smoothing', Choice('Yes','No'),
+    'Images', ListOf(ReadDiskItem('3D Volume',
+                                  'Aims readable volume formats')),
+    'Reference', ReadDiskItem('3D Volume', 'Aims readable volume formats'),
+    'Deviation', WriteDiskItem('3D Volume', 'Aims writable volume formats'),
+    'data_smoothing', Choice('Yes', 'No'),
     'smoothing_parameter', Float()
 )
 
-def initialization( self ):
-     self.data_smoothing = 'Yes'
-     self.smoothing_parameter = 0.25
 
-def execution( self, context ):
-     
-     NbImages =  len( self.Images )     
+def initialization(self):
+    self.data_smoothing = 'Yes'
+    self.smoothing_parameter = 0.25
 
-     #context.write('WARNING : This process works with normalized data having the SAME SPATIAL RESOLUTION')
-     #context.write('')
-     context.write('Number of images: ', NbImages)
-     if NbImages == 0 :
-          raise Exception( _t_( 'arguments <em>images</em> should not be ' \
-                                'empty' ) )
-     
-     inc = 1
-     ok = 0
 
-     temp = context.temporary( 'GIS Image' )
-     ima = context.temporary( 'GIS Image' )
-     ref = context.temporary( 'GIS Image' )
+def execution(self, context):
 
-     for image in self.Images:
-          
-          context.write( 'Subject : ', image.get('subject'), '(', inc, '/', NbImages, ')' )
+    NbImages = len(self.Images)
 
-          context.system('AimsFileConvert','-i',image, '-o', ima,'-t','FLOAT')
+    #context.write('WARNING : This process works with normalized data having the SAME SPATIAL RESOLUTION')
+    # context.write('')
+    context.write('Number of images: ', NbImages)
+    if NbImages == 0:
+        raise Exception(_t_('arguments <em>images</em> should not be '
+                            'empty'))
 
-          if self.data_smoothing == 'Yes' :
-               context.system('AimsImageSmoothing', '-i',ima,
-                              '-o',ima, '-t', self.smoothing_parameter, '-s', '0' )
+    inc = 1
+    ok = 0
 
-          context.system('AimsFileConvert','-i',self.Reference.fullPath(), '-o', ref,'-t','FLOAT') 
+    temp = context.temporary('GIS Image')
+    ima = context.temporary('GIS Image')
+    ref = context.temporary('GIS Image')
 
-          if ok == 0:
-               context.system('AimsLinearComb', '-o', temp , '-i', ima, '-a', '-1', '-j',
-                              ref, '-t', 'FLOAT'  )
-               context.system('AimsPowerComb', '-o',self.Deviation.fullPath()  , '-i', temp,
-                              '-a', '2', '-t', 'FLOAT' )
-               ok = 1
-          else:
-               context.system('AimsLinearComb', '-o', temp , '-i', ima, '-a', '-1', '-j',
-                              ref, '-t' ,'FLOAT' )
-               context.system('AimsPowerComb', '-o',temp , '-i', temp, '-a', '2', '-t', 'FLOAT' )
-               context.system('AimsLinearComb', '-i', temp,'-o', self.Deviation.fullPath(), '-j',
-                              self.Deviation.fullPath(), '-t', 'FLOAT' )      
+    for image in self.Images:
 
-          inc = inc + 1
+        context.write('Subject : ', image.get('subject'),
+                      '(', inc, '/', NbImages, ')')
 
-     context.system('AimsPowerComb', '-i',self.Deviation.fullPath() , '-o',
-                    self.Deviation.fullPath(), '-b',  '2' , '-t', 'FLOAT' ) 
-     context.system('AimsLinearComb', '-i',self.Deviation.fullPath() , '-o',
-                    self.Deviation.fullPath(), '-b',  NbImages - 1 , '-t', 'FLOAT' ) 
-     
+        context.system('AimsFileConvert', '-i', image,
+                       '-o', ima, '-t', 'FLOAT')
+
+        if self.data_smoothing == 'Yes':
+            context.system('AimsImageSmoothing', '-i', ima,
+                           '-o', ima, '-t', self.smoothing_parameter, '-s', '0')
+
+        context.system('AimsFileConvert', '-i',
+                       self.Reference.fullPath(), '-o', ref, '-t', 'FLOAT')
+
+        if ok == 0:
+            context.system('AimsLinearComb', '-o', temp, '-i', ima, '-a', '-1', '-j',
+                           ref, '-t', 'FLOAT')
+            context.system('AimsPowerComb', '-o', self.Deviation.fullPath(), '-i', temp,
+                           '-a', '2', '-t', 'FLOAT')
+            ok = 1
+        else:
+            context.system('AimsLinearComb', '-o', temp, '-i', ima, '-a', '-1', '-j',
+                           ref, '-t', 'FLOAT')
+            context.system('AimsPowerComb', '-o', temp, '-i',
+                           temp, '-a', '2', '-t', 'FLOAT')
+            context.system('AimsLinearComb', '-i', temp, '-o', self.Deviation.fullPath(), '-j',
+                           self.Deviation.fullPath(), '-t', 'FLOAT')
+
+        inc = inc + 1
+
+    context.system('AimsPowerComb', '-i', self.Deviation.fullPath(), '-o',
+                   self.Deviation.fullPath(), '-b',  '2', '-t', 'FLOAT')
+    context.system('AimsLinearComb', '-i', self.Deviation.fullPath(), '-o',
+                   self.Deviation.fullPath(), '-b',  NbImages - 1, '-t', 'FLOAT')

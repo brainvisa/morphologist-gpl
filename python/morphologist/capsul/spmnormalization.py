@@ -5,6 +5,7 @@ from morphologist.capsul.axon.spmnormalizationpipeline \
 from traits.api import Undefined, Bool, File, Set
 import six
 
+
 class SPMNormalization(SPMnormalizationPipeline):
 
     def pipeline_definition(self):
@@ -39,7 +40,8 @@ class SPMNormalization(SPMnormalizationPipeline):
         self.nodes['converter'].process.trait('removeSource').optional = True
         self.nodes['converter'].process.trait('ascii').optional = True
         self.nodes['converter'].process.trait('rescaleDynamic').optional = True
-        self.nodes['converter'].process.trait('useInputTypeLimits').optional = True
+        self.nodes['converter'].process.trait(
+            'useInputTypeLimits').optional = True
         self.nodes['converter'].plugs['removeSource'].optional = True
         self.nodes['converter'].plugs['ascii'].optional = True
         self.nodes['converter'].plugs['rescaleDynamic'].optional = True
@@ -68,4 +70,3 @@ class SPMNormalization(SPMnormalizationPipeline):
 
     def change_flip(self, value):
         self.nodes_activation.ReorientAnatomy = value
-

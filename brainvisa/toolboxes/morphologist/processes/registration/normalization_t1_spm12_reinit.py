@@ -46,56 +46,62 @@ configuration = Application().configuration
 def validation():
     proc = getProcess('normalization_t1_spm12')
     if proc is None:
-        raise ValidationError('normalization_t1_spm12 process is not available')
+        raise ValidationError(
+            'normalization_t1_spm12 process is not available')
     proc.validation()
+
 
 name = 'Anatomy Normalization (using SPM12) with Re-initialization'
 userLevel = 0
 
 signature = Signature(
-    'anatomy_data', ReadDiskItem( "Raw T1 MRI", ['NIFTI-1 image', 'SPM image']),
-    'anatomical_template', ReadDiskItem( "anatomical Template", ['NIFTI-1 image', 'MINC image', 'SPM image'] ),
+    'anatomy_data', ReadDiskItem("Raw T1 MRI", ['NIFTI-1 image', 'SPM image']),
+    'anatomical_template', ReadDiskItem(
+        "anatomical Template", ['NIFTI-1 image', 'MINC image', 'SPM image']),
     'voxel_size', Choice('[1 1 1]'),
     'cutoff_option', Integer(),
     'nbiteration', Integer(),
-    'transformations_informations', WriteDiskItem("SPM2 normalization matrix", 'Matlab file'),
+    'transformations_informations', WriteDiskItem(
+        "SPM2 normalization matrix", 'Matlab file'),
     'normalized_anatomy_data', WriteDiskItem(
         "Raw T1 MRI", ['NIFTI-1 image', 'SPM image'],
-        {"normalization" : "SPM"}),
+        {"normalization": "SPM"}),
     'allow_retry_initialization', Boolean(),
-    'init_translation_origin', Choice( ( 'Center of the image', 0 ), ( 'Gravity center', 1 ) ),
+    'init_translation_origin', Choice(
+        ('Center of the image', 0), ('Gravity center', 1)),
 )
 
-def initialization( self ):
-    configuration.SPM.spm5_path # trigger the spmpathcheck process if needed
-    self.linkParameters("transformations_informations", "anatomy_data" )
+
+def initialization(self):
+    configuration.SPM.spm5_path  # trigger the spmpathcheck process if needed
+    self.linkParameters("transformations_informations", "anatomy_data")
     self.linkParameters("normalized_anatomy_data", "anatomy_data")
     self.voxel_size = "[1 1 1]"
     self.cutoff_option = "25"
     self.nbiteration = 16
     self.setOptional("anatomical_template")
     # Link parameters
-    self.anatomical_template = self.signature[ 'anatomical_template' ].findValue( { 'databasename' : 'spm',
-            'skull_stripped' : 'no' } )
+    self.anatomical_template = self.signature['anatomical_template'].findValue({'databasename': 'spm',
+                                                                                'skull_stripped': 'no'})
     self.allow_retry_initialization = False
 
 
-def execution( self, context ):
-    context.write( _t_( 'Trying 1st pass of normalization...' ) )
-    if os.path.exists( self.transformations_informations.fullPath() ):
-        os.unlink( self.transformations_informations.fullPath() )
+def execution(self, context):
+    context.write(_t_('Trying 1st pass of normalization...'))
+    if os.path.exists(self.transformations_informations.fullPath()):
+        os.unlink(self.transformations_informations.fullPath())
     failed = False
-    normproc = { 'anatomy_data' : self.anatomy_data,
-        'anatomical_template' : self.anatomical_template,
-        'voxel_size' : self.voxel_size,
-        'cutoff_option' : self.cutoff_option,
-        'nbiteration' : self.nbiteration,
-        'transformations_informations' : self.transformations_informations,
-        'normalized_anatomy_data' : self.normalized_anatomy_data,
-    }
+    normproc = {'anatomy_data': self.anatomy_data,
+                'anatomical_template': self.anatomical_template,
+                'voxel_size': self.voxel_size,
+                'cutoff_option': self.cutoff_option,
+                'nbiteration': self.nbiteration,
+                'transformations_informations': self.transformations_informations,
+                'normalized_anatomy_data': self.normalized_anatomy_data,
+                }
     try:
-        context.runProcess( 'normalization_t1_SPM12', **normproc )
-        if not os.path.exists( self.transformations_informations.fullPath() ):
+        context.runProcess('normalization_t1_SPM12', **normproc)
+        if not os.path.exists(self.transformations_informations.fullPath()):
             failed = True
     except:
         failed = True
@@ -107,11 +113,10 @@ def execution( self, context ):
         if not self.allow_retry_initialization:
             raise RuntimeError('Normalization failed')
         context.runProcess('resetInternalImageTransformation',
-            input_image=self.anatomy_data, output_image=self.anatomy_data,
-            origin=self.init_translation_origin)
+                           input_image=self.anatomy_data, output_image=self.anatomy_data,
+                           origin=self.init_translation_origin)
         context.write(_t_(
             'Retrying normalization after changing initialization...'))
         context.runProcess('normalization_t1_SPM12', **normproc)
         if not os.path.exists(self.transformations_informations.fullPath()):
             raise RuntimeError('Normalization has failed.')
-

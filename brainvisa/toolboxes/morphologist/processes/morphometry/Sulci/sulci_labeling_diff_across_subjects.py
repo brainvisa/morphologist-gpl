@@ -19,8 +19,10 @@ def validation():
 
 
 signature = Signature(
-    'sulci1', ListOf(ReadDiskItem('Labelled cortical folds graph', 'Graph and data')),
-    'sulci2', ListOf(ReadDiskItem('Labelled cortical folds graph', 'Graph and data')),
+    'sulci1', ListOf(ReadDiskItem(
+        'Labelled cortical folds graph', 'Graph and data')),
+    'sulci2', ListOf(ReadDiskItem(
+        'Labelled cortical folds graph', 'Graph and data')),
     'session1_hint', String(),
     'session2_hint', String(),
     'manual1', Boolean(),
@@ -66,6 +68,7 @@ def initialization(self):
     self.linkParameters('sulci1', ('session1_hint', 'manual1'), link_sulci1)
     self.linkParameters('sulci2', ('sulci1', 'session2_hint',
                                    'manual2_hint'), link_sulci2)
+
 
 def execution(self, context):
     if len(self.sulci1) != len(self.sulci2):

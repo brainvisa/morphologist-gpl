@@ -6,9 +6,9 @@
 #
 # This software is governed by the CeCILL license version 2 under
 # French law and abiding by the rules of distribution of free software.
-# You can  use, modify and/or redistribute the software under the 
+# You can  use, modify and/or redistribute the software under the
 # terms of the CeCILL license version 2 as circulated by CEA, CNRS
-# and INRIA at the following URL "http://www.cecill.info". 
+# and INRIA at the following URL "http://www.cecill.info".
 #
 # As a counterpart to the access to the source code and  rights to copy,
 # modify and redistribute granted by the license, users are provided only
@@ -23,8 +23,8 @@
 # therefore means  that it is reserved for developers  and  experienced
 # professionals having in-depth computer knowledge. Users are therefore
 # encouraged to load and test the software's suitability as regards their
-# requirements in conditions enabling the security of their systems and/or 
-# data to be ensured and,  more generally, to use and operate it in the 
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
 # same conditions as regards security.
 #
 # The fact that you are presently reading this means that you have had
@@ -41,37 +41,40 @@ userLevel = 0
 
 # Argument declaration
 signature = Signature(
-  'input_mesh',ReadDiskItem( 'Hemisphere White Mesh' , 'Aims mesh formats' ),
-  'output_mesh',WriteDiskItem( 'Inflated Hemisphere White Mesh',
-    'Aims mesh formats' ),
-  'curvature_texture',WriteDiskItem( 'White Curvature Texture',
-    'Aims texture formats' ),
-  'iterations', Integer(),
-  'normal_force', Float(),
-  'spring_force', Float(),
-  'smoothing_force', Float(),
-  'save_sequence', Boolean(),
+    'input_mesh', ReadDiskItem('Hemisphere White Mesh', 'Aims mesh formats'),
+    'output_mesh', WriteDiskItem('Inflated Hemisphere White Mesh',
+                                 'Aims mesh formats'),
+    'curvature_texture', WriteDiskItem('White Curvature Texture',
+                                       'Aims texture formats'),
+    'iterations', Integer(),
+    'normal_force', Float(),
+    'spring_force', Float(),
+    'smoothing_force', Float(),
+    'save_sequence', Boolean(),
 )
 
 
 # Default values
-def initialization( self ):
-  self.linkParameters( 'output_mesh', 'input_mesh' )
-  self.linkParameters( 'curvature_texture', 'input_mesh' )
-  self.iterations = 500
-  self.normal_force = 0.01
-  self.spring_force = 0.01
-  self.smoothing_force = 0.5
-  self.save_sequence = 0
+def initialization(self):
+    self.linkParameters('output_mesh', 'input_mesh')
+    self.linkParameters('curvature_texture', 'input_mesh')
+    self.iterations = 500
+    self.normal_force = 0.01
+    self.spring_force = 0.01
+    self.smoothing_force = 0.5
+    self.save_sequence = 0
 
 # AimsInflate process
 #
 
-def execution( self, context ):
-  if os.path.exists(self.output_mesh.fullName() + '.loc'):
-    context.write( "Inflated cortical surface locked")
-  else:
-    if self.save_sequence:
-      context.system( 'AimsInflate', '-i',  self.input_mesh.fullPath(), '-o', self.output_mesh.fullPath(), '-t', self.iterations, '-Kn', self.normal_force, '-Ksp', self.spring_force, '-Ksm', self.smoothing_force, '-c', self.curvature_texture.fullPath(), '-S')
+
+def execution(self, context):
+    if os.path.exists(self.output_mesh.fullName() + '.loc'):
+        context.write("Inflated cortical surface locked")
     else:
-      context.system( 'AimsInflate', '-i',  self.input_mesh.fullPath(), '-o', self.output_mesh.fullPath(), '-t', self.iterations, '-Kn', self.normal_force, '-Ksp', self.spring_force, '-Ksm', self.smoothing_force,'-c', self.curvature_texture.fullPath())
+        if self.save_sequence:
+            context.system('AimsInflate', '-i',  self.input_mesh.fullPath(), '-o', self.output_mesh.fullPath(), '-t', self.iterations, '-Kn',
+                           self.normal_force, '-Ksp', self.spring_force, '-Ksm', self.smoothing_force, '-c', self.curvature_texture.fullPath(), '-S')
+        else:
+            context.system('AimsInflate', '-i',  self.input_mesh.fullPath(), '-o', self.output_mesh.fullPath(), '-t', self.iterations,
+                           '-Kn', self.normal_force, '-Ksp', self.spring_force, '-Ksm', self.smoothing_force, '-c', self.curvature_texture.fullPath())

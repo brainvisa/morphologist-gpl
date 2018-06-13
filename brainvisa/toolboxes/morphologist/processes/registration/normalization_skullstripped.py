@@ -36,55 +36,57 @@ from brainvisa.processes import *
 name = 'Skull-stripped brain normalization'
 userLevel = 2
 
+
 def validationDelayed():
-  '''validation cannot be done at startup since some sub-processes may not be
-loaded yet. But this validationDelayed method can be used later.
-  '''
-  p = getProcessInstance('NormalizationPipeline')
-  p.validationDelayed()
+    '''validation cannot be done at startup since some sub-processes may not be
+  loaded yet. But this validationDelayed method can be used later.
+    '''
+    p = getProcessInstance('NormalizationPipeline')
+    p.validationDelayed()
 
 
 signature = Signature(
     't1mri', ReadDiskItem('Raw T1 MRI', 'Aims readable volume formats'),
     'brain_mask', ReadDiskItem('Brain Mask', 'Aims readable volume formats'),
     'template', ReadDiskItem('anatomical Template',
-        ['NIFTI-1 image', 'MINC image', 'SPM image'],
-        requiredAttributes={'skull_stripped':'yes'}),
+                             ['NIFTI-1 image', 'MINC image', 'SPM image'],
+                             requiredAttributes={'skull_stripped': 'yes'}),
     'skull_stripped', WriteDiskItem('Raw T1 MRI Brain Masked',
-      'Aims writable volume formats'),
+                                    'Aims writable volume formats'),
     'transformation', WriteDiskItem(
-      'Transform Raw T1 MRI to Talairach-MNI template-SPM',
-      'Transformation matrix'),
+        'Transform Raw T1 MRI to Talairach-MNI template-SPM',
+        'Transformation matrix'),
     'talairach_transformation', WriteDiskItem(
-      'Transform Raw T1 MRI to Talairach-AC/PC-Anatomist',
-      'Transformation matrix'),
+        'Transform Raw T1 MRI to Talairach-AC/PC-Anatomist',
+        'Transformation matrix'),
     'commissure_coordinates', WriteDiskItem('Commissure coordinates',
                                             'Commissure coordinates'),
 )
 
-def initialization( self ):
+
+def initialization(self):
     self.linkParameters('brain_mask', 't1mri')
     self.linkParameters('transformation', 't1mri')
     self.linkParameters('skull_stripped', 't1mri')
     self.linkParameters('talairach_transformation', 't1mri')
     self.template = self.signature['template'].findValue({
-        '_database' : os.path.normpath(os.path.join(mainPath, '..', 'share',
-        'brainvisa-share-%s.%s' % tuple(versionString().split('.')[:2]))),
+        '_database': os.path.normpath(os.path.join(mainPath, '..', 'share',
+                                                   'brainvisa-share-%s.%s' % tuple(versionString().split('.')[:2]))),
         'Size': '2 mm'})
 
     eNode = SerialExecutionNode(self.name, parameterized=self)
     eNode.addChild('SkullStripping',
-        ProcessExecutionNode('skullstripping', selected=1))
+                   ProcessExecutionNode('skullstripping', selected=1))
     eNode.addChild('Normalization',
-        ProcessExecutionNode('normalizationPipeline', selected=1))
+                   ProcessExecutionNode('normalizationPipeline', selected=1))
     eNode.addChild('TalairachFromNormalization',
-        ProcessExecutionNode('TalairachTransformationFromNormalization'))
-    
+                   ProcessExecutionNode('TalairachTransformationFromNormalization'))
+
     eNode.SkullStripping.removeLink('brain_mask', 't1mri')
     eNode.addDoubleLink('SkullStripping.t1mri', 't1mri')
     eNode.addDoubleLink('SkullStripping.brain_mask', 'brain_mask')
     eNode.addDoubleLink('SkullStripping.skull_stripped', 'skull_stripped')
-    
+
     eNode.Normalization.removeLink('transformation', 't1mri')
     eNode.addDoubleLink('Normalization.t1mri', 'skull_stripped')
     eNode.addDoubleLink('Normalization.transformation', 'transformation')
@@ -92,21 +94,21 @@ def initialization( self ):
     spm = hasattr(eNode.Normalization, 'NormalizeSPM')
     bal = hasattr(eNode.Normalization, 'NormalizeBaladin')
     eNode.Normalization.allow_flip_initial_MRI = False
-    
+
     self.setExecutionNode(eNode)
 
     if fsl:
         eNode.addDoubleLink('Normalization.NormalizeFSL.template',
-            'template')
+                            'template')
     if spm:
         eNode.addDoubleLink('Normalization.NormalizeSPM.template',
-            'template')
+                            'template')
     if bal:
         eNode.addDoubleLink('Normalization.NormalizeBaladin.template',
-            'template')
+                            'template')
     eNode.addDoubleLink('Normalization.Normalization_AimsMIRegister.anatomical_template',
-			'template')
-    
+                        'template')
+
     eNode.TalairachFromNormalization.removeLink(
         't1mri', 'commissure_coordinates')
     eNode.TalairachFromNormalization.removeLink(
@@ -124,5 +126,3 @@ def initialization( self ):
 
     self.capsul_do_not_export = [
         ('Normalization', 'output_commissures_coordinates'), ]
-
-

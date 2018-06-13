@@ -40,46 +40,49 @@ try:
 except:
     pass
 
+
 def validation():
     try:
         import brainvisa.morphologist.qt4gui.histo_analysis_widget
     except:
         raise ValidationError(
-            'brainvisa.morphologist.qt4gui.histo_analysis_widget ' \
-            'module cannot be imported' )
+            'brainvisa.morphologist.qt4gui.histo_analysis_widget '
+            'module cannot be imported')
+
 
 name = 'Show histo analysis'
 userLevel = 0
-roles = ( 'viewer', )
+roles = ('viewer', )
 
 signature = Signature(
-    'histo_analysis', ReadDiskItem( 'Histo analysis', 'Histo Analysis' ),
-    'histo', ReadDiskItem( 'Histogram', 'Histogram' ),
+    'histo_analysis', ReadDiskItem('Histo analysis', 'Histo Analysis'),
+    'histo', ReadDiskItem('Histogram', 'Histogram'),
 )
 
 
-def initialization( self ):
-    self.linkParameters( 'histo', 'histo_analysis' )
+def initialization(self):
+    self.linkParameters('histo', 'histo_analysis')
 
 
-def create_histo_widget( self, hdata ):
-    hwid = histo_analysis_widget.HistoAnalysisWidget( None )
-    hwid.setAttribute( QtCore.Qt.WA_DeleteOnClose )
-    hwid.show_toolbar( True )
-    hwid.set_histo_data( hdata, nbins=100 )
-    hwid.layout().addWidget( QtGui.QLabel(
-      '<table><tr><td>Gray peak: </td><td><b>%.1f</b></td>'
-      '<td> , std: </td><td><b>%.1f</b></td></tr>'
-      '<tr><td>White peak: </td><td><b>%.1f</b></td>'
-      '<td> , std: </td><td><b>%.1f</b></td></tr></table>'
-      % ( hdata.han[0][0], hdata.han[0][1], hdata.han[1][0], hdata.han[1][1] ),
-      hwid ) )
+def create_histo_widget(self, hdata):
+    hwid = histo_analysis_widget.HistoAnalysisWidget(None)
+    hwid.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+    hwid.show_toolbar(True)
+    hwid.set_histo_data(hdata, nbins=100)
+    hwid.layout().addWidget(QtGui.QLabel(
+        '<table><tr><td>Gray peak: </td><td><b>%.1f</b></td>'
+        '<td> , std: </td><td><b>%.1f</b></td></tr>'
+        '<tr><td>White peak: </td><td><b>%.1f</b></td>'
+        '<td> , std: </td><td><b>%.1f</b></td></tr></table>'
+        % (hdata.han[0][0], hdata.han[0][1], hdata.han[1][0], hdata.han[1][1]),
+        hwid))
     hwid.draw_histo()
     hwid.show()
     return MainThreadLife(hwid)
 
-def execution( self, context ):
+
+def execution(self, context):
     hdata = histo_analysis_widget.load_histo_data(
-        self.histo_analysis.fullPath(), self.histo.fullPath() )
-    hwid = mainThreadActions().call( self.create_histo_widget, hdata )
+        self.histo_analysis.fullPath(), self.histo.fullPath())
+    hwid = mainThreadActions().call(self.create_histo_widget, hdata)
     return hwid

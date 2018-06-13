@@ -40,15 +40,16 @@ userLevel = 2
 
 signature = Signature(
     'left_grey_white', ReadDiskItem("Left Grey White Mask",
-        'aims readable volume formats'),
+                                    'aims readable volume formats'),
     'right_grey_white', ReadDiskItem("Right Grey White Mask",
-        'aims readable volume formats'),
+                                     'aims readable volume formats'),
     'corpus_callosum_mask', WriteDiskItem('Corpus Callosum mask',
-        'aims writable volume formats'),
-    'talairach_transformation', ReadDiskItem( \
+                                          'aims writable volume formats'),
+    'talairach_transformation', ReadDiskItem(
         'Transform Raw T1 MRI to Talairach-AC/PC-Anatomist',
         'Transformation matrix'),
 )
+
 
 def initialization(self):
     self.linkParameters('right_grey_white', 'left_grey_white')
@@ -56,10 +57,11 @@ def initialization(self):
     self.linkParameters('talairach_transformation', 'left_grey_white')
     self.setOptional('talairach_transformation')
 
+
 def execution(self, context):
     minradius = 15
     maxradius = 50
-    minradius *= minradius # square
+    minradius *= minradius  # square
     maxradius *= maxradius
     tmp1 = context.temporary('NIFTI-1 image')
     # merge both hemispheres segmentations
@@ -76,9 +78,9 @@ def execution(self, context):
                    '-m', 'eq')
     # close white mask
     context.system('AimsMorphoMath', '-m', 'clo', '-i', white, '-o', tmp1,
-                   '-r', 3 )
-    #context.system('AimsMorphoMath', '-m', 'clo', '-i', white,
-                   #'-o', '/tmp/closed.nii', '-r', 3 ) # FIXME: debug
+                   '-r', 3)
+    # context.system('AimsMorphoMath', '-m', 'clo', '-i', white,
+    #'-o', '/tmp/closed.nii', '-r', 3 ) # FIXME: debug
 
     # get GM neighbouring in both hemispheres (interhemi cortex)
     tmp2 = context.temporary('NIFTI-1 image')
@@ -93,16 +95,16 @@ def execution(self, context):
                    '-r', 2)
     del tmp2
     context.system('AimsMorphoMath', '-m', 'dil', '-i', tmp3, '-o', tmp5,
-                   '-r', 2 )
+                   '-r', 2)
     del tmp3
     ihc = context.temporary('NIFTI-1 image')
     context.system('AimsMask', '-i', tmp4, '-m', tmp5, '-o', ihc)
 
     # mask dilated white with interhemi cortex
     context.system('AimsMask', '-i', tmp1, '-m', ihc, '-o', tmp4)
-    #context.system('AimsMask', '-i', tmp1, '-m', ihc, '-o', '/tmp/mask.nii') # FIXME: debug
-    #context.system( 'AimsConnectComp', '-i', tmp4, '-o', tmp5, '-n', 1, '-c',
-        #18 )
+    # context.system('AimsMask', '-i', tmp1, '-m', ihc, '-o', '/tmp/mask.nii') # FIXME: debug
+    # context.system( 'AimsConnectComp', '-i', tmp4, '-o', tmp5, '-n', 1, '-c',
+    # 18 )
     del tmp5
 
     use_talairach = (self.talairach_transformation is not None)
@@ -128,7 +130,7 @@ def execution(self, context):
         # erode back a little bit (trying to avoid disconnecting the
         # segmentation)
         context.system('AimsMorphoMath', '-m', 'clo', '-i', tmp4, '-o', tmp1,
-                       '-r', 2 )
+                       '-r', 2)
         context.system('AimsMorphoMath', '-m', 'ero', '-i', tmp1,
                        '-o', self.corpus_callosum_mask,
                        '-r', dilation_size_before_connected_component - 2)
@@ -139,7 +141,7 @@ def execution(self, context):
                        '-c', 18, '-s', 50)
         vol = aims.read(tmp4.fullPath())
         tal = aims.read(self.talairach_transformation.fullPath())
-        dvol = aims.AimsData( vol ) # still a bug in ref counting
+        dvol = aims.AimsData(vol)  # still a bug in ref counting
         ar = numpy.asarray(vol)
         roiit = aims.getRoiIterator(dvol)
         todel = []
@@ -163,7 +165,7 @@ def execution(self, context):
             p /= n
             #context.write( roiit.regionName(), p, ', out:', out, '/', n )
             if p[2] >= -5 or p[2] <= -40 or p[1] <= -40 or p[1] >= 55 \
-                or out > 0.15 * n:
+                    or out > 0.15 * n:
                 todel.append(comp)
             else:
                 comps.append(comp)
@@ -178,51 +180,49 @@ def execution(self, context):
         #lab = fm.midInterfaceLabels()
         #context.write( 'lab:', lab )
         #merge = numpy.zeros( ( max( comps ) + 1, ) )
-        #for i, j in lab:
+        # for i, j in lab:
             #mid = fm.midInterfaceVol( i, j )
             #ma = numpy.array( mid, copy=False )
             #ma[ ma == -1 ] = 1e38
             #md = numpy.min( ma )
             #context.write( 'dist', i, j, ':', md )
-            #if md < 10:
-                #context.write( 'merge', i, j )
-                #if merge[j] != 0:
-                    #k = j
-                    #j = i
-                    #i = k
-                #merge[j] = i
-                #if merge[i] != 0:
-                    #context.write( '-  ->', merge[i] )
-                    #merge[j] = merge[j]
+            # if md < 10:
+            #context.write( 'merge', i, j )
+            # if merge[j] != 0:
+            #k = j
+            #j = i
+            #i = k
+            #merge[j] = i
+            # if merge[i] != 0:
+            #context.write( '-  ->', merge[i] )
+            #merge[j] = merge[j]
         #context.write( 'to merge', merge )
         #modif = True
-        #while modif:
+        # while modif:
             #modif = False
-            #for i in xrange( merge.shape[0] ):
-                #if merge[i] > 0 and merge[merge[i]] > 0:
-                    #merge[i] = merge[merge[i]]
-                    #modif = True
-        #for i in range( merge.shape[0] ):
-          #if merge[i] != 0:
+            # for i in xrange( merge.shape[0] ):
+            # if merge[i] > 0 and merge[merge[i]] > 0:
+            #merge[i] = merge[merge[i]]
+            #modif = True
+        # for i in range( merge.shape[0] ):
+          # if merge[i] != 0:
             #ar[ ar == i ] = merge[i]
             #comps.remove( i )
         #context.write( 'remaining comps:', comps )
-        ## keep only biggest label
+        # keep only biggest label
         #imax = -1
         #vmax = 0
-        #for i in comps:
+        # for i in comps:
             #m = numpy.where( ar == i )[0].shape[0]
-            #if m > vmax:
-                #vmax = m
-                #imax = i
+            # if m > vmax:
+            #vmax = m
+            #imax = i
         #context.write( 'keep component:', imax, ', size:', vmax )
         #ar[ ar != imax ] = 0
-        aims.write( vol, tmp4.fullPath() )
+        aims.write(vol, tmp4.fullPath())
         # close a little bit
         context.system('AimsMorphoMath', '-m', 'clo', '-i', tmp4,
                        '-o', self.corpus_callosum_mask, '-r', 2)
 
     tm = registration.getTransformationManager()
     tm.copyReferential(self.left_grey_white, self.corpus_callosum_mask)
-
-

@@ -61,7 +61,6 @@ class MorphologistView(acap.AnatomistMultipleViewsProcess):
         allowed_extensions=['.arg'],
         optional=True)
 
-
     def create_anatomist_view(self):
 
         def check_file(filename):
@@ -113,7 +112,7 @@ class MorphologistView(acap.AnatomistMultipleViewsProcess):
                     other.append(wid)
                 continue
             win = a.createWindow(wtype, block=block, **kwargs)
-            win.windowConfig(light={'background': [0,0,0,0]})
+            win.windowConfig(light={'background': [0, 0, 0, 0]})
             wins.append(win)
             self.view_layout_position[j] = (l, c)
             j += 1
@@ -162,7 +161,7 @@ class MorphologistView(acap.AnatomistMultipleViewsProcess):
             mask = a.loadObject(self.split)
             mask.setPalette('RAINBOW')
             mask_fus = a.fusionObjects([t1mri, mask],
-                                        method='Fusion2DMethod')
+                                       method='Fusion2DMethod')
             a.execute('TexturingParams', objects=[mask_fus], texture_index=1,
                       rate=0.7)
             objects += [mask, mask_fus]
@@ -275,15 +274,15 @@ class MorphologistView(acap.AnatomistMultipleViewsProcess):
 
         wpos = (0.5, 0.33, 0.5)
         pos = [(b[0] * b[2] + b[1] * (1. - b[2]))
-                                  for b in zip(*([x[:3]
-                                                  for x in t1mri.boundingbox()]
-                                                  + (wpos,)))]
+               for b in zip(*([x[:3]
+                               for x in t1mri.boundingbox()]
+                              + (wpos,)))]
         wins[0].moveLinkedCursor(pos)
 
         #import time
-        #for i in range(15):
-          #time.sleep(0.1)
-          #QtGui.qApp.processEvents()
+        # for i in range(15):
+        # time.sleep(0.1)
+        # QtGui.qApp.processEvents()
 
         if block is not None:
             objects.append(block)
@@ -315,27 +314,27 @@ if __name__ == '__main__':
     mv.split = os.path.join(acq, 'default_analysis', 'segmentation',
                             'voronoi_sujet01.nii')
     mv.gw_classif_l = os.path.join(acq, 'default_analysis', 'segmentation',
-                            'Lgrey_white_sujet01.nii')
+                                   'Lgrey_white_sujet01.nii')
     mv.gw_classif_r = os.path.join(acq, 'default_analysis', 'segmentation',
-                            'Rgrey_white_sujet01.nii')
+                                   'Rgrey_white_sujet01.nii')
     mv.wmesh_l = os.path.join(acq, 'default_analysis', 'segmentation',
-                            'mesh', 'sujet01_Lwhite.gii')
+                              'mesh', 'sujet01_Lwhite.gii')
     mv.wmesh_r = os.path.join(acq, 'default_analysis', 'segmentation',
-                            'mesh', 'sujet01_Rwhite.gii')
+                              'mesh', 'sujet01_Rwhite.gii')
     mv.gmesh_l = os.path.join(acq, 'default_analysis', 'segmentation',
-                            'mesh', 'sujet01_Lhemi.gii')
+                              'mesh', 'sujet01_Lhemi.gii')
     mv.gmesh_r = os.path.join(acq, 'default_analysis', 'segmentation',
-                            'mesh', 'sujet01_Rhemi.gii')
+                              'mesh', 'sujet01_Rhemi.gii')
     mv.sulci_l = os.path.join(acq, 'default_analysis', 'folds', '3.1',
                               'Lsujet01.arg')
     mv.sulci_r = os.path.join(acq, 'default_analysis', 'folds', '3.1',
                               'Rsujet01.arg')
     mv.sulci_labelled_l = os.path.join(acq, 'default_analysis', 'folds', '3.1',
-                                      'default_session_auto',
-                                      'Lsujet01_default_session_auto.arg')
+                                       'default_session_auto',
+                                       'Lsujet01_default_session_auto.arg')
     mv.sulci_labelled_r = os.path.join(acq, 'default_analysis', 'folds', '3.1',
-                                      'default_session_auto',
-                                      'Rsujet01_default_session_auto.arg')
+                                       'default_session_auto',
+                                       'Rsujet01_default_session_auto.arg')
 
     mv.view_layout_cols = 4
     mv.output_width = 800
@@ -343,4 +342,3 @@ if __name__ == '__main__':
     mv.output = '/tmp/morhsnap.jpg'
 
     res = mv()
-

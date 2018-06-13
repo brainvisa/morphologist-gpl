@@ -13,12 +13,14 @@ import six
 class sulcigraphmorphometrybysubject(Process):
     def __init__(self, **kwargs):
         super(sulcigraphmorphometrybysubject, self).__init__()
-        self.add_trait('left_sulci_graph', File(allowed_extensions=['.arg', '.data']))
-        self.add_trait('right_sulci_graph', File(allowed_extensions=['.arg', '.data']))
+        self.add_trait('left_sulci_graph', File(
+            allowed_extensions=['.arg', '.data']))
+        self.add_trait('right_sulci_graph', File(
+            allowed_extensions=['.arg', '.data']))
         self.add_trait('sulci_file', File(allowed_extensions=['.json']))
         self.add_trait('use_attribute', Enum('label', 'name'))
-        self.add_trait('sulcal_morpho_measures', File(allowed_extensions=['.csv'], output=True))
-
+        self.add_trait('sulcal_morpho_measures', File(
+            allowed_extensions=['.csv'], output=True))
 
         # initialization section
         self.sulci_file = '/volatile/riviere/brainvisa/build-stable-qt5/share/brainvisa-share-4.6/nomenclature/translation/sulci_default_list.json'
@@ -40,7 +42,7 @@ class sulcigraphmorphometrybysubject(Process):
             value = getattr(self, name)
             if value is Undefined:
                 continue
-            if isinstance(self.trait(name).trait_type, File) and value != ''                     and value is not Undefined:
+            if isinstance(self.trait(name).trait_type, File) and value != '' and value is not Undefined:
                 kwargs[name] = value
             elif isinstance(self.trait(name).trait_type, List):
                 kwargs[name] = list(value)

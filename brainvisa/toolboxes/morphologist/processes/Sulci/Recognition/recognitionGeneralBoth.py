@@ -7,9 +7,9 @@
 #
 # This software is governed by the CeCILL license version 2 under
 # French law and abiding by the rules of distribution of free software.
-# You can  use, modify and/or redistribute the software under the 
+# You can  use, modify and/or redistribute the software under the
 # terms of the CeCILL license version 2 as circulated by CEA, CNRS
-# and INRIA at the following URL "http://www.cecill.info". 
+# and INRIA at the following URL "http://www.cecill.info".
 #
 # As a counterpart to the access to the source code and  rights to copy,
 # modify and redistribute granted by the license, users are provided only
@@ -24,8 +24,8 @@
 # therefore means  that it is reserved for developers  and  experienced
 # professionals having in-depth computer knowledge. Users are therefore
 # encouraged to load and test the software's suitability as regards their
-# requirements in conditions enabling the security of their systems and/or 
-# data to be ensured and,  more generally, to use and operate it in the 
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
 # same conditions as regards security.
 #
 # The fact that you are presently reading this means that you have had
@@ -46,97 +46,115 @@ signature = Signature(
     'side', Choice('left', 'right', 'both', 'none'),
     'model', Choice(ann_model, ann_model_2001, spam_model, desync_msg),
     'left_data_graph', ReadDiskItem('Cortical Folds Graph',
-        'Graph and Data', requiredAttributes={'side': 'left'}),
+                                    'Graph and Data', requiredAttributes={'side': 'left'}),
     'left_output_graph', WriteDiskItem('Labelled Cortical Folds Graph',
-        'Graph and Data', requiredAttributes={'side': 'left'}),
+                                       'Graph and Data', requiredAttributes={'side': 'left'}),
     'right_data_graph', ReadDiskItem('Cortical Folds Graph',
-        'Graph and Data', requiredAttributes={'side': 'right'}),
+                                     'Graph and Data', requiredAttributes={'side': 'right'}),
     'right_output_graph', WriteDiskItem('Labelled Cortical Folds Graph',
-        'Graph and Data', requiredAttributes={'side': 'right'}),
+                                        'Graph and Data', requiredAttributes={'side': 'right'}),
 )
 
 #import neuroConfig
 #import sys
 #neuroConfig.debugParametersLinks = sys.stdout
 
+
 class changeSide(object):
-    def __init__( self, proc ):
-        self.proc = weakref.proxy( proc )
-    def __call__( self, node ):
+    def __init__(self, proc):
+        self.proc = weakref.proxy(proc)
+
+    def __call__(self, node):
         side = self.proc.side
         # must be called to avoid infinite recursion
         if (node.isSelected() and side in self.sel) \
-            or (not node.isSelected() and side in self.unsel):
+                or (not node.isSelected() and side in self.unsel):
             return
         self.proc.side = self.map[side]
 
 
 class changeSideLeft(changeSide):
-    map = { 'left' : 'none', 'none' : 'left',
-        'right' : 'both', 'both' : 'right'}
+    map = {'left': 'none', 'none': 'left',
+           'right': 'both', 'both': 'right'}
     sel = ['left', 'both']
     unsel = ['right', 'none']
-    def __init__( self, proc ):
+
+    def __init__(self, proc):
         changeSide.__init__(self, proc)
+
 
 class changeSideRight(changeSide):
-    map = { 'left' : 'both', 'both' : 'left',
-        'right' : 'none', 'none' : 'right'}
+    map = {'left': 'both', 'both': 'left',
+           'right': 'none', 'none': 'right'}
     sel = ['right', 'both']
     unsel = ['left', 'none']
-    def __init__( self, proc ):
+
+    def __init__(self, proc):
         changeSide.__init__(self, proc)
 
+
 class changeModel(object):
-    def __init__( self, proc ):
-        self.proc = weakref.proxy( proc )
-    def __call__( self, node ):
-        if not node.isSelected(): return
+    def __init__(self, proc):
+        self.proc = weakref.proxy(proc)
+
+    def __call__(self, node):
+        if not node.isSelected():
+            return
         if self.left().isSelected() and self.right().isSelected():
             self.proc.model = self.model
-        else:    self.proc.model = desync_msg
+        else:
+            self.proc.model = desync_msg
+
 
 class changeModelANN(changeModel):
-    def __init__( self, proc ):
+    def __init__(self, proc):
         changeModel.__init__(self, proc)
         self.model = ann_model
-    def updateModel( self ):
+
+    def updateModel(self):
         e = self.proc.executionNode()
         model_hint = e.LeftSulciRecognition.recognition2000.model_hint
         if model_hint == 1:
-          self.model = ann_model_2001
+            self.model = ann_model_2001
         else:
-          self.model = ann_model
+            self.model = ann_model
+
     def left(self):
         self.updateModel()
         e = self.proc.executionNode()
         return e.LeftSulciRecognition.recognition2000
+
     def right(self):
         self.updateModel()
         e = self.proc.executionNode()
         return e.RightSulciRecognition.recognition2000
 
+
 class changeModelSPAM(changeModel):
-    def __init__( self, proc ):
+    def __init__(self, proc):
         changeModel.__init__(self, proc)
         self.model = spam_model
+
     def left(self):
         e = self.proc.executionNode()
         return e.LeftSulciRecognition.SPAM_recognition09
+
     def right(self):
         e = self.proc.executionNode()
         return e.RightSulciRecognition.SPAM_recognition09
 
+
 class changeSpamMethod(object):
     def __init__(self, proc):
-        self.proc = weakref.proxy( proc )
-    def __call__( self, node=None): #ignore node
+        self.proc = weakref.proxy(proc)
+
+    def __call__(self, node=None):  # ignore node
         # NOTE: can't be moved to __init__, since executionNode
         # does not exist yet
         e = self.proc.executionNode()
-        self.nodeL = weakref.proxy( e.LeftSulciRecognition.SPAM_recognition09 )
-        self.nodeR = weakref.proxy( \
-            e.RightSulciRecognition.SPAM_recognition09 )
+        self.nodeL = weakref.proxy(e.LeftSulciRecognition.SPAM_recognition09)
+        self.nodeR = weakref.proxy(
+            e.RightSulciRecognition.SPAM_recognition09)
 
         nodesL = self.nodeL.global_recognition, \
             self.nodeL.local_or_markovian, \
@@ -153,9 +171,9 @@ class changeSpamMethod(object):
                 self.proc.spam_method = desync_msg
                 return
         if self.nodeL.global_recognition.model_type != \
-            self.nodeR.global_recognition.model_type:
-                self.proc.spam_method = desync_msg
-                return
+                self.nodeR.global_recognition.model_type:
+            self.proc.spam_method = desync_msg
+            return
 
         # 2) special cases
         node1 = self.globalSpam()
@@ -166,66 +184,74 @@ class changeSpamMethod(object):
             if node2.isSelected():
                 self.proc.spam_method = "unknown"
             # b) Nothing selected
-            else:    self.proc.spam_method = "none"
+            else:
+                self.proc.spam_method = "none"
             return
         # 4) known methods :
         # Talairach, global, global+Markov, global+local
         # Other methods are not named ("unknown" is used)
-        if not node2.isSelected(): # here: node 1 is selected
+        if not node2.isSelected():  # here: node 1 is selected
             if node1.model_type == 'Global registration':
                 self.proc.spam_method = "global"
             elif node1.model_type == 'Talairach':
                 self.proc.spam_method = "Talairach"
-            else:    self.proc.spam_method = "unknown"
+            else:
+                self.proc.spam_method = "unknown"
             return
         if node1.model_type == 'Global registration':
             if node2.local_recognition.isSelected():
                 self.proc.spam_method = "global+local"
             elif node2.markovian_recognition.isSelected():
                 self.proc.spam_method = "global+Markov"
-            else:    self.proc.spam_method = "unknown"
-        else:    self.proc.spam_method = "unknown"
+            else:
+                self.proc.spam_method = "unknown"
+        else:
+            self.proc.spam_method = "unknown"
 
     def globalSpam(self):
         return self.mainNode().global_recognition
+
     def localOrMarkovianSpam(self):
         return self.mainNode().local_or_markovian
 
 
 class changeSpamMethodLeft(changeSpamMethod):
-    def __init__( self, proc ):
+    def __init__(self, proc):
         changeSpamMethod.__init__(self, proc)
+
     def mainNode(self):
         return self.nodeL
 
+
 class changeSpamMethodRight(changeSpamMethod):
-    def __init__( self, proc ):
+    def __init__(self, proc):
         changeSpamMethod.__init__(self, proc)
+
     def mainNode(self):
         return self.nodeR
 
 
 # Default values
-def initialization( self ):
+def initialization(self):
     # values = (left side selected, right side selected)
-    side_select_map = {'left': (True, False), 'right' : (False, True),
-                'both': (True, True), 'none' : (False, False)}
+    side_select_map = {'left': (True, False), 'right': (False, True),
+                       'both': (True, True), 'none': (False, False)}
     # values = (Global/Talairach selected, mode,
     #           Local/Markov     selected, mode)
-    spam_select_map = {'Talairach' : (True, "Talairach", False, None),
-        'global' : (True, "Global registration", False, None),
-        'global+local' : (True, "Global registration", True, "local"),
-        'global+Markov' : (True, "Global registration", True, "Markov"),
-        'none' : (False, None, False, None) }
+    spam_select_map = {'Talairach': (True, "Talairach", False, None),
+                       'global': (True, "Global registration", False, None),
+                       'global+local': (True, "Global registration", True, "local"),
+                       'global+Markov': (True, "Global registration", True, "Markov"),
+                       'none': (False, None, False, None)}
 
     # create nodes
-    eNode = ParallelExecutionNode( self.name, parameterized = self, optional=1)
-    eNodeL = ProcessExecutionNode( 'recognitionGeneral',
-            optional=1, selected=1)
+    eNode = ParallelExecutionNode(self.name, parameterized=self, optional=1)
+    eNodeL = ProcessExecutionNode('recognitionGeneral',
+                                  optional=1, selected=1)
     eNodeL._process.name = 'Sulci Recognition (left side)'
     eNode.addChild("LeftSulciRecognition", eNodeL)
-    eNodeR = ProcessExecutionNode( 'recognitionGeneral',
-            optional=1, selected=1)
+    eNodeR = ProcessExecutionNode('recognitionGeneral',
+                                  optional=1, selected=1)
     eNodeR._process.name = 'Sulci Recognition (right side)'
     eNode.addChild("RightSulciRecognition", eNodeR)
     eNodeLspam = eNodeL.SPAM_recognition09
@@ -237,12 +263,11 @@ def initialization( self ):
 
     def linkSpamMethod(method, names, parameterized):
         eNode = parameterized[0].executionNode()
-        if method in [desync_msg, 'unknown'] :
+        if method in [desync_msg, 'unknown']:
             return
 
         select_step1, type_step1, select_step2, type_step2 = \
-                        spam_select_map[method]
-
+            spam_select_map[method]
 
         # step 1
         Lstep1 = eNodeLspam.global_recognition
@@ -258,14 +283,13 @@ def initialization( self ):
         Rstep2 = eNodeRspam.local_or_markovian
         Lstep2.setSelected(select_step2)
         Rstep2.setSelected(select_step2)
-        if type_step2 == 'local' :
+        if type_step2 == 'local':
             Lstep2.local_recognition.setSelected(True)
             Rstep2.local_recognition.setSelected(True)
-        elif type_step2 == 'Markov' :
+        elif type_step2 == 'Markov':
             Lstep2.markovian_recognition.setSelected(True)
             Rstep2.markovian_recognition.setSelected(True)
         return method
-
 
     def linkModel(model, names, parameterized):
         process = parameterized[0]
@@ -273,20 +297,20 @@ def initialization( self ):
         eNode = process.executionNode()
         if model == spam_model:
             signature['spam_method'] = Choice('Talairach',
-                'global', 'global+local', 'global+Markov',
-                desync_msg, 'unknown', 'none')
+                                              'global', 'global+local', 'global+Markov',
+                                              desync_msg, 'unknown', 'none')
             cL()
             cR()
             eNode.LeftSulciRecognition.SPAM_recognition09.setSelected(True)
             eNode.RightSulciRecognition.SPAM_recognition09.setSelected(True)
             eNode.addLink(None, 'spam_method', linkSpamMethod)
-        elif model in ( ann_model, ann_model_2001 ):
+        elif model in (ann_model, ann_model_2001):
             if model == ann_model:
-              eNode.LeftSulciRecognition.recognition2000.model_hint = 0
-              eNode.RightSulciRecognition.recognition2000.model_hint = 0
+                eNode.LeftSulciRecognition.recognition2000.model_hint = 0
+                eNode.RightSulciRecognition.recognition2000.model_hint = 0
             else:
-              eNode.LeftSulciRecognition.recognition2000.model_hint = 1
-              eNode.RightSulciRecognition.recognition2000.model_hint = 1
+                eNode.LeftSulciRecognition.recognition2000.model_hint = 1
+                eNode.RightSulciRecognition.recognition2000.model_hint = 1
             eNode.LeftSulciRecognition.recognition2000.setSelected(True)
             eNode.RightSulciRecognition.recognition2000.setSelected(True)
         if model != spam_model:
@@ -300,20 +324,19 @@ def initialization( self ):
         eNode.LeftSulciRecognition.setSelected(selectLeft)
         eNode.RightSulciRecognition.setSelected(selectRight)
 
-
     # default
     self.side = 'both'
     # detect if SPAM models are here. If not, ANN is the default method
     # otherwise use SPAMs by default
-    spammodels = ReadDiskItem( 'Sulci Segments Model', 'Text Data Table' \
-      )._findValues( selection = { 'sulci_segments_model_type' : \
-        'global_registered_spam' },
-        requiredAttributes = None, write = False )
+    spammodels = ReadDiskItem('Sulci Segments Model', 'Text Data Table'
+                              )._findValues(selection={'sulci_segments_model_type':
+                                                       'global_registered_spam'},
+                                            requiredAttributes=None, write=False)
     try:
-      spammodels.next()
-      self.model = spam_model
+        spammodels.next()
+        self.model = spam_model
     except StopIteration:
-      self.model = ann_model
+        self.model = ann_model
 
     eNode.addLink(None, 'side', linkSide)
     eNode.addLink(None, 'model', linkModel)
@@ -329,28 +352,29 @@ def initialization( self ):
     eNodeR.SPAM_recognition09._selectionChange.add(changeModelSPAM(self))
 
     # SPAM Methods
-    eNode.addLink(None, 'LeftSulciRecognition.SPAM_recognition09.' + \
-                    'global_recognition.model_type', cL)
+    eNode.addLink(None, 'LeftSulciRecognition.SPAM_recognition09.' +
+                  'global_recognition.model_type', cL)
     eNodeLspam.global_recognition._selectionChange.add(cL)
     eNodeLspam.local_or_markovian._selectionChange.add(cL)
     eNodeLspam.local_or_markovian.local_recognition._selectionChange.add(cL)
-    eNodeLspam.local_or_markovian.markovian_recognition._selectionChange.add(cL)
-    eNode.addLink(None, 'RightSulciRecognition.SPAM_recognition09.' + \
-                    'global_recognition.model_type', cR)
+    eNodeLspam.local_or_markovian.markovian_recognition._selectionChange.add(
+        cL)
+    eNode.addLink(None, 'RightSulciRecognition.SPAM_recognition09.' +
+                  'global_recognition.model_type', cR)
     eNodeRspam.global_recognition._selectionChange.add(cR)
     eNodeRspam.local_or_markovian._selectionChange.add(cR)
     eNodeRspam.local_or_markovian.local_recognition._selectionChange.add(cR)
-    eNodeRspam.local_or_markovian.markovian_recognition._selectionChange.add(cR)
+    eNodeRspam.local_or_markovian.markovian_recognition._selectionChange.add(
+        cR)
 
-    self.setExecutionNode( eNode )
+    self.setExecutionNode(eNode)
 
-    self.addLink( 'LeftSulciRecognition.data_graph', 'left_data_graph' )
-    self.addLink( 'left_data_graph', 'LeftSulciRecognition.data_graph' )
-    self.addLink( 'LeftSulciRecognition.output_graph', 'left_output_graph' )
-    self.addLink( 'left_output_graph', 'LeftSulciRecognition.output_graph' )
-    self.addLink( 'RightSulciRecognition.data_graph', 'right_data_graph' )
-    self.addLink( 'right_data_graph', 'RightSulciRecognition.data_graph' )
-    self.addLink( 'RightSulciRecognition.output_graph', 'right_output_graph' )
-    self.addLink( 'right_output_graph', 'RightSulciRecognition.output_graph' )
-    self.linkParameters( 'right_data_graph', 'left_data_graph' )
-
+    self.addLink('LeftSulciRecognition.data_graph', 'left_data_graph')
+    self.addLink('left_data_graph', 'LeftSulciRecognition.data_graph')
+    self.addLink('LeftSulciRecognition.output_graph', 'left_output_graph')
+    self.addLink('left_output_graph', 'LeftSulciRecognition.output_graph')
+    self.addLink('RightSulciRecognition.data_graph', 'right_data_graph')
+    self.addLink('right_data_graph', 'RightSulciRecognition.data_graph')
+    self.addLink('RightSulciRecognition.output_graph', 'right_output_graph')
+    self.addLink('right_output_graph', 'RightSulciRecognition.output_graph')
+    self.linkParameters('right_data_graph', 'left_data_graph')

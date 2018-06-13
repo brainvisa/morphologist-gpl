@@ -37,100 +37,100 @@ name = 'Brain Mask Segmentation'
 userLevel = 2
 
 signature = Signature(
-  'mri_corrected', ReadDiskItem( "T1 MRI Bias Corrected",
-      'aims readable Volume Formats' ),
-  'brain_mask', WriteDiskItem( 'T1 Brain Mask',
-      'aims Writable Volume Formats' ),
-  'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-  'Commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
-      'Commissure coordinates'),
-  'lesion_mask', ReadDiskItem( 'Lesion Mask', 'aims readable Volume Formats' ),
-  'white_ridges', ReadDiskItem( "T1 MRI White Matter Ridges",
-      'aims Writable Volume Formats' ),
+    'mri_corrected', ReadDiskItem("T1 MRI Bias Corrected",
+                                  'aims readable Volume Formats'),
+    'brain_mask', WriteDiskItem('T1 Brain Mask',
+                                'aims Writable Volume Formats'),
+    'histo_analysis', ReadDiskItem('Histo Analysis', 'Histo Analysis'),
+    'Commissure_coordinates', ReadDiskItem('Commissure coordinates',
+                                           'Commissure coordinates'),
+    'lesion_mask', ReadDiskItem('Lesion Mask', 'aims readable Volume Formats'),
+    'white_ridges', ReadDiskItem("T1 MRI White Matter Ridges",
+                                 'aims Writable Volume Formats'),
 )
 
-def initialization( self ):
-  def linkMask( self, proc ):
-    p = self.signature[ 'brain_mask' ]
-    if not self.histo_analysis:
-      if self.mri_corrected:
-        return p.findValue( self.mri_corrected )
-      return None
-    reqatt = {}
-    if self.mri_corrected:
-      format = self.mri_corrected.format
-      if format:
-        reqatt[ '_format' ] = set( [ format.name ] )
-    if reqatt:
-      x = p.findValue( self.histo_analysis, requiredAttributes=reqatt )
-    else:
-      x = p.findValue( self.histo_analysis )
-    return x
 
-  self.setOptional('white_ridges')
-  self.setOptional('lesion_mask')
-  self.setOptional('Commissure_coordinates')
+def initialization(self):
+    def linkMask(self, proc):
+        p = self.signature['brain_mask']
+        if not self.histo_analysis:
+            if self.mri_corrected:
+                return p.findValue(self.mri_corrected)
+            return None
+        reqatt = {}
+        if self.mri_corrected:
+            format = self.mri_corrected.format
+            if format:
+                reqatt['_format'] = set([format.name])
+        if reqatt:
+            x = p.findValue(self.histo_analysis, requiredAttributes=reqatt)
+        else:
+            x = p.findValue(self.histo_analysis)
+        return x
 
-  # create nodes
+    self.setOptional('white_ridges')
+    self.setOptional('lesion_mask')
+    self.setOptional('Commissure_coordinates')
 
-  eNode = SelectionExecutionNode( self.name, parameterized = self )
-  eNode.addChild( 'BrainSegmentation05',
-                  ProcessExecutionNode( 'BrainSegmentation', selected = 0 ) )
-  eNode.addChild( 'BrainSegmentation04',
-                  ProcessExecutionNode( 'VipGetBrain', selected = 1 ) )
+    # create nodes
 
-  # break internal links
+    eNode = SelectionExecutionNode(self.name, parameterized=self)
+    eNode.addChild('BrainSegmentation05',
+                   ProcessExecutionNode('BrainSegmentation', selected=0))
+    eNode.addChild('BrainSegmentation04',
+                   ProcessExecutionNode('VipGetBrain', selected=1))
 
-  eNode.BrainSegmentation05.clearLinksTo( 'brain_mask' )
-  eNode.BrainSegmentation05.clearLinksTo( 'white_ridges' )
-  eNode.BrainSegmentation05.clearLinksTo( 'commissure_coordinates' )
-  eNode.BrainSegmentation05.clearLinksTo( 'histo_analysis' )
-  # eNode.BrainSegmentation05.clearLinksTo( 'lesion_mask' )
+    # break internal links
 
-  eNode.BrainSegmentation04.clearLinksTo( 'histo_analysis' )
-  eNode.BrainSegmentation04.clearLinksTo( 'Commissure_coordinates' )
-  eNode.BrainSegmentation04.clearLinksTo( 'brain_mask' )
-  # eNode.BrainSegmentation04.clearLinksTo( 'lesion_mask' )
+    eNode.BrainSegmentation05.clearLinksTo('brain_mask')
+    eNode.BrainSegmentation05.clearLinksTo('white_ridges')
+    eNode.BrainSegmentation05.clearLinksTo('commissure_coordinates')
+    eNode.BrainSegmentation05.clearLinksTo('histo_analysis')
+    # eNode.BrainSegmentation05.clearLinksTo( 'lesion_mask' )
 
-  # links for 2005 version
+    eNode.BrainSegmentation04.clearLinksTo('histo_analysis')
+    eNode.BrainSegmentation04.clearLinksTo('Commissure_coordinates')
+    eNode.BrainSegmentation04.clearLinksTo('brain_mask')
+    # eNode.BrainSegmentation04.clearLinksTo( 'lesion_mask' )
 
-  eNode.addLink( 'BrainSegmentation05.t1mri_nobias', 'mri_corrected' )
-  eNode.addLink( 'mri_corrected', 'BrainSegmentation05.t1mri_nobias' )
-  eNode.addLink( 'BrainSegmentation05.brain_mask', 'brain_mask' )
-  eNode.addLink( 'brain_mask', 'BrainSegmentation05.brain_mask' )
-  eNode.addLink( 'BrainSegmentation05.commissure_coordinates',
-                 'Commissure_coordinates' )
-  eNode.addLink( 'Commissure_coordinates',
-                 'BrainSegmentation05.commissure_coordinates' )
-  eNode.addLink( 'BrainSegmentation05.histo_analysis', 'histo_analysis' )
-  eNode.addLink( 'histo_analysis', 'BrainSegmentation05.histo_analysis' )
-  eNode.addLink( 'BrainSegmentation05.lesion_mask', 'lesion_mask' )
-  eNode.addLink( 'lesion_mask', 'BrainSegmentation05.lesion_mask' )
-  eNode.addLink( 'BrainSegmentation05.white_ridges', 'white_ridges' )
-  eNode.addLink( 'white_ridges', 'BrainSegmentation05.white_ridges' )
+    # links for 2005 version
 
-  # links for 2004 version
+    eNode.addLink('BrainSegmentation05.t1mri_nobias', 'mri_corrected')
+    eNode.addLink('mri_corrected', 'BrainSegmentation05.t1mri_nobias')
+    eNode.addLink('BrainSegmentation05.brain_mask', 'brain_mask')
+    eNode.addLink('brain_mask', 'BrainSegmentation05.brain_mask')
+    eNode.addLink('BrainSegmentation05.commissure_coordinates',
+                  'Commissure_coordinates')
+    eNode.addLink('Commissure_coordinates',
+                  'BrainSegmentation05.commissure_coordinates')
+    eNode.addLink('BrainSegmentation05.histo_analysis', 'histo_analysis')
+    eNode.addLink('histo_analysis', 'BrainSegmentation05.histo_analysis')
+    eNode.addLink('BrainSegmentation05.lesion_mask', 'lesion_mask')
+    eNode.addLink('lesion_mask', 'BrainSegmentation05.lesion_mask')
+    eNode.addLink('BrainSegmentation05.white_ridges', 'white_ridges')
+    eNode.addLink('white_ridges', 'BrainSegmentation05.white_ridges')
 
-  eNode.addLink( 'BrainSegmentation04.mri_corrected', 'mri_corrected' )
-  eNode.addLink( 'mri_corrected', 'BrainSegmentation04.mri_corrected' )
-  eNode.addLink( 'BrainSegmentation04.brain_mask', 'brain_mask' )
-  eNode.addLink( 'brain_mask', 'BrainSegmentation04.brain_mask' )
-  eNode.addLink( 'BrainSegmentation04.Commissure_coordinates',
-                 'Commissure_coordinates' )
-  eNode.addLink( 'Commissure_coordinates',
-                 'BrainSegmentation04.Commissure_coordinates' )
-  eNode.addLink( 'BrainSegmentation04.histo_analysis', 'histo_analysis' )
-  eNode.addLink( 'histo_analysis', 'BrainSegmentation04.histo_analysis' )
-  eNode.addLink( 'BrainSegmentation04.lesion_mask', 'lesion_mask' )
-  eNode.addLink( 'lesion_mask', 'BrainSegmentation04.lesion_mask' )
+    # links for 2004 version
 
-  # self links
+    eNode.addLink('BrainSegmentation04.mri_corrected', 'mri_corrected')
+    eNode.addLink('mri_corrected', 'BrainSegmentation04.mri_corrected')
+    eNode.addLink('BrainSegmentation04.brain_mask', 'brain_mask')
+    eNode.addLink('brain_mask', 'BrainSegmentation04.brain_mask')
+    eNode.addLink('BrainSegmentation04.Commissure_coordinates',
+                  'Commissure_coordinates')
+    eNode.addLink('Commissure_coordinates',
+                  'BrainSegmentation04.Commissure_coordinates')
+    eNode.addLink('BrainSegmentation04.histo_analysis', 'histo_analysis')
+    eNode.addLink('histo_analysis', 'BrainSegmentation04.histo_analysis')
+    eNode.addLink('BrainSegmentation04.lesion_mask', 'lesion_mask')
+    eNode.addLink('lesion_mask', 'BrainSegmentation04.lesion_mask')
 
-  self.linkParameters( 'brain_mask', ( 'histo_analysis', 'mri_corrected' ),
-    linkMask )
-  self.linkParameters( 'histo_analysis', 'mri_corrected' )
-  self.linkParameters( 'Commissure_coordinates', 'mri_corrected' )
-  self.linkParameters( 'white_ridges', 'mri_corrected' )
+    # self links
 
-  self.setExecutionNode( eNode )
+    self.linkParameters('brain_mask', ('histo_analysis', 'mri_corrected'),
+                        linkMask)
+    self.linkParameters('histo_analysis', 'mri_corrected')
+    self.linkParameters('Commissure_coordinates', 'mri_corrected')
+    self.linkParameters('white_ridges', 'mri_corrected')
 
+    self.setExecutionNode(eNode)

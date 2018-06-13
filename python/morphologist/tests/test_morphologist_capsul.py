@@ -87,6 +87,7 @@ def handle_debugger(sig, frame):
                 # no debugging, then.
                 pass
 
+
 # Windows platform does not support the SIGUSR2 signal
 if platform.system() != 'Windows':
     signal.signal(signal.SIGUSR2, handle_debugger)
@@ -338,10 +339,10 @@ class TestMorphologistCapsul(soma.test_utils.SomaTestCase):
         brainvisa.axon.cleanup()
 
 
-#def test_suite():
+# def test_suite():
 #    return unittest.TestLoader().loadTestsFromTestCase(TestMorphologistCapsul)
 #
-#try:
+# try:
 #    if __name__ == '__main__':
 #        parser = ArgumentParser("test Morphologist CAPSUL version")
 #        parser.add_argument('-w', '--workflow',
@@ -355,7 +356,7 @@ class TestMorphologistCapsul(soma.test_utils.SomaTestCase):
 #
 #        unittest.main(defaultTest='test_suite',
 #                      argv=[sys.argv[0]]+args.options)
-#finally:
+# finally:
 #    shutil.rmtree(homedir)
 #    del homedir
 

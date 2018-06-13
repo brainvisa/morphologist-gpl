@@ -13,14 +13,18 @@ import six
 class ReorientAnatomy(Process):
     def __init__(self, **kwargs):
         super(ReorientAnatomy, self).__init__()
-        self.add_trait('t1mri', File(allowed_extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg', '.scn', '.mnc', '.mng', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz']))
-        self.add_trait('output_t1mri', File(allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.gif', '.ima', '.dim', '.jpg', '.mnc', '.mng', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'], output=True))
+        self.add_trait('t1mri', File(allowed_extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg', '.scn',
+                                                         '.mnc', '.mng', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz']))
+        self.add_trait('output_t1mri', File(allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.gif', '.ima', '.dim', '.jpg', '.mnc',
+                                                                '.mng', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'], output=True))
         self.add_trait('transformation', File(allowed_extensions=['.trm']))
-        self.add_trait('output_transformation', File(allowed_extensions=['.trm'], output=True))
-        self.add_trait('commissures_coordinates', File(allowed_extensions=['.APC'], optional=True))
-        self.add_trait('output_commissures_coordinates', File(allowed_extensions=['.APC'], output=True, optional=True))
+        self.add_trait('output_transformation', File(
+            allowed_extensions=['.trm'], output=True))
+        self.add_trait('commissures_coordinates', File(
+            allowed_extensions=['.APC'], optional=True))
+        self.add_trait('output_commissures_coordinates', File(
+            allowed_extensions=['.APC'], output=True, optional=True))
         self.add_trait('allow_flip_initial_MRI', Bool())
-
 
         # initialization section
         self.allow_flip_initial_MRI = False
@@ -41,7 +45,7 @@ class ReorientAnatomy(Process):
             value = getattr(self, name)
             if value is Undefined:
                 continue
-            if isinstance(self.trait(name).trait_type, File) and value != ''                     and value is not Undefined:
+            if isinstance(self.trait(name).trait_type, File) and value != '' and value is not Undefined:
                 kwargs[name] = value
             elif isinstance(self.trait(name).trait_type, List):
                 kwargs[name] = list(value)

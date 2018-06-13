@@ -7,7 +7,7 @@ name = 'Morphologist CAPSUL iteration'
 
 signature = Signature(
     't1mri', ListOf(ReadDiskItem('Raw T1 MRI',
-                                  'aims readable volume formats')),
+                                 'aims readable volume formats')),
     'capsul_process_type', OpenChoice(
         ('Morphologist', 'morphologist.capsul.morphologist.Morphologist'),
         ('Morphologist simple',
@@ -35,8 +35,8 @@ def openPipeline(self):
     from capsul.api import Pipeline
     Pipeline.hide_nodes_activation = False
     mpv = PipelineDevelopperView(
-      self.get_edited_pipeline(), allow_open_controller=True,
-      show_sub_pipelines=True)
+        self.get_edited_pipeline(), allow_open_controller=True,
+        show_sub_pipelines=True)
     mpv.show()
     self._pipeline_view = MainThreadLife(mpv)
 
@@ -87,7 +87,7 @@ def get_edited_pipeline(self):
             study_config = StudyConfig(
                 init_config=init_study_config,
                 modules=StudyConfig.default_modules
-                    + ['BrainVISAConfig', 'FomConfig'])
+                + ['BrainVISAConfig', 'FomConfig'])
             self._edited_pipeline = get_process_instance(
                 self.capsul_process_type, study_config)
             pf = ProcessCompletionEngine.get_completion_engine(
@@ -101,7 +101,7 @@ def get_edited_pipeline(self):
 
 
 def execution(self, context):
-    self._pipeline_view = None # close the GUI, if any
+    self._pipeline_view = None  # close the GUI, if any
     import time
     from soma.application import Application
     from capsul.study_config.study_config import StudyConfig
@@ -114,8 +114,8 @@ def execution(self, context):
     import numpy as np
 
     #soma_app = Application('soma.fom', '1.0')
-    #soma_app.plugin_modules.append('soma.fom')
-    #soma_app.initialize()
+    # soma_app.plugin_modules.append('soma.fom')
+    # soma_app.initialize()
     configuration = Appli2().configuration
 
     if self.capsul_process_type \
@@ -166,7 +166,7 @@ def execution(self, context):
         study_config = StudyConfig(
             init_config=init_study_config,
             modules=StudyConfig.default_modules
-                + ['BrainVISAConfig', 'FomConfig'])
+            + ['BrainVISAConfig', 'FomConfig'])
         pf = process_with_fom.ProcessWithFom(mp, study_config)
 
     # activate normalization methods disabling
@@ -178,7 +178,7 @@ def execution(self, context):
     study_config.somaworkflow_computing_resource = 'localhost'
     if self.use_translated_shared_directory:
         path_translations = {
-            'path_translations' : {
+            'path_translations': {
                 study_config.shared_directory:
                     ['brainvisa', 'de25977f-abf5-9f1c-4384-2585338cd7af']}}
     else:
@@ -227,7 +227,7 @@ def execution(self, context):
                 and study_config.input_directory not in transfers:
             transfers.append(study_config.input_directory)
         if self.transfer_outputs \
-                    and study_config.output_directory not in transfers:
+                and study_config.output_directory not in transfers:
             transfers.append(study_config.output_directory)
 
         if len(transfers) != 0:
@@ -239,12 +239,12 @@ def execution(self, context):
 
         priority = (len(self.t1mri) - item - 1) * 100
         wf = pipeline_workflow.workflow_from_pipeline(
-            mp, study_config=study_config)  #, jobs_priority=priority)
+            mp, study_config=study_config)  # , jobs_priority=priority)
         workflow.jobs += wf.jobs
         workflow.dependencies += wf.dependencies
         group = swclient.Group(wf.root_group,
                                name='%s iter %i' % (mp.name, i))
-        workflow.root_group.append(group) # += wf.root_group
+        workflow.root_group.append(group)  # += wf.root_group
         workflow.groups += [group] + wf.groups
         context.progress(item+1, len(self.t1mri), process=self)
 
@@ -253,4 +253,3 @@ def execution(self, context):
                        if j.__class__.__name__ == 'Job']),
                   ' real, ', len(workflow.jobs), ' total including barriers')
     swclient.Helper.serialize(self.workflow.fullPath(), workflow)
-
