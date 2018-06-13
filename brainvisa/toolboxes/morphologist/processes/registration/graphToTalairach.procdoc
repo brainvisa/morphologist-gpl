@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<minf version="1.0">
+  <d name="en" length="3">
+    <xhtml name="short">Extracts Talairach transformation information from a graph file</xhtml>
+    <d name="parameters" length="2">
+      <xhtml name="read">Graph to extract transformation from</xhtml>
+      <xhtml name="write">Output Aims transformation file</xhtml>
+    </d>
+    <xhtml name="long">Talairach transformation information is normally stored in cortiacal fold graphs and possibly other graph variants. This transformation is built from AC, PC points and some scale factors. This transformation can be extracted to be used with other Vip/Aims/Anatomist programs.</xhtml>
+  </d>
+</minf>
