@@ -15,11 +15,13 @@ class SPMsn3dToAims(Process):
         super(SPMsn3dToAims, self).__init__()
         self.add_trait('read', File(allowed_extensions=['.mat']))
         self.add_trait('write', File(allowed_extensions=['.trm'], output=True))
-        self.add_trait('target', Enum('MNI template', 'unspecified template', 'normalized_volume in AIMS orientation'))
-        self.add_trait('source_volume', File(allowed_extensions=['.nii', '.img', '.hdr'], optional=True))
-        self.add_trait('normalized_volume', File(allowed_extensions=['.nii', '.img', '.hdr'], optional=True))
+        self.add_trait('target', Enum(
+            'MNI template', 'unspecified template', 'normalized_volume in AIMS orientation'))
+        self.add_trait('source_volume', File(allowed_extensions=[
+                       '.nii', '.img', '.hdr'], optional=True))
+        self.add_trait('normalized_volume', File(
+            allowed_extensions=['.nii', '.img', '.hdr'], optional=True))
         self.add_trait('removeSource', Bool())
-
 
         # initialization section
         self.target = 'MNI template'
@@ -41,7 +43,7 @@ class SPMsn3dToAims(Process):
             value = getattr(self, name)
             if value is Undefined:
                 continue
-            if isinstance(self.trait(name).trait_type, File) and value != ''                     and value is not Undefined:
+            if isinstance(self.trait(name).trait_type, File) and value != '' and value is not Undefined:
                 kwargs[name] = value
             elif isinstance(self.trait(name).trait_type, List):
                 kwargs[name] = list(value)

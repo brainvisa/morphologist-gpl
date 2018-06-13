@@ -28,4 +28,3 @@ class ImportT1Mri(Process):
     def _run_process(self):
         from brainvisa.tools.data_management.image_importation import Importer
         Importer.import_t1mri(self.input, self.output, self.referential)
-

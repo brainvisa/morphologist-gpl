@@ -34,161 +34,192 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa import registration
-include( 'base' )
-include( 'registration' )
-include( 'raw_data' )
+include('base')
+include('registration')
+include('raw_data')
 
 
 mesh_content = (
-    "<subject>_brain", SetType( 'Brain Mesh' ), SetWeakAttr( 'side', 'both' ),
-    "<subject>_Lhemi", SetType( 'Left Hemisphere Mesh' ),
-        SetWeakAttr('side', 'left', 'averaged', 'No', 'inflated', 'No',
-                    'vertex_corr', 'No'), SetPriorityOffset( +1 ),
-    "<subject>_Rhemi", SetType( 'Right Hemisphere Mesh' ),
-        SetWeakAttr('side', 'right', 'averaged', 'No', 'inflated', 'No',
-                    'vertex_corr', 'No'), SetPriorityOffset( +1 ),
-    "<subject>_Lwhite", SetType( 'Left Hemisphere White Mesh' ),
-        SetWeakAttr('side', 'left', 'averaged', 'No', 'inflated', 'No',
-                    'vertex_corr', 'No'), SetPriorityOffset( +1 ),
-    "<subject>_Rwhite", SetType( 'Right Hemisphere White Mesh' ),
-        SetWeakAttr('side', 'right', 'averaged', 'No', 'inflated', 'No',
-                    'vertex_corr', 'No'), SetPriorityOffset( +1 ),
+    "<subject>_brain", SetType('Brain Mesh'), SetWeakAttr('side', 'both'),
+    "<subject>_Lhemi", SetType('Left Hemisphere Mesh'),
+    SetWeakAttr('side', 'left', 'averaged', 'No', 'inflated', 'No',
+                'vertex_corr', 'No'), SetPriorityOffset(+1),
+    "<subject>_Rhemi", SetType('Right Hemisphere Mesh'),
+    SetWeakAttr('side', 'right', 'averaged', 'No', 'inflated', 'No',
+                'vertex_corr', 'No'), SetPriorityOffset(+1),
+    "<subject>_Lwhite", SetType('Left Hemisphere White Mesh'),
+    SetWeakAttr('side', 'left', 'averaged', 'No', 'inflated', 'No',
+                'vertex_corr', 'No'), SetPriorityOffset(+1),
+    "<subject>_Rwhite", SetType('Right Hemisphere White Mesh'),
+    SetWeakAttr('side', 'right', 'averaged', 'No', 'inflated', 'No',
+                'vertex_corr', 'No'), SetPriorityOffset(+1),
     "<subject>_Lwhite_inflated", SetType('Inflated Hemisphere White Mesh'),
-        SetWeakAttr('side', 'left', 'averaged', 'No', 'inflated', 'Yes',
-                    'vertex_corr', 'No'),
+    SetWeakAttr('side', 'left', 'averaged', 'No', 'inflated', 'Yes',
+                'vertex_corr', 'No'),
     "<subject>_Rwhite_inflated", SetType('Inflated Hemisphere White Mesh'),
-        SetWeakAttr('side', 'right', 'averaged', 'No', 'inflated', 'Yes',
-                    'vertex_corr', 'No'),
+    SetWeakAttr('side', 'right', 'averaged', 'No', 'inflated', 'Yes',
+                'vertex_corr', 'No'),
     "<subject>_Lwhite_fine", SetType('Left Fine Hemisphere White Mesh'),
-        SetWeakAttr('side', 'left', 'averaged', 'No', 'inflated', 'No',
-                    'vertex_corr', 'No'),
+    SetWeakAttr('side', 'left', 'averaged', 'No', 'inflated', 'No',
+                'vertex_corr', 'No'),
     "<subject>_Rwhite_fine", SetType('Right Fine Hemisphere White Mesh'),
-        SetWeakAttr('side', 'right', 'averaged', 'No', 'inflated', 'No',
-                    'vertex_corr', 'No'),
-    "<subject>_head", SetType( 'Head Mesh' ), SetWeakAttr( 'side', 'both' ),
-    "<subject>_Lhemi_hull", SetType( 'Hemisphere Hull Mesh' ),
-        SetWeakAttr('side', 'left', 'averaged', 'No', 'inflated', 'No',
-                    'vertex_corr', 'No'),
+    SetWeakAttr('side', 'right', 'averaged', 'No', 'inflated', 'No',
+                'vertex_corr', 'No'),
+    "<subject>_head", SetType('Head Mesh'), SetWeakAttr('side', 'both'),
+    "<subject>_Lhemi_hull", SetType('Hemisphere Hull Mesh'),
+    SetWeakAttr('side', 'left', 'averaged', 'No', 'inflated', 'No',
+                'vertex_corr', 'No'),
     "<subject>_Rhemi_hull", SetType('Hemisphere Hull Mesh'),
-        SetWeakAttr('side', 'right', 'averaged', 'No', 'inflated', 'No',
-                    'vertex_corr', 'No'),
+    SetWeakAttr('side', 'right', 'averaged', 'No', 'inflated', 'No',
+                'vertex_corr', 'No'),
     "<subject>_Bhemi_hull", SetType('Hemisphere Hull Mesh'),
-        SetWeakAttr('side', 'both', 'averaged', 'No', 'inflated', 'No',
-                    'vertex_corr', 'No'),
+    SetWeakAttr('side', 'both', 'averaged', 'No', 'inflated', 'No',
+                'vertex_corr', 'No'),
     "<subject>_brain_hull", SetType('Brain Hull Mesh'),
-        SetWeakAttr('side', 'both', 'averaged', 'No', 'inflated', 'No',
-                    'vertex_corr', 'No'),
+    SetWeakAttr('side', 'both', 'averaged', 'No', 'inflated', 'No',
+                'vertex_corr', 'No'),
     "<subject>_Lmedian", SetType('Median Mesh'),
-        SetWeakAttr('side', 'left', 'averaged', 'No', 'inflated', 'No',
-                    'vertex_corr', 'No'),
+    SetWeakAttr('side', 'left', 'averaged', 'No', 'inflated', 'No',
+                'vertex_corr', 'No'),
     "<subject>_Rmedian", SetType('Median Mesh'),
-        SetWeakAttr('side', 'right', 'averaged', 'No', 'inflated', 'No',
-                    'vertex_corr', 'No'),
-    "cortex_<subject>_mni", SetType( 'MNI Cortex Mesh' ), SetWeakAttr( 'side', 'both' ), ## utilise en lecture seulement
-    "*", SetType( 'Mesh'),
+    SetWeakAttr('side', 'right', 'averaged', 'No', 'inflated', 'No',
+                'vertex_corr', 'No'),
+    "cortex_<subject>_mni", SetType('MNI Cortex Mesh'), SetWeakAttr(
+        'side', 'both'),  # utilise en lecture seulement
+    "*", SetType('Mesh'),
 )
 
 segmentation_content = (
-    "brain_<subject>", SetType( 'T1 Brain Mask' ), SetWeakAttr( 'side', 'both' ),
+    "brain_<subject>", SetType('T1 Brain Mask'), SetWeakAttr('side', 'both'),
     "skull_stripped_<subject>", SetType('Raw T1 MRI Brain Masked'), SetWeakAttr('side', 'both',
                                                                                 'skull_stripped', 'yes'),
-    "Rgrey_white_<subject>", SetType( 'Right Grey White Mask' ), SetWeakAttr( 'side', 'right' ),
-    "Lgrey_white_<subject>", SetType( 'Left Grey White Mask' ), SetWeakAttr( 'side', 'left' ),
-    "cortex_<subject>", SetType( 'Both CSF+GREY Mask' ), SetWeakAttr( 'side', 'both' ),
-    "Lcortex_<subject>", SetType( 'Left CSF+GREY Mask' ), SetWeakAttr( 'side', 'left' ),
-    "Rcortex_<subject>", SetType( 'Right CSF+GREY Mask' ), SetWeakAttr( 'side', 'right' ),
-    "csf_<subject>", SetType( 'Both CSF Mask' ), SetWeakAttr( 'side', 'both' ),
-    "Lcsf_<subject>", SetType( 'Left CSF Mask' ), SetWeakAttr( 'side', 'left' ),
-    "Rcsf_<subject>", SetType( 'Right CSF Mask' ), SetWeakAttr( 'side', 'right' ),
-    "Lskeleton_<subject>", SetType( 'Left Cortex Skeleton' ), SetWeakAttr( 'side', 'left' ),
-    "Rskeleton_<subject>", SetType( 'Right Cortex Skeleton' ), SetWeakAttr( 'side', 'right' ),
-    "Lroots_<subject>", SetType( 'Left Cortex Catchment Bassins' ), SetWeakAttr( 'side', 'left' ),
-    "Rroots_<subject>", SetType( 'Right Cortex Catchment Bassins' ), SetWeakAttr( 'side', 'right' ),
-    "voronoi_<subject>", SetType( 'Split Brain Mask' ), SetWeakAttr( 'side', 'both' ),
-    "head_<subject>", SetType( 'Head Mask' ),
-    "<subject>_Lwhite_curv", SetType( 'White Curvature Texture' ), SetWeakAttr( 'side', 'left' ),
-    "<subject>_Rwhite_curv", SetType( 'White Curvature Texture' ), SetWeakAttr( 'side', 'right' ),
-    "<subject>_Lwhite_depth", SetType( 'White Depth Texture' ), SetWeakAttr( 'side', 'left' ),
-    "<subject>_Rwhite_depth", SetType( 'White Depth Texture' ), SetWeakAttr( 'side', 'right' ),
-    "<subject>_Lgyri_resampled", SetType('Resampled Hemisphere Gyri Texture'), SetWeakAttr( 'side', 'left' ),
-    "<subject>_Rgyri_resampled", SetType('Resampled Hemisphere Gyri Texture'), SetWeakAttr( 'side', 'right' ),
-    "<subject>_Bgyri_resampled", SetType('Resampled Hemisphere Gyri Texture'), SetWeakAttr( 'side', 'both' ),
-    "Lgw_interface_<subject>", SetType( 'Grey White Mid-Interface Volume' ), SetWeakAttr( 'side', 'left' ),
-    "Rgw_interface_<subject>", SetType( 'Grey White Mid-Interface Volume' ), SetWeakAttr( 'side', 'right' ),
-    "lesiondistance_<subject>", SetType( 'Lesion distance map' ),
-    "corpus_callosum_mask", SetType( 'Corpus Callosum mask' ),
-    "ventricles_<subject>", SetType( 'Ventricles Mask' ),
-    "brain_volumes_<subject>", SetType( 'Brain volumetry measurements' ),
-    
+    "Rgrey_white_<subject>", SetType(
+        'Right Grey White Mask'), SetWeakAttr('side', 'right'),
+    "Lgrey_white_<subject>", SetType(
+        'Left Grey White Mask'), SetWeakAttr('side', 'left'),
+    "cortex_<subject>", SetType(
+        'Both CSF+GREY Mask'), SetWeakAttr('side', 'both'),
+    "Lcortex_<subject>", SetType(
+        'Left CSF+GREY Mask'), SetWeakAttr('side', 'left'),
+    "Rcortex_<subject>", SetType(
+        'Right CSF+GREY Mask'), SetWeakAttr('side', 'right'),
+    "csf_<subject>", SetType('Both CSF Mask'), SetWeakAttr('side', 'both'),
+    "Lcsf_<subject>", SetType('Left CSF Mask'), SetWeakAttr('side', 'left'),
+    "Rcsf_<subject>", SetType('Right CSF Mask'), SetWeakAttr('side', 'right'),
+    "Lskeleton_<subject>", SetType(
+        'Left Cortex Skeleton'), SetWeakAttr('side', 'left'),
+    "Rskeleton_<subject>", SetType(
+        'Right Cortex Skeleton'), SetWeakAttr('side', 'right'),
+    "Lroots_<subject>", SetType(
+        'Left Cortex Catchment Bassins'), SetWeakAttr('side', 'left'),
+    "Rroots_<subject>", SetType(
+        'Right Cortex Catchment Bassins'), SetWeakAttr('side', 'right'),
+    "voronoi_<subject>", SetType(
+        'Split Brain Mask'), SetWeakAttr('side', 'both'),
+    "head_<subject>", SetType('Head Mask'),
+    "<subject>_Lwhite_curv", SetType(
+        'White Curvature Texture'), SetWeakAttr('side', 'left'),
+    "<subject>_Rwhite_curv", SetType(
+        'White Curvature Texture'), SetWeakAttr('side', 'right'),
+    "<subject>_Lwhite_depth", SetType(
+        'White Depth Texture'), SetWeakAttr('side', 'left'),
+    "<subject>_Rwhite_depth", SetType(
+        'White Depth Texture'), SetWeakAttr('side', 'right'),
+    "<subject>_Lgyri_resampled", SetType(
+        'Resampled Hemisphere Gyri Texture'), SetWeakAttr('side', 'left'),
+    "<subject>_Rgyri_resampled", SetType(
+        'Resampled Hemisphere Gyri Texture'), SetWeakAttr('side', 'right'),
+    "<subject>_Bgyri_resampled", SetType(
+        'Resampled Hemisphere Gyri Texture'), SetWeakAttr('side', 'both'),
+    "Lgw_interface_<subject>", SetType(
+        'Grey White Mid-Interface Volume'), SetWeakAttr('side', 'left'),
+    "Rgw_interface_<subject>", SetType(
+        'Grey White Mid-Interface Volume'), SetWeakAttr('side', 'right'),
+    "lesiondistance_<subject>", SetType('Lesion distance map'),
+    "corpus_callosum_mask", SetType('Corpus Callosum mask'),
+    "ventricles_<subject>", SetType('Ventricles Mask'),
+    "brain_volumes_<subject>", SetType('Brain volumetry measurements'),
+
     'mesh', SetContent(*mesh_content),
 )
 
 t1mri_acq_content = (
     # t1mri before processing in acquisition level
     #"<subject>", SetType( 'Raw T1 MRI' ), SetPriorityOffset( +1 ), SetWeakAttr( 'normalized', 'no' ),
-    "<subject>", SetType( 'Commissure coordinates' ),
-    "normalized_{normalization}_<subject>", SetType( 'Raw T1 MRI' ), SetWeakAttr( 'normalized', 'yes' ),
-    "<subject>_sn", SetType( 'SPM2 normalization matrix' ),
-    "<subject>_job_anat_normalization", SetType( 'SPM2 parameters' ),
-    "<subject>_fsl", SetType( 'FSL Transformation' ),
+    "<subject>", SetType('Commissure coordinates'),
+    "normalized_{normalization}_<subject>", SetType(
+        'Raw T1 MRI'), SetWeakAttr('normalized', 'yes'),
+    "<subject>_sn", SetType('SPM2 normalization matrix'),
+    "<subject>_job_anat_normalization", SetType('SPM2 parameters'),
+    "<subject>_fsl", SetType('FSL Transformation'),
     # lesion mask
-    "lesion_<subject>", SetType( 'Lesion Mask' ), SetPriorityOffset( +1 ), SetWeakAttr( 'normalized', 'no' ),
-    "lesion_normalized_{normalization}_<subject>", SetType( 'Lesion Mask' ), SetWeakAttr( 'normalized', 'yes' ),
+    "lesion_<subject>", SetType(
+        'Lesion Mask'), SetPriorityOffset(+1), SetWeakAttr('normalized', 'no'),
+    "lesion_normalized_{normalization}_<subject>", SetType(
+        'Lesion Mask'), SetWeakAttr('normalized', 'yes'),
 
     # "r<subject>", SetType( 'Registered Raw T1 MRI with fMRI' ), SetWeakAttr( 'fMRI_register', 'Yes' ),
     # "wr<subject>", SetType( 'Registered Raw T1 MRI with fMRI' ), SetWeakAttr( 'fMRI_register', 'Yes' ),
     'registration', SetContent(
-        'RawT1-<subject>_<acquisition>_TO_unknown_atlas_WITH_bal', SetType("baladin Transformation"),
-        'RawT1-<subject>_<acquisition>', SetType( 'Referential of Raw T1 MRI' ),
-        'RawT1-<subject>_<acquisition>_TO_Talairach-ACPC', SetType( 'Transform Raw T1 MRI to Talairach-AC/PC-Anatomist' ),
-        'RawT1-<subject>_<acquisition>_TO_Talairach-MNI', SetType( 'Transform Raw T1 MRI to Talairach-MNI template-SPM'),
+        'RawT1-<subject>_<acquisition>_TO_unknown_atlas_WITH_bal', SetType(
+            "baladin Transformation"),
+        'RawT1-<subject>_<acquisition>', SetType('Referential of Raw T1 MRI'),
+        'RawT1-<subject>_<acquisition>_TO_Talairach-ACPC', SetType(
+            'Transform Raw T1 MRI to Talairach-AC/PC-Anatomist'),
+        'RawT1-<subject>_<acquisition>_TO_Talairach-MNI', SetType(
+            'Transform Raw T1 MRI to Talairach-MNI template-SPM'),
 
-        'RawT1-<subject>_<acquisition>_TO_Scanner_Based', SetType( 'Transformation to Scanner Based Referential' ),
-        'RawT1-<subject>_<acquisition>_Scanner_Based', SetType( 'Scanner Based Referential' ), SetWeakAttr('destination_referential', str(registration.talairachMNIReferentialId)),
+        'RawT1-<subject>_<acquisition>_TO_Scanner_Based', SetType(
+            'Transformation to Scanner Based Referential'),
+        'RawT1-<subject>_<acquisition>_Scanner_Based', SetType('Scanner Based Referential'), SetWeakAttr(
+            'destination_referential', str(registration.talairachMNIReferentialId)),
     ),
-    "{analysis}", SetContent( # processing results in analysis
-        "nobias_<subject>", SetType( 'T1 MRI Bias Corrected' ),
-        "biasfield_<subject>", SetType( 'T1 MRI Bias Field' ),
-        "whiteridge_<subject>", SetType( 'T1 MRI White Matter Ridges' ),
-        "variance_<subject>", SetType( 'T1 MRI Variance' ),
-        "edges_<subject>", SetType( 'T1 MRI Edges' ),
-        "mean_curvature_<subject>", SetType( 'T1 MRI Mean Curvature' ),
-        "hfiltered_<subject>", SetType( 'T1 MRI Filtered For Histo' ),
-        "nobias_<subject>", SetType( 'Histogram' ),
-        "nobias_<subject>", SetType( 'Histo Analysis' ),
+    "{analysis}", SetContent(  # processing results in analysis
+        "nobias_<subject>", SetType('T1 MRI Bias Corrected'),
+        "biasfield_<subject>", SetType('T1 MRI Bias Field'),
+        "whiteridge_<subject>", SetType('T1 MRI White Matter Ridges'),
+        "variance_<subject>", SetType('T1 MRI Variance'),
+        "edges_<subject>", SetType('T1 MRI Edges'),
+        "mean_curvature_<subject>", SetType('T1 MRI Mean Curvature'),
+        "hfiltered_<subject>", SetType('T1 MRI Filtered For Histo'),
+        "nobias_<subject>", SetType('Histogram'),
+        "nobias_<subject>", SetType('Histo Analysis'),
 
         'segmentation', SetContent(*segmentation_content),
 
-        'folds', SetContent( # sulci, gyri
+        'folds', SetContent(  # sulci, gyri
             "{graph_version}",
-              SetDefaultAttributeValue('graph_version', default_graph_version),
-              SetContent(
+            SetDefaultAttributeValue('graph_version', default_graph_version),
+            SetContent(
                 "L<subject>", SetType('Cortical folds graph'), SetWeakAttr('side', 'left',
                                                                            'labelled', 'No'),
                 "R<subject>", SetType('Cortical folds graph'), SetWeakAttr('side', 'right',
                                                                            'labelled', 'No'),
-                "Lsulcivoronoi_<subject>", SetType('Sulci Voronoi'), SetWeakAttr('side', 'left'),
-                "Rsulcivoronoi_<subject>", SetType('Sulci Voronoi'), SetWeakAttr('side', 'right'),
+                "Lsulcivoronoi_<subject>", SetType(
+                    'Sulci Voronoi'), SetWeakAttr('side', 'left'),
+                "Rsulcivoronoi_<subject>", SetType(
+                    'Sulci Voronoi'), SetWeakAttr('side', 'right'),
             )
-        ), # folds
+        ),  # folds
 
-        'nuclei', SetContent( #SetWeakAttr( 'category', 'nuclei' ), #SetWeakAttr( 'category', 'deepnuclei' ),
-            ## ces types ne sont utilises dans aucun process
+        'nuclei', SetContent(  # SetWeakAttr( 'category', 'nuclei' ), #SetWeakAttr( 'category', 'deepnuclei' ),
+            # ces types ne sont utilises dans aucun process
             #  '<subject>_deep_nuclei_mask', SetType( 'Deep Nuclei Mask' ),
             #  '<subject>_deep_nuclei_graph', SetType( 'Deep Nuclei Graph' ),
-            ## type Nucleus graph utilie par un process AnatomistShowNucleusGraph (viewer), entree, pas de writer
-            "<subject>_deep_nuclei", SetType('Deep Nuclei Graph'), SetWeakAttr('graph_type', 'NucleusArg')
+            # type Nucleus graph utilie par un process AnatomistShowNucleusGraph (viewer), entree, pas de writer
+            "<subject>_deep_nuclei", SetType(
+                'Deep Nuclei Graph'), SetWeakAttr('graph_type', 'NucleusArg')
             #"<subject>-nucleus",SetType( 'Nucleus graph' ),SetWeakAttr( 'graph_type', 'NucleusArg') # -> Deep Nuclei Graph
-        ), # nuclei
+        ),  # nuclei
 
         'ROI', SetContent(),
-      
-    ), # analysis
-) # t1mri
+
+    ),  # analysis
+)  # t1mri
 
 insert('{center}/{subject}/t1mri/{acquisition}',
        *t1mri_acq_content
-)
+       )
 
 #==================================================================================================================================
 # SNAPSHOTS
@@ -196,40 +227,52 @@ insert('{center}/{subject}/t1mri/{acquisition}',
 
 # snapshots snapbase morphologist
 insert('snapshots/morphologist/{acquisition}/greywhite',
-      "snapshot_greywhite_{subject}_<acquisition>", SetType( 'Snapshot Grey White'), SetWeakAttr('processing', 'morphologist')
-)
+       "snapshot_greywhite_{subject}_<acquisition>", SetType(
+           'Snapshot Grey White'), SetWeakAttr('processing', 'morphologist')
+       )
 
 insert('snapshots/morphologist/{acquisition}/splitbrain',
-  "snapshot_splitbrain_{subject}_<acquisition>", SetType( 'Snapshot Split Brain'), SetWeakAttr('processing', 'morphologist')
-)
+       "snapshot_splitbrain_{subject}_<acquisition>", SetType(
+           'Snapshot Split Brain'), SetWeakAttr('processing', 'morphologist')
+       )
 
 insert('snapshots/morphologist/{acquisition}/meshcut',
-    "snapshot_meshcut_{subject}_<acquisition>", SetType( 'Snapshot Meshcut'), SetWeakAttr('processing', 'morphologist')
-)
+       "snapshot_meshcut_{subject}_<acquisition>", SetType(
+           'Snapshot Meshcut'), SetWeakAttr('processing', 'morphologist')
+       )
 
 insert('snapshots/morphologist/{acquisition}/brainmask',
-    "snapshot_brainmask_{subject}_<acquisition>", SetType( 'Snapshot Brain Mask'), SetWeakAttr('processing', 'morphologist')
-)
+       "snapshot_brainmask_{subject}_<acquisition>", SetType(
+           'Snapshot Brain Mask'), SetWeakAttr('processing', 'morphologist')
+       )
 
 insert('snapshots/morphologist/{acquisition}/raw',
-    "snapshot_raw_{subject}_<acquisition>", SetType( 'Snapshot Raw T1'), SetWeakAttr('processing', 'morphologist')
-)
+       "snapshot_raw_{subject}_<acquisition>", SetType(
+           'Snapshot Raw T1'), SetWeakAttr('processing', 'morphologist')
+       )
 
 insert('snapshots/morphologist/{acquisition}/tablet',
-    "snapshot_tablet_{subject}_<acquisition>", SetType( 'Snapshot Tablet Raw T1'), SetWeakAttr('processing', 'morphologist')
-)
+       "snapshot_tablet_{subject}_<acquisition>", SetType(
+           'Snapshot Tablet Raw T1'), SetWeakAttr('processing', 'morphologist')
+       )
 
 snap_pialmesh_content = (
-    "snapshot_left_pialmesh_{subject}_<acquisition>", SetType( 'Snapshot Pial Mesh'), SetWeakAttr( 'side', 'left', 'processing', 'morphologist' ),
-    "snapshot_right_pialmesh_{subject}_<acquisition>", SetType( 'Snapshot Pial Mesh'), SetWeakAttr( 'side', 'right', 'processing', 'morphologist'  ),
+    "snapshot_left_pialmesh_{subject}_<acquisition>", SetType(
+        'Snapshot Pial Mesh'), SetWeakAttr('side', 'left', 'processing', 'morphologist'),
+    "snapshot_right_pialmesh_{subject}_<acquisition>", SetType(
+        'Snapshot Pial Mesh'), SetWeakAttr('side', 'right', 'processing', 'morphologist'),
 )
 snap_sulci_content = (
-    "snapshot_left_sulci_{subject}_<acquisition>", SetType( 'Snapshot Sulci'), SetWeakAttr( 'side', 'left', 'processing', 'morphologist'  ),
-    "snapshot_right_sulci_{subject}_<acquisition>", SetType( 'Snapshot Sulci'), SetWeakAttr( 'side', 'right', 'processing', 'morphologist'  ),
+    "snapshot_left_sulci_{subject}_<acquisition>", SetType(
+        'Snapshot Sulci'), SetWeakAttr('side', 'left', 'processing', 'morphologist'),
+    "snapshot_right_sulci_{subject}_<acquisition>", SetType(
+        'Snapshot Sulci'), SetWeakAttr('side', 'right', 'processing', 'morphologist'),
 )
 snap_whitemesh_content = (
-    "snapshot_left_whitemesh_{subject}_<acquisition>", SetType( 'Snapshot White Mesh'), SetWeakAttr( 'side', 'left', 'processing', 'morphologist'  ),
-    "snapshot_right_whitemesh_{subject}_<acquisition>", SetType( 'Snapshot White Mesh'), SetWeakAttr( 'side', 'right', 'processing', 'morphologist'  ),
+    "snapshot_left_whitemesh_{subject}_<acquisition>", SetType(
+        'Snapshot White Mesh'), SetWeakAttr('side', 'left', 'processing', 'morphologist'),
+    "snapshot_right_whitemesh_{subject}_<acquisition>", SetType(
+        'Snapshot White Mesh'), SetWeakAttr('side', 'right', 'processing', 'morphologist'),
 )
 
 
@@ -244,95 +287,101 @@ insert('snapshots/morphologist/{acquisition}/whitemesh',
 
 # snapbase qc morphologist
 insert('snapshots/morphologist/{acquisition}/greywhite',
-    "qc_greywhite", SetType( 'Snapshots Grey White Quality Scores') , SetWeakAttr('processing', 'morphologist')
-)
+       "qc_greywhite", SetType('Snapshots Grey White Quality Scores'), SetWeakAttr(
+           'processing', 'morphologist')
+       )
 insert('snapshots/morphologist/{acquisition}/splitbrain',
-    "qc_splitbrain", SetType( 'Snapshots Split Brain Quality Scores'), SetWeakAttr('processing', 'morphologist')
-)
+       "qc_splitbrain", SetType('Snapshots Split Brain Quality Scores'), SetWeakAttr(
+           'processing', 'morphologist')
+       )
 insert('snapshots/morphologist/{acquisition}/meshcut',
-    "qc_meshcut", SetType( 'Snapshots Meshcut Quality Scores'), SetWeakAttr('processing', 'morphologist')
-)
+       "qc_meshcut", SetType('Snapshots Meshcut Quality Scores'), SetWeakAttr(
+           'processing', 'morphologist')
+       )
 insert('snapshots/morphologist/{acquisition}/pialmesh',
-    "qc_pialmesh", SetType( 'Snapshots Pial Mesh Quality Scores'), SetWeakAttr('processing', 'morphologist')
-)
+       "qc_pialmesh", SetType('Snapshots Pial Mesh Quality Scores'), SetWeakAttr(
+           'processing', 'morphologist')
+       )
 insert('snapshots/morphologist/{acquisition}/sulci',
-    "qc_sulci", SetType( 'Snapshots Sulci Quality Scores'), SetWeakAttr('processing', 'morphologist')
-)
+       "qc_sulci", SetType('Snapshots Sulci Quality Scores'), SetWeakAttr(
+           'processing', 'morphologist')
+       )
 insert('snapshots/morphologist/{acquisition}/whitemesh',
-    "qc_whitemesh", SetType( 'Snapshots White Mesh Quality Scores'), SetWeakAttr('processing', 'morphologist')
-)
+       "qc_whitemesh", SetType('Snapshots White Mesh Quality Scores'), SetWeakAttr(
+           'processing', 'morphologist')
+       )
 
 # snapshots snapbase spm
-#snapshots_spm_content = (
-    #'white', SetContent(
-        #'snapshot_<processing>_white_{subject}_<acquisition>',
-            #SetType('Snapshot Probability Map'),
-            #SetWeakAttr('tissue_class', 'white')
-    #)
-    #'grey', SetContent(
-        #'snapshot_<processing>_grey_{subject}_<acquisition>',
-            #SetType('Snapshot Probability Map'),
-            #SetWeakAttr('tissue_class', 'grey')
-    #)
-    #'csf', SetContent(
-        #'snapshot_<processing>_csf_{subject}_<acquisition>',
-            #SetType('Snapshot Probability Map'),
-            #SetWeakAttr('tissue_class', 'csf')
-    #)
-    #'qc_spm8',
-        #SetType('Snapshots Probability Map Quality Scores')
+# snapshots_spm_content = (
+#'white', SetContent(
+#'snapshot_<processing>_white_{subject}_<acquisition>',
+#SetType('Snapshot Probability Map'),
+#SetWeakAttr('tissue_class', 'white')
+#)
+#'grey', SetContent(
+#'snapshot_<processing>_grey_{subject}_<acquisition>',
+#SetType('Snapshot Probability Map'),
+#SetWeakAttr('tissue_class', 'grey')
+#)
+#'csf', SetContent(
+#'snapshot_<processing>_csf_{subject}_<acquisition>',
+#SetType('Snapshot Probability Map'),
+#SetWeakAttr('tissue_class', 'csf')
+#)
+#'qc_spm8',
+#SetType('Snapshots Probability Map Quality Scores')
 #)
 
-#insert('snapshots/{processing}/{acquisition}',
-       #SetContent(*snapshots_spm_content))
+# insert('snapshots/{processing}/{acquisition}',
+# SetContent(*snapshots_spm_content))
 
 insert('snapshots/{processing}/{acquisition}/whiteMatter',
-    "snapshot_<processing>_white_{subject}_<acquisition>", 
-        SetType('Snapshot Probability Map'),
-        SetWeakAttr('tissue_class', 'white')
-)
+       "snapshot_<processing>_white_{subject}_<acquisition>",
+       SetType('Snapshot Probability Map'),
+       SetWeakAttr('tissue_class', 'white')
+       )
 insert('snapshots/{processing}/{acquisition}/greyMatter',
-    "snapshot_<processing>_grey_{subject}_<acquisition>",
-        SetType('Snapshot Probability Map'),
-        SetWeakAttr('tissue_class', 'grey')
-)
+       "snapshot_<processing>_grey_{subject}_<acquisition>",
+       SetType('Snapshot Probability Map'),
+       SetWeakAttr('tissue_class', 'grey')
+       )
 insert('snapshots/{processing}/{acquisition}/csf',
-    "snapshot_<processing>_csf_{subject}_<acquisition>", 
-        SetType('Snapshot Probability Map'),
-        SetWeakAttr('tissue_class', 'csf')
-)
+       "snapshot_<processing>_csf_{subject}_<acquisition>",
+       SetType('Snapshot Probability Map'),
+       SetWeakAttr('tissue_class', 'csf')
+       )
 
 # snapbase qc spm
 insert('snapshots/{processing}/{acquisition}',
-    "qc_<processing>", SetType('Snapshots Probability Map Quality Scores'),
-)
+       "qc_<processing>", SetType('Snapshots Probability Map Quality Scores'),
+       )
 
 #==================================================================================================================================
 # TABLES
 #==================================================================================================================================
 
 tables_content = (
-    "sulcalopenings_morphologist", 
-        SetType('Sulcal Openings Table'),
-        SetWeakAttr('processing', 'morphologist'),
+    "sulcalopenings_morphologist",
+    SetType('Sulcal Openings Table'),
+    SetWeakAttr('processing', 'morphologist'),
     "tissues_volumes_morphologist",
-        SetType('Global Volumetry Table'),
-        SetWeakAttr('processing', 'morphologist'),
+    SetType('Global Volumetry Table'),
+    SetWeakAttr('processing', 'morphologist'),
     "history_sulcalopenings_morphologist",
-        SetType('History Sulcal Openings Table'),
-        SetWeakAttr('processing', 'morphologist'),
+    SetType('History Sulcal Openings Table'),
+    SetWeakAttr('processing', 'morphologist'),
     "history_tissues_volumes_morphologist",
-        SetType('History Global Volumetry Table'),
-        SetWeakAttr('processing', 'morphologist'),
-    "tissues_volumes_{processing}", 
-        SetType('Global Volumetry Table'),
+    SetType('History Global Volumetry Table'),
+    SetWeakAttr('processing', 'morphologist'),
+    "tissues_volumes_{processing}",
+    SetType('Global Volumetry Table'),
     "history_tissues_volumes_{processing}",
-        SetType('History Global Volumetry Table'),
+    SetType('History Global Volumetry Table'),
     "snapshots_features_morphologist",
-        SetType('Snapshots Features Table'),
-        SetWeakAttr('processing', 'morphologist'),
+    SetType('Snapshots Features Table'),
+    SetWeakAttr('processing', 'morphologist'),
     "snapshots_features_{processing}",
-        SetType('Snapshots Features Table'),
+    SetType('Snapshots Features Table'),
 )
 
 insert('tables/{acquisition}',
@@ -340,12 +389,12 @@ insert('tables/{acquisition}',
 
 #----------------- Registration -------------------------
 
-#insertFirst( '{center}/{subject}/registration',
-  #'RawT1-<subject>-{acquisition}', SetType( 'Referential of Raw T1 MRI' ),
-  #'RawT1-<subject>_{acquisition}_TO_Talairach-ACPC', SetType( 'Transform Raw T1 MRI to Talairach-AC/PC-Anatomist' ),
+# insertFirst( '{center}/{subject}/registration',
+#'RawT1-<subject>-{acquisition}', SetType( 'Referential of Raw T1 MRI' ),
+#'RawT1-<subject>_{acquisition}_TO_Talairach-ACPC', SetType( 'Transform Raw T1 MRI to Talairach-AC/PC-Anatomist' ),
 #)
 
-#insertFirst( '{center}/registration',
-  ### idem que pour subject/registration
-  #'RawT1-{source.subject}-{source.acquisition}_TO_RawT1-{dest.subject}-{dest.acquisition}', SetType( 'Transform Raw T1 MRI to Raw T1 MRI' ),
+# insertFirst( '{center}/registration',
+# idem que pour subject/registration
+#'RawT1-{source.subject}-{source.acquisition}_TO_RawT1-{dest.subject}-{dest.acquisition}', SetType( 'Transform Raw T1 MRI to Raw T1 MRI' ),
 #)

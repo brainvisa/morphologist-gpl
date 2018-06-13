@@ -91,7 +91,7 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
         nodes = pipeline.executionNode()
         pipeline.perform_normalization = False
         nodes.child('TalairachTransformation').setSelected(True)
-        #nodes.child('HeadMesh').setSelected(0)
+        # nodes.child('HeadMesh').setSelected(0)
         nodes.HemispheresProcessing.LeftHemisphere.CorticalFoldsGraph.setSelected(
             1)
         nodes.HemispheresProcessing.RightHemisphere.CorticalFoldsGraph.setSelected(
@@ -111,8 +111,10 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
         pipeline.perform_sulci_recognition = True
         nodes.HemispheresProcessing.LeftHemisphere.SulciRecognition.fix_random_seed = True
         nodes.HemispheresProcessing.RightHemisphere.SulciRecognition.fix_random_seed = True
-        nodes.HemispheresProcessing.LeftHemisphere.SulciRecognition.SPAM_recognition09.setSelected(1)
-        nodes.HemispheresProcessing.RightHemisphere.SulciRecognition.SPAM_recognition09.setSelected(1)
+        nodes.HemispheresProcessing.LeftHemisphere.SulciRecognition.SPAM_recognition09.setSelected(
+            1)
+        nodes.HemispheresProcessing.RightHemisphere.SulciRecognition.SPAM_recognition09.setSelected(
+            1)
 
         return pipeline
 
@@ -124,24 +126,34 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
         nodes.BiasCorrection.setSelected(0)
         nodes.HistoAnalysis.setSelected(0)
         nodes.BrainSegmentation.setSelected(0)
-        #nodes.Renorm.setSelected(0)
+        # nodes.Renorm.setSelected(0)
         nodes.SplitBrain.setSelected(0)
         nodes.TalairachTransformation.setSelected(0)
         nodes.HeadMesh.setSelected(0)
-        nodes.HemispheresProcessing.LeftHemisphere.GreyWhiteClassification.setSelected(0)
-        nodes.HemispheresProcessing.LeftHemisphere.GreyWhiteTopology.setSelected(0)
+        nodes.HemispheresProcessing.LeftHemisphere.GreyWhiteClassification.setSelected(
+            0)
+        nodes.HemispheresProcessing.LeftHemisphere.GreyWhiteTopology.setSelected(
+            0)
         nodes.HemispheresProcessing.LeftHemisphere.GreyWhiteMesh.setSelected(0)
         nodes.HemispheresProcessing.LeftHemisphere.SulciSkeleton.setSelected(0)
         nodes.HemispheresProcessing.LeftHemisphere.PialMesh.setSelected(0)
-        nodes.HemispheresProcessing.LeftHemisphere.CorticalFoldsGraph.setSelected(0)
-        nodes.HemispheresProcessing.LeftHemisphere.SulciRecognition.recognition2000.setSelected(1)
-        nodes.HemispheresProcessing.RightHemisphere.GreyWhiteClassification.setSelected(0)
-        nodes.HemispheresProcessing.RightHemisphere.GreyWhiteTopology.setSelected(0)
-        nodes.HemispheresProcessing.RightHemisphere.GreyWhiteMesh.setSelected(0)
-        nodes.HemispheresProcessing.RightHemisphere.SulciSkeleton.setSelected(0)
+        nodes.HemispheresProcessing.LeftHemisphere.CorticalFoldsGraph.setSelected(
+            0)
+        nodes.HemispheresProcessing.LeftHemisphere.SulciRecognition.recognition2000.setSelected(
+            1)
+        nodes.HemispheresProcessing.RightHemisphere.GreyWhiteClassification.setSelected(
+            0)
+        nodes.HemispheresProcessing.RightHemisphere.GreyWhiteTopology.setSelected(
+            0)
+        nodes.HemispheresProcessing.RightHemisphere.GreyWhiteMesh.setSelected(
+            0)
+        nodes.HemispheresProcessing.RightHemisphere.SulciSkeleton.setSelected(
+            0)
         nodes.HemispheresProcessing.RightHemisphere.PialMesh.setSelected(0)
-        nodes.HemispheresProcessing.RightHemisphere.CorticalFoldsGraph.setSelected(0)
-        nodes.HemispheresProcessing.RightHemisphere.SulciRecognition.recognition2000.setSelected(1)
+        nodes.HemispheresProcessing.RightHemisphere.CorticalFoldsGraph.setSelected(
+            0)
+        nodes.HemispheresProcessing.RightHemisphere.SulciRecognition.recognition2000.setSelected(
+            1)
 
         return pipeline
 
@@ -271,7 +283,7 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
         )
         TestMorphologistPipeline.import_data(ref_data_dir,
                                              self.ref_database.name)
-        
+
         # Run the pipelines (conditionnaly).
         if not self.do_spam:
             self.pipeline.perform_sulci_recognition = False

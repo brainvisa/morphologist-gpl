@@ -39,33 +39,35 @@ userLevel = 0
 
 # Argument declaration
 signature = Signature(
-    'hemi_cortex', ReadDiskItem( 'CSF+GREY Mask',
-        'Aims readable volume formats' ),
-    'white_mesh_fine', WriteDiskItem( 'Fine Hemisphere White Mesh',
-        'Aims mesh formats' ),
+    'hemi_cortex', ReadDiskItem('CSF+GREY Mask',
+                                'Aims readable volume formats'),
+    'white_mesh_fine', WriteDiskItem('Fine Hemisphere White Mesh',
+                                     'Aims mesh formats'),
     'maxClearance',  Float(),
     'maxError', Float(),
     'maxCurv', Float(),
 )
 
 # Default values
-def initialization( self ):
-    self.linkParameters( 'white_mesh_fine', 'hemi_cortex' )
-    self.maxClearance=1
-    self.maxError=2
-    self.maxCurv=1.0
 
 
-def execution( self, context ):
-    tm=registration.getTransformationManager()
-    white = context.temporary( 'GIS Image' )
-    context.system( "VipSingleThreshold", "-i", self.hemi_cortex,
-            "-o", white, "-t", "0", "-c", "b", "-m",
-            "ne", "-w", "t" )
+def initialization(self):
+    self.linkParameters('white_mesh_fine', 'hemi_cortex')
+    self.maxClearance = 1
+    self.maxError = 2
+    self.maxCurv = 1.0
 
-    context.system( "AimsMeshBrain", "-i", white, "-o", self.white_mesh_fine, '--internalinterface', "--deciMaxClearance",  self.maxClearance, "--deciMaxError", self.maxError )
-    context.system( "meshCleaner", "-i", self.white_mesh_fine, "-o", self.white_mesh_fine, "-maxCurv", self.maxCurv )
+
+def execution(self, context):
+    tm = registration.getTransformationManager()
+    white = context.temporary('GIS Image')
+    context.system("VipSingleThreshold", "-i", self.hemi_cortex,
+                   "-o", white, "-t", "0", "-c", "b", "-m",
+                   "ne", "-w", "t")
+
+    context.system("AimsMeshBrain", "-i", white, "-o", self.white_mesh_fine, '--internalinterface',
+                   "--deciMaxClearance",  self.maxClearance, "--deciMaxError", self.maxError)
+    context.system("meshCleaner", "-i", self.white_mesh_fine,
+                   "-o", self.white_mesh_fine, "-maxCurv", self.maxCurv)
 
     tm.copyReferential(self.hemi_cortex, self.white_mesh_fine)
-
-

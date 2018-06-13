@@ -13,16 +13,19 @@ import six
 class normalization_t1_spm12_reinit(Process):
     def __init__(self, **kwargs):
         super(normalization_t1_spm12_reinit, self).__init__()
-        self.add_trait('anatomy_data', File(allowed_extensions=['.nii', '.img', '.hdr']))
-        self.add_trait('anatomical_template', File(allowed_extensions=['.nii', '.mnc', '.img', '.hdr'], optional=True))
+        self.add_trait('anatomy_data', File(
+            allowed_extensions=['.nii', '.img', '.hdr']))
+        self.add_trait('anatomical_template', File(allowed_extensions=[
+                       '.nii', '.mnc', '.img', '.hdr'], optional=True))
         self.add_trait('voxel_size', Enum('[1 1 1]'))
         self.add_trait('cutoff_option', Int())
         self.add_trait('nbiteration', Int())
-        self.add_trait('transformations_informations', File(allowed_extensions=['.mat'], output=True))
-        self.add_trait('normalized_anatomy_data', File(allowed_extensions=['.nii', '.img', '.hdr'], output=True))
+        self.add_trait('transformations_informations', File(
+            allowed_extensions=['.mat'], output=True))
+        self.add_trait('normalized_anatomy_data', File(
+            allowed_extensions=['.nii', '.img', '.hdr'], output=True))
         self.add_trait('allow_retry_initialization', Bool())
         self.add_trait('init_translation_origin', Enum(0, 1))
-
 
         # initialization section
         self.anatomical_template = '/usr/share/fsl/data/standard/MNI152_T1_2mm_brain.nii.gz'
@@ -48,7 +51,7 @@ class normalization_t1_spm12_reinit(Process):
             value = getattr(self, name)
             if value is Undefined:
                 continue
-            if isinstance(self.trait(name).trait_type, File) and value != ''                     and value is not Undefined:
+            if isinstance(self.trait(name).trait_type, File) and value != '' and value is not Undefined:
                 kwargs[name] = value
             elif isinstance(self.trait(name).trait_type, List):
                 kwargs[name] = list(value)

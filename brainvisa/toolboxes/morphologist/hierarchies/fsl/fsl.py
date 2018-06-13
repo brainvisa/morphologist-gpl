@@ -36,24 +36,23 @@
 # The database root is the $FSLDIR/data directory.
 
 hierarchy = (
-SetWeakAttr( 'database', '%f' ), SetPriorityOffset( -10 ), SetContent(
-  'standard', SetContent(
-    'MNI152_T1_1mm_brain', SetType( 'anatomical Template' ),
-      SetWeakAttr( 'normalized', 'yes', 'skull_stripped', 'yes', 'Size',
-              '1 mm', 'referential', '49e6b349-b115-211a-c8b9-20d0ece9846d',
-      ),
-    'MNI152_T1_2mm_brain', SetType( 'anatomical Template' ),
-      SetWeakAttr( 'normalized', 'yes', 'skull_stripped', 'yes', 'Size',
-              '2 mm', 'referential', '19bfee8e-51b1-4d9e-8721-990b9f88b12f',
-      ),
-    'MNI152_T1_1mm', SetType( 'anatomical Template' ),
-      SetWeakAttr( 'normalized', 'yes', 'skull_stripped', 'no', 'Size',
-              '1 mm', 'referential', '49e6b349-b115-211a-c8b9-20d0ece9846d',
-      ), SetPriorityOffset( +1 ),
-    'MNI152_T1_2mm', SetType( 'anatomical Template' ),
-      SetWeakAttr( 'normalized', 'yes', 'skull_stripped', 'no', 'Size',
-              '2 mm', 'referential', '19bfee8e-51b1-4d9e-8721-990b9f88b12f',
-      ),
-  )
-) )
-
+    SetWeakAttr('database', '%f'), SetPriorityOffset(-10), SetContent(
+        'standard', SetContent(
+            'MNI152_T1_1mm_brain', SetType('anatomical Template'),
+            SetWeakAttr('normalized', 'yes', 'skull_stripped', 'yes', 'Size',
+                        '1 mm', 'referential', '49e6b349-b115-211a-c8b9-20d0ece9846d',
+                        ),
+            'MNI152_T1_2mm_brain', SetType('anatomical Template'),
+            SetWeakAttr('normalized', 'yes', 'skull_stripped', 'yes', 'Size',
+                        '2 mm', 'referential', '19bfee8e-51b1-4d9e-8721-990b9f88b12f',
+                        ),
+            'MNI152_T1_1mm', SetType('anatomical Template'),
+            SetWeakAttr('normalized', 'yes', 'skull_stripped', 'no', 'Size',
+                        '1 mm', 'referential', '49e6b349-b115-211a-c8b9-20d0ece9846d',
+                        ), SetPriorityOffset(+1),
+            'MNI152_T1_2mm', SetType('anatomical Template'),
+            SetWeakAttr('normalized', 'yes', 'skull_stripped', 'no', 'Size',
+                        '2 mm', 'referential', '19bfee8e-51b1-4d9e-8721-990b9f88b12f',
+                        ),
+        )
+    ))

@@ -7,9 +7,9 @@
 #
 # This software is governed by the CeCILL license version 2 under
 # French law and abiding by the rules of distribution of free software.
-# You can  use, modify and/or redistribute the software under the 
+# You can  use, modify and/or redistribute the software under the
 # terms of the CeCILL license version 2 as circulated by CEA, CNRS
-# and INRIA at the following URL "http://www.cecill.info". 
+# and INRIA at the following URL "http://www.cecill.info".
 #
 # As a counterpart to the access to the source code and  rights to copy,
 # modify and redistribute granted by the license, users are provided only
@@ -24,8 +24,8 @@
 # therefore means  that it is reserved for developers  and  experienced
 # professionals having in-depth computer knowledge. Users are therefore
 # encouraged to load and test the software's suitability as regards their
-# requirements in conditions enabling the security of their systems and/or 
-# data to be ensured and,  more generally, to use and operate it in the 
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
 # same conditions as regards security.
 #
 # The fact that you are presently reading this means that you have had
@@ -41,38 +41,38 @@ userLevel = 0
 signature = Signature(
     't1mri', ReadDiskItem('Raw T1 MRI', 'Aims readable volume formats'),
     'commissure_coordinates', ReadDiskItem('Commissure coordinates',
-        'Commissure coordinates'),
+                                           'Commissure coordinates'),
     'sampling', Float(),
     'field_rigidity', Float(),
-    'zdir_multiply_regul',Float(),
-    'wridges_weight',Float(),
+    'zdir_multiply_regul', Float(),
+    'wridges_weight', Float(),
     'ngrid', Integer(),
     'delete_last_n_slices', OpenChoice(
         'auto (AC/PC Points needed)', '0', '10', '20', '30'),
     't1mri_nobias', WriteDiskItem('T1 MRI Bias Corrected',
-        'Aims writable volume formats'),
+                                  'Aims writable volume formats'),
     'mode', Choice('write_minimal', 'write_all',
-        'delete_useless', 'write_minimal without correction'),
-    'write_field', Choice('yes','no'),
+                   'delete_useless', 'write_minimal without correction'),
+    'write_field', Choice('yes', 'no'),
     'field', WriteDiskItem('T1 MRI Bias Field',
-        'Aims writable volume formats'),
-    'write_hfiltered', Choice('yes','no'),
+                           'Aims writable volume formats'),
+    'write_hfiltered', Choice('yes', 'no'),
     'hfiltered', WriteDiskItem('T1 MRI Filtered For Histo',
-        'Aims writable volume formats'),
-    'write_wridges', Choice('yes','no','read'),
+                               'Aims writable volume formats'),
+    'write_wridges', Choice('yes', 'no', 'read'),
     'white_ridges', WriteDiskItem('T1 MRI White Matter Ridges',
-        'Aims writable volume formats', exactType=1),
+                                  'Aims writable volume formats', exactType=1),
     'variance_fraction', Integer(),
-    'write_variance', Choice('yes','no'),
+    'write_variance', Choice('yes', 'no'),
     'variance', WriteDiskItem('T1 MRI Variance',
-        'Aims writable volume formats'),
-    'edge_mask', Choice('yes','no'),
-    'write_edges', Choice('yes','no'),
+                              'Aims writable volume formats'),
+    'edge_mask', Choice('yes', 'no'),
+    'write_edges', Choice('yes', 'no'),
     'edges', WriteDiskItem('T1 MRI Edges',
-        'Aims writable volume formats'),
-    'write_meancurvature', Choice('yes','no'),
+                           'Aims writable volume formats'),
+    'write_meancurvature', Choice('yes', 'no'),
     'meancurvature', WriteDiskItem('T1 MRI Mean Curvature',
-        'Aims writable volume formats'),
+                                   'Aims writable volume formats'),
     'fix_random_seed', Boolean(),
     'modality', Choice('T1', 'T2'),
     'use_existing_ridges', Boolean(),
@@ -83,16 +83,16 @@ def change_wridges_io(self, use_existing_ridges):
     if use_existing_ridges:
         self.signature['white_ridges'] = ReadDiskItem(
             'T1 MRI White Matter Ridges',
-            'Aims writable volume formats', exactType=1 )
+            'Aims writable volume formats', exactType=1)
     else:
         self.signature['white_ridges'] = WriteDiskItem(
             'T1 MRI White Matter Ridges',
-            'Aims writable volume formats', exactType=1 )
+            'Aims writable volume formats', exactType=1)
     self.changeSignature(self.signature)
 
 
 # Default values
-def initialization( self ):
+def initialization(self):
     self.linkParameters('commissure_coordinates', 't1mri')
     self.linkParameters('t1mri_nobias', 't1mri')
     self.linkParameters('field', 't1mri_nobias')
@@ -104,12 +104,12 @@ def initialization( self ):
     self.setOptional('commissure_coordinates')
     self.setOptional('field')
     self.setOptional('meancurvature')
-    
-    self.signature[ 'ngrid' ].userLevel = 2
-    self.signature[ 'zdir_multiply_regul' ].userLevel = 2
-    self.signature[ 'variance_fraction' ].userLevel = 2
-    self.signature[ 'fix_random_seed' ].userLevel = 3
-    
+
+    self.signature['ngrid'].userLevel = 2
+    self.signature['zdir_multiply_regul'].userLevel = 2
+    self.signature['variance_fraction'].userLevel = 2
+    self.signature['fix_random_seed'].userLevel = 3
+
     self.mode = 'write_minimal'
     self.write_wridges = 'yes'
     self.write_field = 'no'
@@ -128,12 +128,12 @@ def initialization( self ):
     self.fix_random_seed = False
     self.modality = 'T1'
     self.use_existing_ridges = False
-    #self.linkParameters('white_ridges', 'use_existing_ridges',
-                        #change_wridges_io)
+    # self.linkParameters('white_ridges', 'use_existing_ridges',
+    # change_wridges_io)
     self.addLink(None, 'use_existing_ridges', self.change_wridges_io)
 
 
-def execution( self, context ):
+def execution(self, context):
     if self.mode == 'write_all':
         self.write_wridges = 'yes'
         self.write_field = 'yes'
@@ -148,7 +148,8 @@ def execution( self, context ):
     if self.mode in ('write_minimal', 'write_all', 'write_minimal without correction'):
         if os.path.exists(self.t1mri_nobias.fullName() + '.loc'):
             context.write(self.t1mri_nobias.fullName(), ' has been locked')
-            context.write('Remove', self.t1mri_nobias.fullName(), '.loc if you want to trigger a new correction')
+            context.write('Remove', self.t1mri_nobias.fullName(),
+                          '.loc if you want to trigger a new correction')
         else:
             command = ['VipT1BiasCorrection', '-i', self.t1mri,
                        '-o', self.t1mri_nobias,
@@ -183,30 +184,29 @@ def execution( self, context ):
             else:
                 command += ['-Wwrite', self.write_wridges]
 
-            context.system( *command )
+            context.system(*command)
 
             tm = registration.getTransformationManager()
             tm.copyReferential(self.t1mri, self.t1mri_nobias)
             if self.write_field:
-                tm.copyReferential( self.t1mri, self.field )
+                tm.copyReferential(self.t1mri, self.field)
             if self.write_hfiltered:
-                tm.copyReferential( self.t1mri, self.hfiltered )
+                tm.copyReferential(self.t1mri, self.hfiltered)
             if self.write_wridges:
-                tm.copyReferential( self.t1mri, self.white_ridges )
+                tm.copyReferential(self.t1mri, self.white_ridges)
             if self.write_variance:
-                tm.copyReferential( self.t1mri, self.variance )
+                tm.copyReferential(self.t1mri, self.variance)
             if self.write_edges:
-                tm.copyReferential( self.t1mri, self.edges )
+                tm.copyReferential(self.t1mri, self.edges)
             if self.write_meancurvature:
-                tm.copyReferential( self.t1mri, self.meancurvature )
-        
+                tm.copyReferential(self.t1mri, self.meancurvature)
+
     elif self.mode == 'delete_useless':
         if os.path.exists(self.field.fullName() + '.ima') or os.path.exists(self.field.fullName() + '.ima.gz'):
-            shelltools.rm( self.field.fullName() + '.*' )
+            shelltools.rm(self.field.fullName() + '.*')
         if os.path.exists(self.variance.fullName() + '.ima') or os.path.exists(self.variance.fullName() + '.ima.gz'):
-            shelltools.rm( self.variance.fullName() + '.*' )
+            shelltools.rm(self.variance.fullName() + '.*')
         if os.path.exists(self.edges.fullName() + '.ima') or os.path.exists(self.edges.fullName() + '.ima.gz'):
-            shelltools.rm( self.edges.fullName() + '.*' )
+            shelltools.rm(self.edges.fullName() + '.*')
         if os.path.exists(self.meancurvature.fullName() + '.ima') or os.path.exists(self.meancurvature.fullName() + '.ima.gz'):
-            shelltools.rm( self.meancurvature.fullName() + '.*' )
-
+            shelltools.rm(self.meancurvature.fullName() + '.*')

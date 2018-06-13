@@ -7,9 +7,9 @@
 #
 # This software is governed by the CeCILL license version 2 under
 # French law and abiding by the rules of distribution of free software.
-# You can  use, modify and/or redistribute the software under the 
+# You can  use, modify and/or redistribute the software under the
 # terms of the CeCILL license version 2 as circulated by CEA, CNRS
-# and INRIA at the following URL "http://www.cecill.info". 
+# and INRIA at the following URL "http://www.cecill.info".
 #
 # As a counterpart to the access to the source code and  rights to copy,
 # modify and redistribute granted by the license, users are provided only
@@ -24,8 +24,8 @@
 # therefore means  that it is reserved for developers  and  experienced
 # professionals having in-depth computer knowledge. Users are therefore
 # encouraged to load and test the software's suitability as regards their
-# requirements in conditions enabling the security of their systems and/or 
-# data to be ensured and,  more generally, to use and operate it in the 
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
 # same conditions as regards security.
 #
 # The fact that you are presently reading this means that you have had
@@ -37,43 +37,45 @@ name = 'Histogram analysis'
 userLevel = 0
 
 signature = Signature(
-    't1mri_nobias', ReadDiskItem( 'T1 MRI Bias Corrected',
-        'Aims readable volume formats' ),
+    't1mri_nobias', ReadDiskItem('T1 MRI Bias Corrected',
+                                 'Aims readable volume formats'),
     'use_hfiltered', Boolean(),
-    'hfiltered', ReadDiskItem( 'T1 MRI Filtered For Histo',
-        'Aims readable volume formats' ),
+    'hfiltered', ReadDiskItem('T1 MRI Filtered For Histo',
+                              'Aims readable volume formats'),
     'use_wridges', Boolean(),
-    'white_ridges', ReadDiskItem( 'T1 MRI White Matter Ridges',
-        'Aims readable volume formats' ),
-    'undersampling', Choice('2', '4', '8', '16', '32', 'auto', 'iteration' ),
-    'histo_analysis', WriteDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-    'histo', WriteDiskItem( 'Histogram', 'Histogram' ),
+    'white_ridges', ReadDiskItem('T1 MRI White Matter Ridges',
+                                 'Aims readable volume formats'),
+    'undersampling', Choice('2', '4', '8', '16', '32', 'auto', 'iteration'),
+    'histo_analysis', WriteDiskItem('Histo Analysis', 'Histo Analysis'),
+    'histo', WriteDiskItem('Histogram', 'Histogram'),
     'fix_random_seed', Boolean(),
 )
 
-def initialization( self ):
-    self.signature[ 'fix_random_seed' ].userLevel = 3
-    self.linkParameters( 'histo_analysis', 't1mri_nobias' )
-    self.linkParameters( 'histo', 't1mri_nobias' )
-    self.linkParameters( 'hfiltered', 't1mri_nobias' )
-    self.linkParameters( 'white_ridges', 't1mri_nobias' )
-    self.setOptional( 'hfiltered' )
-    self.setOptional( 'white_ridges' )
-    self.use_hfiltered =  True
+
+def initialization(self):
+    self.signature['fix_random_seed'].userLevel = 3
+    self.linkParameters('histo_analysis', 't1mri_nobias')
+    self.linkParameters('histo', 't1mri_nobias')
+    self.linkParameters('hfiltered', 't1mri_nobias')
+    self.linkParameters('white_ridges', 't1mri_nobias')
+    self.setOptional('hfiltered')
+    self.setOptional('white_ridges')
+    self.use_hfiltered = True
     self.use_wridges = True
     self.undersampling = 'iteration'
     self.fix_random_seed = False
 
 
-def execution( self, context ):
+def execution(self, context):
     if os.path.exists(self.histo_analysis.fullName() + '.han.loc'):
         context.write(self.histo_analysis.fullName(), '.han has been locked')
-        context.write('Remove',self.histo_analysis.fullName(),'.han.loc if you want to trigger automated analysis')
+        context.write('Remove', self.histo_analysis.fullName(),
+                      '.han.loc if you want to trigger automated analysis')
     else:
-        command = [ 'VipHistoAnalysis',
-                    '-i', self.t1mri_nobias,
-                    '-o', self.histo_analysis,
-                    '-Save', 'y' ]
+        command = ['VipHistoAnalysis',
+                   '-i', self.t1mri_nobias,
+                   '-o', self.histo_analysis,
+                   '-Save', 'y']
     if self.use_hfiltered and self.hfiltered is not None:
         command += ['-Mask', self.hfiltered]
     if self.use_wridges and self.white_ridges is not None:
@@ -84,5 +86,4 @@ def execution( self, context ):
         command += ['-mode', 'a', '-u', self.undersampling]
     if self.fix_random_seed:
         command += ['-srand', '10']
-    context.system( *command )
-
+    context.system(*command)

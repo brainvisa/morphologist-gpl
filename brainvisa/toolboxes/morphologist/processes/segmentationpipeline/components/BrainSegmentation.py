@@ -71,7 +71,7 @@ signature = Signature(
                       'Robust + (selected erosion)',
                       'Robust + (iterative erosion) without regularisation',
                       'Fast (selected erosion)'),
-    'erosion_size', OpenChoice(1, 1.5, 1.8, 2, 2.5, 3, 3.5 ,4),
+    'erosion_size', OpenChoice(1, 1.5, 1.8, 2, 2.5, 3, 3.5, 4),
     'visu', Choice('No', 'Yes'),
     'layer', Choice(0, 1, 2, 3, 4, 5),
     'first_slice', Integer(),
@@ -83,13 +83,15 @@ signature = Signature(
 )
 
 # Default values
-def initialization( self ):
-    self.linkParameters( 'histo_analysis', 't1mri_nobias' )
-    self.linkParameters( 'brain_mask', 't1mri_nobias' )
-    self.linkParameters( 'white_ridges', 't1mri_nobias' )
-    self.linkParameters( 'variance', 't1mri_nobias' )
-    self.linkParameters( 'edges', 't1mri_nobias' )
-    self.linkParameters( 'commissure_coordinates', 't1mri_nobias' )
+
+
+def initialization(self):
+    self.linkParameters('histo_analysis', 't1mri_nobias')
+    self.linkParameters('brain_mask', 't1mri_nobias')
+    self.linkParameters('white_ridges', 't1mri_nobias')
+    self.linkParameters('variance', 't1mri_nobias')
+    self.linkParameters('edges', 't1mri_nobias')
+    self.linkParameters('commissure_coordinates', 't1mri_nobias')
     self.setOptional('white_ridges')
     self.setOptional('lesion_mask')
     self.setOptional('commissure_coordinates')
@@ -104,25 +106,26 @@ def initialization( self ):
     self.fix_random_seed = False
 
 
-def execution( self, context ):
+def execution(self, context):
     if os.path.exists(self.brain_mask.fullName() + '.loc'):
         context.write(self.brain_mask.fullName(), ' has been locked')
-        context.write('Remove',self.brain_mask.fullName(),'.loc if you want to trigger a new segmentation')
+        context.write('Remove', self.brain_mask.fullName(),
+                      '.loc if you want to trigger a new segmentation')
     else:
-        command = [ 'VipGetBrain', '-i', self.t1mri_nobias,
-                    '-berosion', self.erosion_size,
-                    '-analyse', 'r',
-                    '-hname', self.histo_analysis,
-                    '-bname', self.brain_mask,
-                    '-First', self.first_slice,
-                    '-Last', self.last_slice,
-                    '-layer', self.layer ]
+        command = ['VipGetBrain', '-i', self.t1mri_nobias,
+                   '-berosion', self.erosion_size,
+                   '-analyse', 'r',
+                   '-hname', self.histo_analysis,
+                   '-bname', self.brain_mask,
+                   '-First', self.first_slice,
+                   '-Last', self.last_slice,
+                   '-layer', self.layer]
         if self.commissure_coordinates is not None:
             command += ['-Points', self.commissure_coordinates]
         if self.lesion_mask is not None:
             command += ['-patho', self.lesion_mask,
                         '-pmode', self.lesion_mask_mode]
-        
+
         if self.variant == '2010':
             command += ['-m', 'V',
                         '-Variancename', self.variance,
@@ -135,27 +138,27 @@ def execution( self, context ):
         elif self.variant == 'Standard + (selected erosion)':
             command += ['-m', 'standard']
         elif self.variant == 'Standard + (iterative erosion) without regularisation':
-            command += ['-m', 'Standard','-niter', 0]
+            command += ['-m', 'Standard', '-niter', 0]
         elif self.variant == 'Robust + (iterative erosion)':
             command += ['-m', 'Robust']
         elif self.variant == 'Robust + (selected erosion)':
             command += ['-m', 'robust']
         elif self.variant == 'Robust + (iterative erosion) without regularisation':
-            command += ['-m', 'Robust','-niter', 0]
+            command += ['-m', 'Robust', '-niter', 0]
         elif self.variant == 'Fast (selected erosion)':
             command += ['-m', 'fast']
         else:
-            raise RuntimeError( _t_( 'Variant <em>%s</em> not implemented' ) % self.variant )
+            raise RuntimeError(
+                _t_('Variant <em>%s</em> not implemented') % self.variant)
         if self.fix_random_seed:
             command += ['-srand', '10']
-        context.system( *command )
-        
+        context.system(*command)
+
         tm = registration.getTransformationManager()
         tm.copyReferential(self.t1mri_nobias, self.brain_mask)
-        
+
         result = []
         if self.visu == 'Yes':
             result.append(context.runProcess('AnatomistShowBrainMask',
-                self.brain_mask, self.t1mri_nobias))
+                                             self.brain_mask, self.t1mri_nobias))
             return result
-

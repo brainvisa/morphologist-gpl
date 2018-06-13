@@ -25,13 +25,12 @@ def initialization(self):
     self.signature['pipeline_mode'].userLevel = 3
 
     def find_database():
-        #Find database and add to choice
+        # Find database and add to choice
         databases = [None]
-        databases.extend([dbs.directory for dbs in neuroConfig.dataPath \
+        databases.extend([dbs.directory for dbs in neuroConfig.dataPath
                           if not dbs.builtin])
         self.signature['database'].setChoices(*databases)
         self.database = databases[0]
-
 
     def link_pipeline_mode(model, names, parameterized):
         if self.pipeline_mode:
@@ -63,7 +62,7 @@ def initialization(self):
 
 
 def execution(self, context):
-    #Recuperation des mesures pour chaque sillons
+    # Recuperation des mesures pour chaque sillons
     measures_by_sulci = {}
 
     if self.pipeline_mode and os.path.exists(str(self.output_file)):
@@ -75,8 +74,9 @@ def execution(self, context):
 
     sub_list_global = []
     for f in self.morpho_stat_files:
-        #Lecture des csv
-        csv = np.recfromtxt(f.fullPath(), delimiter=';', names=True, dtype='S12,S32,S6,f8,f8,f8,f8,f8,f8,f8,f8,f8,f8')
+        # Lecture des csv
+        csv = np.recfromtxt(f.fullPath(), delimiter=';', names=True,
+                            dtype='S12,S32,S6,f8,f8,f8,f8,f8,f8,f8,f8,f8,f8')
         subjects_list = list(csv['subject'])
         subject_arr = csv['subject']
 
@@ -87,7 +87,7 @@ def execution(self, context):
             meas = csv[subject_arr == sub][self.measures][0]
             measures_by_sub[sub] = meas
         sulcus = os.path.basename(f.fullPath()).split('_')[-2] + '_' + \
-                            os.path.basename(f.fullPath()).split('_')[-1][:-4]
+            os.path.basename(f.fullPath()).split('_')[-1][:-4]
         measures_by_sulci[sulcus] = measures_by_sub
 
     outf = open(str(self.file_measures), "w")
@@ -111,8 +111,8 @@ def execution(self, context):
         from catidb import catidb_axon
         if need_concatenated:
             catidb_axon.concatenated_csv(context, str(self.output_file),
-                                   str(self.file_measures),
-                                   str(self.history_file))
+                                         str(self.file_measures),
+                                         str(self.history_file))
             # detete tmp file measure
             os.remove(self.file_measures)
         else:

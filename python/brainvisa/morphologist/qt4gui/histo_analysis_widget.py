@@ -130,12 +130,10 @@ class HistoAnalysisWidget(QtGui.QWidget):
     # emitted whenever the histo analysis is modified interactively by the user
     histo_analysis_changed = QtCore.Signal(float, float, float, float)
 
-
     def __del__(self):
         del self.mwidget
         pyplot.close(self.mfig)
         del self.mfig
-
 
     def setPalette(self, palette):
         '''reimplemented from QWidget to handle matplotlib widget and
@@ -347,7 +345,7 @@ class HistoAnalysisWidget(QtGui.QWidget):
         # matplotlib artists
         self._histo_plots = {}
         plots = ((gmean, gbbg, gbbgfn, gbbgfp, gbg, gbgfn, gbgfp),
-                (wmean, wbbg, wbbgfn, wbbgfp, wbg, wbgfn, wbgfp))
+                 (wmean, wbbg, wbbgfn, wbbgfp, wbg, wbgfn, wbgfp))
         self._plots = plots
         for p in plots[0]:
             if p is not None:
@@ -648,10 +646,10 @@ def save_back_histo_analysis(hanfile, han):
             l = l.strip()
             if l.startswith('gray:'):
                 lines.append('gray: mean: %d sigma: %d' %
-                            (int(round(han[0][0])), int(round(han[0][1]))))
+                             (int(round(han[0][0])), int(round(han[0][1]))))
             elif l.startswith('white:'):
                 lines.append('white: mean: %d sigma: %d' %
-                            (int(round(han[1][0])), int(round(han[1][1]))))
+                             (int(round(han[1][0])), int(round(han[1][1]))))
             else:
                 lines.append(l)
         os.rename(hanfile, hanfile + '~')
@@ -704,7 +702,7 @@ if __name__ == '__main__':
 
     hanfile = '/volatile/riviere/basetests-3.1.0/subjects/sujet01/t1mri/default_acquisition/default_analysis/nobias_sujet01.han'
     # hanfile = os.path.join( os.getenv( 'HOME' ),
-        #'data/baseessai/subjects/subject01/t1mri/default_acquisition/default_analysis/nobias_subject01.han' )
+    #'data/baseessai/subjects/subject01/t1mri/default_acquisition/default_analysis/nobias_subject01.han' )
 
     # load histogram data
     histo_data = load_histo_data(hanfile)

@@ -39,49 +39,49 @@ userLevel = 2
 
 # Argument declaration
 signature = Signature(
-  'old_graph', ReadDiskItem( 'Cortical folds graph', 'Graph' ),
-  'skeleton', ReadDiskItem('Cortex Skeleton', 'aims readable Volume Formats'),
-  'graph_version', OpenChoice( '3.1', '3.3' ),
-  'graph', WriteDiskItem( 'Cortical folds graph', 'Graph' ),
-  'commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
-                                          'Commissure coordinates'),
-  'Talairach_transform',
-  ReadDiskItem( 'Transform Raw T1 MRI to Talairach-AC/PC-Anatomist',
-                'Transformation matrix' ),
-  'compute_fold_meshes', Boolean(),
-  'allow_multithreading', Boolean(),
- )
+    'old_graph', ReadDiskItem('Cortical folds graph', 'Graph'),
+    'skeleton', ReadDiskItem(
+        'Cortex Skeleton', 'aims readable Volume Formats'),
+    'graph_version', OpenChoice('3.1', '3.3'),
+    'graph', WriteDiskItem('Cortical folds graph', 'Graph'),
+    'commissure_coordinates', ReadDiskItem('Commissure coordinates',
+                                           'Commissure coordinates'),
+    'Talairach_transform',
+    ReadDiskItem('Transform Raw T1 MRI to Talairach-AC/PC-Anatomist',
+                 'Transformation matrix'),
+    'compute_fold_meshes', Boolean(),
+    'allow_multithreading', Boolean(),
+)
 
 
 # Default values
-def initialization( self ):
-  def linkGraphVersion( self, proc ):
-    p = WriteDiskItem( 'Cortical folds graph', 'Graph' )
-    return p.findValue( self.old_graph,
-                        requiredAttributes = {
-                          'graph_version' : self.graph_version } )
+def initialization(self):
+    def linkGraphVersion(self, proc):
+        p = WriteDiskItem('Cortical folds graph', 'Graph')
+        return p.findValue(self.old_graph,
+                           requiredAttributes={
+                               'graph_version': self.graph_version})
 
-  self.linkParameters( 'skeleton', 'old_graph' )
-  self.linkParameters( 'graph', ( 'old_graph', 'graph_version' ),
-    linkGraphVersion )
-  self.compute_fold_meshes = True
-  self.linkParameters( 'commissure_coordinates', 'old_graph' )
-  self.linkParameters( 'Talairach_transform', 'old_graph' )
-  self.setOptional( 'commissure_coordinates' )
+    self.linkParameters('skeleton', 'old_graph')
+    self.linkParameters('graph', ('old_graph', 'graph_version'),
+                        linkGraphVersion)
+    self.compute_fold_meshes = True
+    self.linkParameters('commissure_coordinates', 'old_graph')
+    self.linkParameters('Talairach_transform', 'old_graph')
+    self.setOptional('commissure_coordinates')
 
 
-def execution( self, context ):
-  attp = [ 'AimsFoldArgAtt', '-i', self.skeleton.fullPath(), '-g',
-           self.old_graph.fullPath(), '-o', self.graph.fullPath(),
-           '-m', self.Talairach_transform, '--graphversion',
-           self.graph_version ]
-  if not self.compute_fold_meshes:
-    attp.append( '-n' )
-  if self.commissure_coordinates:
-    attp += [ '--apc', self.commissure_coordinates ]
-  if not self.allow_multithreading:
-    attp += [ '--threads', '1' ]
-  context.system( *attp )
-  trManager = registration.getTransformationManager()
-  trManager.copyReferential( self.old_graph, self.graph )
-
+def execution(self, context):
+    attp = ['AimsFoldArgAtt', '-i', self.skeleton.fullPath(), '-g',
+            self.old_graph.fullPath(), '-o', self.graph.fullPath(),
+            '-m', self.Talairach_transform, '--graphversion',
+            self.graph_version]
+    if not self.compute_fold_meshes:
+        attp.append('-n')
+    if self.commissure_coordinates:
+        attp += ['--apc', self.commissure_coordinates]
+    if not self.allow_multithreading:
+        attp += ['--threads', '1']
+    context.system(*attp)
+    trManager = registration.getTransformationManager()
+    trManager.copyReferential(self.old_graph, self.graph)

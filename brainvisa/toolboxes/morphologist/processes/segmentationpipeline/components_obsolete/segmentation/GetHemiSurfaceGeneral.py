@@ -33,80 +33,87 @@
 
 from brainvisa.processes import *
 
-name ='Get Hemi Surface'
+name = 'Get Hemi Surface'
 userLevel = 2
 
 signature = Signature(
-  'Side', Choice("Both","Left","Right"),
-  'mri_corrected', ReadDiskItem( "T1 MRI Bias Corrected",
-      'aims readable Volume Formats' ),
-  'split_mask', ReadDiskItem( 'Split Brain Mask',
-      'aims readable Volume Formats' ),
-  'left_hemi_cortex', ReadDiskItem( 'Left CSF+GREY Mask',
-      'Aims writable volume formats' ),
-  'right_hemi_cortex', ReadDiskItem( 'Right CSF+GREY Mask',
-      'Aims writable volume formats' ),
-  'left_hemi_mesh', WriteDiskItem( 'Left Hemisphere Mesh',
-      'Aims mesh formats' ),
-  'right_hemi_mesh', WriteDiskItem( 'Right Hemisphere Mesh',
-      'Aims mesh formats' ),
+    'Side', Choice("Both", "Left", "Right"),
+    'mri_corrected', ReadDiskItem("T1 MRI Bias Corrected",
+                                  'aims readable Volume Formats'),
+    'split_mask', ReadDiskItem('Split Brain Mask',
+                               'aims readable Volume Formats'),
+    'left_hemi_cortex', ReadDiskItem('Left CSF+GREY Mask',
+                                     'Aims writable volume formats'),
+    'right_hemi_cortex', ReadDiskItem('Right CSF+GREY Mask',
+                                      'Aims writable volume formats'),
+    'left_hemi_mesh', WriteDiskItem('Left Hemisphere Mesh',
+                                    'Aims mesh formats'),
+    'right_hemi_mesh', WriteDiskItem('Right Hemisphere Mesh',
+                                     'Aims mesh formats'),
 )
 
-def initialization( self ):
-    
-  # create nodes
 
-  eNode = SelectionExecutionNode( self.name, parameterized = self )
-  eNode.addChild( 'GetSphericalHemiSurface',
-                  ProcessExecutionNode( 'GetSphericalHemiSurface', selected = 1 ) )
-  eNode.addChild( 'GetOpenedHemiSurface',
-                  ProcessExecutionNode( 'AnaGetOpenedHemiSurface', selected = 0 ) )
+def initialization(self):
 
-  # break internal links
-  eNode.GetSphericalHemiSurface.clearLinksTo('split_mask')
-  eNode.GetSphericalHemiSurface.clearLinksTo('left_hemi_cortex')
-  eNode.GetSphericalHemiSurface.clearLinksTo('right_hemi_cortex')
-  eNode.GetSphericalHemiSurface.clearLinksTo('left_hemi_mesh')
-  eNode.GetSphericalHemiSurface.clearLinksTo('right_hemi_mesh')
-  
-  eNode.GetOpenedHemiSurface.clearLinksTo('split_mask')
-  eNode.GetOpenedHemiSurface.clearLinksTo('left_hemi_cortex')
-  eNode.GetOpenedHemiSurface.clearLinksTo('right_hemi_cortex')
-  eNode.GetOpenedHemiSurface.clearLinksTo('left_hemi_mesh')
-  eNode.GetOpenedHemiSurface.clearLinksTo('right_hemi_mesh')
-  
-  # links
-  eNode.addLink('GetSphericalHemiSurface.mri_corrected', 'mri_corrected')
-  eNode.addLink('mri_corrected', 'GetSphericalHemiSurface.mri_corrected')
-  eNode.addLink('GetSphericalHemiSurface.split_mask', 'split_mask')
-  eNode.addLink('split_mask', 'GetSphericalHemiSurface.split_mask')
-  eNode.addLink('GetSphericalHemiSurface.left_hemi_cortex', 'left_hemi_cortex')
-  eNode.addLink('left_hemi_cortex', 'GetSphericalHemiSurface.left_hemi_cortex')
-  eNode.addLink('GetSphericalHemiSurface.right_hemi_cortex', 'right_hemi_cortex')
-  eNode.addLink('right_hemi_cortex', 'GetSphericalHemiSurface.right_hemi_cortex')
-  eNode.addLink('GetSphericalHemiSurface.left_hemi_mesh', 'left_hemi_mesh')
-  eNode.addLink('left_hemi_mesh', 'GetSphericalHemiSurface.left_hemi_mesh')
-  eNode.addLink('GetSphericalHemiSurface.right_hemi_mesh', 'right_hemi_mesh')
-  eNode.addLink('right_hemi_mesh', 'GetSphericalHemiSurface.right_hemi_mesh')
-  
-  eNode.addLink('GetOpenedHemiSurface.mri_corrected', 'mri_corrected')
-  eNode.addLink('mri_corrected', 'GetOpenedHemiSurface.mri_corrected')
-  eNode.addLink('GetOpenedHemiSurface.split_mask', 'split_mask')
-  eNode.addLink('split_mask', 'GetOpenedHemiSurface.split_mask')
-  eNode.addLink('GetOpenedHemiSurface.left_hemi_cortex', 'left_hemi_cortex')
-  eNode.addLink('left_hemi_cortex', 'GetOpenedHemiSurface.left_hemi_cortex')
-  eNode.addLink('GetOpenedHemiSurface.right_hemi_cortex', 'right_hemi_cortex')
-  eNode.addLink('right_hemi_cortex', 'GetOpenedHemiSurface.right_hemi_cortex')
-  eNode.addLink('GetOpenedHemiSurface.left_hemi_mesh', 'left_hemi_mesh')
-  eNode.addLink('left_hemi_mesh', 'GetOpenedHemiSurface.left_hemi_mesh')
-  eNode.addLink('GetOpenedHemiSurface.right_hemi_mesh', 'right_hemi_mesh')
-  eNode.addLink('right_hemi_mesh', 'GetOpenedHemiSurface.right_hemi_mesh')
-  
-  # self links
-  self.linkParameters( 'split_mask', 'mri_corrected' )
-  self.linkParameters( 'left_hemi_cortex', 'mri_corrected' )
-  self.linkParameters( 'right_hemi_cortex', 'mri_corrected' )
-  self.linkParameters( 'left_hemi_mesh', 'mri_corrected' )
-  self.linkParameters( 'right_hemi_mesh', 'mri_corrected' )
-  
-  self.setExecutionNode( eNode )
+    # create nodes
+
+    eNode = SelectionExecutionNode(self.name, parameterized=self)
+    eNode.addChild('GetSphericalHemiSurface',
+                   ProcessExecutionNode('GetSphericalHemiSurface', selected=1))
+    eNode.addChild('GetOpenedHemiSurface',
+                   ProcessExecutionNode('AnaGetOpenedHemiSurface', selected=0))
+
+    # break internal links
+    eNode.GetSphericalHemiSurface.clearLinksTo('split_mask')
+    eNode.GetSphericalHemiSurface.clearLinksTo('left_hemi_cortex')
+    eNode.GetSphericalHemiSurface.clearLinksTo('right_hemi_cortex')
+    eNode.GetSphericalHemiSurface.clearLinksTo('left_hemi_mesh')
+    eNode.GetSphericalHemiSurface.clearLinksTo('right_hemi_mesh')
+
+    eNode.GetOpenedHemiSurface.clearLinksTo('split_mask')
+    eNode.GetOpenedHemiSurface.clearLinksTo('left_hemi_cortex')
+    eNode.GetOpenedHemiSurface.clearLinksTo('right_hemi_cortex')
+    eNode.GetOpenedHemiSurface.clearLinksTo('left_hemi_mesh')
+    eNode.GetOpenedHemiSurface.clearLinksTo('right_hemi_mesh')
+
+    # links
+    eNode.addLink('GetSphericalHemiSurface.mri_corrected', 'mri_corrected')
+    eNode.addLink('mri_corrected', 'GetSphericalHemiSurface.mri_corrected')
+    eNode.addLink('GetSphericalHemiSurface.split_mask', 'split_mask')
+    eNode.addLink('split_mask', 'GetSphericalHemiSurface.split_mask')
+    eNode.addLink('GetSphericalHemiSurface.left_hemi_cortex',
+                  'left_hemi_cortex')
+    eNode.addLink('left_hemi_cortex',
+                  'GetSphericalHemiSurface.left_hemi_cortex')
+    eNode.addLink('GetSphericalHemiSurface.right_hemi_cortex',
+                  'right_hemi_cortex')
+    eNode.addLink('right_hemi_cortex',
+                  'GetSphericalHemiSurface.right_hemi_cortex')
+    eNode.addLink('GetSphericalHemiSurface.left_hemi_mesh', 'left_hemi_mesh')
+    eNode.addLink('left_hemi_mesh', 'GetSphericalHemiSurface.left_hemi_mesh')
+    eNode.addLink('GetSphericalHemiSurface.right_hemi_mesh', 'right_hemi_mesh')
+    eNode.addLink('right_hemi_mesh', 'GetSphericalHemiSurface.right_hemi_mesh')
+
+    eNode.addLink('GetOpenedHemiSurface.mri_corrected', 'mri_corrected')
+    eNode.addLink('mri_corrected', 'GetOpenedHemiSurface.mri_corrected')
+    eNode.addLink('GetOpenedHemiSurface.split_mask', 'split_mask')
+    eNode.addLink('split_mask', 'GetOpenedHemiSurface.split_mask')
+    eNode.addLink('GetOpenedHemiSurface.left_hemi_cortex', 'left_hemi_cortex')
+    eNode.addLink('left_hemi_cortex', 'GetOpenedHemiSurface.left_hemi_cortex')
+    eNode.addLink('GetOpenedHemiSurface.right_hemi_cortex',
+                  'right_hemi_cortex')
+    eNode.addLink('right_hemi_cortex',
+                  'GetOpenedHemiSurface.right_hemi_cortex')
+    eNode.addLink('GetOpenedHemiSurface.left_hemi_mesh', 'left_hemi_mesh')
+    eNode.addLink('left_hemi_mesh', 'GetOpenedHemiSurface.left_hemi_mesh')
+    eNode.addLink('GetOpenedHemiSurface.right_hemi_mesh', 'right_hemi_mesh')
+    eNode.addLink('right_hemi_mesh', 'GetOpenedHemiSurface.right_hemi_mesh')
+
+    # self links
+    self.linkParameters('split_mask', 'mri_corrected')
+    self.linkParameters('left_hemi_cortex', 'mri_corrected')
+    self.linkParameters('right_hemi_cortex', 'mri_corrected')
+    self.linkParameters('left_hemi_mesh', 'mri_corrected')
+    self.linkParameters('right_hemi_mesh', 'mri_corrected')
+
+    self.setExecutionNode(eNode)

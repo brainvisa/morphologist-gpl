@@ -12,27 +12,29 @@
 # serve to show the default.
 
 from __future__ import print_function
-import sys, os
+import sys
+import os
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-#sys.path.append(os.path.abspath('.'))
+# sys.path.append(os.path.abspath('.'))
 try:
-  import matplotlib
-  sys.path.append( os.path.abspath( os.path.join( os.path.dirname( os.path.dirname( matplotlib.__file__ ) ), 'sphinx', 'ext' ) ) )
+    import matplotlib
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(
+        os.path.dirname(matplotlib.__file__)), 'sphinx', 'ext')))
 except Exception as e:
-  print('warning:', e)
+    print('warning:', e)
 
-sys.path.insert(0,os.path.abspath('sphinxext'))
+sys.path.insert(0, os.path.abspath('sphinxext'))
 
 # init brainvisa
 import brainvisa.axon
 try:
-  from soma_workflow import version as swver
-  somaworkflow_version = swver.shortVersion
+    from soma_workflow import version as swver
+    somaworkflow_version = swver.shortVersion
 except:
-  somaworkflow_version = '2.7'
+    somaworkflow_version = '2.7'
 try:
     import brainvisa.config as bv_config
     axon_version = bv_config.shortVersion
@@ -133,22 +135,22 @@ pygments_style = 'sphinx'
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []
 inheritance_graph_attrs = {
-        'rankdir': 'LR',
-        'size': '"100.0, 100.0"',
-    }
+    'rankdir': 'LR',
+    'size': '"100.0, 100.0"',
+}
 inheritance__node_attrs = {
-        'shape': 'box',
-        'fontsize': 10,
-        'height': 0.50,
-        'fontname': 'Arial, Vera Sans, DejaVu Sans, Liberation Sans, '
-                    'Helvetica, sans',
-        'style': '"setlinewidth(1.0)"',
-    }
+    'shape': 'box',
+    'fontsize': 10,
+    'height': 0.50,
+    'fontname': 'Arial, Vera Sans, DejaVu Sans, Liberation Sans, '
+    'Helvetica, sans',
+    'style': '"setlinewidth(1.0)"',
+}
 inheritance_edge_attrs = {
-        'arrowsize': 1.0,
-        'style': '"setlinewidth(1.0)"',
-    }
-                              
+    'arrowsize': 1.0,
+    'style': '"setlinewidth(1.0)"',
+}
+
 # -- Options for HTML output ---------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  Major themes that come with
@@ -158,7 +160,7 @@ html_theme = 'default'
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-html_theme_options = {  }
+html_theme_options = {}
 
 # Add any paths that contain custom themes here, relative to this directory.
 #html_theme_path = []
@@ -236,8 +238,8 @@ htmlhelp_basename = 'morphologistdoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'morphologist.tex', u'Morphologist Documentation',
-   u'someone', 'manual'),
+    ('index', 'morphologist.tex', u'Morphologist Documentation',
+     u'someone', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -260,51 +262,50 @@ latex_documents = [
 autoclass_content = "both"
 
 extlinks = {
-  'axon': ('../../axon-' + axon_version + '/%s', 'axon '),
-  'axonusr': ('../../axon-' + axon_version + '/user_doc/%s', 'axon '),
-  'axondev': ('../../axon-' + axon_version + '/dev_doc/%s', 'axon '),
-  'axonman': ('../../axon-' + axon_version + '/user_doc/%s', 'axon '),
-  'aimsalgodox': ('../../aimsalgo-' + aims_version + '/doxygen/%s',
-    'aimsalgodox '),
-  'aimsalgoex': ('../../pyaimsalgo-' + aims_version + '/examples/%s',
-    'aimsalgoex '),
-  'aims': ('../../aimsdata-' + aims_version + '/%s', 'aims '),
-  'aimsdox': ('../../aimsdata-' + aims_version + '/doxygen/%s',
-    'aimsdox '),
-  'aimsdata' : ('../../aimsdata-' + aims_version + '/%s', 'aimsdata '),
-  'cartobdox' : ('../../cartobase-' + aims_version + '/doxygen/%s',
-  'cartobdox '),
-  'cartoddox' : ('../../cartodata-' + aims_version + '/doxygen/%s',
-  'cartoddox '),
-  'graphdox' : ('../../graph-' + aims_version + '/doxygen/%s',
-  'graphdox '),
-  'somabase' : ( '../../soma-base-' + somabase_version + '/sphinx/%s', 'somabase' ),
-  'somaworkflow' : ( '../../soma-workflow-' + somaworkflow_version \
-    + '/sphinx/%s', 'somaworkflow' ),
-  'anatomist': ('../../anatomist-' + anatomist_version + '/%s', 'anatomist '),
-  'anausr': ('../../anatomist-' + version + '/user_doc/%s', 'anatomist '),
-  'pyanatomist': ('../../pyanatomist-' + anatomist_version + '/sphinx/%s', 'pyanatomist '),
-  'morphologist': ('../../morphologist-' + version + '/%s', 'morphologist'),
-  'morphologistusr': ('%s', 'morphologist '),
-  'connectomist': ('../../connectomist-' + version + '/%s', 'connectomist '),
-  'connectomistusr': ('%s', 'connectomist '),
-  'brainrat': ('../../brainrat-gpl-' + version + '/brainrat_man/en/html/%s', 'brainrat '),
-  'web': ('http://brainvisa.info/%s', 'brainvisa '),
-  'documentation': ('../../%s', 'docs '),
+    'axon': ('../../axon-' + axon_version + '/%s', 'axon '),
+    'axonusr': ('../../axon-' + axon_version + '/user_doc/%s', 'axon '),
+    'axondev': ('../../axon-' + axon_version + '/dev_doc/%s', 'axon '),
+    'axonman': ('../../axon-' + axon_version + '/user_doc/%s', 'axon '),
+    'aimsalgodox': ('../../aimsalgo-' + aims_version + '/doxygen/%s',
+                    'aimsalgodox '),
+    'aimsalgoex': ('../../pyaimsalgo-' + aims_version + '/examples/%s',
+                   'aimsalgoex '),
+    'aims': ('../../aimsdata-' + aims_version + '/%s', 'aims '),
+    'aimsdox': ('../../aimsdata-' + aims_version + '/doxygen/%s',
+                'aimsdox '),
+    'aimsdata': ('../../aimsdata-' + aims_version + '/%s', 'aimsdata '),
+    'cartobdox': ('../../cartobase-' + aims_version + '/doxygen/%s',
+                  'cartobdox '),
+    'cartoddox': ('../../cartodata-' + aims_version + '/doxygen/%s',
+                  'cartoddox '),
+    'graphdox': ('../../graph-' + aims_version + '/doxygen/%s',
+                 'graphdox '),
+    'somabase': ('../../soma-base-' + somabase_version + '/sphinx/%s', 'somabase'),
+    'somaworkflow': ('../../soma-workflow-' + somaworkflow_version
+                     + '/sphinx/%s', 'somaworkflow'),
+    'anatomist': ('../../anatomist-' + anatomist_version + '/%s', 'anatomist '),
+    'anausr': ('../../anatomist-' + version + '/user_doc/%s', 'anatomist '),
+    'pyanatomist': ('../../pyanatomist-' + anatomist_version + '/sphinx/%s', 'pyanatomist '),
+    'morphologist': ('../../morphologist-' + version + '/%s', 'morphologist'),
+    'morphologistusr': ('%s', 'morphologist '),
+    'connectomist': ('../../connectomist-' + version + '/%s', 'connectomist '),
+    'connectomistusr': ('%s', 'connectomist '),
+    'brainrat': ('../../brainrat-gpl-' + version + '/brainrat_man/en/html/%s', 'brainrat '),
+    'web': ('http://brainvisa.info/%s', 'brainvisa '),
+    'documentation': ('../../%s', 'docs '),
 }
 
-docpath = os.path.join( os.path.dirname( os.path.dirname( os.path.dirname( \
-  brainvisa.__file__ ) ) ), 'share', 'doc' )
+docpath = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(
+    brainvisa.__file__))), 'share', 'doc')
 
 intersphinx_mapping = {
-  'somabase': ( os.path.join( docpath, 'soma-base-' + somabase_version +
-                             '/sphinx' ), None ),
-  'pyaims': ( os.path.join( docpath, 'pyaims-' + aims_version + '/sphinx' ),
-             None ),
-  'pyana': ( os.path.join( docpath, 'pyanatomist-' + aims_version + '/sphinx' ),
-            None ),
-  'somaworkflow': ( os.path.join( docpath, 'soma-workflow-' \
-    + somaworkflow_version + '/sphinx' ), None ),
-  'python': ('http://docs.python.org/2.7', None),
+    'somabase': (os.path.join(docpath, 'soma-base-' + somabase_version +
+                              '/sphinx'), None),
+    'pyaims': (os.path.join(docpath, 'pyaims-' + aims_version + '/sphinx'),
+               None),
+    'pyana': (os.path.join(docpath, 'pyanatomist-' + aims_version + '/sphinx'),
+              None),
+    'somaworkflow': (os.path.join(docpath, 'soma-workflow-'
+                                  + somaworkflow_version + '/sphinx'), None),
+    'python': ('http://docs.python.org/2.7', None),
 }
-

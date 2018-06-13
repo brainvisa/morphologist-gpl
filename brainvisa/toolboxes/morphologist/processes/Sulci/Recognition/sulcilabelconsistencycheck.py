@@ -38,37 +38,35 @@ userLevel = 0
 
 
 signature = Signature(
-    'sulci_graph', ReadDiskItem( 'Labelled Cortical folds graph', 'Graph' ),
-    'side', Choice( 'left', 'right', None ),
-    'labeling_type', Choice( ( 'Manual', 'name' ), ( 'Auto', 'label' ), None ),
+    'sulci_graph', ReadDiskItem('Labelled Cortical folds graph', 'Graph'),
+    'side', Choice('left', 'right', None),
+    'labeling_type', Choice(('Manual', 'name'), ('Auto', 'label'), None),
 )
 
 
-def initialization( self ):
-    def linkSide( self, dummy ):
+def initialization(self):
+    def linkSide(self, dummy):
         if self.sulci_graph is not None:
-            return self.sulci_graph.get( 'side' )
-    def linkLabelAtt( self, dummy ):
+            return self.sulci_graph.get('side')
+
+    def linkLabelAtt(self, dummy):
         if self.sulci_graph is not None:
-            a = self.sulci_graph.get( 'automatically_labelled' )
+            a = self.sulci_graph.get('automatically_labelled')
             if a is not None:
                 if a == 'Yes':
                     return 'label'
                 elif a == 'No':
                     return 'name'
 
-    self.linkParameters( 'side', 'sulci_graph', linkSide )
-    self.linkParameters( 'labeling_type', 'sulci_graph', linkLabelAtt )
+    self.linkParameters('side', 'sulci_graph', linkSide)
+    self.linkParameters('labeling_type', 'sulci_graph', linkLabelAtt)
 
 
-def execution( self, context ):
-    cmd = [ sys.executable, find_in_path( 'sulciLabelConsistencyCheck.py' ),
-        '-i', self.sulci_graph ]
+def execution(self, context):
+    cmd = [sys.executable, find_in_path('sulciLabelConsistencyCheck.py'),
+           '-i', self.sulci_graph]
     if self.side:
-        cmd += [ '-s', self.side ]
+        cmd += ['-s', self.side]
     if self.labeling_type is not None:
-        cmd += [ '-l', self.labeling_type ]
-    context.system( *cmd )
-
-
-
+        cmd += ['-l', self.labeling_type]
+    context.system(*cmd)

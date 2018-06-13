@@ -38,51 +38,54 @@ name = 'Anatomist Show Symmetrized Folds Graph'
 #roles = ('viewer',)
 userLevel = 2
 
+
 def validation():
     anatomist.validation()
 
+
 signature = Signature(
-    'graph', ReadDiskItem( 'Cortical folds graph', 'Graph' ),
-    'nomenclature', ReadDiskItem( 'Nomenclature', 'Hierarchy' ),
-    'white_mesh', ReadDiskItem( 'Hemisphere White Mesh',
-      'Anatomist mesh formats' ),
-    )
+    'graph', ReadDiskItem('Cortical folds graph', 'Graph'),
+    'nomenclature', ReadDiskItem('Nomenclature', 'Hierarchy'),
+    'white_mesh', ReadDiskItem('Hemisphere White Mesh',
+                               'Anatomist mesh formats'),
+)
 
-def initialization( self ):
-    self.setOptional( 'nomenclature' )
-    self.setOptional( 'white_mesh' )
-    self.linkParameters( 'white_mesh', 'graph' )
-    self.nomenclature = self.signature[ 'nomenclature' ].findValue( {} )
 
-def execution( self, context ):
-    toload = [ self.graph ]
+def initialization(self):
+    self.setOptional('nomenclature')
+    self.setOptional('white_mesh')
+    self.linkParameters('white_mesh', 'graph')
+    self.nomenclature = self.signature['nomenclature'].findValue({})
+
+
+def execution(self, context):
+    toload = [self.graph]
     if self.white_mesh is not None:
-      toload.append( self.white_mesh )
+        toload.append(self.white_mesh)
     selfdestroy = []
     if self.nomenclature is not None:
-        ( hie, br ) = context.runProcess( 'AnatomistShowNomenclature',
-                                          read=self.nomenclature )
-        selfdestroy += ( hie, br )
-    objs = context.runProcess( 'AnatomistShowSymmetrizedData', items=toload )
+        (hie, br) = context.runProcess('AnatomistShowNomenclature',
+                                       read=self.nomenclature)
+        selfdestroy += (hie, br)
+    objs = context.runProcess('AnatomistShowSymmetrizedData', items=toload)
     a = anatomist.Anatomist()
-    l = self.graph.get( 'automatically_labelled' )
-    context.write( 'automatically_labelled:', l )
+    l = self.graph.get('automatically_labelled')
+    context.write('automatically_labelled:', l)
     nomenclatureprop = 'default'
     if l and l == 'Yes':
         nomenclatureprop = 'label'
         #a.setGraphParams( label_attribute='label', use_nomenclature=1 )
     else:
-        l = self.graph.get( 'manually_labelled' )
-        context.write( 'manually_labelled:', l )
+        l = self.graph.get('manually_labelled')
+        context.write('manually_labelled:', l)
         if l and l == 'Yes':
             nomenclatureprop = 'name'
             #a.setGraphParams( label_attribute='name', use_nomenclature=1 )
     graph = objs[0]
     win = objs[-1]
-    win.addObjects( graph, add_graph_nodes=True )
-    context.write( 'nomenclature_property:', nomenclatureprop )
-    a.execute( 'GraphDisplayProperties', objects=[graph],
-      nomenclature_property=nomenclatureprop )
+    win.addObjects(graph, add_graph_nodes=True)
+    context.write('nomenclature_property:', nomenclatureprop)
+    a.execute('GraphDisplayProperties', objects=[graph],
+              nomenclature_property=nomenclatureprop)
     selfdestroy += objs
     return selfdestroy
-

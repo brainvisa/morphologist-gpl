@@ -7,9 +7,9 @@
 #
 # This software is governed by the CeCILL license version 2 under
 # French law and abiding by the rules of distribution of free software.
-# You can  use, modify and/or redistribute the software under the 
+# You can  use, modify and/or redistribute the software under the
 # terms of the CeCILL license version 2 as circulated by CEA, CNRS
-# and INRIA at the following URL "http://www.cecill.info". 
+# and INRIA at the following URL "http://www.cecill.info".
 #
 # As a counterpart to the access to the source code and  rights to copy,
 # modify and redistribute granted by the license, users are provided only
@@ -24,8 +24,8 @@
 # therefore means  that it is reserved for developers  and  experienced
 # professionals having in-depth computer knowledge. Users are therefore
 # encouraged to load and test the software's suitability as regards their
-# requirements in conditions enabling the security of their systems and/or 
-# data to be ensured and,  more generally, to use and operate it in the 
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
 # same conditions as regards security.
 #
 # The fact that you are presently reading this means that you have had
@@ -42,31 +42,35 @@ userLevel = 2
 
 # Argument declaration
 signature = Signature(
-  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
-      'Aims readable volume formats' ),
-  'histo_analysis', WriteDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-  'visu', Boolean(),
-  'undersampling', Choice('2', '4', '8', '16', '32', 'auto')
+    'mri_corrected', ReadDiskItem('T1 MRI Bias Corrected',
+                                  'Aims readable volume formats'),
+    'histo_analysis', WriteDiskItem('Histo Analysis', 'Histo Analysis'),
+    'visu', Boolean(),
+    'undersampling', Choice('2', '4', '8', '16', '32', 'auto')
 
 )
 
 
 # Default values
-def initialization( self ):
-  self.linkParameters( 'histo_analysis', 'mri_corrected' )
-  self.visu = 0
-  self.undersampling='auto'
+def initialization(self):
+    self.linkParameters('histo_analysis', 'mri_corrected')
+    self.visu = 0
+    self.undersampling = 'auto'
 
 
 # VipHistoAnalysis
 #
 
-def execution( self, context ):
-    if self.visu :
-      context.system( 'VipHistoAnalysis', '-i',  self.mri_corrected.fullPath(), '-o',self.histo_analysis.fullPath(), '-S', 'n', '-m', 'a', '-u', self.undersampling, '-g', 's' )
+def execution(self, context):
+    if self.visu:
+        context.system('VipHistoAnalysis', '-i',  self.mri_corrected.fullPath(), '-o',
+                       self.histo_analysis.fullPath(), '-S', 'n', '-m', 'a', '-u', self.undersampling, '-g', 's')
     else:
-      if os.path.exists(self.histo_analysis.fullName() + '.han.loc'):
-        context.write(self.histo_analysis.fullName(), '.han has been locked')
-        context.write('Remove',self.histo_analysis.fullName(),'.han.loc if you want to trigger automated analysis')
-      else:
-        context.system( 'VipHistoAnalysis', '-i',  self.mri_corrected.fullPath(), '-o',self.histo_analysis.fullPath(), '-S', 'y', '-m', 'a', '-u', self.undersampling )
+        if os.path.exists(self.histo_analysis.fullName() + '.han.loc'):
+            context.write(self.histo_analysis.fullName(),
+                          '.han has been locked')
+            context.write('Remove', self.histo_analysis.fullName(),
+                          '.han.loc if you want to trigger automated analysis')
+        else:
+            context.system('VipHistoAnalysis', '-i',  self.mri_corrected.fullPath(), '-o',
+                           self.histo_analysis.fullPath(), '-S', 'y', '-m', 'a', '-u', self.undersampling)

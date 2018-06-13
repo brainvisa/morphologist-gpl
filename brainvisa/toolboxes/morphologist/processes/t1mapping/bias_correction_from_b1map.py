@@ -39,19 +39,19 @@ userLevel = 0
 
 signature = Signature(
     'biased_image',
-        ReadDiskItem('3D Volume', 'aims readable volume formats'),
+    ReadDiskItem('3D Volume', 'aims readable volume formats'),
     'corrected_image',
-        WriteDiskItem('3D Volume', 'aims writable volume formats'),
+    WriteDiskItem('3D Volume', 'aims writable volume formats'),
     'BAFI_amplitude_map',
-        ReadDiskItem('4D Volume', 'aims readable volume formats'),
+    ReadDiskItem('4D Volume', 'aims readable volume formats'),
     'BAFI_phase_map',
-        ReadDiskItem('4D Volume', 'aims readable volume formats'),
+    ReadDiskItem('4D Volume', 'aims readable volume formats'),
     'B1_map',
-        ReadDiskItem('3D Volume', 'aims readable volume formats'),
+    ReadDiskItem('3D Volume', 'aims readable volume formats'),
     'DP_GRE_lowcontrast',
-        ReadDiskItem('3D Volume', 'aims readable volume formats'),
+    ReadDiskItem('3D Volume', 'aims readable volume formats'),
     'correction_field',
-        WriteDiskItem('3D Volume', 'aims writable volume formats'),
+    WriteDiskItem('3D Volume', 'aims writable volume formats'),
     'field_threshold', Float(),
 )
 
@@ -70,11 +70,11 @@ def execution(self, context):
     if (self.BAFI_amplitude_map is not None
         and (self.BAFI_phase_map is None
              or self.B1_map is not None)) \
-              or (self.BAFI_phase_map is not None
-        and (self.BAFI_amplitude_map is None
-             or self.B1_map is not None)):
-          context.error('When B1 should be rebuilt from BAFI, both BAFI '
-            'images are needed, and the B1_map should be left empty.')
+        or (self.BAFI_phase_map is not None
+            and (self.BAFI_amplitude_map is None
+                 or self.B1_map is not None)):
+        context.error('When B1 should be rebuilt from BAFI, both BAFI '
+                      'images are needed, and the B1_map should be left empty.')
     from soma import aims, aimsalgo
     from soma.aimsalgo import t1mapping
     import numpy as np
@@ -90,7 +90,7 @@ def execution(self, context):
         B1map_farray = np.asfortranarray(B1map_array.reshape(
             B1map_array.shape + (1,)))
         B1map_volume = aims.Volume(B1map_farray)
-        #B1map_volume.header().update(BAFI_amplitude.header())
+        # B1map_volume.header().update(BAFI_amplitude.header())
         B1map_volume.header()['voxel_size'] \
             = BAFI_amplitude.header()['voxel_size']
         B1map_volume.header()['transformations'] \
@@ -125,6 +125,3 @@ def execution(self, context):
     aims.write(unbiased_vol, self.corrected_image.fullPath())
     if self.correction_field is not None:
         aims.write(field, self.correction_field.fullPath())
-
-
-

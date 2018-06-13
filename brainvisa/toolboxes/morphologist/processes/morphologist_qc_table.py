@@ -1,4 +1,4 @@
- 
+
 from brainvisa.processes import *
 
 name = 'Morphologist QC table'
@@ -45,15 +45,15 @@ def execution(self, context):
               'Sulcal morphometry measurements']
 
     tlabels = ['Raw T1 MRI', 'Bias Corrected', 'Histo Analysis',
-              'Brain Mask', 'Hemispheres Split', 'Head Mesh',
-              'Left Grey White Mask', 'Right Grey White Mask',
-              'Left CSF+GREY Mask', 'Right CSF+GREY Mask',
-              'Left Hemisphere White Mesh', 'Right Hemisphere White Mesh',
-              'Left Cortex Skeleton', 'Right Cortex Skeleton',
-              'Left Hemisphere Mesh', 'Right Hemisphere Mesh',
-              'Left Cortical Sulci', 'Right Cortical Sulci',
-              'Left Labelled Sulci', 'Right Labelled Cortical Sulci',
-              'Sulcal morphometry measurements']
+               'Brain Mask', 'Hemispheres Split', 'Head Mesh',
+               'Left Grey White Mask', 'Right Grey White Mask',
+               'Left CSF+GREY Mask', 'Right CSF+GREY Mask',
+               'Left Hemisphere White Mesh', 'Right Hemisphere White Mesh',
+               'Left Cortex Skeleton', 'Right Cortex Skeleton',
+               'Left Hemisphere Mesh', 'Right Hemisphere Mesh',
+               'Left Cortical Sulci', 'Right Cortical Sulci',
+               'Left Labelled Sulci', 'Right Labelled Cortical Sulci',
+               'Sulcal morphometry measurements']
 
     custom_filt = [eval(filt) for filt in self.data_filters]
     if len(custom_filt) == 1:
@@ -97,4 +97,3 @@ def execution(self, context):
                               keys=self.keys,
                               type_labels=tlabels,
                               output_file=self.output_file)
-

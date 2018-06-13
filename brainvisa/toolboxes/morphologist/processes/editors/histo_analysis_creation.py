@@ -48,46 +48,49 @@ if neuroConfig.gui:
     except ImportError:
         pass
 
+
 def validation():
     if not neuroConfig.gui:
-        raise ValidationError( 'No GUI.' )
+        raise ValidationError('No GUI.')
     anatomist.validation()
     try:
         import brainvisa.morphologist.qt4gui.histo_analysis_editor
     except:
         raise ValidationError(
-            'brainvisa.morphologist.qt4gui.histo_analysis_editor ' \
-            'module cannot be imported' )
+            'brainvisa.morphologist.qt4gui.histo_analysis_editor '
+            'module cannot be imported')
+
 
 name = 'Create histo analysis manually'
 userLevel = 0
 
 signature = Signature(
-    'mri_corrected', ReadDiskItem( 'T1 MRI bias corrected',
-        'Anatomist volume formats' ),
-    'histo', WriteDiskItem( 'Histogram', 'Histogram' ),
-    'histo_analysis', WriteDiskItem( 'Histo analysis', 'Histo Analysis' ),
+    'mri_corrected', ReadDiskItem('T1 MRI bias corrected',
+                                  'Anatomist volume formats'),
+    'histo', WriteDiskItem('Histogram', 'Histogram'),
+    'histo_analysis', WriteDiskItem('Histo analysis', 'Histo Analysis'),
 )
 
 
-def initialization( self ):
+def initialization(self):
     self.linkParameters('histo', 'mri_corrected')
     self.linkParameters('histo_analysis', 'histo')
 
 
-def delInMainThread( lock, thing ):
+def delInMainThread(lock, thing):
     # wait for the lock to be released in the process thread
     lock.acquire()
     lock.release()
     # now the process thread should have removed its reference on thing:
     # we can safely delete it fom here, in the main thread.
-    del thing # probably useless
+    del thing  # probably useless
 
-def execution( self, context ):
-    #context.runProcess('histo_analysis_editor',
-        #histo_analysis=self.histo_analysis,
-        #histo=self.histo,
-        #mri_corrected=self.mri_corrected)
+
+def execution(self, context):
+    # context.runProcess('histo_analysis_editor',
+        # histo_analysis=self.histo_analysis,
+        # histo=self.histo,
+        # mri_corrected=self.mri_corrected)
     try:
         data = numpy.loadtxt(self.histo.fullPath(), dtype=int)
         maxdata = data[-1, 0]
@@ -100,20 +103,20 @@ def execution( self, context ):
         hisdata = his.doit(mri)
         data = numpy.zeros((his.bins(), 2), dtype=int)
         data[:, 0] = numpy.arange(his.minDataValue(), his.maxDataValue(),
-            float(his.maxDataValue() - his.minDataValue()) / his.bins())
+                                  float(his.maxDataValue() - his.minDataValue()) / his.bins())
         data[:, 1] = numpy.asarray(his.data().volume()).ravel()
         numpy.savetxt(self.histo.fullPath(), data, fmt='%d')
     gmean = maxdata * 0.2
     gsigma = maxdata * 0.02
     wmean = maxdata * 0.35
     wsigma = maxdata * 0.02
-    han = [ gmean, gsigma ], [ wmean, wsigma ]
+    han = [gmean, gsigma], [wmean, wsigma]
     hdata = HistoData(self.histo.fullPath(),
-        self.histo_analysis.fullPath(), data, han)
-    hwid = mainThreadActions().call( create_histo_editor, hdata,
-        self.mri_corrected )
+                      self.histo_analysis.fullPath(), data, han)
+    hwid = mainThreadActions().call(create_histo_editor, hdata,
+                                    self.mri_corrected)
     try:
-        mainThreadActions().call( hwid.exec_ )
+        mainThreadActions().call(hwid.exec_)
     finally:
         # the following ensures pv is deleted in the main thread, and not
         # in the current non-GUI thread. The principle is the following:
@@ -126,8 +129,6 @@ def execution( self, context ):
         #   is the last ref on pv, so it is actually deleted there.
         lock = threading.Lock()
         lock.acquire()
-        mainThreadActions().push( delInMainThread, lock, hwid )
+        mainThreadActions().push(delInMainThread, lock, hwid)
         del hwid
         lock.release()
-
-

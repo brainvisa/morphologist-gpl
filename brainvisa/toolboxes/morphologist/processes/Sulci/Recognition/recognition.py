@@ -39,17 +39,16 @@ userLevel = 0
 
 
 signature = Signature(
-    'data_graph', ReadDiskItem( 'Data graph', 'Graph' ),
-    'model', ReadDiskItem( 'Model graph', 'Graph',
-        requiredAttributes={'trained' : 'Yes'} ),
+    'data_graph', ReadDiskItem('Data graph', 'Graph'),
+    'model', ReadDiskItem('Model graph', 'Graph',
+                          requiredAttributes={'trained': 'Yes'}),
     'output_graph',
-    WriteDiskItem( 'Labelled Cortical folds graph', 'Graph',
-                   requiredAttributes = { 'labelled' : 'Yes',
-                                          'automatically_labelled' \
-                                          : 'Yes'} ),
-    'model_hint', Choice( ( 'Newer (2008)', 0 ), ( 'Older (2001)', 1 ) ),
-    'energy_plot_file', WriteDiskItem( 'siRelax Fold Energy',
-                                       'siRelax Fold Energy' ),
+    WriteDiskItem('Labelled Cortical folds graph', 'Graph',
+                  requiredAttributes={'labelled': 'Yes',
+                                      'automatically_labelled': 'Yes'}),
+    'model_hint', Choice(('Newer (2008)', 0), ('Older (2001)', 1)),
+    'energy_plot_file', WriteDiskItem('siRelax Fold Energy',
+                                      'siRelax Fold Energy'),
     'rate', Float(),
     'stopRate', Float(),
     'niterBelowStopProp', Integer(),
@@ -57,37 +56,39 @@ signature = Signature(
     'fix_random_seed', Boolean(),
 )
 
-def modelValue( proc, procbis ):
+
+def modelValue(proc, procbis):
     """
     the input graph which is linked to the model has not necessarily the same
     graph_version but this attribute is a key for Graph data, so it will be
     seen as a required attribute, so it is removed from the link information
     """
-    val=None
+    val = None
     if proc.data_graph:
-        val=proc.data_graph.attributes()
+        val = proc.data_graph.attributes()
         if 'graph_version' in val:
             del val['graph_version']
     rdi = ReadDiskItem('Model graph', 'Graph',
-                       requiredAttributes={'trained' : 'Yes'})
-    mod = list( rdi._findValues( val, None, False ) )
-    db = [ x.get( 'sulci_database' ) for x in mod ]
-    dind = [ i for i in range(len(db)) if db[i] is not None ]
-    db = [ int(x) for x in db if x is not None ]
-    newind = [ dind[db.index(x)] for x in sorted( db ) ]
-    if len( mod ) == 1:
+                       requiredAttributes={'trained': 'Yes'})
+    mod = list(rdi._findValues(val, None, False))
+    db = [x.get('sulci_database') for x in mod]
+    dind = [i for i in range(len(db)) if db[i] is not None]
+    db = [int(x) for x in db if x is not None]
+    newind = [dind[db.index(x)] for x in sorted(db)]
+    if len(mod) == 1:
         return val
-    if len( mod ) > proc.model_hint:
-        return mod[newind[len( mod ) - proc.model_hint - 1]]
+    if len(mod) > proc.model_hint:
+        return mod[newind[len(mod) - proc.model_hint - 1]]
     return None
 
-def initialization( self ):
-    self.linkParameters( 'model', ( 'data_graph', 'model_hint' ),
-        modelValue )
-    self.linkParameters( 'output_graph', 'data_graph' )
-    self.linkParameters( 'energy_plot_file', 'output_graph' )
+
+def initialization(self):
+    self.linkParameters('model', ('data_graph', 'model_hint'),
+                        modelValue)
+    self.linkParameters('output_graph', 'data_graph')
+    self.linkParameters('energy_plot_file', 'output_graph')
     for p in ['rate', 'stopRate', 'niterBelowStopProp',
-        'forbid_unknown_label' ]:
+              'forbid_unknown_label']:
         self.signature[p].userLevel = 2
     self.rate = 0.98
     self.stopRate = 0.05
@@ -98,17 +99,24 @@ def initialization( self ):
     self.signature['fix_random_seed'].userLevel = 3
     self.fix_random_seed = False
 
+
 def getConfigFile(self, context, graphname):
     def exist(file):
-        try : os.stat(file)
-        except OSError : return False
-        else: return True
+        try:
+            os.stat(file)
+        except OSError:
+            return False
+        else:
+            return True
     dir = self.parent['self'].parallel_config_directory.fullPath()
     cfgfile = os.path.join(dir, 'siRelax-' + graphname)
-    if not exist(cfgfile + '.cfg'): return cfgfile + '.cfg'
+    if not exist(cfgfile + '.cfg'):
+        return cfgfile + '.cfg'
     n = 0
-    while exist(cfgfile + '-' + str(n) + '.cfg'): n += 1
+    while exist(cfgfile + '-' + str(n) + '.cfg'):
+        n += 1
     return cfgfile + '-' + str(n) + '.cfg'
+
 
 def cmd_duch(self, batchfile, cfgfile):
     import os
@@ -117,12 +125,12 @@ def cmd_duch(self, batchfile, cfgfile):
     return cmd
 
 
-def execution( self, context ):
-    context.write( "Automatic recognition" )
+def execution(self, context):
+    context.write("Automatic recognition")
     graphname = self.data_graph.get('subject')
     if not self.parent['manage_tasks']:
         progname = 'siRelax'
-        cfgfile = context.temporary( 'Config file' ).fullPath()
+        cfgfile = context.temporary('Config file').fullPath()
     else:
         package = self.parent['self'].package
         if package == 'default':
@@ -131,29 +139,29 @@ def execution( self, context ):
             progname = os.path.join(self.parent['package_dir'], package,
                                     'bin', 'siRelax')
         cfgfile = self.getConfigFile(context, graphname)
-    context.write( 'config : ', cfgfile)
+    context.write('config : ', cfgfile)
     try:
-        stream = open(cfgfile, 'w' )
+        stream = open(cfgfile, 'w')
     except IOError as e:
         error(e.strerror, maker.output)
     else:
-        stream.write( '*BEGIN TREE 1.0 siRelax\n' )
-        stream.write( 'modelFile ' + self.model.fullPath() + '\n' )
-        stream.write( 'graphFile ' + self.data_graph.fullPath() + '\n' )
-        stream.write( 'output ' + self.output_graph.fullPath() + '\n' )
-        stream.write( 'plotfile ' + self.energy_plot_file.fullPath() \
-                          + '\n' )
-        stream.write( 'rate ' + str( self.rate ) + '\n' )
-        stream.write( 'stopRate ' + str( self.stopRate ) + '\n' )
-        stream.write( 'niterBelowStopProp ' + str( self.niterBelowStopProp ) \
-                      + '\n' )
-        stream.write( 'extensionMode CONNECT_VOID CONNECT\n' )
+        stream.write('*BEGIN TREE 1.0 siRelax\n')
+        stream.write('modelFile ' + self.model.fullPath() + '\n')
+        stream.write('graphFile ' + self.data_graph.fullPath() + '\n')
+        stream.write('output ' + self.output_graph.fullPath() + '\n')
+        stream.write('plotfile ' + self.energy_plot_file.fullPath()
+                     + '\n')
+        stream.write('rate ' + str(self.rate) + '\n')
+        stream.write('stopRate ' + str(self.stopRate) + '\n')
+        stream.write('niterBelowStopProp ' + str(self.niterBelowStopProp)
+                     + '\n')
+        stream.write('extensionMode CONNECT_VOID CONNECT\n')
         if self.fix_random_seed:
             stream.write('randomSeed 10\n')
-        stream.write( '*END\n' )
+        stream.write('*END\n')
         stream.close()
         f = open(cfgfile)
-        context.log( 'siRelax input file', html=f.read() )
+        context.log('siRelax input file', html=f.read())
         f.close()
     if self.parent['manage_tasks']:
         self.parent['tasks'].append(progname + ' ' + cfgfile)
@@ -161,28 +169,28 @@ def execution( self, context ):
     else:
         context.system(progname, cfgfile)
         if self.forbid_unknown_label:
-            context.write( _t_( 'second pass to remove unknown labels...' ) )
-            stream = open(cfgfile, 'w' )
-            stream.write( '*BEGIN TREE 1.0 siRelax\n' )
-            stream.write( 'modelFile ' + self.model.fullPath() + '\n' )
-            stream.write( 'graphFile ' + self.output_graph.fullPath() + '\n' )
-            stream.write( 'output ' + self.output_graph.fullPath() + '\n' )
-            stream.write( 'plotfile ' + self.energy_plot_file.fullPath() \
-                              + '\n' )
-            stream.write( 'rate ' + str( self.rate ) + '\n' )
-            stream.write( 'stopRate ' + str( self.stopRate ) + '\n' )
-            stream.write( 'niterBelowStopProp ' + str( self.niterBelowStopProp ) \
-                          + '\n' )
-            stream.write( 'mode icm\n' )
-            stream.write( 'forbidVoidLabel 1\n' )
-            stream.write( 'initLabelsType NONE\n' )
-            stream.write( '*END\n' )
+            context.write(_t_('second pass to remove unknown labels...'))
+            stream = open(cfgfile, 'w')
+            stream.write('*BEGIN TREE 1.0 siRelax\n')
+            stream.write('modelFile ' + self.model.fullPath() + '\n')
+            stream.write('graphFile ' + self.output_graph.fullPath() + '\n')
+            stream.write('output ' + self.output_graph.fullPath() + '\n')
+            stream.write('plotfile ' + self.energy_plot_file.fullPath()
+                         + '\n')
+            stream.write('rate ' + str(self.rate) + '\n')
+            stream.write('stopRate ' + str(self.stopRate) + '\n')
+            stream.write('niterBelowStopProp ' + str(self.niterBelowStopProp)
+                         + '\n')
+            stream.write('mode icm\n')
+            stream.write('forbidVoidLabel 1\n')
+            stream.write('initLabelsType NONE\n')
+            stream.write('*END\n')
             stream.close()
             f = open(cfgfile)
-            context.log( 'siRelax input file for 2nd pass removing ' \
-                '"unknown" label', html=f.read() )
+            context.log('siRelax input file for 2nd pass removing '
+                        '"unknown" label', html=f.read())
             f.close()
             context.system(progname, cfgfile)
 
         trManager = registration.getTransformationManager()
-        trManager.copyReferential( self.data_graph, self.output_graph )
+        trManager.copyReferential(self.data_graph, self.output_graph)

@@ -164,7 +164,7 @@ class HistoAnalysisEditorWidget(QDialog):
         han = self.hwid.histodata.han
         if han[0][0] is None or self._palette is None:
             return  # no han
-        hmax = max( ( han[0][0] + han[0][1] ), ( han[1][0] + han[1][1] ) ) \
+        hmax = max((han[0][0] + han[0][1]), (han[1][0] + han[1][1])) \
             * 1.3
         factor = ncolors / (hmax + 1.)
         l = [int(round((han[0][0] - nstdg * han[0][1]) * factor)),

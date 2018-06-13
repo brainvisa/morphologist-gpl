@@ -39,45 +39,45 @@ userLevel = 2
 
 
 signature = Signature(
-  'graph', ReadDiskItem( 'Cortical folds graph', 'Graph'),
-  'hemi_cortex', ReadDiskItem( 'CSF+GREY Mask',
-      'Aims readable volume formats' ),
-  'GW_interface', ReadDiskItem( 'Grey White Mask',
-      'Aims readable volume formats' ),
-  'white_mesh', ReadDiskItem( 'Hemisphere White Mesh', 'Aims mesh formats' ),
-  'hemi_mesh', ReadDiskItem( 'Hemisphere Mesh', 'Aims mesh formats'),
-  'output_graph', WriteDiskItem ( 'Cortical folds graph', 'Graph'),
-  'write_mid_interface', Boolean(),
-  'output_mid_interface', WriteDiskItem ( 'Grey White Mid-Interface Volume',
-      'Aims writable volume formats' ),
-  'sulci_voronoi', ReadDiskItem ( 'Sulci Voronoi',
-    'Aims writable volume formats' ),
+    'graph', ReadDiskItem('Cortical folds graph', 'Graph'),
+    'hemi_cortex', ReadDiskItem('CSF+GREY Mask',
+                                'Aims readable volume formats'),
+    'GW_interface', ReadDiskItem('Grey White Mask',
+                                 'Aims readable volume formats'),
+    'white_mesh', ReadDiskItem('Hemisphere White Mesh', 'Aims mesh formats'),
+    'hemi_mesh', ReadDiskItem('Hemisphere Mesh', 'Aims mesh formats'),
+    'output_graph', WriteDiskItem('Cortical folds graph', 'Graph'),
+    'write_mid_interface', Boolean(),
+    'output_mid_interface', WriteDiskItem('Grey White Mid-Interface Volume',
+                                          'Aims writable volume formats'),
+    'sulci_voronoi', ReadDiskItem('Sulci Voronoi',
+                                  'Aims writable volume formats'),
 )
 
-def initialization( self ):
-  self.linkParameters( 'hemi_cortex', 'graph' )
-  self.linkParameters( 'GW_interface', 'hemi_cortex' )
-  self.linkParameters( 'white_mesh', 'hemi_cortex' )
-  self.linkParameters( 'hemi_mesh', 'white_mesh' )
-  self.linkParameters( 'output_graph', 'graph' )
-  self.linkParameters( 'output_mid_interface', 'hemi_cortex' )
-  self.setOptional( 'output_mid_interface' )
-  self.linkParameters( 'sulci_voronoi', 'graph' )
-  self.write_mid_interface = False
-  self.setOptional( 'sulci_voronoi' )
+
+def initialization(self):
+    self.linkParameters('hemi_cortex', 'graph')
+    self.linkParameters('GW_interface', 'hemi_cortex')
+    self.linkParameters('white_mesh', 'hemi_cortex')
+    self.linkParameters('hemi_mesh', 'white_mesh')
+    self.linkParameters('output_graph', 'graph')
+    self.linkParameters('output_mid_interface', 'hemi_cortex')
+    self.setOptional('output_mid_interface')
+    self.linkParameters('sulci_voronoi', 'graph')
+    self.write_mid_interface = False
+    self.setOptional('sulci_voronoi')
 
 
-def execution( self, context ):
-  cmd = [ 'AimsFoldsGraphThickness.py',
-    '-i', self.graph, '-c', self.hemi_cortex, '-g', self.GW_interface,
-    '-w', self.white_mesh, '-l', self.hemi_mesh, '-o', self.output_graph ]
-  if self.write_mid_interface is not None:
-    cmd += [ '-m', self.output_mid_interface ]
-  if self.sulci_voronoi is not None:
-    cmd += [ '-v', self.sulci_voronoi ]
-  context.pythonSystem( *cmd )
-  trManager = registration.getTransformationManager()
-  trManager.copyReferential( self.graph, self.output_graph )
-  if self.write_mid_interface is not None:
-    trManager.copyReferential( self.graph, self.output_mid_interface )
-
+def execution(self, context):
+    cmd = ['AimsFoldsGraphThickness.py',
+           '-i', self.graph, '-c', self.hemi_cortex, '-g', self.GW_interface,
+           '-w', self.white_mesh, '-l', self.hemi_mesh, '-o', self.output_graph]
+    if self.write_mid_interface is not None:
+        cmd += ['-m', self.output_mid_interface]
+    if self.sulci_voronoi is not None:
+        cmd += ['-v', self.sulci_voronoi]
+    context.pythonSystem(*cmd)
+    trManager = registration.getTransformationManager()
+    trManager.copyReferential(self.graph, self.output_graph)
+    if self.write_mid_interface is not None:
+        trManager.copyReferential(self.graph, self.output_mid_interface)

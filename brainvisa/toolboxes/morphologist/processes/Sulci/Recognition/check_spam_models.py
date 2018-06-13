@@ -51,11 +51,11 @@ def initialization(self):
 def execution(self, context):
     ap = Application()
     if not ap.configuration.sulci.check_spam_models:
-        return None # don't check, do nothing.
+        return None  # don't check, do nothing.
 
     models = list(ReadDiskItem(
         'Sulci Segments Model',
-        'Text Data Table' )._findValues({}, None, False))
+        'Text Data Table')._findValues({}, None, False))
     if len(models) == 0:
         # try upating the shared databases and retry
         for directory, db in databases._databases.items():
@@ -64,10 +64,10 @@ def execution(self, context):
                     db.clear()
                     db.update()
                 except:
-                    pass # could not update
+                    pass  # could not update
         models = list(ReadDiskItem(
-        'Sulci Segments Model',
-        'Text Data Table' )._findValues({}, None, False))
+            'Sulci Segments Model',
+            'Text Data Table')._findValues({}, None, False))
     context.write('models:', len(models))
     if len(models) == 0:
         context.warning(_t_('SPAM models have not be installed yet.'))
@@ -93,4 +93,3 @@ def execution(self, context):
     else:
         context.write(_t_('SPAM models are present.'))
         return True
-

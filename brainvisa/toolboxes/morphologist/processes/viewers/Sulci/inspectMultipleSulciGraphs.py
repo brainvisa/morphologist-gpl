@@ -41,6 +41,6 @@ signature = Signature(
                                   'Graph and Data')),
 )
 
+
 def execution(self, context):
     context.runProcess('inspectMultipleData', items=self.graphs)
-

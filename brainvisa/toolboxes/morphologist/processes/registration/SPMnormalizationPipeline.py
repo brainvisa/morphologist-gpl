@@ -36,22 +36,23 @@ from brainvisa import registration
 import sys
 
 name = 'SPM Normalization Pipeline'
-userLevel=1
+userLevel = 1
+
 
 def validation():
     try:
         from soma import aims
     except:
-        raise ValidationError( 'aims module not here' )
+        raise ValidationError('aims module not here')
     configuration = Application().configuration
     if configuration.SPM.spm8_standalone_command \
             and (configuration.SPM.spm8_standalone_mcr_path
                  or sys.platform == "win32"):
-        return # OK
+        return  # OK
     if configuration.SPM.spm12_standalone_command \
             and (configuration.SPM.spm12_standalone_mcr_path
                  or sys.platform == "win32"):
-        return # OK
+        return  # OK
     if not distutils.spawn.find_executable(configuration.matlab.executable):
         raise ValidationError('SPM standalone or matlab is not found')
     if not configuration.SPM.spm8_path and not configuration.SPM.spm12_path:
@@ -63,14 +64,14 @@ signature = Signature(
                           ['NIFTI-1 image', 'gz compressed NIFTI-1 image',
                            'SPM image']),
     'transformation',
-        WriteDiskItem('Transform Raw T1 MRI to Talairach-MNI template-SPM',
-                      'Transformation matrix'),
+    WriteDiskItem('Transform Raw T1 MRI to Talairach-MNI template-SPM',
+                  'Transformation matrix'),
     'spm_transformation', WriteDiskItem("SPM2 normalization matrix",
                                         'Matlab file'),
     'normalized_t1mri', WriteDiskItem("Raw T1 MRI",
                                       ['NIFTI-1 image', 'SPM image'],
-                                      {"normalization" : "SPM"}),
-    'template', ReadDiskItem( 'anatomical Template',
+                                      {"normalization": "SPM"}),
+    'template', ReadDiskItem('anatomical Template',
                              ['NIFTI-1 image', 'gz compressed NIFTI-1 image',
                               'MINC image']),
     #'set_transformation_in_source_volume', Boolean(),
@@ -78,7 +79,7 @@ signature = Signature(
     'allow_retry_initialization', Boolean(),
     'reoriented_t1mri', WriteDiskItem("Raw T1 MRI",
                                       'aims writable volume formats'),
-    'init_translation_origin', Choice(('Center of the image', 0 ),
+    'init_translation_origin', Choice(('Center of the image', 0),
                                       ('Gravity center', 1)),
     'voxel_size', Choice('[1 1 1]'),
     'cutoff_option', Integer(),
@@ -87,44 +88,47 @@ signature = Signature(
 
 
 class changeAllowFlip:
-    def __init__( self, proc ):
-        self.proc = weakref.proxy( proc )
-    def __call__( self, node ):
+    def __init__(self, proc):
+        self.proc = weakref.proxy(proc)
+
+    def __call__(self, node):
         #eNode = self.proc.executionNode()
         if node.isSelected():
             if not self.proc.allow_flip_initial_MRI:
                 self.proc.allow_flip_initial_MRI = True
-                #eNode.removeLink('transformation',
-                                #'ConvertSPMnormalizationToAIMS.write')
-                #eNode.removeLink('ConvertSPMnormalizationToAIMS.write',
-                                #'transformation')
-                #eNode.addDoubleLink('transformation',
-                                    #'ReorientAnatomy.output_transformation')
-                #eNode.addDoubleLink('reoriented_t1mri',
-                                    #'ReorientAnatomy.output_t1mri')
+                # eNode.removeLink('transformation',
+                #'ConvertSPMnormalizationToAIMS.write')
+                # eNode.removeLink('ConvertSPMnormalizationToAIMS.write',
+                #'transformation')
+                # eNode.addDoubleLink('transformation',
+                #'ReorientAnatomy.output_transformation')
+                # eNode.addDoubleLink('reoriented_t1mri',
+                #'ReorientAnatomy.output_t1mri')
                 #self.proc.transformation = eNode.ReorientAnatomy.output_transformation
         else:
             if self.proc.allow_flip_initial_MRI:
                 self.proc.allow_flip_initial_MRI = False
-                #eNode.removeLink('transformation',
-                                #'ReorientAnatomy.output_transformation')
-                #eNode.removeLink('ReorientAnatomy.output_transformation',
-                                #'transformation')
-                #eNode.addDoubleLink('transformation',
-                                    #'ConvertSPMnormalizationToAIMS.write')
-                #eNode.removeLink('reoriented_t1mri',
-                                #'ReorientAnatomy.output_t1mri')
-                #eNode.removeLink('ReorientAnatomy.output_t1mri',
-                                #'reoriented_t1mri')
+                # eNode.removeLink('transformation',
+                #'ReorientAnatomy.output_transformation')
+                # eNode.removeLink('ReorientAnatomy.output_transformation',
+                #'transformation')
+                # eNode.addDoubleLink('transformation',
+                #'ConvertSPMnormalizationToAIMS.write')
+                # eNode.removeLink('reoriented_t1mri',
+                #'ReorientAnatomy.output_t1mri')
+                # eNode.removeLink('ReorientAnatomy.output_t1mri',
+                #'reoriented_t1mri')
                 #self.proc.transformation = eNode.ConvertSPMnormalizationToAIMS.write
 
-def allowFlip( self, *args, **kwargs ):
+
+def allowFlip(self, *args, **kwargs):
     eNode = self.executionNode()
     s = eNode.ReorientAnatomy.isSelected()
     if s != self.allow_flip_initial_MRI:
-        eNode.ReorientAnatomy.setSelected( self.allow_flip_initial_MRI )
+        eNode.ReorientAnatomy.setSelected(self.allow_flip_initial_MRI)
 
-def initialization( self ):
+
+def initialization(self):
     # TODO:
     #     - link NormalizeSPM.normalized_anatomy_data to
     #       ConvertSPMnormalizationToAIMS.normalized_volume
@@ -172,19 +176,19 @@ def initialization( self ):
                 'normalized_t1mri')
             eNode.addDoubleLink(
                 'NormalizeSPM.%s.anatomical_template' % pname,
-                'template' )
+                'template')
             eNode.addDoubleLink(
                 'NormalizeSPM.%s.init_translation_origin' % pname,
-                'init_translation_origin' )
+                'init_translation_origin')
             eNode.addDoubleLink(
                 'NormalizeSPM.%s.cutoff_option' % pname,
-                'cutoff_option' )
+                'cutoff_option')
             eNode.addDoubleLink(
                 'NormalizeSPM.%s.nbiteration' % pname,
-                'nbiteration' )
+                'nbiteration')
             eNode.addDoubleLink(
                 'NormalizeSPM.%s.voxel_size' % pname,
-                'voxel_size' )
+                'voxel_size')
             if transproc is None:
                 transproc = getattr(sel_node, pname)
             sel_node.selection_outputs.append(['transformations_informations',
@@ -192,8 +196,8 @@ def initialization( self ):
 
     if transproc is None:
         raise ValidationError('No SPM process usable: please check if SPM, '
-            'the SPM toolbox for BrainVisa are installed, and SPM paths '
-            'configured in the preferences.')
+                              'the SPM toolbox for BrainVisa are installed, and SPM paths '
+                              'configured in the preferences.')
 
     sel_node.switch_output = ['spm_transformation', 'normalized_t1mri']
 
@@ -204,7 +208,7 @@ def initialization( self ):
                                         selected=False))
 
     eNode.ConvertSPMnormalizationToAIMS.removeLink('normalized_volume',
-                                                  'read')
+                                                   'read')
     eNode.ConvertSPMnormalizationToAIMS.removeLink('source_volume', 'read')
     #eNode.ConvertSPMnormalizationToAIMS.removeLink( 'write', 'source_volume' )
     eNode.ReorientAnatomy.removeLink('transformation', 't1mri')
@@ -217,13 +221,12 @@ def initialization( self ):
         ReadDiskItem(transinf.type.name, transinf.formats)
     eNode.ConvertSPMnormalizationToAIMS.signature['write'] = \
         WriteDiskItem('Transform Raw T1 MRI to Talairach-MNI template-SPM',
-                      'Transformation matrix' )
+                      'Transformation matrix')
     # force conversion to take exactly the same formats as the normalization
     # as input, because it uses the storage_to_memory matrix, which is
     # format-dependent
     eNode.ConvertSPMnormalizationToAIMS.signature['source_volume'].formats \
-      = transproc.signature['anatomy_data'].formats
-
+        = transproc.signature['anatomy_data'].formats
 
     eNode.addDoubleLink(
         'NormalizeSPM.%s.transformations_informations' % transproc.id(),
@@ -234,7 +237,7 @@ def initialization( self ):
 
     # this seems not to work automatically
     self.template = self.signature['template'].findValue(
-        {'databasename' : 'spm', 'skull_stripped' : 'no'})
+        {'databasename': 'spm', 'skull_stripped': 'no'})
 
     eNode.addDoubleLink('t1mri', 'ReorientAnatomy.t1mri')
     #eNode.addDoubleLink('transformation', 'ConvertSPMnormalizationToAIMS.write')
@@ -248,7 +251,7 @@ def initialization( self ):
 
     self.allow_flip_initial_MRI = True
     self.addLink(None, 'allow_flip_initial_MRI',
-                ExecutionNode.MethodCallbackProxy(self.allowFlip))
+                 ExecutionNode.MethodCallbackProxy(self.allowFlip))
     x = changeAllowFlip(self)
     eNode.ReorientAnatomy._selectionChange.add(x)
     self.allow_retry_initialization = True
@@ -256,4 +259,3 @@ def initialization( self ):
     self.nbiteration = 16
 
     self.capsul_do_not_export = [('ConvertSPMnormalizationToAIMS', 'write')]
-

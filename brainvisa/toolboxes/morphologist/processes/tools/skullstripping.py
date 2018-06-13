@@ -40,15 +40,15 @@ signature = Signature(
     't1mri', ReadDiskItem('Raw T1 MRI', 'Aims readable volume formats'),
     'brain_mask', ReadDiskItem('Brain Mask', 'Aims readable volume formats'),
     'skull_stripped', WriteDiskItem('Raw T1 MRI Brain Masked',
-        'Aims writable volume formats'),
+                                    'Aims writable volume formats'),
 )
 
-def initialization( self ):
+
+def initialization(self):
     self.linkParameters("brain_mask", "t1mri")
     self.linkParameters("skull_stripped", "t1mri")
 
-def execution( self, context ):
+
+def execution(self, context):
     context.system('AimsMask', '-i', self.t1mri, '-m', self.brain_mask,
-        '-o', self.skull_stripped)
-
-
+                   '-o', self.skull_stripped)

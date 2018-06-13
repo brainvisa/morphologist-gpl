@@ -37,91 +37,91 @@ name = 'AC/PC Or Normalization'
 userLevel = 0
 
 signature = Signature(
-  'T1mri', ReadDiskItem( "Raw T1 MRI", 'aims readable Volume Formats' ),
-  'commissure_coordinates', WriteDiskItem('Commissure coordinates',
-                                          'Commissure coordinates'),
-  'allow_flip_initial_MRI', Boolean(),
-  'reoriented_t1mri', WriteDiskItem('Raw T1 MRI',
-                                    'aims writable volume formats'),
-  )
+    'T1mri', ReadDiskItem("Raw T1 MRI", 'aims readable Volume Formats'),
+    'commissure_coordinates', WriteDiskItem('Commissure coordinates',
+                                            'Commissure coordinates'),
+    'allow_flip_initial_MRI', Boolean(),
+    'reoriented_t1mri', WriteDiskItem('Raw T1 MRI',
+                                      'aims writable volume formats'),
+)
 
-def initialization( self ):
-  try:
-    ps = getProcess( 'preparesubject' )
-  except:
-    ps = None
-  try:
-    np = getProcess( 'normalizationPipeline' )
-    np.validationDelayed()
-  except:
-    np = None
 
-  self.allow_flip_initial_MRI = False
+def initialization(self):
+    try:
+        ps = getProcess('preparesubject')
+    except:
+        ps = None
+    try:
+        np = getProcess('normalizationPipeline')
+        np.validationDelayed()
+    except:
+        np = None
 
-  eNode = SelectionExecutionNode( self.name, parameterized=self )
+    self.allow_flip_initial_MRI = False
 
-  # for "future" pipelines
-  self.selection_outputs = []
-  self.switch_output = ['commissure_coordinates', 'reoriented_t1mri',
-                        'talairach_transformation']
+    eNode = SelectionExecutionNode(self.name, parameterized=self)
 
-  if ps:
-    if np:
-      sel = 0
-    else:
-      sel = 1
-    eNode.addChild( 'StandardACPC',
-      ProcessExecutionNode( ps, selected=sel ) )
-    self.selection_outputs.append(['commissure_coordinates',
-                                   'reoriented_t1mri', None])
-
-    eNode.addDoubleLink('StandardACPC.T1mri', 'T1mri')
-    eNode.addDoubleLink('StandardACPC.commissure_coordinates',
-      'commissure_coordinates')
-    eNode.addDoubleLink('StandardACPC.allow_flip_initial_MRI',
-      'allow_flip_initial_MRI')
-    eNode.addDoubleLink('reoriented_t1mri', 'StandardACPC.reoriented_t1mri')
-
-  if np:
-    eNode1 = SerialExecutionNode( 'Normalization', selected=1 )
-    eNode1.addChild( 'Normalization',
-      ProcessExecutionNode( np ) )
-    eNode1.addChild( 'TalairachFromNormalization',
-      ProcessExecutionNode( 'TalairachTransformationFromNormalization' ) )
-    eNode.addChild( 'Normalization', eNode1 )
-
-    # eNode1.Normalization.removeLink( 'commissures_coordinates', 't1mri' )
-    # eNode1.addDoubleLink( 'Normalization.commissures_coordinates', 
-    #   'TalairachFromNormalization.commissure_coordinates' )
-    self.selection_outputs.append([
-      'TalairachFromNormalization.commissure_coordinates',
-      'Normalization.reoriented_t1mri',
-      'TalairachFromNormalization.Talairach_transform'])
-
-    eNode.addDoubleLink( 'Normalization.Normalization.t1mri', 'T1mri' )
-    eNode.addDoubleLink( 'Normalization.Normalization.allow_flip_initial_MRI',
-      'allow_flip_initial_MRI' )
-    eNode.addDoubleLink('reoriented_t1mri',
-                        'Normalization.Normalization.reoriented_t1mri')
+    # for "future" pipelines
+    self.selection_outputs = []
+    self.switch_output = ['commissure_coordinates', 'reoriented_t1mri',
+                          'talairach_transformation']
 
     if ps:
-      eNode1.TalairachFromNormalization.removeLink( 'commissure_coordinates',
-        'Talairach_transform' )
-    eNode1.TalairachFromNormalization.removeLink( 't1mri',
-                                                 'commissure_coordinates' )
+        if np:
+            sel = 0
+        else:
+            sel = 1
+        eNode.addChild('StandardACPC',
+                       ProcessExecutionNode(ps, selected=sel))
+        self.selection_outputs.append(['commissure_coordinates',
+                                       'reoriented_t1mri', None])
 
-    eNode.addDoubleLink('Normalization.Normalization.reoriented_t1mri',
-                        'Normalization.TalairachFromNormalization.t1mri')
-    eNode.addDoubleLink( \
-      'Normalization.TalairachFromNormalization.normalization_transformation',
-      'Normalization.Normalization.transformation' )
-    eNode.addDoubleLink( \
-      'Normalization.TalairachFromNormalization.commissure_coordinates',
-      'commissure_coordinates' )
+        eNode.addDoubleLink('StandardACPC.T1mri', 'T1mri')
+        eNode.addDoubleLink('StandardACPC.commissure_coordinates',
+                            'commissure_coordinates')
+        eNode.addDoubleLink('StandardACPC.allow_flip_initial_MRI',
+                            'allow_flip_initial_MRI')
+        eNode.addDoubleLink('reoriented_t1mri',
+                            'StandardACPC.reoriented_t1mri')
 
-  self.setExecutionNode( eNode )
+    if np:
+        eNode1 = SerialExecutionNode('Normalization', selected=1)
+        eNode1.addChild('Normalization',
+                        ProcessExecutionNode(np))
+        eNode1.addChild('TalairachFromNormalization',
+                        ProcessExecutionNode('TalairachTransformationFromNormalization'))
+        eNode.addChild('Normalization', eNode1)
 
-  self.capsul_do_not_export = [
-    ('Normalization', 'output_commissures_coordinates'),]
+        # eNode1.Normalization.removeLink( 'commissures_coordinates', 't1mri' )
+        # eNode1.addDoubleLink( 'Normalization.commissures_coordinates',
+        #   'TalairachFromNormalization.commissure_coordinates' )
+        self.selection_outputs.append([
+            'TalairachFromNormalization.commissure_coordinates',
+            'Normalization.reoriented_t1mri',
+            'TalairachFromNormalization.Talairach_transform'])
 
+        eNode.addDoubleLink('Normalization.Normalization.t1mri', 'T1mri')
+        eNode.addDoubleLink('Normalization.Normalization.allow_flip_initial_MRI',
+                            'allow_flip_initial_MRI')
+        eNode.addDoubleLink('reoriented_t1mri',
+                            'Normalization.Normalization.reoriented_t1mri')
 
+        if ps:
+            eNode1.TalairachFromNormalization.removeLink('commissure_coordinates',
+                                                         'Talairach_transform')
+        eNode1.TalairachFromNormalization.removeLink('t1mri',
+                                                     'commissure_coordinates')
+
+        eNode.addDoubleLink('Normalization.Normalization.reoriented_t1mri',
+                            'Normalization.TalairachFromNormalization.t1mri')
+        eNode.addDoubleLink(
+            'Normalization.TalairachFromNormalization.normalization_transformation',
+            'Normalization.Normalization.transformation')
+        eNode.addDoubleLink(
+            'Normalization.TalairachFromNormalization.commissure_coordinates',
+            'commissure_coordinates')
+
+    self.setExecutionNode(eNode)
+
+    self.capsul_do_not_export = [
+        ('Normalization', 'output_commissures_coordinates'), ]

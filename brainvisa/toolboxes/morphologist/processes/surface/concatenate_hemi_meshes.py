@@ -39,19 +39,20 @@ userLevel = 0
 signature = Signature(
     'left_mesh', ReadDiskItem('Mesh', 'aims mesh formats',
                               requiredAttributes={'side': 'left'}),
-    'right_mesh',ReadDiskItem('Mesh', 'aims mesh formats',
-                              requiredAttributes={'side': 'right'}),
+    'right_mesh', ReadDiskItem('Mesh', 'aims mesh formats',
+                               requiredAttributes={'side': 'right'}),
     'both_mesh', WriteDiskItem('Mesh', 'aims mesh formats',
                                requiredAttributes={'side': 'both'}),
 )
 
+
 def initialization(self):
-    self.linkParameters('right_mesh','left_mesh' )
-    self.linkParameters('both_mesh','left_mesh' )
+    self.linkParameters('right_mesh', 'left_mesh')
+    self.linkParameters('both_mesh', 'left_mesh')
+
 
 def execution(self, context):
     context.system('AimsZCat', '-i', self.left_mesh, '-i', self.right_mesh,
                    '-o', self.both_mesh)
     tm = registration.getTransformationManager()
     tm.copyReferential(self.left_mesh, self.both_mesh)
-

@@ -35,150 +35,156 @@ from brainvisa.processes import *
 from brainvisa import registration
 
 name = 'FSL Normalization Pipeline'
-userLevel=1
+userLevel = 1
+
 
 def validation():
-  try:
-    from soma import aims
-  except:
-    raise ValidationError( 'aims module not here' )
-  configuration = Application().configuration
-  import distutils.spawn
-  if not distutils.spawn.find_executable( \
-    configuration.FSL.fsl_commands_prefix + 'flirt' ):
-    raise ValidationError(_t_('FSL flirt commandline could not be found'))
-  # the previous test seems not to be good enough...
-  try:
-    di = ReadDiskItem( 'anatomical Template', ['NIFTI-1 image', 'gz compressed NIFTI-1 image'] )
-  except ValueError:
-    raise ValidationError( 'FSL templates could not be found.' )
+    try:
+        from soma import aims
+    except:
+        raise ValidationError('aims module not here')
+    configuration = Application().configuration
+    import distutils.spawn
+    if not distutils.spawn.find_executable(
+            configuration.FSL.fsl_commands_prefix + 'flirt'):
+        raise ValidationError(_t_('FSL flirt commandline could not be found'))
+    # the previous test seems not to be good enough...
+    try:
+        di = ReadDiskItem('anatomical Template', [
+                          'NIFTI-1 image', 'gz compressed NIFTI-1 image'])
+    except ValueError:
+        raise ValidationError('FSL templates could not be found.')
+
 
 signature = Signature(
-  't1mri', ReadDiskItem( 'Raw T1 MRI',
-    ['NIFTI-1 image', 'gz compressed NIFTI-1 image'] ),
-  'transformation',
-    WriteDiskItem( 'Transform Raw T1 MRI to Talairach-MNI template-SPM',
-      'Transformation matrix' ),
-  'template', ReadDiskItem( "anatomical Template",
-    ['NIFTI-1 image', 'gz compressed NIFTI-1 image'] ),
-  'alignment', Choice('Already Virtualy Aligned',
-    'Not Aligned but Same Orientation', 'Incorrectly Oriented'),
-  'set_transformation_in_source_volume', Boolean(),
-  'allow_flip_initial_MRI', Boolean(), 
-  'allow_retry_initialization', Boolean(),
-  'reoriented_t1mri', WriteDiskItem("Raw T1 MRI",
-                                    'aims writable volume formats'),
+    't1mri', ReadDiskItem('Raw T1 MRI',
+                          ['NIFTI-1 image', 'gz compressed NIFTI-1 image']),
+    'transformation',
+    WriteDiskItem('Transform Raw T1 MRI to Talairach-MNI template-SPM',
+                  'Transformation matrix'),
+    'template', ReadDiskItem("anatomical Template",
+                             ['NIFTI-1 image', 'gz compressed NIFTI-1 image']),
+    'alignment', Choice('Already Virtualy Aligned',
+                        'Not Aligned but Same Orientation', 'Incorrectly Oriented'),
+    'set_transformation_in_source_volume', Boolean(),
+    'allow_flip_initial_MRI', Boolean(),
+    'allow_retry_initialization', Boolean(),
+    'reoriented_t1mri', WriteDiskItem("Raw T1 MRI",
+                                      'aims writable volume formats'),
 )
 
 
 class changeAllowFlip:
-  def __init__( self, proc ):
-    self.proc = weakref.proxy( proc )
-  def __call__( self, node ):
-    #eNode = self.proc.executionNode()
-    if node.isSelected():
-      if not self.proc.allow_flip_initial_MRI:
-        self.proc.allow_flip_initial_MRI = True
-        #eNode.removeLink('transformation',
-                         #'ConvertFSLnormalizationToAIMS.write')
-        #eNode.removeLink('ConvertFSLnormalizationToAIMS.write',
-                         #'transformation')
-        #eNode.addDoubleLink('transformation',
-                            #'ReorientAnatomy.output_transformation')
-        ##eNode.addDoubleLink('reoriented_t1mri',
-                            ##'ReorientAnatomy.output_t1mri')
-        #self.proc.transformation = eNode.ReorientAnatomy.output_transformation
-        ##self.proc.reoriented_t1mri =  eNode.ReorientAnatomy.output_t1mri
-    else:
-      if self.proc.allow_flip_initial_MRI:
-        self.proc.allow_flip_initial_MRI = False
-        #eNode.removeLink('transformation',
-                         #'ReorientAnatomy.output_transformation')
-        #eNode.removeLink('ReorientAnatomy.output_transformation',
-                         #'transformation')
-        #eNode.addDoubleLink('transformation',
-                            #'ConvertFSLnormalizationToAIMS.write')
-        #eNode.removeLink('reoriented_t1mri',
-                         #'ReorientAnatomy.output_t1mri')
-        ##eNode.removeLink('ReorientAnatomy.output_t1mri',
-                         ##'reoriented_t1mri')
-        #self.proc.transformation = eNode.ConvertFSLnormalizationToAIMS.write
-        #self.proc.reoriented_t1mri = self.t1mri
+    def __init__(self, proc):
+        self.proc = weakref.proxy(proc)
 
-def allowFlip( self, *args, **kwargs ):
-  eNode = self.executionNode()
-  s = eNode.ReorientAnatomy.isSelected()
-  if s != self.allow_flip_initial_MRI:
-    eNode.ReorientAnatomy.setSelected( self.allow_flip_initial_MRI )
+    def __call__(self, node):
+        #eNode = self.proc.executionNode()
+        if node.isSelected():
+            if not self.proc.allow_flip_initial_MRI:
+                self.proc.allow_flip_initial_MRI = True
+                # eNode.removeLink('transformation',
+                #'ConvertFSLnormalizationToAIMS.write')
+                # eNode.removeLink('ConvertFSLnormalizationToAIMS.write',
+                #'transformation')
+                # eNode.addDoubleLink('transformation',
+                #'ReorientAnatomy.output_transformation')
+                # eNode.addDoubleLink('reoriented_t1mri',
+                # 'ReorientAnatomy.output_t1mri')
+                #self.proc.transformation = eNode.ReorientAnatomy.output_transformation
+                ##self.proc.reoriented_t1mri =  eNode.ReorientAnatomy.output_t1mri
+        else:
+            if self.proc.allow_flip_initial_MRI:
+                self.proc.allow_flip_initial_MRI = False
+                # eNode.removeLink('transformation',
+                #'ReorientAnatomy.output_transformation')
+                # eNode.removeLink('ReorientAnatomy.output_transformation',
+                #'transformation')
+                # eNode.addDoubleLink('transformation',
+                #'ConvertFSLnormalizationToAIMS.write')
+                # eNode.removeLink('reoriented_t1mri',
+                #'ReorientAnatomy.output_t1mri')
+                # eNode.removeLink('ReorientAnatomy.output_t1mri',
+                # 'reoriented_t1mri')
+                #self.proc.transformation = eNode.ConvertFSLnormalizationToAIMS.write
+                #self.proc.reoriented_t1mri = self.t1mri
 
-def initialization( self ):
-  self.linkParameters( 'transformation', 't1mri' )
-  self.linkParameters( 'reoriented_t1mri', 't1mri' )
 
-  eNode = SerialExecutionNode( self.name, parameterized=self )
+def allowFlip(self, *args, **kwargs):
+    eNode = self.executionNode()
+    s = eNode.ReorientAnatomy.isSelected()
+    if s != self.allow_flip_initial_MRI:
+        eNode.ReorientAnatomy.setSelected(self.allow_flip_initial_MRI)
 
-  eNode.addChild( 'NormalizeFSL',
-                  ProcessExecutionNode( 'Normalization_FSL_reinit' ) )
-  eNode.addChild( 'ConvertFSLnormalizationToAIMS',
-                  ProcessExecutionNode( 'FSLnormalizationToAims' ) )
-  eNode.addChild( 'ReorientAnatomy',
-                  ProcessExecutionNode( 'reorientAnatomy', optional=True,
-                  selected=False ) )
 
-  eNode.ConvertFSLnormalizationToAIMS.removeLink( 'registered_volume',
-    'read' )
-  eNode.ConvertFSLnormalizationToAIMS.removeLink( 'source_volume', 'read' )
-  #eNode.ConvertFSLnormalizationToAIMS.removeLink( 'write', 'source_volume' )
-  eNode.ReorientAnatomy.removeLink( 'transformation', 't1mri' )
-  eNode.ReorientAnatomy.removeLink( 'output_t1mri', 't1mri' )
-  eNode.ReorientAnatomy.removeLink( 'output_transformation', 'output_t1mri' )
+def initialization(self):
+    self.linkParameters('transformation', 't1mri')
+    self.linkParameters('reoriented_t1mri', 't1mri')
 
-  # fix transformation_matrix type
-  eNode.NormalizeFSL.signature[ 'transformation_matrix' ] = \
-    WriteDiskItem( 'FSL transformation', 'Matlab file' )
-  eNode.addDoubleLink( 'NormalizeFSL.anatomy_data', 't1mri' )
-  eNode.addDoubleLink( 'NormalizeFSL.allow_retry_initialization',
-    'allow_retry_initialization' )
-  eNode.addDoubleLink( 'NormalizeFSL.anatomical_template', 'template' )
-  eNode.addDoubleLink( 'NormalizeFSL.Alignment', 'alignment' )
+    eNode = SerialExecutionNode(self.name, parameterized=self)
 
-  # fix registered_volume type
-  eNode.ConvertFSLnormalizationToAIMS.signature[ 'registered_volume' ] = \
-    ReadDiskItem( "anatomical Template",
-      ['NIFTI-1 image', 'gz compressed NIFTI-1 image'] )
-  tm = eNode.NormalizeFSL.signature[ 'transformation_matrix' ]
-  eNode.ConvertFSLnormalizationToAIMS.signature[ 'read' ] = \
-    ReadDiskItem( tm.type.name, tm.formats )
-  eNode.addDoubleLink('ConvertFSLnormalizationToAIMS.source_volume', 't1mri')
-  eNode.addDoubleLink('ConvertFSLnormalizationToAIMS.write',
-                      'ReorientAnatomy.transformation')
+    eNode.addChild('NormalizeFSL',
+                   ProcessExecutionNode('Normalization_FSL_reinit'))
+    eNode.addChild('ConvertFSLnormalizationToAIMS',
+                   ProcessExecutionNode('FSLnormalizationToAims'))
+    eNode.addChild('ReorientAnatomy',
+                   ProcessExecutionNode('reorientAnatomy', optional=True,
+                                        selected=False))
 
-  eNode.addDoubleLink( \
-    'ConvertFSLnormalizationToAIMS.set_transformation_in_source_volume',
-    'set_transformation_in_source_volume' )
+    eNode.ConvertFSLnormalizationToAIMS.removeLink('registered_volume',
+                                                   'read')
+    eNode.ConvertFSLnormalizationToAIMS.removeLink('source_volume', 'read')
+    #eNode.ConvertFSLnormalizationToAIMS.removeLink( 'write', 'source_volume' )
+    eNode.ReorientAnatomy.removeLink('transformation', 't1mri')
+    eNode.ReorientAnatomy.removeLink('output_t1mri', 't1mri')
+    eNode.ReorientAnatomy.removeLink('output_transformation', 'output_t1mri')
 
-  eNode.addDoubleLink( 'template',
-    'ConvertFSLnormalizationToAIMS.registered_volume' )
-  eNode.addDoubleLink( 'NormalizeFSL.transformation_matrix',
-    'ConvertFSLnormalizationToAIMS.read' )
+    # fix transformation_matrix type
+    eNode.NormalizeFSL.signature['transformation_matrix'] = \
+        WriteDiskItem('FSL transformation', 'Matlab file')
+    eNode.addDoubleLink('NormalizeFSL.anatomy_data', 't1mri')
+    eNode.addDoubleLink('NormalizeFSL.allow_retry_initialization',
+                        'allow_retry_initialization')
+    eNode.addDoubleLink('NormalizeFSL.anatomical_template', 'template')
+    eNode.addDoubleLink('NormalizeFSL.Alignment', 'alignment')
 
-  eNode.addDoubleLink( 't1mri', 'ReorientAnatomy.t1mri' )
-  #eNode.addDoubleLink('transformation', 'ConvertFSLnormalizationToAIMS.write')
-  eNode.addDoubleLink('transformation',
-                      'ReorientAnatomy.output_transformation')
-  eNode.addDoubleLink( 'allow_flip_initial_MRI',
-    'ReorientAnatomy.allow_flip_initial_MRI' )
-  eNode.addDoubleLink('reoriented_t1mri', 'ReorientAnatomy.output_t1mri')
+    # fix registered_volume type
+    eNode.ConvertFSLnormalizationToAIMS.signature['registered_volume'] = \
+        ReadDiskItem("anatomical Template",
+                     ['NIFTI-1 image', 'gz compressed NIFTI-1 image'])
+    tm = eNode.NormalizeFSL.signature['transformation_matrix']
+    eNode.ConvertFSLnormalizationToAIMS.signature['read'] = \
+        ReadDiskItem(tm.type.name, tm.formats)
+    eNode.addDoubleLink('ConvertFSLnormalizationToAIMS.source_volume', 't1mri')
+    eNode.addDoubleLink('ConvertFSLnormalizationToAIMS.write',
+                        'ReorientAnatomy.transformation')
 
-  # this seems not to work automatically
-  self.alignment = 'Not Aligned but Same Orientation'
-  self.template = self.signature[ 'template' ].findValue( {} )
+    eNode.addDoubleLink(
+        'ConvertFSLnormalizationToAIMS.set_transformation_in_source_volume',
+        'set_transformation_in_source_volume')
 
-  self.setExecutionNode( eNode )
+    eNode.addDoubleLink('template',
+                        'ConvertFSLnormalizationToAIMS.registered_volume')
+    eNode.addDoubleLink('NormalizeFSL.transformation_matrix',
+                        'ConvertFSLnormalizationToAIMS.read')
 
-  self.allow_flip_initial_MRI = True
-  self.addLink( None, 'allow_flip_initial_MRI',
-    ExecutionNode.MethodCallbackProxy( self.allowFlip ) )
-  x = changeAllowFlip( self )
-  eNode.ReorientAnatomy._selectionChange.add( x )
-  self.allow_retry_initialization = True
+    eNode.addDoubleLink('t1mri', 'ReorientAnatomy.t1mri')
+    #eNode.addDoubleLink('transformation', 'ConvertFSLnormalizationToAIMS.write')
+    eNode.addDoubleLink('transformation',
+                        'ReorientAnatomy.output_transformation')
+    eNode.addDoubleLink('allow_flip_initial_MRI',
+                        'ReorientAnatomy.allow_flip_initial_MRI')
+    eNode.addDoubleLink('reoriented_t1mri', 'ReorientAnatomy.output_t1mri')
+
+    # this seems not to work automatically
+    self.alignment = 'Not Aligned but Same Orientation'
+    self.template = self.signature['template'].findValue({})
+
+    self.setExecutionNode(eNode)
+
+    self.allow_flip_initial_MRI = True
+    self.addLink(None, 'allow_flip_initial_MRI',
+                 ExecutionNode.MethodCallbackProxy(self.allowFlip))
+    x = changeAllowFlip(self)
+    eNode.ReorientAnatomy._selectionChange.add(x)
+    self.allow_retry_initialization = True

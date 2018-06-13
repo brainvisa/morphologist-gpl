@@ -8,9 +8,9 @@
 #
 # This software is governed by the CeCILL license version 2 under
 # French law and abiding by the rules of distribution of free software.
-# You can  use, modify and/or redistribute the software under the 
+# You can  use, modify and/or redistribute the software under the
 # terms of the CeCILL license version 2 as circulated by CEA, CNRS
-# and INRIA at the following URL "http://www.cecill.info". 
+# and INRIA at the following URL "http://www.cecill.info".
 #
 # As a counterpart to the access to the source code and  rights to copy,
 # modify and redistribute granted by the license, users are provided only
@@ -25,8 +25,8 @@
 # therefore means  that it is reserved for developers  and  experienced
 # professionals having in-depth computer knowledge. Users are therefore
 # encouraged to load and test the software's suitability as regards their
-# requirements in conditions enabling the security of their systems and/or 
-# data to be ensured and,  more generally, to use and operate it in the 
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
 # same conditions as regards security.
 #
 # The fact that you are presently reading this means that you have had
@@ -39,48 +39,51 @@ name = 'Volumic Sulcus SPAM'
 userLevel = 1
 
 signature = Signature(
-    'graphs', ListOf( ReadDiskItem( 'Cortical folds graph', 'Graph' ) ),
-    'mri', ReadDiskItem( '3D Volume', 'Aims readable volume formats' ),
-    'SPAM', WriteDiskItem( '3D Volume', 'Aims writable volume formats' ),
-    'smoothing', Choice('Yes','No'),
+    'graphs', ListOf(ReadDiskItem('Cortical folds graph', 'Graph')),
+    'mri', ReadDiskItem('3D Volume', 'Aims readable volume formats'),
+    'SPAM', WriteDiskItem('3D Volume', 'Aims writable volume formats'),
+    'smoothing', Choice('Yes', 'No'),
     'smoothing_parameter', Float(),
-    'bucket',Choice( 'custom', 'Sulci', 'Simple Surfaces','Bottoms',
-                     'Junctions with brain hull' ),
+    'bucket', Choice('custom', 'Sulci', 'Simple Surfaces', 'Bottoms',
+                     'Junctions with brain hull'),
     'custom_buckets', String(),
-    'label_translation',ReadDiskItem('Label Translation','Label Translation' ),
-    'int_to_label_translation', WriteDiskItem( 'log file', 'log file' ),
-    'label_attributes', Choice( 'custom', '(label, name)', 'label', 'name' ), 
+    'label_translation', ReadDiskItem(
+        'Label Translation', 'Label Translation'),
+    'int_to_label_translation', WriteDiskItem('log file', 'log file'),
+    'label_attributes', Choice('custom', '(label, name)', 'label', 'name'),
     'custom_label_attributes', String(),
-    'node_edge_types', Choice( 'All', 'custom',
-                               'Nodes (fold, cluster, roi, nucleus)',
-                               'Relations (junction, cortical, etc.)'), 
+    'node_edge_types', Choice('All', 'custom',
+                              'Nodes (fold, cluster, roi, nucleus)',
+                              'Relations (junction, cortical, etc.)'),
     'custom_node_edge_types', String(),
-    'label_values', String(), 
+    'label_values', String(),
 )
 
-def initialization( self ):
-     self.bucket = 'Sulci'
-     self.smoothing = 'Yes'
-     self.label_attributes = '(label, name)'
-     self.setOptional( 'mri' )
-     self.setOptional( 'label_translation' )
-     self.setOptional( 'int_to_label_translation' )
-     self.setOptional( 'custom_buckets' )
-     self.setOptional( 'custom_node_edge_types' )
-     self.setOptional( 'custom_label_attributes' )
-     self.setOptional( 'label_values' )
-     self.smoothing_parameter = 0.25
 
-def execution( self, context ):
+def initialization(self):
+    self.bucket = 'Sulci'
+    self.smoothing = 'Yes'
+    self.label_attributes = '(label, name)'
+    self.setOptional('mri')
+    self.setOptional('label_translation')
+    self.setOptional('int_to_label_translation')
+    self.setOptional('custom_buckets')
+    self.setOptional('custom_node_edge_types')
+    self.setOptional('custom_label_attributes')
+    self.setOptional('label_values')
+    self.smoothing_parameter = 0.25
 
-    NbGraph =  len( self.graphs )
+
+def execution(self, context):
+
+    NbGraph = len(self.graphs)
     inc = 1
     context.write('Number of graphs: ', NbGraph)
     if NbGraph == 0:
-        raise Exception( _t_( 'argument <em>graph</em> should not be ' \
-                              'empty' ) )
+        raise Exception(_t_('argument <em>graph</em> should not be '
+                            'empty'))
 
-    temp = context.temporary( 'NIFTI-1 Image' )
+    temp = context.temporary('NIFTI-1 Image')
     ok = 0
     if self.mri is not None:
         f = aims.Finder()
@@ -102,69 +105,69 @@ def execution( self, context ):
         context.write('Subject : ', graph.get('subject'), '(', inc, '/',
                       NbGraph, ')')
 
-        cmd = [ 'siGraph2Label', '-g', graph.fullPath() ]
+        cmd = ['siGraph2Label', '-g', graph.fullPath()]
 
-        #if self.mri is not None:
-              #cmd += [ '-tv', self.mri.fullPath() ]
+        # if self.mri is not None:
+        #cmd += [ '-tv', self.mri.fullPath() ]
 
         if self.label_translation is not None:
-              cmd += [ '-tr', self.label_translation.fullPath() ]
+            cmd += ['-tr', self.label_translation.fullPath()]
 
         if self.label_attributes == 'custom':
-              if self.custom_label_attributes:
-                  la = string.split( self.custom_label_attributes )
-              else:
-                  la = ()
+            if self.custom_label_attributes:
+                la = string.split(self.custom_label_attributes)
+            else:
+                la = ()
         elif self.label_attributes == '(label, name)':
-              la = ()
+            la = ()
         else:
-              la = ( self.label_attributes, )
+            la = (self.label_attributes, )
         for i in la:
-              cmd += [ '-a', i ]
+            cmd += ['-a', i]
 
         if self.int_to_label_translation is not None:
-              cmd += [ '-ot', self.int_to_label_translation.fullPath() ]
+            cmd += ['-ot', self.int_to_label_translation.fullPath()]
 
         a = ()
         if self.node_edge_types == 'custom':
-              if self.custom_node_edge_types:
-                  a = string.split( self.custom_node_edge_types )
+            if self.custom_node_edge_types:
+                a = string.split(self.custom_node_edge_types)
         elif self.node_edge_types == 'Nodes (fold, cluster, roi, nucleus)':
-              a = ( 'fold', 'cluster', 'roi', 'nucleus' )
+            a = ('fold', 'cluster', 'roi', 'nucleus')
         elif self.node_edge_types == 'Relations (junction, cortical, etc.)':
-              a = ( 'junction', 'cortical', 'hull_junction', 'plidepassage',
-              'scalebloblink', 'blob_saddle_link', 'roi_junction', )
+            a = ('junction', 'cortical', 'hull_junction', 'plidepassage',
+                 'scalebloblink', 'blob_saddle_link', 'roi_junction', )
         for i in a:
-              cmd += [ '-s', i ]
+            cmd += ['-s', i]
 
         if self.label_values:
-            a = string.split( self.label_values )
+            a = string.split(self.label_values)
             for i in a:
-                cmd += [ '-l', i ]
+                cmd += ['-l', i]
 
         if self.bucket == 'custom':
             if not self.custom_buckets:
-                raise Exception( '<em>custom_buckets</em> must be non-empty '
-                            'in custom bucket mode' )
-            cmd += ['-o', self.temp ]
-            a = string.split( self.custom_buckets )
+                raise Exception('<em>custom_buckets</em> must be non-empty '
+                                'in custom bucket mode')
+            cmd += ['-o', self.temp]
+            a = string.split(self.custom_buckets)
             for i in a:
-                cmd += [ '-b', i ]
+                cmd += ['-b', i]
         else:
             if self.bucket in ('Sulci',):
-                cmd += [ '-o', temp, '-b', 'aims_ss', '-b', 'aims_bottom',
-                        '-b', 'aims_other' ]
+                cmd += ['-o', temp, '-b', 'aims_ss', '-b', 'aims_bottom',
+                        '-b', 'aims_other']
             if self.bucket in ('Bottoms',):
-                cmd += [ '-o', temp, '-b', 'aims_bottom' ]
+                cmd += ['-o', temp, '-b', 'aims_bottom']
             if self.bucket in ('Junctions with brain hull',):
-                cmd += [ '-o', temp, '-b',
-                          'aims_junction', '-s', 'hull_junction' ]
+                cmd += ['-o', temp, '-b',
+                        'aims_junction', '-s', 'hull_junction']
             if self.bucket in ('Simple Surfaces',):
-                cmd += [ '-o',temp, '-b', 'aims_ss' ]
-        context.system( *cmd )
-        context.system('AimsThreshold', '-i',temp,'-m', 'gt', '-t', '0',
-                       '-b','-o', temp )
-        context.system('AimsReplaceLevel', '-i',temp,'-g','32767', '-n', '1',
+                cmd += ['-o', temp, '-b', 'aims_ss']
+        context.system(*cmd)
+        context.system('AimsThreshold', '-i', temp, '-m', 'gt', '-t', '0',
+                       '-b', '-o', temp)
+        context.system('AimsReplaceLevel', '-i', temp, '-g', '32767', '-n', '1',
                        '-o', temp)
         # Talairach transform
         aims_graph = aims.read(graph.fullPath())
@@ -189,23 +192,22 @@ def execution( self, context ):
             context.system('cartoLinearComb.py', '-i', temp,
                            '-i', self.SPAM.fullPath(),
                            '-f', 'I1+I2',
-                           '-o', self.SPAM.fullPath() )
+                           '-o', self.SPAM.fullPath())
 
         inc = inc + 1
 
-    context.system('cartoLinearComb.py', '-i',self.SPAM.fullPath(),
+    context.system('cartoLinearComb.py', '-i', self.SPAM.fullPath(),
                    '-f', 'I1 * 100. / %f' % NbGraph,
-                   '-o', self.SPAM.fullPath() )
-    if self.smoothing == 'Yes' :
-        context.system('AimsFileConvert', '-i',self.SPAM.fullPath(),
-                       '-o',self.SPAM.fullPath(), '-t', 'FLOAT' )
-        context.system('AimsImageSmoothing', '-i',self.SPAM.fullPath(),
-                       '-o',self.SPAM.fullPath(),
-                       '-t', self.smoothing_parameter, '-s', '0' )
+                   '-o', self.SPAM.fullPath())
+    if self.smoothing == 'Yes':
+        context.system('AimsFileConvert', '-i', self.SPAM.fullPath(),
+                       '-o', self.SPAM.fullPath(), '-t', 'FLOAT')
+        context.system('AimsImageSmoothing', '-i', self.SPAM.fullPath(),
+                       '-o', self.SPAM.fullPath(),
+                       '-t', self.smoothing_parameter, '-s', '0')
     res_vol = aims.read(self.SPAM.fullPath())
     res_vol.header()['referentials'] \
         = [aims.StandardReferentials.acPcReferentialID()]
     res_vol.header()['transformations'] \
         = [list(translation.inverse().toVector())]
     aims.write(res_vol, self.SPAM.fullPath())
-

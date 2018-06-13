@@ -7,9 +7,9 @@
 #
 # This software is governed by the CeCILL license version 2 under
 # French law and abiding by the rules of distribution of free software.
-# You can  use, modify and/or redistribute the software under the 
+# You can  use, modify and/or redistribute the software under the
 # terms of the CeCILL license version 2 as circulated by CEA, CNRS
-# and INRIA at the following URL "http://www.cecill.info". 
+# and INRIA at the following URL "http://www.cecill.info".
 #
 # As a counterpart to the access to the source code and  rights to copy,
 # modify and redistribute granted by the license, users are provided only
@@ -24,8 +24,8 @@
 # therefore means  that it is reserved for developers  and  experienced
 # professionals having in-depth computer knowledge. Users are therefore
 # encouraged to load and test the software's suitability as regards their
-# requirements in conditions enabling the security of their systems and/or 
-# data to be ensured and,  more generally, to use and operate it in the 
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
 # same conditions as regards security.
 #
 # The fact that you are presently reading this means that you have had
@@ -36,106 +36,106 @@ name = 'Split Brain Mask'
 userLevel = 2
 
 signature = Signature(
-  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
-      'Aims readable volume formats' ),
-  'split_mask', WriteDiskItem( 'Split Brain Mask',
-      'Aims writable volume formats' ),
-  'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-  'brain_mask', ReadDiskItem( 'T1 Brain Mask',
-      'Aims readable volume formats' ),
-  'use_template', Boolean(),
-  'split_template', ReadDiskItem( 'Hemispheres Template',
-      'Aims readable volume formats' ),
-  'commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
-      'Commissure coordinates'),
-  'use_ridges', Boolean(),
-  'white_ridges', ReadDiskItem( "T1 MRI White Matter Ridges",
-      'Aims readable volume formats' ),
+    'mri_corrected', ReadDiskItem('T1 MRI Bias Corrected',
+                                  'Aims readable volume formats'),
+    'split_mask', WriteDiskItem('Split Brain Mask',
+                                'Aims writable volume formats'),
+    'histo_analysis', ReadDiskItem('Histo Analysis', 'Histo Analysis'),
+    'brain_mask', ReadDiskItem('T1 Brain Mask',
+                               'Aims readable volume formats'),
+    'use_template', Boolean(),
+    'split_template', ReadDiskItem('Hemispheres Template',
+                                   'Aims readable volume formats'),
+    'commissure_coordinates', ReadDiskItem('Commissure coordinates',
+                                           'Commissure coordinates'),
+    'use_ridges', Boolean(),
+    'white_ridges', ReadDiskItem("T1 MRI White Matter Ridges",
+                                 'Aims readable volume formats'),
 )
 
 
-def initialization( self ):
-  self.setOptional('white_ridges')
-  self.split_template = self.signature[ 'split_template' ].findValue( {} )
-  self.use_template = "True"
-  self.setOptional('split_template')
-  self.setOptional('commissure_coordinates')
+def initialization(self):
+    self.setOptional('white_ridges')
+    self.split_template = self.signature['split_template'].findValue({})
+    self.use_template = "True"
+    self.setOptional('split_template')
+    self.setOptional('commissure_coordinates')
 
-  # create nodes
+    # create nodes
 
-  eNode = SelectionExecutionNode( self.name, parameterized = self )
-  eNode.addChild( 'SplitBrain05', 
-                  ProcessExecutionNode( 'SplitBrain', selected = 1 ) )
-  eNode.addChild( 'SplitBrain04', 
-                  ProcessExecutionNode( 'AnaSplitBrainFromBrainMask',
-                                        selected = 0 ) )
+    eNode = SelectionExecutionNode(self.name, parameterized=self)
+    eNode.addChild('SplitBrain05',
+                   ProcessExecutionNode('SplitBrain', selected=1))
+    eNode.addChild('SplitBrain04',
+                   ProcessExecutionNode('AnaSplitBrainFromBrainMask',
+                                        selected=0))
 
-  # break internal links
-  
-  eNode.SplitBrain05.clearLinksTo( 'split_brain' )
-  eNode.SplitBrain05.clearLinksTo( 'use_ridges' )
-  eNode.SplitBrain05.clearLinksTo( 'white_ridges' )
-  eNode.SplitBrain05.clearLinksTo( 'histo_analysis' )
-  eNode.SplitBrain05.clearLinksTo( 't1mri_nobias' )
-  eNode.SplitBrain05.clearLinksTo( 'use_template' )
-  eNode.SplitBrain05.clearLinksTo( 'split_template' )
-  eNode.SplitBrain05.clearLinksTo( 'commissure_coordinates' )
+    # break internal links
 
-  eNode.SplitBrain04.clearLinksTo( 'histo_analysis' )
-  eNode.SplitBrain04.clearLinksTo( 'brain_mask' )
-  eNode.SplitBrain04.clearLinksTo( 'Use_template' )
-  eNode.SplitBrain04.clearLinksTo( 'split_mask' )
-  eNode.SplitBrain04.clearLinksTo( 'split_template' )
-  eNode.SplitBrain04.clearLinksTo( 'Commissure_coordinates' )
+    eNode.SplitBrain05.clearLinksTo('split_brain')
+    eNode.SplitBrain05.clearLinksTo('use_ridges')
+    eNode.SplitBrain05.clearLinksTo('white_ridges')
+    eNode.SplitBrain05.clearLinksTo('histo_analysis')
+    eNode.SplitBrain05.clearLinksTo('t1mri_nobias')
+    eNode.SplitBrain05.clearLinksTo('use_template')
+    eNode.SplitBrain05.clearLinksTo('split_template')
+    eNode.SplitBrain05.clearLinksTo('commissure_coordinates')
 
-  # links for 2005 version
+    eNode.SplitBrain04.clearLinksTo('histo_analysis')
+    eNode.SplitBrain04.clearLinksTo('brain_mask')
+    eNode.SplitBrain04.clearLinksTo('Use_template')
+    eNode.SplitBrain04.clearLinksTo('split_mask')
+    eNode.SplitBrain04.clearLinksTo('split_template')
+    eNode.SplitBrain04.clearLinksTo('Commissure_coordinates')
 
-  eNode.addLink( 'SplitBrain05.t1mri_nobias', 'mri_corrected' )
-  eNode.addLink( 'mri_corrected', 'SplitBrain05.t1mri_nobias' )
-  eNode.addLink( 'SplitBrain05.split_brain', 'split_mask' )
-  eNode.addLink( 'split_mask', 'SplitBrain05.split_brain' )
-  eNode.addLink( 'SplitBrain05.use_ridges', 'use_ridges' )
-  eNode.addLink( 'use_ridges', 'SplitBrain05.use_ridges' )
-  eNode.addLink( 'SplitBrain05.white_ridges', 'white_ridges' )
-  eNode.addLink( 'white_ridges', 'SplitBrain05.white_ridges' )
-  eNode.addLink( 'SplitBrain05.histo_analysis', 'histo_analysis' )
-  eNode.addLink( 'histo_analysis', 'SplitBrain05.histo_analysis' )
-  eNode.addLink( 'SplitBrain05.brain_mask', 'brain_mask' )
-  eNode.addLink( 'brain_mask', 'SplitBrain05.brain_mask' )
-  eNode.addLink( 'SplitBrain05.use_template', 'use_template' )
-  eNode.addLink( 'use_template', 'SplitBrain05.use_template' )
-  eNode.addLink( 'SplitBrain05.split_template', 'split_template' )
-  eNode.addLink( 'split_template', 'SplitBrain05.split_template' )
-  eNode.addLink( 'SplitBrain05.commissure_coordinates',
-                 'commissure_coordinates' )
-  eNode.addLink( 'commissure_coordinates',
-                 'SplitBrain05.commissure_coordinates' )
+    # links for 2005 version
 
-  # links for 2004 version
+    eNode.addLink('SplitBrain05.t1mri_nobias', 'mri_corrected')
+    eNode.addLink('mri_corrected', 'SplitBrain05.t1mri_nobias')
+    eNode.addLink('SplitBrain05.split_brain', 'split_mask')
+    eNode.addLink('split_mask', 'SplitBrain05.split_brain')
+    eNode.addLink('SplitBrain05.use_ridges', 'use_ridges')
+    eNode.addLink('use_ridges', 'SplitBrain05.use_ridges')
+    eNode.addLink('SplitBrain05.white_ridges', 'white_ridges')
+    eNode.addLink('white_ridges', 'SplitBrain05.white_ridges')
+    eNode.addLink('SplitBrain05.histo_analysis', 'histo_analysis')
+    eNode.addLink('histo_analysis', 'SplitBrain05.histo_analysis')
+    eNode.addLink('SplitBrain05.brain_mask', 'brain_mask')
+    eNode.addLink('brain_mask', 'SplitBrain05.brain_mask')
+    eNode.addLink('SplitBrain05.use_template', 'use_template')
+    eNode.addLink('use_template', 'SplitBrain05.use_template')
+    eNode.addLink('SplitBrain05.split_template', 'split_template')
+    eNode.addLink('split_template', 'SplitBrain05.split_template')
+    eNode.addLink('SplitBrain05.commissure_coordinates',
+                  'commissure_coordinates')
+    eNode.addLink('commissure_coordinates',
+                  'SplitBrain05.commissure_coordinates')
 
-  eNode.addLink( 'SplitBrain04.mri_corrected', 'mri_corrected' )
-  eNode.addLink( 'mri_corrected', 'SplitBrain04.mri_corrected' )
-  eNode.addLink( 'SplitBrain04.histo_analysis', 'histo_analysis' )
-  eNode.addLink( 'histo_analysis', 'SplitBrain04.histo_analysis' )
-  eNode.addLink( 'SplitBrain04.brain_mask', 'brain_mask' )
-  eNode.addLink( 'brain_mask', 'SplitBrain04.brain_mask' )
-  eNode.addLink( 'SplitBrain04.Use_template', 'use_template' )
-  eNode.addLink( 'use_template', 'SplitBrain04.Use_template' )
-  eNode.addLink( 'SplitBrain04.split_template', 'split_template' )
-  eNode.addLink( 'split_template', 'SplitBrain04.split_template' )
-  eNode.addLink( 'SplitBrain04.split_mask', 'split_mask' )
-  eNode.addLink( 'split_mask', 'SplitBrain04.split_mask' )
-  eNode.addLink( 'SplitBrain04.Commissure_coordinates',
-                 'commissure_coordinates' )
-  eNode.addLink( 'commissure_coordinates',
-                 'SplitBrain04.Commissure_coordinates' )
+    # links for 2004 version
 
-  # self links
+    eNode.addLink('SplitBrain04.mri_corrected', 'mri_corrected')
+    eNode.addLink('mri_corrected', 'SplitBrain04.mri_corrected')
+    eNode.addLink('SplitBrain04.histo_analysis', 'histo_analysis')
+    eNode.addLink('histo_analysis', 'SplitBrain04.histo_analysis')
+    eNode.addLink('SplitBrain04.brain_mask', 'brain_mask')
+    eNode.addLink('brain_mask', 'SplitBrain04.brain_mask')
+    eNode.addLink('SplitBrain04.Use_template', 'use_template')
+    eNode.addLink('use_template', 'SplitBrain04.Use_template')
+    eNode.addLink('SplitBrain04.split_template', 'split_template')
+    eNode.addLink('split_template', 'SplitBrain04.split_template')
+    eNode.addLink('SplitBrain04.split_mask', 'split_mask')
+    eNode.addLink('split_mask', 'SplitBrain04.split_mask')
+    eNode.addLink('SplitBrain04.Commissure_coordinates',
+                  'commissure_coordinates')
+    eNode.addLink('commissure_coordinates',
+                  'SplitBrain04.Commissure_coordinates')
 
-  self.linkParameters( 'split_mask', 'brain_mask' )
-  self.linkParameters( 'white_ridges', 'mri_corrected' )
-  self.linkParameters( 'histo_analysis', 'mri_corrected' )
-  self.linkParameters( 'brain_mask', 'histo_analysis' )
-  self.linkParameters( 'commissure_coordinates', 'mri_corrected' )
+    # self links
 
-  self.setExecutionNode( eNode )
+    self.linkParameters('split_mask', 'brain_mask')
+    self.linkParameters('white_ridges', 'mri_corrected')
+    self.linkParameters('histo_analysis', 'mri_corrected')
+    self.linkParameters('brain_mask', 'histo_analysis')
+    self.linkParameters('commissure_coordinates', 'mri_corrected')
+
+    self.setExecutionNode(eNode)

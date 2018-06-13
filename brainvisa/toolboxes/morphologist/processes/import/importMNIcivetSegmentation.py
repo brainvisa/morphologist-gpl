@@ -52,44 +52,44 @@ userLevel = 3
 
 signature = Signature(
     'input_raw_t1_mri', ReadDiskItem('Raw T1 MRI',
-        'Aims readable volume formats'),
+                                     'Aims readable volume formats'),
     'input_bias_corrected', ReadDiskItem('T1 MRI Bias Corrected',
-        'Aims readable volume formats'),
+                                         'Aims readable volume formats'),
     'input_brain_mask', ReadDiskItem('T1 Brain Mask',
-        'Aims readable volume formats'),
+                                     'Aims readable volume formats'),
     'input_grey_white', ReadDiskItem('Grey White Mask',
-        'Aims readable volume formats'),
+                                     'Aims readable volume formats'),
     'use_civet_segmentations_in_mni_space', Boolean(),
     'input_T1_to_MNI_transformation',
-      ReadDiskItem('MINC transformation matrix',
-                   'MINC transformation matrix'),
+    ReadDiskItem('MINC transformation matrix',
+                 'MINC transformation matrix'),
     'input_white_mesh_left', ReadDiskItem('Hemisphere white mesh',
                                           'aims mesh formats'),
     'input_white_mesh_right', ReadDiskItem('Hemisphere white mesh',
-                                          'aims mesh formats'),
+                                           'aims mesh formats'),
     'input_pial_mesh_left', ReadDiskItem('Hemisphere mesh',
-                                        'aims mesh formats'),
+                                         'aims mesh formats'),
     'input_pial_mesh_right', ReadDiskItem('Hemisphere mesh',
                                           'aims mesh formats'),
     'grey_white_classif_from_meshes', Boolean(),
 
     'output_raw_t1_mri', WriteDiskItem('Raw T1 MRI',
-        'Aims writable volume formats'),
+                                       'Aims writable volume formats'),
     'output_bias_corrected', WriteDiskItem('T1 MRI Bias Corrected',
-        'Aims writable volume formats'),
+                                           'Aims writable volume formats'),
     'output_T1_to_Talairach_transformation',
-      WriteDiskItem('Transform Raw T1 MRI to Talairach-AC/PC-Anatomist',
-        'Transformation matrix'),
+    WriteDiskItem('Transform Raw T1 MRI to Talairach-AC/PC-Anatomist',
+                  'Transformation matrix'),
     'output_ACPC', WriteDiskItem('Commissure coordinates',
-      'Commissure coordinates'),
+                                 'Commissure coordinates'),
     'output_brain_mask', WriteDiskItem('T1 Brain Mask',
-        'Aims writable volume formats'),
+                                       'Aims writable volume formats'),
     'output_left_grey_white', WriteDiskItem('Left Grey White Mask',
-        'Aims writable volume formats'),
+                                            'Aims writable volume formats'),
     'output_right_grey_white', WriteDiskItem('Right Grey White Mask',
-        'Aims writable volume formats'),
+                                             'Aims writable volume formats'),
     'use_t1pipeline', Choice(('graphically', 0), ('in batch', 1),
-        ('don\'t use it', 2)),
+                             ('don\'t use it', 2)),
     'transform_Talairach_to_MNI', ReadDiskItem('Transformation matrix',
                                                'Transformation matrix'),
 )
@@ -101,7 +101,7 @@ def initialization(self):
         value = self.output_raw_t1_mri
         if self.input_raw_t1_mri is not None \
                 and isinstance(self.input_raw_t1_mri, DiskItem):
-            value=self.input_raw_t1_mri.hierarchyAttributes()
+            value = self.input_raw_t1_mri.hierarchyAttributes()
             if value.get("subject", None) is None:
                 value["subject"] = os.path.basename(
                     self.input_raw_t1_mri.fullPath()).partition(".")[0]
@@ -154,7 +154,7 @@ def initialization(self):
                 gfinal = glob.glob(os.path.join(bfinal,
                                                 '*_final_classify.mnc*'))
                 if len(gfinal) != 0:
-                  g = gfinal
+                    g = gfinal
             if len(g) == 1:
                 return g[0]
 
@@ -174,12 +174,12 @@ def initialization(self):
 
     def linkmesh(mesh_type, hemisphere, self, proc):
         if self.input_raw_t1_mri is not None:
-            b = os.path.dirname( self.input_raw_t1_mri.fullPath() )
-            if os.path.basename( b ) == 'native':
-                b = os.path.dirname( b )
+            b = os.path.dirname(self.input_raw_t1_mri.fullPath())
+            if os.path.basename(b) == 'native':
+                b = os.path.dirname(b)
             b = os.path.join(b, 'surfaces')
             g = glob.glob(os.path.join(b, '*_%s_surface_%s_*.obj'
-                                      % (mesh_type, hemisphere)))
+                                       % (mesh_type, hemisphere)))
             if len(g) != 0:
                 return g[0]
 
@@ -193,13 +193,13 @@ def initialization(self):
             return False
 
     self.setOptional('input_raw_t1_mri', 'input_bias_corrected',
-        'input_brain_mask', 'input_grey_white',
-        'input_T1_to_MNI_transformation',
-        'input_white_mesh_left', 'input_white_mesh_right',
-        'input_pial_mesh_left', 'input_pial_mesh_right')
+                     'input_brain_mask', 'input_grey_white',
+                     'input_T1_to_MNI_transformation',
+                     'input_white_mesh_left', 'input_white_mesh_right',
+                     'input_pial_mesh_left', 'input_pial_mesh_right')
     self.setOptional('output_brain_mask', 'output_left_grey_white',
-        'output_right_grey_white', 'output_T1_to_Talairach_transformation',
-        'output_ACPC')
+                     'output_right_grey_white', 'output_T1_to_Talairach_transformation',
+                     'output_ACPC')
 
     self.linkParameters('input_bias_corrected', 'input_raw_t1_mri', linknuc)
     self.linkParameters('input_grey_white', 'input_raw_t1_mri', linkigw)
@@ -248,7 +248,7 @@ def buildGWimage(self, context, dims, input_white_mesh, input_pial_mesh,
     aims.write(pial, pial_mesh.fullPath())
     context.write('written:', pial_mesh)
     context.write('<font color="#60ff60">'
-        + _t_('White/pial meshes imported.') + '</font>')
+                  + _t_('White/pial meshes imported.') + '</font>')
 
     if self.grey_white_classif_from_meshes \
             and hasattr(aims.SurfaceManip, 'rasterizeMesh'):
@@ -268,18 +268,18 @@ def buildGWimage(self, context, dims, input_white_mesh, input_pial_mesh,
         aims.write(gw_vol, temp1.fullPath())
         gw_vol = aims.read(temp2.fullPath())
         gw = numpy.asarray(gw_vol)
-        gw[gw==0] = 200
-        gw[numpy.asarray(w_vol)==0] = 100 # mesh is in GM
+        gw[gw == 0] = 200
+        gw[numpy.asarray(w_vol) == 0] = 100  # mesh is in GM
         context.system('AimsConnectComp', '-i', temp1, '-o', temp2, '-c', 6,
                        '-n', 1, '-b')
         pial_cc = aims.read(temp2.fullPath())
         pial_a = numpy.asarray(pial_cc)
-        gw[pial_a==1] = 0
-        gw[gw==1] = 100
+        gw[pial_a == 1] = 0
+        gw[gw == 1] = 100
         aims.write(gw_vol, grey_white.fullPath())
         context.write('<font color="#60ff60">'
-            + _t_('Grey/White classification imported from meshes.')
-            + '</font>')
+                      + _t_('Grey/White classification imported from meshes.')
+                      + '</font>')
 
 
 def import_t1(self, context, trManager):
@@ -291,66 +291,65 @@ def import_t1(self, context, trManager):
         self.input_raw_t1_mri = self.input_bias_corrected
 
     if self.output_raw_t1_mri is not None:
-        context.write( _t_( 'importing raw T1 MRI...' ) )
+        context.write(_t_('importing raw T1 MRI...'))
         if self.input_raw_t1_mri is not None:
-            context.runProcess( 'ImportT1MRI', input=self.input_raw_t1_mri,
-                output=self.output_raw_t1_mri )
+            context.runProcess('ImportT1MRI', input=self.input_raw_t1_mri,
+                               output=self.output_raw_t1_mri)
             mridone = True
         else:
-            context.warning( _t_( 'output raw T1 MRI could not be written: ' \
-                'no possible source' ) )
-        context.progress( 1, self.nsteps, self )
+            context.warning(_t_('output raw T1 MRI could not be written: '
+                                'no possible source'))
+        context.progress(1, self.nsteps, self)
         if mridone:
-            context.write('<font color="#60ff60">' \
-                + _t_('Raw T1 MRI inserted.') + '</font>')
+            context.write('<font color="#60ff60">'
+                          + _t_('Raw T1 MRI inserted.') + '</font>')
             if self.input_T1_to_MNI_transformation is not None:
-              # import / convert transformation to MNI space
-              context.write(_t_('import transformation'))
-              m = []
-              i = 0
-              rl = False
-              for l in open(
-                    self.input_T1_to_MNI_transformation.fullPath(
+                # import / convert transformation to MNI space
+                context.write(_t_('import transformation'))
+                m = []
+                i = 0
+                rl = False
+                for l in open(
+                        self.input_T1_to_MNI_transformation.fullPath(
                         )).xreadlines():
-                  if l.startswith('Linear_Transform ='):
-                      rl = True
-                  elif rl:
-                      if l.endswith(';\n'):
-                          l = l[:-2]
-                      m.append([float(x) for x in l.split()])
-                      i += 1
-                      if i == 3:
-                          break
-              t12mni = aims.AffineTransformation3d(
-                  numpy.array(m + [[0., 0., 0., 1.]]))
-              t1aims2t1 = aims.AffineTransformation3d(
-                  aimsGlobals.aimsVolumeAttributes(
-                      self.output_raw_t1_mri)['transformations' ][-1])
-              t1aims2mni = t12mni * t1aims2t1
-              acpcDI = neuroHierarchy.databases.getDiskItemFromUuid(
-                  registration.talairachACPCReferentialId)
-              mniReferential = trManager.referential(
-                  registration.talairachMNIReferentialId)
-              mniDI = neuroHierarchy.databases.getDiskItemFromUuid(
-                  mniReferential.uuid())
-              if self.output_T1_to_Talairach_transformation is not None:
-                  trm = context.temporary('Transformation matrix')
-                  aims.write(t1aims2mni, trm.fullPath())
-                  context.runProcess(
-                      'TalairachTransformationFromNormalization',
-                      normalization_transformation=trm,
-                      Talairach_transform
-                          =self.output_T1_to_Talairach_transformation,
-                      commissure_coordinates=self.output_ACPC,
-                      t1mri=self.output_raw_t1_mri,
-                      source_referential=trManager.referential(
-                          self.output_raw_t1_mri ),
-                      # normalized_referential=mniDI, # why doesn't this work ??
-                  )
-                  self.output_T1_to_Talairach_transformation.lockData()
+                    if l.startswith('Linear_Transform ='):
+                        rl = True
+                    elif rl:
+                        if l.endswith(';\n'):
+                            l = l[:-2]
+                        m.append([float(x) for x in l.split()])
+                        i += 1
+                        if i == 3:
+                            break
+                t12mni = aims.AffineTransformation3d(
+                    numpy.array(m + [[0., 0., 0., 1.]]))
+                t1aims2t1 = aims.AffineTransformation3d(
+                    aimsGlobals.aimsVolumeAttributes(
+                        self.output_raw_t1_mri)['transformations'][-1])
+                t1aims2mni = t12mni * t1aims2t1
+                acpcDI = neuroHierarchy.databases.getDiskItemFromUuid(
+                    registration.talairachACPCReferentialId)
+                mniReferential = trManager.referential(
+                    registration.talairachMNIReferentialId)
+                mniDI = neuroHierarchy.databases.getDiskItemFromUuid(
+                    mniReferential.uuid())
+                if self.output_T1_to_Talairach_transformation is not None:
+                    trm = context.temporary('Transformation matrix')
+                    aims.write(t1aims2mni, trm.fullPath())
+                    context.runProcess(
+                        'TalairachTransformationFromNormalization',
+                        normalization_transformation=trm,
+                        Talairach_transform=self.output_T1_to_Talairach_transformation,
+                        commissure_coordinates=self.output_ACPC,
+                        t1mri=self.output_raw_t1_mri,
+                        source_referential=trManager.referential(
+                            self.output_raw_t1_mri),
+                        # normalized_referential=mniDI, # why doesn't this work ??
+                    )
+                    self.output_T1_to_Talairach_transformation.lockData()
     else:
-        context.write('<font color="#a0a060">' + \
-            _t_('Raw T1 MRI not written.') + '</font>')
+        context.write('<font color="#a0a060">' +
+                      _t_('Raw T1 MRI not written.') + '</font>')
 
     return mridone, t1aims2mni
 
@@ -369,9 +368,9 @@ def import_bias_corrected(self, context):
             else:
                 nobias = self.output_bias_corrected
             context.system('AimsFileConvert',
-                '-i', self.input_bias_corrected,
-                '-o', nobias, '-t', 'S16',
-                '-r', '--omin', 0, '--omax', 4095)
+                           '-i', self.input_bias_corrected,
+                           '-o', nobias, '-t', 'S16',
+                           '-r', '--omin', 0, '--omax', 4095)
             if nobias is self.output_bias_corrected:
                 tm = registration.getTransformationManager()
                 tm.copyReferential(self.output_raw_t1_mri,
@@ -379,11 +378,11 @@ def import_bias_corrected(self, context):
             nobiasdone = True
         else:
             context.warning(_t_('output_bias_corrected could not be written: '
-              'no possible source'))
+                                'no possible source'))
             nobias = None
     else:
         context.write('<font color="#a0a060">'
-            + _t_('Bias corrected MRI not written.') + '</font>')
+                      + _t_('Bias corrected MRI not written.') + '</font>')
 
     return nobiasdone, nobias
 
@@ -396,24 +395,24 @@ def import_mask(self, context, t1aims2mni, mridone, nobiasdone, nobias,
         context.write(_t_('importing brain mask...'))
         if self.input_brain_mask is not None:
             context.system('AimsFileConvert', '-o', self.output_brain_mask,
-                '-i', self.input_brain_mask, '-t', 'S16')
+                           '-i', self.input_brain_mask, '-t', 'S16')
             context.system('cartoLinearComb.py', '-o', self.output_brain_mask,
-                '-f', 'I1*255', '-i', self.output_brain_mask)
+                           '-f', 'I1*255', '-i', self.output_brain_mask)
             maskdone = True
         elif self.input_grey_white is not None:
             # no brain mask. Use with the cortex segmentation
             context.write('importing mask from G/W segmentation...')
             context.system('AimsFileConvert', '-o', self.output_brain_mask,
-                '-i', self.input_grey_white, '-t', 'S16')
+                           '-i', self.input_grey_white, '-t', 'S16')
             context.system('AimsThreshold', '-i', self.output_brain_mask,
-                '-o', self.output_brain_mask, '-t', 48, '-b', '-m', 'ge', '-p')
+                           '-o', self.output_brain_mask, '-t', 48, '-b', '-m', 'ge', '-p')
             maskdone = True
         else:
             context.write('<font color="#a0a060">'
-                + _t_('Brain mask not written: no possible source')
-                + '</font>')
+                          + _t_('Brain mask not written: no possible source')
+                          + '</font>')
         context.write('<font color="#60ff60">'
-            + _t_('Brain mask inserted.') + '</font>')
+                      + _t_('Brain mask inserted.') + '</font>')
 
         context.progress(4, self.nsteps, self)
 
@@ -427,28 +426,28 @@ def import_mask(self, context, t1aims2mni, mridone, nobiasdone, nobias,
             mref = trManager.referential(self.output_raw_t1_mri)
             tr = aims.AffineTransformation3d(aimsGlobals.aimsVolumeAttributes(
                 self.output_brain_mask)['transformations'][-1])
-            if t1aims2mni and (self.output_bias_corrected is not None \
-                    or self.output_raw_t1_mri is not None):
+            if t1aims2mni and (self.output_bias_corrected is not None
+                               or self.output_raw_t1_mri is not None):
                 # resample raw T1 and bias corrected image
                 t12mask = tr.inverse() * t1aims2mni
                 trm = context.temporary('Transformation Matrix')
                 aims.write(t12mask, trm.fullPath())
                 context.runProcess('transformAPC',
-                    Commissure_coordinates=self.output_ACPC,
-                    T1mri=self.output_raw_t1_mri,
-                    output_coordinates=self.output_ACPC,
-                    transformation=trm,
-                    destination_volume=self.output_brain_mask)
+                                   Commissure_coordinates=self.output_ACPC,
+                                   T1mri=self.output_raw_t1_mri,
+                                   output_coordinates=self.output_ACPC,
+                                   transformation=trm,
+                                   destination_volume=self.output_brain_mask)
                 if nobiasdone:
                     context.write(_t_('Resampling bias corrected volume to '
-                      'the mask space...'))
+                                      'the mask space...'))
                     context.system('AimsResample', '-i', nobias,
-                        '-o', self.output_bias_corrected, '-m', trm,
-                        '-r', self.output_brain_mask)
+                                   '-o', self.output_bias_corrected, '-m', trm,
+                                   '-r', self.output_brain_mask)
                     trManager.copyReferential(self.output_raw_t1_mri,
-                        self.output_bias_corrected)
+                                              self.output_bias_corrected)
                     context.write('<font color="#60ff60">'
-                        + _t_('Bias corrected MRI inserted.') + '</font>')
+                                  + _t_('Bias corrected MRI inserted.') + '</font>')
                 if mridone:
                     context.write(_t_(
                         'Resampling raw T1 volume to the mask space...'))
@@ -469,7 +468,7 @@ def import_mask(self, context, t1aims2mni, mridone, nobiasdone, nobias,
                     self.output_T1_to_Talairach_transformation.fullPath()) \
                     * t12mask.inverse()
                 aims.write(t12acpc,
-                    self.output_T1_to_Talairach_transformation.fullPath())
+                           self.output_T1_to_Talairach_transformation.fullPath())
                 # change .APC voxel size
                 apc = apctools.apcRead(self.output_ACPC.fullPath())
                 for pt in ('ac', 'pc', 'ih'):
@@ -488,8 +487,8 @@ def import_mask(self, context, t1aims2mni, mridone, nobiasdone, nobias,
             mref = trManager.referential(self.output_raw_t1_mri)
             tr = aims.AffineTransformation3d(aimsGlobals.aimsVolumeAttributes(
                 self.output_brain_mask)['transformations'][-1])
-            if t1aims2mni and (self.output_bias_corrected is not None \
-                    or self.output_raw_t1_mri is not None):
+            if t1aims2mni and (self.output_bias_corrected is not None
+                               or self.output_raw_t1_mri is not None):
                 # resample mask
                 if self.output_bias_corrected is not None:
                     native = self.output_bias_corrected
@@ -499,13 +498,13 @@ def import_mask(self, context, t1aims2mni, mridone, nobiasdone, nobias,
                 trm = context.temporary('Transformation Matrix')
                 aims.write(mask2t1, trm.fullPath())
                 context.write(_t_('Resampling brain mask volume to '
-                  'native space...'))
+                                  'native space...'))
                 context.system('AimsResample',
-                    '-i', self.output_brain_mask,
-                    '-o', self.output_brain_mask, '-m', trm,
-                    '-r', native, '-t', 'n')
+                               '-i', self.output_brain_mask,
+                               '-o', self.output_brain_mask, '-m', trm,
+                               '-r', native, '-t', 'n')
                 context.write('<font color="#60ff60">'
-                    + _t_('Brain mask resampled.') + '</font>')
+                              + _t_('Brain mask resampled.') + '</font>')
         trManager.copyReferential(
             self.output_raw_t1_mri, self.output_brain_mask)
 
@@ -530,14 +529,14 @@ def import_grey_white(self, context, gw_from_meshes, t1pipeline, trManager,
                 '-g', 1, '-n', 0, '-g', 2, '-n', 100, '-g', 3, '-n', 200,
                 '-g', 255, '-n', 200, '-g', 170, '-n', 100)
             clgm = context.temporary('NIFTI-1 image', '3D Volume')
-            ## apply little closing on GM
-            #context.system( 'AimsReplaceLevel', '-i', gw, '-o', clgm,
-              #'-g', 1, '-n', 0, '-g', 2, '-n', 100, '-g', 3, '-n', 0 )
+            # apply little closing on GM
+            # context.system( 'AimsReplaceLevel', '-i', gw, '-o', clgm,
+            #'-g', 1, '-n', 0, '-g', 2, '-n', 100, '-g', 3, '-n', 0 )
             #context.system( 'AimsClosing', '-i', clgm, '-o', clgm, '-r', 1.3 )
-            #context.system( 'AimsReplaceLevel', '-i', gw, '-o', gw,
-              #'-g', 1, '-n', 0, '-g', 2, '-n', 200, '-g', 3, '-n', 200 )
-            #context.system( 'AimsMask', '-i', gw,
-                #'-o', gw, '-m', clgm, '-d', 100, '--inv' )
+            # context.system( 'AimsReplaceLevel', '-i', gw, '-o', gw,
+            #'-g', 1, '-n', 0, '-g', 2, '-n', 200, '-g', 3, '-n', 200 )
+            # context.system( 'AimsMask', '-i', gw,
+            #'-o', gw, '-m', clgm, '-d', 100, '--inv' )
             mask = context.temporary('NIFTI-1 image')
             enode = t1pipeline.executionNode()
             if mask2t1 is not None:
@@ -556,15 +555,15 @@ def import_grey_white(self, context, gw_from_meshes, t1pipeline, trManager,
                     '-i', enode.SplitBrain._process.split_brain, '-o', mask,
                     '-t', 2, '-m', 'eq')
                 context.system('AimsMask', '-i', gw,
-                    '-o', self.output_left_grey_white, '-m', mask)
+                               '-o', self.output_left_grey_white, '-m', mask)
                 trManager.copyReferential(self.output_brain_mask,
-                    self.output_left_grey_white)
+                                          self.output_left_grey_white)
                 self.output_left_grey_white.lockData()
             if self.output_right_grey_white is not None:
                 context.system(
                     'AimsThreshold',
                     '-i', enode.SplitBrain._process.split_brain, '-o', mask,
-                    '-t', 1, '-m', 'eq' )
+                    '-t', 1, '-m', 'eq')
                 context.system(
                     'AimsMask', '-i', gw, '-o', self.output_right_grey_white,
                     '-m', mask)
@@ -576,12 +575,12 @@ def import_grey_white(self, context, gw_from_meshes, t1pipeline, trManager,
                 have_gw = True
         else:
             context.write('<font color="#a0a060">'
-                + _t_('G/W segmentation not written: no possible source')
-                + '</font>')
+                          + _t_('G/W segmentation not written: no possible source')
+                          + '</font>')
     return have_gw
 
 
-def execution( self, context ):
+def execution(self, context):
 
     pi, p = context.getProgressInfo(self)
     #pi.children = [None] * 3
@@ -602,18 +601,18 @@ def execution( self, context ):
     context.progress(4, nsteps, self)
 
     if mridone:
-      self.output_raw_t1_mri.lockData()
-    #if nobiasdone:
-      #self.output_bias_corrected.lockData()
+        self.output_raw_t1_mri.lockData()
+    # if nobiasdone:
+        # self.output_bias_corrected.lockData()
     if maskdone:
-      self.output_brain_mask.lockData()
+        self.output_brain_mask.lockData()
 
     t1pipeline = getProcessInstance('morphologist')
     t1pipeline.t1mri = self.output_raw_t1_mri
     t1pipeline.t1mri_nobias = self.output_bias_corrected
     enode = t1pipeline.executionNode()
     #npi, proc = context.getProgressInfo(enode, parent=pi)
-    #context.progress()
+    # context.progress()
     enode.PrepareSubject.setSelected(False)
     if hasattr(enode, 'Renorm'):
         enode.Renorm.setSelected(False)
@@ -651,7 +650,7 @@ def execution( self, context ):
             self.input_pial_mesh_left,
             mni_to_t1, gw_left,
             enode.HemispheresProcessing.LeftHemisphere.GreyWhiteMesh.white_mesh,
-          enode.HemispheresProcessing.LeftHemisphere.PialMesh.pial_mesh)
+            enode.HemispheresProcessing.LeftHemisphere.PialMesh.pial_mesh)
         context.progress(5, nsteps, self)
         context.write('importing right hemisphere meshes')
         self.buildGWimage(
@@ -666,12 +665,12 @@ def execution( self, context ):
             enode.SplitBrain.setSelected(False)
             split = aims.read(gw_left.fullPath())
             split_a = numpy.asarray(split)
-            split_a[split_a==200] = 1
-            split_a[split_a==100] = 1
+            split_a[split_a == 200] = 1
+            split_a[split_a == 100] = 1
             gw_r = aims.read(gw_right.fullPath())
             gw_a = numpy.asarray(gw_r)
-            split_a[gw_a==200] = 2
-            split_a[gw_a==100] = 2
+            split_a[gw_a == 200] = 2
+            split_a[gw_a == 100] = 2
             del gw_a, gw_r, split_a
             aims.write(split, enode.SplitBrain.split_brain.fullPath())
             del split
@@ -708,8 +707,8 @@ def execution( self, context ):
         # if GW segmentation is not built from meshes, we have to run the split
         # step before doing the next step.
         context.write(_t_('Running a first pass of the missing T1 pipeline '
-            'steps to recover bias correction, histogram analysis, '
-            'brain split.'))
+                          'steps to recover bias correction, histogram analysis, '
+                          'brain split.'))
         if self.use_t1pipeline == 0:
             pv = mainThreadActions().call(ProcessView, t1pipeline)
             r = context.ask('run the pipeline, then click here', 'OK', 'Abort')
@@ -722,12 +721,12 @@ def execution( self, context ):
             if r != 0:
                 raise context.UserInterruption()
         elif self.use_t1pipeline == 1:
-          context.runProcess(t1pipeline)
+            context.runProcess(t1pipeline)
         else:
-          context.write(
-            '<font color="#a0a060">'
-            + _t_('Pipeline not run since the "use_t1pipeline" parameter '
-                  'prevents it') + '</font>')
+            context.write(
+                '<font color="#a0a060">'
+                + _t_('Pipeline not run since the "use_t1pipeline" parameter '
+                      'prevents it') + '</font>')
         context.write('OK')
         context.progress(5, nsteps, self)
 
@@ -753,8 +752,10 @@ def execution( self, context ):
     enode.HemispheresProcessing.setSelected(True)
     enode.TalairachTransformation.setSelected(False)
     if have_gw:
-        enode.HemispheresProcessing.LeftHemisphere.GreyWhiteClassification.setSelected(False)
-        enode.HemispheresProcessing.RightHemisphere.GreyWhiteClassification.setSelected(False)
+        enode.HemispheresProcessing.LeftHemisphere.GreyWhiteClassification.setSelected(
+            False)
+        enode.HemispheresProcessing.RightHemisphere.GreyWhiteClassification.setSelected(
+            False)
     enode.HemispheresProcessing.LeftHemisphere.GreyWhiteTopology.setSelected(
         True)
     enode.HemispheresProcessing.RightHemisphere.GreyWhiteTopology.setSelected(
@@ -783,7 +784,7 @@ def execution( self, context ):
         enode.HemispheresProcessing.RightHemisphere.PialMesh.setSelected(False)
 
     context.write(_t_('Running a second pass of the missing T1 pipeline '
-        'steps to recover cortex, meshes and sulci graphs.'))
+                      'steps to recover cortex, meshes and sulci graphs.'))
     if self.use_t1pipeline == 0:
         pv = mainThreadActions().call(ProcessView, t1pipeline)
         r = context.ask('run the pipeline, then click here', 'OK')
@@ -797,8 +798,8 @@ def execution( self, context ):
         context.runProcess(t1pipeline)
     else:
         context.write('<font color="#a0a060">'
-            + _t_('Pipeline not run since the "use_t1pipeline" parameter '
-                  'prevents it' ) + '</font>')
+                      + _t_('Pipeline not run since the "use_t1pipeline" parameter '
+                            'prevents it') + '</font>')
     context.write('OK')
     self.output_T1_to_Talairach_transformation.unlockData()
     self.output_ACPC.unlockData()
@@ -808,4 +809,3 @@ def execution( self, context ):
     self.output_left_grey_white.unlockData()
     self.output_right_grey_white.unlockData()
     context.progress(8, nsteps, self)
-

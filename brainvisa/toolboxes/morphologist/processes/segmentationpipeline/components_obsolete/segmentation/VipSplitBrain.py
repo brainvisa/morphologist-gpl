@@ -7,9 +7,9 @@
 #
 # This software is governed by the CeCILL license version 2 under
 # French law and abiding by the rules of distribution of free software.
-# You can  use, modify and/or redistribute the software under the 
+# You can  use, modify and/or redistribute the software under the
 # terms of the CeCILL license version 2 as circulated by CEA, CNRS
-# and INRIA at the following URL "http://www.cecill.info". 
+# and INRIA at the following URL "http://www.cecill.info".
 #
 # As a counterpart to the access to the source code and  rights to copy,
 # modify and redistribute granted by the license, users are provided only
@@ -24,8 +24,8 @@
 # therefore means  that it is reserved for developers  and  experienced
 # professionals having in-depth computer knowledge. Users are therefore
 # encouraged to load and test the software's suitability as regards their
-# requirements in conditions enabling the security of their systems and/or 
-# data to be ensured and,  more generally, to use and operate it in the 
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
 # same conditions as regards security.
 #
 # The fact that you are presently reading this means that you have had
@@ -41,71 +41,74 @@ userLevel = 2
 
 # Argument declaration
 signature = Signature(
-  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
-      'Aims readable volume formats' ),
-  'Use_template', Boolean(), 
-  'split_template', ReadDiskItem( 'Hemispheres Template',
-      'Aims readable volume formats' ),
-  'brain_mask', ReadDiskItem( "T1 Brain Mask",
-      'Aims readable volume formats' ),
-  'histo_analysis', ReadDiskItem( 'Histo Analysis', 'Histo Analysis' ),
-  'split_mask', WriteDiskItem( 'Split Brain Mask',
-      'Aims writable volume formats' ),
-  'Commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
-      'Commissure coordinates'),
-  'white_algo', Choice('r','c','b','t'),
-  'mult_factor', Float(),
-  'bary_factor', Float(),
-  'white_threshold', Integer(),
-  'initial_erosion', Float(),
-  'cc_min_size', Integer()
+    'mri_corrected', ReadDiskItem('T1 MRI Bias Corrected',
+                                  'Aims readable volume formats'),
+    'Use_template', Boolean(),
+    'split_template', ReadDiskItem('Hemispheres Template',
+                                   'Aims readable volume formats'),
+    'brain_mask', ReadDiskItem("T1 Brain Mask",
+                               'Aims readable volume formats'),
+    'histo_analysis', ReadDiskItem('Histo Analysis', 'Histo Analysis'),
+    'split_mask', WriteDiskItem('Split Brain Mask',
+                                'Aims writable volume formats'),
+    'Commissure_coordinates', ReadDiskItem('Commissure coordinates',
+                                           'Commissure coordinates'),
+    'white_algo', Choice('r', 'c', 'b', 't'),
+    'mult_factor', Float(),
+    'bary_factor', Float(),
+    'white_threshold', Integer(),
+    'initial_erosion', Float(),
+    'cc_min_size', Integer()
 )
 
 # Default values
-def initialization( self ):
-  self.linkParameters( 'histo_analysis', 'mri_corrected' )
-  self.linkParameters( 'brain_mask', 'mri_corrected' )
-  self.linkParameters( 'split_mask', 'mri_corrected' )
-  self.linkParameters( 'Commissure_coordinates', 'mri_corrected' )
-  self.split_template = self.signature[ 'split_template' ].findValue( {} )
-  self.Use_template = 1
-  self.setOptional('split_template')
-  self.setOptional('Commissure_coordinates')
-  self.setOptional('white_algo')
-  self.setOptional('mult_factor')
-  self.white_algo = 'r'
-  self.bary_factor = 0.75
-  self.setOptional('white_threshold')
-  self.initial_erosion = 2
-  self.cc_min_size = 500
-  self.mult_factor = 2.
 
 
-def execution( self, context ):
-  if os.path.exists(self.split_mask.fullName() + '.loc'):
-    context.write(self.split_mask.fullName(), ' has been locked')
-    context.write('Remove',self.split_mask.fullName(),'.loc if you want to trigger a new segmentation')
-  else:
-    option_list = []
-    if self.Commissure_coordinates is not None:
-      option_list += ['-Points', self.Commissure_coordinates.fullPath()]
-    if self.white_threshold is not None:
-      option_list += ['-wthreshold', self.white_threshold]
-      self.white_algo = 't'
-    if self.white_algo == 'b' :
-      option_list += ['-Bary', self.bary_factor]
-    if self.white_algo == 'c' :
-      option_list += ['-Coef', self.mult_factor]
-    if self.Use_template:
-      option_list += ['-template', self.split_template.fullPath(),
-                      '-TemplateUse', 'y']
-    call_list = ['VipSplitBrain',
-                 '-input',  self.mri_corrected.fullPath(),
-                 '-brain', self.brain_mask.fullPath(),
-                 '-analyse', 'r', '-hname', self.histo_analysis.fullPath(),
-                 '-output', self.split_mask.fullPath(),
-                 '-erosion', self.initial_erosion,
-                 '-ccsize', self.cc_min_size,
-                 '-walgo',self.white_algo
-                 ]
-    apply( context.system, call_list+option_list )
+def initialization(self):
+    self.linkParameters('histo_analysis', 'mri_corrected')
+    self.linkParameters('brain_mask', 'mri_corrected')
+    self.linkParameters('split_mask', 'mri_corrected')
+    self.linkParameters('Commissure_coordinates', 'mri_corrected')
+    self.split_template = self.signature['split_template'].findValue({})
+    self.Use_template = 1
+    self.setOptional('split_template')
+    self.setOptional('Commissure_coordinates')
+    self.setOptional('white_algo')
+    self.setOptional('mult_factor')
+    self.white_algo = 'r'
+    self.bary_factor = 0.75
+    self.setOptional('white_threshold')
+    self.initial_erosion = 2
+    self.cc_min_size = 500
+    self.mult_factor = 2.
+
+
+def execution(self, context):
+    if os.path.exists(self.split_mask.fullName() + '.loc'):
+        context.write(self.split_mask.fullName(), ' has been locked')
+        context.write('Remove', self.split_mask.fullName(),
+                      '.loc if you want to trigger a new segmentation')
+    else:
+        option_list = []
+        if self.Commissure_coordinates is not None:
+            option_list += ['-Points', self.Commissure_coordinates.fullPath()]
+        if self.white_threshold is not None:
+            option_list += ['-wthreshold', self.white_threshold]
+            self.white_algo = 't'
+        if self.white_algo == 'b':
+            option_list += ['-Bary', self.bary_factor]
+        if self.white_algo == 'c':
+            option_list += ['-Coef', self.mult_factor]
+        if self.Use_template:
+            option_list += ['-template', self.split_template.fullPath(),
+                            '-TemplateUse', 'y']
+        call_list = ['VipSplitBrain',
+                     '-input',  self.mri_corrected.fullPath(),
+                     '-brain', self.brain_mask.fullPath(),
+                     '-analyse', 'r', '-hname', self.histo_analysis.fullPath(),
+                     '-output', self.split_mask.fullPath(),
+                     '-erosion', self.initial_erosion,
+                     '-ccsize', self.cc_min_size,
+                     '-walgo', self.white_algo
+                     ]
+        apply(context.system, call_list+option_list)

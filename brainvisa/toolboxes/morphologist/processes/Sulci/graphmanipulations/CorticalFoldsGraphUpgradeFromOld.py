@@ -39,57 +39,57 @@ userLevel = 2
 
 # Argument declaration
 signature = Signature(
-  'old_graph', ReadDiskItem( 'Cortical folds graph', 'Graph' ),
-  'skeleton', ReadDiskItem('Cortex Skeleton', 'aims readable Volume Formats'),
-  'graph_version', OpenChoice( '3.1', '3.3' ),
-  'graph', WriteDiskItem( 'Cortical folds graph', 'Graph' ),
-  'commissure_coordinates', ReadDiskItem( 'Commissure coordinates',
-                                          'Commissure coordinates'),
-  'Talairach_transform',
-  ReadDiskItem( 'Transform Raw T1 MRI to Talairach-AC/PC-Anatomist',
-                'Transformation matrix' ),
-  'compute_fold_meshes', Boolean(),
-  'allow_multithreading', Boolean(),
- )
+    'old_graph', ReadDiskItem('Cortical folds graph', 'Graph'),
+    'skeleton', ReadDiskItem(
+        'Cortex Skeleton', 'aims readable Volume Formats'),
+    'graph_version', OpenChoice('3.1', '3.3'),
+    'graph', WriteDiskItem('Cortical folds graph', 'Graph'),
+    'commissure_coordinates', ReadDiskItem('Commissure coordinates',
+                                           'Commissure coordinates'),
+    'Talairach_transform',
+    ReadDiskItem('Transform Raw T1 MRI to Talairach-AC/PC-Anatomist',
+                 'Transformation matrix'),
+    'compute_fold_meshes', Boolean(),
+    'allow_multithreading', Boolean(),
+)
 
 
 # Default values
-def initialization( self ):
-  self.setOptional( 'commissure_coordinates' )
+def initialization(self):
+    self.setOptional('commissure_coordinates')
 
-  eNode = SerialExecutionNode( self.name, parameterized = self )
-  eNode.addChild( 'FoldGraphUpgradeStructure',
-    ProcessExecutionNode( 'foldgraphupgradestructure', optional= 1 ) )
-  eNode.addChild( 'SulciVoronoi',
-                   ProcessExecutionNode( 'SulciVoronoi', optional = 1 ) )
-  eNode.addChild( 'CorticalFoldsGraphThickness',
-                   ProcessExecutionNode( 'CorticalFoldsGraphThickness',
-                   optional = 1 ) )
-  eNode.CorticalFoldsGraphThickness.clearLinksTo( 'hemi_cortex' )
-  eNode.CorticalFoldsGraphThickness.clearLinksTo( 'output_graph' )
-  eNode.CorticalFoldsGraphThickness.clearLinksTo( 'sulci_voronoi' )
-  eNode.addDoubleLink( 'FoldGraphUpgradeStructure.old_graph', 'old_graph' )
-  eNode.addDoubleLink( 'FoldGraphUpgradeStructure.skeleton', 'skeleton' )
-  eNode.addDoubleLink( 'FoldGraphUpgradeStructure.graph_version',
-    'graph_version' )
-  eNode.addDoubleLink( 'FoldGraphUpgradeStructure.graph', 'graph' )
-  eNode.addDoubleLink( 'FoldGraphUpgradeStructure.commissure_coordinates',
-    'commissure_coordinates' )
-  eNode.addDoubleLink( 'FoldGraphUpgradeStructure.Talairach_transform',
-    'Talairach_transform' )
-  eNode.addLink( 'SulciVoronoi.graph', 'graph' )
-  eNode.addLink( 'graph', 'SulciVoronoi.graph' )
-  eNode.addLink( 'SulciVoronoi.hemi_cortex',
-    'CorticalFoldsGraphThickness.hemi_cortex' )
-  eNode.addLink( 'CorticalFoldsGraphThickness.hemi_cortex',
-    'SulciVoronoi.hemi_cortex' )
-  eNode.addLink( 'CorticalFoldsGraphThickness.graph', 'graph' )
-  eNode.addLink( 'graph', 'CorticalFoldsGraphThickness.graph' )
-  eNode.addLink( 'CorticalFoldsGraphThickness.output_graph', 'graph' )
-  eNode.addLink( 'graph', 'CorticalFoldsGraphThickness.output_graph' )
-  eNode.addLink( 'SulciVoronoi.sulci_voronoi',
-    'CorticalFoldsGraphThickness.sulci_voronoi' )
-  eNode.addLink( 'CorticalFoldsGraphThickness.sulci_voronoi',
-    'SulciVoronoi.sulci_voronoi' )
-  self.setExecutionNode( eNode )
-
+    eNode = SerialExecutionNode(self.name, parameterized=self)
+    eNode.addChild('FoldGraphUpgradeStructure',
+                   ProcessExecutionNode('foldgraphupgradestructure', optional=1))
+    eNode.addChild('SulciVoronoi',
+                   ProcessExecutionNode('SulciVoronoi', optional=1))
+    eNode.addChild('CorticalFoldsGraphThickness',
+                   ProcessExecutionNode('CorticalFoldsGraphThickness',
+                                        optional=1))
+    eNode.CorticalFoldsGraphThickness.clearLinksTo('hemi_cortex')
+    eNode.CorticalFoldsGraphThickness.clearLinksTo('output_graph')
+    eNode.CorticalFoldsGraphThickness.clearLinksTo('sulci_voronoi')
+    eNode.addDoubleLink('FoldGraphUpgradeStructure.old_graph', 'old_graph')
+    eNode.addDoubleLink('FoldGraphUpgradeStructure.skeleton', 'skeleton')
+    eNode.addDoubleLink('FoldGraphUpgradeStructure.graph_version',
+                        'graph_version')
+    eNode.addDoubleLink('FoldGraphUpgradeStructure.graph', 'graph')
+    eNode.addDoubleLink('FoldGraphUpgradeStructure.commissure_coordinates',
+                        'commissure_coordinates')
+    eNode.addDoubleLink('FoldGraphUpgradeStructure.Talairach_transform',
+                        'Talairach_transform')
+    eNode.addLink('SulciVoronoi.graph', 'graph')
+    eNode.addLink('graph', 'SulciVoronoi.graph')
+    eNode.addLink('SulciVoronoi.hemi_cortex',
+                  'CorticalFoldsGraphThickness.hemi_cortex')
+    eNode.addLink('CorticalFoldsGraphThickness.hemi_cortex',
+                  'SulciVoronoi.hemi_cortex')
+    eNode.addLink('CorticalFoldsGraphThickness.graph', 'graph')
+    eNode.addLink('graph', 'CorticalFoldsGraphThickness.graph')
+    eNode.addLink('CorticalFoldsGraphThickness.output_graph', 'graph')
+    eNode.addLink('graph', 'CorticalFoldsGraphThickness.output_graph')
+    eNode.addLink('SulciVoronoi.sulci_voronoi',
+                  'CorticalFoldsGraphThickness.sulci_voronoi')
+    eNode.addLink('CorticalFoldsGraphThickness.sulci_voronoi',
+                  'SulciVoronoi.sulci_voronoi')
+    self.setExecutionNode(eNode)

@@ -32,55 +32,57 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
-import shutil, math, os
+import shutil
+import math
+import os
 
 name = 'Choose best recognition'
 userLevel = 2
 
 signature = Signature(
-    'labelled_graphs', ListOf( ReadDiskItem( 'Labelled Cortical folds graph',
-        'Graph and data',
-        requiredAttributes = { 'automatically_labelled' : 'Yes' } ) ),
-    'energy_plot_files', ListOf( ReadDiskItem( 'siRelax Fold Energy',
-        'siRelax Fold Energy' ) ),
+    'labelled_graphs', ListOf(ReadDiskItem('Labelled Cortical folds graph',
+                                           'Graph and data',
+                                           requiredAttributes={'automatically_labelled': 'Yes'})),
+    'energy_plot_files', ListOf(ReadDiskItem('siRelax Fold Energy',
+                                             'siRelax Fold Energy')),
     'output_graph',
-        WriteDiskItem( 'Labelled Cortical folds graph', 'Graph',
-            requiredAttributes = { 'automatically_labelled' : 'Yes' } ),
-    'energy_plot_file', WriteDiskItem( 'siRelax Fold Energy',
-        'siRelax Fold Energy' ),
-    'stats_file', WriteDiskItem( 'Text file', 'Text file' ),
+    WriteDiskItem('Labelled Cortical folds graph', 'Graph',
+                  requiredAttributes={'automatically_labelled': 'Yes'}),
+    'energy_plot_file', WriteDiskItem('siRelax Fold Energy',
+                                      'siRelax Fold Energy'),
+    'stats_file', WriteDiskItem('Text file', 'Text file'),
 )
 
 
-def initialization( self ):
-    self.setOptional( 'stats_file' )
-    self.linkParameters( 'output_graph', 'labelled_graphs' )
-    self.linkParameters( 'energy_plot_files', 'labelled_graphs' )
-    self.linkParameters( 'energy_plot_file', 'output_graph' )
-    self.linkParameters( 'stats_file', 'output_graph' )
+def initialization(self):
+    self.setOptional('stats_file')
+    self.linkParameters('output_graph', 'labelled_graphs')
+    self.linkParameters('energy_plot_files', 'labelled_graphs')
+    self.linkParameters('energy_plot_file', 'output_graph')
+    self.linkParameters('stats_file', 'output_graph')
 
 
-def execution( self, context ):
-    if len( self.energy_plot_files ) != len( self.labelled_graphs ):
-        raise ValueError( _t_( 'There should be one energy plot file for ' \
-            'each labelled graph.' ) )
+def execution(self, context):
+    if len(self.energy_plot_files) != len(self.labelled_graphs):
+        raise ValueError(_t_('There should be one energy plot file for '
+                             'each labelled graph.'))
     energies = []
     for s in self.energy_plot_files:
-        f = open( s.fullPath() )
+        f = open(s.fullPath())
         en = f.readlines()
         f.close()
-        en = en[ len(en)-1 ].split()[2]
-        energies.append( float( en ) )
-        context.write( 'energy:', en, '\n' )
-    context.write( '\nfinal energies:\n' )
-    context.write( energies )
+        en = en[len(en)-1].split()[2]
+        energies.append(float(en))
+        context.write('energy:', en, '\n')
+    context.write('\nfinal energies:\n')
+    context.write(energies)
     emin = 0
     M = 0
     mean = 0
     var = 0
     if self.stats_file:
-        statsfile = open( self.stats_file.fullPath(), 'w' )
-    for x in xrange( len( self.labelled_graphs ) ):
+        statsfile = open(self.stats_file.fullPath(), 'w')
+    for x in xrange(len(self.labelled_graphs)):
         mean += energies[x]
         var += energies[x] * energies[x]
         if x == 0:
@@ -92,20 +94,19 @@ def execution( self, context ):
         if M < energies[x]:
             M = energies[x]
         if self.stats_file:
-            statsfile.write( self.labelled_graphs[x].fullPath() + '\t' + str( energies[x] ) + '\n' )
-    mean /= len( self.labelled_graphs )
-    var = var / len( self.labelled_graphs ) - mean * mean
+            statsfile.write(self.labelled_graphs[x].fullPath(
+            ) + '\t' + str(energies[x]) + '\n')
+    mean /= len(self.labelled_graphs)
+    var = var / len(self.labelled_graphs) - mean * mean
     if self.stats_file:
-        statsfile.write( '\nmin:\t' + str( m ) + '\t(' + str( emin ) + ')\n' )
-        statsfile.write( 'max:\t' + str( M ) + '\n' )
-        statsfile.write( 'mean:\t' + str( mean ) + '\n' )
-        statsfile.write( 'stddev:\t' + str( math.sqrt( var ) ) + '\n' )
+        statsfile.write('\nmin:\t' + str(m) + '\t(' + str(emin) + ')\n')
+        statsfile.write('max:\t' + str(M) + '\n')
+        statsfile.write('mean:\t' + str(mean) + '\n')
+        statsfile.write('stddev:\t' + str(math.sqrt(var)) + '\n')
         statsfile.close()
-    context.write( 'min: ', m, ' for trial ', emin, '\n' )
-    context.system( 'AimsGraphConvert', '-i', self.labelled_graphs[emin], '-o',
-                    self.output_graph )
+    context.write('min: ', m, ' for trial ', emin, '\n')
+    context.system('AimsGraphConvert', '-i', self.labelled_graphs[emin], '-o',
+                   self.output_graph)
     if self.energy_plot_file is not None:
-        shutil.copy( self.energy_plot_files[emin].fullPath(),
-            self.energy_plot_file.fullPath() )
-
-
+        shutil.copy(self.energy_plot_files[emin].fullPath(),
+                    self.energy_plot_file.fullPath())

@@ -40,18 +40,19 @@ configuration = Application().configuration
 
 
 def validation():
-  try:
-      from soma.spm.spm_launcher import SPM12, SPM12Standalone
-  except ImportError:
-      raise ValidationError('The SPM toolbox for BrainVISA is not available')
-  try:
-    spm = SPM12Standalone(configuration.SPM.spm12_standalone_command,
-                         configuration.SPM.spm12_standalone_mcr_path,
-                         configuration.SPM.spm12_standalone_path)
-  except:
-    spm = SPM12(configuration.SPM.spm12_path,
-               configuration.matlab.executable,
-               configuration.matlab.options)
+    try:
+        from soma.spm.spm_launcher import SPM12, SPM12Standalone
+    except ImportError:
+        raise ValidationError('The SPM toolbox for BrainVISA is not available')
+    try:
+        spm = SPM12Standalone(configuration.SPM.spm12_standalone_command,
+                              configuration.SPM.spm12_standalone_mcr_path,
+                              configuration.SPM.spm12_standalone_path)
+    except:
+        spm = SPM12(configuration.SPM.spm12_path,
+                    configuration.matlab.executable,
+                    configuration.matlab.options)
+
 
 name = 'Anatomy Normalization (using SPM12)'
 userLevel = 2
@@ -68,25 +69,26 @@ signature = Signature(
                                                   'Matlab file'),
     'normalized_anatomy_data', WriteDiskItem("Raw T1 MRI",
                                              ['NIFTI-1 image', 'SPM image'],
-                                             {"normalization" : "SPM"})
+                                             {"normalization": "SPM"})
 )
 
-def initialization( self ):
-    configuration.SPM.spm12_path # trigger the spmpathcheck process if needed
-    self.linkParameters("transformations_informations", "anatomy_data" )
-    self.linkParameters("normalized_anatomy_data", "anatomy_data" )
+
+def initialization(self):
+    configuration.SPM.spm12_path  # trigger the spmpathcheck process if needed
+    self.linkParameters("transformations_informations", "anatomy_data")
+    self.linkParameters("normalized_anatomy_data", "anatomy_data")
     self.voxel_size = "[1 1 1]"
     self.cutoff_option = "25"
     self.nbiteration = 16
     self.setOptional("anatomical_template")
     # Link parameters
-    self.anatomical_template = self.signature[ 'anatomical_template' ].findValue( { 'databasename' : 'spm',
-            'skull_stripped' : 'no' } )
+    self.anatomical_template = self.signature['anatomical_template'].findValue({'databasename': 'spm',
+                                                                                'skull_stripped': 'no'})
 
 
-def execution( self, context ):
+def execution(self, context):
     vs = [float(x) for x in self.voxel_size[1:-1].split(' ')]
-    matfileDI = context.temporary( 'Matlab script' )
+    matfileDI = context.temporary('Matlab script')
     # we must instantiate SPM12OldNormaliseEandW_generic and change the type of
     # its sn_mat parameter
     p = getProcessInstance('SPM12OldNormaliseEandW_generic')
@@ -101,4 +103,3 @@ def execution( self, context ):
                        images_written=[self.normalized_anatomy_data],
                        sn_mat=self.transformations_informations,
                        batch_location=matfileDI)
-

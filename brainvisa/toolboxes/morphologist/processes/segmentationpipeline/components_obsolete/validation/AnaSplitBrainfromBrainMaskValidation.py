@@ -7,9 +7,9 @@
 #
 # This software is governed by the CeCILL license version 2 under
 # French law and abiding by the rules of distribution of free software.
-# You can  use, modify and/or redistribute the software under the 
+# You can  use, modify and/or redistribute the software under the
 # terms of the CeCILL license version 2 as circulated by CEA, CNRS
-# and INRIA at the following URL "http://www.cecill.info". 
+# and INRIA at the following URL "http://www.cecill.info".
 #
 # As a counterpart to the access to the source code and  rights to copy,
 # modify and redistribute granted by the license, users are provided only
@@ -24,8 +24,8 @@
 # therefore means  that it is reserved for developers  and  experienced
 # professionals having in-depth computer knowledge. Users are therefore
 # encouraged to load and test the software's suitability as regards their
-# requirements in conditions enabling the security of their systems and/or 
-# data to be ensured and,  more generally, to use and operate it in the 
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
 # same conditions as regards security.
 #
 # The fact that you are presently reading this means that you have had
@@ -38,36 +38,39 @@ name = 'Validation_4 Split Brain from Brain Mask'
 userLevel = 0
 
 signature = Signature(
-  'split_mask', ReadDiskItem( 'Split Brain Mask',
-    'Aims readable volume formats' ),
-  'mri_corrected', ReadDiskItem( 'T1 MRI Bias Corrected',
-    'Aims readable volume formats' ),
-  'validation', Choice("Visualise","Lock","Unlock"),
+    'split_mask', ReadDiskItem('Split Brain Mask',
+                               'Aims readable volume formats'),
+    'mri_corrected', ReadDiskItem('T1 MRI Bias Corrected',
+                                  'Aims readable volume formats'),
+    'validation', Choice("Visualise", "Lock", "Unlock"),
 )
 
-def initialization( self ):
-  self.linkParameters(  'mri_corrected','split_mask' )
-  self.validation = "Visualise"
 
-def execution( self, context ):
+def initialization(self):
+    self.linkParameters('mri_corrected', 'split_mask')
+    self.validation = "Visualise"
+
+
+def execution(self, context):
     if self.validation == "Visualise":
-      return(context.runProcess('AnatomistShowSplitBrain',
-        mri_corrected=self.mri_corrected,split_mask=self.split_mask))
+        return(context.runProcess('AnatomistShowSplitBrain',
+                                  mri_corrected=self.mri_corrected, split_mask=self.split_mask))
     elif self.validation == "Lock":
-      if os.path.exists(self.split_mask.fullName() + '.loc'):
-        context.write(self.split_mask.fullName(),'has already been locked')
-      else:
-        shelltools.touch( self.split_mask.fullName() + '.loc' )
+        if os.path.exists(self.split_mask.fullName() + '.loc'):
+            context.write(self.split_mask.fullName(),
+                          'has already been locked')
+        else:
+            shelltools.touch(self.split_mask.fullName() + '.loc')
 
     elif self.validation == "Unlock":
-      if os.path.exists(self.split_mask.fullName() + '.loc'):
-        os.unlink( self.split_mask.fullName() + '.loc' )
-      else:
-        context.write(self.split_mask.fullName(),'has not been locked')
-    #elif self.validation == "Delete":
-        #if os.path.exists(self.split_mask.fullName() + '.loc'):
+        if os.path.exists(self.split_mask.fullName() + '.loc'):
+            os.unlink(self.split_mask.fullName() + '.loc')
+        else:
+            context.write(self.split_mask.fullName(), 'has not been locked')
+    # elif self.validation == "Delete":
+            # if os.path.exists(self.split_mask.fullName() + '.loc'):
             #context.write("Sorry, I can not delete ",self.split_mask.fullName(),', which has been locked')
-        #elif os.path.exists(self.split_mask.fullName() + '.ima') or os.path.exists(self.split_mask.fullName() + '.ima.gz'):
+            # elif os.path.exists(self.split_mask.fullName() + '.ima') or os.path.exists(self.split_mask.fullName() + '.ima.gz'):
             #shelltools.rm( self.split_mask.fullName() + '.*' )
-        #else:
+            # else:
             #context.write("Sorry ", self.split_mask.fullName(),' does not exist on fdisk')

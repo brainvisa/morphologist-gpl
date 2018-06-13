@@ -33,14 +33,13 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
-include( 'anatomy' )
+include('anatomy')
 
-insert( '{center}/{subject}',
-    'morphologist_longitudinal', SetContent(
-        '{coregistration}_{coregistration_analysis}', SetContent(
-            '{analysis}', SetContent(
-            ),
-        ),
-    ),
-)
-
+insert('{center}/{subject}',
+       'morphologist_longitudinal', SetContent(
+           '{coregistration}_{coregistration_analysis}', SetContent(
+               '{analysis}', SetContent(
+               ),
+           ),
+       ),
+       )

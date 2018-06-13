@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 
+
 class DatabaseChecker():
     ''' DatabaseChecker objects are only intended to store as attributes a collection
     of database-related information. '''
+
     def __init__(self):
         pass
+
 
 from diskusage.check import check_disk_usage
 from hierarchies.check import check_hierarchies
@@ -16,4 +19,3 @@ from hierarchies.snapshots import SnapshotsCheckbase
 from hierarchies.catishared import CATISharedCheckbase
 from hierarchies.spm import SPMCheckbase
 from hierarchies.checkbase import Checkbase
-
