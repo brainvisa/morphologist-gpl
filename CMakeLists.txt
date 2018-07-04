@@ -13,6 +13,7 @@ BRAINVISA_DEPENDENCY( RUN RECOMMENDS "morphologist-private" RUN
 BRAINVISA_DEPENDENCY( RUN RECOMMENDS "aims-til" RUN "= ${aims-til_VERSION}" )
 BRAINVISA_DEPENDENCY( RUN RECOMMENDS "anatomist-gpl" RUN
                       "= ${anatomist-gpl_VERSION}" )
+BRAINVISA_DEPENDENCY( DEV DEPENDS "${PROJECT_NAME}" RUN "= ${${PROJECT_NAME}_VERSION}" )
 BRAINVISA_DEPENDENCY( DEV RECOMMENDS "aims-til" DEV "= ${aims-til_VERSION}" )
 BRAINVISA_DEPENDENCY( DEV RECOMMENDS "anatomist-gpl" DEV
                       "= ${anatomist-gpl_VERSION}" )
