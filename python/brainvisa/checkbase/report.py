@@ -27,10 +27,10 @@ class size(long):
 
 
 def revision_number(filepath):
-    import subprocess
+    import soma.subprocess
     import string
 
-    df = subprocess.Popen(['svn', 'info', filepath], stdout=subprocess.PIPE)
+    df = soma.subprocess.Popen(['svn', 'info', filepath], stdout=soma.subprocess.PIPE)
     output = df.communicate()[0]
     rev_number = string.atoi(output.split('\n')[5].split(' ')[1])
     return rev_number

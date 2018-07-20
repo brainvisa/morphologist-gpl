@@ -11,8 +11,8 @@ def get_size(directory='.', fastmode=True):
     sum of sizes of all the files recursively contained in the directory'''
 
     def fast_get_size(path='.'):
-        import subprocess
-        df = subprocess.Popen(['du', '-sb', path], stdout=subprocess.PIPE)
+        import soma.subprocess
+        df = soma.subprocess.Popen(['du', '-sb', path], stdout=soma.subprocess.PIPE)
         output = df.communicate()[0]
         size, directory = output.rstrip('\n').split('\t')
         return size
@@ -52,14 +52,14 @@ def check_disk_usage(directory, get_sizes=True, studies_list=studies_list, users
     database_checker.other_users = {'datajunkie1337' : 12223, ...}
     '''
     import os
-    import subprocess
+    import soma.subprocess
     import time
     import string
     from brainvisa.checkbase import DatabaseChecker
     start_time = time.time()
 
     # get df output
-    df = subprocess.Popen(["df", directory], stdout=subprocess.PIPE)
+    df = soma.subprocess.Popen(["df", directory], stdout=soma.subprocess.PIPE)
     output = df.communicate()[0]
     device, size, used, available, percent, mountpoint = \
         output.split("\n")[1].split()

@@ -32,7 +32,7 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
-import subprocess
+import soma.subprocess
 import re
 
 
@@ -71,8 +71,8 @@ def execution(self, context):
         tr.setTranslation([vol.getSizeX() * vs[0] / 2,
                            vol.getSizeY() * vs[1] / 2, vol.getSizeZ() * vs[2] / 2, ])
     else:
-        p = subprocess.Popen(['AimsMassCenter',
-                              self.input_image.fullPath()], stdout=subprocess.PIPE,
+        p = soma.subprocess.Popen(['AimsMassCenter',
+                              self.input_image.fullPath()], stdout=soma.subprocess.PIPE,
                              shell=False)
         pout = p.communicate()[0]
         if p.returncode != 0:

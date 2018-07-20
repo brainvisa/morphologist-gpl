@@ -38,7 +38,7 @@ import distutils.spawn
 import os
 
 from soma.wip.application.api import Application
-import subprocess
+import soma.subprocess
 
 configuration = Application().configuration
 
