@@ -51,7 +51,7 @@ class SPMNormalization(SPMnormalizationPipeline):
             self.nodes['normalization_t1_spm12_reinit'].enabled = False
             self.nodes['normalization_t1_spm8_reinit'].enabled = False
         else:
-            if self.get_study_config().spm_version in ('12', None):
+            if self.get_study_config().spm_version in ('12', None, Undefined):
                 self.nodes['normalization_t1_spm8_reinit'].enabled = False
                 self.NormalizeSPM = 'normalization_t1_spm12_reinit'
             else:
