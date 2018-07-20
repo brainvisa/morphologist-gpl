@@ -39,7 +39,7 @@ from brainvisa.data import neuroHierarchy
 import distutils.spawn
 from soma.wip.application.api import Application
 import brainvisa.processes
-import subprocess
+import soma.subprocess
 import glob
 from brainvisa.configuration.sulci_configuration import SulciConfiguration
 

@@ -7,7 +7,7 @@ except ImportError:
     from enthought.traits.api import ListStr, HasTraits, File, Float, Instance, Enum, Str, Int
 
 from soma.controller import Controller, add_trait
-import subprocess
+import soma.subprocess
 import anatomist.api as ana
 
 
@@ -61,4 +61,4 @@ class ShowWhiteRidges(Controller):
 
     def __call__(self):
         """ Function to call the execution """
-        subprocess.check_call(self.command())
+        soma.subprocess.check_call(self.command())

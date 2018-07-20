@@ -41,7 +41,7 @@ import os
 import sys
 
 from soma.wip.application.api import Application
-import subprocess
+import soma.subprocess
 
 configuration = Application().configuration
 
