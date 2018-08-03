@@ -35,6 +35,9 @@ from brainvisa.processes import *
 from brainvisa.validation import ValidationError
 from soma.wip.application.api import Application
 
+import os.path
+
+
 configuration = Application().configuration
 
 
@@ -87,7 +90,12 @@ def initialization(self):
 
 def execution(self, context):
     vs = [float(x) for x in self.voxel_size[1:-1].split(' ')]
-    matfileDI = context.temporary('Matlab script')
+    # The directory containing the batch-file is used as working directory for
+    # SPM; by allocating a temporary directory instead of a temporary Matlab
+    # script we ensure that the working directory will be different for each
+    # run (this avoids clobbering intermediate results during parallel runs).
+    tmpdir = context.temporary('Directory')
+    matfile_path = os.path.join(tmpdir.fullPath(), "batch.m")
     # we must instantiate SPM8NormaliseEandW_generic and change the type of
     # its sn_mat parameter
     p = getProcessInstance('SPM8NormaliseEandW_generic')
@@ -101,4 +109,4 @@ def execution(self, context):
                        voxel_size=vs,
                        images_written=[self.normalized_anatomy_data],
                        sn_mat=self.transformations_informations,
-                       batch_location=matfileDI)
+                       batch_location=matfile_path)
