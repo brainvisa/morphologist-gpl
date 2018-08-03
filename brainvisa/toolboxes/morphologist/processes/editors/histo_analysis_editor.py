@@ -88,6 +88,8 @@ def delInMainThread(lock, thing):
 
 
 def execution(self, context):
+    from soma.qt_gui.qtThread import MainThreadLife
+
     hdata = load_histo_data(self.histo_analysis.fullPath(),
                             self.histo.fullPath())
     hwid = mainThreadActions().call(create_histo_editor, hdata,
@@ -95,17 +97,7 @@ def execution(self, context):
     try:
         mainThreadActions().call(hwid.exec_)
     finally:
-        # the following ensures pv is deleted in the main thread, and not
-        # in the current non-GUI thread. The principle is the following:
-        # - acquire a lock
-        # - pass the pv object to something in the main thread
-        # - the main thread waits on the lock while holding a reference on pv
-        # - we delete pv in the process thread
-        # - the lock is releasd from the pv thread
-        # - now the main thread can go on, and del / release the ref on pv: it
-        #   is the last ref on pv, so it is actually deleted there.
-        lock = threading.Lock()
-        lock.acquire()
-        mainThreadActions().push(delInMainThread, lock, hwid)
+        # the following ensures hwid is deleted in the main thread, and not
+        # in the current non-GUI thread.
+        hwid = MainThreadLife(hwid)
         del hwid
-        lock.release()
