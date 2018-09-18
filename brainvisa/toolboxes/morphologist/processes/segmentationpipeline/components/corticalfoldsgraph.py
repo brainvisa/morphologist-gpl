@@ -132,6 +132,25 @@ def initialization(self):
         di = WriteDiskItem('Sulci Voronoi', str(format))
         return di.findValue(self.graph)
 
+    def link_tal(self, proc):
+        # a direct link to grey_white would refer to an analysis session
+        # however talairach_transform is outside the analysis session and lies
+        # next to the raw T1 acquisition. In rate (and probably erroneous)
+        # cases when the acquisition and the analysis have a different
+        # center attribute, talairach_transform should take it from the raw
+        # T1 MRI.
+        tal = None
+        t1mri = ReadDiskItem(
+            'Raw T1 MRI',
+            'aims readable volume formats').findValue(self.grey_white)
+        if t1mri is not None:
+            tal = self.signature['talairach_transform'].findValue(t1mri)
+        if tal is None:
+            # fallback to grey_white
+            tal = self.signature['talairach_transform'].findValue(
+                self.grey_white)
+        return tal
+
     self.graph_version = '3.1'
     self.addLink(None, 'graph_version', self.buildNewSignature)
     self.linkParameters('roots', 'skeleton')
@@ -141,7 +160,7 @@ def initialization(self):
     self.linkParameters('white_mesh', 'grey_white')
     self.linkParameters('pial_mesh', 'white_mesh')
     self.linkParameters('commissure_coordinates', 'grey_white')
-    self.linkParameters('talairach_transform', 'grey_white')
+    self.linkParameters('talairach_transform', 'grey_white', link_tal)
     self.linkParameters(
         'graph', ('skeleton', 'graph_version'), linkGraphVersion)
     self.linkParameters('sulci_voronoi', ('graph', 'skeleton'), linkVoronoi)
