@@ -52,7 +52,7 @@ signature = Signature(
 
 def initialization(self):
     self.linkParameters('commissure_coordinates', 'split_mask')
-    self.linkParameters('Talairach_transform', 'split_mask')
+    self.linkParameters('Talairach_transform', 'commissure_coordinates')
 
 
 def execution(self, context):
