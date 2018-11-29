@@ -190,12 +190,22 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
             settings=database_settings)
         neuroHierarchy.databases.add(database)
         neuroConfig.dataPath.append(database_settings)
+        # update new database
         try:
             database.clear(context=defaultContext())
             database.update(context=defaultContext())
         except:
             if not allow_ro:
                 raise
+        # update shared database
+        shared_db = [db for db in neuroHierarchy.databases.iterDatabases()
+                     if db.fso.name== 'shared']
+        for db in shared_db:
+            try:
+                db.clear(context=defaultContext())
+                db.update(context=defaultContext())
+            except:
+                pass # oh, well.
         return database
 
     @staticmethod
