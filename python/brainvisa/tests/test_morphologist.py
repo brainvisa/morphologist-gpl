@@ -161,6 +161,7 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
     def download_data(dir_):
         if not os.path.exists(dir_):
             os.makedirs(dir_)
+        old_cwd = os.getcwd()
         os.chdir(dir_)
         if not os.path.exists("demo_data.zip"):
             print("* Download ftp://ftp.cea.fr/pub/dsv/anatomist/data/demo_data.zip to",
@@ -174,6 +175,9 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
             rmtree("data_unprocessed")
         zf = zipfile.ZipFile("demo_data.zip")
         zf.extractall()
+        
+        # Reset current working directory to previous one
+        os.chdir(old_cwd)
 
     @staticmethod
     def create_database(database_directory, allow_ro=False):
