@@ -157,9 +157,9 @@ def execution(self, context):
         d = [(float(x)*y-z)/2. for x, y,
              z in zip(dim[:3], vs[:3], [157, 189, 136])]
         trl = aims.Motion()
-        trl.translation()[0] = d[0]
-        trl.translation()[1] = d[1]
-        trl.translation()[2] = d[2]
+        trl.toMatrix()(0, 3) = d[0]
+        trl.toMatrix()(1, 3) = d[1]
+        trl.toMatrix()(2, 3) = d[2]
         aimsToMni = trl * spmAimsToMni
         outref = registration.talairachMNIReferentialId
 
