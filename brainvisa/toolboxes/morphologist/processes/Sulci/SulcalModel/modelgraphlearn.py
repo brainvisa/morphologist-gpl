@@ -81,7 +81,7 @@ signature = Signature(
 
 def cleanSignature(self):
     def delItem(signature, item):
-        if signature.has_key(item):
+        if item in signature:
             del signature[item]
     items = ['learning_mode', 'parallelism_mode', 'time', 'email',
              'learningbase_data_graphs', 'testbase_data_graphs',
@@ -94,7 +94,7 @@ def cleanSignature(self):
 def parallel_config_directory_callback(self, *args, **kwargs):
     if self.model_graph is None:
         return
-    if self.signature.has_key('parallel_config_directory'):
+    if 'parallel_config_directory' in self.signature:
         self.parallel_config_directory = os.path.join(os.path.dirname(
             self.model_graph.fullPath()), 'tasks', self.learning_mode)
 

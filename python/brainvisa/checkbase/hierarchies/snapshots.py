@@ -44,7 +44,7 @@ class SnapshotsCheckbase(Checkbase):
                 datatype, attributes = m
                 subject = attributes['subject']
                 all_subjects_files.setdefault(subject, {})
-                if all_subjects_files[subject].has_key(datatype):
+                if datatype in all_subjects_files[subject]:
                     if isinstance(all_subjects_files[subject][datatype], list):
                         all_subjects_files[subject][datatype].append(
                             attributes)

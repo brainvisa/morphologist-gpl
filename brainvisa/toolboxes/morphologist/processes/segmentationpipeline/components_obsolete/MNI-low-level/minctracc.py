@@ -282,7 +282,7 @@ def execution(self, context):
           self.target.fullPath(),
           self.output_transfile.fullPath()]
 
-    apply(context.system, call_list+option_list+io)
+    context.system(*(call_list+option_list+io))
 
     if self.transformed_source is not None:
         if self.transformation_direction == 'Forward':
@@ -291,4 +291,4 @@ def execution(self, context):
         else:
             command = ['mincresample', '-invert_transformation', '-clobber', '-like',
                        self.target.fullPath(), self.source.fullPath(), self.transformed_source.fullPath()]
-        apply(context.system, command)
+        context.system(*command)

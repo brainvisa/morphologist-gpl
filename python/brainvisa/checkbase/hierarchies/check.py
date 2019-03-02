@@ -93,7 +93,7 @@ def _check_directories(rootdirectory, dirlist, verbose=True):
             print(eachdir, 'in progress')
         db_dir = os.path.join(rootdirectory, eachdir)
         h = c.detect_hierarchies(db_dir, maxdepth=3)
-        assert(not hierarchies.has_key(eachdir))
+        assert(eachdir not in hierarchies)
         hierarchies[eachdir] = h
         dir_checks = perform_checks_hierarchy(h)
 

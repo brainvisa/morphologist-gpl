@@ -66,25 +66,25 @@ templ_sulci2 = (
 
     'default', SetWeakAttr('sulci_recognition_session', 'default'),
     SetPriorityOffset(+1),
-    apply(SetContent, templ_sulci1),
+    SetContent(*templ_sulci1),
     '{sulci_recognition_session}',
-    apply(SetContent, templ_sulci1),
+    SetContent(*templ_sulci1),
 )
 
 sulci_content = (
     "default", SetWeakAttr('sulciGraph', 'default'), SetWeakAttr(
         'graph_version', '3.1'), SetPriorityOffset(+1),
-    apply(SetContent, templ_sulci2),
+    SetContent(*templ_sulci2),
     '{sulciGraph}', SetWeakAttr('graph_version', '3.1'),
-    apply(SetContent, templ_sulci2),
+    SetContent(*templ_sulci2),
 )
 
 
 insert('{protocol}/{subject}',
 
        "sulci", SetWeakAttr('acquisition', ''),
-       apply(SetContent, sulci_content +
-             ('{acquisition}', apply(SetContent, sulci_content), )),
+       SetContent(*(sulci_content +
+             ('{acquisition}', SetContent(*sulci_content), ))),
        )
 
 insert('{protocol}/{subject}/graphe/{sulci_recognition_session}',

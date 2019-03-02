@@ -113,7 +113,7 @@ def execution(self, context):
             fi.write(subject + ';' + ';'.join(column) + '\n')
         elif self.sort_by == 'sulcus':
             for sulcus in sulci:
-                if meas_by_sulcus.has_key(sulcus):
+                if sulcus in meas_by_sulcus:
                     meas_by_sulcus[sulcus][subject] = list(
                         csv[sulci_arr == sulcus][0])[1:]
                 else:

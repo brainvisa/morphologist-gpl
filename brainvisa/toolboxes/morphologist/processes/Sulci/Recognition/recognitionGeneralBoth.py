@@ -314,7 +314,7 @@ def initialization(self):
             eNode.LeftSulciRecognition.recognition2000.setSelected(True)
             eNode.RightSulciRecognition.recognition2000.setSelected(True)
         if model != spam_model:
-            if signature.has_key('spam_method'):
+            if 'spam_method' in signature:
                 del signature['spam_method']
         process.changeSignature(signature)
 
@@ -333,7 +333,7 @@ def initialization(self):
                                                        'global_registered_spam'},
                                             requiredAttributes=None, write=False)
     try:
-        spammodels.next()
+        next(spammodels)
         self.model = spam_model
     except StopIteration:
         self.model = ann_model

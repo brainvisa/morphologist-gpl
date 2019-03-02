@@ -64,7 +64,7 @@ class TopNode(SerialExecutionNode):
 
     def cleanSignature(self):
         def delItem(signature, item):
-            if signature.has_key(item):
+            if item in signature:
                 del signature[item]
         items = ['parallelism_mode', 'package', 'email', 'time',
                  'parallel_config_directory']

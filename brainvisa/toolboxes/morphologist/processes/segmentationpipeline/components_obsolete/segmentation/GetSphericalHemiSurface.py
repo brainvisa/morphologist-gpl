@@ -90,7 +90,7 @@ def execution(self, context):
                        skeleton, "-vo", roots, "-g", braing, "-ve", "1", "-w", "t"]
             if self.fix_random_seed:
                 command.extend(['-srand', 10])
-            apply(context.system, command)
+            context.system(*command)
 
             context.write("Reconstructing left hemisphere surface...")
             hemi = context.temporary('NIFTI-1 Image')
@@ -99,7 +99,7 @@ def execution(self, context):
                        self.left_hemi_cortex, "-o", hemi, "-m", "H", "-w", "t"]
             if self.fix_random_seed:
                 command.extend(['-srand', 10])
-            apply(context.system, command)
+            context.system(*command)
 
             context.system("VipSingleThreshold", "-i", hemi, "-o",
                            hemi, "-t", "0", "-c", "b", "-m", "ne", "-w", "t")
@@ -137,7 +137,7 @@ def execution(self, context):
                        skeleton,  "-vo", roots, "-g", braing, "-ve", "1", "-w", "t"]
             if self.fix_random_seed:
                 command.extend(['-srand', 10])
-            apply(context.system, command)
+            context.system(*command)
 
             context.write("Reconstructing right hemisphere surface...")
             hemi = context.temporary('NIFTI-1 Image')
@@ -145,7 +145,7 @@ def execution(self, context):
                        self.right_hemi_cortex, "-o", hemi, "-m", "H", "-w", "t"]
             if self.fix_random_seed:
                 command.extend(['-srand', 10])
-            apply(context.system, command)
+            context.system(*command)
 
             context.system("VipSingleThreshold", "-i", hemi, "-o",
                            hemi, "-t", "0", "-c", "b", "-m", "ne", "-w", "t")

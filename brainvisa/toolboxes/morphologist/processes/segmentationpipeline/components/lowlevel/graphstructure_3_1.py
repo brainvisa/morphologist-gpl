@@ -106,7 +106,7 @@ def execution(self, context):
                "-g", braing, "-ve", "1", "-w", "t"]
     if self.fix_random_seed:
         command.extend(['-srand', 10])
-    apply(context.system, command)
+    context.system(*command)
 
     context.write("Building Attributed Relational Graph...")
     graphd = context.temporary('Directory')

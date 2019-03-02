@@ -84,10 +84,10 @@ def json2html(json, embedded_data=None, with_head_tags=True):
 
         bgcolor = '#FFFFFF'
         for each in json['key_items']:
-            bgcolor = color[items.has_key(each)]
+            bgcolor = color[each in items]
             emb_data = ''
-            if items.has_key(each):
-                if not embedded_data is None and embedded_data.has_key(subject) and embedded_data[subject].has_key(each):
+            if each in items:
+                if not embedded_data is None and subject in embedded_data and each in embedded_data[subject]:
                     emb_data = embedded_data[subject][each]
                 html += "   <td bgcolor=%s data-exis='%s' data-date='%s' class='b-table__cell'>&nbsp;</td>" % (
                     bgcolor, items[each], emb_data)
@@ -162,7 +162,7 @@ def measuresjson2html(json, embedded_data=None, with_head_tags=True):
 
         bgcolor = '#FFFFFF'
         for each in names:
-            exists = items.has_key(each)
+            exists = each in items
             bgcolor = color[exists]
 #           if exists:
 #              html += "   <td bgcolor=%s>&nbsp;</td>"%(bgcolor)
@@ -281,7 +281,7 @@ def save_volumes(volumes, logdir='/neurospin/cati/Users/operto/logs/volumes/', d
         for subject, vol in volumes.items():
             subject_row = [unicode(subject).encode("utf-8")]
             for k in fields_names[1:]:
-                if vol.has_key(k):
+                if k in vol:
                     subject_row.append('%3.2f' % vol[k])
                 else:
                     subject_row.append('n/a')
