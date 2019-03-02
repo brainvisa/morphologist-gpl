@@ -68,7 +68,7 @@ def modelValue(self, proc, procbis):
     val = None
     if proc.data_graph:
         val = proc.data_graph.attributes()
-        if val.has_key('graph_version'):
+        if 'graph_version' in val:
             del val['graph_version']
     rdi = ReadDiskItem('Model graph', 'Graph',
                        requiredAttributes={'trained': 'Yes'})

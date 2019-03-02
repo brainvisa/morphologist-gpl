@@ -14,6 +14,7 @@ from soma.qt_gui.qt_backend import init_matplotlib_backend
 init_matplotlib_backend()
 from matplotlib import pyplot
 import matplotlib.ticker
+import six
 
 
 class EnhancedSciFormatter(matplotlib.ticker.ScalarFormatter):
@@ -163,7 +164,7 @@ class HistoAnalysisWidget(QtGui.QWidget):
             else:
                 axes.tick_params(colors=colorname)
                 axes.tick_params(labelsize=labelsize)
-            for axisline in axes.spines.itervalues():
+            for axisline in six.itervalues(axes.spines):
                 axisline.set_color(str(textcolor.name()))
 
     def set_binned_data(self, bdata):
@@ -256,7 +257,7 @@ class HistoAnalysisWidget(QtGui.QWidget):
         else:
             axes.tick_params(colors=colorname)
             axes.tick_params(labelsize=labelsize)
-        for axisline in axes.spines.itervalues():
+        for axisline in six.itervalues(axes.spines):
             axisline.set_color(colorname)
 
         # use our EnhancedSciFormatter for y ticks labels

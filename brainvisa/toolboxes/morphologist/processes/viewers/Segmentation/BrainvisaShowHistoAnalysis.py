@@ -90,4 +90,4 @@ def execution(self, context):
         option_list += ['-Mask', self.hfiltered.fullPath()]
     if self.use_wridges and self.white_ridges is not None:
         option_list += ['-Ridge', self.white_ridges.fullPath()]
-    apply(context.system, constant_list + option_list)
+    context.system(*(constant_list + option_list))

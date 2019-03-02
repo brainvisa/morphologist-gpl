@@ -83,7 +83,7 @@ def processregexp(regexp, attributes, wildcards=True):
             field = m.groupdict()['field']
             #print(field, attributes[field], each[_findmatchingparenthesis(each)+1:])
             if wildcards:
-                if not attributes.has_key(field):
+                if field not in attributes:
                     attributes[field] = '*'
             res.append('%s%s' % (
                 attributes[field], each[_findmatchingparenthesis(each)+1:].rstrip('$)')))

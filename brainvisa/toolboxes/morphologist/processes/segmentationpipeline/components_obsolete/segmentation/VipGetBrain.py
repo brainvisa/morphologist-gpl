@@ -109,7 +109,7 @@ def execution(self, context):
                      '-First', self.first_slice,
                      '-Last', self.last_slice,
                      '-layer', self.layer]
-        apply(context.system, call_list+option_list)
+        context.system(*(call_list+option_list))
 
         # manage referentials
         tm = registration.getTransformationManager()

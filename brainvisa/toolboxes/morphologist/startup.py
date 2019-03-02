@@ -138,5 +138,5 @@ if spmdir is not None:
     del spmtemplates, spmdir
 
 # Sulci configuration
-if not configuration.signature.has_key('sulci'):
+if not 'sulci' in configuration.signature:
     configuration.add('sulci', SulciConfiguration())

@@ -148,7 +148,7 @@ class Checkbase():
         if not attributes:
             attributes = {'subject': subject}
 
-        assert(attributes.has_key('subject'))
+        assert('subject' in attributes)
         attributes.setdefault('database', self.directory)
 
         from glob import glob
@@ -172,12 +172,12 @@ class Checkbase():
         if not hasattr(self, 'existingfiles'):
             items = self.get_subject_hierarchy_files(subject)
         else:
-            if self.existingfiles[0].has_key(subject):
+            if subject in self.existingfiles[0]:
                 items = self.existingfiles[0][subject]
 
         missing = []
         for key in keyitems:
-            if not items.has_key(key):
+            if key not in item:
                 missing.append(key)
         return missing
 
@@ -217,7 +217,7 @@ class Checkbase():
                 if m:
                     datatype, attributes = m
                     all_subjects_files.setdefault(subject, {})
-                    if all_subjects_files[subject].has_key(datatype):
+                    if datatype in all_subjects_files[subject]:
                         if isinstance(all_subjects_files[subject][datatype], list):
                             all_subjects_files[subject][datatype].append(
                                 attributes)
@@ -244,7 +244,7 @@ class Checkbase():
         complete_subjects = []
         incomplete_subjects = []
         for subject in self.get_flat_subjects():
-            if self.existingfiles[0].has_key(subject):
+            if subject in self.existingfiles[0]:
                 c = len(set(self.existingfiles[0][subject].keys()).intersection(
                     set(keyitems)))
                 if c == len(keyitems):
@@ -265,7 +265,7 @@ class Checkbase():
             self.check_database_for_existing_files(save=True)
         empty_subjects = []
         for subject in set(self.get_flat_subjects()).difference(set(self.get_multiple_subjects())):
-            if not self.existingfiles[0].has_key(subject):
+            if subject not in self.existingfiles[0]:
                 empty_subjects.append(subject)
         if save:
             self.empty_subjects = empty_subjects

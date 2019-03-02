@@ -111,4 +111,4 @@ def execution(self, context):
                      '-ccsize', self.cc_min_size,
                      '-walgo', self.white_algo
                      ]
-        apply(context.system, call_list+option_list)
+        context.system(*(call_list+option_list))

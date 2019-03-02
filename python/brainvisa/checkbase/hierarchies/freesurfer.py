@@ -177,7 +177,7 @@ class FreeSurferCheckbase(Checkbase):
         self.volumes = {}
         for subject in files.keys():
             key = 'aseg_stats'
-            if files[subject].has_key(key):
+            if key in files[subject:
                 path = getfilepath(
                     key, files[subject][key], patterns=self.patterns)
                 test = open(path, 'r').readlines()
@@ -213,7 +213,7 @@ class FreeSurferCheckbase(Checkbase):
         self.thicknesses = {}
         for subject in files.keys():
             for key in ['left_aparc_stats', 'right_aparc_stats']:
-                if files[subject].has_key(key):
+                if key in files[subject]:
                     path = getfilepath(
                         key, files[subject][key][0], patterns=self.patterns)
                     test = open(path, 'r').readlines()

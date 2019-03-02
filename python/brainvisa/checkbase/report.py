@@ -354,7 +354,7 @@ class HTMLReportGenerator():
             summary = self._generate_detailed_directories()
             from brainvisa.checkbase import check
             ed = None
-            if j.has_key('embedded_data'):
+            if 'embedded_data' in j:
                 ed = j['embedded_data']['dates']
             html = check.json2html(j, embedded_data=ed, with_head_tags=False)
             import string
