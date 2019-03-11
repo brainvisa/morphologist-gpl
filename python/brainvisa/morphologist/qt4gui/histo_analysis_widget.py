@@ -12,8 +12,10 @@ import numpy
 from soma.qt_gui.qt_backend import QtGui, QtCore
 from soma.qt_gui.qt_backend import init_matplotlib_backend
 init_matplotlib_backend()
+import matplotlib
 from matplotlib import pyplot
 import matplotlib.ticker
+import sys
 import six
 
 
@@ -181,11 +183,11 @@ class HistoAnalysisWidget(QtGui.QWidget):
         # rescale/bin histogram data to nbins bins
         dlen = data[-1, 0] + 1
         orig_bin_size = data[1, 0] - data[0, 0]
-        bins = [(i * float(dlen) / nbins) for i in xrange(nbins)]
+        bins = [(i * float(dlen) // nbins) for i in six.moves.xrange(nbins)]
         bins.append(-1)
-        self.bdata = [numpy.sum(data[int(bins[i] / orig_bin_size):
-                                     int(bins[i + 1] / orig_bin_size), 1])
-                      for i in xrange(len(bins) - 1)]
+        self.bdata = [numpy.sum(data[int(bins[i] // orig_bin_size):
+                                     int(bins[i + 1] // orig_bin_size), 1])
+                      for i in six.moves.xrange(len(bins) - 1)]
         self.bins = bins[: -1]
 
     def set_histo_analysis(self, han):
@@ -218,10 +220,10 @@ class HistoAnalysisWidget(QtGui.QWidget):
             return
         # height = max of non-background values
         if self._histo_view_mode == self.HISTO:
-            height = max(self.bdata[len(self.bdata) / 20:])
+            height = max(self.bdata[len(self.bdata) // 20:])
         else:
             height = max(self.histodata.data[
-                self.histodata.data.shape[0] / 20:, 1])
+                self.histodata.data.shape[0] // 20:, 1])
         gx = self.histodata.han[0][0]
         dgx = self.histodata.han[0][1]
         wx = self.histodata.han[1][0]
@@ -234,7 +236,11 @@ class HistoAnalysisWidget(QtGui.QWidget):
         if len(self.mfig.axes) == 0:
             # no axes yet. Create them
             bgcolor = self.palette().color(QtGui.QPalette.Base)
-            axes = self.mfig.add_subplot(111, axisbg=str(bgcolor.name()))
+            if int(matplotlib.__version__.split('.')[0]) >= 2:
+                kwargs = {'fc': str(bgcolor.name())}
+            else:
+                kwargs = {'axisbg': str(bgcolor.name())}
+            axes = self.mfig.add_subplot(1, 1, 1, **kwargs)
         else:
             # use existing axes
             axes = self.mfig.axes[0]
@@ -447,15 +453,17 @@ class HistoAnalysisWidget(QtGui.QWidget):
         denom = 0.5 / numpy.power(sigma, 2)
         data1 = numpy.array([0.] +
                             [numpy.exp(-numpy.power(x, 2) * denom)
-                             for x in xrange(-sigma, sigma + 1)]
+                             for x in six.moves.xrange(-sigma, sigma + 1)]
                             + [0.]) * height * 1.2
         data2 = numpy.array([0., 0., 1.] +
                             [numpy.exp(-numpy.power(x, 2) * denom)
-                             for x in xrange(-int(sigma * smax), -sigma + 1)]
+                             for x in six.moves.xrange(-int(sigma * smax),
+                                                       -sigma + 1)]
                             + [0.]) * height * 1.2
         data3 = numpy.array([0.] +
                             [numpy.exp(-numpy.power(x, 2) * denom)
-                             for x in xrange(sigma, int(sigma * smax) + 1)]
+                             for x in six.moves.xrange(sigma,
+                                                       int(sigma * smax) + 1)]
                             + [0., 1., 0.]) * height * 1.2
         return data1, data2, data3
 
@@ -617,7 +625,11 @@ def load_histo_analysis(hanfile):
     r = re.compile('^.*mean:\s*(-?[0-9]+(\.[0-9]*)?)\s*sigma:\s'
                    '(-?[0-9]+(\.[0-9]*)?)\s*$')
     gmean, gsigma, wmean, wsigma = None, None, None, None
-    for l in open(hanfile).xreadlines():
+    if sys.version_info[0] >= 3:
+        line_iter = open(hanfile).readlines()
+    else:
+        line_iter = open(hanfile).xreadlines()
+    for l in line_iter:
         l = l.strip()
         if l.startswith('gray:'):
             m = r.match(l)
@@ -643,7 +655,11 @@ def save_back_histo_analysis(hanfile, han):
     except IOError:
         hanf = None
     if hanf:
-        for l in hanf.xreadlines():
+        if sys.version_info[0] >= 3:
+            line_iter = open(hanfile).readlines()
+        else:
+            line_iter = open(hanfile).xreadlines()
+        for l in line_iter:
             l = l.strip()
             if l.startswith('gray:'):
                 lines.append('gray: mean: %d sigma: %d' %
