@@ -83,5 +83,5 @@ def execution(self, context):
                 context.error(
                     'Header of the failed subject "%s":\n%s' % (subject, header))
                 raise ValueError('CSV headers do not match')
-        for line in ifi.xreadlines():
+        for line in ifi.readlines():
             f.write(';'.join([subject, line.strip()]) + '\n')
