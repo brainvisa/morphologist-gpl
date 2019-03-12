@@ -63,19 +63,19 @@ def execution(self, context):
     li = None
     for l in lines:
         if l[:3] == 'AC:':
-            ac = map(lambda x: int(x), l.split()[1:4])
+            ac = [int(x) for x in l.split()[1:4]]
         elif l[:3] == 'PC:':
-            pc = map(lambda x: int(x), l.split()[1:4])
+            pc = [int(x) for x in l.split()[1:4]]
         elif l[:3] == 'IH:':
-            ip = map(lambda x: int(x), l.split()[1:4])
+            ip = [int(x) for x in l.split()[1:4]]
         elif l[:5] == 'ACmm:':
-            acm = map(lambda x: float(x), l.split()[1:4])
+            acm = [float(x) for x in l.split()[1:4]]
             la = l
         elif l[:5] == 'PCmm:':
-            pcm = map(lambda x: float(x), l.split()[1:4])
+            pcm = [float(x) for x in l.split()[1:4]]
             lp = l
         elif l[:5] == 'IHmm:':
-            ipm = map(lambda x: float(x), l.split()[1:4])
+            ipm = [float(x) for x in l.split()[1:4]]
             li = l
 
     if len(acm) == 3 and len(pcm) == 3 and len(ipm) == 3:
@@ -101,16 +101,13 @@ def execution(self, context):
         f = open(self.Commissure_coordinates.fullPath(), 'w')
         for l in lines:
             if l == la and wa:
-                f.write('ACmm: ' +
-                        string.join(map(lambda x: str(x), acm)) + '\n')
+                f.write('ACmm: ' + ''.join([str(x) for x in acm]) + '\n')
                 wa = 0
             elif l == lp and wp:
-                f.write('PCmm: ' +
-                        string.join(map(lambda x: str(x), pcm)) + '\n')
+                f.write('PCmm: ' + ''.join([str(x) for x in pcm]) + '\n')
                 wp = 0
             elif l == li and wi:
-                f.write('IHmm: ' +
-                        string.join(map(lambda x: str(x), ipm)) + '\n')
+                f.write('IHmm: ' + ''.join([str(x) for x in ipm]) + '\n')
                 wi = 0
             else:
                 f.write(l)
@@ -119,14 +116,11 @@ def execution(self, context):
                     'defined in voxels\n')
             f.write('# They stem from the following coordinates in '
                     'millimeters:\n')
-            f.write('ACmm: ' +
-                    string.join(map(lambda x: str(x), acm)) + '\n')
+            f.write('ACmm: ' + ''.join([str(x) for x in acm]) + '\n')
         if wp:
-            f.write('PCmm: ' +
-                    string.join(map(lambda x: str(x), pcm)) + '\n')
+            f.write('PCmm: ' + ''.join([str(x) for x in pcm]) + '\n')
         if wi:
-            f.write('IHmm: ' +
-                    string.join(map(lambda x: str(x), ipm)) + '\n')
+            f.write('IHmm: ' + ''.join([str(x) for x in ipm]) + '\n')
         f.close()
     except:
         # could not write modifications
