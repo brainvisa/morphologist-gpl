@@ -251,4 +251,33 @@ def execution(self, context):
         if self.write_cortex_mid_interface is not None:
             trManager.copyReferential(self.skeleton, self.cortex_mid_interface)
 
+    # copy transformations (Talairach) to put it back after copyReferential
+    self.graph.readAndUpdateMinf()
+    grefs = self.graph.get('referentials')
+    gtrans = self.graph.get('transformations')
+    print('grefs:', grefs)
+    print('gtrans:', gtrans)
     trManager.copyReferential(self.skeleton, self.graph)
+    ngrefs = self.graph.get('referentials')
+    ngtrans = self.graph.get('transformations')
+    print('ngrefs:', ngrefs)
+    print('ngtrans:', ngtrans)
+    # merge Talairach transform into header
+    for ref, trans in zip(grefs, gtrans):
+        try:
+            i = ngrefs.index(ref)
+            ngtrans[i] = trans
+            print(ref, 'replace', i)
+        except:
+            print(ref, 'appended')
+            ngrefs.append(ref)
+            ngtrans.append(trans)
+    print('now ngrefs:', ngrefs)
+    print('now ngtrans:', ngtrans)
+    if len(grefs) != 0:
+        self.graph.updateMinf({'referentials': ngrefs,
+                               'transformations': ngtrans},
+                              saveMinf=True)
+    print('new minf:', self.graph.get('referentials'))
+    context.system('cat', '%s.minf' % self.graph.fullPath())
+
