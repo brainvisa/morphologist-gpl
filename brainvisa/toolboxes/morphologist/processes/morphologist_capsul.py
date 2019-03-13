@@ -2,6 +2,7 @@
 from brainvisa.processes import *
 from soma.qt_gui.qtThread import MainThreadLife
 from brainvisa.processing import capsul_process
+import six
 
 name = 'Morphologist CAPSUL iteration'
 
@@ -190,7 +191,7 @@ def execution(self, context):
     workflow.root_group = []
 
     context.progress(0, len(self.t1mri), process=self)
-    for item in xrange(len(self.t1mri)):
+    for item in six.moves.xrange(len(self.t1mri)):
         i = sorted_items[item]
         t1mri = self.t1mri[i]
         format = formats[i]

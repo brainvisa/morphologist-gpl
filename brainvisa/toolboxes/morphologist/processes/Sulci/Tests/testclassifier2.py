@@ -32,6 +32,7 @@
 
 from brainvisa.processes import *
 from soma import aims
+import six
 
 name = 'Test Classifier'
 userLevel = 2
@@ -69,8 +70,8 @@ def execution(self, context):
             context.write('SVM classifier')
             svminput = context.temporary('Text file')
             f = open(svminput.fullPath(), 'w')
-            for y in xrange(im.getSizeY()):
-                for x in xrange(im.getSizeX()):
+            for y in six.moves.xrange(im.getSizeY()):
+                for x in six.moves.xrange(im.getSizeX()):
                     val = im.value(x, y)
                     if val:
                         f.write('%d\t1:%f\t2:%f\n' %
@@ -82,8 +83,8 @@ def execution(self, context):
         tests = context.temporary('Text file')
         testout = context.temporary('Text file')
         f = open(tests.fullPath(), 'w')
-        for y in xrange(im.getSizeY()):
-            for x in xrange(im.getSizeX()):
+        for y in six.moves.xrange(im.getSizeY()):
+            for x in six.moves.xrange(im.getSizeX()):
                 val = im.value(x, y)
                 f.write('%f\t%f\n' % (float(x)/im.getSizeX(),
                                       float(y)/im.getSizeY()))
@@ -150,8 +151,8 @@ nstats_normal 1
                        testout)
         im2 = aims.Volume_FLOAT(im.getSizeX(), im.getSizeY())
         f = open(testout.fullPath())
-        for y in xrange(im2.getSizeY()):
-            for x in xrange(im2.getSizeX()):
+        for y in six.moves.xrange(im2.getSizeY()):
+            for x in six.moves.xrange(im2.getSizeX()):
                 val = float(f.readline())
                 im2.setValue(val, x, y)
         f.close()

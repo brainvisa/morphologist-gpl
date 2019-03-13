@@ -37,6 +37,7 @@ from brainvisa.processes import *
 from brainvisa.data.qtgui import neuroDataGUI
 from brainvisa import registration
 from brainvisa import anatomist
+import six
 
 
 class TalairachPointEditor(neuroDataGUI.PointEditor):
@@ -57,7 +58,7 @@ class TalairachPointEditor(neuroDataGUI.PointEditor):
             position = a.linkCursorLastClickedPosition()
 
         if position is None:
-            position = [0 for i in xrange(self.parameter.dimension)]
+            position = [0 for i in six.moves.xrange(self.parameter.dimension)]
 
         self.setValue(position)
         self.checkValue()  # to force link mechanism to run
@@ -118,9 +119,9 @@ def execution(self, context):
         coords[0]/sx), ',', int(coords[1]/sy), ',', int(coords[2]/sz), ')')
 
     context.write('Creating functional image of size', dx, 'x', dy, 'x', dz)
-    # for z in xrange( dz ):
-    # for y in xrange( dy ):
-    # for x in xrange( dx ):
+    # for z in six.moves.xrange( dz ):
+    # for y in six.moves.xrange( dy ):
+    # for x in six.moves.xrange( dx ):
     #ima.setValue( 0, x, y, z )
     ima.fill(0.0)
     ima.setValue(100, int(coords[0]/sx), int(coords[1]/sy), int(coords[2]/sz))

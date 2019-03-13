@@ -31,6 +31,7 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from brainvisa.processes import *
+import six
 try:
     from soma import aims
 except:
@@ -63,8 +64,8 @@ def execution(self, context):
     im = r.read(self.input_data.fullPath())
     input = context.temporary('Text file')
     f = open(input.fullPath(), 'w')
-    for y in xrange(im.getSizeY()):
-        for x in xrange(im.getSizeX()):
+    for y in six.moves.xrange(im.getSizeY()):
+        for x in six.moves.xrange(im.getSizeX()):
             val = im.value(x, y)
             if val:
                 f.write('%d\t1:%f\t2:%f\n' %

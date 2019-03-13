@@ -36,7 +36,8 @@ import re
 import os
 import os.path
 import glob
-import string
+import six
+
 name = 'Select folds & relations with good recognition percentage'
 userLevel = 0
 
@@ -78,7 +79,7 @@ def filter(srcdir, destdir, prop, remove_non_valid, select_all_descriptors, sele
         nnoutCol = -1
         validCol = -1
         subjectCol = -1
-        for i in xrange(len(colNames)):
+        for i in six.moves.xrange(len(colNames)):
             if nn_re.match(colNames[i]):
                 nnoutCol = i
             if colNames[i] == 'valid':
@@ -97,7 +98,7 @@ def filter(srcdir, destdir, prop, remove_non_valid, select_all_descriptors, sele
 
         # store the header
         if select_all_descriptors:
-            strLineOut = string.strip(lines[0])
+            strLineOut = lines[0].strip()
         else:
             strLineOut = colNames[subjectCol]
             for j in selectedDesciptorsIndex:
@@ -107,7 +108,7 @@ def filter(srcdir, destdir, prop, remove_non_valid, select_all_descriptors, sele
         # select feature
         # where line are valid => put everything in outLines
         nbNeg = 0
-        for i in xrange(1, len(lines)):
+        for i in six.moves.xrange(1, len(lines)):
             # print('\nline',i,'--', end='')
             strLineOut = ''
             items = lines[i].split()
@@ -116,7 +117,7 @@ def filter(srcdir, destdir, prop, remove_non_valid, select_all_descriptors, sele
                 nbNeg += 1
             if not remove_non_valid or int(items[validCol]):
                 if select_all_descriptors:
-                    strLineOut = string.strip(lines[i])
+                    strLineOut = lines[i].strip()
                 else:
                     strLineOut = items[subjectCol]
                     for j in selectedDesciptorsIndex:

@@ -35,6 +35,7 @@ from brainvisa.processes import *
 import shutil
 import math
 import os
+import six
 
 name = 'Choose best recognition'
 userLevel = 2
@@ -82,7 +83,7 @@ def execution(self, context):
     var = 0
     if self.stats_file:
         statsfile = open(self.stats_file.fullPath(), 'w')
-    for x in xrange(len(self.labelled_graphs)):
+    for x in six.moves.xrange(len(self.labelled_graphs)):
         mean += energies[x]
         var += energies[x] * energies[x]
         if x == 0:

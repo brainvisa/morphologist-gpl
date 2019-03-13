@@ -34,6 +34,7 @@
 from brainvisa.processes import *
 from brainvisa.tools import aimsGlobals
 from brainvisa import registration
+import six
 
 name = 'Segmentation of Corpus Callosum'
 userLevel = 2
@@ -200,7 +201,7 @@ def execution(self, context):
         #modif = True
         # while modif:
             #modif = False
-            # for i in xrange( merge.shape[0] ):
+            # for i in six.moves.xrange( merge.shape[0] ):
             # if merge[i] > 0 and merge[merge[i]] > 0:
             #merge[i] = merge[merge[i]]
             #modif = True
