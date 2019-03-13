@@ -35,6 +35,7 @@ from brainvisa.processes import *
 import shutil
 import math
 import os
+import six
 
 name = 'Parallel recognition'
 userLevel = 1
@@ -150,7 +151,7 @@ def execution(self, context):
     sign = []
     pproc.signature = Signature()
 
-    for x in xrange(self.number_of_trials):
+    for x in six.moves.xrange(self.number_of_trials):
         g = os.path.join(dir, '%s_res_%03d.arg'
                          % (os.path.basename(self.data_graph.fullName()),
                               x))

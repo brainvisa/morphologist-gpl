@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
+import six
 
 image_extensions = '(nii.gz|nii|ima|ima.gz)$'
 mesh_extensions = '(gii|mesh)$'
@@ -187,8 +188,8 @@ def detect_hierarchies(directory, maxdepth=3):
     hierarchies = {}
     globpath = directory
     dirs = []
-    for depth in xrange(maxdepth):
-        for i in xrange(depth):
+    for depth in six.moves.xrange(maxdepth):
+        for i in six.moves.xrange(depth):
             globpath = os.path.join(globpath, '*')
         dirs.extend([e for e in glob(globpath) if os.path.isdir(e)])
     for root in dirs:

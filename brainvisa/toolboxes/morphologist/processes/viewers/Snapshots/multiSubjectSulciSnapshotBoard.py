@@ -35,6 +35,7 @@ from __future__ import print_function
 from brainvisa.processes import *
 from brainvisa import anatomist
 import time
+import six
 
 name = 'Multi Subject Sulci Snapshot Board'
 userLevel = 0
@@ -136,7 +137,7 @@ def execution(self, context):
     #global scripts
     scripts = [pyscript]
 
-    for i in xrange(n):
+    for i in six.moves.xrange(n):
         outim = context.temporary(self.output_image.format)
         # snapshot
         images.append(outim)

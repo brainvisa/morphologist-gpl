@@ -12,6 +12,7 @@ from morphologist.capsul.morphologist import Morphologist
 from capsul.process import process_with_fom
 import soma.config as soma_config
 from capsul.pipeline import pipeline_workflow
+import six
 
 
 class TestMorphologistCapsulPerf(unittest.TestCase):
@@ -54,13 +55,13 @@ class TestMorphologistCapsulPerf(unittest.TestCase):
         print('time to instantiate one Morphologist pipeline: %f' % (t1 - t0))
         self.morpho = mp
         t0 = time.clock()
-        morpho_list1 = [CustomMorphologist() for i in xrange(10)]
+        morpho_list1 = [CustomMorphologist() for i in six.moves.xrange(10)]
         t1 = time.clock()
         print('time to instantiate 10 Morphologist pipelines: %f' % (t1 - t0))
         nmorpho = 200
         t0 = time.clock()
         mpick = cPickle.dumps(mp)
-        self.morpho_list = [cPickle.loads(mpick) for i in xrange(nmorpho)]
+        self.morpho_list = [cPickle.loads(mpick) for i in six.moves.xrange(nmorpho)]
         t1 = time.clock()
         print('time to duplicate %d Morphologist pipelines: %f'
               % (nmorpho, t1 - t0))
@@ -101,7 +102,7 @@ class TestMorphologistCapsulPerf(unittest.TestCase):
         t1 = time.clock()
         print('time to complete Morphologist parameters: %f' % (t1 - t0))
         subjects = ['subject%03d' % i
-                    for i in xrange(len(self.morpho_fom_list))]
+                    for i in six.moves.xrange(len(self.morpho_fom_list))]
         t0 = time.clock()
         for pf, subject in zip(self.morpho_fom_list, subjects):
             pf.attributes['center'] = 'test'

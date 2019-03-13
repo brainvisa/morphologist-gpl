@@ -33,6 +33,7 @@
 from brainvisa.processes import *
 import shutil
 import os
+import six
 
 name = 'Parallel recognition CCRT'
 userLevel = 1
@@ -70,7 +71,7 @@ def initialization(self):
 
 def execution(self, context):
     dir = os.path.dirname(self.output_graph.fullName())
-    for x in xrange(self.number_of_trials):
+    for x in six.moves.xrange(self.number_of_trials):
         g = os.path.join(dir, '%s_res_%03d.arg'
                          % (os.path.basename(self.data_graph.fullName()),
                               x))
