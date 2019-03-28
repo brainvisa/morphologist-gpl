@@ -17,7 +17,6 @@ import unittest
 import os
 import sys
 import tempfile
-import urllib
 from shutil import rmtree
 import filecmp
 import time
@@ -42,6 +41,11 @@ from brainvisa.configuration import neuroConfig
 from brainvisa.data import neuroHierarchy
 from soma.aims.graph_comparison import same_graphs
 import soma.test_utils
+
+if sys.version_info[0] >= 3:
+    from urllib.requests import urlretrieve
+else:
+    from urllib import urlretrieve
 
 
 class MorphologistTestLoader(soma.test_utils.SomaTestLoader):
@@ -166,7 +170,7 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
         if not os.path.exists("demo_data.zip"):
             print("* Download ftp://ftp.cea.fr/pub/dsv/anatomist/data/demo_data.zip to",
                   dir_)
-            urllib.urlretrieve(
+            urlretrieve(
                 "ftp://ftp.cea.fr/pub/dsv/anatomist/data/demo_data.zip",
                 "demo_data.zip")
         if os.path.exists("data_for_anatomist"):

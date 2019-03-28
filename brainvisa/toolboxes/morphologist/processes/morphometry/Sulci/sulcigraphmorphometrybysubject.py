@@ -54,9 +54,9 @@ userLevel = 0
 
 signature = Signature(
     'left_sulci_graph', ReadDiskItem('Labelled Cortical folds graph', 'Graph',
-                                     requiredAttributes={'side': 'left', 'graph_version': '3.1'}),
+                                     requiredAttributes={'side': 'left'}),
     'right_sulci_graph', ReadDiskItem('Labelled Cortical folds graph', 'Graph',
-                                      requiredAttributes={'side': 'right', 'graph_version': '3.1'}),
+                                      requiredAttributes={'side': 'right'}),
     'sulci_file', ReadDiskItem('Sulci groups list', 'JSON file'),
     'use_attribute', Choice('label', 'name'),
     'sulcal_morpho_measures', WriteDiskItem(
