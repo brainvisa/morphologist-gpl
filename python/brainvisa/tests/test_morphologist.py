@@ -43,7 +43,7 @@ from soma.aims.graph_comparison import same_graphs
 import soma.test_utils
 
 if sys.version_info[0] >= 3:
-    from urllib.requests import urlretrieve
+    from urllib.request import urlretrieve
 else:
     from urllib import urlretrieve
 
