@@ -239,14 +239,14 @@ def execution(self, context):
     self.genmesh(os.path.join(dir, 'v15'), [159, 151.75, 30],
                  [159, 151.75, 159], context)
 
-    files = map(lambda x: 'e' + str(x), range(1, 13))
-    files += map(lambda x: 'se' + str(x), range(1, 13))
-    files += map(lambda x: 'oe' + str(x), range(1, 7))
-    files += map(lambda x: 'i' + str(x), range(1, 16))
-    files += map(lambda x: 'l' + str(x), range(1, 22))
-    files += map(lambda x: 'v' + str(x), range(1, 16))
+    files = ['e' + str(x) for x in range(1, 13)]
+    files += ['se' + str(x) for x in range(1, 13)]
+    files += ['oe' + str(x) for x in range(1, 7)]
+    files += ['i' + str(x) for x in range(1, 16)]
+    files += ['l' + str(x) for x in range(1, 22)]
+    files += ['v' + str(x) for x in range(1, 16)]
 
     context.write(files)
 
     context.system('AimsZCat', '-o', self.output_grid,
-                   *map(lambda f: os.path.join(dir, f + '.mesh'), files))
+                   *[os.path.join(dir, f + '.mesh') for f in files])

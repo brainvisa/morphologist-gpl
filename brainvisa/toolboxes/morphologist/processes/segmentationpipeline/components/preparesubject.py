@@ -315,11 +315,11 @@ def execution(self, context):
 
             fliprot = flipmat[:3] + [0] + flipmat[4:7] + [0] + flipmat[8:11] \
                 + [0, 0, 0, 0, 1]
-            vs2 = map(abs, matrixMult(fliprot, vs))
+            vs2 = [abs(x) for x in matrixMult(fliprot, vs)]
             dims = atts['volume_dimension'][:3]
             dims2 = (dims[0] * vs[0], dims[1] * vs[1], dims[2] * vs[2])
             dims3 = matrixMult(fliprot, dims2)
-            dims4 = map(lambda x, y: int(round(abs(x) / y)), dims3, vs2)
+            dims4 = [int(round(abs(x) / y)) for x, y in zip(dims3, vs2)]
 
             #flip[9] = -min( 0, dims3[0] )
             #flip[10] = -min( 0, dims3[1] )
@@ -335,10 +335,10 @@ def execution(self, context):
 
             mfile = context.temporary('Transformation matrix')
             mf = open(mfile.fullPath(), 'w')
-            mf.write(string.join(map(str, flipmat[3:12:4])) + '\n')
-            mf.write(string.join(map(str, flipmat[:3])) + '\n')
-            mf.write(string.join(map(str, flipmat[4:7])) + '\n')
-            mf.write(string.join(map(str, flipmat[8:11])) + '\n')
+            mf.write(' '.join([str(x) for x in flipmat[3:12:4]]) + '\n')
+            mf.write(' '.join([str(x) for x in flipmat[:3]]) + '\n')
+            mf.write(' '.join([str(x) for x in flipmat[4:7]]) + '\n')
+            mf.write(' '.join([str(x) for x in flipmat[8:11]]) + '\n')
             mf.close()
             context.log('Transformation',
                         html='transformation: R = ' + str(flipmat[:3]
@@ -439,20 +439,20 @@ def execution(self, context):
                 ipmm = ip
 
     f = open(self.commissure_coordinates.fullPath(), 'w')
-    f.write("AC: " + string.join(map(lambda x: str(x), ac)) + '\n')
-    f.write("PC: " + string.join(map(lambda x: str(x), pc)) + '\n')
-    f.write("IH: " + string.join(map(lambda x: str(x), ip)) + '\n')
+    f.write("AC: " + ' '.join([str(x) for x in ac]) + '\n')
+    f.write("PC: " + ' '.join([str(x) for x in pc]) + '\n')
+    f.write("IH: " + ' '.join([str(x) for x in ip]) + '\n')
     f.write("The previous coordinates, used by the system, are defined in "
             "voxels\n")
     f.write("They stem from the following coordinates in millimeters:\n")
     if self.Normalised == 'No':
-        f.write("ACmm: " + string.join(map(str, acmm)) + '\n')
-        f.write("PCmm: " + string.join(map(str, pcmm)) + '\n')
-        f.write("IHmm: " + string.join(map(str, ipmm)) + '\n')
+        f.write("ACmm: " + ' '.join([str(x) for x in acmm]) + '\n')
+        f.write("PCmm: " + ' '.join([str(x) for x in pcmm]) + '\n')
+        f.write("IHmm: " + ' '.join([str(x) for x in ipmm]) + '\n')
     else:
-        f.write("ACmm: " + string.join(map(str, ac)) + '\n')
-        f.write("PCmm: " + string.join(map(str, pc)) + '\n')
-        f.write("IHmm: " + string.join(map(str, ip)) + '\n')
+        f.write("ACmm: " + ' '.join([str(x) for x in ac]) + '\n')
+        f.write("PCmm: " + ' '.join([str(x) for x in pc]) + '\n')
+        f.write("IHmm: " + ' '.join([str(x) for x in ip]) + '\n')
     f.close()
 
     # remove older MNI normalization

@@ -148,8 +148,7 @@ def execution(self, context):
     stream.write('*BEGIN TREE 1.0 siMorpho\n')
     stream.write('modelFile  ' + self.model.fullPath() + "\n")
     stream.write('graphFiles  "' +
-                 '" "'.join(map(lambda x: x.fullPath(),
-                                self.data_graphs)) + '"\n')
+                 '" "'.join([x.fullPath() for x in self.data_graphs]) + '"\n')
 
     if self.region_type is None:
         self.region_type = 'label'
@@ -228,7 +227,7 @@ def execution(self, context):
                     if y[0] == 'L' or y[0] == 'R':
                         y = y[1:]
                 return y
-            subjects = map(lambda x: _subj(x), self.data_graphs)
+            subjects = [_subj(x) for x in self.data_graphs]
             subjectsFile = context.temporary('Config file')
             try:
                 f = open(subjectsFile.fullPath(), 'w')

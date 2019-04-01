@@ -124,8 +124,7 @@ def execution(self, context):
         stream.write('*BEGIN TREE 1.0 siMorpho\n')
         stream.write('modelFile  ' + model + "\n")
         stream.write('graphFiles  ' +
-                     string.join(map(lambda x: x.fullPath(),
-                                     self.data_graphs)) + "\n")
+                     ' '.join([x.fullPath() for x in self.data_graphs]) + "\n")
         if self.region_type is None:
             self.region_type = 'label'
         stream.write('filter_attributes  ' + self.region_type + "\n")
@@ -139,7 +138,7 @@ def execution(self, context):
         if self.name_descriptors:
             stream.write('name_descriptors 1\n')
 
-        subjects = map(lambda x: str(x.get('subject')), self.data_graphs)
+        subjects = [str(x.get('subject')) for x in self.data_graphs]
         stream.write('subjects ' + string.join(subjects) + "\n")
 
         stream.write('*END\n')
