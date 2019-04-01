@@ -86,7 +86,7 @@ def execution(self, context):
     if self.anatomy is not None:
         obj.append(a.loadObject(self.anatomy))
     if self.meshes is not None:
-        msh = map(lambda x: a.loadObject(x), self.meshes)
+        msh = [a.loadObject(x) for x in self.meshes]
         obj += msh
     if self.head_mesh is not None:
         hd = a.loadObject(self.head_mesh)

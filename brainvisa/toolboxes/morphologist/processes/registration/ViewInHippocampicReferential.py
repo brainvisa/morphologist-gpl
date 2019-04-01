@@ -75,7 +75,7 @@ class APCReader:
             f = open(acp.fullPath())
             for l in f.readlines():
                 if l[:len(self._key)] == self._key:
-                    return map(float, string.split(l[len(self._key)+1:]))
+                    return [float(x) for x in l[len(self._key)+1:].split()]
 
 
 def initialization(self):
@@ -114,11 +114,11 @@ def execution(self, context):
         f = open(self.Commissure_coordinates.fullPath())
         for l in f.readlines():
             if l[:len('ACmm')] == 'ACmm':
-                self.acmm = map(float, string.split(l[len('ACmm')+1:]))
+                self.acmm = [float(x) for x in l[len('ACmm')+1:].split()]
             if l[:len('PCmm')] == 'PCmm':
-                self.pcmm = map(float, string.split(l[len('PCmm')+1:]))
+                self.pcmm = [float(x) for x in l[len('PCmm')+1:].split()]
             if l[:len('IHmm')] == 'IHmm':
-                self.ihmm = map(float, string.split(l[len('ACmm')+1:]))
+                self.ihmm = [float(x) for x in l[len('ACmm')+1:].split()]
 
     context.system('AimsHippocampicReferential', '--ac', self.acmm[0], self.acmm[1], self.acmm[2],
                    '--pc', self.pcmm[0], self.pcmm[1], self.pcmm[2],
