@@ -61,7 +61,7 @@ def initialization(self):
     self.linkParameters('white_mesh', 'hemi_cortex')
     self.linkParameters('hemi_mesh', 'white_mesh')
     self.linkParameters('output_graph', 'graph')
-    self.linkParameters('output_mid_interface', 'hemi_cortex')
+    self.linkParameters('output_mid_interface', 'output_graph')
     self.setOptional('output_mid_interface')
     self.linkParameters('sulci_voronoi', 'graph')
     self.write_mid_interface = False
