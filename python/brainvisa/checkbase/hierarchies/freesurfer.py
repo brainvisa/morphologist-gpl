@@ -177,7 +177,7 @@ class FreeSurferCheckbase(Checkbase):
         self.volumes = {}
         for subject in files.keys():
             key = 'aseg_stats'
-            if key in files[subject:
+            if key in files[subject]:
                 path = getfilepath(
                     key, files[subject][key], patterns=self.patterns)
                 test = open(path, 'r').readlines()
