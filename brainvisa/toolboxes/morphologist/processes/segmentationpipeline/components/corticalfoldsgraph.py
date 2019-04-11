@@ -255,13 +255,9 @@ def execution(self, context):
     self.graph.readAndUpdateMinf()
     grefs = self.graph.get('referentials')
     gtrans = self.graph.get('transformations')
-    print('grefs:', grefs)
-    print('gtrans:', gtrans)
     trManager.copyReferential(self.skeleton, self.graph)
     ngrefs = self.graph.get('referentials')
     ngtrans = self.graph.get('transformations')
-    print('ngrefs:', ngrefs)
-    print('ngtrans:', ngtrans)
     # merge Talairach transform into header
     for ref, trans in zip(grefs, gtrans):
         try:
@@ -272,12 +268,8 @@ def execution(self, context):
             print(ref, 'appended')
             ngrefs.append(ref)
             ngtrans.append(trans)
-    print('now ngrefs:', ngrefs)
-    print('now ngtrans:', ngtrans)
     if len(grefs) != 0:
         self.graph.updateMinf({'referentials': ngrefs,
                                'transformations': ngtrans},
                               saveMinf=True)
-    print('new minf:', self.graph.get('referentials'))
-    context.system('cat', '%s.minf' % self.graph.fullPath())
 
