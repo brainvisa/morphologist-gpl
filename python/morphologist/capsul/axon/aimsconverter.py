@@ -17,7 +17,7 @@ class AimsConverter(Process):
                                                         '.mnc', '.mng', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz']))
         self.add_trait('write', File(allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.gif', '.ima', '.dim', '.jpg', '.mnc', '.mng',
                                                          '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'], output=True))
-        self.add_trait('preferedFormat', Enum(None, 'gz compressed NIFTI-1 image', 'NIFTI-1 image', 'GIS image', 'SPM image', 'VIDA image', 'ECAT v image', 'ECAT i image', 'JPEG image', 'GIF image', 'PNG image',
+        self.add_trait('preferredFormat', Enum(None, 'gz compressed NIFTI-1 image', 'NIFTI-1 image', 'GIS image', 'SPM image', 'VIDA image', 'ECAT v image', 'ECAT i image', 'JPEG image', 'GIF image', 'PNG image',
                                               'MNG image', 'BMP image', 'PBM image', 'PGM image', 'PPM image', 'XBM image', 'XPM image', 'TIFF image', 'MINC image', 'gz compressed MINC image', 'DICOM image', 'Directory', optional=True))
         self.add_trait('removeSource', Bool())
         self.add_trait('ascii', Bool())
