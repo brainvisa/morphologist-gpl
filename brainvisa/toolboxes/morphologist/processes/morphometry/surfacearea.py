@@ -32,6 +32,7 @@
 
 from brainvisa.processes import *
 import os
+import subprocess
 
 name = "Surface Area and Volume"
 userLevel = 0
@@ -49,12 +50,8 @@ def initialization(self):
 
 def execution(self, context):
     def areaVolSurface(context, surface):
-        cmd = 'AimsMeshArea ' + surface.fullPath()
-        f = os.popen(cmd)
-        output = f.readlines()
-        res = f.close()
-        if res is not None and res != 0:
-            raise RuntimeError('failure in execution of command ' + cmd)
+        cmd = ['AimsMeshArea', surface.fullPath()]
+        output = subprocess.check_output(cmd).split('\n')
         a = float(output[0].split()[1])
         v = float(output[1].split()[1])
         return [a, v]
