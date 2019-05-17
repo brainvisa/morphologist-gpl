@@ -33,6 +33,8 @@
 
 from __future__ import print_function
 from brainvisa.processes import *
+import subprocess
+
 name = 'Recognition Error'
 userLevel = 1
 
@@ -63,8 +65,7 @@ signature = Signature(
 
 
 def get_sigraph_path():
-    p = os.popen('siError --info')
-    lines = p.readlines()
+    lines = subprocess.check_call(['siError', '--info']).split('\n')
     r = [l for l in lines if l.startswith('sigraph base path')][0]
     path = r[r.find('/'):-1]
     return path
