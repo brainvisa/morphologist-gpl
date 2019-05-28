@@ -34,6 +34,7 @@
 
 from brainvisa.processes import *
 from brainvisa import shelltools
+from brainvisa import registration
 
 name = 'Create Sulcus Label Volume'
 userLevel = 2
@@ -144,6 +145,8 @@ def execution(self, context):
         for i in a:
             cmd += ['-l', i]
 
+    tm = registration.getTransformationManager()
+
     if self.bucket == 'custom':
         if not self.custom_buckets:
             raise Exception('<em>custom_buckets</em> must be non-empty '
@@ -153,17 +156,20 @@ def execution(self, context):
         for i in a:
             cmd += ['-b', i]
         context.system(*cmd)
+        tm.copyReferential(self.graph, self.sulci)
         if self.compress == 'Yes':
             context.system('gzip', '--force',
                            self.sulci.fullName() + '*')
     else:
-        if self.bucket in ('Sulci'):
+        if self.bucket in ('Sulci', ):
             if os.path.exists(self.sulci.fullPath() + '.gz') \
                     or os.path.exists(self.sulci.fullPath()):
                 shelltools.rm(self.sulci.fullName() + '.*')
             cmd += ['-o', self.sulci.fullPath(), '-b', 'aims_ss', '-b',
                     'aims_bottom', '-b', 'aims_other']
             context.system(*cmd)
+            if self.transformation != 'Yes':
+                tm.copyReferential(self.graph, self.sulci)
             if self.compress == 'Yes':
                 for i in self.sulci.fullPaths():
                     context.system('gzip', '--force', i)
@@ -179,12 +185,14 @@ def execution(self, context):
                 context.system('AimsReplaceLevel', '-i', self.sulci.fullPath(),
                                '-g', '32767', '-n', '100', '-o', self.sulci.fullPath())
 
-        if self.bucket in ('Bottoms'):
+        if self.bucket in ('Bottoms', ):
             if os.path.exists(self.bottom.fullPath() + '.gz') \
                     or os.path.exists(self.bottom.fullPath()):
                 shelltools.rm(self.bottom.fullName() + '.*')
             cmd += ['-o', self.bottom.fullPath(), '-b', 'aims_bottom']
             context.system(*cmd)
+            if self.transformation != 'Yes':
+                tm.copyReferential(self.graph, self.bottom)
             if self.compress == 'Yes':
                 for i in self.bottom.fullPaths():
                     context.system('gzip', '--force', i)
@@ -200,13 +208,15 @@ def execution(self, context):
                 context.system('AimsReplaceLevel', '-i', self.bottom.fullPath(),
                                '-g', '32767', '-n', '100', '-o', self.bottom.fullPath())
 
-        if self.bucket in ('Junctions with brain hull'):
+        if self.bucket in ('Junctions with brain hull', ):
             if os.path.exists(self.hull_junction.fullPath() + 'a.gz') \
                     or os.path.exists(self.hull_junction.fullPath()):
                 shelltools.rm(self.hull_junction.fullName() + '.*')
             cmd += ['-o', self.hull_junction.fullPath(), '-b',
                     'aims_junction', '-s', 'hull_junction']
             context.system(*cmd)
+            if self.transformation != 'Yes':
+                tm.copyReferential(self.graph, self.hull_junction)
             if self.compress == 'Yes':
                 for i in self.hull_junction.fullPaths():
                     context.system('gzip', '--force', i)
@@ -222,12 +232,14 @@ def execution(self, context):
                 context.system('AimsReplaceLevel', '-i', self.hull_junction.fullPath(),
                                '-g', '32767', '-n', '100', '-o', self.hull_junction.fullPath())
 
-        if self.bucket in ('Simple Surfaces'):
+        if self.bucket in ('Simple Surfaces', ):
             if os.path.exists(self.simple_surface.fullPath() + '.gz') \
                     or os.path.exists(self.simple_surface.fullPath()):
                 shelltools.rm(self.simple_surface.fullName() + '.*')
             cmd += ['-o', self.simple_surface.fullPath(), '-b', 'aims_ss']
             context.system(*cmd)
+            if self.transformation != 'Yes':
+                tm.copyReferential(self.graph, self.simple_surface)
             if self.compress == 'Yes':
                 for i in self.simple_surface.fullPaths():
                     context.system('gzip', '--force', i)
