@@ -27,7 +27,7 @@ class SulciLabellingSPAMLocal(Process):
         self.add_trait('direction_priors', File(allowed_extensions=['.dat']))
         self.add_trait('angle_priors', File(allowed_extensions=['.dat']))
         self.add_trait('translation_priors', File(allowed_extensions=['.dat']))
-        self.add_trait('output_local_transformations', File(
+        self.add_trait('output_local_transformations', Directory(
             allowed_extensions=[''], output=True, optional=True))
         self.add_trait('initial_transformation', File(
             allowed_extensions=['.trm'], optional=True))
