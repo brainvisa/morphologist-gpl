@@ -23,7 +23,7 @@ class BrainOrientation(Pipeline):
     def pipeline_definition(self):
         # nodes section
         self.add_switch('select_AC_PC_Or_Normalization', ['StandardACPC', 'Normalization'], ['commissure_coordinates', 'reoriented_t1mri', 'talairach_transformation'], output_types=[File(optional=True, allowed_extensions=['.APC']), File(allowed_extensions=[
-                        '.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.gif', '.ima', '.dim', '.jpg', '.mnc', '.mng', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz']), File(allowed_extensions=['.trm'])])
+                        '.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.gif', '.ima', '.dim', '.jpg', '.mnc', '.mng', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz']), File(allowed_extensions=['.trm'])])
         self.add_process(
             'StandardACPC', 'morphologist.capsul.axon.acpcorientation.AcpcOrientation')
         self.nodes['StandardACPC']._weak_outputs = True

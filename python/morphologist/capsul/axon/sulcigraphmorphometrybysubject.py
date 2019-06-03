@@ -23,7 +23,7 @@ class sulcigraphmorphometrybysubject(Process):
             allowed_extensions=['.csv'], output=True))
 
         # initialization section
-        self.sulci_file = '/volatile/riviere/brainvisa/build-stable-qt5/share/brainvisa-share-4.6/nomenclature/translation/sulci_default_list.json'
+        self.sulci_file = '/home/riviere/build-current64/share/brainvisa-share-4.6/nomenclature/translation/sulci_default_list.json'
         self.use_attribute = 'label'
 
     def _run_process(self):

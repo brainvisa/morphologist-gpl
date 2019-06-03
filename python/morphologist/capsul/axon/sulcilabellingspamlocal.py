@@ -27,7 +27,7 @@ class SulciLabellingSPAMLocal(Process):
         self.add_trait('direction_priors', File(allowed_extensions=['.dat']))
         self.add_trait('angle_priors', File(allowed_extensions=['.dat']))
         self.add_trait('translation_priors', File(allowed_extensions=['.dat']))
-        self.add_trait('output_local_transformations', Directory(
+        self.add_trait('output_local_transformations', File(
             allowed_extensions=[''], output=True, optional=True))
         self.add_trait('initial_transformation', File(
             allowed_extensions=['.trm'], optional=True))
@@ -35,7 +35,7 @@ class SulciLabellingSPAMLocal(Process):
             allowed_extensions=['.trm'], optional=True))
 
         # initialization section
-        self.labels_translation_map = '/volatile/riviere/brainvisa/build-stable-qt5/share/brainvisa-share-4.6/nomenclature/translation/sulci_model_2008.trl'
+        self.labels_translation_map = '/home/riviere/build-current64/share/brainvisa-share-4.6/nomenclature/translation/sulci_model_2008.trl'
 
     def _run_process(self):
         from brainvisa import axon
