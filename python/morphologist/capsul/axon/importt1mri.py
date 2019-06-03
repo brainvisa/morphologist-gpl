@@ -1,22 +1,33 @@
 # -*- coding: utf-8 -*-
 try:
     from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
-        List, Undefined
+        List, Any, Undefined
 except ImportError:
     from enthought.traits.api import File, Directory, Float, Int, Bool, Enum, \
-        Str, List, Undefined
+        Str, List, Any, Undefined
 
 from capsul.api import Process
+import six
 
 
 class ImportT1MRI(Process):
     def __init__(self, **kwargs):
         super(ImportT1MRI, self).__init__()
-        self.add_trait('input', File(allowed_extensions=['.nii.gz', '.svs', '.vms', '.vmu', '.ndpi', '.scn', '.svslide', '.bif', '.nii', '.jpg', '.gif', '.png', '.mng',
-                                                         '.bmp', '.pbm', '.pgm', '.ppm', '.xbm', '.xpm', '.tiff', '.tif', '.ima', '.dim', '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.v', '.i', '.mnc', '.mnc.gz', '']))
+        self.add_trait('input', File(allowed_extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg',
+                                                         '.scn', '.mnc', '.mng', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz']))
         self.add_trait('output', File(allowed_extensions=[
-                       '.nii.gz', '.nii', '.ima', '.dim'], output=True))
+                       '.nii.gz', '.ima', '.dim', '.nii'], output=True))
         self.add_trait('referential', File(output=True, optional=True))
+        self.add_trait('output_database', Enum(
+            u'/mnt/sys2/home/riviere/data/baseessai', u'/home/riviere/data/morphologist-data/data1'))
+        self.add_trait('attributes_merging', Enum(
+            'BrainVisa', 'header', 'selected_from_header'))
+        self.add_trait('selected_attributes_from_header', List())
+
+        # initialization section
+        self.output_database = u'/mnt/sys2/home/riviere/data/baseessai'
+        self.attributes_merging = 'BrainVisa'
+        self.selected_attributes_from_header = []
 
     def _run_process(self):
         from brainvisa import axon
@@ -29,11 +40,17 @@ class ImportT1MRI(Process):
 
         axon.initializeProcesses()
 
-        kwargs = dict([(name, getattr(self, name))
-                       for name in self.user_traits()
-                       if getattr(self, name) is not Undefined and
-                       (not isinstance(self.user_traits()[name].trait_type, File)
-                        or getattr(self, name) != '')])
+        kwargs = {}
+        for name in self.user_traits():
+            value = getattr(self, name)
+            if value is Undefined:
+                continue
+            if isinstance(self.trait(name).trait_type, File) and value != '' and value is not Undefined:
+                kwargs[name] = value
+            elif isinstance(self.trait(name).trait_type, List):
+                kwargs[name] = list(value)
+            else:
+                kwargs[name] = value
 
         context = brainvisa.processes.defaultContext()
         context.runProcess('ImportT1MRI', **kwargs)
