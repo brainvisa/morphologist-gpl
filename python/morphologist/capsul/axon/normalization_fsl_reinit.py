@@ -31,7 +31,6 @@ class Normalization_FSL_reinit(Process):
         self.add_trait('init_translation_origin', Enum(0, 1))
 
         # initialization section
-        self.anatomical_template = '/usr/share/fsl/data/standard/MNI152_T1_2mm_brain.nii.gz'
         self.Alignment = 'Not Aligned but Same Orientation'
         self.cost_function = 'corratio'
         self.search_cost_function = 'corratio'

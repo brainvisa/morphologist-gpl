@@ -32,7 +32,7 @@ class SulciLabellingSPAMMarkov(Process):
         self.add_trait('fix_random_seed', Bool())
 
         # initialization section
-        self.labels_translation_map = '/volatile/riviere/brainvisa/build-stable-qt5/share/brainvisa-share-4.6/nomenclature/translation/sulci_model_2008.trl'
+        self.labels_translation_map = '/home/riviere/build-current64/share/brainvisa-share-4.6/nomenclature/translation/sulci_model_2008.trl'
         self.fix_random_seed = False
 
     def _run_process(self):

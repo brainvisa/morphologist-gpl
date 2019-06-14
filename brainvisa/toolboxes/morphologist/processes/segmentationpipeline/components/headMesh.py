@@ -50,6 +50,9 @@ signature = Signature(
     'first_slice', Integer(),
     'threshold', Integer(),
     'closing', Float(),
+    'threshold_mode', Choice(('automatic', 'auto'), ('absolute', 'abs'),
+                             ('% of grey peak', 'grey')),
+    'threshold', Integer(),
 )
 
 # Default values
@@ -87,9 +90,13 @@ def initialization(self):
     self.threshold = None
     self.closing = None
     self.keep_head_mask = 0
+    self.setOptional('threshold')
 
 
 def execution(self, context):
+    if self.threshold_mode != 'auto' and self.threshold is None:
+        raise ValueError('threshold should be specified in non-auto mode')
+
     tm = registration.getTransformationManager()
 
     if self.head_mask is not None and self.keep_head_mask:
@@ -111,6 +118,10 @@ def execution(self, context):
         command.extend(['-t', self.threshold])
     if self.closing is not None:
         command.extend(['-c', self.closing])
+    if self.threshold_mode != 'auto':
+        command.extend(['-threshmode', self.threshold_mode])
+    if self.threshold is not None:
+        command.extend(['-t', self.threshold])
 
     context.system(*command)
     context.system('AimsMeshBrain', '-i', mask,

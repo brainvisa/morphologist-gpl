@@ -42,5 +42,3 @@ class GraphPointCloudLabel(Process):
 
         aims.write(graph, self.output_graph)
         print(summary)
-
-

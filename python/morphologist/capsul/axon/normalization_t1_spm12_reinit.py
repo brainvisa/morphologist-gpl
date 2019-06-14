@@ -28,7 +28,6 @@ class normalization_t1_spm12_reinit(Process):
         self.add_trait('init_translation_origin', Enum(0, 1))
 
         # initialization section
-        self.anatomical_template = '/usr/share/fsl/data/standard/MNI152_T1_2mm_brain.nii.gz'
         self.voxel_size = '[1 1 1]'
         self.cutoff_option = 25
         self.nbiteration = 16
