@@ -27,12 +27,16 @@ class ScalpMesh(Process):
         self.add_trait('first_slice', Int(optional=True))
         self.add_trait('threshold', Int(optional=True))
         self.add_trait('closing', Float(optional=True))
+        self.add_trait('threshold_mode', Enum('auto', 'abs', 'grey'))
+        self.add_trait('threshold', Int(optional=True))
 
         # initialization section
         self.keep_head_mask = False
         self.first_slice = Undefined
         self.threshold = Undefined
         self.closing = Undefined
+        self.threshold_mode = 'auto'
+        self.threshold = Undefined
 
     def _run_process(self):
         from brainvisa import axon
