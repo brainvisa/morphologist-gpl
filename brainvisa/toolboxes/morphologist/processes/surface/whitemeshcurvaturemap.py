@@ -39,7 +39,7 @@ userLevel = 0
 
 signature = Signature(
     "white_mesh", ReadDiskItem("Hemisphere White Mesh", "Aims mesh formats"),
-    "curvature_texture", WriteDiskItem("White Curvature Texture", "Texture"),
+    "curvature_texture", WriteDiskItem("White Curvature Texture", "Aims texture formats"),
     "curvature_method", Choice(('Finite Elements', 'fem'), ('Boix', 'boix'),
                                ('Barycenter', 'barycenter'), ('Boix Gaussian', 'boixgaussian')),
 )
