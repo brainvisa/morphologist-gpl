@@ -82,16 +82,12 @@ def initialization(self):
     eNode.SPAM_recognition09.removeLink('output_graph', 'data_graph')
 
     # links for SPAM version
-    eNode.addLink('SPAM_recognition09.data_graph', 'data_graph')
-    eNode.addLink('data_graph', 'SPAM_recognition09.data_graph')
-    eNode.addLink('SPAM_recognition09.output_graph', 'output_graph')
-    eNode.addLink('output_graph', 'SPAM_recognition09.output_graph')
+    eNode.addDoubleLink('SPAM_recognition09.data_graph', 'data_graph')
+    eNode.addDoubleLink('SPAM_recognition09.output_graph', 'output_graph')
 
     # 2000 version
-    eNode.addLink('recognition2000.data_graph', 'data_graph')
-    eNode.addLink('data_graph', 'recognition2000.data_graph')
-    eNode.addLink('recognition2000.output_graph', 'output_graph')
-    eNode.addLink('output_graph', 'recognition2000.output_graph')
+    eNode.addDoubleLink('recognition2000.data_graph', 'data_graph')
+    eNode.addDoubleLink('recognition2000.output_graph', 'output_graph')
 
     # self links
     self.linkParameters('output_graph', 'data_graph')
@@ -107,3 +103,16 @@ def initialization(self):
 
     self.signature['fix_random_seed'].userLevel = 3
     self.fix_random_seed = False
+
+    # CNN models
+    try:
+        proc = getProcess('sulci_deep_labeling')
+    except ValidationError:
+        proc = None
+    if proc is not None:
+        eNode3 = ProcessExecutionNode('sulci_deep_labeling', selected=False)
+        eNode3._process.name = 'CNN-based'
+        eNode.addChild('CNN_recognition19', eNode3)
+        eNode.addDoubleLink('data_graph', 'CNN_recognition19.graph')
+        eNode.addDoubleLink('output_graph', 'CNN_recognition19.labeled_graph')
+
