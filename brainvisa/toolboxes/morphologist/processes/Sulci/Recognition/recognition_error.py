@@ -57,6 +57,8 @@ signature = Signature(
                                   'Graph',
                                   requiredAttributes={'labelled': 'Yes',
                                                       'automatically_labelled': 'Yes'}),
+    'base_graph_labeling', Choice('Automatic', 'Manual'),
+    'labeled_graph_labeling', Choice('Automatic', 'Manual'),
     'error_file', WriteDiskItem('Text File', 'Text File'),
 )
 
@@ -71,6 +73,20 @@ def get_sigraph_path():
     return path
 
 
+def link_base_label(self, proc, dummy):
+    if self.base_graph is not None:
+        if self.base_graph.get('automatically_labelled') == 'Yes':
+            return 'Automatic'
+    return 'Manual'
+
+
+def link_labeled_label(self, proc, dummy):
+    if self.labeled_graph is not None:
+        if self.labeled_graph.get('automatically_labelled') == 'No':
+            return 'Manual'
+    return 'Automatic'
+
+
 def initialization(self):
     self.linkParameters('labeled_graph', 'base_graph')
     self.labels_translation = \
@@ -80,11 +96,24 @@ def initialization(self):
     self.parent = {}
     self.parent['manage_tasks'] = False
     self.setOptional('error_file')
+    self.base_graph_labeling = 'Manual'
+    self.labeled_graph_labeling = 'Automatic'
+    self.linkParameters('base_graph_labeling', 'base_graph',
+                        self.link_base_label)
+    self.linkParameters('labeled_graph_labeling', 'labeled_graph',
+                        self.link_labeled_label)
 
 
 def execution(self, context):
     import os
     context.write('...')
+    bg_label = 'name'
+    lg_label = 'label'
+    if self.base_graph_labeling == 'Automatic':
+        bg_label = 'label'
+    if self.labeled_graph_labeling == 'Manual':
+        lg_label = 'name'
+
     if self.parent['manage_tasks']:
         package = self.parent['self'].package
         if package == 'default':
