@@ -22,6 +22,9 @@ class Normalization_Baladin(Process):
         self.add_trait('normalized_anatomy_data', File(allowed_extensions=[
                        '.ima', '.dim', '.nii', '.nii.gz'], output=True))
 
+        # initialization section
+        self.anatomical_template = '/usr/share/fsl/data/standard/MNI152_T1_1mm.nii.gz'
+
     def _run_process(self):
         from brainvisa import axon
         from brainvisa.configuration import neuroConfig

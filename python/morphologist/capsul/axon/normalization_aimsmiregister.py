@@ -30,7 +30,8 @@ class normalization_aimsmiregister(Process):
         self.add_trait('smoothing', Float())
 
         # initialization section
-        self.mni_to_acpc = '/home/riviere/build-current64/share/brainvisa-share-4.6/transformation/talairach_TO_spm_template_novoxels.trm'
+        self.anatomical_template = '/usr/share/fsl/data/standard/MNI152_T1_2mm_brain.nii.gz'
+        self.mni_to_acpc = '/volatile/riviere/brainvisa/build-stable-qt5/share/brainvisa-share-4.6/transformation/talairach_TO_spm_template_novoxels.trm'
         self.smoothing = 1.0
 
     def _run_process(self):

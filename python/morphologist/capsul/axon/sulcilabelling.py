@@ -22,7 +22,7 @@ class SulciLabelling(Pipeline):
 
     def pipeline_definition(self):
         # nodes section
-        self.add_switch('select_Sulci_Recognition', ['recognition2000', 'SPAM_recognition09'], [
+        self.add_switch('select_Sulci_Recognition', ['recognition2000', 'SPAM_recognition09', 'CNN_recognition19'], [
                         'output_graph'], output_types=[File(allowed_extensions=['.arg', '.data'])])
         self.add_process(
             'recognition2000', 'morphologist.capsul.axon.sulcilabellingann.SulciLabellingANN')
@@ -30,6 +30,9 @@ class SulciLabelling(Pipeline):
         self.add_process(
             'SPAM_recognition09', 'morphologist.capsul.axon.sulcilabellingspam.SulciLabellingSPAM')
         self.nodes['SPAM_recognition09']._weak_outputs = True
+        self.add_process(
+            'CNN_recognition19', 'deepsulci.sulci_labeling.capsul.labeling.SulciDeepLabeling')
+        self.nodes['CNN_recognition19']._weak_outputs = True
 
         # exports section
         # export input parameter
@@ -44,10 +47,13 @@ class SulciLabelling(Pipeline):
         # links section
         self.add_link('fix_random_seed->SPAM_recognition09.fix_random_seed')
         self.add_link('data_graph->recognition2000.data_graph')
+        self.add_link('data_graph->CNN_recognition19.graph')
         self.add_link(
             'recognition2000.output_graph->select_Sulci_Recognition.recognition2000_switch_output_graph')
         self.add_link(
             'SPAM_recognition09.output_graph->select_Sulci_Recognition.SPAM_recognition09_switch_output_graph')
+        self.add_link(
+            'CNN_recognition19.labeled_graph->select_Sulci_Recognition.CNN_recognition19_switch_output_graph')
 
         # initialization section
         self.nodes['select_Sulci_Recognition'].switch = 'SPAM_recognition09'
