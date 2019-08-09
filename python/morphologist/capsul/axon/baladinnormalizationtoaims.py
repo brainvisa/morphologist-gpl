@@ -22,6 +22,7 @@ class BaladinNormalizationToAims(Process):
         self.add_trait('set_transformation_in_source_volume', Bool())
 
         # initialization section
+        self.registered_volume = '/usr/share/fsl/data/standard/MNI152_T1_1mm.nii.gz'
         self.set_transformation_in_source_volume = True
 
     def _run_process(self):
