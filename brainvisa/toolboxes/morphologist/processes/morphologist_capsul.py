@@ -162,7 +162,9 @@ def execution(self, context):
     if cversion >= (2, 1):
         study_config = mp.get_study_config()
         study_config.set_study_configuration(init_study_config)
-        pf = mp.completion_engine
+        from capsul.attributes.completion_engine \
+            import ProcessCompletionEngine
+        pf = ProcessCompletionEngine.get_completion_engine(mp)
     else:
         study_config = StudyConfig(
             init_config=init_study_config,
