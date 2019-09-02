@@ -291,6 +291,17 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
         self.add_link('sulci_recognition_spam_global_model_type->'
                       'SulciRecognition_1.'
                       'SPAM_recognition09_global_recognition_model_type')
+        if 'CNN_recognition19' in self.nodes['SulciRecognition'].process.nodes:
+          self.add_link(
+              'allow_multithreading->SulciRecognition.CNN_recognition19_allow_multithreading')
+          self.export_parameter(
+              'SulciRecognition',
+              'CNN_recognition19_rebuild_attributes',
+              'rebuild_graph_attributes_after_split')
+          self.add_link(
+              'allow_multithreading->SulciRecognition_1.CNN_recognition19_allow_multithreading')
+          self.add_link(
+              'rebuild_graph_attributes_after_split->SulciRecognition_1.CNN_recognition19_rebuild_attributes')
 
         self.export_parameter('SulcalMorphometry', 'sulcal_morpho_measures')
         self.export_parameter('SulcalMorphometry', 'sulci_file',
@@ -417,34 +428,35 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
         self.nodes_activation.SulciRecognition_1 = True
 
         # nodes position in Pipeline*View
-        self.node_position = {'BiasCorrection': (210.9, 1149.7),
-                              'BrainSegmentation': (629.2, 1471.2),
-                              'CorticalFoldsGraph': (2608., 589.),
-                              'CorticalFoldsGraph_1': (2571., 2731.),
-                              'GreyWhiteClassification': (1775., 565.),
-                              'GreyWhiteClassification_1': (1663.0, 2716.0),
-                              'GreyWhiteMesh': (2405., 347.),
-                              'GreyWhiteMesh_1': (2278., 2409.),
-                              'GreyWhiteTopology': (1992., 369.),
-                              'GreyWhiteTopology_1': (1866., 2481.),
-                              'HeadMesh': (1885., 1867.),
-                              'HistoAnalysis': (428.8, 1199.2),
-                              'PialMesh': (2393., 523.),
-                              'PialMesh_1': (2289., 2557.),
-                              'PrepareSubject': (-489.2, 431.1),
-                              'Renorm': (845., 62.),
-                              'SplitBrain': (1477., 1248.),
-                              'SulcalMorphometry': (3227., 1940.),
-                              'SulciRecognition': (2918., 347.),
-                              'SulciRecognition_1': (2902., 2615.),
-                              'SulciSkeleton': (2169., 668.),
-                              'SulciSkeleton_1': (2075., 2737.),
-                              'TalairachTransformation': (1961., 1273.),
-                              'inputs': (-1335.3, 121.7),
-                              'outputs': (3629., 1029.),
-                              'select_Talairach': (2231., 1673.),
-                              'select_renormalization_commissures': (1194., 1119.),
-                              'select_renormalization_transform': (2563.0, 1470.0)}
+        self.node_position = {'BiasCorrection': (2149., 1157.),
+                              'BrainSegmentation': (2746., 2089.),
+                              'CorticalFoldsGraph': (6470., 2061.),
+                              'CorticalFoldsGraph_1': (6470., 608.),
+                              'GreyWhiteClassification': (4973., 1982.),
+                              'GreyWhiteClassification_1': (4973., 1012.),
+                              'GreyWhiteMesh': (6234., 1785.),
+                              'GreyWhiteMesh_1': (6234., 530.),
+                              'GreyWhiteTopology': (5397., 1911.),
+                              'GreyWhiteTopology_1': (5397., 573.),
+                              'HeadMesh': (2767., 565.),
+                              'HistoAnalysis': (2472., 1040.),
+                              'PialMesh': (6222., 1910.),
+                              'PialMesh_1': (6222., 690.),
+                              'PrepareSubject': (1062., 2159.),
+                              'Renorm': (3048., 2368.),
+                              'SplitBrain': (4649., 1261.),
+                              'SulcalMorphometry': (7843., 2278.),
+                              'SulciRecognition': (6854., 1954.),
+                              'SulciRecognition_1': (6854., 636.),
+                              'SulciSkeleton': (5873., 2387.),
+                              'SulciSkeleton_1': (5873., 875.),
+                              'TalairachTransformation': (4943., 3313.),
+                              'importation': (703., 2820.),
+                              'inputs': (0.0, 0.0),
+                              'outputs': (8179., 700.),
+                              'select_Talairach': (5297., 3419.),
+                              'select_renormalization_commissures': (4134., 2217.),
+                              'select_renormalization_transform': (5762., 3201.)}
 
         self.nodes['PrepareSubject'].process.node_position = {
             'Normalization': (161.4, 227.6),

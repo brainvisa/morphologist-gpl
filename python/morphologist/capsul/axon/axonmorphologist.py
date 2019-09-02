@@ -52,8 +52,8 @@ class AxonMorphologist(Pipeline):
             'PialMesh', 'morphologist.capsul.axon.pialmesh.PialMesh')
         self.add_process('CorticalFoldsGraph',
                          'morphologist.capsul.axon.sulcigraph.SulciGraph')
-        self.add_process(
-            'SulciRecognition', 'morphologist.capsul.sulcilabelling.SulciLabelling')
+        self.add_process('SulciRecognition',
+                         'morphologist.capsul.sulcilabelling.SulciLabelling')
         self.add_process('GreyWhiteClassification_1',
                          'morphologist.capsul.axon.greywhiteclassificationhemi.GreyWhiteClassificationHemi')
         self.add_process('GreyWhiteTopology_1',
@@ -66,8 +66,8 @@ class AxonMorphologist(Pipeline):
             'PialMesh_1', 'morphologist.capsul.axon.pialmesh.PialMesh')
         self.add_process('CorticalFoldsGraph_1',
                          'morphologist.capsul.axon.sulcigraph.SulciGraph')
-        self.add_process(
-            'SulciRecognition_1', 'morphologist.capsul.sulcilabelling.SulciLabelling')
+        self.add_process('SulciRecognition_1',
+                         'morphologist.capsul.sulcilabelling.SulciLabelling')
 
         # exports section
         # export input parameter
@@ -212,7 +212,11 @@ class AxonMorphologist(Pipeline):
             'GreyWhiteMesh.white_mesh->CorticalFoldsGraph.white_mesh')
         self.add_link('SulciSkeleton.skeleton->PialMesh.skeleton')
         self.add_link('SulciSkeleton.skeleton->CorticalFoldsGraph.skeleton')
+        self.add_link(
+            'SulciSkeleton.skeleton->SulciRecognition.CNN_recognition19_skeleton')
         self.add_link('SulciSkeleton.roots->CorticalFoldsGraph.roots')
+        self.add_link(
+            'SulciSkeleton.roots->SulciRecognition.CNN_recognition19_roots')
         self.add_link('PialMesh.pial_mesh->CorticalFoldsGraph.pial_mesh')
         self.add_link(
             'CorticalFoldsGraph_graph_version->CorticalFoldsGraph_1.graph_version')
@@ -238,7 +242,11 @@ class AxonMorphologist(Pipeline):
         self.add_link('SulciSkeleton_1.skeleton->PialMesh_1.skeleton')
         self.add_link(
             'SulciSkeleton_1.skeleton->CorticalFoldsGraph_1.skeleton')
+        self.add_link(
+            'SulciSkeleton_1.skeleton->SulciRecognition_1.CNN_recognition19_skeleton')
         self.add_link('SulciSkeleton_1.roots->CorticalFoldsGraph_1.roots')
+        self.add_link(
+            'SulciSkeleton_1.roots->SulciRecognition_1.CNN_recognition19_roots')
         self.add_link('PialMesh_1.pial_mesh->CorticalFoldsGraph_1.pial_mesh')
         self.add_link(
             'CorticalFoldsGraph_graph_version->CorticalFoldsGraph_1.graph_version')
