@@ -592,6 +592,19 @@ def initialization(self):
                             'left_labelled_graph')
         eNode.addDoubleLink(rhemi + '.SulciRecognition.output_graph',
                             'right_labelled_graph')
+        if 'Sulci recognition with Deep CNN' in \
+                [p.name() for p in
+                 leftNode.SulciRecognition.executionNode().children()]:
+            leftNode.addDoubleLink(
+                'SulciSkeleton.skeleton',
+                'SulciRecognition.CNN_recognition19.skeleton')
+            leftNode.addDoubleLink('SulciSkeleton.roots',
+                                   'SulciRecognition.CNN_recognition19.roots')
+            rightNode.addDoubleLink(
+                'SulciSkeleton.skeleton',
+                'SulciRecognition.CNN_recognition19.skeleton')
+            rightNode.addDoubleLink('SulciSkeleton.roots',
+                                    'SulciRecognition.CNN_recognition19.roots')
 
         leftNode.SulciRecognition._selectionChange.add(linkCheckModels(self))
         rightNode.SulciRecognition._selectionChange.add(linkCheckModels(self))

@@ -20,7 +20,6 @@ class SulciLabelling(sulcilabelling.SulciLabelling):
             cnn = True
         except:
             cnn = False
-        print('CNN:', cnn)
         # nodes section
         if cnn:
             self.add_switch('select_Sulci_Recognition', ['recognition2000', 'SPAM_recognition09', 'CNN_recognition19'], [
