@@ -32,6 +32,7 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from __future__ import print_function
+from __future__ import absolute_import
 from brainvisa.processes import *
 
 name = 'Morphologist 2015'
@@ -94,6 +95,27 @@ class linkCheckModels:
                 linkCheckModels.spamModelsChecked = True
                 if proc:
                     defaultContext().runProcess(proc)
+
+
+def change_fom_format(self, value, names, parameterized):
+    # print('change_fom_format:', value, names, [p.name for p in parameterized])
+    if value is not None:
+        format = value.format
+        sc = self.executionNode().HemispheresProcessing.LeftHemisphere.SulciRecognition.CNN_recognition19.get_study_config()
+        old_format = sc.volumes_format
+        sc.volumes_format = format.name
+        proc = self.executionNode().HemispheresProcessing.LeftHemisphere. \
+            SulciRecognition.CNN_recognition19.get_capsul_process()
+        from capsul.attributes.completion_engine import ProcessCompletionEngine
+        ce = ProcessCompletionEngine.get_completion_engine(proc)
+        if ce is not None:
+            ce.complete_parameters()
+        # WARNING: as we set back the former FOM format, later completions
+        # will happen in the old format, which will be inconsistent.
+        # however if we leave the new format in the sc, then other processes
+        # may be affected in an unexpected way. As SC is global, there is no
+        # good solution.
+        sc.volumes_format = old_format
 
 
 def initialization(self):
@@ -595,6 +617,12 @@ def initialization(self):
         if 'Sulci recognition with Deep CNN' in \
                 [p.name() for p in
                  leftNode.SulciRecognition.executionNode().children()]:
+            # we have to change FOM completion format in CNN process
+            # according to the format of the input images
+            leftNode.SulciSkeleton.addLink(None, 'hemi_cortex',
+                                           self.change_fom_format)
+            rightNode.SulciSkeleton.addLink(None, 'hemi_cortex',
+                                            self.change_fom_format)
             leftNode.addDoubleLink(
                 'SulciSkeleton.skeleton',
                 'SulciRecognition.CNN_recognition19.skeleton')
