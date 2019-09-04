@@ -68,10 +68,10 @@
 
             ### NormalizeSPM
             "PrepareSubject_Normalization_NormalizeSPM_template": "{shared.anatomical_template_t1}",
-            "normalization_spm_native_transformation_pass1": [["output:{acquisition}/<subject>_sn_pass1", "Matlab"]],
-            "normalization_spm_native_job_file_pass1": [["output:{acquisition}/<subject>_job_anat_normalization_pass1", "Matlab"]],
-            "normalization_spm_native_transformation": [["output:{acquisition}/<subject>_sn", "Matlab"]],
-            "normalization_spm_native_job_file": [["output:{acquisition}/<subject>_job_anat_normalization", "Matlab"]],
+            "normalization_spm_native_transformation_pass1": [["output:{acquisition}/<subject>_sn_pass1", "Matlab file"]],
+            "normalization_spm_native_job_file_pass1": [["output:{acquisition}/<subject>_job_anat_normalization_pass1", "Matlab file"]],
+            "normalization_spm_native_transformation": [["output:{acquisition}/<subject>_sn", "Matlab file"]],
+            "normalization_spm_native_job_file": [["output:{acquisition}/<subject>_job_anat_normalization", "Matlab file"]],
             # "PrepareSubject_Normalization_NormalizeSPM_normalized_t1mri": [["output:{acquisition}/normalized_<normalization>_<subject>","images", {"normalization":"SPM"}]],
 
             #### ConvertSPMnormalizationToAIMS
@@ -82,9 +82,9 @@
 
             ### NormalizeFSL
             "normalization_fsl_native_transformation_pass1":
-                [["output:{acquisition}/<subject>_fsl_pass1", "Matlab"]],
+                [["output:{acquisition}/<subject>_fsl_pass1", "Matlab file"]],
             "normalization_fsl_native_transformation":
-                [["output:{acquisition}/<subject>_fsl", "Matlab"]],
+                [["output:{acquisition}/<subject>_fsl", "Matlab file"]],
             "PrepareSubject_Normalization_NormalizeFSL_ReorientAnatomy_output_t1mri":
                 [["output:{acquisition}/<subject>", "images"]],
             "PrepareSubject_Normalization_NormalizeFSL_template": "{shared.anatomical_template_t1}",
@@ -170,13 +170,13 @@
                     {"side": "L", "sulci_database": "2008"}]],
             "SulciRecognition_recognition2000_energy_plot_file":
                 [["output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto",
-                    "Energy", {"side": "L"}]],
+                    "siRelax Fold Energy", {"side": "L"}]],
             "SulciRecognition_1_recognition2000_model":
                 [["shared:{sulci_recognition_ann_model}", "Graph and data",
                     {"side": "R", "sulci_database": "2008"}]],
             "SulciRecognition_1_recognition2000_energy_plot_file":
                 [["output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto",
-                    "Energy", {"side": "R"}]],
+                    "siRelax Fold Energy", {"side": "R"}]],
 
             ## recognition09
             "SPAM_recognition_labels_translation_map": "{shared.sulci_labels_translation_map}",
@@ -318,7 +318,7 @@
         "Morphologist.PrepareSubject.Normalization.NormalizeSPM": {
             "normalized_t1mri":
                 [["output:{acquisition}/normalized_<normalization>_<subject>",
-                    ["NIFTI", "SPM"], {"normalization": "SPM"}]],
+                    ["NIFTI-1 image", "SPM image"], {"normalization": "SPM"}]],
             # has to be re-specified here because of a problem in
             # switch back-propagation of output values
             "reoriented_t1mri":
@@ -328,7 +328,7 @@
         "Morphologist.PrepareSubject.Normalization.NormalizeFSL": {
             "NormalizeFSL_normalized_anatomy_data":
                 [["output:{acquisition}/normalized_<normalization>_<subject>",
-                    ["NIFTI", "SPM"], {"normalization": "FSL"}]],
+                    ["NIFTI-1 image", "SPM image"], {"normalization": "FSL"}]],
             # has to be re-specified here because of a problem in
             # switch back-propagation of output values
             "reoriented_t1mri":
@@ -338,7 +338,7 @@
         "Morphologist.PrepareSubject.Normalization.NormalizeBaladin": {
             "NormalizeBaladin_normalized_anatomy_data":
                 [["output:{acquisition}/normalized_<normalization>_<subject>",
-                    ["NIFTI", "SPM"], {"normalization": "Baladin"}]],
+                    ["NIFTI-1 image", "SPM image"], {"normalization": "Baladin"}]],
             # has to be re-specified here because of a problem in
             # switch back-propagation of output values
             "reoriented_t1mri":
@@ -348,7 +348,7 @@
         "Morphologist.PrepareSubject.Normalization.Normalization_AimsMIRegister": {
           "normalized_anatomy_data":
               [["output:{acquisition}/normalized_<normalization>_<subject>",
-                    ["NIFTI", "SPM"], {"normalization": "AimsMIRegister"}]],
+                    ["NIFTI-1 image", "SPM image"], {"normalization": "AimsMIRegister"}]],
         },
 
         "Morphologist.TalairachTransformation": {
