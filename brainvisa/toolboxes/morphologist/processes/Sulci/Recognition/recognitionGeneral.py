@@ -110,7 +110,8 @@ def initialization(self):
     except ValidationError:
         proc = None
     if proc is not None:
-        eNode3 = ProcessExecutionNode('sulci_deep_labeling', selected=False)
+        #eNode3 = ProcessExecutionNode('sulci_deep_labeling', selected=False)
+        eNode3 = ProcessExecutionNode('capsul://deepsulci.sulci_labeling.capsul.labeling', selected=False)
         eNode3._process.name = 'CNN-based'
         eNode.addChild('CNN_recognition19', eNode3)
         eNode.addDoubleLink('data_graph', 'CNN_recognition19.graph')

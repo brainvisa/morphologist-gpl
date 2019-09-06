@@ -101,12 +101,18 @@ def change_fom_format(self, value, names, parameterized):
     # print('change_fom_format:', value, names, [p.name for p in parameterized])
     if value is not None:
         format = value.format
-        sc = self.executionNode().HemispheresProcessing.LeftHemisphere.SulciRecognition.CNN_recognition19.get_study_config()
+        sc = self.executionNode().HemispheresProcessing.LeftHemisphere. \
+            SulciRecognition.CNN_recognition19.get_study_config()
         old_format = sc.volumes_format
         sc.volumes_format = format.name
         proc = self.executionNode().HemispheresProcessing.LeftHemisphere. \
             SulciRecognition.CNN_recognition19.get_capsul_process()
         from capsul.attributes.completion_engine import ProcessCompletionEngine
+        ce = ProcessCompletionEngine.get_completion_engine(proc)
+        if ce is not None:
+            ce.complete_parameters()
+        proc = self.executionNode().HemispheresProcessing.RightHemisphere. \
+            SulciRecognition.CNN_recognition19.get_capsul_process()
         ce = ProcessCompletionEngine.get_completion_engine(proc)
         if ce is not None:
             ce.complete_parameters()
