@@ -119,25 +119,25 @@ def execution(self, context):
     # soma_app.initialize()
     configuration = Appli2().configuration
 
-    if self.capsul_process_type \
-            == 'morphologist.capsul.morphologist.Morphologist':
-        # Morphologist uses the hand-written Capsul formats
-        # formats-brainvisa-1.0
-        axon_to_capsul_formats = {
-            'NIFTI-1 image': "NIFTI",
-            'gz compressed NIFTI-1 image': "NIFTI gz",
-            'GIS image': "GIS",
-            'MINC image': "MINC",
-            'SPM image': "SPM",
-            'GIFTI file': "GIFTI",
-            'MESH mesh': "MESH",
-            'PLY mesh': "PLY",
-            'siRelax Fold Energy': "Energy",
-        }
-    else:
-        # other processes use the directly translated formats
-        # brainvisa-formats-3.2.0
-        axon_to_capsul_formats = {}
+    #if self.capsul_process_type \
+            #== 'morphologist.capsul.morphologist.Morphologist':
+        ## Morphologist uses the hand-written Capsul formats
+        ## formats-brainvisa-1.0
+        #axon_to_capsul_formats = {
+            #'NIFTI-1 image': "NIFTI",
+            #'gz compressed NIFTI-1 image': "NIFTI gz",
+            #'GIS image': "GIS",
+            #'MINC image': "MINC",
+            #'SPM image': "SPM",
+            #'GIFTI file': "GIFTI",
+            #'MESH mesh': "MESH",
+            #'PLY mesh': "PLY",
+            #'siRelax Fold Energy': "Energy",
+        #}
+    #else:
+        ## other processes use the directly translated formats
+        ## brainvisa-formats-3.2.0
+    axon_to_capsul_formats = {}
 
     # dirs and formats have to be handled sorted since
     # FomConfig.check_and_update_foms(study_config) needs to be called
