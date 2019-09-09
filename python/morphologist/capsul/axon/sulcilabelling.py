@@ -22,8 +22,6 @@ class SulciLabelling(Pipeline):
 
     def pipeline_definition(self):
         # nodes section
-        self.add_switch('select_Sulci_Recognition', ['recognition2000', 'SPAM_recognition09', 'CNN_recognition19'], [
-                        'output_graph'], output_types=[File(allowed_extensions=['.arg', '.data'])])
         self.add_process(
             'recognition2000', 'morphologist.capsul.axon.sulcilabellingann.SulciLabellingANN')
         self.nodes['recognition2000']._weak_outputs = True
@@ -31,8 +29,15 @@ class SulciLabelling(Pipeline):
             'SPAM_recognition09', 'morphologist.capsul.axon.sulcilabellingspam.SulciLabellingSPAM')
         self.nodes['SPAM_recognition09']._weak_outputs = True
         self.add_process(
-            'CNN_recognition19', 'deepsulci.sulci_labeling.capsul.labeling.SulciDeepLabeling')
-        self.nodes['CNN_recognition19']._weak_outputs = True
+            'CNN_recognition19', 'deepsulci.sulci_labeling.capsul.labeling.SulciDeepLabeling', skip_invalid=True)
+        if 'CNN_recognition19' in self.nodes:
+            self.nodes['CNN_recognition19']._weak_outputs = True
+
+        # switches section
+        input_names = [n for n in ['recognition2000',
+                                   'SPAM_recognition09', 'CNN_recognition19'] if n in self.nodes]
+        self.add_switch('select_Sulci_Recognition', input_names, [
+                        'output_graph'], output_types=[File(allowed_extensions=['.arg', '.data'])])
 
         # exports section
         # export input parameter
@@ -56,7 +61,8 @@ class SulciLabelling(Pipeline):
             'CNN_recognition19.labeled_graph->select_Sulci_Recognition.CNN_recognition19_switch_output_graph')
 
         # initialization section
-        self.nodes['select_Sulci_Recognition'].switch = 'SPAM_recognition09'
+        if 'SPAM_recognition09' in self.nodes:
+            self.nodes['select_Sulci_Recognition'].switch = 'SPAM_recognition09'
         # export orphan parameters
         if not hasattr(self, '_autoexport_nodes_parameters') \
                 or self._autoexport_nodes_parameters:

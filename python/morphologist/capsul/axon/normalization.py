@@ -22,8 +22,6 @@ class Normalization(Pipeline):
 
     def pipeline_definition(self):
         # nodes section
-        self.add_switch('select_Normalization_pipeline', ['NormalizeFSL', 'NormalizeSPM', 'NormalizeBaladin', 'Normalization_AimsMIRegister'], ['transformation', 'normalized', 'reoriented_t1mri'], output_types=[File(optional=True, allowed_extensions=['.trm']), File(optional=True, allowed_extensions=['.nii.gz', '.nii', '.img', '.hdr', '.ima', '.dim', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.gif', '.jpg', '.mnc', '.mng', '.pbm', '.pgm',
-                                                                                                                                                                                                                                                                                                             '.png', '.ppm', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz']), File(allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.gif', '.ima', '.dim', '.jpg', '.mnc', '.mng', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz', '.svs', '.mgh', '.mgz', '.ndpi', '.vms', '.vmu', '.scn', '.svslide', '.bif', '.czi'])])
         self.add_process(
             'NormalizeFSL', 'morphologist.capsul.fslnormalization.FSLNormalization')
         self.nodes['NormalizeFSL']._weak_outputs = True
@@ -36,6 +34,10 @@ class Normalization(Pipeline):
         self.add_process('Normalization_AimsMIRegister',
                          'morphologist.capsul.axon.normalization_aimsmiregister.normalization_aimsmiregister')
         self.nodes['Normalization_AimsMIRegister']._weak_outputs = True
+
+        # switches section
+        self.add_switch('select_Normalization_pipeline', ['NormalizeFSL', 'NormalizeSPM', 'NormalizeBaladin', 'Normalization_AimsMIRegister'], ['transformation', 'normalized', 'reoriented_t1mri'], output_types=[File(optional=True, allowed_extensions=['.trm']), File(optional=True, allowed_extensions=['.nii.gz', '.nii', '.img', '.hdr', '.ima', '.dim', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.gif', '.jpg', '.mnc', '.mng', '.pbm', '.pgm',
+                                                                                                                                                                                                                                                                                                             '.png', '.ppm', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz']), File(allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.gif', '.ima', '.dim', '.jpg', '.mnc', '.mng', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz', '.svs', '.mgh', '.mgz', '.ndpi', '.vms', '.vmu', '.scn', '.svslide', '.bif', '.czi'])])
 
         # exports section
         # export input parameter
@@ -108,10 +110,8 @@ class Normalization(Pipeline):
             't1mri->select_Normalization_pipeline.Normalization_AimsMIRegister_switch_reoriented_t1mri')
 
         # initialization section
-        self.nodes['select_Normalization_pipeline'].switch = 'NormalizeSPM'
-        self.nodes['NormalizeFSL'].allow_flip_initial_MRI = False
-        self.nodes['NormalizeSPM'].allow_flip_initial_MRI = False
-        self.nodes['NormalizeBaladin'].allow_flip_initial_MRI = False
+        if 'NormalizeSPM' in self.nodes:
+            self.nodes['select_Normalization_pipeline'].switch = 'NormalizeSPM'
         # export orphan parameters
         if not hasattr(self, '_autoexport_nodes_parameters') \
                 or self._autoexport_nodes_parameters:
