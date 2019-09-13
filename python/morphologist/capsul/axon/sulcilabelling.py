@@ -34,10 +34,8 @@ class SulciLabelling(Pipeline):
             self.nodes['CNN_recognition19']._weak_outputs = True
 
         # switches section
-        input_names = [n for n in ['recognition2000',
-                                   'SPAM_recognition09', 'CNN_recognition19'] if n in self.nodes]
-        self.add_switch('select_Sulci_Recognition', input_names, [
-                        'output_graph'], output_types=[File(allowed_extensions=['.arg', '.data'])])
+        self.add_switch('select_Sulci_Recognition', ['recognition2000', 'SPAM_recognition09', 'CNN_recognition19'], [
+                        'output_graph'], output_types=[File(allowed_extensions=['.arg', '.data'])], opt_nodes=True)
 
         # exports section
         # export input parameter
