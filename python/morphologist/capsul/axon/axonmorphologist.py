@@ -52,8 +52,8 @@ class AxonMorphologist(Pipeline):
             'PialMesh', 'morphologist.capsul.axon.pialmesh.PialMesh')
         self.add_process('CorticalFoldsGraph',
                          'morphologist.capsul.axon.sulcigraph.SulciGraph')
-        self.add_process('SulciRecognition',
-                         'morphologist.capsul.sulcilabelling.SulciLabelling')
+        self.add_process(
+            'SulciRecognition', 'morphologist.capsul.axon.sulcilabelling.SulciLabelling')
         self.add_process('GreyWhiteClassification_1',
                          'morphologist.capsul.axon.greywhiteclassificationhemi.GreyWhiteClassificationHemi')
         self.add_process('GreyWhiteTopology_1',
@@ -66,8 +66,8 @@ class AxonMorphologist(Pipeline):
             'PialMesh_1', 'morphologist.capsul.axon.pialmesh.PialMesh')
         self.add_process('CorticalFoldsGraph_1',
                          'morphologist.capsul.axon.sulcigraph.SulciGraph')
-        self.add_process('SulciRecognition_1',
-                         'morphologist.capsul.sulcilabelling.SulciLabelling')
+        self.add_process(
+            'SulciRecognition_1', 'morphologist.capsul.axon.sulcilabelling.SulciLabelling')
 
         # exports section
         # export input parameter

@@ -22,8 +22,6 @@ class SPMnormalizationPipeline(Pipeline):
 
     def pipeline_definition(self):
         # nodes section
-        self.add_switch('NormalizeSPM', ['normalization_t1_spm12_reinit', 'normalization_t1_spm8_reinit'], [
-                        'spm_transformation', 'normalized_t1mri'], output_types=[File(allowed_extensions=['.mat']), File(allowed_extensions=['.nii', '.img', '.hdr'])])
         self.add_process('ConvertSPMnormalizationToAIMS',
                          'morphologist.capsul.axon.spmsn3dtoaims.SPMsn3dToAims')
         self.add_process(
@@ -34,6 +32,10 @@ class SPMnormalizationPipeline(Pipeline):
         self.add_process('normalization_t1_spm8_reinit',
                          'morphologist.capsul.axon.normalization_t1_spm8_reinit.normalization_t1_spm8_reinit')
         self.nodes['normalization_t1_spm8_reinit']._weak_outputs = True
+
+        # switches section
+        self.add_switch('NormalizeSPM', ['normalization_t1_spm12_reinit', 'normalization_t1_spm8_reinit'], [
+                        'spm_transformation', 'normalized_t1mri'], output_types=[File(allowed_extensions=['.mat']), File(allowed_extensions=['.nii', '.img', '.hdr'])])
 
         # exports section
         # export input parameter
@@ -102,8 +104,8 @@ class SPMnormalizationPipeline(Pipeline):
             'ConvertSPMnormalizationToAIMS.write->ReorientAnatomy.transformation')
 
         # initialization section
-        self.nodes['NormalizeSPM'].switch = 'normalization_t1_spm12_reinit'
-        self.nodes['ReorientAnatomy'].allow_flip_initial_MRI = False
+        if 'normalization_t1_spm12_reinit' in self.nodes:
+            self.nodes['NormalizeSPM'].switch = 'normalization_t1_spm12_reinit'
         self.nodes_activation.ReorientAnatomy = False
         # export orphan parameters
         if not hasattr(self, '_autoexport_nodes_parameters') \

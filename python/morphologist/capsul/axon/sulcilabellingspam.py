@@ -24,14 +24,16 @@ class SulciLabellingSPAM(Pipeline):
         # nodes section
         self.add_process(
             'global_recognition', 'morphologist.capsul.axon.sulcilabellingspamglobal.SulciLabellingSPAMGlobal')
-        self.add_switch('local_or_markovian', ['local_recognition', 'markovian_recognition'], [
-                        'output_graph'], output_types=[File(allowed_extensions=['.arg', '.data'])])
         self.add_process(
             'local_recognition', 'morphologist.capsul.axon.sulcilabellingspamlocal.SulciLabellingSPAMLocal')
         self.nodes['local_recognition']._weak_outputs = True
         self.add_process('markovian_recognition',
                          'morphologist.capsul.axon.sulcilabellingspammarkov.SulciLabellingSPAMMarkov')
         self.nodes['markovian_recognition']._weak_outputs = True
+
+        # switches section
+        self.add_switch('local_or_markovian', ['local_recognition', 'markovian_recognition'], [
+                        'output_graph'], output_types=[File(allowed_extensions=['.arg', '.data'])])
 
         # exports section
         # export input parameter
@@ -86,7 +88,8 @@ class SulciLabellingSPAM(Pipeline):
             'global_recognition_labels_priors->local_recognition.labels_priors')
 
         # initialization section
-        self.nodes['local_or_markovian'].switch = 'local_recognition'
+        if 'local_recognition' in self.nodes:
+            self.nodes['local_or_markovian'].switch = 'local_recognition'
         # export orphan parameters
         if not hasattr(self, '_autoexport_nodes_parameters') \
                 or self._autoexport_nodes_parameters:
