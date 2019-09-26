@@ -105,15 +105,13 @@ def initialization(self):
     self.fix_random_seed = False
 
     # CNN models
-    try:
-        proc = getProcess('sulci_deep_labeling')
-    except ValidationError:
-        proc = None
-    if proc is not None:
-        #eNode3 = ProcessExecutionNode('sulci_deep_labeling', selected=False)
-        eNode3 = ProcessExecutionNode('capsul://deepsulci.sulci_labeling.capsul.labeling', selected=False)
+    #eNode3 = ProcessExecutionNode('sulci_deep_labeling', selected=False)
+    eNode3 = ProcessExecutionNode(
+        'capsul://deepsulci.sulci_labeling.capsul.labeling', selected=False,
+        skip_invalid=True)
+    if eNode3.is_valid():
         eNode3._process.name = 'CNN-based'
-        eNode.addChild('CNN_recognition19', eNode3)
-        eNode.addDoubleLink('data_graph', 'CNN_recognition19.graph')
-        eNode.addDoubleLink('output_graph', 'CNN_recognition19.labeled_graph')
+    eNode.addChild('CNN_recognition19', eNode3)
+    eNode.addDoubleLink('data_graph', 'CNN_recognition19.graph')
+    eNode.addDoubleLink('output_graph', 'CNN_recognition19.labeled_graph')
 
