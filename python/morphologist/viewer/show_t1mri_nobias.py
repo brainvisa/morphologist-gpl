@@ -5,8 +5,9 @@ try:
 except ImportError:
     from enthought.traits.api import ListStr, HasTraits, File, Float, Instance, Enum, Str
 
-from soma.controller import Controller, add_trait
+from soma.controller import Controller
 import anatomist.api as ana
+import traits.api as traits
 
 
 class ShowT1mriNobias(Controller):
@@ -14,10 +15,10 @@ class ShowT1mriNobias(Controller):
 
     def __init__(self, *args, **kwargs):
         HasTraits.__init__(self)
-        add_trait(self, 'mask', File(exists=True))
-        self.mask = kwargs['mask']
-        add_trait(self, 'mri', File(exist=True))
-        self.mri = kwargs['mri']
+        self.add_trait('mask', File(exists=True))
+        self.mask = kwargs.get('mask', traits.Undefined)
+        self.add_trait('mri', File(exist=True))
+        self.mri = kwargs.get('mri', traits.Undefined)
 
     def anatomist_instance(self):
         a = ana.Anatomist()
