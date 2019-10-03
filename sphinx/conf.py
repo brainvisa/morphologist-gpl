@@ -14,6 +14,7 @@
 from __future__ import print_function
 import sys
 import os
+import subprocess
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -51,8 +52,8 @@ try:
     aims_version = '%d.%d' % aims.version()
     aims_fullversion = aims.versionString()
 except:
-    aims_version = '4.5'
-    aims_fullversion = '4.6.0'
+    aims_version = '4.6'
+    aims_fullversion = '4.6.2'
 anatomist_version = aims_version
 bv_release_version = aims_version
 bv_release_fullversion = aims_fullversion
@@ -317,3 +318,20 @@ intersphinx_mapping = {
                                   + somaworkflow_version + '/sphinx'), None),
     'python': ('http://docs.python.org/2.7', None),
 }
+
+# generate pipeline and processes docs
+#sphinx_dir = sys.argv[-1]  # TODO: secure this - maybe not always OK
+sphinx_dir = os.path.dirname(__file__)
+proc_rst_dir = os.path.join(sphinx_dir, 'process_docs', 'morphologist')
+if not os.path.exists(proc_rst_dir):
+    os.makedirs(proc_rst_dir)
+cmd = [sys.executable, '-m', 'capsul.sphinxext.capsul_pipeline_rst',
+       '-i', 'morphologist.capsul', '-o', proc_rst_dir, '--schema']
+print('generating CAPSUL processes docs...')
+print(cmd)
+subprocess.check_output(cmd)
+#cmd = [sys.executable, '-m', 'capsul.sphinxext.capsul_pipeline_view',
+       #'-i', 'morphologist.capsul', '-o', proc_rst_dir]
+#print(cmd)
+#subprocess.check_output(cmd)
+

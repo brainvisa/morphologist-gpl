@@ -16,7 +16,7 @@ All processes and pipelines:
 
 .. toctree::
 
-    Capsul
+    process_docs/morphologist/capsul/index.rst
 
 
 
