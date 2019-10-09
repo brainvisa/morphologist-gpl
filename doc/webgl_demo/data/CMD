@@ -1,0 +1,5 @@
+# convert one .mesh file
+python ../mesh2js.py chaos_left.mesh mesh.js
+
+convert a serie of .mesh files
+python ../mesh2js.py /i2bm/brainvisa/Ubuntu-10.04-x86_64/brainvisa-Ubuntu-10.04-x86_64-4.1.0-2011_05_16i2bm/share/brainvisa-share-4.1/models/descriptive_models/segments/global_registered_spam_left/meshes/*1.mesh /i2bm/brainvisa/Ubuntu-10.04-x86_64/brainvisa-Ubuntu-10.04-x86_64-4.1.0-2011_05_16i2bm/share/brainvisa-share-4.1/models/descriptive_models/segments/global_registered_spam_right/meshes/*1.mesh spam.js

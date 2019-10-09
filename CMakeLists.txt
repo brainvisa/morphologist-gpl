@@ -43,7 +43,9 @@ brainvisa_add_test(morphologist-test-capsul "${PYTHON_EXECUTABLE_NAME}" -m morph
 set_tests_properties(morphologist-test-capsul PROPERTIES DEPENDS morphologist-tests)
 
 find_package( Sphinx )
-BRAINVISA_GENERATE_SPHINX_DOC( "sphinx"
+BRAINVISA_GENERATE_SPHINX_DOC( "sphinx/user_doc"
+  "share/doc/morphologist-${BRAINVISA_PACKAGE_VERSION_MAJOR}.${BRAINVISA_PACKAGE_VERSION_MINOR}/user_doc" USER )
+BRAINVISA_GENERATE_SPHINX_DOC( "sphinx/dev_doc"
   "share/doc/morphologist-${BRAINVISA_PACKAGE_VERSION_MAJOR}.${BRAINVISA_PACKAGE_VERSION_MINOR}/dev_doc" )
 
 BRAINVISA_CREATE_CMAKE_CONFIG_FILES()
