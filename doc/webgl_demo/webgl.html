@@ -1,0 +1,160 @@
+<html> 
+<head> 
+<title>webgl</title> 
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<script type="text/javascript" src="glMatrix.js"></script>
+<script type="text/javascript" src="webgl.js"></script>
+<!--script type="text/javascript" src="data/triangle.js"></script-->
+<!--script type="text/javascript" src="data/cube.js"></script-->
+<!--script type="text/javascript" src="data/mesh.js"></script-->
+<script type="text/javascript" src="data/spam.js"></script>
+
+<script type="text/javascript">
+var controller = {}
+controller.mouseDown = false;
+controller.lastMouseX = null;
+controller.lastMouseY = null;
+controller.object = null;
+
+controller.handleMouseDown = function(event)
+{
+	document.getElementById("plop").value = "down";
+	controller.mouseDown = true;
+	controller.lastMouseX = event.clientX;
+	controller.lastMouseY = event.clientY;
+}
+
+controller.handleMouseUp = function(event)
+{
+	document.getElementById("plop").value = "up";
+	controller.mouseDown = false;
+}
+
+function degToRad(degrees)
+{
+        return degrees * Math.PI / 180;
+}
+
+controller.handleMouseMove = function(event)
+{
+	if (controller.object == null) return;
+	if (!controller.mouseDown) return;
+
+	var deltaX = -(event.clientX - controller.lastMouseX);
+	var deltaY = event.clientY - controller.lastMouseY;
+
+	controller.lastMouseX = event.clientX;
+	controller.lastMouseY = event.clientY;
+	document.getElementById("plop").value = "move : " + deltaX + ', ' + deltaY + ': ' + event.clientX + ', ' + event.clientY;
+
+
+	var R = mat4.identity();
+	mat4.rotate(R, degToRad(deltaX / 3.), [0, 1, 0], R);
+	mat4.rotate(R, degToRad(deltaY / 3.), [1, 0, 0], R);
+	mat4.multiply(R, controller.object.modelMatrix,
+			controller.object.modelMatrix);
+	
+	mat4.set(mat4.inverse(mat4.transpose(controller.object.modelMatrix)),
+				controller.object.modelMatrixIT);
+
+	pgm = controller.update_args[0];
+	objects = controller.update_args[1];
+	draw_objects(pgm, objects);
+	gl.flush();
+}
+
+controller.handleTouchDown = function(event)
+{
+        document.getElementById("plop").value = "down";
+        controller.mouseDown = true;
+        controller.lastMouseX = event.touches[0].pageX;
+        controller.lastMouseY = event.touches[0].pageY;
+}
+
+controller.handleTouchMove = function(event)
+{
+        if (controller.object == null) return;
+        if (!controller.mouseDown) return;
+	event.preventDefault();
+
+        var deltaX = -(event.touches[0].pageX - controller.lastMouseX);
+        var deltaY = event.touches[0].pageY - controller.lastMouseY;
+
+        controller.lastMouseX = event.touches[0].pageX;
+        controller.lastMouseY = event.touches[0].pageY;
+        document.getElementById("plop").value = "move : " + deltaX + ', ' + deltaY;
+
+
+        var R = mat4.identity();
+        mat4.rotate(R, degToRad(deltaX / 3.), [0, 1, 0], R);
+        mat4.rotate(R, degToRad(deltaY / 3.), [1, 0, 0], R);
+        mat4.multiply(R, controller.object.modelMatrix,
+                        controller.object.modelMatrix);
+
+        mat4.set(mat4.inverse(mat4.transpose(controller.object.modelMatrix)),
+                                controller.object.modelMatrixIT);
+
+        pgm = controller.update_args[0];
+        objects = controller.update_args[1];
+        draw_objects(pgm, objects);
+        gl.flush();
+}
+
+controller.set_object = function(object)
+{
+	controller.object = object;
+}
+
+function fill_webgl_canvas()
+{
+	var canvas = document.getElementById("webgl_canvas");
+	canvas.onmousedown = controller.handleMouseDown
+	canvas.onmouseup = controller.handleMouseUp
+	canvas.onmousemove = controller.handleMouseMove
+        canvas.ontouchstart = controller.handleTouchDown
+        canvas.ontouchend = controller.handleMouseUp
+        canvas.ontouchmove = controller.handleTouchMove
+        canvas.addEventListener ("mouseout", controller.handleMouseUp, false);
+ 	init_gl(canvas);
+	//prefix = "shaders/no_light_model/color_shader"
+	//prefix = "shaders/blinn_phong_light_model/flat_shader"
+	//prefix = "shaders/blinn_phong_light_model/gouraud_shader"
+	//prefix = "shaders/blinn_phong_light_model/phong_shader"
+	//prefix = "shaders/phong_light_model/flat_shader"
+	//prefix = "shaders/phong_light_model/gouraud_shader"
+	prefix = "shaders/phong_light_model/phong_shader"
+	shader_program = init_shaders_from_files(prefix + ".vert",
+						prefix + ".frag");
+
+	//define objects
+	objects = load_objects();
+	controller.set_object(objects[0]);
+	controller.update_args = [shader_program, objects];
+
+	// init
+	gl.viewport(0, 0, canvas.width, canvas.height);
+	gl.clearColor(0.1, 0.1, 0.1, 1.0);
+	gl.clearDepth(1.0);
+	gl.enable(gl.DEPTH_TEST);
+	gl.depthFunc(gl.LEQUAL);
+
+	// camera position / orientation
+	viewMatrix = mat4.identity();
+	mat4.scale(viewMatrix, [1.75, 1.75, 1.75], viewMatrix);
+	mat4.translate(viewMatrix, [0, 0, -20], viewMatrix);
+        mat4.rotate(viewMatrix, 3.1416, [1, 0, 0], viewMatrix);
+	set_view_matrix(viewMatrix);
+
+	// draw
+	draw_objects(shader_program, objects);
+	gl.flush();
+}
+
+</script>
+</head>
+<body onload="fill_webgl_canvas();">
+	<canvas id="webgl_canvas" width="600" height="600"
+		"></canvas>
+	value: <input type="text" id="plop" value="loaded"/>
+</body>
+</html> 

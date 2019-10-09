@@ -1,0 +1,127 @@
+
+@import url("default.css");
+
+/* -- page layout ----------------------------------------------------------- */
+
+body {
+    background-color: #403453;
+    color: #000;
+}
+
+div.document {
+    background-color: #75759B;
+}
+
+div.related {
+    background-color: #5F447D;
+}
+
+div.sphinxsidebar input {
+    border: #db98cc;
+}
+
+/* -- hyperlink styles ------------------------------------------------------ */
+
+a {
+    color: #7c355f;
+}
+
+a:visited {
+    color: #7c355f;
+}
+
+div.sphinxsidebar a {
+    color: #A9A0B6;
+}
+
+/* -- body styles ----------------------------------------------------------- */
+
+div.body h1,
+div.body h2,
+div.body h3,
+div.body h4,
+div.body h5,
+div.body h6 {
+    background-color: #f6f0f2;
+    color: #5c2043;
+}
+
+dl.class dt {
+    background-color: #ffe8f0;
+    border-bottom: 1px solid #ccc;
+    border-top: 1px solid #ccc;
+}
+
+dl.method dt {
+    background-color: #ffffff;
+    border-bottom: none;
+    border-top: none;
+}
+
+dl.docutils dt {
+    background-color: #ffffff;
+    border-bottom: none;
+    border-top: none;
+}
+
+dl.staticmethod dt {
+    background-color: #ffffff;
+    border-bottom: none;
+    border-top: none;
+}
+
+dl.data dt {
+    background-color: #ffffff;
+    border-bottom: none;
+    border-top: none;
+}
+
+dl.attribute dt {
+    background-color: #ffffff;
+    border-bottom: none;
+    border-top: none;
+}
+
+dl.class dt:target, .highlighted {
+    background-color: #fb4ee5;
+}
+
+dl.method dt:target, .highlighted {
+    background-color: #fb4ee5;
+}
+
+dl.docutils dt:target, .highlighted {
+    background-color: #fb4ee5;
+}
+
+dl.staticmethod dt:target, .highlighted {
+    background-color: #fb4ee5;
+}
+
+dl.data dt:target, .highlighted {
+    background-color: #fb4ee5;
+}
+
+dl.attribute dt:target, .highlighted {
+    background-color: #fb4ee5;
+}
+
+table.citation a {
+    background-color: #ffd0d0;
+    display: inline;
+    border-radius: 8px;
+    text-align: center;
+    border-color: #e0b0b0;
+    border-width: 1px;
+    border-style: solid;
+    padding-left: 3px;
+    padding-right: 3px;
+/*     box-shadow: 1px 1px 2px #c0c0c0; */
+    border-left-color: #ffe0e0;
+    border-top-color: #ffe0e0;
+}
+
+table.docutils.citation td.label {
+    font-weight: bold;
+    font-size: 90%;
+}
