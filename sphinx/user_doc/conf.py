@@ -331,7 +331,7 @@ intersphinx_mapping = {
     'somaworkflow': (os.path.join(docpath, 'soma-workflow-'
                                   + somaworkflow_version + '/sphinx'), None),
     'python': ('http://docs.python.org/2.7', None),
-    'morphouiusr': ('doc/morphologist-ui/%s', 'morphoui '),
+    'morphouiusr': ('doc/morphologist-ui/%s', None),
 }
 
 # generate pipeline and processes docs
