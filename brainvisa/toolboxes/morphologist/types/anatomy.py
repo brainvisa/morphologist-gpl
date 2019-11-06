@@ -105,6 +105,8 @@ FileType('Sulci Volume', 'Label Volume')
 FileType('Head Mask', 'Label Volume')
 FileType('Corpus Callosum mask', 'Label Volume')
 FileType('Deep Nuclei Mask', 'Label Volume')
+FileType('Subcortical labels', 'Label Volume')
+FileType('Intracranial mask', 'Label Volume')
 
 FileType('MRI Ext Edge Image', '3D Volume')
 
@@ -113,6 +115,9 @@ FileType('Gyri White Volume', '3D Volume')
 FileType('Gyri Model', 'Any Type', 'Gyri Model')
 
 FileType('Moment Vector', 'Any Type', 'Moment Vector')
+
+FileType('T1 MRI Denoised', '3D Volume')
+FileType('T1 MRI Denoised and Bias Corrected', '3D Volume')
 
 #--------------------- Mesh ---------------------
 
