@@ -31,6 +31,8 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
+from __future__ import print_function
+
 from brainvisa.processes import *
 import os
 import sys
@@ -158,8 +160,12 @@ def execution(self, context):
             # LENGTH
             for rel in sulcus.edges():
                 if rel.getSyntax() == 'hull_junction':
-                    hj_length_tal = rel['reflength']
-                    hj_length_nat = rel['length']
+                    if 'reflength' not in rel:
+                        context.write('no reflength in rel', rel)
+                        context.write('vertex:', sulcus.get('name'), sulcus.get('index'))
+                    else:
+                        hj_length_tal = rel['reflength']
+                        hj_length_nat = rel['length']
             # THICKNESS
             # Si la MG est trop fine, il peut ne pas y avoir d'epaisseur moyenne.
             if 'mid_interface_voxels' in sulcus.keys():
