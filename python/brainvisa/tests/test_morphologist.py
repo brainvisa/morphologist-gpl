@@ -327,8 +327,8 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
         pc = [116.197914124, 147.53125, 91.1999969482]
         ip = [118.197914124, 99.53125, 45.6000061035]
         # Get data
-        t1, t1_nobias, left_ann_graph, right_ann_graph = \
-            self.get_data(database)
+        t1, t1_nobias, left_ann_graph, right_ann_graph, left_cnn_graph, \
+            right_cnn_graph = self.get_data(database)
         # Run pipelines
         print("* Check SPAM models installation")
         # warning: models install needs write permissions to the shared
