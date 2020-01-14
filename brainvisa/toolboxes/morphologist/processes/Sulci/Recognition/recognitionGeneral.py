@@ -114,4 +114,5 @@ def initialization(self):
     eNode.addChild('CNN_recognition19', eNode3)
     eNode.addDoubleLink('data_graph', 'CNN_recognition19.graph')
     eNode.addDoubleLink('output_graph', 'CNN_recognition19.labeled_graph')
+    self.addDoubleLink('fix_random_seed', 'CNN_recognition19.fix_random_seed')
 
