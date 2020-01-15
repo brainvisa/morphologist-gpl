@@ -307,8 +307,8 @@ class TestMorphologistCapsul(soma.test_utils.SomaTestCase):
 
             # run CNN if available
             if 'CNN_recognition19' \
-                    in mp.trait('select_Sulci_Recognition').get_validate()[1]:
-                mp.select_Sulci_Recognition = 'CNN_recognition19'
+                    in mp.trait('select_sulci_recognition').get_validate()[1]:
+                mp.select_sulci_recognition = 'CNN_recognition19'
                 from capsul.attributes.completion_engine \
                     import ProcessCompletionEngine
                 pce = ProcessCompletionEngine.get_completion_engine(mp)
