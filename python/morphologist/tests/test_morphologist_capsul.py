@@ -309,7 +309,12 @@ class TestMorphologistCapsul(soma.test_utils.SomaTestCase):
             if 'CNN_recognition19' \
                     in mp.trait('select_sulci_recognition').get_validate()[1]:
                 mp.select_sulci_recognition = 'CNN_recognition19'
-                from capsul.attributes.completion_engine \
+                for step in mp.pipeline_steps.user_traits().keys():
+                    if step != 'sulci_labelling':
+                        setattr(mp.pipeline_steps, step, False)
+                    else:
+                        setattr(mp.pipeline_steps, step, True)
+                 from capsul.attributes.completion_engine \
                     import ProcessCompletionEngine
                 pce = ProcessCompletionEngine.get_completion_engine(mp)
                 atts = pce.get_attribute_values()
