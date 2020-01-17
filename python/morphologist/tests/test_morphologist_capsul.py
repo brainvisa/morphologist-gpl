@@ -314,7 +314,7 @@ class TestMorphologistCapsul(soma.test_utils.SomaTestCase):
                         setattr(mp.pipeline_steps, step, False)
                     else:
                         setattr(mp.pipeline_steps, step, True)
-                 from capsul.attributes.completion_engine \
+                from capsul.attributes.completion_engine \
                     import ProcessCompletionEngine
                 pce = ProcessCompletionEngine.get_completion_engine(mp)
                 atts = pce.get_attribute_values()
