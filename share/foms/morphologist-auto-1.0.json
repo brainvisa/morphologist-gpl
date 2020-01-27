@@ -287,8 +287,8 @@
               [["shared:models/models_2019/cnn_models/sulci_unet_model_params_left",
                  "JSON file", {"side": "L"}]],
           "SulciRecognition_1_CNN_recognition19_param_file":
-              [["shared:models/models_2019/cnn_models/sulci_unet_model_params_left",
-                 "JSON file", {"side": "L"}]],
+              [["shared:models/models_2019/cnn_models/sulci_unet_model_params_right",
+                 "JSON file", {"side": "R"}]],
 
           # Sulcal morphometry
           "sulcal_morpho_measures":
