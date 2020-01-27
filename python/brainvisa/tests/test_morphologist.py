@@ -57,6 +57,9 @@ class MorphologistTestLoader(soma.test_utils.SomaTestLoader):
             '--no-ann', action='store_true',
             help='do not perform ANN sulci recognition test.')
         self.parser.add_argument(
+            '--no-cnn', action='store_true',
+            help='do not perform CNN sulci recognition test.')
+        self.parser.add_argument(
             '--no-spam', action='store_true',
             help='do not perform SPAM sulci recognition test.')
         self.parser.add_argument(
@@ -84,10 +87,12 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
         # coded with those variables)
         self.do_spam = not self.no_spam
         self.do_ann = not self.no_ann
+        self.do_cnn = not self.no_cnn
         self.day_filter = self.sparse
         # Create the pipelines (we need them to query the databases)
         self.pipeline = self.create_spam_pipeline()
         self.ann_pipeline = self.create_ann_pipeline()
+        self.cnn_pipeline = self.create_cnn_pipeline()
 
     @staticmethod
     def create_spam_pipeline():
@@ -157,6 +162,51 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
         nodes.HemispheresProcessing.RightHemisphere.CorticalFoldsGraph.setSelected(
             0)
         nodes.HemispheresProcessing.RightHemisphere.SulciRecognition.recognition2000.setSelected(
+            1)
+
+        return pipeline
+
+    @staticmethod
+    def create_cnn_pipeline():
+        pipeline = TestMorphologistPipeline.create_spam_pipeline()
+        nodes = pipeline.executionNode()
+        if 'Sulci recognition with Deep CNN' not in \
+                [p.name() for p in
+                 nodes.HemispheresProcessing.LeftHemisphere.SulciRecognition \
+                    .executionNode().children()]:
+            # CNN not available
+            return None
+        nodes.PrepareSubject.setSelected(0)
+        nodes.BiasCorrection.setSelected(0)
+        nodes.HistoAnalysis.setSelected(0)
+        nodes.BrainSegmentation.setSelected(0)
+        # nodes.Renorm.setSelected(0)
+        nodes.SplitBrain.setSelected(0)
+        nodes.TalairachTransformation.setSelected(0)
+        nodes.HeadMesh.setSelected(0)
+        nodes.HemispheresProcessing.LeftHemisphere.GreyWhiteClassification.setSelected(
+            0)
+        nodes.HemispheresProcessing.LeftHemisphere.GreyWhiteTopology.setSelected(
+            0)
+        nodes.HemispheresProcessing.LeftHemisphere.GreyWhiteMesh.setSelected(0)
+        nodes.HemispheresProcessing.LeftHemisphere.SulciSkeleton.setSelected(0)
+        nodes.HemispheresProcessing.LeftHemisphere.PialMesh.setSelected(0)
+        nodes.HemispheresProcessing.LeftHemisphere.CorticalFoldsGraph.setSelected(
+            0)
+        nodes.HemispheresProcessing.LeftHemisphere.SulciRecognition.CNN_recognition19.setSelected(
+            1)
+        nodes.HemispheresProcessing.RightHemisphere.GreyWhiteClassification.setSelected(
+            0)
+        nodes.HemispheresProcessing.RightHemisphere.GreyWhiteTopology.setSelected(
+            0)
+        nodes.HemispheresProcessing.RightHemisphere.GreyWhiteMesh.setSelected(
+            0)
+        nodes.HemispheresProcessing.RightHemisphere.SulciSkeleton.setSelected(
+            0)
+        nodes.HemispheresProcessing.RightHemisphere.PialMesh.setSelected(0)
+        nodes.HemispheresProcessing.RightHemisphere.CorticalFoldsGraph.setSelected(
+            0)
+        nodes.HemispheresProcessing.RightHemisphere.SulciRecognition.CNN_recognition19.setSelected(
             1)
 
         return pipeline
@@ -256,16 +306,29 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
                                 "graph_version": "3.1",
                                 "manually_labelled": "No",
                                 "side": "right"})
-        return t1, t1_nobias, left_ann_graph, right_ann_graph
+        left_cnn_graph = glwd.findValue(
+            t1_nobias,
+            requiredAttributes={"sulci_recognition_session": "cnn",
+                                "graph_version": "3.1",
+                                "manually_labelled": "No",
+                                "side": "left"})
+        right_cnn_graph = grwd.findValue(
+            t1_nobias,
+            requiredAttributes={"sulci_recognition_session": "cnn",
+                                "graph_version": "3.1",
+                                "manually_labelled": "No",
+                                "side": "right"})
+        return (t1, t1_nobias, left_ann_graph, right_ann_graph, left_cnn_graph,
+                right_cnn_graph)
 
-    def run_pipelines(self, database, skip_ann=False):
+    def run_pipelines(self, database, skip_ann=False, skip_cnn=False):
         # Constants
         ac = [114.864585876, 118.197914124, 88.7999954224]
         pc = [116.197914124, 147.53125, 91.1999969482]
         ip = [118.197914124, 99.53125, 45.6000061035]
         # Get data
-        t1, t1_nobias, left_ann_graph, right_ann_graph = \
-            self.get_data(database)
+        t1, t1_nobias, left_ann_graph, right_ann_graph, left_cnn_graph, \
+            right_cnn_graph = self.get_data(database)
         # Run pipelines
         print("* Check SPAM models installation")
         # warning: models install needs write permissions to the shared
@@ -284,6 +347,16 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
                 anterior_commissure=ac, posterior_commissure=pc,
                 interhemispheric_point=ip, left_labelled_graph=left_ann_graph,
                 right_labelled_graph=right_ann_graph)
+        if not skip_cnn and self.cnn_pipeline:
+            print("* Run CNN recognition")
+            defaultContext().runProcess(
+                self.cnn_pipeline, t1mri=t1, t1mri_nobias=t1_nobias,
+                anterior_commissure=ac, posterior_commissure=pc,
+                interhemispheric_point=ip, left_labelled_graph=left_cnn_graph,
+                right_labelled_graph=right_cnn_graph)
+        elif not skip_cnn:
+            print('-- CNN recognition is disabled due to missing '
+                  'dependencies --')
 
     def setUp_ref_mode(self):
         # ref mode ignores options test_only, no_ann and no_spam
@@ -311,9 +384,13 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
             skip_ann = True
         else:
             skip_ann = False
+        if not self.do_cnn:
+            print('(not doing CNN sulci recognition tests)')
+        skip_cnn = not self.do_cnn
+
 
         # Run the pipelines (always use ANN)
-        self.run_pipelines(self.ref_database, skip_ann)
+        self.run_pipelines(self.ref_database, skip_ann, skip_cnn)
 
     def setUp_run_mode(self):
         # Get the ref database
@@ -352,7 +429,10 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
             skip_ann = True
         else:
             skip_ann = False
-        self.run_pipelines(self.run_database, skip_ann)
+        if not self.do_cnn:
+            print('(not doing CNN sulci recognition tests)')
+        skip_cnn = not self.do_cnn
+        self.run_pipelines(self.run_database, skip_ann, skip_cnn)
 
     def compare_files(self, ref_file, test_file):
         skipped_ends = [
@@ -396,8 +476,8 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
         if not self.do_spam or not self.do_sulci_today():
             skipped_dirs.append('default_session_auto')
         # Get data
-        _, ref_t1_nobias, _, _ = self.get_data(self.ref_database)
-        _, run_t1_nobias, _, _ = self.get_data(self.run_database)
+        _, ref_t1_nobias, _, _, _, _ = self.get_data(self.ref_database)
+        _, run_t1_nobias, _, _, _, _ = self.get_data(self.run_database)
         ref_dir = os.path.dirname(ref_t1_nobias.fullPath())
         test_dir = os.path.dirname(run_t1_nobias.fullPath())
         for (dirpath, dirnames, filenames) in os.walk(ref_dir):

@@ -267,46 +267,112 @@ class TestMorphologistCapsul(soma.test_utils.SomaTestCase):
         os.unlink(tmpdb[1])
         config._database_file = tmpdb[1]
         controller = swclient.WorkflowController(config=config)
-        wf_id = controller.submit_workflow(wf)
-        print('* running Morphologist...')
-        swclient.Helper.wait_workflow(wf_id, controller)
-        print('* finished.')
-        self.workflow_status = controller.workflow_status(wf_id)
-        elements_status = controller.workflow_elements_status(wf_id)
-        self.failed_jobs = [element for element in elements_status[0]
-                            if element[1] != swconstants.DONE
-                            or element[3][0] != swconstants.FINISHED_REGULARLY
-                            or element[3][1] != 0]
-        self.failed_jobs_info = controller.jobs(
-            [element[0] for element in self.failed_jobs
-             if element[3][0] != swconstants.EXIT_NOTRUN])
-        controller.delete_workflow(wf_id)
-        # remove the temporary database
-        del controller
-        del config
-        os.unlink(tmpdb[1])
+        try:
+            wf_id = controller.submit_workflow(wf)
+            print('* running Morphologist...')
+            swclient.Helper.wait_workflow(wf_id, controller)
+            print('* finished.')
+            self.workflow_status = controller.workflow_status(wf_id)
+            elements_status = controller.workflow_elements_status(wf_id)
+            self.failed_jobs = [element for element in elements_status[0]
+                                if element[1] != swconstants.DONE
+                                or element[3][0] != swconstants.FINISHED_REGULARLY
+                                or element[3][1] != 0]
+            self.failed_jobs_info = controller.jobs(
+                [element[0] for element in self.failed_jobs
+                if element[3][0] != swconstants.EXIT_NOTRUN])
+            controller.delete_workflow(wf_id)
 
-        self.assertTrue(
-            self.workflow_status == swconstants.WORKFLOW_DONE,
-            'Workflow did not finish regularly: %s' % self.workflow_status
-        )
-        print('** workflow status OK')
-        if len(self.failed_jobs) != 0:
-            # failure
-            print('** Jobs failure, the following jobs ended with failed '
-                  'status:', file=sys.stderr)
-            for element in self.failed_jobs:
-                # skip those aborted for their dependencies
-                if element[3][0] != swconstants.EXIT_NOTRUN:
-                    job = self.failed_jobs_info[element[0]]
-                    print('+ job:', job[0], ', status:', element[1],
-                          ', exit:', element[3][0], ', value:', element[3][1],
-                          file=sys.stderr)
-                    print('  commandline:', file=sys.stderr)
-                    print(job[1], file=sys.stderr)
-        self.assertTrue(len(self.failed_jobs) == 0,
-                        'Morphologist jobs failed')
-        print('** No failed jobs.')
+            self.assertTrue(
+                self.workflow_status == swconstants.WORKFLOW_DONE,
+                'Workflow did not finish regularly: %s' % self.workflow_status
+            )
+            print('** workflow status OK')
+            if len(self.failed_jobs) != 0:
+                # failure
+                print('** Jobs failure, the following jobs ended with failed '
+                      'status:', file=sys.stderr)
+                for element in self.failed_jobs:
+                    # skip those aborted for their dependencies
+                    if element[3][0] != swconstants.EXIT_NOTRUN:
+                        job = self.failed_jobs_info[element[0]]
+                        print('+ job:', job[0], ', status:', element[1],
+                              ', exit:', element[3][0],
+                              ', value:', element[3][1],
+                              file=sys.stderr)
+                        print('  commandline:', file=sys.stderr)
+                        print(job[1], file=sys.stderr)
+            self.assertTrue(len(self.failed_jobs) == 0,
+                            'Morphologist jobs failed')
+
+            # run CNN if available
+            if 'CNN_recognition19' \
+                    in mp.trait('select_sulci_recognition').get_validate()[1]:
+                mp.select_sulci_recognition = 'CNN_recognition19'
+                for step in mp.pipeline_steps.user_traits().keys():
+                    if step != 'sulci_labelling':
+                        setattr(mp.pipeline_steps, step, False)
+                    else:
+                        setattr(mp.pipeline_steps, step, True)
+                from capsul.attributes.completion_engine \
+                    import ProcessCompletionEngine
+                pce = ProcessCompletionEngine.get_completion_engine(mp)
+                atts = pce.get_attribute_values()
+                atts.sulci_recognition_session = 'cnn'
+                print("* Run Morphologist_Capsul CNN sulci recognition")
+                defaultContext().runProcess(
+                    process, t1mri=t1mri,
+                    analysis=analysis, use_translated_shared_directory=False,
+                    workflow=workflow_di
+                )
+                print('workflow:', workflow_di.fullPath())
+                wf = swclient.Helper.unserialize(workflow_di.fullPath())
+
+                wf_id = controller.submit_workflow(wf)
+                print('* running CNN...')
+                swclient.Helper.wait_workflow(wf_id, controller)
+                print('* finished.')
+                self.workflow_status = controller.workflow_status(wf_id)
+                elements_status = controller.workflow_elements_status(wf_id)
+                self.failed_jobs = [element for element in elements_status[0]
+                                    if element[1] != swconstants.DONE
+                                    or element[3][0]
+                                        != swconstants.FINISHED_REGULARLY
+                                    or element[3][1] != 0]
+                self.failed_jobs_info = controller.jobs(
+                    [element[0] for element in self.failed_jobs
+                    if element[3][0] != swconstants.EXIT_NOTRUN])
+                controller.delete_workflow(wf_id)
+
+                self.assertTrue(
+                    self.workflow_status == swconstants.WORKFLOW_DONE,
+                    'Workflow did not finish regularly: %s'
+                        % self.workflow_status
+                )
+                print('** workflow status OK')
+                if len(self.failed_jobs) != 0:
+                    # failure
+                    print('** Jobs failure, the following jobs ended with failed '
+                          'status:', file=sys.stderr)
+                    for element in self.failed_jobs:
+                        # skip those aborted for their dependencies
+                        if element[3][0] != swconstants.EXIT_NOTRUN:
+                            job = self.failed_jobs_info[element[0]]
+                            print('+ job:', job[0], ', status:', element[1],
+                                  ', exit:', element[3][0], ', value:', element[3][1],
+                                  file=sys.stderr)
+                            print('  commandline:', file=sys.stderr)
+                            print(job[1], file=sys.stderr)
+                self.assertTrue(len(self.failed_jobs) == 0,
+                                'CNN jobs failed')
+
+            print('** No failed jobs.')
+
+        finally:
+            # remove the temporary database
+            del controller
+            del config
+            os.unlink(tmpdb[1])
 
         skipped_dirs = [
             "_global_TO_local",

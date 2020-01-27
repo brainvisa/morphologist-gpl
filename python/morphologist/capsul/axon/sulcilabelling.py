@@ -49,6 +49,7 @@ class SulciLabelling(Pipeline):
 
         # links section
         self.add_link('fix_random_seed->SPAM_recognition09.fix_random_seed')
+        self.add_link('fix_random_seed->CNN_recognition19.fix_random_seed')
         self.add_link('data_graph->recognition2000.data_graph')
         self.add_link('data_graph->CNN_recognition19.graph')
         self.add_link(
