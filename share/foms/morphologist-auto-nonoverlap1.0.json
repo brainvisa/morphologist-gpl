@@ -276,7 +276,22 @@
                 [["output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto_proba",
                     "CSV file", {"side": "R"}]],
 
-          ### Sulcal morphometry
+          ## CNN_recognition19
+          #  (need to be forced because the generic process needs a side)
+          "SulciRecognition_CNN_recognition19_model_file":
+              [["shared:models/models_2019/cnn_models/sulci_unet_model_left",
+                 "Deep model file", {"side": "L"}]],
+          "SulciRecognition_1_CNN_recognition19_model_file":
+              [["shared:models/models_2019/cnn_models/sulci_unet_model_right",
+                 "Deep model file", {"side": "R"}]],
+          "SulciRecognition_CNN_recognition19_param_file":
+              [["shared:models/models_2019/cnn_models/sulci_unet_model_params_left",
+                 "JSON file", {"side": "L"}]],
+          "SulciRecognition_1_CNN_recognition19_param_file":
+              [["shared:models/models_2019/cnn_models/sulci_unet_model_params_left",
+                 "JSON file", {"side": "L"}]],
+
+          # Sulcal morphometry
           "sulcal_morpho_measures":
               [["output:{recognition_analysis}/<subject>_<sulci_recognition_session>_auto_sulcal_morphometry",
                   "CSV file"]],
