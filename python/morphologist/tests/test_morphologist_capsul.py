@@ -319,6 +319,7 @@ class TestMorphologistCapsul(soma.test_utils.SomaTestCase):
                 pce = ProcessCompletionEngine.get_completion_engine(mp)
                 atts = pce.get_attribute_values()
                 atts.sulci_recognition_session = 'cnn'
+                pce.complete_parameters()
                 print("* Run Morphologist_Capsul CNN sulci recognition")
                 defaultContext().runProcess(
                     process, t1mri=t1mri,
