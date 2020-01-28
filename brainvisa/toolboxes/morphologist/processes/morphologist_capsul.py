@@ -29,6 +29,9 @@ def onEditPipeline(self, process, dummy):
         mainThreadActions().push(self.openPipeline)
     else:
         self._pipeline_view = None
+    from capsul.attributes.completion_engine \
+                import ProcessCompletionEngine
+    pce = ProcessCompletionEngine.get_completion_engine(self.get_edited_pipeline())
 
 
 def openPipeline(self):
@@ -103,6 +106,7 @@ def get_edited_pipeline(self):
 
 def execution(self, context):
     self._pipeline_view = None  # close the GUI, if any
+
     import time
     from soma.application import Application
     from capsul.study_config.study_config import StudyConfig
@@ -154,18 +158,19 @@ def execution(self, context):
 
     old_database = self.t1mri[sorted_items[0]]['_database']
 
-    init_study_config = capsul_process.get_initial_study_config()
-    init_study_config["input_directory"] = old_database
-    init_study_config["output_directory"] = old_database
 
     mp = self.get_edited_pipeline()
     if cversion >= (2, 1):
         study_config = mp.get_study_config()
-        study_config.set_study_configuration(init_study_config)
+        study_config.input_directory = old_database
+        study_config.output_directory = old_database
         from capsul.attributes.completion_engine \
             import ProcessCompletionEngine
         pf = ProcessCompletionEngine.get_completion_engine(mp)
     else:
+        init_study_config = capsul_process.get_initial_study_config()
+        init_study_config["input_directory"] = old_database
+        init_study_config["output_directory"] = old_database
         study_config = StudyConfig(
             init_config=init_study_config,
             modules=StudyConfig.default_modules
@@ -199,7 +204,7 @@ def execution(self, context):
         format = formats[i]
         database = t1mri['_database']
         if cversion >= (2, 1):
-            attributes = {}
+            attributes = pf.get_attribute_values().export_to_dict()
         else:
             attributes = pf.attributes
         attributes['center'] = t1mri['center']
