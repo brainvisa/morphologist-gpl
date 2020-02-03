@@ -2,6 +2,7 @@
 from brainvisa.processes import *
 from soma.qt_gui.qtThread import MainThreadLife
 from brainvisa.processing import capsul_process
+from brainvisa.configuration import axon_capsul_config_link
 import six
 
 name = 'Morphologist CAPSUL iteration'
@@ -87,11 +88,23 @@ def get_edited_pipeline(self):
                 import ProcessCompletionEngine
         if cversion >= (2, 1):
             from capsul.study_config.study_config import StudyConfig
-            init_study_config = capsul_process.get_initial_study_config()
+
+            study_config = getattr(defaultContext(), 'study_config', None)
+            if study_config is None:
+                init_study_config = {}
+            else:
+                init_study_config = study_config.export_to_dict()
+
+            init_study_config.update(capsul_process.get_initial_study_config())
             study_config = StudyConfig(
                 init_config=init_study_config,
                 modules=StudyConfig.default_modules
                 + ['BrainVISAConfig', 'FomConfig'])
+            study_config.axon_link = \
+                axon_capsul_config_link.AxonCapsulConfSynchronizer(study_config)
+            study_config.axon_link.sync_axon_to_capsul()
+            study_config.on_trait_change(
+                study_config.axon_link.sync_capsul_to_axon)
             self._edited_pipeline = get_process_instance(
                 self.capsul_process_type, study_config)
             pf = ProcessCompletionEngine.get_completion_engine(
