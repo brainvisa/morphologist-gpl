@@ -37,7 +37,7 @@ name = 'Inspect Multiple Sulci Graphs'
 userLevel = 0
 
 signature = Signature(
-    'graphs', ListOf(ReadDiskItem('Labelled Cortical folds graph',
+    'graphs', ListOf(ReadDiskItem('Cortical folds graph',
                                   'Graph and Data')),
 )
 

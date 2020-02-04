@@ -310,7 +310,7 @@ class TestMorphologistCapsul(soma.test_utils.SomaTestCase):
                     in mp.trait('select_sulci_recognition').get_validate()[1]:
                 mp.select_sulci_recognition = 'CNN_recognition19'
                 for step in mp.pipeline_steps.user_traits().keys():
-                    if step != 'sulci_labelling':
+                    if step not in ('sulci_labelling', 'sulcal_morphometry'):
                         setattr(mp.pipeline_steps, step, False)
                     else:
                         setattr(mp.pipeline_steps, step, True)
