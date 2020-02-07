@@ -272,38 +272,12 @@ class TestMorphologistCapsul(soma.test_utils.SomaTestCase):
             print('* running Morphologist...')
             swclient.Helper.wait_workflow(wf_id, controller)
             print('* finished.')
-            self.workflow_status = controller.workflow_status(wf_id)
-            elements_status = controller.workflow_elements_status(wf_id)
-            self.failed_jobs = [element for element in elements_status[0]
-                                if element[1] != swconstants.DONE
-                                or element[3][0] != swconstants.FINISHED_REGULARLY
-                                or element[3][1] != 0]
-            self.failed_jobs_info = controller.jobs(
-                [element[0] for element in self.failed_jobs
-                if element[3][0] != swconstants.EXIT_NOTRUN])
+
+            ok = controller.log_failed_workflow(wf_id)
             controller.delete_workflow(wf_id)
 
-            self.assertTrue(
-                self.workflow_status == swconstants.WORKFLOW_DONE,
-                'Workflow did not finish regularly: %s' % self.workflow_status
-            )
-            print('** workflow status OK')
-            if len(self.failed_jobs) != 0:
-                # failure
-                print('** Jobs failure, the following jobs ended with failed '
-                      'status:', file=sys.stderr)
-                for element in self.failed_jobs:
-                    # skip those aborted for their dependencies
-                    if element[3][0] != swconstants.EXIT_NOTRUN:
-                        job = self.failed_jobs_info[element[0]]
-                        print('+ job:', job[0], ', status:', element[1],
-                              ', exit:', element[3][0],
-                              ', value:', element[3][1],
-                              file=sys.stderr)
-                        print('  commandline:', file=sys.stderr)
-                        print(job[1], file=sys.stderr)
-            self.assertTrue(len(self.failed_jobs) == 0,
-                            'Morphologist jobs failed')
+            self.assertTrue(ok,
+                            'Failure during Morphologist workflow execution')
 
             # run CNN if available
             if 'CNN_recognition19' \
@@ -333,39 +307,11 @@ class TestMorphologistCapsul(soma.test_utils.SomaTestCase):
                 print('* running CNN...')
                 swclient.Helper.wait_workflow(wf_id, controller)
                 print('* finished.')
-                self.workflow_status = controller.workflow_status(wf_id)
-                elements_status = controller.workflow_elements_status(wf_id)
-                self.failed_jobs = [element for element in elements_status[0]
-                                    if element[1] != swconstants.DONE
-                                    or element[3][0]
-                                        != swconstants.FINISHED_REGULARLY
-                                    or element[3][1] != 0]
-                self.failed_jobs_info = controller.jobs(
-                    [element[0] for element in self.failed_jobs
-                    if element[3][0] != swconstants.EXIT_NOTRUN])
+
+                ok = controller.log_failed_workflow(wf_id)
                 controller.delete_workflow(wf_id)
 
-                self.assertTrue(
-                    self.workflow_status == swconstants.WORKFLOW_DONE,
-                    'Workflow did not finish regularly: %s'
-                        % self.workflow_status
-                )
-                print('** workflow status OK')
-                if len(self.failed_jobs) != 0:
-                    # failure
-                    print('** Jobs failure, the following jobs ended with failed '
-                          'status:', file=sys.stderr)
-                    for element in self.failed_jobs:
-                        # skip those aborted for their dependencies
-                        if element[3][0] != swconstants.EXIT_NOTRUN:
-                            job = self.failed_jobs_info[element[0]]
-                            print('+ job:', job[0], ', status:', element[1],
-                                  ', exit:', element[3][0], ', value:', element[3][1],
-                                  file=sys.stderr)
-                            print('  commandline:', file=sys.stderr)
-                            print(job[1], file=sys.stderr)
-                self.assertTrue(len(self.failed_jobs) == 0,
-                                'CNN jobs failed')
+                self.assertTrue(ok, 'Failure during CNN workflow execution')
 
             print('** No failed jobs.')
 
