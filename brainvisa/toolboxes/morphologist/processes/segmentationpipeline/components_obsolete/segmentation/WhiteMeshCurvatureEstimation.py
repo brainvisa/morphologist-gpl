@@ -33,6 +33,7 @@
 #
 # MeshCurvatureEstimation process declaration
 #
+from __future__ import absolute_import
 from brainvisa.processes import *
 
 name = 'White Mesh Curvature Estimation'

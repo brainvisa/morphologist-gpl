@@ -13,6 +13,7 @@ in other tests.
 There are a few more options for to tune the behaviour of the test.
 """
 from __future__ import print_function
+from __future__ import absolute_import
 import unittest
 import os
 import sys
@@ -42,10 +43,7 @@ from brainvisa.data import neuroHierarchy
 from soma.aims.graph_comparison import same_graphs
 import soma.test_utils
 
-if sys.version_info[0] >= 3:
-    from urllib.request import urlretrieve
-else:
-    from urllib import urlretrieve
+from six.moves.urllib.request import urlretrieve
 
 
 class MorphologistTestLoader(soma.test_utils.SomaTestLoader):

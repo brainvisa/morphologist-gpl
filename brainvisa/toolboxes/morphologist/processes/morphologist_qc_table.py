@@ -1,5 +1,7 @@
 
+from __future__ import absolute_import
 from brainvisa.processes import *
+from six.moves import zip
 
 name = 'Morphologist QC table'
 userLevel = 0

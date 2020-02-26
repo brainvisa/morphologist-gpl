@@ -1,7 +1,9 @@
+from __future__ import absolute_import
 from brainvisa.processes import ReadDiskItem, WriteDiskItem, ListOf, \
     Signature, String, Choice, Boolean
 from soma import aims
 import numpy as np
+from six.moves import zip
 try:
     import pandas
 except ImportError:

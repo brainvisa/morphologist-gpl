@@ -31,11 +31,13 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
+from __future__ import absolute_import
 import os
 import sys
 
 from brainvisa.processes import *
 from brainvisa.data import neuroData
+from six.moves import zip
 name = 'Automatic recognition iterator'
 userLevel = 1
 
@@ -108,7 +110,7 @@ def initialization(self):
         if session == None:
             return None
         p = kwargs['parameterized'][0]
-        p2 = p._executionNode._children.values()[0]._process
+        p2 = list(p._executionNode._children.values())[0]._process
         wd = WriteDiskItem('Labelled Cortical folds graph', 'Graph',
                            requiredAttributes={'labelled': 'Yes',
                                                'automatically_labelled': 'Yes',
@@ -350,7 +352,7 @@ def createProcesses(self, context):
             for p in processes:
                 self.change_signature_test(p)
         subprocess[name], selected[name] = processes, node._selected
-    processes = zip(*[subprocess[n] for n in process_name_list])
+    processes = list(zip(*[subprocess[n] for n in process_name_list]))
     return processes, selected
 
 

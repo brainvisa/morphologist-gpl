@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
+from __future__ import absolute_import
 from brainvisa.processes import *
 import numpy as np
 import os
@@ -92,7 +93,7 @@ def execution(self, context):
 
     outf = open(str(self.file_measures), "w")
     outf.write("subject")
-    print(measures_by_sulci.keys())
+    print(list(measures_by_sulci.keys()))
     for sulcus in sorted(measures_by_sulci.keys()):
         outf.write(";" + sulcus)
     outf.write("\n")
@@ -100,7 +101,7 @@ def execution(self, context):
     for sub in sub_list_global:
         outf.write(str(sub))
         for sulcus in sorted(measures_by_sulci.keys()):
-            if sub in measures_by_sulci[sulcus].keys():
+            if sub in measures_by_sulci[sulcus]:
                 outf.write(";" + str(measures_by_sulci[sulcus][sub]))
             else:
                 outf.write(";X")

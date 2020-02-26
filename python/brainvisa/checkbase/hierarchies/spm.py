@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import os
 from brainvisa.checkbase.hierarchies import *
 from brainvisa.checkbase.hierarchies.checkbase import Checkbase

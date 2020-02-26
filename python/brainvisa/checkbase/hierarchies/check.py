@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
+from __future__ import absolute_import
 from brainvisa.checkbase.check import studies_list, users_dict, users_dir
 
 
@@ -106,7 +107,7 @@ def _check_directories(rootdirectory, dirlist, verbose=True):
     return checks, hierarchies
 
 
-def check_hierarchies(input_dir, studies_list=studies_list, users_dir=users_dir, users_list=users_dict.keys(), verbose=True):
+def check_hierarchies(input_dir, studies_list=studies_list, users_dir=users_dir, users_list=list(users_dict.keys()), verbose=True):
 
     from brainvisa.checkbase import DatabaseChecker
     import os

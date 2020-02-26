@@ -32,6 +32,7 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from __future__ import print_function
+from __future__ import absolute_import
 from brainvisa.processes import *
 from brainvisa import shelltools
 import os

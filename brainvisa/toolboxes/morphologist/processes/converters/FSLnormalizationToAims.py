@@ -30,12 +30,13 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
+from __future__ import absolute_import
 from brainvisa.processes import *
 from brainvisa import registration
 import sys
+import six
+from six.moves import zip
 
-if sys.version_info[0] >= 3:
-    basestring = str
 
 name = 'FSL Normalization to AIMS converter'
 userLevel = 0
@@ -123,7 +124,7 @@ def execution(self, context):
     # 1. first try o get direct transformation info in the template image header
     aimsToMni = None
     outref = None
-    if isinstance(tmplimg, basestring):
+    if isinstance(tmplimg, six.string_types):
         tmplimg = neuroDiskItems.aimsFileInfo(
             self.registered_volume.fullPath())
         refs = tmplimg.get('referentials')

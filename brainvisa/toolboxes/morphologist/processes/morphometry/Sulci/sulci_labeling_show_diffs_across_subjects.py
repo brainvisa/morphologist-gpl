@@ -1,9 +1,11 @@
 from __future__ import print_function
+from __future__ import absolute_import
 from brainvisa.processes import ReadDiskItem, WriteDiskItem, ListOf, \
     Signature, String
 from soma.qt_gui import qtThread
 import numpy as np
 import os
+from six.moves import range
 try:
     import pandas
 except ImportError:

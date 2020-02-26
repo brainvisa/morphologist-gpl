@@ -5,12 +5,14 @@ filenames.
 '''
 
 from __future__ import print_function
+from __future__ import absolute_import
 import re
 import os
 import math
 import numpy
 from soma.qt_gui.qt_backend import QtGui, QtCore
 from soma.qt_gui.qt_backend import init_matplotlib_backend
+from six.moves import range
 init_matplotlib_backend()
 import matplotlib
 from matplotlib import pyplot
@@ -625,10 +627,7 @@ def load_histo_analysis(hanfile):
     r = re.compile('^.*mean:\s*(-?[0-9]+(\.[0-9]*)?)\s*sigma:\s'
                    '(-?[0-9]+(\.[0-9]*)?)\s*$')
     gmean, gsigma, wmean, wsigma = None, None, None, None
-    if sys.version_info[0] >= 3:
-        line_iter = open(hanfile).readlines()
-    else:
-        line_iter = open(hanfile).xreadlines()
+    line_iter = open(hanfile)
     for l in line_iter:
         l = l.strip()
         if l.startswith('gray:'):
@@ -655,10 +654,7 @@ def save_back_histo_analysis(hanfile, han):
     except IOError:
         hanf = None
     if hanf:
-        if sys.version_info[0] >= 3:
-            line_iter = open(hanfile).readlines()
-        else:
-            line_iter = open(hanfile).xreadlines()
+        line_iter = open(hanfile)
         for l in line_iter:
             l = l.strip()
             if l.startswith('gray:'):

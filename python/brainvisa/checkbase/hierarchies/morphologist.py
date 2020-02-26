@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
+from __future__ import absolute_import
 import os
 from brainvisa.checkbase.hierarchies import *
 from brainvisa.checkbase.hierarchies.checkbase import Checkbase
+from six.moves import zip
 
 patterns = {'raw': os.path.join('(?P<database>[\w -/]+)', '(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', '(?P=subject).(?P<extension>%s)' % image_extensions),
             'acpc': os.path.join('(?P<database>[\w -/]+)', '(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', '(?P=subject).APC$'),
@@ -147,7 +149,7 @@ class MorphologistCheckbase(Checkbase):
                     self.volumes[subject][each] = v
 
             for key in ['spm_greymap', 'spm_whitemap', 'brainmask']:
-                if key in self.existingfiles[0][subject].keys():
+                if key in self.existingfiles[0][subject]:
                     from soma import aims
                     import numpy as np
                     data = aims.read(getfilepath(
@@ -163,7 +165,7 @@ class MorphologistCheckbase(Checkbase):
                             255.0 * voxel_size
 
             for key in ['left_greywhite', 'right_greywhite']:
-                if key in self.existingfiles[0][subject].keys():
+                if key in self.existingfiles[0][subject]:
                     from soma import aims
                     import numpy as np
                     data = aims.read(getfilepath(

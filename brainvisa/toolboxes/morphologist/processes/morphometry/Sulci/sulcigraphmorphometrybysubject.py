@@ -33,6 +33,7 @@
 
 from __future__ import print_function
 
+from __future__ import absolute_import
 from brainvisa.processes import *
 import os
 import sys
@@ -140,22 +141,22 @@ def execution(self, context):
             CSF_volume = 0.
 
             # SURFACE
-            if 'refsurface_area' in sulcus.keys():
+            if 'refsurface_area' in sulcus:
                 surface_tal = sulcus['refsurface_area']
-            if 'surface_area' in sulcus.keys():
+            if 'surface_area' in sulcus:
                 surface_nat = sulcus['surface_area']
             # MAX_DEPTH
-            if 'refmaxdepth' in sulcus.keys():
+            if 'refmaxdepth' in sulcus:
                 maxdepth_tal = sulcus['refmaxdepth']
-            if 'maxdepth' in sulcus.keys():
+            if 'maxdepth' in sulcus:
                 maxdepth_nat = sulcus['maxdepth']
             # MEAN_DEPTH
             # Si les sillons sont trop petits, ils peuvent ne pas avoir de profondeur moyenne.
-            if 'bottom_point_number' in sulcus.keys():
+            if 'bottom_point_number' in sulcus:
                 bottom_point_number = sulcus['bottom_point_number']
-            if 'refmean_depth' in sulcus.keys():
+            if 'refmean_depth' in sulcus:
                 meandepth_tal = sulcus['refmean_depth']
-            if 'mean_depth' in sulcus.keys():
+            if 'mean_depth' in sulcus:
                 meandepth_nat = sulcus['mean_depth']
             # LENGTH
             for rel in sulcus.edges():
@@ -168,12 +169,12 @@ def execution(self, context):
                         hj_length_nat = rel['length']
             # THICKNESS
             # Si la MG est trop fine, il peut ne pas y avoir d'epaisseur moyenne.
-            if 'mid_interface_voxels' in sulcus.keys():
+            if 'mid_interface_voxels' in sulcus:
                 mid_interface_voxels = sulcus['mid_interface_voxels']
-            if 'thickness_mean' in sulcus.keys():
+            if 'thickness_mean' in sulcus:
                 thickness_mean = sulcus['thickness_mean']
             # OPENING
-            if 'CSF_volume' in sulcus.keys():
+            if 'CSF_volume' in sulcus:
                 CSF_volume = sulcus['CSF_volume']
 
             # On ecrit les valeurs dans un dictionnaire, en rangeant par sillon principal.
@@ -213,7 +214,7 @@ def execution(self, context):
 
     for sulcus in sorted(sulci_sel[next(iter(sulci_sel.keys()))].keys()):
         # for sulcus in sorted(dict_morpho.keys()):
-        if sulcus in dict_morpho.keys():
+        if sulcus in dict_morpho:
             # SURFACE
             surface_tal = round(sum(dict_morpho[sulcus]['surface_tal']), 2)
             surface_nat = round(sum(dict_morpho[sulcus]['surface_nat']), 2)

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
+from __future__ import absolute_import
 from brainvisa.checkbase.check import studies_list, users_dict
 
 
@@ -30,7 +31,7 @@ def get_size(directory='.', fastmode=True):
 
 
 def check_disk_usage(directory, get_sizes=True, studies_list=studies_list, users_dir='Users',
-                     users_list=users_dict.keys(), excludelist=['.snapshot', 'Users'], verbose=True, process_undeclared=True):
+                     users_list=list(users_dict.keys()), excludelist=['.snapshot', 'Users'], verbose=True, process_undeclared=True):
     ''' Disk usage controlling procedure, originally for /neurospin/cati
     - gets the output of df Unix function
     - estimates the size of every folder under the given directory

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
+from __future__ import absolute_import
 import six
 
 image_extensions = '(nii.gz|nii|ima|ima.gz)$'
@@ -17,7 +18,7 @@ def parsefilepath(filepath, patterns=None):
        'group': 'Paris',
        'modality': 't1mri',
        'subject': 'CHBR'}) '''
-    import morphologist as morpho
+    from . import morphologist as morpho
     if not patterns:
         patterns = morpho.patterns
     import re
@@ -30,7 +31,7 @@ def parsefilepath(filepath, patterns=None):
 
 def getfilepath(datatype, attributes, patterns=None):
     ''' Returns a filepath built on a given datatype and a dictionary of attributes. For now based on Morpho patterns'''
-    import morphologist as morpho
+    from . import morphologist as morpho
     if not patterns:
         patterns = morpho.patterns
     assert(isinstance(attributes, dict))
@@ -169,12 +170,12 @@ def detect_hierarchy(directory, returnvotes=False, maxvote=50):
                             #'spm_preproc', 'segmentation']:
                             votes['morphologist'] += 1
     m = max(votes.values())
-    if votes.values().count(m) > 1:
+    if list(votes.values()).count(m) > 1:
         return None
     if returnvotes:
-        return votes.keys()[votes.values().index(m)], votes
+        return list(votes.keys())[list(votes.values()).index(m)], votes
     else:
-        return votes.keys()[votes.values().index(m)]
+        return list(votes.keys())[list(votes.values()).index(m)]
 
 
 def detect_hierarchies(directory, maxdepth=3):

@@ -1,8 +1,10 @@
 from __future__ import print_function
 
+from __future__ import absolute_import
 import traits.api as traits
 import anatomist.capsul as acap
 import math
+from six.moves import zip
 
 
 class MorphologistView(acap.AnatomistMultipleViewsProcess):

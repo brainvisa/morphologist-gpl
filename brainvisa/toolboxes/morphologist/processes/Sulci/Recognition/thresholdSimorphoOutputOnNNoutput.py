@@ -31,12 +31,14 @@
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
 from __future__ import print_function
+from __future__ import absolute_import
 from brainvisa.processes import *
 import re
 import os
 import os.path
 import glob
 import six
+from six.moves import filter
 
 name = 'Select folds & relations with good recognition percentage'
 userLevel = 0
@@ -163,9 +165,9 @@ def initialization(self):
 def execution(self, context):
     selectedDesciptors = self.sulci_descriptors+self.relations_descriptors
     print(selectedDesciptors)
-    filter(srcdir=self.input_directory.fullPath(),
+    list(filter(srcdir=self.input_directory.fullPath(),
            destdir=self.output_directory.fullPath(),
            prop=self.good_regonition_percentage,
            remove_non_valid=self.remove_non_valid,
            select_all_descriptors=self.select_all_descriptors,
-           selectedDesciptors=selectedDesciptors)
+           selectedDesciptors=selectedDesciptors))
