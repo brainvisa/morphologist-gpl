@@ -1,4 +1,5 @@
 
+from __future__ import absolute_import
 from brainvisa.processes import *
 from soma.qt_gui.qtThread import MainThreadLife
 from brainvisa.processing import capsul_process

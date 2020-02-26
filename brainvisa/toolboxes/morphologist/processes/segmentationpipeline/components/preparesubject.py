@@ -31,10 +31,13 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
+from __future__ import absolute_import
 from brainvisa.processes import *
 import math
 from brainvisa.tools import aimsGlobals
 from brainvisa import registration
+from six.moves import range
+from six.moves import zip
 try:
     from brainvisa import anatomist
 except:

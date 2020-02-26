@@ -2,6 +2,7 @@
 from __future__ import print_function
 
 
+from __future__ import absolute_import
 class Checkbase():
     def __init__(self, directory):
         import os
@@ -9,7 +10,7 @@ class Checkbase():
         self.directory = directory
 
     def get_centres(self, save=True):
-        import morphologist as morpho
+        from . import morphologist as morpho
         m = morpho.MorphologistCheckbase(self.directory)
         if save:
             self.centres = m.get_centres()
@@ -19,7 +20,7 @@ class Checkbase():
         ''' mode : 1 - directory/subject
                    2 - directory/center/subject '''
         if mode == 2:
-            import morphologist as morpho
+            from . import morphologist as morpho
             m = morpho.MorphologistCheckbase(self.directory)
             if save:
                 self.subjects = m.get_subjects()

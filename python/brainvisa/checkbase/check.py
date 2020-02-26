@@ -2,6 +2,8 @@
 from __future__ import print_function
 from __future__ import with_statement  # allow python 2.5 to work
 
+from __future__ import absolute_import
+import six
 users_dir = 'Users'
 
 users_dict = {'operto': 'go231605',
@@ -191,7 +193,7 @@ def csv2html(csvfile, embedded_data=None, with_head_tags=True):
     import codecs
 
     #file = codecs.open(sys.argv[1], encoding='utf-8', mode='r')
-    if isinstance(csvfile, basestring) and os.path.exists(csvfile):
+    if isinstance(csvfile, six.string_types) and os.path.exists(csvfile):
         file = open(csvfile, 'r')
     elif isinstance(csvfile, list):
         file = csvfile
@@ -279,7 +281,7 @@ def save_volumes(volumes, logdir='/neurospin/cati/Users/operto/logs/volumes/', d
                               quotechar='|', quoting=csv.QUOTE_MINIMAL)
         mywriter.writerow(fields_names)
         for subject, vol in volumes.items():
-            subject_row = [unicode(subject).encode("utf-8")]
+            subject_row = [six.text_type(subject).encode("utf-8")]
             for k in fields_names[1:]:
                 if k in vol:
                     subject_row.append('%3.2f' % vol[k])
@@ -302,10 +304,10 @@ def save_volumes_as_csv(volumes, csvfile):
     with open(csvfile, 'wb',) as csvfile:
         mywriter = csv.writer(csvfile, delimiter=';',
                               quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        mywriter.writerow(volumes.items()[0][1].keys())
+        mywriter.writerow(list(volumes.items())[0][1].keys())
         for i, (subject, vol) in enumerate(volumes.items()):
             row = [subject]
-            row.extend(vol.values())
+            row.extend(list(vol.values()))
             mywriter.writerow(row)
 
 
@@ -316,12 +318,12 @@ def save_thicknesses_as_csv(volumes, csvfile, centers={}):
     with open(csvfile, 'wb',) as csvfile:
         mywriter = csv.writer(csvfile, delimiter=';',
                               quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        f1 = volumes.items()[0][1].items()[0][1]
+        f1 = list(volumes.items())[0][1].items()[0][1]
         fields = ['center', 'subject']
-        fields.extend(['%s_%s' % (volumes.items()[0][1].keys()[
-                      0][:volumes.items()[0][1].keys()[0].find('_')], each) for each in f1])
-        fields.extend(['%s_%s' % (volumes.items()[0][1].keys()[
-                      1][:volumes.items()[0][1].keys()[0].find('_')], each) for each in f1])
+        fields.extend(['%s_%s' % (list(volumes.items())[0][1].keys()[
+                      0][:list(volumes.items())[0][1].keys()[0].find('_')], each) for each in f1])
+        fields.extend(['%s_%s' % (list(volumes.items())[0][1].keys()[
+                      1][:list(volumes.items())[0][1].keys()[0].find('_')], each) for each in f1])
         mywriter.writerow(fields)
         for i, (subject, vol) in enumerate(volumes.items()):
             row = [centers.get(subject, None)]
@@ -348,9 +350,9 @@ def save_csv(database_checker, logdir='/neurospin/cati/Users/operto/logs', datet
                               quotechar='|', quoting=csv.QUOTE_MINIMAL)
         mywriter.writerow(['directory', 'size'])
         for i, (study, size) in enumerate(studies_space.items()):
-            mywriter.writerow([unicode(study).encode("utf-8"), size])
+            mywriter.writerow([six.text_type(study).encode("utf-8"), size])
         for i, (user, size) in enumerate(users_space.items()):
-            mywriter.writerow([unicode(user).encode("utf-8"), size])
+            mywriter.writerow([six.text_type(user).encode("utf-8"), size])
     with open(os.path.join(logdir, 'globalusage-%s.csv' % datetime_string), 'wb',) as csvfile:
         mywriter = csv.writer(csvfile, delimiter=';',
                               quotechar='|', quoting=csv.QUOTE_MINIMAL)
@@ -453,9 +455,9 @@ def save_table(checkbase, logdir='/neurospin/cati/Users/operto/logs/existingfile
                               quotechar='|', quoting=csv.QUOTE_MINIMAL)
         mywriter.writerow(fields_names)
         for subject in checkbase.existingfiles[0].keys():
-            subject_row = [unicode(subject).encode("utf-8")]
+            subject_row = [six.text_type(subject).encode("utf-8")]
             for each in checkbase.keyitems:
-                if each in checkbase.existingfiles[0][subject].keys():
+                if each in list(checkbase.existingfiles[0][subject].keys()):
                     subject_row.append(1)
                 else:
                     subject_row.append(0)
@@ -501,9 +503,9 @@ def json_to_measures_tables(j):
         csv = []
         csv.append(string.join(fields_names, ';'))
         for subject in inv['identified_items'].keys():
-            subject_row = [unicode(subject).encode("utf-8")]
+            subject_row = [six.text_type(subject).encode("utf-8")]
             for each in inv['key_items']:
-                if each in inv['identified_items'][subject].keys():
+                if each in list(inv['identified_items'][subject].keys()):
                     subject_row.append('1')
                 else:
                     subject_row.append('0')
@@ -533,7 +535,7 @@ def run_disk_check(directory='/neurospin/cati', logdir='/neurospin/cati/Users/op
     if not studies_list:
         studies_list = ch.studies_list
     if users_list is None:
-        users_list = ch.users_dict.keys()
+        users_list = list(ch.users_dict.keys())
     if not users_dir:
         users_dir = ch.users_dir
     if len(users_list) == 0:
@@ -613,7 +615,7 @@ def jsons_for_web(json, _type='existence'):
         for subject, items in json['inventory']['identified_items'].items():
             inv[subject] = {}
             for each in simple['key_items']:
-                if each in items.keys():
+                if each in items:
                     if type(items[each]) == list:
                         item = items[each][0]
                     elif type(items[each]) == dict:
@@ -642,7 +644,7 @@ def run_hierarchies_check(directory='/neurospin/cati', logdir='/neurospin/cati/U
     if not studies_list:
         studies_list = ch.studies_list
     if not users_list:
-        users_list = ch.users_dict.keys()
+        users_list = list(ch.users_dict.keys())
     if not users_dir:
         users_dir = ch.users_dir
     if len(users_list) == 0:

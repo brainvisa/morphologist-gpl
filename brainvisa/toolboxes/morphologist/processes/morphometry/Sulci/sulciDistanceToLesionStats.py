@@ -38,6 +38,7 @@
 # Pascal Cathier
 
 from __future__ import print_function
+from __future__ import absolute_import
 from brainvisa.processes import *
 from brainvisa.data.labelSelection import LabelSelection
 from brainvisa import registration
@@ -173,7 +174,7 @@ def execution(self, context):
     first = True
     ns = len(subjects)
     n = 0
-    ks = subjects.keys()
+    ks = list(subjects.keys())
     ks.sort()
     if dolesionsize:
         of = open(self.lesions_sizes.fullPath(), 'w')

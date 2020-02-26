@@ -31,6 +31,7 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
+from __future__ import absolute_import
 from brainvisa.processes import *
 from brainvisa.tools import aimsGlobals
 from brainvisa import registration
@@ -162,7 +163,7 @@ def execution(self, context):
                 if r < minradius or r > maxradius:
                     out += 1
                 n += 1
-                mit.next()
+                next(mit)
             p /= n
             #context.write( roiit.regionName(), p, ', out:', out, '/', n )
             if p[2] >= -5 or p[2] <= -40 or p[1] <= -40 or p[1] >= 55 \
@@ -170,7 +171,7 @@ def execution(self, context):
                 todel.append(comp)
             else:
                 comps.append(comp)
-            roiit.next()
+            next(roiit)
         #context.write( 'del:', todel )
         for v in todel:
             ar[ar == v] = 0

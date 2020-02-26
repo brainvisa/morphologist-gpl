@@ -31,6 +31,7 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
+from __future__ import absolute_import
 from brainvisa.processes import *
 from brainvisa.tools import aimsGlobals
 from brainvisa import registration
@@ -72,7 +73,7 @@ def initialization(self):
     self.linkParameters("transformation_to_ACPC", "anatomy_data")
     tplval = {'skull_stripped': 'no', 'Size': '2 mm'}
     if len(neuroHierarchy.databases._databases) != 0:
-        tplval['_database'] = neuroHierarchy.databases._databases.keys()[0]
+        tplval['_database'] = list(neuroHierarchy.databases._databases.keys())[0]
     self.anatomical_template = self.signature['anatomical_template'].findValue(
         tplval)
     try:

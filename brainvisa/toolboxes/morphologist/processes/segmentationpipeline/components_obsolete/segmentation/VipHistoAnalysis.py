@@ -35,6 +35,7 @@
 # VipHistoAnalysis
 #
 
+from __future__ import absolute_import
 from brainvisa.processes import *
 
 name = 'Vip Histogram analysis'

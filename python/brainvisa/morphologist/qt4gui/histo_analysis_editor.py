@@ -35,7 +35,9 @@
 '''
 
 
+from __future__ import absolute_import
 import sip
+from six.moves import range
 sip.setapi('QString', 2)
 import anatomist.api as anatomist
 from soma import aims
@@ -269,7 +271,7 @@ class HistoAnalysisEditorWidget(QDialog):
                                        maxVal=maxVal)
         if self._colormap_widget is not None:
             img = QImage(pal.shape[0], 1, QImage.Format_RGB32)
-            for x in xrange(pal.shape[0]):
+            for x in range(pal.shape[0]):
                 img.setPixel(x, 0, QColor(pal[x, 0], pal[x, 1], pal[x, 2]
                                           ).rgb())
             pix = QPixmap.fromImage(img)

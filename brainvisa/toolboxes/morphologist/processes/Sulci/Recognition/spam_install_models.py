@@ -31,6 +31,7 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
+from __future__ import absolute_import
 from brainvisa.processes import *
 import os
 import sys
@@ -41,10 +42,7 @@ from brainvisa.configuration import neuroConfig
 from soma.wip.application.api import Application
 from brainvisa.configuration import databases_configuration as dbconf
 
-if sys.version_info[0] >= 3:
-    from six.moves.urllib import request as urllib2
-else:
-    import urllib2
+import six.moves.urllib.request
 
 name = 'SPAM models installation'
 userLevel = 0
@@ -141,7 +139,7 @@ def execution(self, context):
     for fname in files:
         context.write('downloading', fname, '...')
         context.progress(pgs, pnum, self)
-        ftp = urllib2.urlopen(self.download_url + '/' + fname)
+        ftp = six.moves.urllib.request.urlopen(self.download_url + '/' + fname)
         tzf = context.temporary('zip file')
         f = open(tzf.fullPath(), 'wb')
         fsize = int(ftp.headers.get('content-length'))

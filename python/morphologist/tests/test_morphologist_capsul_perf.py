@@ -1,11 +1,12 @@
 #!/usr/bin/env python2
 
 from __future__ import print_function
+from __future__ import absolute_import
 import os
 import unittest
 import tempfile
 import time
-import cPickle
+import six.moves.cPickle
 from soma.application import Application
 from capsul.study_config.study_config import StudyConfig
 from morphologist.capsul.morphologist import Morphologist
@@ -13,6 +14,7 @@ from capsul.process import process_with_fom
 import soma.config as soma_config
 from capsul.pipeline import pipeline_workflow
 import six
+from six.moves import zip
 
 
 class TestMorphologistCapsulPerf(unittest.TestCase):
@@ -60,8 +62,8 @@ class TestMorphologistCapsulPerf(unittest.TestCase):
         print('time to instantiate 10 Morphologist pipelines: %f' % (t1 - t0))
         nmorpho = 200
         t0 = time.clock()
-        mpick = cPickle.dumps(mp)
-        self.morpho_list = [cPickle.loads(mpick) for i in six.moves.xrange(nmorpho)]
+        mpick = six.moves.cPickle.dumps(mp)
+        self.morpho_list = [six.moves.cPickle.loads(mpick) for i in six.moves.xrange(nmorpho)]
         t1 = time.clock()
         print('time to duplicate %d Morphologist pipelines: %f'
               % (nmorpho, t1 - t0))
@@ -85,10 +87,10 @@ class TestMorphologistCapsulPerf(unittest.TestCase):
               % (len(self.morpho_fom_list), t1 - t0))
         t0 = time.clock()
         self.morpho_fom.study_config = None
-        mfompick = cPickle.dumps(self.morpho_fom)
+        mfompick = six.moves.cPickle.dumps(self.morpho_fom)
         self.morpho_fom.study_config = self.study_config
         self.morpho_fom_list \
-            = [cPickle.loads(mfompick) for mp in self.morpho_list]
+            = [six.moves.cPickle.loads(mfompick) for mp in self.morpho_list]
         for pf in self.morpho_fom_list:
             pf.study_config = self.study_config
         t1 = time.clock()

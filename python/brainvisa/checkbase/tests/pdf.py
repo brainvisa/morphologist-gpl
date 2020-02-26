@@ -1,4 +1,5 @@
 
+from __future__ import absolute_import
 from soma.qt_gui.qt_backend.Qt import QPrinter, QTextDocument, QSizeF
 
 

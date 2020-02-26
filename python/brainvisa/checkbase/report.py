@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
+from __future__ import absolute_import
 class size(long):
     """ define a size class to allow custom formatting
         Implements a format specifier of S for the size class - which displays a human readable in b, kb, Mb etc
@@ -11,7 +12,7 @@ class size(long):
         if fmt == "" or fmt[-1] != "S":
             if fmt[-1].tolower() in ['b', 'c', 'd', 'o', 'x', 'n', 'e', 'f', 'g', '%']:
                 # Numeric format.
-                return long(self).__format__(fmt)
+                return int(self).__format__(fmt)
             else:
                 return str(self).__format__(fmt)
 
@@ -159,7 +160,7 @@ class HTMLReportGenerator():
     def _generate_summary_on_undeclared_directories(self):
         import os
         summary = ''
-        if len(self.database_checker.other_studies.keys()) > 0:
+        if len(list(self.database_checker.other_studies.keys())) > 0:
             summary += '<br><b><h3>Detailed information on undeclared directories :</h3></b><br>'
 
             for study, study_size in self.database_checker.other_studies.items():
@@ -182,7 +183,7 @@ class HTMLReportGenerator():
 
     def _generate_summary_on_undeclared_users(self):
         summary = ''
-        if len(self.database_checker.other_users.keys()) > 0:
+        if len(list(self.database_checker.other_users.keys())) > 0:
             summary += '<br><b><h3>Detailed information on undeclared directories :</h3></b><br>'
             for user, user_size in self.database_checker.other_users.items():
                 summary = summary + \
@@ -193,9 +194,9 @@ class HTMLReportGenerator():
 
     def _generate_detailed_directories(self):
         if hasattr(self, 'database_checker'):
-            hier_list = self.database_checker.hierarchies.keys()
+            hier_list = list(self.database_checker.hierarchies.keys())
         elif hasattr(self, 'json'):
-            hier_list = self.json['inventory'].keys()
+            hier_list = list(self.json['inventory'].keys())
 
         summary = ''
         if hasattr(self, 'database_checker'):
@@ -206,7 +207,7 @@ class HTMLReportGenerator():
             empty_subjects = self.database_checker.checks['empty_subjects']
             complete_subjects = self.database_checker.checks['complete_subjects']
         else:
-            subjects = self.json['inventory'].keys()
+            subjects = list(self.json['inventory'].keys())
             keyitems = self.json['key_items']
             import string
             hieratype = string.lower(self.json['hierarchy_type'])
@@ -291,13 +292,13 @@ class HTMLReportGenerator():
                 self.database_checker.global_disk_space, ' ')
             percent = 100.0 - float(percent)
 
-            ht = {'$NUMBER_OF_STUDIES': str('%i' % len(self.database_checker.studies_space.keys())),
+            ht = {'$NUMBER_OF_STUDIES': str('%i' % len(list(self.database_checker.studies_space.keys()))),
                   '$DATABASE_DIR': str(db_id),
                   '$NUMBER_OF_PREVIOUS_CHECKS': str(nb_previous_checks),
-                  '$STUDIES': str(self.database_checker.studies_space.keys()),
-                  '$NUMBER_OF_USERS': str('%i' % len(self.database_checker.users_space.keys())),
-                  '$USERS': str(self.database_checker.users_space.keys()),
-                  '$UNIDENTIFIED_DIRS': str('%s (%i studies)' % (str(self.database_checker.other_studies.keys()), len(self.database_checker.other_studies.keys()))),
+                  '$STUDIES': str(list(self.database_checker.studies_space.keys())),
+                  '$NUMBER_OF_USERS': str('%i' % len(list(self.database_checker.users_space.keys()))),
+                  '$USERS': str(list(self.database_checker.users_space.keys())),
+                  '$UNIDENTIFIED_DIRS': str('%s (%i studies)' % (str(list(self.database_checker.other_studies.keys())), len(list(self.database_checker.other_studies.keys())))),
                   '$TOTAL_SPACE': str("{0:.2S}".format(size(int(total_size) * 1024.0))),
                   '$USED_SPACE': str("{0:.2S}".format(size(int(used) * 1024.0))),
                   '$FREE_SPACE': str("{0:.2S}".format(size(int(available) * 1024.0))),
@@ -338,10 +339,10 @@ class HTMLReportGenerator():
                 '$TOTAL_SPACE': str("{0:.2S}".format(size(int(total_size) * 1024.0))),
                 '$USED_SPACE': str("{0:.2S}".format(size(int(used) * 1024.0))),
                 '$FREE_SPACE': str("{0:.2S}".format(size(int(available) * 1024.0))),
-                '$STUDIES': str(j['studies'].keys()),
-                '$USERS': str(j['users'].keys()),
-                '$NUMBER_OF_STUDIES': len(j['studies'].items()),
-                '$NUMBER_OF_USERS': len(j['users'].items()),
+                '$STUDIES': str(list(j['studies'].keys())),
+                '$USERS': str(list(j['users'].keys())),
+                '$NUMBER_OF_STUDIES': len(list(j['studies'].items())),
+                '$NUMBER_OF_USERS': len(list(j['users'].items())),
                 '$SUMMARY_ON_DIRECTORIES': str(self._generate_summary_on_directories()),
                 '$SUMMARY_ON_USERS': str(self._generate_summary_on_users()),
                 '$SUMMARY_ON_UNDECLARED_DIRS': '',

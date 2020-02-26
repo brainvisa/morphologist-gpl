@@ -37,10 +37,12 @@
 ###################################################
 
 from __future__ import print_function
+from __future__ import absolute_import
 from brainvisa.processes import *
 from brainvisa import anatomist
 import numpy
 import os
+from six.moves import range
 try:
     from PIL import Image
 except:
