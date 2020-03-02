@@ -1,7 +1,6 @@
 #!/usr/bin/python2
-from __future__ import print_function
-from __future__ import with_statement  # allow python 2.5 to work
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
+
 import pyinotify
 import sys
 import os
