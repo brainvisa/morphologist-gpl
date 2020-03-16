@@ -3,7 +3,7 @@ from __future__ import print_function
 
 
 from __future__ import absolute_import
-class Checkbase():
+class Checkbase(object):
     def __init__(self, directory):
         import os
         assert (os.path.isdir(directory))

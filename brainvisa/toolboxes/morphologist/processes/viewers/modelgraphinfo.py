@@ -53,7 +53,7 @@ def initialization(self):
 
 
 def execution(self, context):
-    class WidgetLifeKeeper:
+    class WidgetLifeKeeper(object):
         def __init__(self, w):
             self.w = w
 

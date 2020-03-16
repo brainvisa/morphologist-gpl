@@ -51,7 +51,7 @@ signature = Signature(
 )
 
 
-class changeTalairach:
+class changeTalairach(object):
     def __init__(self, proc):
         self.proc = weakref.proxy(proc)
 
@@ -64,7 +64,7 @@ class changeTalairach:
             self.proc.perform_normalization = True
 
 
-class linkCheckModels:
+class linkCheckModels(object):
     spamModelsChecked = False
 
     def __init__(self, proc):

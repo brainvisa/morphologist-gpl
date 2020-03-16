@@ -61,7 +61,7 @@ def validation():
     anatomist.validation()
 
 
-class APCReader:
+class APCReader(object):
     def __init__(self, key):
         self._key = key + 'mm:'
 
