@@ -82,8 +82,8 @@ def execution(self, context):
     if len(acm) == 3 and len(pcm) == 3 and len(ipm) == 3:
         return (acm, pcm, ipm)
     if self.T1mri is None:
-        raise 'AC/PC positions in mm are not recorded. You must specify a ' \
-              'T1 MRI for voxel sizes'
+        raise RuntimeError('AC/PC positions in mm are not recorded. '
+                           'You must specify a T1 MRI for voxel sizes')
 
     vs = aimsGlobals.aimsVolumeAttributes(self.T1mri)['voxel_size']
     wa = 0

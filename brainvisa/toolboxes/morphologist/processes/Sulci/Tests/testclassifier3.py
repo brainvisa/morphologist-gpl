@@ -81,7 +81,8 @@ def execution(self, context):
             modtype = 'mlp'
             modopts = 'eta                       0.15\n'
         else:
-            raise 'Unknown/unsupported model type: ' + self.model.format.name
+            raise RuntimeError('Unknown/unsupported model type: '
+                               + self.model.format.name)
         moddi = context.temporary('Template model')
         mod = moddi.fullPath()
         f = open(mod, 'w')
