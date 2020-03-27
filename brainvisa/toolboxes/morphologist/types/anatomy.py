@@ -237,3 +237,7 @@ FileType('Central Nuclei Template', '4D Volume')
 
 FileType('MINC transformation matrix',
          'Any Type', 'MINC transformation matrix')
+
+#-----------Sulci masks---------------------------
+FileType('Left Sulci Mask', 'Label Volume')
+FileType('Right Sulci Mask', 'Label Volume')
