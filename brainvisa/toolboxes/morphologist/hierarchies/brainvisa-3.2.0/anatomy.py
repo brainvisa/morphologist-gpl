@@ -142,6 +142,7 @@ segmentation_content = (
     "brain_volumes_<subject>", SetType('Brain volumetry measurements'),
 
     'mesh', SetContent(*mesh_content),
+
 )
 
 t1mri_acq_content = (
@@ -200,6 +201,10 @@ t1mri_acq_content = (
                     'Sulci Voronoi'), SetWeakAttr('side', 'left'),
                 "Rsulcivoronoi_<subject>", SetType(
                     'Sulci Voronoi'), SetWeakAttr('side', 'right'),
+                "Lsulci_mask_<subject>", SetType(
+                    'Left Sulci Mask'), SetWeakAttr('side', 'left'),
+                "Rsulci_mask_<subject>", SetType(
+                    'Right Sulci Mask'), SetWeakAttr('side', 'right')
             )
         ),  # folds
 
