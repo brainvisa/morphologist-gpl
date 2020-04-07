@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import with_statement  # allow python 2.5 to work
+from __future__ import absolute_import, print_function
 
-from __future__ import absolute_import
 import six
 users_dir = 'Users'
 

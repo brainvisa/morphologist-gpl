@@ -3,7 +3,7 @@ from __future__ import absolute_import
 from soma.qt_gui.qt_backend.Qt import QPrinter, QTextDocument, QSizeF
 
 
-class PDFReportPrinter():
+class PDFReportPrinter(object):
     '''
     This class allows to generate a PDF file from some HTML source. The document title
     can be specified as parameter.

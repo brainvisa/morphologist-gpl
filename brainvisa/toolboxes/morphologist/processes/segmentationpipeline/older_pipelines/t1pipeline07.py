@@ -51,7 +51,7 @@ signature = Signature(
 )
 
 
-class changeTalairach:
+class changeTalairach(object):
     def __init__(self, proc):
         self.proc = proc
 
@@ -64,7 +64,7 @@ class changeTalairach:
             self.proc.perform_normalization = True
 
 
-class changeUseridges:
+class changeUseridges(object):
     def __init__(self, proc):
         self.proc = proc
 

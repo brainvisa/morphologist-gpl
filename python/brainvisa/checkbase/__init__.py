@@ -2,7 +2,7 @@
 
 
 from __future__ import absolute_import
-class DatabaseChecker():
+class DatabaseChecker(object):
     ''' DatabaseChecker objects are only intended to store as attributes a collection
     of database-related information. '''
 

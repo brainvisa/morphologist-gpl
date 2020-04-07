@@ -47,7 +47,7 @@ def millify(n):
     return '%.0f %s' % (n/10**(3*millidx), millnames[millidx])
 
 
-class HTMLReportGenerator():
+class HTMLReportGenerator(object):
 
     def __init__(self, data=None):
         '''

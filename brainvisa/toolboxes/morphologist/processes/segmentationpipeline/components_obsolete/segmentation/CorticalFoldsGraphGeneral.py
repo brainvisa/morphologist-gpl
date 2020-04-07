@@ -60,7 +60,7 @@ signature = Signature(
 )
 
 
-class switch_3_0:
+class switch_3_0(object):
     def __init__(self, proc):
         self.proc = weakref.proxy(proc)
 
@@ -93,7 +93,7 @@ class switch_3_0:
                                                  'CorticalFoldsGraph_3_0.RightCorticalFoldsGraph_3_0.graph')
 
 
-class switch_3_1:
+class switch_3_1(object):
     def __init__(self, proc):
         self.proc = weakref.proxy(proc)
 

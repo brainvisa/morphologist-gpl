@@ -75,7 +75,7 @@ signature = Signature(
 )
 
 
-class changeAllowFlip:
+class changeAllowFlip(object):
     def __init__(self, proc):
         self.proc = weakref.proxy(proc)
 

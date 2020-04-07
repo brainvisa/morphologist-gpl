@@ -45,6 +45,8 @@ signature = Signature(
         'Raw T1 MRI',
         'Aims readable volume formats'),
     'perform_segmentation', Boolean(),
+    'perform_bias_correction', Boolean(),
+
     # Commissures Coordinates
     'method_ACPC', Choice('Manually',
                           'With SPM8 Normalization',
@@ -226,7 +228,7 @@ signature = Signature(
 )
 
 
-class APCReader:
+class APCReader(object):
     def __init__(self, key):
         self._key = key
 
@@ -264,6 +266,8 @@ def linkOldNormalization(self, proc, dummy):
 
 def initialization(self):
     self.perform_segmentation = True
+    self.perform_bias_correction = True
+
     # Commissures Coordinates
     self.method_ACPC = 'With SPM8 Normalization'
     self.linkParameters('commissure_coordinates', 't1mri')
@@ -534,18 +538,38 @@ def execution(self, context):
                                source_referential=self.source_referential,
                                normalized_referential=self.normalized_referential,
                                transform_chain_ACPC_to_Normalized=self.tal_to_normalized_transform)
+
         # Bias Correction
-        context.write('<b>' + 'Computing T1 Bias Correction...' + '</b>')
-        context.runProcess('T1BiasCorrection',
-                           t1mri=self.t1mri,
-                           commissure_coordinates=self.commissure_coordinates,
-                           t1mri_nobias=self.t1mri_nobias,
-                           field=self.field,
-                           hfiltered=self.hfiltered,
-                           white_ridges=self.white_ridges,
-                           variance=self.variance,
-                           edges=self.edges,
-                           meancurvature=self.meancurvature)
+        if self.perform_bias_correction:
+            context.write('<b>' + 'Computing T1 Bias Correction...' + '</b>')
+            context.runProcess('T1BiasCorrection',
+                               t1mri=self.t1mri,
+                               commissure_coordinates=self.commissure_coordinates,
+                               t1mri_nobias=self.t1mri_nobias,
+                               field=self.field,
+                               hfiltered=self.hfiltered,
+                               white_ridges=self.white_ridges,
+                               variance=self.variance,
+                               edges=self.edges,
+                               meancurvature=self.meancurvature)
+        else:
+
+            # > Perform bias correction and create intermediate outputs
+            # > without actually applying the correction
+            # > the t1mri_nobias will be the actual t1 input
+            context.write('<b>' + 'Computing T1 Bias Correction intermediate outputs without applying the correction...' + '</b>')
+            context.runProcess('T1BiasCorrection',
+                               t1mri=self.t1mri,
+                               commissure_coordinates=self.commissure_coordinates,
+                               t1mri_nobias=self.t1mri_nobias,
+                               mode='write_minimal without correction',
+                               field=self.field,
+                               hfiltered=self.hfiltered,
+                               white_ridges=self.white_ridges,
+                               variance=self.variance,
+                               edges=self.edges,
+                               meancurvature=self.meancurvature)
+
         # Histogram Analysis
         context.write('<b>' + 'Computing Histogram Analysis...' + '</b>')
         context.runProcess('NobiasHistoAnalysis',
