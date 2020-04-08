@@ -331,7 +331,7 @@ intersphinx_mapping = {
               None),
     'somaworkflow': (os.path.join(docpath, 'soma-workflow-'
                                   + somaworkflow_version + '/sphinx'), None),
-    'python': ('http://docs.python.org/2.7', None),
+    'python': ('http://docs.python.org/%d.%d' % sys.version_info[:2], None),
     'morphouiusr': ('doc/morphologist-ui-%s/' % morphoui_version, None),
 }
 
