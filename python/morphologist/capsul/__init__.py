@@ -4,7 +4,9 @@ _doc_path = None
 def _init_doc_path():
     global _doc_path
     import os
-    import morphologist
+    import sys
+
+    morphologist = sys.modules['morphologist']
 
     # use axon config for version
     try:
