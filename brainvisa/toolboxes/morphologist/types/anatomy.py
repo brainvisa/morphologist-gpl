@@ -106,6 +106,7 @@ FileType('Head Mask', 'Label Volume')
 FileType('Corpus Callosum mask', 'Label Volume')
 FileType('Deep Nuclei Mask', 'Label Volume')
 FileType('Subcortical labels', 'Label Volume')
+FileType('Intracranial labels', 'Label Volume')
 FileType('Intracranial mask', 'Label Volume')
 
 FileType('MRI Ext Edge Image', '3D Volume')

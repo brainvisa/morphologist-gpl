@@ -36,11 +36,11 @@ include('anatomy')
 
 
 insert('{center}/{subject}',
-    'volBrain', SetWeakAttr('processing', 'volBrain'), SetContent(
+    'volBrain', SetWeakAttr('modality', 'volBrain'), SetContent(
         '{acquisition}', SetType('Acquisition'),
         SetDefaultAttributeValue('acquisition', default_acquisition), SetContent(
             'native', SetWeakAttr('space', 'native'), SetContent(
-                '<subject>_native_crisp', SetType('T1 MRI intracranial labels'),
+                '<subject>_native_crisp', SetType('Intracranial labels'),
                 '<subject>_native_hemi', SetType('Split Brain Mask'),
                 '<subject>_native_lab', SetType('Subcortical labels'),
                 '<subject>_native_mask', SetType('Intracranial mask'),
@@ -49,21 +49,21 @@ insert('{center}/{subject}',
                 '<subject>_native_readme', SetType('Text file'),
             ),
             'mni', SetWeakAttr('space', 'mni'), SetContent(
-                '<subject>_mni_crisp', SetType('T1 MRI intracranial labels'),
+                '<subject>_mni_crisp', SetType('Intracranial labels'),
                 '<subject>_mni_hemi', SetType('Split Brain Mask'),
                 '<subject>_mni_lab', SetType('Subcortical labels'),
                 '<subject>_mni_mask', SetType('Intracranial mask'),
-                '<subject>_mni_csf', SetType('T1 MRI tissue probability map'),
-                SetWeakAttr('tissue_class', 'csf'),
-                '<subject>_mni_gm', SetType('T1 MRI tissue probability map'),
-                SetWeakAttr('tissue_class', 'grey'),
-                '<subject>_mni_wm', SetType('T1 MRI tissue probability map'),
+                '<subject>_mni_wm', SetType('tissue probability map'),
                 SetWeakAttr('tissue_class', 'white'),
+                '<subject>_mni_gm', SetType('tissue probability map'),
+                SetWeakAttr('tissue_class', 'grey'),
+                '<subject>_mni_csf', SetType('tissue probability map'),
+                SetWeakAttr('tissue_class', 'csf'),
                 '<subject>_mni_normalised', SetType('T1 MRI Denoised and Bias Corrected'),
                 '<subject>_mni_readme', SetType('Text file'),
                 '<subject>_affine_transformation', SetType('Transformation'),
             ),
-            '<subject>_report', SetType('Text file'),
+            '<subject>_report', SetType('Analysis Report'),
         ),
     ),
 )
