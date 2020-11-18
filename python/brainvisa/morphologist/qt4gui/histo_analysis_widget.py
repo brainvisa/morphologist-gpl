@@ -602,7 +602,10 @@ class HistoAnalysisWidget(QtGui.QWidget):
                 self._pick = self.mfig.canvas.mpl_connect('pick_event',
                                                           self._his_mouse_press)
             toolbar = self.findChild(QtGui.QToolBar)
-            forcemode = (toolbar._active is not None)
+            if hasattr(toolbar, '_active'):
+                forcemode = (toolbar._active is not None)
+            else:
+                forcemode = False
         else:
             # unset picker callback and activate interactive objects
             for p in self._plots[0]:
@@ -614,7 +617,12 @@ class HistoAnalysisWidget(QtGui.QWidget):
             self.mfig.canvas.mpl_disconnect(self._pick)
             self._pick = None
             toolbar = self.findChild(QtGui.QToolBar)
-            forcemode = (toolbar._active != 'PAN')
+            print('toolbar:', toolbar)
+            print(toolbar.__dict__.keys())
+            if hasattr(toolbar, '_active'):
+                forcemode = (toolbar._active != 'PAN')
+            else:
+                forcemode = False
         if forcemode:
             toolbar.pan()
 
