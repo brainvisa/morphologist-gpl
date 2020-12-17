@@ -53,8 +53,6 @@ from soma.qt_gui.qt_backend import QtCore
 from soma.qt_gui.qt_backend.QtCore import pyqtSignal as qtSignal
 from soma.qt_gui.qt_backend.QtCore import pyqtSlot as qtSlot
 import sys
-if sys.version_info[0] >= 3:
-    xrange = range
 
 
 class HistoAnalysisEditorWidget(QDialog):
