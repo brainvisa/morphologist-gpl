@@ -149,7 +149,7 @@ def execution(self, context):
     #context.write( 's:', s )
     p = -s.transform(dimm)
     #context.write( 'translation:', p )
-    R.translation().assign(p)
+    R.toMatrix()[:3, 3] = p
     context.write('apply resampling matrix:')
     context.write(R)
 
