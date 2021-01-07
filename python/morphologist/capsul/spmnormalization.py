@@ -70,3 +70,7 @@ class SPMNormalization(SPMnormalizationPipeline):
 
     def change_flip(self, value):
         self.nodes_activation.ReorientAnatomy = value
+
+    def requirements(self):
+        return {'spm': 'any'}
+

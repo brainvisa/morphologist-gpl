@@ -45,3 +45,6 @@ class FSLNormalization(FSLnormalizationPipeline):
 
     def change_flip(self, value):
         self.nodes_activation.ReorientAnatomy = value
+
+    def requirements(self):
+        return {'fsl': 'any'}
