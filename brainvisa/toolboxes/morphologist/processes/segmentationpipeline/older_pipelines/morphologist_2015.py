@@ -35,7 +35,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 from brainvisa.processes import *
 
-name = 'Morphologist 2021'
+name = 'Morphologist 2015'
 userLevel = 0
 
 signature = Signature(
@@ -86,17 +86,11 @@ class linkCheckModels(object):
 
     def __call__(self, node):
         eNode = self.proc.executionNode().HemispheresProcessing
-        if eNode.LeftHemisphere.SulciRecognition.isSelected() \
-                == eNode.RightHemisphere.SulciRecognition.isSelected():
-            self.proc.perform_sulci_recognition \
-                = eNode.LeftHemisphere.SulciRecognition.isSelected()
+        if eNode.LeftHemisphere.SulciRecognition.isSelected() == eNode.RightHemisphere.SulciRecognition.isSelected():
+            self.proc.perform_sulci_recognition = eNode.LeftHemisphere.SulciRecognition.isSelected()
         if not linkCheckModels.spamModelsChecked:
-            if (eNode.LeftHemisphere.SulciRecognition.isSelected()
-                    and eNode.LeftHemisphere.SulciRecognition. \
-                        SPAM_recognition09.isSelected()) \
-                    or (eNode.RightHemisphere.SulciRecognition.isSelected()
-                        and eNode.RightHemisphere.SulciRecognition. \
-                            SPAM_recognition09.isSelected()):
+            if eNode.LeftHemisphere.SulciRecognition.isSelected() \
+                    or eNode.RightHemisphere.SulciRecognition.isSelected():
                 proc = getProcessInstance('check_spam_models')
                 linkCheckModels.spamModelsChecked = True
                 if proc:
@@ -272,12 +266,6 @@ def initialization(self):
         rightNode.addChild('SulciRecognition',
                            ProcessExecutionNode('recognitionGeneral',
                                                 optional=1, selected=0))
-        if hasattr(leftNode.SulciRecognition.executionNode(),
-                   'CNN_recognition19'):
-            leftNode.SulciRecognition.executionNode().CNN_recognition19. \
-                setSelected(True)
-            rightNode.SulciRecognition.executionNode().CNN_recognition19. \
-                setSelected(True)
         eNode.addChild('SulcalMorphometry',
                        ProcessExecutionNode('sulcigraphmorphometrybysubject',
                                             optional=1, selected=0))
@@ -291,12 +279,10 @@ def initialization(self):
                             'anterior_commissure')
         eNode.addDoubleLink('PrepareSubject.StandardACPC.Posterior_Commissure',
                             'posterior_commissure')
-        eNode.addDoubleLink(
-            'PrepareSubject.StandardACPC.Interhemispheric_Point',
-            'interhemispheric_point')
-        eNode.addDoubleLink(
-            'PrepareSubject.StandardACPC.Left_Hemisphere_Point',
-            'left_hemisphere_point')
+        eNode.addDoubleLink('PrepareSubject.StandardACPC.Interhemispheric_Point',
+                            'interhemispheric_point')
+        eNode.addDoubleLink('PrepareSubject.StandardACPC.Left_Hemisphere_Point',
+                            'left_hemisphere_point')
 
     self.setOptional('anterior_commissure')
     self.setOptional('posterior_commissure')
@@ -697,7 +683,6 @@ def initialization(self):
     self.setExecutionNode(eNode)
 
     eNode.TalairachTransformation.setSelected(False)
-    self.perform_sulci_recognition = True
 
     self.capsul_do_not_export = [
         ('GreyWhiteClassification', 'side'),

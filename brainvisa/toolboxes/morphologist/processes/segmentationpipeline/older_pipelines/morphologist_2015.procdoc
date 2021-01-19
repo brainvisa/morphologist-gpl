@@ -12,18 +12,32 @@
 <a HREF="graphstructure_3_0.html"><img SRC="../../images/II_sulci.jpg" ALT="" border="0"/></a>
 <br/>
 Permet de déclencher une chaîne d'analyse d'images qui extrait divers objets d'une IRM T1 anatomique</xhtml>
+    <d name="parameters">
+      <xhtml name="left_labelled_graph"/>
+      <xhtml name="interhemispheric_point"/>
+      <xhtml name="t1mri"/>
+      <xhtml name="right_graph"/>
+      <xhtml name="perform_normalization"/>
+      <xhtml name="right_labelled_graph"/>
+      <xhtml name="split_brain"/>
+      <xhtml name="t1mri_nobias"/>
+      <xhtml name="perform_sulci_recognition"/>
+      <xhtml name="left_hemisphere_point"/>
+      <xhtml name="left_graph"/>
+      <xhtml name="posterior_commissure"/>
+      <xhtml name="histo_analysis"/>
+      <xhtml name="anterior_commissure"/>
+    </d>
     <xhtml name="long"><p>
 Ce pipeline se nomme désormais "<b>Morphologist</b>", il est le principal point d'entrée de la toolbox "Morphologist" dédiée aux traitement des IRM T1. C'est l'évolution de l'ancien "Pipeline T1".
 </p>
 
 <p>
-Morphologist 2021 ne change pas en termes de segmentation, mais utilise désormais une méthode de reconnaissance des sillons basée sur des CNN (Convolutional Neural Networks). Cette étape est maintenant activée par défaut.
-</p>
-<p>Les anciennes versions du pipeline sont toujours accessibles dans le répertoire <a href="categories/morphologist/segmentationpipeline/older_pipelines/category_documentation.html">"Pipeline de segmentation / Anciens pipelines"</a> et devraient en principe fonctionner comme avant.
+Celui-ci constitue la seconde version de Morphologist. Les anciennes versions du pipeline sont toujours accessibles dans le répertoire <a href="categories/morphologist/segmentationpipeline/older_pipelines/category_documentation.html">"Pipeline de segmentation / Anciens pipelines"</a> et devraient en principe fonctionner comme avant.
 </p>
 
-<div class="note"><h4>Nouveautés de 2021 vs. 2015:</h4>
-Le sous-pipeline de reconnaissance de sillons a été enrichi avec une 3ème génération de méthodes, basée sur des CNN (apprentissage profond). Il est légèrement plus performant que son prédécesseur basé sur des SPAM, et est aussi bien plus rapide. Cependant il nécessite une quantité non-négligeable de mémoire pour tourner (environ 6 Go), ou un GPU avec CUDA fonctionnel.
+<div class="note"><h4>Nouveautés de 2015 vs. 2013:</h4>
+Une étape optionnelle a été ajoutée dans la version 2015 du pipeline Morphologist: l'étape "<a href="normalization_skullstripped.html">Renormalisation cerveau extrait</a>". Son but est d'améliorer (ou plutôt de corriger) la normalisation initiale qui obtient parfois des résultats incorrects à cause de champs de vue trop différents entre image et template, ou d'une confusion scalp/cerveau.
 </div>
 
 <p>
@@ -135,22 +149,6 @@ le site de Marseille à cause du biais important de leur scanner 3T: <a href="ht
 <img SRC="../../images/III_sulci.jpg" ALT=""/>
 
 </xhtml>
-    <d name="parameters">
-      <xhtml name="t1mri"/>
-      <xhtml name="perform_normalization"/>
-      <xhtml name="anterior_commissure"/>
-      <xhtml name="posterior_commissure"/>
-      <xhtml name="interhemispheric_point"/>
-      <xhtml name="left_hemisphere_point"/>
-      <xhtml name="t1mri_nobias"/>
-      <xhtml name="histo_analysis"/>
-      <xhtml name="split_brain"/>
-      <xhtml name="left_graph"/>
-      <xhtml name="right_graph"/>
-      <xhtml name="perform_sulci_recognition"/>
-      <xhtml name="left_labelled_graph"/>
-      <xhtml name="right_labelled_graph"/>
-    </d>
   </d>
   <d name="en">
     <xhtml name="short"><img SRC="../../images/II_T1mri.jpg" ALT="" border="0"/>
@@ -163,6 +161,22 @@ le site de Marseille à cause du biais important de leur scanner 3T: <a href="ht
 <a HREF="graphstructure_3_0.html"><img SRC="../../images/II_sulci.jpg" ALT="" border="0"/></a>
 <br/>
 Trigger all segmentation tools for T1-weighted data</xhtml>
+    <d name="parameters">
+      <xhtml name="left_labelled_graph"/>
+      <xhtml name="interhemispheric_point"/>
+      <xhtml name="t1mri"/>
+      <xhtml name="right_graph"/>
+      <xhtml name="perform_normalization"/>
+      <xhtml name="right_labelled_graph"/>
+      <xhtml name="split_brain"/>
+      <xhtml name="t1mri_nobias"/>
+      <xhtml name="perform_sulci_recognition"/>
+      <xhtml name="left_hemisphere_point"/>
+      <xhtml name="left_graph"/>
+      <xhtml name="posterior_commissure"/>
+      <xhtml name="histo_analysis"/>
+      <xhtml name="anterior_commissure"/>
+    </d>
     <xhtml name="long"><head>
 <style>
   #warning {
@@ -179,13 +193,11 @@ This pipeline is now named "<b>Morphologist</b>", and is the main entry point of
 </p>
 
 <p>
-Morphologist 2021 does not change in terms of segmentation, but now switches to a CNN-based  (Convolutional Neural Networks) sulci recognition method. This step is also now enabled by default.
-</p>
-<p>Older versions of the pipeline are still available in the sub-directory <a href="categories/morphologist/segmentationpipeline/older_pipelines/category_documentation.html">"segmentation Pipeline / Older pipelines"</a>, and should normally work as they used to.
+This is the second version of Morphologist. Older versions of the pipeline are still available in the sub-directory <a href="categories/morphologist/segmentationpipeline/older_pipelines/category_documentation.html">"segmentation Pipeline / Older pipelines"</a>, and should normally work as they used to.
 </p>
 
-<div class="note"><h4>News in 2021 vs. 2015:</h4>
-The sulci recognition sub-pipeline has been enriched with a 3rd generation of methods, based on deep learning CNN models. It performs slightly better than the former SPAM model, and is also way faster. However it needs a fair amount of memory to run (about 6 Gb), or a GPU with Cuda enabled.
+<div class="note"><h4>News in 2015 vs. 2013:</h4>
+A new optional step has been added in the 2015 version of the Morphologist pipeline: the "<a href="normalization_skullstripped.html">Skull-stripped renormalization</a>" step. It aims at improving (or rather, correcting) the initial normalization which sometimes get incorrect results due to too different image/template fields of view, or to scalp/brain mismatch.
 </div>
 
 <p>
@@ -307,22 +319,6 @@ of the 3T large bias field: <a href="http://marspack.free.fr/">http://marspack.f
 <img SRC="../../images/III_white.jpg" ALT=""/>
 <img SRC="../../images/III_sulci.jpg" ALT=""/>
 </xhtml>
-    <d name="parameters">
-      <xhtml name="t1mri"/>
-      <xhtml name="perform_normalization"/>
-      <xhtml name="anterior_commissure"/>
-      <xhtml name="posterior_commissure"/>
-      <xhtml name="interhemispheric_point"/>
-      <xhtml name="left_hemisphere_point"/>
-      <xhtml name="t1mri_nobias"/>
-      <xhtml name="histo_analysis"/>
-      <xhtml name="split_brain"/>
-      <xhtml name="left_graph"/>
-      <xhtml name="right_graph"/>
-      <xhtml name="perform_sulci_recognition"/>
-      <xhtml name="left_labelled_graph"/>
-      <xhtml name="right_labelled_graph"/>
-    </d>
   </d>
 </d>
 </minf>
