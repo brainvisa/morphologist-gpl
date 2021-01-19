@@ -7,9 +7,9 @@
   <p>Morphologist is the name for the toolbox including T1 anatomical MRI processing, cortical sulci extraction and identification, and morphometric applications.
   </p>
 
-  <p>Morphologist has been released for many years as a toolbox for the BrainVISA software. It now has a simplified user interface: <a href="../../../../../morphologist-ui-1.1/index.html">Morphologist-UI</a>, which may be used in a much user-friendly way in many cases.
+  <p>Morphologist has been released for many years as a toolbox for the BrainVISA software. It now has a simplified user interface: <a href="../../../../../morphologist-ui-5.0/index.html">Morphologist-UI</a>, which may be used in a much user-friendly way in many cases.
   </p>
-  <p align="center"><a href="../../../../../morphologist-ui-1.1/index.html"><img src="../../../../../morphologist-ui-1.1/_images/morphologist-ui.jpg" width="70%" alt="Morphologist-UI" align="center" /></a>
+  <p align="center"><a href="../../../../../morphologist-ui-5.0/index.html"><img src="../../../../../morphologist-ui-5.0/_images/morphologist-ui.jpg" width="70%" alt="Morphologist-UI" align="center" /></a>
   </p>
 
   <p>
@@ -23,12 +23,12 @@
   <p>
   Then, the main pipeline extracts various anatomical objects (hemispheres, grey matter, white matter, cortical sulci...). The first step of this pipeline requires to manually specify to BrainVISA the image orientation (axial, coronal, sagittal...). If you have spatially normalized your data with SPM or MRItotal, you will just have to specify it (be careful if using SPM2 or older, with conventions for left and right...). Otherwise, you may let BrainVisa use SPM or FSL to perform normalization, or you may help brainVISA to virtually normalize your data, clicking on anterior and posterior commissures. All this is done in the process:
      <ul>
-    <li><a href="bvprocess://morphologist"><bvProcessName name="Morphologist 2015"/></a></li>
+    <li><a href="bvprocess://morphologist"><bvProcessName name="Morphologist 2021"/></a></li>
     </ul>
   </p>
   <p>
   Some of the components can be individually triggered in expert mode and may overcome problems occuring with the default pipeline parameters settings.
-  The organization of these new components is compatible with the older (2013, 2012, 2011, 2007, 2004) pipelines. However since the 2012 version of the pipeline, obsolete variants of components have been removed. However they can still be found in the older versions of the pipelines, still present in <a href="bvcategory://morphologist/segmentationpipeline/older_pipelines">"Segmentation pipeline/Older pipelines"</a>.
+  The organization of these new components is compatible with the older (2015, 2013, 2012, 2011, 2007, 2004) pipelines. However since the 2012 version of the pipeline, obsolete variants of components have been removed. However they can still be found in the older versions of the pipelines, still present in <a href="bvcategory://morphologist/segmentationpipeline/older_pipelines">"Segmentation pipeline/Older pipelines"</a>.
   This means that individual components can be used to replace one old component, using the validation flags to control the pipeline behaviour.
   In t the 2013 version of Morphologist, all steps have been reorganized for more efficient distributed execution: all per-hemisphere processing can be done in parallel. Almost all steps of the Morphologist pipeline have been notably improved in the 2012 version. In 2013, mainly the meshes generation have undergone significant improvements: the pipeline produces more accurate, less decimated meshes for both grew/CSF and grey/white meshes.
   </p>
@@ -61,9 +61,9 @@
   <p>Morphologist est le nom de la boîte à outils d'analyse d'images anatomiques T1, d'extraction de d'identification des sillons corticaux, et de leurs applications morphométriques.
   </p>
 
-  <p>Morphologist est distribué depuis des années en tant que boîte à outil pour le logiciel BrainVISA. Il a à présent une interface graphique simplifiée: <a href="../../../../../morphologist-ui-1.1/index.html">Morphologist-UI</a>, qui est bien plus facile à utiliser dans la plupart des cas.
+  <p>Morphologist est distribué depuis des années en tant que boîte à outil pour le logiciel BrainVISA. Il a à présent une interface graphique simplifiée: <a href="../../../../../morphologist-ui-5.0/index.html">Morphologist-UI</a>, qui est bien plus facile à utiliser dans la plupart des cas.
   </p>
-  <p align="center"><a href="../../../../../morphologist-ui-1.1/index.html"><img src="../../../../../morphologist-ui-1.1/_images/morphologist-ui.jpg" width="70%" alt="Morphologist-UI" align="center" /></a>
+  <p align="center"><a href="../../../../../morphologist-ui-5.0/index.html"><img src="../../../../../morphologist-ui-5.0/_images/morphologist-ui.jpg" width="70%" alt="Morphologist-UI" align="center" /></a>
   </p>
 
   <p>
@@ -78,11 +78,11 @@
   Ensuite, le pipeline principal effectue l'extraction de différents objets anatomiques (hémisphères, matière grise, matière blanche, sillons corticaux). La première étape de ce pipeline demande de spécifier manuellement à brainVISA l'orientation de vos acquisitions (axiale, coronale ou sagittale...). Si vous avez normalisé spatialement vos images au préalable avec SPM ou MRItotal, il devrait vous suffire de le spécifier (méfiez vous des conventions de SPM2 ou précédents en ce qui concerne la gauche et la droite). Autrement, vous pouvez laisser BrainVisa utiliser SPM ou FSL pour normaliser les données, ou bien vous devrez cliquer sur quelques points, en particulier les commissures antérieure et postérieure, pour permettre à brainVISA de normaliser virtuellement vos données. Tout cela concerne le traitement:
   </p>
   <ul>
-    <li><a href="bvprocess://morphologist"><bvProcessName name="Morphologist 2015"/></a></li>
+    <li><a href="bvprocess://morphologist"><bvProcessName name="Morphologist 2021"/></a></li>
   </ul>
   <p>
   Certains de ses composants peuvent être utilisés individuellement dans le mode expert et pourraient résoudre des problèmes rencontrés avec les réglages par défaut du pipeline Morphologist.
-  L'organisation de ces composants est compatible avec les anciens pipelines (2013, 2012, 2011, 2007, 2004). Cependant les anciennes variantes qui n'ont plus lieu d'être ont été retirées du pipeline 2012. Elles peuvent toujours être trouvées dans les anciennes versions du pipeline, toujours présentes dans <a href="bvcategory://morphologist/segmentationpipeline/older_pipelines">"Pipeline de segmentation/Anciens pipelines"</a>.
+  L'organisation de ces composants est compatible avec les anciens pipelines (2015, 2013, 2012, 2011, 2007, 2004). Cependant les anciennes variantes qui n'ont plus lieu d'être ont été retirées du pipeline 2012. Elles peuvent toujours être trouvées dans les anciennes versions du pipeline, toujours présentes dans <a href="bvcategory://morphologist/segmentationpipeline/older_pipelines">"Pipeline de segmentation/Anciens pipelines"</a>.
   Pratiquement, ceci signifie que les composants individuels peuvent être utilisés pour remplacer un ancien traitement, dans la mesure ou les briques de validation permettent
   d'empêcher le pipeline général d'écraser ces nouveaux résultats.
   Presque toutes les étapes ont été notablement améliorées dans le pipeline Morphologist 2012.
