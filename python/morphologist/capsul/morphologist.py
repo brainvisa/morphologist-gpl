@@ -302,6 +302,7 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
               'allow_multithreading->SulciRecognition_1.CNN_recognition19_allow_multithreading')
           self.add_link(
               'rebuild_graph_attributes_after_split->SulciRecognition_1.CNN_recognition19_rebuild_attributes')
+          self.select_sulci_recognition = 'CNN_recognition19'
 
         self.export_parameter('SulcalMorphometry', 'sulcal_morpho_measures')
         self.export_parameter('SulcalMorphometry', 'sulci_file',
