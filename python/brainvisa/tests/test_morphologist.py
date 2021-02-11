@@ -474,9 +474,17 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
         if not self.do_spam or not self.do_sulci_today():
             skipped_dirs.append('default_session_auto')
         # Get data
-        _, ref_t1_nobias, _, _, _, _ = self.get_data(self.ref_database)
+        ref_data = self.get_data(self.ref_database)
+        ref_t1_nobias = ref_data[1]
+
         _, run_t1_nobias, _, _, _, _ = self.get_data(self.run_database)
         ref_dir = os.path.dirname(ref_t1_nobias.fullPath())
+
+        # check that the ref data actually exist
+        for ref_item in ref_data:
+            self.assertTrue(os.path.exists(ref_item.fullPath()),
+                            msg='Reference data missing.')
+
         test_dir = os.path.dirname(run_t1_nobias.fullPath())
         for (dirpath, dirnames, filenames) in os.walk(ref_dir):
             if len([1 for ext in skipped_dirs if dirpath.endswith(ext)]) != 0:
