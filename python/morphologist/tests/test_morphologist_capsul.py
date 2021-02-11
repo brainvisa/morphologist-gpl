@@ -332,6 +332,20 @@ class TestMorphologistCapsul(soma.test_utils.SomaTestCase):
         ref_dir = os.path.join(self.ref_database_dir, 'test', 'sujet01',
                                't1mri', 'default_acquisition',
                                'default_analysis')
+
+        # check that the ref data actually exist
+        ref_data = (
+            'nobias_sujet01.nii',
+            'folds/3.1/default_session_auto/Lsujet01_default_session_auto.arg',
+            'folds/3.1/default_session_auto/Rsujet01_default_session_auto.arg',
+            'folds/3.1/cnn_auto/Lsujet01_cnn_auto.arg',
+            'folds/3.1/cnn_auto/Rsujet01_cnn_auto.arg',
+        )
+        for ref_item in ref_data:
+            self.assertTrue(os.path.exists(os.path.join(ref_dir, ref_item)),
+                            msg='Reference data missing.')
+
+
         test_dir = self.analysis_dir
         for (dirpath, dirnames, filenames) in os.walk(ref_dir):
             if len([1 for ext in skipped_dirs if dirpath.endswith(ext)]) != 0:
