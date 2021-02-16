@@ -291,31 +291,39 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
                                     "center": "test",
                                     "subject": "sujet01"})
         glwd = self.pipeline.signature["left_labelled_graph"]
-        left_ann_graph = glwd.findValue(
-            t1_nobias,
-            requiredAttributes={"sulci_recognition_session": "ann",
-                                "graph_version": "3.1",
-                                "manually_labelled": "No",
-                                "side": "left"})
-        grwd = self.pipeline.signature["left_labelled_graph"]
-        right_ann_graph = grwd.findValue(
-            t1_nobias,
-            requiredAttributes={"sulci_recognition_session": "ann",
-                                "graph_version": "3.1",
-                                "manually_labelled": "No",
-                                "side": "right"})
-        left_cnn_graph = glwd.findValue(
-            t1_nobias,
-            requiredAttributes={"sulci_recognition_session": "cnn",
-                                "graph_version": "3.1",
-                                "manually_labelled": "No",
-                                "side": "left"})
-        right_cnn_graph = grwd.findValue(
-            t1_nobias,
-            requiredAttributes={"sulci_recognition_session": "cnn",
-                                "graph_version": "3.1",
-                                "manually_labelled": "No",
-                                "side": "right"})
+        if self.do_ann:
+            left_ann_graph = glwd.findValue(
+                t1_nobias,
+                requiredAttributes={"sulci_recognition_session": "ann",
+                                    "graph_version": "3.1",
+                                    "manually_labelled": "No",
+                                    "side": "left"})
+            grwd = self.pipeline.signature["left_labelled_graph"]
+            right_ann_graph = grwd.findValue(
+                t1_nobias,
+                requiredAttributes={"sulci_recognition_session": "ann",
+                                    "graph_version": "3.1",
+                                    "manually_labelled": "No",
+                                    "side": "right"})
+        else:
+            left_ann_graph = None
+            right_ann_graph = None
+        if self.do_cnn:
+            left_cnn_graph = glwd.findValue(
+                t1_nobias,
+                requiredAttributes={"sulci_recognition_session": "cnn",
+                                    "graph_version": "3.1",
+                                    "manually_labelled": "No",
+                                    "side": "left"})
+            right_cnn_graph = grwd.findValue(
+                t1_nobias,
+                requiredAttributes={"sulci_recognition_session": "cnn",
+                                    "graph_version": "3.1",
+                                    "manually_labelled": "No",
+                                    "side": "right"})
+        else:
+            left_cnn_graph = None
+            right_cnn_graph = None
         return (t1, t1_nobias, left_ann_graph, right_ann_graph, left_cnn_graph,
                 right_cnn_graph)
 
@@ -482,8 +490,10 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
 
         # check that the ref data actually exist
         for ref_item in ref_data:
-            self.assertTrue(os.path.exists(ref_item.fullPath()),
-                            msg='Reference data missing.')
+            if ref_item:
+                self.assertTrue(os.path.exists(ref_item.fullPath()),
+                                msg='Reference data missing: %s'
+                                % ref_item.fullPath())
 
         test_dir = os.path.dirname(run_t1_nobias.fullPath())
         for (dirpath, dirnames, filenames) in os.walk(ref_dir):
