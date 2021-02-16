@@ -16,6 +16,7 @@ signature = Signature(
         ('Morphologist simple',
          'morphologist.capsul.morphologist_simple.MorphologistSimple')),
     'analysis', ListOf(String()),
+    'sulci_recognition_session', ListOf(String()),
     'transfer_inputs', Boolean(),
     'transfer_outputs', Boolean(),
     'use_translated_shared_directory', Boolean(),
@@ -55,6 +56,7 @@ def change_process_type(self, process, dummy):
 
 def initialization(self):
     self.analysis = ['default_analysis']
+    self.sulci_recognition_session = ['default_session']
     self.transfer_inputs = False
     self.transfer_outputs = False
     self.use_translated_shared_directory = True
@@ -228,6 +230,10 @@ def execution(self, context):
         if len(self.analysis) <= j:
             j = -1
         attributes['analysis'] = self.analysis[j]
+        if len(self.sulci_recognition_session) <= j:
+            j = -1
+        attributes['sulci_recognition_session'] \
+            = self.sulci_recognition_session[j]
         # handle input format
         if database != study_config.input_directory \
                 or database != study_config.output_directory \

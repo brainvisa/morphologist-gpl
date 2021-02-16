@@ -226,6 +226,7 @@ class TestMorphologistCapsul(soma.test_utils.SomaTestCase):
         mp.anterior_commissure = ac
         mp.posterior_commissure = pc
         mp.interhemispheric_point = ip
+        mp.select_sulci_recognition = 'SPAM_recognition09'
 
         t1mri = [process.signature['t1mri'].contentType.findValue(
             {"_database": self.run_database.name,
@@ -236,6 +237,8 @@ class TestMorphologistCapsul(soma.test_utils.SomaTestCase):
         )]
         analysis = ['capsul']
         self.analysis = analysis
+        sulci = ['cnn']
+        self.sulci_recognition_session = sulci
 
         context = defaultContext()
         if not self.test_workflow_file:
@@ -253,8 +256,11 @@ class TestMorphologistCapsul(soma.test_utils.SomaTestCase):
             shutil.rmtree(analysis_dir)
         print("* Run Morphologist_Capsul to get test results")
         defaultContext().runProcess(
-            process, t1mri=t1mri,
-            analysis=analysis, use_translated_shared_directory=False,
+            process,
+            t1mri=t1mri,
+            analysis=analysis,
+            sulci_recognition_session=sulci,
+            use_translated_shared_directory=False,
             workflow=workflow_di
         )
         print('workflow:', workflow_di.fullPath())
@@ -289,16 +295,18 @@ class TestMorphologistCapsul(soma.test_utils.SomaTestCase):
                         setattr(mp.pipeline_steps, step, False)
                     else:
                         setattr(mp.pipeline_steps, step, True)
-                from capsul.attributes.completion_engine \
-                    import ProcessCompletionEngine
-                pce = ProcessCompletionEngine.get_completion_engine(mp)
-                atts = pce.get_attribute_values()
-                atts.sulci_recognition_session = 'cnn'
-                pce.complete_parameters()
+                # from capsul.attributes.completion_engine \
+                    # import ProcessCompletionEngine
+                # pce = ProcessCompletionEngine.get_completion_engine(mp)
+                # atts = pce.get_attribute_values()
+                # atts.sulci_recognition_session = 'cnn'
+                # pce.complete_parameters()
                 print("* Run Morphologist_Capsul CNN sulci recognition")
                 defaultContext().runProcess(
                     process, t1mri=t1mri,
-                    analysis=analysis, use_translated_shared_directory=False,
+                    analysis=analysis,
+                    sulci_recognition_session=sulci_recognition_session,
+                    use_translated_shared_directory=False,
                     workflow=workflow_di
                 )
                 print('workflow:', workflow_di.fullPath())
