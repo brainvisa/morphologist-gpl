@@ -237,8 +237,6 @@ class TestMorphologistCapsul(soma.test_utils.SomaTestCase):
         )]
         analysis = ['capsul']
         self.analysis = analysis
-        sulci = ['cnn']
-        self.sulci_recognition_session = sulci
 
         context = defaultContext()
         if not self.test_workflow_file:
@@ -259,7 +257,6 @@ class TestMorphologistCapsul(soma.test_utils.SomaTestCase):
             process,
             t1mri=t1mri,
             analysis=analysis,
-            sulci_recognition_session=sulci,
             use_translated_shared_directory=False,
             workflow=workflow_di
         )
@@ -305,7 +302,7 @@ class TestMorphologistCapsul(soma.test_utils.SomaTestCase):
                 defaultContext().runProcess(
                     process, t1mri=t1mri,
                     analysis=analysis,
-                    sulci_recognition_session=sulci_recognition_session,
+                    sulci_recognition_session='cnn',
                     use_translated_shared_directory=False,
                     workflow=workflow_di
                 )
