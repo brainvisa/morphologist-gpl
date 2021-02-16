@@ -291,6 +291,7 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
                                     "center": "test",
                                     "subject": "sujet01"})
         glwd = self.pipeline.signature["left_labelled_graph"]
+        grwd = self.pipeline.signature["right_labelled_graph"]
         if self.do_ann:
             left_ann_graph = glwd.findValue(
                 t1_nobias,
@@ -298,7 +299,6 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
                                     "graph_version": "3.1",
                                     "manually_labelled": "No",
                                     "side": "left"})
-            grwd = self.pipeline.signature["left_labelled_graph"]
             right_ann_graph = grwd.findValue(
                 t1_nobias,
                 requiredAttributes={"sulci_recognition_session": "ann",
@@ -308,6 +308,7 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
         else:
             left_ann_graph = None
             right_ann_graph = None
+
         if self.do_cnn:
             left_cnn_graph = glwd.findValue(
                 t1_nobias,
@@ -324,6 +325,7 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
         else:
             left_cnn_graph = None
             right_cnn_graph = None
+
         return (t1, t1_nobias, left_ann_graph, right_ann_graph, left_cnn_graph,
                 right_cnn_graph)
 
