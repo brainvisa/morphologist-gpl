@@ -241,7 +241,7 @@ def execution(self, context):
     a.camera([w3], view_quaternion=view_quaternionR_H)  # Right hemisphere
     a.camera([w4], view_quaternion=view_quaternionL_H)  # Left hemisphere
     # Help about quaternions:
-    # http://brainvisa.info/doc/anatomist/ana_training/en/html/ch08s03.html
+    # https://brainvisa.info/doc/anatomist/ana_training/en/html/ch08s03.html
     # http://fr.wikipedia.org/wiki/Quaternion
     # http://code.google.com/p/coloradocollegegame/wiki/Quaternions
     # Important:
