@@ -23,7 +23,7 @@ def _init_doc_path():
     if os.path.exists(p):
         _doc_path = p
         return _doc_path
-    _doc_path = 'http://brainvisa.info/morphologist-%s/dev_doc/process_docs/' \
+    _doc_path = 'https://brainvisa.info/morphologist-%s/dev_doc/process_docs/' \
         'morphologist/capsul' % axon_version
     return _doc_path
 

@@ -35,12 +35,12 @@ This process automatizes the download and installation process of these models.
 <p>The models installation allows to use the <a href="spam_recognition.html">SPAM recognition</a> processes family, depending on the installed models.
 </p>
 <hr/>
-<p>Alternately, instead of using this process, models can be downloaded by hand from <a href="http://brainvisa.info/download.html">the BrainVISA web site</a>, in the "data" section. BrainVisa 4.2 is using models version 4.2.
-<li>For "Talairach" mode, the <a href="http://brainvisa.info/download/go.php?url=ftp%3A//ftp.cea.fr/pub/dsv/anatomist/data/descriptive_models-talairach-4.2.zip">"descriptive_models-talairach.zip"</a> package is required.</li>
-<li>For "Global registration" mode, the <a href="http://brainvisa.info/download/go.php?url=ftp%3A//ftp.cea.fr/pub/dsv/anatomist/data/descriptive_models-global-4.2.zip">"descriptive_models-global.zip"</a> package is required</li>
-<li>For "Local registration" mode, the <a href="http://brainvisa.info/download/go.php?url=ftp%3A//ftp.cea.fr/pub/dsv/anatomist/data/descriptive_models-local-4.2.zip">"descriptive_models-local.zip"</a> package is required, and it must be applied after a global registration step, so the requirements for global registration do apply.</li>
+<p>Alternately, instead of using this process, models can be downloaded by hand from <a href="https://brainvisa.info/download.html">the BrainVISA web site</a>, in the "data" section. BrainVisa 4.2 is using models version 4.2.
+<li>For "Talairach" mode, the <a href="https://brainvisa.info/download/go.php?url=ftp%3A//ftp.cea.fr/pub/dsv/anatomist/data/descriptive_models-talairach-4.2.zip">"descriptive_models-talairach.zip"</a> package is required.</li>
+<li>For "Global registration" mode, the <a href="https://brainvisa.info/download/go.php?url=ftp%3A//ftp.cea.fr/pub/dsv/anatomist/data/descriptive_models-global-4.2.zip">"descriptive_models-global.zip"</a> package is required</li>
+<li>For "Local registration" mode, the <a href="https://brainvisa.info/download/go.php?url=ftp%3A//ftp.cea.fr/pub/dsv/anatomist/data/descriptive_models-local-4.2.zip">"descriptive_models-local.zip"</a> package is required, and it must be applied after a global registration step, so the requirements for global registration do apply.</li>
 <li>For "Markovian" mode, no additional data is required, but  it must be applied after a global registration step, so the requirements for global registration do apply.</li>
-<li>Additional data are available for SPAM models visualization: use the <a href="http://brainvisa.info/download/go.php?url=ftp%3A//ftp.cea.fr/pub/dsv/anatomist/data/descriptive_models-additional_data-4.2.zip">"descriptive_models-additional_data.zip"</a> file.</li>
+<li>Additional data are available for SPAM models visualization: use the <a href="https://brainvisa.info/download/go.php?url=ftp%3A//ftp.cea.fr/pub/dsv/anatomist/data/descriptive_models-additional_data-4.2.zip">"descriptive_models-additional_data.zip"</a> file.</li>
 </p>
 <p>All these additional packages should be uncompressed in the BrainVisa binary distribution, in the "share/brainvisa-share-&amp;amp;amp;amp;amp;lt;version&amp;amp;amp;amp;amp;gt;" subdirectory. <b>After uncompressing the data, the internal "shared" database of BrainVisa must be <a href="updateDatabases.html">updated</a></b>.
 </p>

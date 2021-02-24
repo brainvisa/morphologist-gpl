@@ -30,7 +30,7 @@ Si l'on travaille sur une base de données, il suffit de remplir le champ "right
 A la fin de l'exécution du traitement deux fenêtre restent ouvertes : le "browser" de la hiérarchie (sulcal_root_colors.hie) et le bloc des 4 vues.
 
 Pour plus d'information sur la rotation avec les quaternions :
-http://brainvisa.info/doc/anatomist/ana_training/en/html/ch08s03.html
+https://brainvisa.info/doc/anatomist/ana_training/en/html/ch08s03.html
 http://fr.wikipedia.org/wiki/Quaternion
 http://code.google.com/p/coloradocollegegame/wiki/Quaternions
 </xhtml>
@@ -64,7 +64,7 @@ If working on a database, only field "right_graph" has to be filled.
 At the end of the processing two windows will remain open: the hierarchy (sulcal_root_colors.hie) browser and the 4 views block.
 
 For more information about rotation using quaternions:
-http://brainvisa.info/doc/anatomist/ana_training/en/html/ch08s03.html
+https://brainvisa.info/doc/anatomist/ana_training/en/html/ch08s03.html
 http://fr.wikipedia.org/wiki/Quaternion
 http://code.google.com/p/coloradocollegegame/wiki/Quaternions
 </xhtml>
