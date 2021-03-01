@@ -38,8 +38,8 @@ BRAINVISA_COPY_DIRECTORY( "${CMAKE_CURRENT_SOURCE_DIR}/doc"
                           "share/doc/morphologist-${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}"
                           ${PROJECT_NAME}-usrdoc )
 
-brainvisa_add_test(morphologist-tests "${PYTHON_EXECUTABLE_NAME}" -m brainvisa.tests.test_morphologist --no-ann TESTREF)
-brainvisa_add_test(morphologist-test-capsul "${PYTHON_EXECUTABLE_NAME}" -m morphologist.tests.test_morphologist_capsul)
+brainvisa_add_test(morphologist-tests TIMEOUT 5400 "${PYTHON_EXECUTABLE_NAME}" -m brainvisa.tests.test_morphologist --no-ann TESTREF) # timeout: 1h30
+brainvisa_add_test(morphologist-test-capsul TIMEOUT 5400 "${PYTHON_EXECUTABLE_NAME}" -m morphologist.tests.test_morphologist_capsul) # timeout: 1h30
 set_tests_properties(morphologist-test-capsul PROPERTIES DEPENDS morphologist-tests)
 
 find_package( Sphinx )
