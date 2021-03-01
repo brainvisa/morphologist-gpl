@@ -81,6 +81,10 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
         # Must be called before pipeline construction. As we construct them in
         # __init__ it should work.
         brainvisa.axon.initializeProcesses()
+        # update shared database
+        db = neuroHierarchy.databases.database(
+            neuroConfig.dataPath[0].directory)
+        db.update()
         # Set some internal variables from CLI arguments (the functions were
         # coded with those variables)
         self.do_spam = not self.no_spam
