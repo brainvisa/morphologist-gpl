@@ -81,15 +81,20 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
         # Must be called before pipeline construction. As we construct them in
         # __init__ it should work.
         brainvisa.axon.initializeProcesses()
-        # update shared database
-        db = neuroHierarchy.databases.database(
-            neuroConfig.dataPath[0].directory)
-        assert db.fso.name == 'shared'
-        # The shared database must be updated during tests of a build tree,
-        # but not in the case of a read-only installed BrainVISA.
-        if os.access(db.directory, os.R_OK | os.W_OK | os.X_OK):
-            db.clear(context=defaultContext())
-            db.update(context=defaultContext())
+
+        # update shared database(s)
+        shared_db = [db for db in neuroHierarchy.databases.iterDatabases()
+                     if db.fso.name== 'shared']
+        for db in shared_db:
+            # The shared database must be updated during tests of a build tree,
+            # but not in the case of a read-only installed BrainVISA.
+            if os.access(db.directory, os.R_OK | os.W_OK | os.X_OK):
+                try:
+                    db.clear(context=defaultContext())
+                    db.update(context=defaultContext())
+                except:
+                    pass # oh, well.
+
         # Set some internal variables from CLI arguments (the functions were
         # coded with those variables)
         self.do_spam = not self.no_spam
