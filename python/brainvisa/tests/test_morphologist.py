@@ -25,25 +25,40 @@ import numpy as np
 
 import zipfile
 from soma.path import relative_path
-import brainvisa.config
 
-# BRAINVISA_USER_DIR should be set before neuroConfig is imported so we set it
-# to an empty temporary directory to not mess up with the real user directory.
-# This could be done as part of the test case setUpClass (instead of the
-# initialization of the module) which would allow to suppress it in
-# tearDownClass.
-homedir = tempfile.mkdtemp(prefix='bv_home')
-os.environ['BRAINVISA_USER_DIR'] = homedir
-
-import brainvisa.axon
-from brainvisa.processes import defaultContext
-from brainvisa.data.writediskitem import WriteDiskItem
-from brainvisa.configuration import neuroConfig
-from brainvisa.data import neuroHierarchy
 from soma.aims.graph_comparison import same_graphs
 import soma.test_utils
+# CAUTION: all imports from the brainvisa package must be done in setUpModule.
 
 from six.moves.urllib.request import urlretrieve
+
+
+def setUpModule():
+    global brainvisa
+    global defaultContext
+    global WriteDiskItem
+    global neuroConfig
+    global neuroHierarchy
+
+    import brainvisa.test_utils
+    brainvisa.test_utils.setUpModule_axon()
+    # All imports of BrainVISA modules must be done here, *after* calling
+    # setUpModule_axon which takes care of properly initializing axon for the
+    # test environment. If these modules were imported before setUpModule_axon
+    # is called, they would perform a regular initialization of BrainVISA.
+    import brainvisa.processes
+    import brainvisa.configuration.neuroConfig
+    import brainvisa.axon
+    import brainvisa.config
+    from brainvisa.processes import defaultContext
+    from brainvisa.data.writediskitem import WriteDiskItem
+    from brainvisa.configuration import neuroConfig
+    from brainvisa.data import neuroHierarchy
+
+
+def tearDownModule():
+    import brainvisa.test_utils
+    brainvisa.test_utils.tearDownModule_axon()
 
 
 class MorphologistTestLoader(soma.test_utils.SomaTestLoader):
@@ -78,22 +93,6 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
 
     def __init__(self, testName):
         super(TestMorphologistPipeline, self).__init__(testName)
-        # Must be called before pipeline construction. As we construct them in
-        # __init__ it should work.
-        brainvisa.axon.initializeProcesses()
-
-        # update shared database(s)
-        shared_db = [db for db in neuroHierarchy.databases.iterDatabases()
-                     if db.fso.name== 'shared']
-        for db in shared_db:
-            # The shared database must be updated during tests of a build tree,
-            # but not in the case of a read-only installed BrainVISA.
-            if os.access(db.directory, os.R_OK | os.W_OK | os.X_OK):
-                try:
-                    db.clear(context=defaultContext())
-                    db.update(context=defaultContext())
-                except:
-                    pass # oh, well.
 
         # Set some internal variables from CLI arguments (the functions were
         # coded with those variables)
@@ -101,10 +100,15 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
         self.do_ann = not self.no_ann
         self.do_cnn = not self.no_cnn
         self.day_filter = self.sparse
+
+    def setUp(self):
         # Create the pipelines (we need them to query the databases)
         self.pipeline = self.create_spam_pipeline()
         self.ann_pipeline = self.create_ann_pipeline()
         self.cnn_pipeline = self.create_cnn_pipeline()
+        # Call setUp_ref_mode or setUp_run_mode depending on the current mode.
+        super(TestMorphologistPipeline, self).setUp()
+
 
     @staticmethod
     def create_spam_pipeline():
@@ -516,7 +520,6 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
                     "the reference results " + f_ref + ".")
 
     def tearDown(self):
-        brainvisa.axon.cleanup()
         super(TestMorphologistPipeline, self).tearDown()
 
 
@@ -524,14 +527,10 @@ def test(argv):
     """
     Function to execute unitest
     """
-    try:
-        loader = MorphologistTestLoader()
-        suite = loader.loadTestsFromTestCase(TestMorphologistPipeline, argv)
-        runtime = unittest.TextTestRunner(verbosity=2).run(suite)
-        return runtime.wasSuccessful()
-    finally:
-        if os.path.isdir(homedir):
-            rmtree(homedir)
+    loader = MorphologistTestLoader()
+    suite = loader.loadTestsFromTestCase(TestMorphologistPipeline, argv)
+    runtime = unittest.TextTestRunner(verbosity=2).run(suite)
+    return runtime.wasSuccessful()
 
 
 if __name__ == "__main__":
