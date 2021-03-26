@@ -28,36 +28,23 @@ from soma.path import relative_path
 
 from soma.aims.graph_comparison import same_graphs
 import soma.test_utils
-# CAUTION: all imports from the brainvisa package must be done in setUpModule.
+
+# CAUTION: all imports from the main brainvisa package must be done in
+# functions, *after* calling setUpModule_axon has been called, which takes care
+# of properly initializing axon for the test environment. If these modules were
+# imported before setUpModule_axon is called, they would perform an incorrect
+# initialization of BrainVISA.
+import brainvisa.test_utils
+
 
 from six.moves.urllib.request import urlretrieve
 
 
 def setUpModule():
-    global brainvisa
-    global defaultContext
-    global WriteDiskItem
-    global neuroConfig
-    global neuroHierarchy
-
-    import brainvisa.test_utils
     brainvisa.test_utils.setUpModule_axon()
-    # All imports of BrainVISA modules must be done here, *after* calling
-    # setUpModule_axon which takes care of properly initializing axon for the
-    # test environment. If these modules were imported before setUpModule_axon
-    # is called, they would perform a regular initialization of BrainVISA.
-    import brainvisa.processes
-    import brainvisa.configuration.neuroConfig
-    import brainvisa.axon
-    import brainvisa.config
-    from brainvisa.processes import defaultContext
-    from brainvisa.data.writediskitem import WriteDiskItem
-    from brainvisa.configuration import neuroConfig
-    from brainvisa.data import neuroHierarchy
 
 
 def tearDownModule():
-    import brainvisa.test_utils
     brainvisa.test_utils.tearDownModule_axon()
 
 
@@ -112,6 +99,7 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
 
     @staticmethod
     def create_spam_pipeline():
+        import brainvisa.processes
         pipeline = brainvisa.processes.getProcessInstance("morphologist")
         nodes = pipeline.executionNode()
         pipeline.perform_normalization = False
@@ -251,6 +239,9 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
 
     @staticmethod
     def create_database(database_directory, allow_ro=False):
+        from brainvisa.configuration import neuroConfig
+        from brainvisa.data import neuroHierarchy
+        from brainvisa.processes import defaultContext
         if not os.path.exists(database_directory):
             print("* Create test database")
             os.makedirs(database_directory)
@@ -275,6 +266,8 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
 
     @staticmethod
     def import_data(dir_, db_name):
+        from brainvisa.data.writediskitem import WriteDiskItem
+        from brainvisa.processes import defaultContext
         input = os.path.join(dir_, "data_unprocessed",
                              "sujet01", "anatomy", "sujet01.ima")
         wd = WriteDiskItem("Raw T1 MRI", "NIFTI-1 image")
@@ -291,6 +284,7 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
         return True
 
     def get_data(self, database):
+        from brainvisa.data.writediskitem import WriteDiskItem
         wd = WriteDiskItem("Raw T1 MRI", "NIFTI-1 image")
         t1 = wd.findValue({"_database": database.name,
                            "center": "test", "subject": "sujet01"})
@@ -339,6 +333,7 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
                 right_cnn_graph)
 
     def run_pipelines(self, database, skip_ann=False, skip_cnn=False):
+        from brainvisa.processes import defaultContext
         # Constants
         ac = [114.864585876, 118.197914124, 88.7999954224]
         pc = [116.197914124, 147.53125, 91.1999969482]
@@ -376,6 +371,7 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
                   'dependencies --')
 
     def setUp_ref_mode(self):
+        import brainvisa.config
         # ref mode ignores options test_only, no_ann and no_spam
         ref_data_dir = self.private_ref_data_dir()
         ref_database_dir = os.path.join(
@@ -410,6 +406,7 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
         self.run_pipelines(self.ref_database, skip_ann, skip_cnn)
 
     def setUp_run_mode(self):
+        import brainvisa.config
         # Get the ref database
         ref_data_dir = self.private_ref_data_dir()
         ref_database_dir = os.path.join(

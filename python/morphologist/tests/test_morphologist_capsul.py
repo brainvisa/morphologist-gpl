@@ -21,25 +21,31 @@ import platform
 
 import numpy as np
 
-# set en empty temporary user dir
-# BRAINVISA_USER_DIR sould be set before neuroConfig is imported
-homedir = tempfile.mkdtemp(prefix='bv_home')
-os.environ['BRAINVISA_USER_DIR'] = homedir
-
 import soma_workflow.client as swclient
 import soma_workflow.constants as swconstants
 import soma_workflow.configuration as swconfig
 from soma.path import relative_path
-import brainvisa.axon
-from brainvisa.processes import defaultContext
-from brainvisa.data.writediskitem import WriteDiskItem
 from soma.aims.graph_comparison import same_graphs
 import soma.test_utils
 
+# CAUTION: all imports from the main brainvisa package must be done in
+# functions, *after* calling setUpModule_axon has been called, which takes care
+# of properly initializing axon for the test environment. If these modules were
+# imported before setUpModule_axon is called, they would perform an incorrect
+# initialization of BrainVISA.
+import brainvisa.test_utils
 from brainvisa.tests.test_morphologist import TestMorphologistPipeline
 
 # debugging
 import signal
+
+
+def setUpModule():
+    brainvisa.test_utils.setUpModule_axon()
+
+
+def tearDownModule():
+    brainvisa.test_utils.tearDownModule_axon()
 
 
 def handle_debugger(sig, frame):
@@ -132,21 +138,21 @@ class TestMorphologistCapsul(soma.test_utils.SomaTestCase):
         # Set some internal variables from CLI arguments (the functions were
         # coded with those variables)
         self.test_workflow_file = self.workflow
-        # Must be called before pipeline construction. As we construct them in
-        # __init__ it should work.
-        print('* initialize BrainVisa')
-        brainvisa.axon.initializeProcesses()
+
+    def setUp(self):
+        from brainvisa.processes import defaultContext
         print("* Check SPAM models installation")
         # warning: models install needs write permissions to the shared
         # database. If not, and if models are not already here, this will
         # make the test fail. But it is more or less what we want.
         defaultContext().runProcess("check_spam_models", auto_install=True)
 
-    def setUp_ref_mode(self):
         ref_data_dir = self.private_ref_data_dir()
         self.ref_database_dir = os.path.join(
             ref_data_dir, 'db_morphologist-%s' % brainvisa.config.__version__
         )
+        # Call setUp_ref_mode or setUp_run_mode depending on the current mode.
+        super(TestMorphologistCapsul, self).setUp()
 
     def setUp_run_mode(self):
         # Location of the ref database
@@ -200,6 +206,8 @@ class TestMorphologistCapsul(soma.test_utils.SomaTestCase):
         return filecmp.cmp(ref_file, test_file)
 
     def test_pipeline_results(self):
+        from brainvisa.processes import defaultContext
+        from brainvisa.data.writediskitem import WriteDiskItem
         if self.test_mode == soma.test_utils.ref_mode:
             # In ref mode we just check that ref database exists (this could be
             # done in setUp_ref_mode too)
@@ -367,10 +375,6 @@ class TestMorphologistCapsul(soma.test_utils.SomaTestCase):
                 #print('file', f_test, 'OK.')
         print('** all OK.')
 
-    def tearDown(self):
-        super(TestMorphologistCapsul, self).tearDown()
-        brainvisa.axon.cleanup()
-
 
 # def test_suite():
 #    return unittest.TestLoader().loadTestsFromTestCase(TestMorphologistCapsul)
@@ -398,14 +402,10 @@ def test(argv):
     """
     Function to execute unitest
     """
-    try:
-        loader = MorphologistCapsulTestLoader()
-        suite = loader.loadTestsFromTestCase(TestMorphologistCapsul, argv)
-        runtime = unittest.TextTestRunner(verbosity=2).run(suite)
-        return runtime.wasSuccessful()
-    finally:
-        if os.path.isdir(homedir):
-            shutil.rmtree(homedir)
+    loader = MorphologistCapsulTestLoader()
+    suite = loader.loadTestsFromTestCase(TestMorphologistCapsul, argv)
+    runtime = unittest.TextTestRunner(verbosity=2).run(suite)
+    return runtime.wasSuccessful()
 
 
 if __name__ == "__main__":
@@ -416,6 +416,3 @@ if __name__ == "__main__":
         sys.exit(0)
     else:
         sys.exit(1)
-
-# WARNING: if this file is imported as a module, homedir will be removed,
-# and later processing will issue errors
