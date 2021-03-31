@@ -55,11 +55,17 @@ signature = Signature(
     'output_image', WriteDiskItem("4D Volume",
                                   'aims writable volume formats'),
     'origin', Choice(('Center of the image', 0), ('Gravity center', 1)),
+    'roi_image', ReadDiskItem("4D Volume",
+                              'aims readable volume formats'),
 )
 
 
 def initialization(self):
     self.linkParameters('output_image', 'input_image')
+
+    self.addLink(None, 'origin', self._update_roi_by_origin)
+    self.setOptional('roi_image')
+    self.setUserLevel(2, 'roi_image')
 
 
 def execution(self, context):
@@ -73,10 +79,14 @@ def execution(self, context):
         tr.setTranslation([vol.getSizeX() * vs[0] / 2,
                            vol.getSizeY() * vs[1] / 2, vol.getSizeZ() * vs[2] / 2, ])
     else:
-        p = soma.subprocess.Popen(['AimsMassCenter',
-                              self.input_image.fullPath()], stdout=soma.subprocess.PIPE,
-                             shell=False)
-        pout = p.communicate()[0]
+        cmd = ['AimsMassCenter',
+               self.input_image.fullPath()]
+        if self.roi_image:
+            cmd.extend(['-r', self.roi_image.fullPath()])
+        p = soma.subprocess.Popen(cmd,
+                                  stdout=soma.subprocess.PIPE,
+                                  shell=False)
+        pout = p.communicate()[0].decode('utf-8')
         if p.returncode != 0:
             raise RuntimeError('AimsMassCenter failed')
         m = re.search('^General:\t([^\t]+)\t([^\t]+)\t([^\t]+)', pout, re.M)
@@ -85,3 +95,11 @@ def execution(self, context):
     h['referentials'] = refs
     h['transformations'] = trans
     aims.write(vol, self.output_image.fullPath())
+
+
+def _update_roi_by_origin(self, proc):
+    if self.origin:
+        self.setEnable('roi_image')
+    else:
+        self.setDisable('roi_image')
+    self.changeSignature(self.signature)
