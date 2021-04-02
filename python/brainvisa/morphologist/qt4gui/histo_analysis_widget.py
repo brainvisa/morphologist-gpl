@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 '''HistoAnalysisWidget QWidget class, plus some helper classes, namely
 HistoData objects, which binds histogram data, histogram analysis, and their
 filenames.
