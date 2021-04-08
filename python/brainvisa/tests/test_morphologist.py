@@ -375,7 +375,7 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
         # ref mode ignores options test_only, no_ann and no_spam
         ref_data_dir = self.private_ref_data_dir()
         ref_database_dir = os.path.join(
-            ref_data_dir, 'db_morphologist-%s' % brainvisa.config.__version__
+            ref_data_dir, 'db_morphologist'
         )
         # Remove the old database
         if os.path.exists(ref_database_dir):
