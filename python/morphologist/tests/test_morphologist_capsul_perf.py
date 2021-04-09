@@ -23,7 +23,7 @@ class TestMorphologistCapsulPerf(unittest.TestCase):
         tempdir = tempfile.gettempdir()
         self.tests_dir = os.path.join(tempdir, "tmp_tests_brainvisa")
         self.db_dir = os.path.join(
-            self.tests_dir, "db_morphologist-%s" % soma_config.full_version)
+            self.tests_dir, "db_morphologist")
 
         init_study_config = {
             "input_directory": self.db_dir,

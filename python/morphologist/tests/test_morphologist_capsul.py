@@ -145,7 +145,7 @@ class TestMorphologistCapsul(soma.test_utils.SomaTestCase):
     def setUp_ref_mode(self):
         ref_data_dir = self.private_ref_data_dir()
         self.ref_database_dir = os.path.join(
-            ref_data_dir, 'db_morphologist-%s' % brainvisa.config.__version__
+            ref_data_dir, 'db_morphologist'
         )
 
     def setUp_run_mode(self):
@@ -154,7 +154,7 @@ class TestMorphologistCapsul(soma.test_utils.SomaTestCase):
         # Location of run database
         run_data_dir = self.private_run_data_dir()
         self.run_database_dir = os.path.join(
-            run_data_dir, 'db_morphologist-%s' % brainvisa.config.__version__
+            run_data_dir, 'db_morphologist'
         )
         # Remove the run database
         if os.path.exists(self.run_database_dir) and not self.test_only:
