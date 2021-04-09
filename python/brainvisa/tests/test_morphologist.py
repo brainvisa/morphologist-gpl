@@ -410,7 +410,7 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
         # Get the ref database
         ref_data_dir = self.private_ref_data_dir()
         ref_database_dir = os.path.join(
-            ref_data_dir, 'db_morphologist-%s' % brainvisa.config.__version__
+            ref_data_dir, 'db_morphologist'
         )
         self.ref_database = TestMorphologistPipeline.create_database(
             ref_database_dir, allow_ro=True
@@ -418,7 +418,7 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
         # Location of run database
         run_data_dir = self.private_run_data_dir()
         run_database_dir = os.path.join(
-            run_data_dir, 'db_morphologist-%s' % brainvisa.config.__version__
+            run_data_dir, 'db_morphologist'
         )
         # Remove the run database
         if os.path.exists(run_database_dir) and not self.test_only:
