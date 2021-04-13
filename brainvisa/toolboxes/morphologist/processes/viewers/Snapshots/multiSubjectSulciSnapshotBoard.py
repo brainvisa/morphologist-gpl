@@ -122,15 +122,14 @@ def execution(self, context):
     images = []
     # load a python script into the running BV anatomist
     pyscript = context.temporary('Python Script')
-    pys = open(pyscript.fullPath(), 'w')
-    print('import imp', file=pys)
-    print('anasul = imp.find_module( "anaSulciSnapshot", [ "'
-          + os.path.dirname(find_in_path('anaSulciSnapshot.py')) + '" ] )',
-          file=pys)
-    print('anaSulciSnapshot = imp.load_module( "anaSulciSnapshot", '
-          'anasul[0], anasul[1], anasul[2] )', file=pys)
-    print('anasul[0].close()', file=pys)
-    pys.close()
+    with open(pyscript.fullPath(), 'w') as pys:
+        print('import imp', file=pys)
+        print('anasul = imp.find_module( "anaSulciSnapshot", [ "'
+              + os.path.dirname(find_in_path('anaSulciSnapshot.py')) + '" ] )',
+              file=pys)
+        print('anaSulciSnapshot = imp.load_module( "anaSulciSnapshot", '
+              'anasul[0], anasul[1], anasul[2] )', file=pys)
+        print('anasul[0].close()', file=pys)
     from brainvisa import anatomist
     a = anatomist.Anatomist()
     wins = a.importWindows()
@@ -170,10 +169,9 @@ def execution(self, context):
 
         # load command into anatomist
         pycom = context.temporary('Python Script')
-        pyc = open(pycom.fullPath(), 'w')
-        print('import anaSulciSnapshot', file=pys)
-        print('res = anaSulciSnapshot.main(', cmd, ')', file=pys)
-        pyc.close()
+        with open(pycom.fullPath(), 'w') as pyc:
+            print('import anaSulciSnapshot', file=pyc)
+            print('res = anaSulciSnapshot.main(', cmd, ')', file=pyc)
         a.loadObject(pycom.fullPath())
         scripts.append(pycom)
 
