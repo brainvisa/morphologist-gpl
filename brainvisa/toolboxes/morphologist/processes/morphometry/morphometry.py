@@ -194,7 +194,7 @@ def execution(self, context):
         else:
             s = os.path.basename(x.fullPath())
         subjects.append(s)
-    stream.write('subjects ' + string.join(subjects) + "\n")
+    stream.write('subjects ' + ' '.join(subjects) + "\n")
     stream.write('*END\n')
     stream.close()
     f = open(tmp.fullPath()).read()
