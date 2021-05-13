@@ -100,7 +100,7 @@ def execution(self, context):
     #context.write( 'r:', r )
     R = aims.Motion()
     R.rotation().fill(0.)
-    rot = numpy.array(r.rotation().volume(), copy=False)[:, :, 0, 0]
+    rot = r.rotation().np[:, :, 0, 0]
     # snap/binarize
     for c in range(3):
         i = int(round(numpy.argmax(numpy.abs(rot[:, c]))))
@@ -144,7 +144,7 @@ def execution(self, context):
     #context.write( 'dims: ', str( dims ), ' -> ', str( dims2 ) )
     #context.write( 'vs: ', str( vs ), ' -> ', str( vs2 ) )
     s = aims.Motion(R)
-    a = numpy.array(s.rotation().volume(), copy=False)
+    a = s.rotation()
     a[a > 0] = 0.
     #context.write( 's:', s )
     p = -s.transform(dimm)
