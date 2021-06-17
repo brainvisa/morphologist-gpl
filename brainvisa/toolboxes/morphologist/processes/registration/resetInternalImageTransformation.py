@@ -100,6 +100,7 @@ def execution(self, context):
 def _update_roi_by_origin(self, proc):
     if self.origin:
         self.setEnable('roi_image')
+        self.setOptional('roi_image')
     else:
         self.setDisable('roi_image')
     self.changeSignature(self.signature)
