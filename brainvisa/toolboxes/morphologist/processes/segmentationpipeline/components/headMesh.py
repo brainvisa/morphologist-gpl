@@ -128,7 +128,7 @@ def execution(self, context):
     context.system('AimsMeshBrain', '-i', mask,
                    '-o', self.head_mesh, '--smoothIt', 50,
                    '--smoothRate', 0.5, '--deciMaxClearance', 5.)
-    context.system("meshCleaner",
+    context.system("AimsMeshCleaner",
                    "-i", self.head_mesh,
                    "-o", self.head_mesh,
                    "-maxCurv", "0.5")

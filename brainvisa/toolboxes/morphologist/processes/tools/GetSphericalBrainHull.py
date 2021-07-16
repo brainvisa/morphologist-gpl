@@ -52,7 +52,7 @@ def execution(self, context):
                    "-i", Lhull, "-o", self.left_hemi_hull,
                    "--smoothIt", 50, "--smoothRate", 0.5,
                    "--deciMaxClearance", 5., "--internalinterface")
-    context.system("meshCleaner",
+    context.system("AimsMeshCleaner",
                    "-i", self.left_hemi_hull,
                    "-o", self.left_hemi_hull,
                    "-maxCurv", "0.5")
@@ -71,7 +71,7 @@ def execution(self, context):
                    "-i", Rhull, "-o", self.right_hemi_hull,
                    "--smoothIt", 50, "--smoothRate", 0.5,
                    "--deciMaxClearance", 5., "--internalinterface")
-    context.system("meshCleaner",
+    context.system("AimsMeshCleaner",
                    "-i", self.right_hemi_hull,
                    "-o", self.right_hemi_hull,
                    "-maxCurv", "0.5")
@@ -98,7 +98,7 @@ def execution(self, context):
                    "-i", Hhull, "-o", self.both_hemi_hull,
                    "--smoothIt", 50, "--smoothRate", 0.5,
                    "--deciMaxClearance", 5., "--internalinterface")
-    context.system("meshCleaner",
+    context.system("AimsMeshCleaner",
                    "-i", self.both_hemi_hull,
                    "-o", self.both_hemi_hull,
                    "-maxCurv", "0.5")
@@ -125,7 +125,7 @@ def execution(self, context):
                    "-i", Bhull, "-o", self.brain_hull,
                    "--smoothIt", 50, "--smoothRate", 0.5,
                    "--deciMaxClearance", 5., "--internalinterface")
-    context.system("meshCleaner",
+    context.system("AimsMeshCleaner",
                    "-i", self.brain_hull,
                    "-o", self.brain_hull,
                    "-maxCurv", "0.5")

@@ -69,7 +69,7 @@ def execution(self, context):
                    "-m", "eq", "-w", "t")
 
     context.system("AimsMeshBrain", "-i", white, "-o", self.white_mesh)
-    context.system("meshCleaner", "-i", self.white_mesh, "-o",
+    context.system("AimsMeshCleaner", "-i", self.white_mesh, "-o",
                    self.white_mesh, "-maxCurv", "0.5")
 
     tm.copyReferential(self.hemi_cortex, self.white_mesh)

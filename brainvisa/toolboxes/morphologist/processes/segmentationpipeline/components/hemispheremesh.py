@@ -105,7 +105,7 @@ def execution(self, context):
 
     context.system("AimsMeshBrain", "-i", hemi.fullPath(), "-o", self.pial_mesh,
                    "--internalinterface", "--smoothIt", 50)
-    context.system("meshCleaner", "-i", self.pial_mesh, "-o",
+    context.system("AimsMeshCleaner", "-i", self.pial_mesh, "-o",
                    self.pial_mesh, "-maxCurv", "0.5")
 
     trManager.copyReferential(self.hemi_cortex, self.pial_mesh)

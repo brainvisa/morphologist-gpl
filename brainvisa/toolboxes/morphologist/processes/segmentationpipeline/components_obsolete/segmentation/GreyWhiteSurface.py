@@ -112,7 +112,7 @@ def execution(self, context):
                            "--smoothIt", 5, "--smoothRate", 0.4,
                            "--deciMaxClearance", 5., "--deciMaxError", 3.,
                            "--internalinterface")
-            context.system("meshCleaner", "-i", self.left_white_mesh,
+            context.system("AimsMeshCleaner", "-i", self.left_white_mesh,
                            "-o", self.left_white_mesh, "-maxCurv", "0.5")
 
             tm.copyReferential(self.left_grey_white, self.left_white_mesh)
@@ -151,7 +151,7 @@ def execution(self, context):
                            "--smoothIt", 5, "--smoothRate", 0.4,
                            "--deciMaxClearance", 5., "--deciMaxError", 3.,
                            "--internalinterface")
-            context.system("meshCleaner", "-i", self.right_white_mesh,
+            context.system("AimsMeshCleaner", "-i", self.right_white_mesh,
                            "-o", self.right_white_mesh, "-maxCurv", "0.5")
 
             tm.copyReferential(self.right_grey_white, self.right_white_mesh)

@@ -111,7 +111,7 @@ def execution(self, context):
                            "--smoothIt", 5, "--smoothRate", 0.4,
                            "--deciMaxClearance", 5., "--deciMaxError", 3.,
                            "--internalinterface")
-            context.system("meshCleaner", "-i", self.left_hemi_mesh,
+            context.system("AimsMeshCleaner", "-i", self.left_hemi_mesh,
                            "-o", self.left_hemi_mesh, "-maxCurv", "0.5")
 
             trManager.copyReferential(self.mri_corrected, self.left_hemi_mesh)
@@ -157,7 +157,7 @@ def execution(self, context):
                            "--smoothIt", 5, "--smoothRate", 0.4,
                            "--deciMaxClearance", 5., "--deciMaxError", 3.,
                            "--internalinterface")
-            context.system("meshCleaner", "-i", self.right_hemi_mesh.fullPath(),
+            context.system("AimsMeshCleaner", "-i", self.right_hemi_mesh.fullPath(),
                            "-o", self.right_hemi_mesh.fullPath(), "-maxCurv", "0.5")
 
             trManager.copyReferential(self.mri_corrected, self.right_hemi_mesh)
