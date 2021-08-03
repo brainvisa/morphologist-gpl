@@ -77,7 +77,7 @@ signature = Signature(
     'cycles_tst', Integer(),
     'parallelism_mode', Choice('local',
                                ('lag (soma.workflow)', 'soma.workflow'),
-                               'grid', 'duch', 'LSF'))
+                               'grid', 'LSF'))
 
 
 def cleanSignature(self):
@@ -121,18 +121,18 @@ def signature_callback(self, learning_mode, **kwargs):
             testbase_data_graphs_signature
         self.signature['cycles'] = Integer()
         self.signature['cycles_tst'] = Integer()
-    parmodes = ['local', 'grid', 'duch', 'LSF']
+    parmodes = ['local', 'grid', 'LSF']
     if self.soma_workflow:
         parmodes.insert(1, ('lag (soma.workflow)', 'soma.workflow'))
     self.signature['parallelism_mode'] = Choice(*parmodes)
-    if self.parallelism_mode in ['grid', 'duch', 'LSF', 'soma.workflow']:
+    if self.parallelism_mode in ['grid', 'LSF', 'soma.workflow']:
         self.signature['parallel_config_directory'] = \
             WriteDiskItem('Directory', 'Directory')
         self.setOptional('parallel_config_directory')
     if self.parallelism_mode == 'LSF':
         self.signature['time'] = String()
         self.signature['email'] = String()
-    if self.parallelism_mode in ['grid', 'duch', 'LSF']:
+    if self.parallelism_mode in ['grid', 'LSF']:
         packslist = createPackageSignature()
         if len(packslist.values) != 1:
             self.signature['package'] = packslist
@@ -236,28 +236,6 @@ def execution(self, context):
     if self.parallelism_mode == 'local':
         context.write('local learning mode')
         context.pythonSystem(silcmd, conf)
-    elif self.parallelism_mode == 'duch':
-        context.write('Duch parallelism mode')
-        sglt = distutils.spawn.find_executable('siGenerateLearningTasks.py')
-        batchname = 'siLearn-' + self.learning_mode + '-duch_batch'
-        batchout = os.path.join(odir, batchname)
-        context.system('python2', sglt, '-m', self.model_graph, '-o', batchout,
-                       '-p', 'duch', '-c', conf, '-b', silcmd)
-        scriptname = 'siLearn-' + self.learning_mode + '-duch.sh'
-        scriptout = os.path.join(odir, scriptname)
-        distcmd = distutils.spawn.find_executable('distributed_computing.py')
-        if distcmd is None:
-            context.write("<font color=red>error</font> : can't find "
-                          "distributed_computing.py program. It may be found in "
-                          "'//depot/datamind-version/python/"
-                          "datamind/gui/bin/distributed_computing.py'")
-            return
-        fd = open(scriptout, 'w')
-        print("#!/bin/bash\n", file=fd)
-        print("%s %s -l 1 -v ~/hosts '%s' '%s'" %
-              (os.path.basename(sys.executable), distcmd, batchout, batchout + '.log'), file=fd)
-        fd.close()
-        os.chmod(scriptout, 0o0750)
     elif self.parallelism_mode == 'grid':
         context.write('Grid (Matthieu) parallelism mode')
         sglt = distutils.spawn.find_executable('siGenerateLearningTasks.py')
