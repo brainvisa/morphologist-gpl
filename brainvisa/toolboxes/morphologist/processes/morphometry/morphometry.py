@@ -83,7 +83,6 @@ if selectionmode == 0:
 
 sign += (
     'label_attribute', Choice('auto', 'label', 'name'),
-    'run_dataMind', Boolean(),
 )
 
 signature = Signature(*sign)
@@ -123,7 +122,6 @@ def initialization(self):
     self.name_descriptors = 1
     #self.print_subjects = 1
     self.print_labels = 1
-    self.run_dataMind = 0
     self.output_directory = os.getcwd()
     self.output_filename_prefix = 'morpho_'
     if selectionmode == 0:
@@ -212,42 +210,6 @@ def execution(self, context):
     # if result:
     #    context.write( '<b>siMorpho failed: result = ' \
     #                   + str( result ) + '</b>' )
-
-    # Run dataMind if needed
-    if self.run_dataMind:
-        if not distutils.spawn.find_executable('R'):
-            context.write('<font color="#c00000">R is not found</font> '
-                          'so the data mind module will not be run')
-        else:
-            def _subj(x):
-                y = x.get('subject')
-                if y is None:
-                    y = os.path.basename(x.fileName())
-                    if y[-4:] == '.arg':
-                        y = y[:-4]
-                    if y[0] == 'L' or y[0] == 'R':
-                        y = y[1:]
-                return y
-            subjects = [_subj(x) for x in self.data_graphs]
-            subjectsFile = context.temporary('Config file')
-            try:
-                f = open(subjectsFile.fullPath(), 'w')
-            except IOError as e:
-                error(e.strerror, maker.output)
-            else:
-                f.write('subject\n')
-                for subject in subjects:
-                    f.write(subject+'\n')
-                f.close()
-            #context.write( "DataMind running" )
-            python_interpretor = sys.executable
-            progname = [python_interpretor,
-                        os.path.join(os.path.join(mainPath, 'bin'),
-                                     'datamind'),
-                        subjectsFile.fullPath(),
-                        str(self.output_prefix)]
-            context.write('Running ', *progname)
-            context.system(*progname)
 
 
 # enable selector
