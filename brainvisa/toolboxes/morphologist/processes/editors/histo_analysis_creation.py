@@ -105,7 +105,7 @@ def execution(self, context):
         data = numpy.zeros((his.bins(), 2), dtype=int)
         data[:, 0] = numpy.arange(his.minDataValue(), his.maxDataValue(),
                                   float(his.maxDataValue() - his.minDataValue()) / his.bins())
-        data[:, 1] = numpy.asarray(his.data().volume()).ravel()
+        data[:, 1] = numpy.asarray(his.data()).ravel()
         numpy.savetxt(self.histo.fullPath(), data, fmt='%d')
     gmean = maxdata * 0.2
     gsigma = maxdata * 0.02

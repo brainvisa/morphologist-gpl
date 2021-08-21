@@ -116,8 +116,7 @@ def execution(self, context):
             dest = a.centralRef
         inv = aims.Motion([-1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1])
         pr = inv * pr
-        trans = list(pr.translation()) + list(numpy.array(
-            pr.rotation().volume(), copy=False).ravel())
+        trans = list(pr.translation()) + list(pr.rotation().np.ravel())
         trans = [float(x) for x in trans]
         oref = a.createReferential()
         newid = a.newId()

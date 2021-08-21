@@ -90,7 +90,7 @@ def execution(self, context):
     s2atlas.setTranslation(T)
     s2atlasR = s2atlas.rotation()
     # don't know why but R must be transposed
-    s2atlasR.volume().arraydata()[0, 0][:] = numpy.array(R).T
+    s2atlasR.arraydata()[0, 0][:] = numpy.array(R).T
 
     # string of destination referential
     outref = self.write.get("destination_referential", None)
