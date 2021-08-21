@@ -143,9 +143,8 @@ def execution(self, context):
                        '-c', 18, '-s', 50)
         vol = aims.read(tmp4.fullPath())
         tal = aims.read(self.talairach_transformation.fullPath())
-        dvol = aims.AimsData(vol)  # still a bug in ref counting
-        ar = numpy.asarray(vol)
-        roiit = aims.getRoiIterator(dvol)
+        ar = vol.np
+        roiit = aims.getRoiIterator(vol)
         todel = []
         comps = []
         #cent = tal.inverse().transform( aims.Point3df( 0, 10, 0 ) )

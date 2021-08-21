@@ -99,20 +99,14 @@ def execution(self, context):
     transInv = trans.inverse()
     coords = transInv.transform(self.point)
 
-    reader = aims.Reader()
-    reader.mapType('Volume', 'AimsData')
-    data = reader.read(self.t1mri.fullPath())
-    dx = data.dimX()
-    dy = data.dimY()
-    dz = data.dimZ()
-    sx = data.sizeX()
-    sy = data.sizeY()
-    sz = data.sizeZ()
+    data = aims.read(self.t1mri.fullPath())
+    dx = data.getSizeX()
+    dy = data.getSizeY()
+    dz = data.getSizeZ()
+    sx, sy, sz = data.getVoxelSize()[:3]
 
-    ima = aims.AimsData_FLOAT(dx, dy, dz, 1)
-    ima.setSizeX(sx)
-    ima.setSizeY(sy)
-    ima.setSizeZ(sz)
+    ima = aims.Volume_FLOAT(dx, dy, dz, 1)
+    ima.setVoxelSize(sx, sy, sz)
     # ima=data.clone()
 
     context.write('Talairach : ', self.point)
