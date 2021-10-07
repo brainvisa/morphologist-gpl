@@ -1,0 +1,4 @@
+# Ignore files generated during documentation building
+# (FIXME: ideally these files should not be generated in the
+# source directory, but in the build directory instead).
+/*/process_docs/
