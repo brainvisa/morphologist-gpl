@@ -88,22 +88,24 @@ def execution(self, context):
                        self.Reference.fullPath(), '-o', ref, '-t', 'FLOAT')
 
         if ok == 0:
-            context.system('AimsLinearComb', '-o', temp, '-i', ima, '-a', '-1', '-j',
-                           ref, '-t', 'FLOAT')
-            context.system('AimsPowerComb', '-o', self.Deviation.fullPath(), '-i', temp,
-                           '-a', '2', '-t', 'FLOAT')
+            context.pythonSystem('cartoLinearComb.py', '-o', temp, '-i', ima,
+                                 '-i', ref, '-f', 'I2 - I1')
+            context.pythonSystem('cartoLinearComb.py',
+                                 '-o', self.Deviation.fullPath(), '-i', temp,
+                                 '-f', 'I1 ** 2')
             ok = 1
         else:
-            context.system('AimsLinearComb', '-o', temp, '-i', ima, '-a', '-1', '-j',
-                           ref, '-t', 'FLOAT')
-            context.system('AimsPowerComb', '-o', temp, '-i',
-                           temp, '-a', '2', '-t', 'FLOAT')
-            context.system('AimsLinearComb', '-i', temp, '-o', self.Deviation.fullPath(), '-j',
-                           self.Deviation.fullPath(), '-t', 'FLOAT')
+            context.pythonSystem('cartoLinearComb.py', '-o', temp, '-i', ima,
+                                 '-i', ref, '-f', 'I2 - I1')
+            context.pythonSystem('cartoLinearComb.py', '-o', temp, '-i',
+                           temp, '-f', 'I1 ** 2')
+            context.pythonSystem('cartoLinearComb.py', '-i', temp,
+                                 '-o', self.Deviation.fullPath(),
+                                 '-i', self.Deviation.fullPath(),
+                                 '-f', 'I1 + I2')
 
         inc = inc + 1
 
-    context.system('AimsPowerComb', '-i', self.Deviation.fullPath(), '-o',
-                   self.Deviation.fullPath(), '-b',  '2', '-t', 'FLOAT')
-    context.system('AimsLinearComb', '-i', self.Deviation.fullPath(), '-o',
-                   self.Deviation.fullPath(), '-b',  NbImages - 1, '-t', 'FLOAT')
+    context.pythonSystem('cartoLinearComb.py', '-i', self.Deviation.fullPath(),
+                         '-o', self.Deviation.fullPath(),
+                         '-f',  '(I1 ** 0.5) / %f' % (NbImages - 1))

@@ -90,12 +90,12 @@ def execution(self, context):
     Images = self.Images_group1 + self.Images_group2
     meanTot = context.temporary('GIS Image')
 
-    context.system('AimsLinearComb', '-o', meanTot,
-                   '-i', self.Average_group1.fullPath(),
-                   '-j', self.Average_group2.fullPath(),
-                   '-a', NbImages1, '-c', NbImages2,
-                   '-b', NbImages, '-d', NbImages,
-                   '-t', 'FLOAT')
+    context.pythonSystem('cartoLinearComb.py', '-o', meanTot,
+                         '-i', self.Average_group1.fullPath(),
+                         '-i', self.Average_group2.fullPath(),
+                         '-f', 'I1.astype("FLOAT") * %d / %d '
+                         '+ I2.astype("FLOAT") * %d / %d'
+                         % (NbImages1, NbImages, NbImages2, NbImages))
 
     context.write('')
     context.write('Computing whole group deviation image')
@@ -106,20 +106,23 @@ def execution(self, context):
                        data_smoothing=self.smoothing,
                        smoothing_parameter=self.smoothing_parameter)
 
-    context.system('AimsLinearComb', '-o', self.Mean_difference.fullPath(),
-                   '-i', self.Average_group1.fullPath(),
-                   '-j', self.Average_group2.fullPath(),
-                   '-c', '-1.0', '-t', 'FLOAT')
+    context.pythonSystem('cartoLinearComb.py',
+                         '-o', self.Mean_difference.fullPath(),
+                         '-i', self.Average_group1.fullPath(),
+                         '-i', self.Average_group2.fullPath(),
+                         '-f', 'I1.astype("FLOAT") - I2')
 
-    context.system('AimsPowerComb', '-o', self.Mean_difference.fullPath(),
-                   '-i', self.Mean_difference.fullPath(),
-                   '-a', '2', '-t', 'FLOAT')
+    context.pythonSystem('cartoLinearComb.py',
+                         '-o', self.Mean_difference.fullPath(),
+                         '-i', self.Mean_difference.fullPath(),
+                         '-f', 'I1 ** 2')
 
-    context.system('AimsPowerComb', '-o', self.Mean_difference.fullPath(),
-                   '-i', self.Mean_difference.fullPath(),
-                   '-b', '2', '-t', 'FLOAT')
+    context.pythonSystem('cartoLinearComb.py',
+                         '-o', self.Mean_difference.fullPath(),
+                         '-i', self.Mean_difference.fullPath(),
+                         '-f', 'I1 ** 0.5')
 
-    context.system('AimsPowerComb', '-o', self.T_test.fullPath(),
-                   '-i', self.Mean_difference.fullPath(),
-                   '-j', self.Deviation.fullPath(),
-                   '-c', '-1', '-t', 'FLOAT')
+    context.pythonSystem('cartoLinearComb.py', '-o', self.T_test.fullPath(),
+                         '-i', self.Mean_difference.fullPath(),
+                         '-i', self.Deviation.fullPath(),
+                         '-f', 'I1 / I2')
