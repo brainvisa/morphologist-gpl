@@ -78,18 +78,21 @@ def execution(self, context):
                        '-o', ima, '-t', 'FLOAT')
 
         if ok == 0:
-            context.system('AimsLinearComb', '-o', self.Average.fullPath(),
-                           '-i', ima, '-d', '0', '-e', '0', '-t', 'FLOAT')
+            context.pythonSystem('cartoLinearComb.py',
+                                 '-o', self.Average.fullPath(),
+                                 '-i', ima, '-f', 'I1.astype("FLOAT")')
             ok = 1
         else:
-            context.system('AimsLinearComb', '-i', ima, '-j',
-                           self.Average.fullPath(),
-                           '-o', self.Average.fullPath(), '-t', 'FLOAT')
+            context.pythonSystem('cartoLinearComb.py', '-i', ima,
+                           '-i', self.Average.fullPath(),
+                           '-o', self.Average.fullPath(),
+                           '-f', 'I1.astype("FLOAT") + I2')
 
         inc = inc + 1
 
-    context.system('AimsLinearComb', '-i', self.Average.fullPath(),
-                   '-o', self.Average.fullPath(), '-b', NbImages, '-t', 'FLOAT')
+    context.pythonSystem('cartoLinearComb.py', '-i', self.Average.fullPath(),
+                         '-o', self.Average.fullPath(),
+                         '-f', 'I1 / %f' % NbImages)
 
     if self.data_smoothing == 'Yes':
         context.write('Data smoothing')
