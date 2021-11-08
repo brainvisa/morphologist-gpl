@@ -133,16 +133,15 @@ def execution(self, context):
     context.pythonSystem('cartoLinearComb.py', '-i', voronoi, '-i', brain,
                          '-o', voronoi, '-f', 'I1 + I2 / 32767')
 
-    # context.system( 'AimsLinearComb', '-i', voronoi ,
-    #                '-j', brain , '-o', '/tmp/vor.ima' , '-d', '32767' )
-
     # Remove cerebelum
     context.system('AimsThreshold', '-i', voronoi,
                    '-o', self.left_csf.fullPath(), '-m', 'eq', '-t', '3', '-b')
-    context.system('AimsPowerComb', '-i', self.left_csf.fullPath(),
-                   '-j', cerebelum, '-o', self.left_csf.fullPath())
+    context.pythonSystem('cartoLinearComb.py', '-i', self.left_csf.fullPath(),
+                         '-i', cerebelum, '-o', self.left_csf.fullPath(),
+                         '-f', 'I1 * I2')
     # Remove cerebelum
     context.system('AimsThreshold', '-i', voronoi,
                    '-o', self.right_csf.fullPath(), '-m', 'eq', '-t', '5', '-b')
-    context.system('AimsPowerComb', '-i', self.right_csf.fullPath(),
-                   '-j', cerebelum, '-o', self.right_csf.fullPath())
+    context.pythonSystem('cartoLinearComb.py', '-i', self.right_csf.fullPath(),
+                         '-i', cerebelum, '-o', self.right_csf.fullPath(),
+                         '-f', 'I1 * I2')
