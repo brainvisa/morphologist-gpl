@@ -33,7 +33,7 @@
 from __future__ import absolute_import
 from brainvisa.processes import *
 from brainvisa import shelltools
-from brainvisa.processing.qtgui.backwardCompatibleQt import *
+from soma.qt_gui.qt_backend import Qt
 from brainvisa import anatomist
 
 name = 'Anatomist Show 3D Activations'
@@ -76,19 +76,20 @@ def initialization(self):
     self.brain_transparency = 0.5
 
 
-class UpdateActivation3D(QWidget):
+class UpdateActivation3D(Qt.QWidget):
     def __init__(self, values, context, parent):
-        QWidget.__init__(self, parent)
-        layout = QHBoxLayout(self)
-        btn = QPushButton('Update', self)
+        Qt.QWidget.__init__(self, parent)
+        layout = Qt.QHBoxLayout(self)
+        btn = Qt.QPushButton('Update', self)
         layout.addWidget(btn)
-        btn.setSizePolicy(QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed))
+        btn.setSizePolicy(Qt.QSizePolicy(Qt.QSizePolicy.Fixed,
+                                         Qt.QSizePolicy.Fixed))
         self._context = context
         self._values = values
         btn.clicked.connect(self.update3D)
         self._executed = 0
-        self.setSizePolicy(QSizePolicy(
-            QSizePolicy.Minimum, QSizePolicy.Minimum))
+        self.setSizePolicy(Qt.QSizePolicy(
+            Qt.QSizePolicy.Minimum, Qt.QSizePolicy.Minimum))
 
     def buildThresholdedImage(self):
         # Build thresholded image and meshes if necessary
