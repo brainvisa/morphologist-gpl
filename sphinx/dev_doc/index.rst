@@ -25,3 +25,11 @@ Morphologist-DeepSulci
 ++++++++++++++++++++++
 
 :morphodeep_dev:`The Deep-learning-based sulci identification and sulcal patterns detection processes <index.html>`
+
+Example of use in Capsul
+++++++++++++++++++++++++
+
+Download code: `morpho_completion.py <_static/examples/morpho_completion.py>`_
+
+.. literalinclude:: _static/examples/morpho_completion.py
+
