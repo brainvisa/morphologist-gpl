@@ -19,14 +19,13 @@ import os
 import sys
 import tempfile
 from shutil import rmtree
-import filecmp
 import time
 import numpy as np
 
 import zipfile
 from soma.path import relative_path
 
-from soma.aims.graph_comparison import same_graphs
+from soma.aims import filetools
 import soma.test_utils
 
 # CAUTION: all imports from the main brainvisa package must be done in
@@ -449,32 +448,7 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
         self.run_pipelines(self.run_database, skip_ann, skip_cnn)
 
     def compare_files(self, ref_file, test_file):
-        skipped_ends = [
-            ".minf",
-            # SPAM probas differ up tp 0.15 in energy and I don't know why, so
-            # skip the test
-            "_proba.csv",
-            # this .dat file contains full paths of filenames
-            "_global_TO_local.dat",
-            # referentials with registration are allocated differently (uuids)
-            "_auto.referential"]
-        for ext in skipped_ends:
-            if ref_file.endswith(ext):
-                return True
-        if ref_file.endswith(".arg"):
-            return same_graphs(ref_file, test_file)
-        if filecmp.cmp(ref_file, test_file):
-            return True
-        if ref_file.endswith(".csv") or ref_file.endswith(".trm"):
-            arr1 = np.genfromtxt(ref_file)
-            if len(arr1.shape) >= 2 and np.any(np.isnan(arr1[0, :])):
-                arr1 = arr1[1:, :]
-            arr2 = np.genfromtxt(test_file)
-            if len(arr2.shape) >= 2 and np.any(np.isnan(arr2[0, :])):
-                arr2 = arr2[1:, :]
-            return np.max(np.abs(arr2 - arr1)) <= 1e-4
-        # no match
-        return False
+        return filetools.cmp(ref_file, test_file)
 
     def test_pipeline_results(self):
         if self.test_mode == soma.test_utils.ref_mode:
