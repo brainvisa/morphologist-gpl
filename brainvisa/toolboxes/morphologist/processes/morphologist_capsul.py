@@ -38,10 +38,10 @@ def onEditPipeline(self, process, dummy):
 
 
 def openPipeline(self):
-    from capsul.qt_gui.widgets import PipelineDevelopperView
+    from capsul.qt_gui.widgets import PipelineDeveloperView
     from capsul.api import Pipeline
     Pipeline.hide_nodes_activation = False
-    mpv = PipelineDevelopperView(
+    mpv = PipelineDeveloperView(
         self.get_edited_pipeline(), allow_open_controller=True,
         show_sub_pipelines=True)
     mpv.show()

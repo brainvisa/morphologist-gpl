@@ -41,9 +41,9 @@ if not show_fom_gui:
 if Qt.QApplication.instance() is not None:
 
     if show_pipeline:
-        from capsul.qt_gui.widgets import PipelineDevelopperView
+        from capsul.qt_gui.widgets import PipelineDeveloperView
 
-        mpv = PipelineDevelopperView(mp, allow_open_controller=True,
+        mpv = PipelineDeveloperView(mp, allow_open_controller=True,
                                     show_sub_pipelines=True,
                                     enable_edition=True)
         mpv.show()

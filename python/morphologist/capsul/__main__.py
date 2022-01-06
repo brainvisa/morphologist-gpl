@@ -7,7 +7,7 @@ qt_backend.set_qt_backend(compatible_qt5=True)
 from soma.qt_gui.qt_backend import QtGui
 from capsul.qt_gui.widgets.activation_inspector import ActivationInspector
 from capsul.api import Pipeline
-from capsul.qt_gui.widgets import PipelineDevelopperView
+from capsul.qt_gui.widgets import PipelineDeveloperView
 from morphologist.capsul.morphologist import Morphologist
 
 Pipeline.hide_nodes_activation = False
@@ -35,8 +35,8 @@ mp = Morphologist()
 #mp = pickle.loads(pickled)
 ##mp = CustomMorphologist()
 # print(i)
-mpv = PipelineDevelopperView(mp, show_sub_pipelines=True,
-                             allow_open_controller=True, enable_edition=True)
+mpv = PipelineDeveloperView(mp, show_sub_pipelines=True,
+                            allow_open_controller=True, enable_edition=True)
 ai = ActivationInspector(mp, record_file='/tmp/activations',
                          developper_view=mpv)
 ai.show()
