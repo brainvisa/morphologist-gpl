@@ -20,6 +20,12 @@
   <a href="bvcategory://data management/import"><_t_>import</_t_></a> /
   <a href="bvprocess://ImportT1MRI"><_t_>T1 MRI</_t_></a>
   </p>
+
+  <p><b>Optional requirements</b></p>
+  <p>
+    The first steps consist in aligning images in a standard orientation using a <em>normalization step</em>. This step may use external software to do it better. It is recommended to use <b><a href="https://www.fil.ion.ucl.ac.uk/spm/">SPM</a></b> for this step, as it works far better than the fallback rigid normalization shipped in BrainVisa. The user thus should install SPM (it not already done) and configure it in BrainVisa preferences.
+  </p>
+
   <p>
   Then, the main pipeline extracts various anatomical objects (hemispheres, grey matter, white matter, cortical sulci...). The first step of this pipeline requires to manually specify to BrainVISA the image orientation (axial, coronal, sagittal...). If you have spatially normalized your data with SPM or MRItotal, you will just have to specify it (be careful if using SPM2 or older, with conventions for left and right...). Otherwise, you may let BrainVisa use SPM or FSL to perform normalization, or you may help brainVISA to virtually normalize your data, clicking on anterior and posterior commissures. All this is done in the process:
      <ul>
@@ -74,6 +80,12 @@
   <a href="bvprocess://ImportT1MRI"><_t_>T1 MRI</_t_></a>
   </p>
   </p>
+
+  <p><b>Dpendences optionnelles</b></p>
+  <p>
+    Les premières étapes consistent à aligner les images vers une orientation standard dans une <em>étape de normalisation</em>. Cette étape peut utiliser des logiciels externes pour le faire au mieux. Il est recommandé d'utiliser <b><a href="https://www.fil.ion.ucl.ac.uk/spm/">SPM</a></b> pour cette étape, dans la mesure où cela fonctionne bien mieux que la normalisation rigide proposée en remplacement dans BrainVisa. Il est donc recommandé d'installer SPM (si ce n'est déjà fait) et de le configurer dans les préférences de BrainVisa.
+  </p>
+
   <p>
   Ensuite, le pipeline principal effectue l'extraction de différents objets anatomiques (hémisphères, matière grise, matière blanche, sillons corticaux). La première étape de ce pipeline demande de spécifier manuellement à brainVISA l'orientation de vos acquisitions (axiale, coronale ou sagittale...). Si vous avez normalisé spatialement vos images au préalable avec SPM ou MRItotal, il devrait vous suffire de le spécifier (méfiez vous des conventions de SPM2 ou précédents en ce qui concerne la gauche et la droite). Autrement, vous pouvez laisser BrainVisa utiliser SPM ou FSL pour normaliser les données, ou bien vous devrez cliquer sur quelques points, en particulier les commissures antérieure et postérieure, pour permettre à brainVISA de normaliser virtuellement vos données. Tout cela concerne le traitement:
   </p>
