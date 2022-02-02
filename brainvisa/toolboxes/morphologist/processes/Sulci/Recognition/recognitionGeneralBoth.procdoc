@@ -20,16 +20,13 @@
       <xhtml name="left_data_graph"/>
       <xhtml name="left_output_graph"/>
       <xhtml name="right_data_graph"/>
-      <xhtml name="spam_method"/>
       <xhtml name="right_output_graph"/>
       <xhtml name="model"/>
       <xhtml name="side"/>
     </d>
-    <xhtml name="long"><p><b><font color="#b00000">Warning:</font> in BrainVISA version 4.1 and later,
+    <xhtml name="long"><p><b><font color="#b00000">Warning:</font> in BrainVISA version 5.0 and later,
 <ul>
-  <li>the default mode has been set to "SPAM", if the corresponding model has been installed and is found.
-  </li>
-  <li>The ANN default models are the newer 2011 one, which follow the same nomenclature and learning database as the SPAM models, but slightly differ from the older 2000-2001 models.
+  <li>the default mode has been set to "CNN".
   </li>
 </ul>
 </b>
