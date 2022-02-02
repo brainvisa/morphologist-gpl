@@ -42,11 +42,12 @@ userLevel = 0
 ann_model = 'Abstract Neural Network (ANN)'
 ann_model_2001 = 'ANN, older 2000-2001 labels'
 spam_model = 'Statistical Parametric Anatomy Map (SPAM)'
+cnn_model = 'CNN (Deep Learning)'
 desync_msg = 'desynchronized between left and right side'
 
 signature = Signature(
     'side', Choice('left', 'right', 'both', 'none'),
-    'model', Choice(ann_model, ann_model_2001, spam_model, desync_msg),
+    'model', Choice(cnn_model, spam_model, ann_model, ann_model_2001, desync_msg),
     'left_data_graph', ReadDiskItem('Cortical Folds Graph',
                                     'Graph and Data', requiredAttributes={'side': 'left'}),
     'left_output_graph', WriteDiskItem('Labelled Cortical Folds Graph',
@@ -315,6 +316,9 @@ def initialization(self):
                 eNode.RightSulciRecognition.recognition2000.model_hint = 1
             eNode.LeftSulciRecognition.recognition2000.setSelected(True)
             eNode.RightSulciRecognition.recognition2000.setSelected(True)
+        elif model == cnn_model:
+            eNode.LeftSulciRecognition.CNN_recognition19.setSelected(True)
+            eNode.RightSulciRecognition.CNN_recognition19.setSelected(True)
         if model != spam_model:
             if 'spam_method' in signature:
                 del signature['spam_method']
@@ -334,11 +338,12 @@ def initialization(self):
                               )._findValues(selection={'sulci_segments_model_type':
                                                        'global_registered_spam'},
                                             requiredAttributes=None, write=False)
-    try:
-        next(spammodels)
-        self.model = spam_model
-    except StopIteration:
-        self.model = ann_model
+    #try:
+        #next(spammodels)
+        #self.model = spam_model
+    #except StopIteration:
+        #self.model = ann_model
+    self.model = cnn_model
 
     eNode.addLink(None, 'side', linkSide)
     eNode.addLink(None, 'model', linkModel)
