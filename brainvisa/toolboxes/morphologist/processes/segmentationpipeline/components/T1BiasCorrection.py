@@ -48,6 +48,9 @@ signature = Signature(
     'zdir_multiply_regul', Float(),
     'wridges_weight', Float(),
     'ngrid', Integer(),
+    'background_threshold_auto', Choice('no',
+                                        ('c', 'corners'),
+                                        ('o', 'otsu')),
     'delete_last_n_slices', OpenChoice(
         'auto (AC/PC Points needed)', '0', '10', '20', '30'),
     't1mri_nobias', WriteDiskItem('T1 MRI Bias Corrected',
@@ -124,6 +127,7 @@ def initialization(self):
     self.ngrid = 2
     self.zdir_multiply_regul = 0.5
     self.variance_fraction = 75
+    self.background_threshold_auto = 'c'
     self.edge_mask = 'yes'
     self.delete_last_n_slices = 'auto (AC/PC Points needed)'
     self.fix_random_seed = False
@@ -173,7 +177,8 @@ def execution(self, context):
                        '-hWrite', self.write_hfiltered,
                        '-hname', self.hfiltered,
                        '-Last', self.delete_last_n_slices,
-                       '-Cw', self.modality]
+                       '-Cw', self.modality,
+                       '-tauto', self.background_threshold_auto]
             if self.commissure_coordinates is not None:
                 command += ['-Points', self.commissure_coordinates]
             if self.mode == 'write_minimal without correction':
