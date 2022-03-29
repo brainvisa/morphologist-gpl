@@ -82,18 +82,21 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
             'TalairachFromNormalization_transform_chain_ACPC_to_Normalized',
             'PrepareSubject_TalairachFromNormalization_transform_chain_ACPC_to_Normalized')
 
-        self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes['Normalization_AimsMIRegister'].process.user_traits()[
-            'transformation_to_MNI'].optional = False
-        self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes['Normalization_AimsMIRegister'].process.user_traits()[
-            'normalized_anatomy_data'].optional = False
+        self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes['Normalization_AimsMIRegister'].process.trait(
+            'transformation_to_MNI').optional = False
+        self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes['Normalization_AimsMIRegister'].process.trait(
+            'normalized_anatomy_data').optional = False
         self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes[
             'Normalization_AimsMIRegister'].plugs['transformation_to_MNI'].optional = False
         self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes[
             'Normalization_AimsMIRegister'].plugs['normalized_anatomy_data'].optional = False
 
         self.nodes['PrepareSubject'].plugs['talairach_transformation'].optional = True
+        self.nodes['PrepareSubject'].process.trait('talairach_transformation').optional = True
         self.nodes['PrepareSubject'].process.nodes['TalairachFromNormalization'].plugs['Talairach_transform'].optional = True
+        self.nodes['PrepareSubject'].process.nodes['TalairachFromNormalization'].process.trait('Talairach_transform').optional = True
         self.nodes['PrepareSubject'].process.nodes['TalairachFromNormalization'].plugs['commissure_coordinates'].optional = False
+        self.nodes['PrepareSubject'].process.nodes['TalairachFromNormalization'].process.trait('commissure_coordinates').optional = False
 
         self.nodes['PrepareSubject'].process.export_parameter(
             'Normalization', 'transformation',
@@ -105,6 +108,7 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
         self.add_trait('normalization_allow_retry_initialization', Bool())
 
         self.nodes['Renorm'].plugs['transformation'].optional = True
+        self.nodes['Renorm'].process.trait('transformation').optional = True
 
         self.add_link(
             'PrepareSubject.commissure_coordinates->Renorm.Normalization_commissures_coordinates')
@@ -312,6 +316,7 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
         self.export_parameter(
             'PrepareSubject', 'reoriented_t1mri', is_optional=True)
         self.nodes['PrepareSubject'].process.nodes['select_AC_PC_Or_Normalization'].plugs['talairach_transformation'].optional = True
+        self.nodes['PrepareSubject'].process.nodes['select_AC_PC_Or_Normalization'].trait('talairach_transformation').optional = True
 
         # self.add_link('Renorm.Normalization_reoriented_t1mri->reoriented_t1mri')
         # self.remove_link('t1mri->BiasCorrection.t1mri')
@@ -321,8 +326,13 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
 
         self.do_not_export.add(('Renorm', 'Normalization_reoriented_t1mri'))
         self.nodes['Renorm'].process.nodes['Normalization'].plugs['reoriented_t1mri'].optional = True
+        self.nodes['Renorm'].process.nodes['Normalization'].process.trait('reoriented_t1mri').optional = True
         self.nodes['Renorm'].process.nodes['Normalization'].process.nodes[
-            'select_Normalization_pipeline'].plugs['reoriented_t1mri'].optional = True
+            'select_Normalization_pipeline'].plugs[
+                'reoriented_t1mri'].optional = True
+        self.nodes['Renorm'].process.nodes['Normalization'].process.nodes[
+            'select_Normalization_pipeline'].trait(
+                'reoriented_t1mri').optional = True
 
         if 'NormalizeSPM' \
                 in self.nodes['PrepareSubject'].process.nodes[
@@ -404,8 +414,10 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
             self.autoexport_nodes_parameters()
 
         self.nodes['GreyWhiteClassification'].plugs['side'].optional = True
+        self.nodes['GreyWhiteClassification'].process.trait('side').optional = True
         self.nodes['GreyWhiteClassification'].set_plug_value('side', 'left')
         self.nodes['GreyWhiteClassification_1'].plugs['side'].optional = True
+        self.nodes['GreyWhiteClassification_1'].process.trait('side').optional = True
         self.nodes['GreyWhiteClassification_1'].set_plug_value('side', 'right')
 
         # check normalization type
