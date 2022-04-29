@@ -106,9 +106,9 @@ def execution(self, context):
                        source=self.anatomy_data,
                        images_to_write=[self.anatomy_data],
                        template=self.anatomical_template,
-                       frequency_cutoff=self.cutoff_option,
-                       iterations=self.nbiteration,
-                       voxel_size=vs,
+                       nonlinear_frequency_cutoff=self.cutoff_option,
+                       nonlinear_iterations=self.nbiteration,
+                       voxel_sizes=vs,
                        images_written=[self.normalized_anatomy_data],
                        sn_mat=self.transformations_informations,
                        batch_location=matfile_path)
