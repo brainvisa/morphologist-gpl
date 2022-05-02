@@ -18,7 +18,7 @@ class Normalization_FSL_reinit(Process):
             allowed_extensions=['.nii', '.nii.gz']))
         self.add_trait('anatomical_template', File(
             allowed_extensions=['.nii', '.nii.gz']))
-        self.add_trait('Alignment', Enum('Already Virtualy Aligned',
+        self.add_trait('Alignment', Enum('Already Virtually Aligned',
                                          'Not Aligned but Same Orientation', 'Incorrectly Oriented'))
         self.add_trait('transformation_matrix', File(
             allowed_extensions=['.mat'], output=True))

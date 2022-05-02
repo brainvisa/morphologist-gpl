@@ -65,7 +65,7 @@ signature = Signature(
                   'Transformation matrix'),
     'template', ReadDiskItem("anatomical Template",
                              ['NIFTI-1 image', 'gz compressed NIFTI-1 image']),
-    'alignment', Choice('Already Virtualy Aligned',
+    'alignment', Choice('Already Virtually Aligned',
                         'Not Aligned but Same Orientation', 'Incorrectly Oriented'),
     'set_transformation_in_source_volume', Boolean(),
     'allow_flip_initial_MRI', Boolean(),

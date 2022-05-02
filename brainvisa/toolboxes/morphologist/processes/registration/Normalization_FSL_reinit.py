@@ -54,7 +54,7 @@ signature = Signature(
         "Raw T1 MRI", ['NIFTI-1 image', 'gz compressed NIFTI-1 image']),
     'anatomical_template', ReadDiskItem(
         "anatomical Template", ['NIFTI-1 image', 'gz compressed NIFTI-1 image']),
-    'Alignment', Choice('Already Virtualy Aligned',
+    'Alignment', Choice('Already Virtually Aligned',
                         'Not Aligned but Same Orientation', 'Incorrectly Oriented'),
     'transformation_matrix', WriteDiskItem(
         "FSL Transformation", 'Matlab file'),

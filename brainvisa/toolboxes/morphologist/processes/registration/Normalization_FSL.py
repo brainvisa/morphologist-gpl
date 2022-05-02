@@ -83,7 +83,7 @@ signature = Signature(
         "Raw T1 MRI", ['NIFTI-1 image', 'gz compressed NIFTI-1 image']),
     'anatomical_template', ReadDiskItem(
         "anatomical Template", ['NIFTI-1 image', 'gz compressed NIFTI-1 image']),
-    'Alignment', Choice('Already Virtualy Aligned',
+    'Alignment', Choice('Already Virtually Aligned',
                         'Not Aligned but Same Orientation', 'Incorrectly Oriented'),
     'transformation_matrix', WriteDiskItem(
         "FSL Transformation", 'Matlab file'),
@@ -122,7 +122,7 @@ def execution(self, context):
     template = self.anatomical_template.fullPath()
     snmat = self.transformation_matrix.fullPath()
     normanat = self.normalized_anatomy_data.fullPath()
-    if self.Alignment == 'Already Virtualy Aligned':
+    if self.Alignment == 'Already Virtually Aligned':
         s1 = 'AVA'
     elif self.Alignment == 'Not Aligned but Same Orientation':
         s1 = 'NASO'
