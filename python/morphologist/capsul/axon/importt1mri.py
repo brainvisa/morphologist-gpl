@@ -1,36 +1,27 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-try:
-    from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
-        List, Any, Undefined
-except ImportError:
-    from enthought.traits.api import File, Directory, Float, Int, Bool, Enum, \
-        Str, List, Any, Undefined
-
+from soma.controller import File, Directory, undefined, Any, \
+    Literal, field
+from pydantic import conlist
 from capsul.api import Process
-import six
 
 
 class ImportT1MRI(Process):
     def __init__(self, **kwargs):
-        super(ImportT1MRI, self).__init__()
-        self.add_trait('input', File(allowed_extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg',
-                                                         '.scn', '.mnc', '.mng', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz']))
-        self.add_trait('output', File(allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.gif', '.ima', '.dim', '.jpg', '.mnc', '.mng',
-                                                          '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'], output=True))
-        self.add_trait('referential', File(output=True, optional=True))
-        self.add_trait('output_database', Enum(
-            u'/neurospin/lnao/PClean/database_learnclean', u'/volatile/riviere/basetests-3.1.0'))
-        self.add_trait('attributes_merging', Enum(
-            'BrainVisa', 'header', 'selected_from_header'))
-        self.add_trait('selected_attributes_from_header', List())
+        super(ImportT1MRI, self).__init__(**kwargs)
+        self.add_field('input', File, read=True, allowed_extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg', '.scn', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz'])
+        self.add_field('output', File, write=True, allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.gif', '.ima', '.dim', '.jpg', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'])
+        self.add_field('referential', File, write=True, optional=True)
+        self.add_field('output_database', Literal['/home/dr144257/data/baseessai'], optional=True)
+        self.add_field('attributes_merging', Literal['BrainVisa', 'header', 'selected_from_header'], optional=True)
+        self.add_field('selected_attributes_from_header', list, optional=True)
+
 
         # initialization section
-        self.output_database = u'/neurospin/lnao/PClean/database_learnclean'
+        self.output_database = '/home/dr144257/data/baseessai'
         self.attributes_merging = 'BrainVisa'
         self.selected_attributes_from_header = []
 
-    def _run_process(self):
+    def execution(self, context=None):
         from brainvisa import axon
         from brainvisa.configuration import neuroConfig
         import brainvisa.processes
@@ -42,13 +33,14 @@ class ImportT1MRI(Process):
         axon.initializeProcesses()
 
         kwargs = {}
-        for name in self.user_traits():
+        for field in self.fields():
+            name = field.name
             value = getattr(self, name)
-            if value is Undefined:
+            if value is undefined:
                 continue
-            if isinstance(self.trait(name).trait_type, File) and value != '' and value is not Undefined:
+            if is_path(field) and value != '':
                 kwargs[name] = value
-            elif isinstance(self.trait(name).trait_type, List):
+            elif is_list(field):
                 kwargs[name] = list(value)
             else:
                 kwargs[name] = value

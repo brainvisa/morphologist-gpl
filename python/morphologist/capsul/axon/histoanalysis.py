@@ -1,33 +1,23 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-try:
-    from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
-        List, Any, Undefined
-except ImportError:
-    from enthought.traits.api import File, Directory, Float, Int, Bool, Enum, \
-        Str, List, Any, Undefined
-
+from soma.controller import File, Directory, undefined, Any, \
+    Literal, field
+from pydantic import conlist
 from capsul.api import Process
-import six
 
 
 class HistoAnalysis(Process):
     def __init__(self, **kwargs):
-        super(HistoAnalysis, self).__init__()
-        self.add_trait('t1mri_nobias', File(allowed_extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg',
-                                                                '.scn', '.mnc', '.mng', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz']))
-        self.add_trait('use_hfiltered', Bool())
-        self.add_trait('hfiltered', File(allowed_extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg', '.scn',
-                                                             '.mnc', '.mng', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz'], optional=True))
-        self.add_trait('use_wridges', Bool())
-        self.add_trait('white_ridges', File(allowed_extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg', '.scn',
-                                                                '.mnc', '.mng', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz'], optional=True))
-        self.add_trait('undersampling', Enum(
-            '2', '4', '8', '16', '32', 'auto', 'iteration'))
-        self.add_trait('histo_analysis', File(
-            allowed_extensions=['.han'], output=True))
-        self.add_trait('histo', File(output=True))
-        self.add_trait('fix_random_seed', Bool())
+        super(HistoAnalysis, self).__init__(**kwargs)
+        self.add_field('t1mri_nobias', File, read=True, allowed_extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg', '.scn', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz'])
+        self.add_field('use_hfiltered', bool)
+        self.add_field('hfiltered', File, read=True, allowed_extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg', '.scn', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz'], optional=True)
+        self.add_field('use_wridges', bool)
+        self.add_field('white_ridges', File, read=True, allowed_extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg', '.scn', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz'], optional=True)
+        self.add_field('undersampling', Literal['2', '4', '8', '16', '32', 'auto', 'iteration'])
+        self.add_field('histo_analysis', File, write=True, allowed_extensions=['.han'])
+        self.add_field('histo', File, write=True)
+        self.add_field('fix_random_seed', bool)
+
 
         # initialization section
         self.use_hfiltered = True
@@ -35,7 +25,7 @@ class HistoAnalysis(Process):
         self.undersampling = 'iteration'
         self.fix_random_seed = False
 
-    def _run_process(self):
+    def execution(self, context=None):
         from brainvisa import axon
         from brainvisa.configuration import neuroConfig
         import brainvisa.processes
@@ -47,13 +37,14 @@ class HistoAnalysis(Process):
         axon.initializeProcesses()
 
         kwargs = {}
-        for name in self.user_traits():
+        for field in self.fields():
+            name = field.name
             value = getattr(self, name)
-            if value is Undefined:
+            if value is undefined:
                 continue
-            if isinstance(self.trait(name).trait_type, File) and value != '' and value is not Undefined:
+            if is_path(field) and value != '':
                 kwargs[name] = value
-            elif isinstance(self.trait(name).trait_type, List):
+            elif is_list(field):
                 kwargs[name] = list(value)
             else:
                 kwargs[name] = value

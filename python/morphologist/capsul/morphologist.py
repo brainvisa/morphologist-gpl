@@ -1,12 +1,12 @@
 
 from __future__ import absolute_import
 import distutils.spawn
-import morphologist.capsul.axon.axonmorphologist
-from traits.api import Undefined, Bool, File, Set
-import six
+import morphologist.capsul3.axon.axonmorphologist
+from soma.controller import undefined, File
 
 
-class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
+class Morphologist(
+        morphologist.capsul3.axon.axonmorphologist.AxonMorphologist):
 
     def __init__(self, autoexport_nodes_parameters=True, **kwargs):
         super(Morphologist, self).__init__(
@@ -19,12 +19,12 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
         autoexport_nodes_parameters = self._autoexport_nodes_parameters
         self._autoexport_nodes_parameters = False
         self.add_process('importation',
-                         'morphologist.capsul.axon.importt1mri.ImportT1MRI')
+                         'morphologist.capsul3.axon.importt1mri.ImportT1MRI')
         super(Morphologist, self).pipeline_definition()
 
         self.add_switch('select_Talairach',
                         ['StandardACPC', 'Normalization'],
-                        ['Talairach_transform'], output_types=[File()])
+                        ['Talairach_transform'], output_types=[File])
 
         # WARNING: we must keep 2 switches here, otherwise we introduce a loop
         # in the pipeline graph:
@@ -35,11 +35,11 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
         self.add_switch('select_renormalization_commissures',
                         ['initial', 'skull_stripped'],
                         ['commissure_coordinates'], export_switch=False,
-                        output_types=[File()])
+                        output_types=[File])
         self.add_switch('select_renormalization_transform',
                         ['initial', 'skull_stripped'],
                         ['Talairach_transform', 'MNI_transform'], export_switch=False,
-                        output_types=[File(), File()])
+                        output_types=[File, File])
 
         self.remove_link('t1mri->PrepareSubject.T1mri')
         self.add_link('t1mri->importation.input')
@@ -50,15 +50,15 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
 
         self._autoexport_nodes_parameters = autoexport_nodes_parameters
 
-        # fix initial values of switches: should be Undefined, not None.
-        self.nodes['select_Talairach'].StandardACPC_switch_Talairach_transform = Undefined
-        self.nodes['select_Talairach'].Normalization_switch_Talairach_transform = Undefined
-        self.nodes['select_renormalization_transform'].skull_stripped_switch_Talairach_transform = Undefined
-        self.nodes['select_renormalization_transform'].initial_switch_Talairach_transform = Undefined
-        self.nodes['select_renormalization_transform'].skull_stripped_switch_MNI_transform = Undefined
-        self.nodes['select_renormalization_transform'].initial_switch_MNI_transform = Undefined
-        self.nodes['select_renormalization_commissures'].skull_stripped_switch_commissure_coordinates = Undefined
-        self.nodes['select_renormalization_commissures'].initial_switch_commissure_coordinates = Undefined
+        # fix initial values of switches: should be undefined, not None.
+        self.nodes['select_Talairach'].StandardACPC_switch_Talairach_transform = undefined
+        self.nodes['select_Talairach'].Normalization_switch_Talairach_transform = undefined
+        self.nodes['select_renormalization_transform'].skull_stripped_switch_Talairach_transform = undefined
+        self.nodes['select_renormalization_transform'].initial_switch_Talairach_transform = undefined
+        self.nodes['select_renormalization_transform'].skull_stripped_switch_MNI_transform = undefined
+        self.nodes['select_renormalization_transform'].initial_switch_MNI_transform = undefined
+        self.nodes['select_renormalization_commissures'].skull_stripped_switch_commissure_coordinates = undefined
+        self.nodes['select_renormalization_commissures'].initial_switch_commissure_coordinates = undefined
 
         self.export_parameter('PrepareSubject', 'allow_flip_initial_MRI')
         self.export_parameter(
@@ -82,33 +82,27 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
             'TalairachFromNormalization_transform_chain_ACPC_to_Normalized',
             'PrepareSubject_TalairachFromNormalization_transform_chain_ACPC_to_Normalized')
 
-        self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes['Normalization_AimsMIRegister'].process.trait(
-            'transformation_to_MNI').optional = False
-        self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes['Normalization_AimsMIRegister'].process.trait(
-            'normalized_anatomy_data').optional = False
-        self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes[
+        self.nodes['PrepareSubject'].nodes['Normalization'].nodes['Normalization_AimsMIRegister'].field('transformation_to_MNI').optional = False
+        self.nodes['PrepareSubject'].nodes['Normalization'].nodes['Normalization_AimsMIRegister'].field('normalized_anatomy_data').optional = False
+        self.nodes['PrepareSubject'].nodes['Normalization'].nodes[
             'Normalization_AimsMIRegister'].plugs['transformation_to_MNI'].optional = False
-        self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes[
+        self.nodes['PrepareSubject'].nodes['Normalization'].nodes[
             'Normalization_AimsMIRegister'].plugs['normalized_anatomy_data'].optional = False
 
         self.nodes['PrepareSubject'].plugs['talairach_transformation'].optional = True
-        self.nodes['PrepareSubject'].process.trait('talairach_transformation').optional = True
-        self.nodes['PrepareSubject'].process.nodes['TalairachFromNormalization'].plugs['Talairach_transform'].optional = True
-        self.nodes['PrepareSubject'].process.nodes['TalairachFromNormalization'].process.trait('Talairach_transform').optional = True
-        self.nodes['PrepareSubject'].process.nodes['TalairachFromNormalization'].plugs['commissure_coordinates'].optional = False
-        self.nodes['PrepareSubject'].process.nodes['TalairachFromNormalization'].process.trait('commissure_coordinates').optional = False
+        self.nodes['PrepareSubject'].nodes['TalairachFromNormalization'].plugs['Talairach_transform'].optional = True
+        self.nodes['PrepareSubject'].nodes['TalairachFromNormalization'].plugs['commissure_coordinates'].optional = False
 
-        self.nodes['PrepareSubject'].process.export_parameter(
+        self.nodes['PrepareSubject'].export_parameter(
             'Normalization', 'transformation',
             'normalization_transformation', is_optional=True, weak_link=True)
 
         self.export_parameter(
             'PrepareSubject', 'Normalization_normalized', 'normalized_t1mri',
             is_optional=True, weak_link=True)
-        self.add_trait('normalization_allow_retry_initialization', Bool())
+        self.add_field('normalization_allow_retry_initialization', bool)
 
         self.nodes['Renorm'].plugs['transformation'].optional = True
-        self.nodes['Renorm'].process.trait('transformation').optional = True
 
         self.add_link(
             'PrepareSubject.commissure_coordinates->Renorm.Normalization_commissures_coordinates')
@@ -163,7 +157,7 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
 
         self.remove_link(
             'Renorm.commissure_coordinates->Renorm_commissure_coordinates')
-        self.remove_trait('Renorm_commissure_coordinates')
+        #self.remove_field('Renorm_commissure_coordinates')
 
         # why does this one exist ? FIXME
         # self.remove_link('PrepareSubject.commissure_coordinates->Renorm_TalairachFromNormalization_commissure_coordinates')
@@ -295,7 +289,7 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
         self.add_link('sulci_recognition_spam_global_model_type->'
                       'SulciRecognition_1.'
                       'SPAM_recognition09_global_recognition_model_type')
-        if 'CNN_recognition19' in self.nodes['SulciRecognition'].process.nodes:
+        if 'CNN_recognition19' in self.nodes['SulciRecognition'].nodes:
           self.add_link(
               'allow_multithreading->SulciRecognition.CNN_recognition19_allow_multithreading')
           self.export_parameter(
@@ -315,8 +309,7 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
 
         self.export_parameter(
             'PrepareSubject', 'reoriented_t1mri', is_optional=True)
-        self.nodes['PrepareSubject'].process.nodes['select_AC_PC_Or_Normalization'].plugs['talairach_transformation'].optional = True
-        self.nodes['PrepareSubject'].process.nodes['select_AC_PC_Or_Normalization'].trait('talairach_transformation').optional = True
+        self.nodes['PrepareSubject'].nodes['select_AC_PC_Or_Normalization'].plugs['talairach_transformation'].optional = True
 
         # self.add_link('Renorm.Normalization_reoriented_t1mri->reoriented_t1mri')
         # self.remove_link('t1mri->BiasCorrection.t1mri')
@@ -325,21 +318,16 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
         # self.add_link('PrepareSubject.reoriented_t1mri->Renorm.t1mri')
 
         self.do_not_export.add(('Renorm', 'Normalization_reoriented_t1mri'))
-        self.nodes['Renorm'].process.nodes['Normalization'].plugs['reoriented_t1mri'].optional = True
-        self.nodes['Renorm'].process.nodes['Normalization'].process.trait('reoriented_t1mri').optional = True
-        self.nodes['Renorm'].process.nodes['Normalization'].process.nodes[
-            'select_Normalization_pipeline'].plugs[
-                'reoriented_t1mri'].optional = True
-        self.nodes['Renorm'].process.nodes['Normalization'].process.nodes[
-            'select_Normalization_pipeline'].trait(
-                'reoriented_t1mri').optional = True
+        self.nodes['Renorm'].nodes['Normalization'].plugs['reoriented_t1mri'].optional = True
+        self.nodes['Renorm'].nodes['Normalization'].nodes[
+            'select_Normalization_pipeline'].plugs['reoriented_t1mri'].optional = True
 
         if 'NormalizeSPM' \
-                in self.nodes['PrepareSubject'].process.nodes[
-                    'Normalization'].process.nodes:
-            self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes[
-                'NormalizeSPM'].process.nodes_activation.ReorientAnatomy = True
-            self.nodes['Renorm'].process.nodes['Normalization'].process.nodes['NormalizeSPM'].process.nodes_activation.ReorientAnatomy = True
+                in self.nodes['PrepareSubject'].nodes[
+                    'Normalization'].nodes:
+            self.nodes['PrepareSubject'].nodes['Normalization'].nodes[
+                'NormalizeSPM'].nodes_activation.ReorientAnatomy = True
+            self.nodes['Renorm'].nodes['Normalization'].nodes['NormalizeSPM'].nodes_activation.ReorientAnatomy = True
             self.add_link(
                 'normalization_allow_retry_initialization->PrepareSubject.Normalization_NormalizeSPM_allow_retry_initialization')
             self.add_link(
@@ -360,11 +348,11 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
                           'Renorm.Normalization_NormalizeSPM_NormalizeSPM')
 
         if 'NormalizeFSL' \
-                in self.nodes['PrepareSubject'].process.nodes[
-                    'Normalization'].process.nodes:
-            self.nodes['PrepareSubject'].process.nodes['Normalization'].process.nodes[
-                'NormalizeFSL'].process.nodes_activation.ReorientAnatomy = True
-            self.nodes['Renorm'].process.nodes['Normalization'].process.nodes['NormalizeFSL'].process.nodes_activation.ReorientAnatomy = True
+                in self.nodes['PrepareSubject'].nodes[
+                    'Normalization'].nodes:
+            self.nodes['PrepareSubject'].nodes['Normalization'].nodes[
+                'NormalizeFSL'].nodes_activation.ReorientAnatomy = True
+            self.nodes['Renorm'].nodes['Normalization'].nodes['NormalizeFSL'].nodes_activation.ReorientAnatomy = True
             self.add_link(
                 'normalization_allow_retry_initialization->PrepareSubject.Normalization_NormalizeFSL_allow_retry_initialization')
             self.add_link(
@@ -381,8 +369,8 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
                 ('Renorm', 'Normalization_NormalizeFSL_ReorientAnatomy_output_t1mri'))
 
         if 'NormalizeBaladin' \
-                in self.nodes['PrepareSubject'].process.nodes[
-                    'Normalization'].process.nodes:
+                in self.nodes['PrepareSubject'].nodes[
+                    'Normalization'].nodes:
             self.export_parameter(
                 'PrepareSubject',
                 'Normalization_NormalizeBaladin_NormalizeBaladin_transformation_matrix',
@@ -395,12 +383,12 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
                 ('Renorm', 'Normalization_NormalizeBaladin_ReorientAnatomy_output_t1mri'))
             # disable it if baladin is not in the path
             if not distutils.spawn.find_executable('baladin'):
-                self.nodes['PrepareSubject'].process.nodes['Normalization'].\
-                    process.nodes['NormalizeBaladin'].enabled = False
+                self.nodes['PrepareSubject'].nodes['Normalization'].\
+                    nodes['NormalizeBaladin'].enabled = False
 
         if 'Normalization_AimsMIRegister' \
-                in self.nodes['PrepareSubject'].process.nodes[
-                    'Normalization'].process.nodes:
+                in self.nodes['PrepareSubject'].nodes[
+                    'Normalization'].nodes:
             self.do_not_export.add(
                 ('PrepareSubject', 'Normalization_Normalization_AimsMIRegister_transformation_to_template'))
             self.do_not_export.add(
@@ -414,16 +402,16 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
             self.autoexport_nodes_parameters()
 
         self.nodes['GreyWhiteClassification'].plugs['side'].optional = True
-        self.nodes['GreyWhiteClassification'].process.trait('side').optional = True
         self.nodes['GreyWhiteClassification'].set_plug_value('side', 'left')
         self.nodes['GreyWhiteClassification_1'].plugs['side'].optional = True
-        self.nodes['GreyWhiteClassification_1'].process.trait('side').optional = True
         self.nodes['GreyWhiteClassification_1'].set_plug_value('side', 'right')
 
         # check normalization type
-        self.on_trait_change(self.ensure_use_allowed_normalization,
-                             'Normalization_select_Normalization_pipeline')
-        self.on_trait_change(self._check_renormalization, 'select_Talairach')
+        self.on_attribute_change.add(
+            self.ensure_use_allowed_normalization,
+            'Normalization_select_Normalization_pipeline')
+        self.on_attribute_change.add(self._check_renormalization,
+                                     'select_Talairach')
 
         # default settings
         self.select_Talairach = 'Normalization'
@@ -471,7 +459,7 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
                               'select_renormalization_commissures': (4134., 2217.),
                               'select_renormalization_transform': (5762., 3201.)}
 
-        self.nodes['PrepareSubject'].process.node_position = {
+        self.nodes['PrepareSubject'].node_position = {
             'Normalization': (161.4, 227.6),
             'StandardACPC': (272.8, -169.),
             'TalairachFromNormalization': (684.6, 485.4),
@@ -479,8 +467,8 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
             'outputs': (1185.4, 441.8),
             'select_AC_PC_Or_Normalization': (925.6, 189.4)}
 
-        self.nodes['PrepareSubject'].process.nodes['Normalization'] \
-            .process.node_position = {
+        self.nodes['PrepareSubject'].nodes['Normalization'] \
+            .node_position = {
             'Normalization_AimsMIRegister': (538., 1375.),
             'NormalizeBaladin': (479., 1041.),
             'NormalizeFSL': (475., 0.0),
@@ -489,10 +477,10 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
             'outputs': (1212., 855.),
             'select_Normalization_pipeline': (846., 764.)}
 
-        if 'NormalizeBaladin' in self.nodes['PrepareSubject'].process \
-                .nodes['Normalization'].process.nodes:
-            self.nodes['PrepareSubject'].process.nodes['Normalization'] \
-                .process.nodes['NormalizeBaladin'].process.node_position \
+        if 'NormalizeBaladin' in self.nodes['PrepareSubject'] \
+                .nodes['Normalization'].nodes:
+            self.nodes['PrepareSubject'].nodes['Normalization'] \
+                .nodes['NormalizeBaladin'].node_position \
                 = {
                     'ConvertBaladinNormalizationToAIMS': (318.0, 104.0),
                     'NormalizeBaladin': (108.0, 393.0),
@@ -500,30 +488,30 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
                     'inputs': (-208.0, 127.0),
                     'outputs': (699.0, 241.0)}
 
-        self.nodes['Renorm'].process.node_position = {
+        self.nodes['Renorm'].node_position = {
             'Normalization': (832.0799999999998, 384.39999999999986),
             'SkullStripping': (672.1599999999999, 248.68),
             'TalairachFromNormalization': (1363.9600000000003, 79.84),
             'inputs': (50.0, 50.0),
             'outputs': (1646.84, 315.48)}
 
-        self.nodes['Renorm'].process.nodes['Normalization'] \
-            .process.node_position \
-            = self.nodes['PrepareSubject'].process.nodes['Normalization'] \
-            .process.node_position
+        self.nodes['Renorm'].nodes['Normalization'] \
+            .node_position \
+            = self.nodes['PrepareSubject'].nodes['Normalization'] \
+            .node_position
 
-        self.nodes['SulciRecognition'].process.node_position = {
+        self.nodes['SulciRecognition'].node_position = {
             'SPAM_recognition09': (95.0, 340.0),
             'outputs': (756.0, 429.0),
             'recognition2000': (182.0, -5.0),
             'inputs': (-508.0, 245.0),
             'select_Sulci_Recognition': (497.0, 197.0)}
 
-        self.nodes['SulciRecognition_1'].process.node_position \
-            = self.nodes['SulciRecognition'].process.node_position
+        self.nodes['SulciRecognition_1'].node_position \
+            = self.nodes['SulciRecognition'].node_position
 
-        self.nodes['SulciRecognition'].process.nodes['SPAM_recognition09'] \
-            .process.node_position = {
+        self.nodes['SulciRecognition'].nodes['SPAM_recognition09'] \
+            .node_position = {
             'inputs': (-517.0, 255.0),
             'markovian_recognition': (238.0, 72.0),
             'outputs': (652.0, 510.0),
@@ -531,10 +519,10 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
             'local_or_markovian': (456.0, 341.0),
             'local_recognition': (155.0, 404.0)}
 
-        self.nodes['SulciRecognition_1'].process.nodes['SPAM_recognition09'] \
-            .process.node_position \
-            = self.nodes['SulciRecognition'].process \
-            .nodes['SPAM_recognition09'].process.node_position
+        self.nodes['SulciRecognition_1'].nodes['SPAM_recognition09'] \
+            .node_position \
+            = self.nodes['SulciRecognition'] \
+            .nodes['SPAM_recognition09'].node_position
 
         self.add_pipeline_step('importation', ['importation'])
         self.add_pipeline_step('orientation',
@@ -561,7 +549,7 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
         self.add_pipeline_step('sulcal_morphometry', ['SulcalMorphometry'])
 
         # customize params order for nicer user GUI
-        self.reorder_traits([
+        self.reorder_fields([
             't1mri', 'imported_t1mri', 'select_Talairach',
             'Normalization_select_Normalization_pipeline',
             'commissure_coordinates',
@@ -597,11 +585,11 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
                    'right_labelled_graph', 'select_sulci_recognition',
                    'sulcal_morpho_measures')
         for param in ungroup:
-            del self.trait(param).groups
-        self.trait('grey_white_topology_version').groups = ['segmentation']
-        self.trait('pial_mesh_version').groups = ['segmentation']
-        self.on_trait_change(self._change_graph_version,
-                             'CorticalFoldsGraph_graph_version')
+            del self.field(param).groups
+        self.field('grey_white_topology_version').groups = ['segmentation']
+        self.field('pial_mesh_version').groups = ['segmentation']
+        self.on_attribute_change.add(self._change_graph_version,
+                                     'CorticalFoldsGraph_graph_version')
         self._change_graph_version(self.CorticalFoldsGraph_graph_version)
         self.visible_groups = set()
 
@@ -614,8 +602,10 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
         '''
         study_config = self.get_study_config()
         self.detach_config_activation()
-        study_config.on_trait_change(self._change_spm_activation, 'use_spm')
-        study_config.on_trait_change(self._change_fsl_activation, 'use_fsl')
+        study_config.on_attribute_change.add(
+            self._change_spm_activation, 'use_spm')
+        study_config.on_attribute_change.add(
+            self._change_fsl_activation, 'use_fsl')
         self._change_spm_activation(study_config.use_spm)
         self._change_fsl_activation(study_config.use_fsl)
 
@@ -625,23 +615,23 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
         the study config.
         '''
         study_config = self.study_config
-        study_config.on_trait_change(self._change_spm_activation, 'use_spm',
-                                     remove=True)
-        study_config.on_trait_change(self._change_fsl_activation, 'use_fsl',
-                                     remove=True)
+        study_config.on_attribute_change.remove(
+            self._change_spm_activation, 'use_spm')
+        study_config.on_attribute_change.remove(
+            self._change_fsl_activation, 'use_fsl')
 
     def _change_spm_activation(self, dummy):
         '''
         Callback for study_config.use_spm state change
         '''
         enabled = self.study_config.use_spm
-        if 'NormalizeSPM' in self.nodes['PrepareSubject'].process \
-                .nodes['Normalization'].process.nodes:
-            self.nodes['PrepareSubject'].process \
-                .nodes['Normalization'].process.nodes['NormalizeSPM'].enabled \
+        if 'NormalizeSPM' in self.nodes['PrepareSubject'] \
+                .nodes['Normalization'].nodes:
+            self.nodes['PrepareSubject'] \
+                .nodes['Normalization'].nodes['NormalizeSPM'].enabled \
                 = enabled
-            self.nodes['Renorm'].process \
-                .nodes['Normalization'].process.nodes['NormalizeSPM'].enabled \
+            self.nodes['Renorm'] \
+                .nodes['Normalization'].nodes['NormalizeSPM'].enabled \
                 = enabled
         self.ensure_use_allowed_normalization()
 
@@ -650,13 +640,13 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
         Callback for study_config.use_fsl state change
         '''
         enabled = self.study_config.use_fsl
-        if 'NormalizeFSL' in self.nodes['PrepareSubject'].process \
-                .nodes['Normalization'].process.nodes:
-            self.nodes['PrepareSubject'].process \
-                .nodes['Normalization'].process.nodes['NormalizeFSL'].enabled \
+        if 'NormalizeFSL' in self.nodes['PrepareSubject'] \
+                .nodes['Normalization'].nodes:
+            self.nodes['PrepareSubject'] \
+                .nodes['Normalization'].nodes['NormalizeFSL'].enabled \
                 = enabled
-            self.nodes['Renorm'].process \
-                .nodes['Normalization'].process.nodes['NormalizeFSL'].enabled \
+            self.nodes['Renorm'] \
+                .nodes['Normalization'].nodes['NormalizeFSL'].enabled \
                 = enabled
         self.ensure_use_allowed_normalization()
 
@@ -667,12 +657,12 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
         SPM is the highest priority, other values are tested in the switch
         values order.
         '''
-        nodes = self.nodes['PrepareSubject'].process.nodes[
-            'Normalization'].process.nodes
+        nodes = self.nodes['PrepareSubject'].nodes[
+            'Normalization'].nodes
         if nodes[self.Normalization_select_Normalization_pipeline].enabled:
             return  # OK, nothing to change.
-        values = self.trait(
-            'Normalization_select_Normalization_pipeline').trait_type.values
+        values = self.field(
+            'Normalization_select_Normalization_pipeline').__args__[0].__args__
         # reorder: spm first
         if 'NormalizeSPM' in values:
             values = list(values)
@@ -694,10 +684,11 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
                 import ProcessCompletionEngine
         except ImportError:
             return
-        compl = ProcessCompletionEngine.get_completion_engine(self)
+        # compl = ProcessCompletionEngine.get_completion_engine(self)
+        compl = None
         if compl is not None:
             attributes = compl.get_attribute_values()
-            if attributes.trait('graph_version') is not None \
+            if attributes.field('graph_version') is not None \
                     and attributes.graph_version != value:
                 attributes.graph_version = value
                 compl.complete_parameters()

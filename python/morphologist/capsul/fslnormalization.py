@@ -1,9 +1,7 @@
 
 from __future__ import absolute_import
-from morphologist.capsul.axon.fslnormalizationpipeline \
+from morphologist.capsul3.axon.fslnormalizationpipeline \
     import FSLnormalizationPipeline
-from traits.api import Undefined, Bool, File, Set
-import six
 
 
 class FSLNormalization(FSLnormalizationPipeline):
@@ -15,21 +13,20 @@ class FSLNormalization(FSLnormalizationPipeline):
         self.remove_link('t1mri->NormalizeFSL.anatomy_data')
         self.add_process(
             'converter',
-            'morphologist.capsul.axon.aimsconverter.AimsConverter')
+            'morphologist.capsul3.axon.aimsconverter.AimsConverter')
         self.add_link('t1mri->converter.read')
         self.add_link('converter.write->NormalizeFSL.anatomy_data')
 
         self.nodes_activation.ReorientAnatomy = True
-        self.on_trait_change(self.change_flip, 'allow_flip_initial_MRI')
+        self.on_attribute_change.add(self.change_flip,
+                                     'allow_flip_initial_MRI')
 
-        self.nodes['converter'].process.trait('write').allowed_extensions \
-            = ['.nii']
-        self.nodes['converter'].process.trait('write').optional = False
-        self.nodes['converter'].process.trait('removeSource').optional = True
-        self.nodes['converter'].process.trait('ascii').optional = True
-        self.nodes['converter'].process.trait('rescaleDynamic').optional = True
-        self.nodes['converter'].process.trait(
-            'useInputTypeLimits').optional = True
+        self.nodes['converter'].field('write').allowed_extensions = ['.nii']
+        self.nodes['converter'].field('write').optional = False
+        self.nodes['converter'].field('removeSource').optional = True
+        self.nodes['converter'].field('ascii').optional = True
+        self.nodes['converter'].field('rescaleDynamic').optional = True
+        self.nodes['converter'].field('useInputTypeLimits').optional = True
         self.nodes['converter'].plugs['removeSource'].optional = True
         self.nodes['converter'].plugs['ascii'].optional = True
         self.nodes['converter'].plugs['rescaleDynamic'].optional = True

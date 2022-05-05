@@ -1,33 +1,25 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-try:
-    from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
-        List, Any, Undefined
-except ImportError:
-    from enthought.traits.api import File, Directory, Float, Int, Bool, Enum, \
-        Str, List, Any, Undefined
-
+from soma.controller import File, Directory, undefined, Any, \
+    Literal, field
+from pydantic import conlist
 from capsul.api import Process
-import six
 
 
 class sulcigraphmorphometrybysubject(Process):
     def __init__(self, **kwargs):
-        super(sulcigraphmorphometrybysubject, self).__init__()
-        self.add_trait('left_sulci_graph', File(
-            allowed_extensions=['.arg', '.data']))
-        self.add_trait('right_sulci_graph', File(
-            allowed_extensions=['.arg', '.data']))
-        self.add_trait('sulci_file', File(allowed_extensions=['.json']))
-        self.add_trait('use_attribute', Enum('label', 'name'))
-        self.add_trait('sulcal_morpho_measures', File(
-            allowed_extensions=['.csv'], output=True))
+        super(sulcigraphmorphometrybysubject, self).__init__(**kwargs)
+        self.add_field('left_sulci_graph', File, read=True, allowed_extensions=['.arg', '.data'])
+        self.add_field('right_sulci_graph', File, read=True, allowed_extensions=['.arg', '.data'])
+        self.add_field('sulci_file', File, read=True, allowed_extensions=['.json'])
+        self.add_field('use_attribute', Literal['label', 'name'])
+        self.add_field('sulcal_morpho_measures', File, write=True, allowed_extensions=['.csv'])
+
 
         # initialization section
-        self.sulci_file = '/volatile/riviere/brainvisa/build-stable-qt5/share/brainvisa-share-4.6/nomenclature/translation/sulci_default_list.json'
+        self.sulci_file = '/casa/host/build/share/brainvisa-share-5.1/nomenclature/translation/sulci_default_list.json'
         self.use_attribute = 'label'
 
-    def _run_process(self):
+    def execution(self, context=None):
         from brainvisa import axon
         from brainvisa.configuration import neuroConfig
         import brainvisa.processes
@@ -39,13 +31,14 @@ class sulcigraphmorphometrybysubject(Process):
         axon.initializeProcesses()
 
         kwargs = {}
-        for name in self.user_traits():
+        for field in self.fields():
+            name = field.name
             value = getattr(self, name)
-            if value is Undefined:
+            if value is undefined:
                 continue
-            if isinstance(self.trait(name).trait_type, File) and value != '' and value is not Undefined:
+            if is_path(field) and value != '':
                 kwargs[name] = value
-            elif isinstance(self.trait(name).trait_type, List):
+            elif is_list(field):
                 kwargs[name] = list(value)
             else:
                 kwargs[name] = value

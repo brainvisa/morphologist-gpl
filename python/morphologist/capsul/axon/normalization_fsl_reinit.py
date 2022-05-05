@@ -1,45 +1,32 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-try:
-    from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
-        List, Any, Undefined
-except ImportError:
-    from enthought.traits.api import File, Directory, Float, Int, Bool, Enum, \
-        Str, List, Any, Undefined
-
+from soma.controller import File, Directory, undefined, Any, \
+    Literal, field
+from pydantic import conlist
 from capsul.api import Process
-import six
 
 
 class Normalization_FSL_reinit(Process):
     def __init__(self, **kwargs):
-        super(Normalization_FSL_reinit, self).__init__()
-        self.add_trait('anatomy_data', File(
-            allowed_extensions=['.nii', '.nii.gz']))
-        self.add_trait('anatomical_template', File(
-            allowed_extensions=['.nii', '.nii.gz']))
-        self.add_trait('Alignment', Enum('Already Virtually Aligned',
-                                         'Not Aligned but Same Orientation', 'Incorrectly Oriented'))
-        self.add_trait('transformation_matrix', File(
-            allowed_extensions=['.mat'], output=True))
-        self.add_trait('normalized_anatomy_data', File(
-            allowed_extensions=['.nii.gz'], output=True))
-        self.add_trait('cost_function', Enum(
-            'corratio', 'mutualinfo', 'normcorr', 'normmi', 'leastsq', 'labeldiff'))
-        self.add_trait('search_cost_function', Enum(
-            'corratio', 'mutualinfo', 'normcorr', 'normmi', 'leastsq', 'labeldiff'))
-        self.add_trait('allow_retry_initialization', Bool())
-        self.add_trait('init_translation_origin', Enum(0, 1))
+        super(Normalization_FSL_reinit, self).__init__(**kwargs)
+        self.add_field('anatomy_data', File, read=True, allowed_extensions=['.nii', '.nii.gz'])
+        self.add_field('anatomical_template', File, read=True, allowed_extensions=['.nii', '.nii.gz'])
+        self.add_field('Alignment', Literal['Already Virtually Aligned', 'Not Aligned but Same Orientation', 'Incorrectly Oriented'])
+        self.add_field('transformation_matrix', File, write=True, allowed_extensions=['.mat'])
+        self.add_field('normalized_anatomy_data', File, write=True, allowed_extensions=['.nii.gz'])
+        self.add_field('cost_function', Literal['corratio', 'mutualinfo', 'normcorr', 'normmi', 'leastsq', 'labeldiff'])
+        self.add_field('search_cost_function', Literal['corratio', 'mutualinfo', 'normcorr', 'normmi', 'leastsq', 'labeldiff'])
+        self.add_field('allow_retry_initialization', bool)
+        self.add_field('init_translation_origin', Literal[0, 1])
+
 
         # initialization section
-        self.anatomical_template = '/usr/share/fsl/data/standard/MNI152_T1_2mm_brain.nii.gz'
         self.Alignment = 'Not Aligned but Same Orientation'
         self.cost_function = 'corratio'
         self.search_cost_function = 'corratio'
         self.allow_retry_initialization = True
         self.init_translation_origin = 0
 
-    def _run_process(self):
+    def execution(self, context=None):
         from brainvisa import axon
         from brainvisa.configuration import neuroConfig
         import brainvisa.processes
@@ -51,13 +38,14 @@ class Normalization_FSL_reinit(Process):
         axon.initializeProcesses()
 
         kwargs = {}
-        for name in self.user_traits():
+        for field in self.fields():
+            name = field.name
             value = getattr(self, name)
-            if value is Undefined:
+            if value is undefined:
                 continue
-            if isinstance(self.trait(name).trait_type, File) and value != '' and value is not Undefined:
+            if is_path(field) and value != '':
                 kwargs[name] = value
-            elif isinstance(self.trait(name).trait_type, List):
+            elif is_list(field):
                 kwargs[name] = list(value)
             else:
                 kwargs[name] = value

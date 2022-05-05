@@ -1,35 +1,27 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-try:
-    from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
-        List, Any, Undefined
-except ImportError:
-    from enthought.traits.api import File, Directory, Float, Int, Bool, Enum, \
-        Str, List, Any, Undefined
-
+from soma.controller import File, Directory, undefined, Any, \
+    Literal, field
+from pydantic import conlist
 from capsul.api import Process
-import six
 
 
 class SulciLabellingANN(Process):
     def __init__(self, **kwargs):
-        super(SulciLabellingANN, self).__init__()
-        self.add_trait('data_graph', File(
-            allowed_extensions=['.arg', '.data']))
-        self.add_trait('model', File(allowed_extensions=['.arg', '.data']))
-        self.add_trait('output_graph', File(
-            allowed_extensions=['.arg', '.data'], output=True))
-        self.add_trait('model_hint', Enum(0, 1))
-        self.add_trait('energy_plot_file', File(
-            allowed_extensions=['.nrj'], output=True))
-        self.add_trait('rate', Float())
-        self.add_trait('stopRate', Float())
-        self.add_trait('niterBelowStopProp', Int())
-        self.add_trait('forbid_unknown_label', Bool())
-        self.add_trait('fix_random_seed', Bool())
+        super(SulciLabellingANN, self).__init__(**kwargs)
+        self.add_field('data_graph', File, read=True, allowed_extensions=['.arg', '.data'])
+        self.add_field('model', File, read=True, allowed_extensions=['.arg', '.data'])
+        self.add_field('output_graph', File, write=True, allowed_extensions=['.arg', '.data'])
+        self.add_field('model_hint', Literal[0, 1])
+        self.add_field('energy_plot_file', File, write=True, allowed_extensions=['.nrj'])
+        self.add_field('rate', float)
+        self.add_field('stopRate', float)
+        self.add_field('niterBelowStopProp', int)
+        self.add_field('forbid_unknown_label', bool)
+        self.add_field('fix_random_seed', bool)
+
 
         # initialization section
-        self.model = '/volatile/riviere/brainvisa/build-stable-qt5/share/brainvisa-share-4.6/models/models_2008/discriminative_models/3.0/Rfolds_noroots/Rfolds_noroots.arg'
+        self.model = '/casa/host/build/share/brainvisa-share-5.1/models/models_2008/discriminative_models/3.0/Lfolds_noroots/Lfolds_noroots.arg'
         self.model_hint = 0
         self.rate = 0.98
         self.stopRate = 0.05
@@ -37,7 +29,7 @@ class SulciLabellingANN(Process):
         self.forbid_unknown_label = False
         self.fix_random_seed = False
 
-    def _run_process(self):
+    def execution(self, context=None):
         from brainvisa import axon
         from brainvisa.configuration import neuroConfig
         import brainvisa.processes
@@ -49,13 +41,14 @@ class SulciLabellingANN(Process):
         axon.initializeProcesses()
 
         kwargs = {}
-        for name in self.user_traits():
+        for field in self.fields():
+            name = field.name
             value = getattr(self, name)
-            if value is Undefined:
+            if value is undefined:
                 continue
-            if isinstance(self.trait(name).trait_type, File) and value != '' and value is not Undefined:
+            if is_path(field) and value != '':
                 kwargs[name] = value
-            elif isinstance(self.trait(name).trait_type, List):
+            elif is_list(field):
                 kwargs[name] = list(value)
             else:
                 kwargs[name] = value

@@ -1,42 +1,30 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-try:
-    from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
-        List, Any, Undefined
-except ImportError:
-    from enthought.traits.api import File, Directory, Float, Int, Bool, Enum, \
-        Str, List, Any, Undefined
-
+from soma.controller import File, Directory, undefined, Any, \
+    Literal, field
+from pydantic import conlist
 from capsul.api import Process
-import six
 
 
 class SulciLabellingSPAMMarkov(Process):
     def __init__(self, **kwargs):
-        super(SulciLabellingSPAMMarkov, self).__init__()
-        self.add_trait('data_graph', File(
-            allowed_extensions=['.arg', '.data']))
-        self.add_trait('output_graph', File(
-            allowed_extensions=['.arg', '.data'], output=True))
-        self.add_trait('model', File(allowed_extensions=['.dat']))
-        self.add_trait('posterior_probabilities', File(
-            allowed_extensions=['.csv'], output=True))
-        self.add_trait('labels_translation_map', File(
-            allowed_extensions=['.trl', '.def']))
-        self.add_trait('labels_priors', File(allowed_extensions=['.dat']))
-        self.add_trait('segments_relations_model',
-                       File(allowed_extensions=['.dat']))
-        self.add_trait('initial_transformation', File(
-            allowed_extensions=['.trm'], optional=True))
-        self.add_trait('global_transformation', File(
-            allowed_extensions=['.trm'], optional=True))
-        self.add_trait('fix_random_seed', Bool())
+        super(SulciLabellingSPAMMarkov, self).__init__(**kwargs)
+        self.add_field('data_graph', File, read=True, allowed_extensions=['.arg', '.data'])
+        self.add_field('output_graph', File, write=True, allowed_extensions=['.arg', '.data'])
+        self.add_field('model', File, read=True, allowed_extensions=['.dat'])
+        self.add_field('posterior_probabilities', File, write=True, allowed_extensions=['.csv'])
+        self.add_field('labels_translation_map', File, read=True, allowed_extensions=['.trl', '.def'])
+        self.add_field('labels_priors', File, read=True, allowed_extensions=['.dat'])
+        self.add_field('segments_relations_model', File, read=True, allowed_extensions=['.dat'])
+        self.add_field('initial_transformation', File, read=True, allowed_extensions=['.trm'], optional=True)
+        self.add_field('global_transformation', File, read=True, allowed_extensions=['.trm'], optional=True)
+        self.add_field('fix_random_seed', bool)
+
 
         # initialization section
-        self.labels_translation_map = '/volatile/riviere/brainvisa/build-stable-qt5/share/brainvisa-share-4.6/nomenclature/translation/sulci_model_2008.trl'
+        self.labels_translation_map = '/casa/host/build/share/brainvisa-share-5.1/nomenclature/translation/sulci_model_2008.trl'
         self.fix_random_seed = False
 
-    def _run_process(self):
+    def execution(self, context=None):
         from brainvisa import axon
         from brainvisa.configuration import neuroConfig
         import brainvisa.processes
@@ -48,13 +36,14 @@ class SulciLabellingSPAMMarkov(Process):
         axon.initializeProcesses()
 
         kwargs = {}
-        for name in self.user_traits():
+        for field in self.fields():
+            name = field.name
             value = getattr(self, name)
-            if value is Undefined:
+            if value is undefined:
                 continue
-            if isinstance(self.trait(name).trait_type, File) and value != '' and value is not Undefined:
+            if is_path(field) and value != '':
                 kwargs[name] = value
-            elif isinstance(self.trait(name).trait_type, List):
+            elif is_list(field):
                 kwargs[name] = list(value)
             else:
                 kwargs[name] = value
