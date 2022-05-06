@@ -89,8 +89,11 @@ class Morphologist(
             'Normalization_AimsMIRegister'].plugs['normalized_anatomy_data'].optional = False
 
         self.nodes['PrepareSubject'].plugs['talairach_transformation'].optional = True
+        self.nodes['PrepareSubject'].field('talairach_transformation').optional = True
         self.nodes['PrepareSubject'].nodes['TalairachFromNormalization'].plugs['Talairach_transform'].optional = True
+        self.nodes['PrepareSubject'].nodes['TalairachFromNormalization'].field('Talairach_transform').optional = True
         self.nodes['PrepareSubject'].nodes['TalairachFromNormalization'].plugs['commissure_coordinates'].optional = False
+        self.nodes['PrepareSubject'].nodes['TalairachFromNormalization'].field('commissure_coordinates').optional = False
 
         self.nodes['PrepareSubject'].export_parameter(
             'Normalization', 'transformation',
@@ -102,6 +105,7 @@ class Morphologist(
         self.add_field('normalization_allow_retry_initialization', bool)
 
         self.nodes['Renorm'].plugs['transformation'].optional = True
+        self.nodes['Renorm'].field('transformation').optional = True
 
         self.add_link(
             'PrepareSubject.commissure_coordinates->Renorm.Normalization_commissures_coordinates')
@@ -309,6 +313,7 @@ class Morphologist(
         self.export_parameter(
             'PrepareSubject', 'reoriented_t1mri', is_optional=True)
         self.nodes['PrepareSubject'].nodes['select_AC_PC_Or_Normalization'].plugs['talairach_transformation'].optional = True
+        self.nodes['PrepareSubject'].nodes['select_AC_PC_Or_Normalization'].field('talairach_transformation').optional = True
 
         # self.add_link('Renorm.Normalization_reoriented_t1mri->reoriented_t1mri')
         # self.remove_link('t1mri->BiasCorrection.t1mri')
@@ -318,8 +323,11 @@ class Morphologist(
 
         self.do_not_export.add(('Renorm', 'Normalization_reoriented_t1mri'))
         self.nodes['Renorm'].nodes['Normalization'].plugs['reoriented_t1mri'].optional = True
+        self.nodes['Renorm'].nodes['Normalization'].field('reoriented_t1mri').optional = True
         self.nodes['Renorm'].nodes['Normalization'].nodes[
             'select_Normalization_pipeline'].plugs['reoriented_t1mri'].optional = True
+        self.nodes['Renorm'].nodes['Normalization'].nodes[
+            'select_Normalization_pipeline'].field('reoriented_t1mri').optional = True
 
         if 'NormalizeSPM' \
                 in self.nodes['PrepareSubject'].nodes[
@@ -401,8 +409,10 @@ class Morphologist(
             self.autoexport_nodes_parameters()
 
         self.nodes['GreyWhiteClassification'].plugs['side'].optional = True
+        self.nodes['GreyWhiteClassification'].field('side').optional = True
         self.nodes['GreyWhiteClassification'].set_plug_value('side', 'left')
         self.nodes['GreyWhiteClassification_1'].plugs['side'].optional = True
+        self.nodes['GreyWhiteClassification_1'].field('side').optional = True
         self.nodes['GreyWhiteClassification_1'].set_plug_value('side', 'right')
 
         # check normalization type

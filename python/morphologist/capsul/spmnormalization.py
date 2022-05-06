@@ -38,6 +38,7 @@ class SPMNormalization(SPMnormalizationPipeline):
         self.nodes['converter'].field('ascii').optional = True
         self.nodes['converter'].field('rescaleDynamic').optional = True
         self.nodes['converter'].field('useInputTypeLimits').optional = True
+        self.nodes['converter'].plugs['write'].optional = False
         self.nodes['converter'].plugs['removeSource'].optional = True
         self.nodes['converter'].plugs['ascii'].optional = True
         self.nodes['converter'].plugs['rescaleDynamic'].optional = True
