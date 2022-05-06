@@ -401,6 +401,16 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
         if 'Normalization_AimsMIRegister' \
                 in self.nodes['PrepareSubject'].process.nodes[
                     'Normalization'].process.nodes:
+            # allow disabling the node when it's not selected
+            self.nodes['PrepareSubject'].process.nodes[
+                'Normalization'].process.nodes[
+                    'Normalization_AimsMIRegister'].plugs[
+                        'normalized_anatomy_data'].optional = False
+            self.nodes['PrepareSubject'].process.nodes[
+                'Normalization'].process.nodes[
+                    'Normalization_AimsMIRegister'].process.trait(
+                        'normalized_anatomy_data').optional = False
+
             self.do_not_export.add(
                 ('PrepareSubject', 'Normalization_Normalization_AimsMIRegister_transformation_to_template'))
             self.do_not_export.add(
