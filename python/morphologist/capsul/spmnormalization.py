@@ -1,6 +1,5 @@
 
-from __future__ import absolute_import
-from morphologist.capsul3.axon.spmnormalizationpipeline \
+from morphologist.capsul.axon.spmnormalizationpipeline \
     import SPMnormalizationPipeline
 
 
@@ -23,7 +22,7 @@ class SPMNormalization(SPMnormalizationPipeline):
         self.remove_link('t1mri->normalization_t1_spm8_reinit.anatomy_data')
         self.add_process(
             'converter',
-            'morphologist.capsul3.axon.aimsconverter.AimsConverter')
+            'morphologist.capsul.axon.aimsconverter.AimsConverter')
         self.add_link('t1mri->converter.read')
         self.add_link('converter.write->'
                       'normalization_t1_spm12_reinit.anatomy_data')

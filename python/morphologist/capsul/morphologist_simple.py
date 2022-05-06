@@ -1,6 +1,5 @@
 
-from __future__ import absolute_import
-import distutils.spawn
+#import distutils.spawn
 import morphologist.capsul.axon.morphologistprocess
 from traits.api import Undefined, Bool, File
 

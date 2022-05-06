@@ -1,6 +1,5 @@
 
-from __future__ import absolute_import
-from morphologist.capsul3.axon.fslnormalizationpipeline \
+from morphologist.capsul.axon.fslnormalizationpipeline \
     import FSLnormalizationPipeline
 
 
@@ -13,7 +12,7 @@ class FSLNormalization(FSLnormalizationPipeline):
         self.remove_link('t1mri->NormalizeFSL.anatomy_data')
         self.add_process(
             'converter',
-            'morphologist.capsul3.axon.aimsconverter.AimsConverter')
+            'morphologist.capsul.axon.aimsconverter.AimsConverter')
         self.add_link('t1mri->converter.read')
         self.add_link('converter.write->NormalizeFSL.anatomy_data')
 

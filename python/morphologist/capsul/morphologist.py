@@ -1,12 +1,11 @@
 
-from __future__ import absolute_import
 import distutils.spawn
-import morphologist.capsul3.axon.axonmorphologist
+import morphologist.capsul.axon.axonmorphologist
 from soma.controller import undefined, File
 
 
 class Morphologist(
-        morphologist.capsul3.axon.axonmorphologist.AxonMorphologist):
+        morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
 
     def __init__(self, autoexport_nodes_parameters=True, **kwargs):
         super(Morphologist, self).__init__(
@@ -19,7 +18,7 @@ class Morphologist(
         autoexport_nodes_parameters = self._autoexport_nodes_parameters
         self._autoexport_nodes_parameters = False
         self.add_process('importation',
-                         'morphologist.capsul3.axon.importt1mri.ImportT1MRI')
+                         'morphologist.capsul.axon.importt1mri.ImportT1MRI')
         super(Morphologist, self).pipeline_definition()
 
         self.add_switch('select_Talairach',

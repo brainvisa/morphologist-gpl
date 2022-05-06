@@ -1,5 +1,4 @@
 
-from __future__ import absolute_import
 from capsul.process.process import Process
 from soma.controller import File
 

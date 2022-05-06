@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
 
 from soma.controller import File, undefined
 
-import morphologist.capsul3.axon.talairachtransformationfromnormalization
+import morphologist.capsul.axon.talairachtransformationfromnormalization
 
 
 class TalairachTransformationFromNormalization(
-    morphologist.capsul3.axon.talairachtransformationfromnormalization.
+    morphologist.capsul.axon.talairachtransformationfromnormalization.
         TalairachTransformationFromNormalization):
     def __init__(self, **kwargs):
         super(TalairachTransformationFromNormalization, self).__init__(**kwargs)
