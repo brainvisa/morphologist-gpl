@@ -160,7 +160,7 @@ class Morphologist(
 
         self.remove_link(
             'Renorm.commissure_coordinates->Renorm_commissure_coordinates')
-        #self.remove_field('Renorm_commissure_coordinates')
+        self.remove_field('Renorm_commissure_coordinates')
 
         # why does this one exist ? FIXME
         # self.remove_link('PrepareSubject.commissure_coordinates->Renorm_TalairachFromNormalization_commissure_coordinates')
@@ -396,6 +396,14 @@ class Morphologist(
         if 'Normalization_AimsMIRegister' \
                 in self.nodes['PrepareSubject'].nodes[
                     'Normalization'].nodes:
+            # allow disabling the node when it's not selected
+            self.nodes['PrepareSubject'].nodes['Normalization'].nodes[
+                'Normalization_AimsMIRegister'].plugs[
+                    'normalized_anatomy_data'].optional = False
+            self.nodes['PrepareSubject'].nodes['Normalization'].nodes[
+                'Normalization_AimsMIRegister'].field(
+                    'normalized_anatomy_data').optional = False
+
             self.do_not_export.add(
                 ('PrepareSubject', 'Normalization_Normalization_AimsMIRegister_transformation_to_template'))
             self.do_not_export.add(
