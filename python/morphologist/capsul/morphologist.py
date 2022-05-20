@@ -23,7 +23,8 @@ class Morphologist(
 
         self.add_switch('select_Talairach',
                         ['StandardACPC', 'Normalization'],
-                        ['Talairach_transform'], output_types=[File])
+                        ['Talairach_transform'], output_types=[File],
+                        switch_value='Normalization')
 
         # WARNING: we must keep 2 switches here, otherwise we introduce a loop
         # in the pipeline graph:
@@ -423,12 +424,19 @@ class Morphologist(
         self.nodes['GreyWhiteClassification_1'].field('side').optional = True
         self.nodes['GreyWhiteClassification_1'].set_plug_value('side', 'right')
 
+        # allow to disable AimsMIRegister by making one of its outputs
+        # mandatory
+        self.nodes['PrepareSubject'].nodes['Normalization'].nodes['Normalization_AimsMIRegister'].field('transformation_to_MNI').optional = False
+        self.nodes['PrepareSubject'].nodes['Normalization'].nodes['Normalization_AimsMIRegister'].plugs['transformation_to_MNI'].optional = False
+
         # check normalization type
         self.on_attribute_change.add(
             self.ensure_use_allowed_normalization,
             'Normalization_select_Normalization_pipeline')
         self.on_attribute_change.add(self._check_renormalization,
                                      'select_Talairach')
+        # enable values dispatch
+        self.enable_parameter_links = True
 
         # default settings
         self.select_Talairach = 'Normalization'
