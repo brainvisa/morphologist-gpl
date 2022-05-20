@@ -44,16 +44,16 @@ class SPMNormalization(SPMnormalizationPipeline):
         self.nodes['converter'].plugs['rescaleDynamic'].optional = True
         self.nodes['converter'].plugs['useInputTypeLimits'].optional = True
 
-        if not True:  ### FIXME self.get_study_config().use_spm:
-            self.nodes['normalization_t1_spm12_reinit'].enabled = False
-            self.nodes['normalization_t1_spm8_reinit'].enabled = False
-        else:
-            if True:  ## FIXME self.get_study_config().spm_version in ('12', None, Undefined):
-                self.nodes['normalization_t1_spm8_reinit'].enabled = False
-                self.NormalizeSPM = 'normalization_t1_spm12_reinit'
-            else:
-                self.nodes['normalization_t1_spm12_reinit'].enabled = False
-                self.NormalizeSPM = 'normalization_t1_spm8_reinit'
+        #if not True:  ### FIXME self.get_study_config().use_spm:
+            #self.nodes['normalization_t1_spm12_reinit'].enabled = False
+            #self.nodes['normalization_t1_spm8_reinit'].enabled = False
+        #else:
+            #if True:  ## FIXME self.get_study_config().spm_version in ('12', None, Undefined):
+                #self.nodes['normalization_t1_spm8_reinit'].enabled = False
+                #self.NormalizeSPM = 'normalization_t1_spm12_reinit'
+            #else:
+                #self.nodes['normalization_t1_spm12_reinit'].enabled = False
+                #self.NormalizeSPM = 'normalization_t1_spm8_reinit'
 
         self.node_position = {
             'ConvertSPMnormalizationToAIMS': (1179.07095, 117.05630000000008),
