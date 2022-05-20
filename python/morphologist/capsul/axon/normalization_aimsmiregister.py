@@ -19,6 +19,7 @@ class normalization_aimsmiregister(Process):
 
 
         # initialization section
+        self.anatomical_template = '/casa/host/build/share/brainvisa-share-5.1/anatomical_templates/MNI152_T1_2mm.nii.gz'
         self.mni_to_acpc = '/casa/host/build/share/brainvisa-share-5.1/transformation/talairach_TO_spm_template_novoxels.trm'
         self.smoothing = 1.0
 

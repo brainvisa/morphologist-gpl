@@ -75,7 +75,7 @@ class Normalization(Pipeline):
 
         # initialization section
         if 'NormalizeSPM' in self.nodes:
-            self.nodes['select_Normalization_pipeline'].switch = 'NormalizeSPM'
+            self.dispatch_value(self, 'select_Normalization_pipeline', 'NormalizeSPM')
         # export orphan parameters
         if not hasattr(self, '_autoexport_nodes_parameters') \
                 or self._autoexport_nodes_parameters:

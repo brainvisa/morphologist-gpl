@@ -61,7 +61,7 @@ class SulciLabellingSPAM(Pipeline):
 
         # initialization section
         if 'local_recognition' in self.nodes:
-            self.nodes['local_or_markovian'].switch = 'local_recognition'
+            self.dispatch_value(self, 'local_or_markovian', 'local_recognition')
         # export orphan parameters
         if not hasattr(self, '_autoexport_nodes_parameters') \
                 or self._autoexport_nodes_parameters:

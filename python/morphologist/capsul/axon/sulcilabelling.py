@@ -48,7 +48,7 @@ class SulciLabelling(Pipeline):
 
         # initialization section
         if 'CNN_recognition19' in self.nodes:
-            self.nodes['select_Sulci_Recognition'].switch = 'CNN_recognition19'
+            self.dispatch_value(self, 'select_Sulci_Recognition', 'CNN_recognition19')
         # export orphan parameters
         if not hasattr(self, '_autoexport_nodes_parameters') \
                 or self._autoexport_nodes_parameters:

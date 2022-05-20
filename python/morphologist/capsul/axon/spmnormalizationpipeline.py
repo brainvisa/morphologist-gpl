@@ -74,7 +74,7 @@ class SPMnormalizationPipeline(Pipeline):
 
         # initialization section
         if 'normalization_t1_spm12_reinit' in self.nodes:
-            self.nodes['NormalizeSPM'].switch = 'normalization_t1_spm12_reinit'
+            self.dispatch_value(self, 'NormalizeSPM', 'normalization_t1_spm12_reinit')
         self.nodes['ReorientAnatomy'].allow_flip_initial_MRI = False
         self.nodes_activation.ReorientAnatomy = False
         # export orphan parameters

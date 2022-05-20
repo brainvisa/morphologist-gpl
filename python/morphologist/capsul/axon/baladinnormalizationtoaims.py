@@ -16,6 +16,7 @@ class BaladinNormalizationToAims(Process):
 
 
         # initialization section
+        self.registered_volume = '/casa/host/build/share/brainvisa-share-5.1/anatomical_templates/MNI152_T1_1mm.nii.gz'
         self.set_transformation_in_source_volume = True
 
     def execution(self, context=None):

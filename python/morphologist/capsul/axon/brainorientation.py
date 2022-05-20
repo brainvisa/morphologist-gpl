@@ -55,7 +55,7 @@ class BrainOrientation(Pipeline):
 
         # initialization section
         if 'Normalization' in self.nodes:
-            self.nodes['select_AC_PC_Or_Normalization'].switch = 'Normalization'
+            self.dispatch_value(self, 'select_AC_PC_Or_Normalization', 'Normalization')
         # export orphan parameters
         if not hasattr(self, '_autoexport_nodes_parameters') \
                 or self._autoexport_nodes_parameters:
