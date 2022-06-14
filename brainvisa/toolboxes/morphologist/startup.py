@@ -108,18 +108,22 @@ elif configuration.SPM.spm5_path:
 # print('*** SPMDIR:', spmdir)
 if spmdir is not None:
     spmtemplates = None
-    #print('SPM dir:', spmdir)
+    print('SPM dir:', spmdir)
     if not os.path.isdir(os.path.join(spmdir, 'templates')) \
             and not os.path.isdir(os.path.join(spmdir, 'toolbox')):
-        if os.path.isdir(os.path.join(spmdir, 'spm8_mcr', 'spm8',
-                                      'templates')):
-            spmtemplates = os.path.join(spmdir, 'spm8_mcr', 'spm8')
-        elif os.path.isdir(os.path.join(spmdir, 'spm12_mcr', 'spm12',
+        if os.path.isdir(os.path.join(spmdir, 'spm12_mcr', 'spm12',
                                         'toolbox', 'OldNorm')):
             spmtemplates = os.path.join(spmdir, 'spm12_mcr', 'spm12')
+        elif os.path.isdir(os.path.join(spmdir, 'spm12_mcr', 'spm12', 'spm12',
+                                        'toolbox', 'OldNorm')):
+            # spm12-standalone-8168 is installed this way...
+            spmtemplates = os.path.join(spmdir, 'spm12_mcr', 'spm12', 'spm12')
+        elif os.path.isdir(os.path.join(spmdir, 'spm8_mcr', 'spm8',
+                                      'templates')):
+            spmtemplates = os.path.join(spmdir, 'spm8_mcr', 'spm8')
     else:
         spmtemplates = spmdir  # os.path.join( spmdir, 'templates' )
-    #print('spmtemplates:', spmtemplates)
+    print('spmtemplates:', spmtemplates)
     if not neuroConfig.fastStart and spmtemplates and \
             not neuroHierarchy.databases.hasDatabase(spmtemplates):
         dbs = neuroConfig.DatabaseSettings(spmtemplates)
