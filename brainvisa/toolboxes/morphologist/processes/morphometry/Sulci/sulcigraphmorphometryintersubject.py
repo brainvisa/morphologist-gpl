@@ -89,11 +89,11 @@ def execution(self, context):
         # lecture des csv
         csv = np.recfromtxt(item.fullPath(), delimiter=';', names=True)
         header = csv.dtype.names
-        sulci = list(csv['sulcus'])
+        sulci = [x.decode() for x in csv['sulcus']]
         sulci_arr = csv['sulcus']
 
         if self.sort_by == 'measure' and first:
-            fi.write('subject;' + ';'.join(csv['sulcus']) + '\n')
+            fi.write('subject;' + ';'.join(sulci) + '\n')
             first_header = header
             first_sulci = sulci
             first = False
