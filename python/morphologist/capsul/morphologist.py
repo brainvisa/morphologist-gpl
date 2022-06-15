@@ -435,6 +435,7 @@ class Morphologist(
             'Normalization_select_Normalization_pipeline')
         self.on_attribute_change.add(self._check_renormalization,
                                      'select_Talairach')
+        self.Normalization_select_Normalization_pipeline = 'NormalizeSPM'
         # enable values dispatch
         self.enable_parameter_links = True
 
