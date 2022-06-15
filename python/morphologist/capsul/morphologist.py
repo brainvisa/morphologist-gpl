@@ -405,6 +405,8 @@ class Morphologist(
                 'Normalization_AimsMIRegister'].field(
                     'normalized_anatomy_data').optional = False
 
+                        'normalized_anatomy_data').optional = False
+
             self.do_not_export.add(
                 ('PrepareSubject', 'Normalization_Normalization_AimsMIRegister_transformation_to_template'))
             self.do_not_export.add(
