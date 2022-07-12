@@ -2,6 +2,8 @@
 from brainvisa.morphologist.morpho_hierarchy import *
 
 
+default_acq_session = '1'
+
 raw_t1 = (
     '<subject>', SetType('Raw T1 MRI'), SetPriorityOffset(+1),
     SetWeakAttr('normalized', 'no'),
@@ -48,6 +50,7 @@ hierarchy = (
         SetDefaultAttributeValue('center', default_center),
         SetContent(
             'ses-{session}',
+            SetDefaultAttributeValue('session', default_acq_session),
             SetContent(
                 # The "registration" directory in each subject contains:
                 #   - all the referentials related to this subjects
