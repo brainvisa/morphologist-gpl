@@ -1,0 +1,22 @@
+{
+    "fom_name": "raw-bids-1.0",
+    "fom_import": [
+        "brainvisa-formats-3.2.0",
+        "shared-brainvisa-1.0"
+    ],
+    "attribute_definitions": {
+        "session": {
+            "default_value": "1"
+        }
+    },
+    "processes": {
+        "ImportT1MRI": {
+            "input": [
+                [
+                    "input:sub-<subject>/ses-<session>/anat/sub-<subject>_ses-<session>_acq-<acquisition>_T1w",
+                    "Aims readable volume formats"
+                ]
+            ]
+        }
+    }
+}
