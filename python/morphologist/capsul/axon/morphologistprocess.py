@@ -18,7 +18,7 @@ class morphologistProcess(Process):
                                                          '.mnc', '.mng', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz']))
         self.add_trait('perform_segmentation', Bool())
         self.add_trait('method_ACPC', Enum(
-            'Manually', 'With SPM Normalization', 'Already done'))
+            'Manually', 'With SPM12 Normalization', 'Already done'))
         self.add_trait('commissure_coordinates', File(
             allowed_extensions=['.APC'], output=True))
         self.add_trait('anterior_commissure', List(
@@ -110,7 +110,8 @@ class morphologistProcess(Process):
                                                                        '.mng', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'], output=True))
         self.add_trait('right_cortex_mid_interface', File(allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.gif', '.ima', '.dim', '.jpg', '.mnc',
                                                                               '.mng', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'], output=True))
-        self.add_trait('perform_sulci_SPAM_recognition', Bool())
+        self.add_trait('perform_sulci_recognition', Enum(
+            'No', 'SPAM', 'DeepCNN'))
         self.add_trait('labels_translation_map', File(
             allowed_extensions=['.trl', '.def']))
         self.add_trait('left_labelled_graph', File(
@@ -160,15 +161,16 @@ class morphologistProcess(Process):
 
         # initialization section
         self.perform_segmentation = True
-        self.method_ACPC = 'With SPM Normalization'
-        self.anatomical_template = u'/usr/local/spm8-standalone/spm8_mcr/spm8/templates/T1.nii'
+        self.method_ACPC = 'With SPM12 Normalization'
+        self.anatomical_template = '/i2bm/local/spm12-standalone/spm12_mcr/spm12/toolbox/OldNorm/T1.nii'
+        #self.anatomical_template = u'/usr/local/spm12-standalone/spm8_mcr/spm8/templates/T1.nii'
         self.tal_to_normalized_transform = []
-        self.anatomical_template_skull_stripped = '/home/riviere/build-cmake/build-trunk-release/share/brainvisa-share-4.6/anatomical_templates/MNI152_T1_2mm_brain.nii'
-        self.split_template = '/home/riviere/build-cmake/build-trunk-release/share/brainvisa-share-4.6/hemitemplate/closedvoronoi.ima'
+        self.anatomical_template_skull_stripped = '/casa/host/build/share/brainvisa-share-5.1/anatomical_templates/MNI152_T1_2mm_brain.nii' #'/home/riviere/build-cmake/build-trunk-release/share/brainvisa-share-4.6/anatomical_templates/MNI152_T1_2mm_brain.nii'
+        self.split_template = '/casa/host/build/share/brainvisa-share-5.1/hemitemplate/closedvoronoi.ima' #'/home/riviere/build-cmake/build-trunk-release/share/brainvisa-share-4.6/hemitemplate/closedvoronoi.ima'
         self.perform_meshes_and_graphs = True
-        self.perform_sulci_SPAM_recognition = False
-        self.labels_translation_map = '/home/riviere/build-cmake/build-trunk-release/share/brainvisa-share-4.6/nomenclature/translation/sulci_model_2008.trl'
-        self.sulci_file = '/home/riviere/build-cmake/build-trunk-release/share/brainvisa-share-4.6/nomenclature/translation/sulci_default_list.json'
+        self.perform_sulci_recognition = 'DeepCNN'
+        self.labels_translation_map = '/casa/host/build/share/brainvisa-share-5.1/nomenclature/translation/sulci_model_2008.trl' #'/home/riviere/build-cmake/build-trunk-release/share/brainvisa-share-4.6/nomenclature/translation/sulci_model_2008.trl'
+        self.sulci_file = '/casa/host/build/share/brainvisa-share-5.1/nomenclature/translation/sulci_default_list.json' #'/home/riviere/build-cmake/build-trunk-release/share/brainvisa-share-4.6/nomenclature/translation/sulci_default_list.json'
 
     def _run_process(self):
         from brainvisa import axon

@@ -49,7 +49,6 @@ signature = Signature(
 
     # Commissures Coordinates
     'method_ACPC', Choice('Manually',
-                          'With SPM8 Normalization',
                           'With SPM12 Normalization',
                           'Already done'),
     'commissure_coordinates', WriteDiskItem(
@@ -164,7 +163,9 @@ signature = Signature(
     'right_cortex_mid_interface', WriteDiskItem('Grey White Mid-Interface Volume',
                                                 'Aims writable volume formats', requiredAttributes={'side': 'right'}),
     # Sulci Recognition
-    'perform_sulci_SPAM_recognition', Boolean(),
+    'perform_sulci_recognition', Choice('No',
+                                        'SPAM',
+                                        'DeepCNN'),
     'labels_translation_map', ReadDiskItem('Label Translation',
                                            ['Label Translation', 'DEF Label translation']),
     # Left
@@ -269,7 +270,7 @@ def initialization(self):
     self.perform_bias_correction = True
 
     # Commissures Coordinates
-    self.method_ACPC = 'With SPM8 Normalization'
+    self.method_ACPC = 'With SPM12 Normalization'
     self.linkParameters('commissure_coordinates', 't1mri')
     self.linkParameters('anterior_commissure',
                         'commissure_coordinates', APCReader('AC'))
@@ -430,21 +431,21 @@ def initialization(self):
     self.signature['right_cortex_mid_interface'].userLevel = 100
 
     # Sulci Recognition
-    self.perform_sulci_SPAM_recognition = False
+    self.perform_sulci_recognition = 'No'
     self.labels_translation_map = self.signature['labels_translation_map'].findValue(
         {'filename_variable': 'sulci_model_2008'})
     self.signature['labels_translation_map'].userLevel = 100
     # Left
     self.linkParameters('left_labelled_graph', 'left_graph')
-    self.linkParameters('left_posterior_probabilities', 'left_graph')
+    self.linkParameters('left_posterior_probabilities', 'left_labelled_graph')
     self.linkParameters('left_labels_priors', 'left_graph')
     self.signature['left_posterior_probabilities'].userLevel = 100
     self.signature['left_labels_priors'].userLevel = 100
     # Global
     self.left_global_model = self.signature['left_global_model'].findValue(
         {'sulci_segments_model_type': 'global_registered_spam'})
-    self.linkParameters('left_tal_to_global_transform', 'left_graph')
-    self.linkParameters('left_t1_to_global_transform', 'left_graph')
+    self.linkParameters('left_tal_to_global_transform', 'left_labelled_graph')
+    self.linkParameters('left_t1_to_global_transform', 'left_labelled_graph')
     self.signature['left_global_model'].userLevel = 100
     self.signature['left_tal_to_global_transform'].userLevel = 100
     self.signature['left_t1_to_global_transform'].userLevel = 100
@@ -455,7 +456,7 @@ def initialization(self):
     self.linkParameters('left_direction_priors', 'left_graph')
     self.linkParameters('left_angle_priors', 'left_graph')
     self.linkParameters('left_translation_priors', 'left_graph')
-    self.linkParameters('left_global_to_local_transforms', 'left_graph')
+    self.linkParameters('left_global_to_local_transforms', 'left_labelled_graph')
     self.signature['left_local_model'].userLevel = 100
     self.signature['left_local_referentials'].userLevel = 100
     self.signature['left_direction_priors'].userLevel = 100
@@ -463,16 +464,16 @@ def initialization(self):
     self.signature['left_translation_priors'].userLevel = 100
     self.signature['left_global_to_local_transforms'].userLevel = 100
     # Right
-    self.linkParameters('right_labelled_graph', 'right_graph')
-    self.linkParameters('right_posterior_probabilities', 'right_graph')
+    self.linkParameters('right_labelled_graph', 'left_labelled_graph')
+    self.linkParameters('right_posterior_probabilities', 'right_labelled_graph')
     self.linkParameters('right_labels_priors', 'right_graph')
     self.signature['right_posterior_probabilities'].userLevel = 100
     self.signature['right_labels_priors'].userLevel = 100
     # Global
     self.right_global_model = self.signature['right_global_model'].findValue(
         {'sulci_segments_model_type': 'global_registered_spam'})
-    self.linkParameters('right_tal_to_global_transform', 'right_graph')
-    self.linkParameters('right_t1_to_global_transform', 'right_graph')
+    self.linkParameters('right_tal_to_global_transform', 'right_labelled_graph')
+    self.linkParameters('right_t1_to_global_transform', 'right_labelled_graph')
     self.signature['right_global_model'].userLevel = 100
     self.signature['right_tal_to_global_transform'].userLevel = 100
     self.signature['right_t1_to_global_transform'].userLevel = 100
@@ -483,7 +484,7 @@ def initialization(self):
     self.linkParameters('right_direction_priors', 'right_graph')
     self.linkParameters('right_angle_priors', 'right_graph')
     self.linkParameters('right_translation_priors', 'right_graph')
-    self.linkParameters('right_global_to_local_transforms', 'right_graph')
+    self.linkParameters('right_global_to_local_transforms', 'right_labelled_graph')
     self.signature['right_local_model'].userLevel = 100
     self.signature['right_local_referentials'].userLevel = 100
     self.signature['right_direction_priors'].userLevel = 100
@@ -510,21 +511,13 @@ def execution(self, context):
                                Interhemispheric_Point=self.interhemispheric_point,
                                Left_Hemisphere_Point=self.left_hemisphere_point,
                                older_MNI_normalization=self.older_MNI_normalization)
-        elif self.method_ACPC == 'With SPM8 Normalization' or self.method_ACPC == 'With SPM12 Normalization':
-            if self.method_ACPC == 'With SPM8 Normalization':
-                context.runProcess('normalization_t1_spm8_reinit',
-                                   anatomy_data=self.t1mri,
-                                   anatomical_template=self.anatomical_template,
-                                   transformations_informations=self.transformations_information,
-                                   normalized_anatomy_data=self.normalized_t1mri,
-                                   allow_retry_initialization=True)
-            elif self.method_ACPC == 'With SPM12 Normalization':
-                context.runProcess('normalization_t1_spm12_reinit',
-                                   anatomy_data=self.t1mri,
-                                   anatomical_template=self.anatomical_template,
-                                   transformations_informations=self.transformations_information,
-                                   normalized_anatomy_data=self.normalized_t1mri,
-                                   allow_retry_initialization=True)
+        elif self.method_ACPC == 'With SPM12 Normalization':
+            context.runProcess('normalization_t1_spm12_reinit',
+                                anatomy_data=self.t1mri,
+                                anatomical_template=self.anatomical_template,
+                                transformations_informations=self.transformations_information,
+                                normalized_anatomy_data=self.normalized_t1mri,
+                                allow_retry_initialization=True)
             context.runProcess('SPMsn3dToAims',
                                read=self.transformations_information,
                                write=self.talairach_MNI_transform,
@@ -737,7 +730,7 @@ def execution(self, context):
                            cortex_mid_interface=self.right_cortex_mid_interface)
 
     # Sulci Recognition
-    if self.perform_sulci_SPAM_recognition:
+    if self.perform_sulci_recognition=='SPAM':
         context.write(
             '<b>' + 'Computing Sulci Recognition with SPAM global+local...' + '</b>')
         # Left
@@ -767,7 +760,6 @@ def execution(self, context):
                            output_local_transformations=self.left_global_to_local_transforms,
                            initial_transformation=None,
                            global_transformation=self.left_tal_to_global_transform)
-
         # Right
         # Global
         context.runProcess('spam_recognitionglobal',
@@ -795,7 +787,19 @@ def execution(self, context):
                            output_local_transformations=self.right_global_to_local_transforms,
                            initial_transformation=None,
                            global_transformation=self.right_tal_to_global_transform)
-
+    
+    elif self.perform_sulci_recognition=='DeepCNN':
+        context.runProcess('capsul://deepsulci.sulci_labeling.capsul.labeling',
+                           graph=self.left_graph,
+                           roots=self.left_roots,
+                           skeleton=self.left_skeleton,
+                           labeled_graph=self.left_labelled_graph)
+        context.runProcess('capsul://deepsulci.sulci_labeling.capsul.labeling',
+                           graph=self.right_graph,
+                           roots=self.right_roots,
+                           skeleton=self.right_skeleton,
+                           labeled_graph=self.right_labelled_graph)
+    if self.perform_sulci_recognition!='No':
         # Sulcal Morphometry
         context.runProcess('sulcigraphmorphometrybysubject',
                            left_sulci_graph=self.left_labelled_graph,
