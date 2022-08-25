@@ -184,6 +184,10 @@ Morphologist 2021 does not change in terms of segmentation, but now switches to 
 <p>Older versions of the pipeline are still available in the sub-directory <a href="categories/morphologist/segmentationpipeline/older_pipelines/category_documentation.html">"segmentation Pipeline / Older pipelines"</a>, and should normally work as they used to.
 </p>
 
+<div class="note"><h4>News in 2022:</h4>
+A modification has been added in the bias correction step to avoid failures with thresholded images (which is sometimes used to remove the background noise).
+</div>
+
 <div class="note"><h4>News in 2021 vs. 2015:</h4>
 The sulci recognition sub-pipeline has been enriched with a 3rd generation of methods, based on deep learning CNN models. It performs slightly better than the former SPAM model, and is also way faster. However it needs a fair amount of memory to run (about 6 Gb), or a GPU with Cuda enabled.
 </div>
@@ -308,20 +312,6 @@ of the 3T large bias field: <a href="http://marspack.free.fr/">http://marspack.f
 <img SRC="../../images/III_sulci.jpg" ALT=""/>
 </xhtml>
     <d name="parameters">
-      <xhtml name="t1mri"/>
-      <xhtml name="perform_normalization"/>
-      <xhtml name="anterior_commissure"/>
-      <xhtml name="posterior_commissure"/>
-      <xhtml name="interhemispheric_point"/>
-      <xhtml name="left_hemisphere_point"/>
-      <xhtml name="t1mri_nobias"/>
-      <xhtml name="histo_analysis"/>
-      <xhtml name="split_brain"/>
-      <xhtml name="left_graph"/>
-      <xhtml name="right_graph"/>
-      <xhtml name="perform_sulci_recognition"/>
-      <xhtml name="left_labelled_graph"/>
-      <xhtml name="right_labelled_graph"/>
     </d>
   </d>
 </d>
