@@ -102,8 +102,8 @@ def execution(self, context):
                 command.extend(['-srand', 10])
             context.system(*command)
 
-            context.system("VipSingleThreshold", "-i", hemi, "-o",
-                           hemi, "-t", "0", "-c", "b", "-m", "ne", "-w", "t")
+            context.system("AimsThreshold", "-i", hemi, "-o",
+                           hemi, "-t", "0", "-b", "-m", "di")
 
             context.system("AimsMeshBrain", "-i", hemi.fullPath(),
                            "-o", self.left_hemi_mesh,
@@ -148,8 +148,8 @@ def execution(self, context):
                 command.extend(['-srand', 10])
             context.system(*command)
 
-            context.system("VipSingleThreshold", "-i", hemi, "-o",
-                           hemi, "-t", "0", "-c", "b", "-m", "ne", "-w", "t")
+            context.system("AimsThreshold", "-i", hemi, "-o",
+                           hemi, "-t", "0", "-b", "-m", "di")
 
             context.system("AimsMeshBrain", "-i", hemi.fullPath(),
                            "-o", self.right_hemi_mesh,

@@ -62,9 +62,8 @@ def initialization(self):
 def execution(self, context):
     tm = registration.getTransformationManager()
     white = context.temporary('GIS Image')
-    context.system("VipSingleThreshold", "-i", self.hemi_cortex,
-                   "-o", white, "-t", "0", "-c", "b", "-m",
-                   "ne", "-w", "t")
+    context.system("AimsThreshold", "-i", self.hemi_cortex,
+                   "-o", white, "-t", "0", "-b", "-m", "di")
 
     context.system("AimsMeshBrain", "-i", white, "-o", self.white_mesh_fine, '--internalinterface',
                    "--deciMaxClearance",  self.maxClearance, "--deciMaxError", self.maxError)

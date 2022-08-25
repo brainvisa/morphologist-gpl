@@ -99,9 +99,8 @@ def execution(self, context):
     else:
         context.write("Reconstructing pial mesh...")
 
-    context.system("VipSingleThreshold", "-i", hemi,
-                   "-o", hemi, "-t", "0", "-c", "b",
-                   "-m", "ne", "-w", "t")
+    context.system("AimsThreshold", "-i", hemi,
+                   "-o", hemi, "-t", "0", "-b", "-m", "di")
 
     context.system("AimsMeshBrain", "-i", hemi.fullPath(), "-o", self.pial_mesh,
                    "--internalinterface", "--smoothIt", 50)

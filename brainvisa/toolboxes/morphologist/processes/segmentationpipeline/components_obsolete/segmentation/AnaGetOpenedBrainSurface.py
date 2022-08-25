@@ -81,9 +81,9 @@ def execution(self, context):
 
             context.write("Reconstructing brain surface...")
             white = context.temporary('GIS Image')
-            context.system("VipSingleThreshold", "-i", self.cortex.fullPath(),
-                           "-o", white.fullPath(), "-t", "0", "-c", "b", "-m",
-                           "eq", "-w", "t")
+            context.system("AimsThreshold", "-i", self.cortex.fullPath(),
+                           "-o", white.fullPath(), "-t", "0", "-b",
+                           "-m", "eq")
             openbrain = context.temporary('GIS Image')
             context.system("VipOpenFold", "-i", braing.fullPath(), "-s",
                            white.fullPath(), "-o", openbrain.fullPath(),

@@ -201,14 +201,12 @@ def execution(self, context):
             mesh = 'n'
         lhemi = context.temporary('NIFTI-1 Image')
         rhemi = context.temporary('NIFTI-1 Image')
-        context.system('VipSingleThreshold', '-i',
+        context.system('AimsThreshold', '-i',
                        self.split_brain, '-o', lhemi,
-                       '-t', '2', '-c', 'b',
-                       '-m', 'eq', '-w', 't')
-        context.system('VipSingleThreshold', '-i',
+                       '-t', '2', '-b', '-m', 'eq')
+        context.system('AimsThreshold', '-i',
                        self.split_brain, '-o', rhemi,
-                       '-t', '1', '-c', 'b',
-                       '-m', 'eq', '-w', 't')
+                       '-t', '1', '-b', '-m', 'eq')
 
         context.system('VipFoldArgAtt', '-i', self.skeleton,
                        '-lh', lhemi, '-rh', rhemi,

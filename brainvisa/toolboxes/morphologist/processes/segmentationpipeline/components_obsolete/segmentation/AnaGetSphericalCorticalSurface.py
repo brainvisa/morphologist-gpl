@@ -155,9 +155,8 @@ def execution(self, context):
 
             context.write("Reconstructing left hemisphere white surface...")
             white = context.temporary('GIS Image')
-            context.system("VipSingleThreshold", "-i", hemi_cortex,
-                           "-o", white, "-t", "0", "-c", "b", "-m",
-                           "ne", "-w", "t")
+            context.system("AimsThreshold", "-i", hemi_cortex,
+                           "-o", white, "-t", "0", "-b", "-m", "di")
             del hemi_cortex
 
             context.write("Triangulation and Decimation...")
@@ -199,9 +198,8 @@ def execution(self, context):
 
             context.write("Reconstructing right hemisphere white surface...")
             white = context.temporary('GIS Image')
-            context.system("VipSingleThreshold", "-i", hemi_cortex,
-                           "-o", white, "-t", "0", "-c", "b", "-m",
-                           "ne", "-w", "t")
+            context.system("AimsThreshold", "-i", hemi_cortex,
+                           "-o", white, "-t", "0", "-b", "-m", "di")
             del hemi_cortex
 
             context.write("Triangulation and Decimation...")

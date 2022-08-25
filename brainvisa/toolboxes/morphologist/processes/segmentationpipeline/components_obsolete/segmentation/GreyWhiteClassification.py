@@ -80,10 +80,10 @@ def execution(self, context):
     #hemis = context.temporary( 'GIS Image' )
     #grey_white = context.temporary( 'GIS Image' )
     #context.write( "Computing hemispheres grey-white classification..." )
-    # context.system( "VipDoubleThreshold", "-i",
+    # context.system( "AimsThreshold", "-i",
     #self.split_mask, "-o", hemis,
-    #"-tl", "1", "-th", "2",
-    #"-m", "be", "-c", "b", "-w", "t" )
+    #"-t", "1", "-u", "2",
+    #"-m", "be", "-b")
     # context.system( "VipMerge", "-i",
     #hemis, "-m", self.split_mask,
     #"-o", hemis, "-c", "l",

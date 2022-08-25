@@ -81,9 +81,8 @@ def execution(self, context):
         else:
             context.write("Reconstructing left hemisphere white surface...")
             white = context.temporary('GIS Image')
-            context.system("VipSingleThreshold", "-i", self.left_hemi_cortex,
-                           "-o", white, "-t", "0", "-c", "b", "-m",
-                           "ne", "-w", "t")
+            context.system("AimsThreshold", "-i", self.left_hemi_cortex,
+                           "-o", white, "-t", "0", "-b", "-m", "di")
             context.system("AimsMeshWhite", "-i", white, "-o",
                            self.left_white_mesh)
             context.system("AimsMeshWhite", "-i", white, "-o",
@@ -108,9 +107,8 @@ def execution(self, context):
         else:
             context.write("Reconstructing right hemisphere white surface...")
             white = context.temporary('GIS Image')
-            context.system("VipSingleThreshold", "-i", self.right_hemi_cortex,
-                           "-o", white, "-t", "0", "-c", "b", "-m",
-                           "ne", "-w", "t")
+            context.system("AimsThreshold", "-i", self.right_hemi_cortex,
+                           "-o", white, "-t", "0", "-b", "-m", "di")
             context.system("AimsMeshWhite", "-i", white, "-o",
                            self.right_white_mesh)
             context.system("AimsMeshWhite", "-i", white, "-o",
