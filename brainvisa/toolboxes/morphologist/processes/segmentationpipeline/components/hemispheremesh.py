@@ -71,9 +71,8 @@ def execution(self, context):
     trManager = registration.getTransformationManager()
 
     braing = context.temporary('NIFTI-1 Image')
-    context.system("VipMask", "-i", self.t1mri_nobias,
-                   "-m", self.grey_white, "-o", braing,
-                   "-w", "t")
+    context.system("AimsMask", "-i", self.t1mri_nobias,
+                   "-m", self.grey_white, "-o", braing)
 
     side = self.hemi_cortex.get('side')
     if side is not None:

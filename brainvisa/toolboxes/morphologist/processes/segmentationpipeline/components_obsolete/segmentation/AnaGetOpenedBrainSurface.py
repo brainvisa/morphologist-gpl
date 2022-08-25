@@ -68,9 +68,9 @@ def execution(self, context):
     else:
         context.write("Computing whole brain surface...")
         braing = context.temporary('GIS Image')
-        context.system("VipMask", "-i", self.mri_corrected.fullPath(),
+        context.system("AimsMask", "-i", self.mri_corrected.fullPath(),
                        "-m", self.brain_mask.fullPath(), "-o",
-                       braing.fullPath(), "-w", "t")
+                       braing.fullPath())
         if os.path.exists(self.cortex.fullPath() + '.loc'):
             context.write("grey/white interface detection locked")
         else:

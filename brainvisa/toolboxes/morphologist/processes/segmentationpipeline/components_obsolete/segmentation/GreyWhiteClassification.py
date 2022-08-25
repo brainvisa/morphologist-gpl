@@ -102,10 +102,9 @@ def execution(self, context):
     # if os.path.exists(self.left_grey_white.fullName() + '.loc'):
     #context.write( "Left grey-white locked")
     # else:
-    # context.system( "VipMask", "-i", grey_white,
+    # context.system( "AimsMask", "-i", grey_white,
     #"-m", self.split_mask,
-    #"-o", self.left_grey_white,
-    #"-w", "t", "-l", "2" )
+    #"-o", self.left_grey_white, "-l", "2" )
     #tm.copyReferential(self.mri_corrected, self.left_grey_white)
 
     # if self.Side in ('Right','Both'):
@@ -113,10 +112,9 @@ def execution(self, context):
     # if os.path.exists(self.right_grey_white.fullName() + '.loc'):
     #context.write( "Right grey-white locked")
     # else:
-    # context.system( "VipMask", "-i", grey_white,
+    # context.system( "AimsMask", "-i", grey_white,
     #"-m", self.split_mask,
-    #"-o", self.right_grey_white,
-    #"-w", "t", "-l", "1" )
+    #"-o", self.right_grey_white, "-l", "1" )
     #tm.copyReferential(self.mri_corrected, self.right_grey_white)
 
     #del hemis

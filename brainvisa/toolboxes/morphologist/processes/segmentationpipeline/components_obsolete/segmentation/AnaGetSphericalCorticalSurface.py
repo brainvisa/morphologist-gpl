@@ -141,9 +141,9 @@ def execution(self, context):
             context.write(
                 "Masking Bias corrected image with left hemisphere mask...")
             braing = context.temporary('GIS Image')
-            context.system("VipMask", "-i", over_nobias, "-m",
+            context.system("AimsMask", "-i", over_nobias, "-m",
                            over_split, "-o", braing,
-                           "-w", "t", "-l", "2")
+                           "-l", "2")
 
             hemi_cortex = context.temporary('GIS Image')
             context.write("Detecting left grey/white interface...")
@@ -184,9 +184,9 @@ def execution(self, context):
             context.write(
                 "Masking Bias corrected image with right hemisphere mask...")
             braing = context.temporary('GIS Image')
-            context.system("VipMask", "-i", over_nobias, "-m",
+            context.system("AimsMask", "-i", over_nobias, "-m",
                            over_split, "-o", braing,
-                           "-w", "t", "-l", "1")
+                           "-l", "1")
 
             hemi_cortex = context.temporary('GIS Image')
             context.write("Detecting right grey/white interface...")

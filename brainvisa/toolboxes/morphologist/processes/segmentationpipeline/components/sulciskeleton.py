@@ -79,9 +79,8 @@ def execution(self, context):
         context.write("Computing sulci skeleton and buried gyrus watershed...")
 
     braing = context.temporary('NIFTI-1 Image')
-    context.system("VipMask", "-i", self.t1mri_nobias,
-                   "-m", self.grey_white, "-o", braing,
-                   "-w", "t")
+    context.system("AimsMask", "-i", self.t1mri_nobias,
+                   "-m", self.grey_white, "-o", braing)
     command = ["VipSkeleton", "-i", self.hemi_cortex,
                "-so", self.skeleton, "-vo", self.roots,
                "-g", braing, "-ve", self.version, "-w", "t"]

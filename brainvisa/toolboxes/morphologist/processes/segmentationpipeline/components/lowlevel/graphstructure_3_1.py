@@ -97,9 +97,9 @@ def execution(self, context):
         masklabel = '2'
     else:
         masklabel = '1'
-    context.system('VipMask', '-i', self.mri_corrected, "-m",
+    context.system('AimsMask', '-i', self.mri_corrected, "-m",
                    self.split_mask, "-o", braing,
-                   "-w", "t", "-l", masklabel)
+                   "-l", masklabel)
 
     context.write("Computing skeleton and buried gyrus watershed...")
     command = ["VipSkeleton", "-i", self.hemi_cortex,
