@@ -175,7 +175,8 @@ def execution(self, context):
                 for i in self.sulci.fullPaths():
                     context.system('gzip', '--force', i)
             if self.transformation == 'Yes':
-                context.system('AimsResample', '-i', self.sulci.fullPath(),
+                context.system('AimsApplyTransform',
+                               '-i', self.sulci.fullPath(),
                                '-o', self.sulci.fullPath(),
                                '-m', self.transformation_matrix.fullPath(),
                                '-t', '0',
@@ -198,7 +199,8 @@ def execution(self, context):
                 for i in self.bottom.fullPaths():
                     context.system('gzip', '--force', i)
             if self.transformation == 'Yes':
-                context.system('AimsResample', '-i', self.bottom.fullPath(),
+                context.system('AimsApplyTransform',
+                               '-i', self.bottom.fullPath(),
                                '-o', self.bottom.fullPath(),
                                '-m', self.transformation_matrix.fullPath(),
                                '-t', '0',
@@ -222,7 +224,8 @@ def execution(self, context):
                 for i in self.hull_junction.fullPaths():
                     context.system('gzip', '--force', i)
             if self.transformation == 'Yes':
-                context.system('AimsResample', '-i', self.hull_junction.fullPath(),
+                context.system('AimsApplyTransform',
+                               '-i', self.hull_junction.fullPath(),
                                '-o', self.hull_junction.fullPath(),
                                '-m', self.transformation_matrix.fullPath(),
                                '-t', '0',
@@ -245,7 +248,8 @@ def execution(self, context):
                 for i in self.simple_surface.fullPaths():
                     context.system('gzip', '--force', i)
             if self.transformation == 'Yes':
-                context.system('AimsResample', '-i', self.simple_surface.fullPath(),
+                context.system('AimsApplyTransform',
+                               '-i', self.simple_surface.fullPath(),
                                '-o', self.simple_surface.fullPath(),
                                '-m', self.transformation_matrix.fullPath(),
                                '-t', '0',

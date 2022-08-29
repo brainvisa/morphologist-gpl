@@ -157,7 +157,7 @@ def execution(self, context):
     aims.write(R, mfile.fullPath())
     context.log('Transformation', html='transformation: ' + str(R))
 
-    context.system('AimsResample', '-i', self.t1mri,
+    context.system('AimsApplyTransform', '-i', self.t1mri,
                    '-o', self.output_t1mri, '-m', mfile,
                    '--sx', vs2[0], '--sy', vs2[1], '--sz', vs2[2],
                    '--dx', dims2[0], '--dy', dims2[1], '--dz', dims2[2])

@@ -179,14 +179,14 @@ def execution(self, context):
         aims.write(trans, temp_tr.fullPath())
 
         if ok == 0:
-            context.system('AimsResample', '-i', temp,
+            context.system('AimsApplyTransform', '-i', temp,
                            '-o', self.SPAM.fullPath(), '-m', temp_tr,
                            '--dx', dim[0], '--dy', dim[1], '--dz', dim[2],
                            '--sx', vs[0], '--sy', vs[1], '--sz', vs[2],
                            '-t', 'n')
             ok = 1
         else:
-            context.system('AimsResample', '-i', temp,
+            context.system('AimsApplyTransform', '-i', temp,
                            '-o', temp, '-m', temp_tr,
                            '--dx', dim[0], '--dy', dim[1], '--dz', dim[2],
                            '--sx', vs[0], '--sy', vs[1], '--sz', vs[2],
