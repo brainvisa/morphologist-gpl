@@ -121,18 +121,18 @@ def execution(self, context):
         newdimz = int((dimz+1)*voxz/newvox)
         context.write("Computing oversampled MR image to improve cortical "
                       "surface definition (cubic spline)")
-        context.system("VipSplineResamp", "-i", self.mri_corrected,
-                       "-ord", "3", "-dx", str(newdimx), "-dy", str(newdimy),
-                       "-dz", str(newdimz), "-sx", str(newvox), "-sy",
-                       str(newvox), "-sz", str(newvox), "-did", "-o",
-                       over_nobias)
+        context.system("AimsApplyTransform", "-i", self.mri_corrected,
+                       "-n", "3", "--dx", str(newdimx), "--dy", str(newdimy),
+                       "--dz", str(newdimz), "--sx", str(newvox),
+                       "--sy", str(newvox), "--sz", str(newvox), "--vol_id",
+                       "-o", over_nobias)
         context.write(
             "Computing oversampled split brain mask (nearest neighbor)")
-        context.system("VipSplineResamp", "-i", self.split_mask,
-                       "-ord", "0", "-dx", str(newdimx), "-dy", str(newdimy),
-                       "-dz", str(newdimz), "-sx", str(newvox), "-sy",
-                       str(newvox), "-sz", str(newvox), "-did", "-o",
-                       over_split)
+        context.system("AimsApplyTransform", "-i", self.split_mask,
+                       "-n", "0", "--dx", str(newdimx), "--dy", str(newdimy),
+                       "--dz", str(newdimz), "--sx", str(newvox),
+                       "--sy", str(newvox), "--sz", str(newvox), "--vol_id",
+                       "-o", over_split)
     trManager = registration.getTransformationManager()
     if self.Side in ('Left', 'Both'):
         if os.path.exists(self.left_white_mesh.fullName() + '.loc'):
