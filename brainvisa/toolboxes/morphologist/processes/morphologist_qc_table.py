@@ -54,7 +54,7 @@ def execution(self, context):
                'Left Cortex Skeleton', 'Right Cortex Skeleton',
                'Left Hemisphere Mesh', 'Right Hemisphere Mesh',
                'Left Cortical Sulci', 'Right Cortical Sulci',
-               'Left Labelled Sulci', 'Right Labelled Cortical Sulci',
+               'Left Labelled Sulci', 'Right Labelled Sulci',
                'Sulcal morphometry measurements']
 
     custom_filt = [eval(filt) for filt in self.data_filters]
