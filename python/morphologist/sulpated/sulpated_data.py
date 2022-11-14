@@ -464,6 +464,8 @@ class SulcalPatternsData(Qt.QObject):
         with self.lock:
             last_poll = self.last_poll
         if last_poll is not None:
+            if not osp.exists(self.version_file):
+                return
             s = os.stat(self.version_file)
             if self.last_poll == s.st_mtime:
                 return  # things are up to date
@@ -471,6 +473,8 @@ class SulcalPatternsData(Qt.QObject):
         with self.lock:
             # abort previous ongoing update
             if self.updating:
+                if not osp.exists(self.version_file):
+                    return
                 s = os.stat(self.version_file)
                 if self.last_poll_started == s.st_mtime:
                     # print('dont reupdate')
