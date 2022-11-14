@@ -1,5 +1,18 @@
 #!/usr/bin/env python
 
+'''
+SULPATED
+========
+
+SUlcal PAtterns EDitor
+
+In order to work, a few things have to be prepared:
+
+- create a directory for sulcal paterns data storage
+- create a BrainVisa database compatible with Morphologist. It may be inside the above sulal patterns directory.
+- create a patterns definition file in the toor of the sulcal patterns directory, ``patterns_def.json``
+'''
+
 import argparse
 from argparse import ArgumentParser
 import sys
