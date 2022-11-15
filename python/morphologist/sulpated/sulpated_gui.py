@@ -188,7 +188,7 @@ class SulcalPatternsEditor(Qt.QWidget):
 
     def update_started(self):
         print('update_started')
-        Qt.qApp.setOverrideCursor(Qt.Qt.BusyCursor)
+        # Qt.qApp.setOverrideCursor(Qt.Qt.BusyCursor)
 
     def item_color(self, subject, side, pattern, checked):
         if not self.pattern_def:
@@ -210,9 +210,10 @@ class SulcalPatternsEditor(Qt.QWidget):
     def update_gui(self, aborted):
         if aborted:
             print('update_gui aborted')
-            Qt.qApp.restoreOverrideCursor()
+            # Qt.qApp.restoreOverrideCursor()
             return
         print('update_gui')
+        Qt.qApp.setOverrideCursor(Qt.Qt.BusyCursor)
         self.validate_annotation()
         self.annot_widget.clear()
         with self.lock:
@@ -668,7 +669,6 @@ class SulcalPatternsEditor(Qt.QWidget):
         self.update_sulci_view(subject, side)
 
     def save_sulci(self, subject, side, silent=False, modified_only=True):
-        print('save_sulci GUI', subject, side)
         r = self.data_model.save_sulci(subject, side,
                                        modified_only=modified_only)
         if not r:  # not saved
@@ -682,7 +682,6 @@ class SulcalPatternsEditor(Qt.QWidget):
             locked = pat.sulci_locked
             backup_filename = pat.sulci_backup_filename()
 
-        print('status:', status)
         if status == 'conflict':
             if locked:
                 msg = 'Sulci for subject %s, hemisphere %s have been ' \
@@ -1114,7 +1113,13 @@ class PatternsWidget(Qt.QWidget):
         for i in reversed(range(layout.count())):
             w = layout.itemAt(i).widget()
             if w:
-                w.disconnect()
+                try:
+                    # in some rare cases
+                    w.disconnect()
+                except Exception as e:
+                    print('PatternsWidget.clear() error in signals '
+                          'disconnection:', file=sys.stderr)
+                    print(e, file=sys.stderr)
             sip.transferback(w)
             layout.takeAt(i)
             del w

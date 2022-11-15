@@ -137,14 +137,19 @@ class SulcalPattern(object):
         if self.sulci:
             if self.sulci_status == 'conflict':
                 return None
+            if filename != self.sulci.fileName():
+                self.sulci_status = 'conflict'
+                return None
             mtime = os.stat(filename).st_mtime
             if self.sulci.loadDate <= mtime:
-                # if not modified, we should reload.
-                if self.sulci.userModified():
-                    self.sulci_status = 'conflict'
-                    return None
-                # otherwise, outdated but not modified: reload
-                return True
+                self.sulci_status = 'conflict'
+                return None
+                ## if not modified, we should reload.
+                #if self.sulci.userModified():
+                    #self.sulci_status = 'conflict'
+                    #return None
+                ## otherwise, outdated but not modified: reload
+                #return True
             else:
                 # up-to-date: nothing to do.
                 return None
@@ -620,6 +625,50 @@ class SulcalPatternsData(Qt.QObject):
             subjects = {di.get('subject') for di in graphs}
             print('subjects:', len(subjects))
 
+            # filter graphs and check we have one matching for each subject
+            done = {}
+            new_graphs = []
+
+            for graph in graphs:
+                sub = graph.get('subject')
+                side = graph.get('side')
+                man_label = (graph.get('manually_labelled') == 'Yes')
+
+                readonly = graph.get('_database') == self.ro_database
+
+                old = done.get((sub, side))
+                if old is not None:
+                    old_ro, old_man = old[:2]
+                    # if old is read-only,
+                    # or old is not manually labelled and new is:
+                    # replace it
+                    if old_ro and not readonly:
+                        replace = True
+                    elif not old_ro and not readonly:
+                        replace = False
+                    elif old_man and not man_label:
+                        replace = False
+                    elif not old_man and man_label:
+                        replace = True
+                    else:
+                        raise ValueError(
+                            'Several sulci graphs for subject %s and side '
+                            '%s: you should focus your query for input '
+                            'sulci data' % (sub, side))
+                    if not replace:
+                        continue  # ignore RO graphs already in outputs
+
+                done[(sub, side)] = (readonly, man_label, graph)
+                new_graphs.append(graph)
+
+            # keep unique final ones
+            graphs = [graph for graph in new_graphs
+                      if done[(graph.get('subject'), graph.get('side'))][2]
+                          is graph]
+            del done, new_graphs
+            print('filtered graphs:', len(graphs))
+
+            # now build the data model
             with self.database_lock:
 
                 self._check_abort()
@@ -639,41 +688,13 @@ class SulcalPatternsData(Qt.QObject):
                 # collect patterns
                 patterns = {}
                 ns = len(graphs)
-                done = {}
 
                 for n, graph in enumerate(graphs):
                     self._check_abort()
                     sub = graph.get('subject')
                     side = graph.get('side')
-                    man_label = (graph.get('manually_labelled') == 'Yes')
                     print('\r%d / %d (%d%%)' % (n+1, ns, int(n * 100 / ns)),
                           end='')
-
-                    readonly = graph.get('_database') == self.ro_database
-
-                    old = done.get((sub, side))
-                    if old is not None:
-                        old_ro, old_man = old
-                        # if old is read-only,
-                        # or old is not manually labelled and new is:
-                        # replace it
-                        if old_ro and not readonly:
-                            replace = True
-                        elif not old_ro and not readonly:
-                            replace = False
-                        elif old_man and not man_label:
-                            replace = False
-                        elif not old_man and man_label:
-                            replace = True
-                        else:
-                            raise ValueError(
-                                'Several sulci graphs for subject %s and side '
-                                '%s: you should focus your query for input '
-                                'sulci data' % (sub, side))
-                        if not replace:
-                            continue  # ignore RO graphs already in outputs
-
-                    done[(sub, side)] = (readonly, man_label)
 
                     # print(sub, side)
                     pat_file = osp.join(
@@ -684,21 +705,25 @@ class SulcalPatternsData(Qt.QObject):
                         pat_file, graph, self.out_database,
                         db_settings.directory,
                         force_sulci_lock=force_sulci_locks_state)
-                    if old_pat and (old_pat.modified or old_pat.sulci):
-                        print('keep old pat', sub, side, old_pat.modified)
-                        patterns.setdefault(sub, {})[side] = old_pat
-                        old_pat.out_db = self.out_database
-                        if old_pat.modified \
-                                and old_pat.patterns != pat.patterns:
-                            old_pat.status = 'conflict'
-                        else:
-                            old_pat.status = 'ok'
-                            old_pat.modified = False
-                        old_pat.sulci_locked = pat.sulci_locked
-                        if old_pat.sulci:
-                            old_pat.update_sulci_status()
-                    else:
-                        patterns.setdefault(sub, {})[side] = pat
+                    if old_pat:
+                        if old_pat.sulci and not old_pat.modified:
+                            pat.set_sulci_graph(old_pat.sulci)
+                            pat.update_sulci_status()
+                        elif old_pat.modified:
+                            print('keep old pat', sub, side, old_pat.modified)
+                            patterns.setdefault(sub, {})[side] = old_pat
+                            old_pat.out_db = self.out_database
+                            if old_pat.modified \
+                                    and old_pat.patterns != pat.patterns:
+                                old_pat.status = 'conflict'
+                            else:
+                                old_pat.status = 'ok'
+                                old_pat.modified = False
+                            old_pat.sulci_locked = pat.sulci_locked
+                            if old_pat.sulci:
+                                old_pat.update_sulci_status()
+                            pat = old_pat
+                    patterns.setdefault(sub, {})[side] = pat
 
                 print('\r%d / %d (100%%)' % (ns, ns))
                 if not osp.exists(self.version_file):
