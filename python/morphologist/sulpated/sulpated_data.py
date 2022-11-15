@@ -798,9 +798,11 @@ class SulcalPatternsData(Qt.QObject):
             with self.lock:
                 pattern = self.patterns[subject][side]
 
-                pattern.save_sulci(modified_only=modified_only)
+                saved = pattern.save_sulci(modified_only=modified_only)
 
-                self.save_version()
+                if saved:
+                    self.save_version()
+        return saved
 
     def get_sulci_graph_file(self, subject, side, use_backup=False):
         with self.lock:

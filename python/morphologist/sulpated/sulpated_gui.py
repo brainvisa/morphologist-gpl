@@ -668,9 +668,11 @@ class SulcalPatternsEditor(Qt.QWidget):
         self.update_sulci_view(subject, side)
 
     def save_sulci(self, subject, side, silent=False, modified_only=True):
+        print('save_sulci GUI', subject, side)
         r = self.data_model.save_sulci(subject, side,
                                        modified_only=modified_only)
         if not r:  # not saved
+            print('not modified')
             return
         with self.data_model.lock:
             pat = self.get_pattern(subject, side)
@@ -680,6 +682,7 @@ class SulcalPatternsEditor(Qt.QWidget):
             locked = pat.sulci_locked
             backup_filename = pat.sulci_backup_filename()
 
+        print('status:', status)
         if status == 'conflict':
             if locked:
                 msg = 'Sulci for subject %s, hemisphere %s have been ' \
