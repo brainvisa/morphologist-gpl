@@ -302,14 +302,13 @@ class SulcalPatternsEditor(Qt.QWidget):
                     continue
                 for c, (p, pd) in enumerate(pat_def.items()):
                     text = ''
+                    checked = Qt.Qt.Unchecked
                     if pats is not None and p in pats.patterns:
                         if pats.patterns[p].get('enabled'):
                             checked = Qt.Qt.Checked
                         confidence = pats.patterns[p].get('confidence')
                         if confidence:
                             text = str(confidence)
-                    else:
-                        checked = Qt.Qt.Unchecked
                     col = c + s * len(base_cols) + 1
                     colsizes[col] = 65
                     titem = Qt.QTableWidgetItem(text)
@@ -669,8 +668,10 @@ class SulcalPatternsEditor(Qt.QWidget):
         self.update_sulci_view(subject, side)
 
     def save_sulci(self, subject, side, silent=False, modified_only=True):
-        self.data_model.save_sulci(subject, side,
-                                   modified_only=modified_only)
+        r = self.data_model.save_sulci(subject, side,
+                                       modified_only=modified_only)
+        if not r:  # not saved
+            return
         with self.data_model.lock:
             pat = self.get_pattern(subject, side)
             if not pat:
@@ -820,11 +821,20 @@ class SulcalPatternsEditor(Qt.QWidget):
 
             graph_file = self.data_model.get_sulci_graph_file(subject, side,
                                                               use_backup=True)
+            org_graph_file = self.data_model.get_sulci_graph_file(
+                subject, side, use_backup=False)
             w = a.createWindow('3D', block=self.sulci_window())
             a.setReusableWindow(w, True)
             context = processes.defaultContext()
-            items = context.runProcess('AnatomistShowFoldGraph',
-                                       graph=graph_file)
+            viewer = processes.getProcessInstance('AnatomistShowFoldGraph')
+            # initialize using database graph in order to have completion
+            viewer.graph = org_graph_file
+            # then lock all params and set the backup, if any
+            if graph_file not in(org_graph_file, org_graph_file.fullPath()):
+                for param in viewer.signature:
+                    viewer.setDefault(param, False)
+                viewer.graph = graph_file
+            items = context.runProcess(viewer)
             # remove browser
             del items[1]
             graph = items[1]

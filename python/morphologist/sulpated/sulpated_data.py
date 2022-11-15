@@ -151,6 +151,7 @@ class SulcalPattern(object):
         return False
 
     def load_sulci(self):
+        ## currently unused... see set_sulci_graph() instead
         needs_reload = self.update_sulci_status()
         if not needs_reload is None:
             return
@@ -171,6 +172,16 @@ class SulcalPattern(object):
             # keep track of views displaying the old graph
             wins = self.sulci.getWindows()
         self.sulci = a.loadObject(filename)
+        if self.sulci_di.get('automatically_labelled') == 'Yes':
+            # switch to manual labels
+            graph = self.sulci.graph()
+            for v in graph.vertices():
+                label = v.get('label')
+                if label is not None:
+                    v['name'] = label
+            graph['label_property'] = 'name'
+            a.execute('GraphDisplayProperties', objects=[self.sulci],
+                      nomenclature_property='name')
         self.sulci.addInWindows(wins)
         if self.sulci_status != 'conflict':
             self.sulci_status = 'ok'
@@ -185,6 +196,23 @@ class SulcalPattern(object):
 
     def set_sulci_graph(self, sulci):
         self.sulci = sulci
+        if self.sulci_di.get('automatically_labelled') == 'Yes':
+            # the following should be called from the GUI thread
+            # because it involves threading issues.
+
+            from brainvisa import anatomist as ana
+
+            a = ana.Anatomist()
+
+            # switch to manual labels
+            graph = self.sulci.graph()
+            for v in graph.vertices():
+                label = v.get('label')
+                if label is not None:
+                    v['name'] = label
+            graph['label_property'] = 'name'
+            a.execute('GraphDisplayProperties', objects=[self.sulci],
+                      nomenclature_property='name')
         if self.sulci_status != 'conflict':
             self.sulci_status = 'ok'
             mtime = os.stat(self.sulci_di.fullPath()).st_mtime
@@ -205,17 +233,19 @@ class SulcalPattern(object):
     def save_sulci(self, modified_only=True):
         graph = self.sulci
         if not graph:
-            return
+            return False
         if not graph.userModified():
-            return
+            return False
         graph_di = self.sulci_di
 
-        if self.sulci_db and graph_di.get('_database') != self.sulci_db:
+        if self.sulci_db and (graph_di.get('_database') != self.sulci_db or graph_di.get('automatically_labelled') == 'Yes'):
             # was in a read-only database, convert it into the output one
             from brainvisa.data.writediskitem import WriteDiskItem
 
             sel = dict(graph_di.hierarchyAttributes())
             sel['_database'] = self.sulci_db
+            sel['automatically_labelled'] = 'No'
+            sel['manually_labelled'] = 'Yes'
             wdi = WriteDiskItem('Labelled Cortical Folds Graph',
                                 'Graph and data')
             di = wdi.findValue(sel)
@@ -259,6 +289,7 @@ class SulcalPattern(object):
 
             neuroHierarchy.databases.insertDiskItem(self.sulci_di, update=True)
         # print('saved:', filename, ', stat:', os.stat(filename).st_mtime, ', loaddate:', graph.loadDate, ', modified:', graph.userModified())
+        return True
 
     def backup_filename(self):
         return '%s.backup.%s.json' % (self.filename, getpass.getuser())
@@ -487,7 +518,8 @@ class SulcalPatternsData(Qt.QObject):
         if self.update_thread:
             self.update_thread.join()
         self.update_thread = threading.Thread(target=self._update)
-        self.updating = True
+        with self.lock:
+            self.updating = True
         self.update_thread.start()
 
     def _update(self):
@@ -607,25 +639,41 @@ class SulcalPatternsData(Qt.QObject):
                 # collect patterns
                 patterns = {}
                 ns = len(graphs)
-                done = set()
+                done = {}
 
                 for n, graph in enumerate(graphs):
                     self._check_abort()
                     sub = graph.get('subject')
                     side = graph.get('side')
+                    man_label = (graph.get('manually_labelled') == 'Yes')
                     print('\r%d / %d (%d%%)' % (n+1, ns, int(n * 100 / ns)),
                           end='')
 
                     readonly = graph.get('_database') == self.ro_database
 
-                    if (sub, side) in done:
-                        if readonly:
+                    old = done.get((sub, side))
+                    if old is not None:
+                        old_ro, old_man = old
+                        # if old is read-only,
+                        # or old is not manually labelled and new is:
+                        # replace it
+                        if old_ro and not readonly:
+                            replace = True
+                        elif not old_ro and not readonly:
+                            replace = False
+                        elif old_man and not man_label:
+                            replace = False
+                        elif not old_man and man_label:
+                            replace = True
+                        else:
+                            raise ValueError(
+                                'Several sulci graphs for subject %s and side '
+                                '%s: you should focus your query for input '
+                                'sulci data' % (sub, side))
+                        if not replace:
                             continue  # ignore RO graphs already in outputs
-                        raise ValueError(
-                            'Several sulci graphs for subject %s and side %s: '
-                            'you should focus your query for input sulci data'
-                            % (sub, side))
-                    done.add((sub, side))
+
+                    done[(sub, side)] = (readonly, man_label)
 
                     # print(sub, side)
                     pat_file = osp.join(
@@ -667,9 +715,10 @@ class SulcalPatternsData(Qt.QObject):
 
         finally:
             print('data update done.')
-            qtThread.QtThreadCall().push(self.notify_update_finished.emit,
-                                         not self.updating)
-            self.updating = False
+            with self.lock:
+                qtThread.QtThreadCall().push(self.notify_update_finished.emit,
+                                             not self.updating)
+                self.updating = False
 
     def _check_abort(self):
         with self.lock:

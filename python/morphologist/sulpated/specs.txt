@@ -13,6 +13,7 @@ Requirements
 * [auto-save ?]                                                     [not done]
 
 * edit sulci manual labelings                                             [OK]
+  * convert auto to manual labelings                                      [OK]
 
 * enter labels for a subject, with possible annotations
   * multiple labels                                                       [OK]
