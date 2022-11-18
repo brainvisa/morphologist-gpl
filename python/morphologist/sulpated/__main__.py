@@ -9,8 +9,13 @@ SUlcal PAtterns EDitor
 In order to work, a few things have to be prepared:
 
 - create a directory for sulcal paterns data storage
-- create a BrainVisa database compatible with Morphologist. It may be inside the above sulal patterns directory.
+- create a BrainVisa database compatible with Morphologist. It may be inside the above sulcal patterns directory.
+- Activate and Update this (new) database, and the input (read-only) database, if any.
 - create a patterns definition file in the toor of the sulcal patterns directory, ``patterns_def.json``
+
+Only Sulpated should be used when working on a sulcal patterns edition session: its modification notification is based on the polling of a single file, and will not notice or take into account "external" modifications such as writing a sulcal graph from BrainVisa or directly using Anatomist (even if checks are made before writing a file to avoid overwriting data modifiied by someone else).
+
+Otherwise Sulpated is supposed to handle multiuser sessions, and conflicts happening in this situation. When another user writes a file we are currently modifying, saving it will be done in a separate user backup.
 '''
 
 import argparse
