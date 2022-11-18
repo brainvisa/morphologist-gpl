@@ -112,6 +112,7 @@ class SulcalPattern(object):
             #print('t:', time.time() - t0)
 
     def save(self):
+        print('SAVE')
         if self.locked():
             self.save_backup()
             raise LockedDataError(self.filename)
@@ -320,6 +321,8 @@ class SulcalPattern(object):
                 patterns = json.load(f)
         except FileNotFoundError:
             # file has been removed in the meantime: just rewrite it
+            print('save_backup, orig file', self.filename, 'could not be read. Saving backup:', backup_file)
+            os.makedirs(osp.dirname(backup_file), exist_ok=True)
             with open(backup_file, 'w') as f:
                 json.dump(self.patterns, f)
             patterns = self.patterns
@@ -701,28 +704,38 @@ class SulcalPatternsData(Qt.QObject):
                         self.out_database, 'sub-%s' % sub, 'patterns',
                         self.region, side, 'patterns.json')
                     old_pat = self.patterns.get(sub, {}).get(side)
-                    pat = SulcalPattern(
-                        pat_file, graph, self.out_database,
-                        db_settings.directory,
-                        force_sulci_lock=force_sulci_locks_state)
-                    if old_pat:
-                        if old_pat.sulci and not old_pat.modified:
-                            pat.set_sulci_graph(old_pat.sulci)
-                            pat.update_sulci_status()
-                        elif old_pat.modified:
-                            print('keep old pat', sub, side, old_pat.modified)
-                            patterns.setdefault(sub, {})[side] = old_pat
-                            old_pat.out_db = self.out_database
-                            if old_pat.modified \
-                                    and old_pat.patterns != pat.patterns:
-                                old_pat.status = 'conflict'
-                            else:
-                                old_pat.status = 'ok'
-                                old_pat.modified = False
-                            old_pat.sulci_locked = pat.sulci_locked
-                            if old_pat.sulci:
-                                old_pat.update_sulci_status()
-                            pat = old_pat
+
+                    if old_pat and (not osp.exists(pat_file)
+                                    or (self.last_poll
+                                        and os.stat(pat_file).st_mtime
+                                            < self.last_poll)):
+                        # the file has not been modified since we have read it
+                        pat = old_pat
+                    else:
+                        pat = SulcalPattern(
+                            pat_file, graph, self.out_database,
+                            db_settings.directory,
+                            force_sulci_lock=force_sulci_locks_state)
+                        if old_pat:
+                            if old_pat.sulci and not old_pat.modified:
+                                pat.set_sulci_graph(old_pat.sulci)
+                                pat.update_sulci_status()
+                            elif old_pat.modified:
+                                # print('keep old pat', sub, side,
+                                #       old_pat.modified)
+                                patterns.setdefault(sub, {})[side] = old_pat
+                                old_pat.out_db = self.out_database
+                                if old_pat.modified \
+                                        and old_pat.patterns != pat.patterns:
+                                    old_pat.status = 'conflict'
+                                else:
+                                    old_pat.status = 'ok'
+                                    old_pat.modified = False
+                                old_pat.sulci_locked = pat.sulci_locked
+                                if old_pat.sulci:
+                                    old_pat.update_sulci_status()
+                                pat = old_pat
+
                     patterns.setdefault(sub, {})[side] = pat
 
                 print('\r%d / %d (100%%)' % (ns, ns))
@@ -756,7 +769,8 @@ class SulcalPatternsData(Qt.QObject):
         if self.update_thread:
             self.update_thread.join()
 
-    def set_pattern_state(self, subject, side, pattern, state_dict):
+    def set_pattern_state(self, subject, side, pattern, state_dict,
+                          remove_keys=None):
         # print('set_pattern_state', subject, side, pattern, state_dict)
         with self.lock:
             pat = self.patterns.get(subject, {}).get(side)
@@ -771,6 +785,9 @@ class SulcalPatternsData(Qt.QObject):
                 pd.update(p)
             sd = dict(pd)
             sd.update(state_dict)
+            if remove_keys:
+                for key in remove_keys:
+                    del sd[key]
             if sd != pd:
                 # print('MODIF:', subject, side, pattern, pd, sd)
                 pat.modified = True

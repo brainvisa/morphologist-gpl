@@ -532,7 +532,7 @@ class SulcalPatternsEditor(Qt.QWidget):
         #self.update_pattern(item, subject, side, pattern)
 
     def update_pattern(self, item, subject, side, pattern):
-        #print('change pattern state')
+        # print('change pattern state')
         if item.checkState() == Qt.Qt.Checked:
             state = True
         else:
@@ -556,19 +556,21 @@ class SulcalPatternsEditor(Qt.QWidget):
         self.summary_table.blockSignals(True)
         item.setText(conf)
         self.summary_table.blockSignals(False)
+        remove_keys = []
         with self.data_model.lock:
             pstate = {}
             pat = self.get_pattern(subject, side)
             if pat:
                 p = pat.patterns.get(pattern, {})
                 pstate.update(p)
-            pstate = {'enabled': state}
+            pstate['enabled'] = state
             if confidence is not None:
                 pstate['confidence'] = confidence
             elif 'confidence' in pstate:
-              del pstate['confidence']
+                remove_keys.append('confidence')
 
-            self.data_model.set_pattern_state(subject, side, pattern, pstate)
+            self.data_model.set_pattern_state(subject, side, pattern, pstate,
+                                              remove_keys=remove_keys)
             mod = pat.modified
             status = pat.status
         side_i = self.side_names.index(side)
