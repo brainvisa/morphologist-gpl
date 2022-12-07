@@ -175,6 +175,8 @@ signature = Signature(
                                                   'CSV file', requiredAttributes={'side': 'left'}),
     'left_labels_priors', ReadDiskItem('Sulci Labels Priors',
                                        'Text Data Table', requiredAttributes={'side': 'left'}),
+    'left_model_file', ReadDiskItem('Any Type', 'mdsm file'),
+    'left_param_file', ReadDiskItem('Any Type', 'JSON file'),
     # Global
     'left_global_model', ReadDiskItem('Sulci Segments Model',
                                       'Text Data Table', requiredAttributes={'side': 'left'}),
@@ -202,6 +204,8 @@ signature = Signature(
                                                    'CSV file', requiredAttributes={'side': 'right'}),
     'right_labels_priors', ReadDiskItem('Sulci Labels Priors',
                                         'Text Data Table', requiredAttributes={'side': 'right'}),
+    'right_model_file', ReadDiskItem('Any Type', 'mdsm file'),
+    'right_param_file', ReadDiskItem('Any Type', 'JSON file'),
     # Global
     'right_global_model', ReadDiskItem('Sulci Segments Model',
                                        'Text Data Table', requiredAttributes={'side': 'right'}),
@@ -441,6 +445,17 @@ def initialization(self):
     self.linkParameters('left_labels_priors', 'left_graph')
     self.signature['left_posterior_probabilities'].userLevel = 100
     self.signature['left_labels_priors'].userLevel = 100
+    
+    self.left_model_file = os.path.normpath(os.path.join(mainPath, '..', 'share',
+                                                         'brainvisa-share-%s.%s'% tuple(versionString().split('.')[:2]),
+                                                         'models', 'models_2019',
+                                                         'cnn_models', 'sulci_unet_model_left.mdsm'))
+    self.signature['left_model_file'].userLevel = 100
+    self.left_param_file = os.path.normpath(os.path.join(mainPath, '..', 'share',
+                                                         'brainvisa-share-%s.%s'% tuple(versionString().split('.')[:2]),
+                                                         'models', 'models_2019',
+                                                         'cnn_models', 'sulci_unet_model_params_left.json'))
+    self.signature['left_param_file'].userLevel = 100
     # Global
     self.left_global_model = self.signature['left_global_model'].findValue(
         {'sulci_segments_model_type': 'global_registered_spam'})
@@ -469,6 +484,17 @@ def initialization(self):
     self.linkParameters('right_labels_priors', 'right_graph')
     self.signature['right_posterior_probabilities'].userLevel = 100
     self.signature['right_labels_priors'].userLevel = 100
+    
+    self.right_model_file = os.path.normpath(os.path.join(mainPath, '..', 'share',
+                                                         'brainvisa-share-%s.%s'% tuple(versionString().split('.')[:2]),
+                                                         'models', 'models_2019',
+                                                         'cnn_models', 'sulci_unet_model_right.mdsm'))
+    self.signature['right_model_file'].userLevel = 100
+    self.right_param_file = os.path.normpath(os.path.join(mainPath, '..', 'share',
+                                                         'brainvisa-share-%s.%s'% tuple(versionString().split('.')[:2]),
+                                                         'models', 'models_2019',
+                                                         'cnn_models', 'sulci_unet_model_params_right.json'))
+    self.signature['right_param_file'].userLevel = 100
     # Global
     self.right_global_model = self.signature['right_global_model'].findValue(
         {'sulci_segments_model_type': 'global_registered_spam'})
@@ -791,11 +817,15 @@ def execution(self, context):
     elif self.perform_sulci_recognition=='DeepCNN':
         context.runProcess('capsul://deepsulci.sulci_labeling.capsul.labeling',
                            graph=self.left_graph,
+                           model_file=self.left_model_file,
+                           param_file=self.left_param_file,
                            roots=self.left_roots,
                            skeleton=self.left_skeleton,
                            labeled_graph=self.left_labelled_graph)
         context.runProcess('capsul://deepsulci.sulci_labeling.capsul.labeling',
                            graph=self.right_graph,
+                           model_file=self.right_model_file,
+                           param_file=self.right_param_file,
                            roots=self.right_roots,
                            skeleton=self.right_skeleton,
                            labeled_graph=self.right_labelled_graph)
