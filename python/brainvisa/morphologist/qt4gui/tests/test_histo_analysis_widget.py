@@ -6,14 +6,6 @@ import sys
 import unittest
 import numpy
 
-import sip
-sip.setapi('QString', 2)
-sip.setapi('QVariant', 2)
-sip.setapi('QDate', 2)
-sip.setapi('QDateTime', 2)
-sip.setapi('QTextStream', 2)
-sip.setapi('QTime', 2)
-sip.setapi('QUrl', 2)
 from soma.qt_gui.qt_backend import QtGui, QtCore, QtTest
 from morphologist.tests.gui import TestGui
 from morphologist.core.study import Study

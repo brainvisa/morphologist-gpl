@@ -38,13 +38,12 @@
 from __future__ import absolute_import
 import sip
 from six.moves import range
-sip.setapi('QString', 2)
 import anatomist.api as anatomist
+from soma.qt_gui.qt_backend import Qt
 from soma import aims
 # anatomist may be replaced by another implementation (brainvisa.anatomist)
 import numpy
 from brainvisa.morphologist.qt4gui import histo_analysis_widget
-from soma.qt_gui.qt_backend import Qt
 from soma.qt_gui.qt_backend.QtGui import QDialog, QWidget, QVBoxLayout, \
     QHBoxLayout, \
     QGridLayout, QPushButton, QLabel, QLineEdit, QDoubleValidator, QSlider, \
