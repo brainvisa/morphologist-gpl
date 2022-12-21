@@ -94,7 +94,7 @@ class HistoAnalysisWidget(QtGui.QWidget):
     #: Used for curve representation, in set_histo_view_mode()
     CURVE = 1
 
-    def __init__(self, parent=None, flags=QtCore.Qt.WindowFlags(0)):
+    def __init__(self, parent=None, flags=QtCore.Qt.WindowType(0)):
         QtGui.QWidget.__init__(self, parent, flags)
         self.histodata = HistoData()
         self.mfig = None
