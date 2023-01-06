@@ -182,7 +182,7 @@ class FreeSurferCheckbase(Checkbase):
                 path = getfilepath(
                     key, files[subject][key], patterns=self.patterns)
                 test = open(path, 'r').readlines()
-                res = [string.split(each.rstrip('\n'), ', ') for each in test]
+                res = [each.rstrip('\n').split(', ') for each in test]
                 measures = {}
                 for region in freesurfer_atlas_regions:
                     m = [each for each in res if region in each]
@@ -190,7 +190,7 @@ class FreeSurferCheckbase(Checkbase):
                         v = float(m[0][m[0].index(region) + 2])
                         measures[region] = v
 
-                res = [string.split(each.rstrip('\n')) for each in test]
+                res = [each.rstrip('\n').split() for each in test]
                 for region in freesurfer_atlas_regions2:
                     m = [each for each in res if region in each]
                     if len(m) > 0:
@@ -218,7 +218,7 @@ class FreeSurferCheckbase(Checkbase):
                     path = getfilepath(
                         key, files[subject][key][0], patterns=self.patterns)
                     test = open(path, 'r').readlines()
-                    res = [string.split(each.rstrip('\n')) for each in test]
+                    res = [each.rstrip('\n').split() for each in test]
                     measures = {}
                     for region in freesurfer_surface_regions:
                         m = [each for each in res if each[0] == region]
@@ -228,7 +228,7 @@ class FreeSurferCheckbase(Checkbase):
                     self.thicknesses.setdefault(subject, {})
                     self.thicknesses[subject][key] = measures
 
-                    res = [string.split(each.rstrip('\n'), ', ')
+                    res = [each.rstrip('\n').split(', ')
                            for each in test]
                     avg = [each for each in res if 'MeanThickness' in each][0]
                     avg_thick = float(avg[avg.index('MeanThickness') + 2])

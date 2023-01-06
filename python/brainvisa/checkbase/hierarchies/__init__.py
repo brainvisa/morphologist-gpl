@@ -77,7 +77,7 @@ def processregexp(regexp, attributes, wildcards=True):
 
     import string
     import re
-    s = string.split(regexp, '(?P')
+    s = regexp.split('(?P')
     res = []
     for each in s:
         m = re.match('^[=<](?P<field>\w+)', each)

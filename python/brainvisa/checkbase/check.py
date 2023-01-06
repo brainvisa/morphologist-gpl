@@ -356,8 +356,8 @@ def save_csv(database_checker, logdir='/neurospin/cati/Users/operto/logs', datet
                               quotechar='|', quoting=csv.QUOTE_MINIMAL)
         mywriter.writerow(
             ['device', 'size', 'used', 'available', 'percent', 'computation time'])
-        device, size, used, available, percent = string.split(
-            database_checker.global_disk_space, ' ')
+        device, size, used, available, percent \
+            = database_checker.global_disk_space.split(' ')
         mywriter.writerow([device, size, used, available,
                            percent, database_checker.execution_time])
 
@@ -390,7 +390,7 @@ def save_action_diskusage(database_checker, logdir='/neurospin/cati/Users/operto
     for i, (user, size) in enumerate(other_users.items()):
         res['users'][user] = size
 
-    s = string.split(database_checker.global_disk_space, ' ')
+    s = database_checker.global_disk_space.split(' ')
     for i, each in enumerate(['device', 'size', 'used', 'available', 'percent']):
         res['global'][each] = s[i]
 
