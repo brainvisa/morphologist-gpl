@@ -170,7 +170,7 @@ def initialization(self):
     def linkVolBrainOutput(self, proc):
         if self.subject and self.acquisition:
             d = {'_database': self.subject.get('_database'),
-                 '_ontology': 'brainvisa-3.2.0',
+                 '_ontology': self.subject.get('_ontology'),
                  'center': self.subject.get('center'),
                  'subject': self.subject.get('subject'),
                  'acquisition': self.acquisition}
