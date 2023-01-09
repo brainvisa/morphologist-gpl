@@ -1,6 +1,6 @@
-#!/usr/bin/python2
-from __future__ import absolute_import, print_function
+#!/usr/bin/python
 
+from __future__ import absolute_import, print_function
 import pyinotify
 import sys
 import os
