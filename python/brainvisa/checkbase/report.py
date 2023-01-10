@@ -288,8 +288,9 @@ class HTMLReportGenerator(object):
 
         # Information on disk usage
         if hasattr(self.database_checker, 'studies_space'):
-            device, total_size, used, available, percent = string.split(
-                self.database_checker.global_disk_space, ' ')
+            device, total_size, used, available, percent = (
+                self.database_checker.global_disk_space.split(' ')
+            )
             percent = 100.0 - float(percent)
 
             ht = {'$NUMBER_OF_STUDIES': str('%i' % len(list(self.database_checker.studies_space.keys()))),

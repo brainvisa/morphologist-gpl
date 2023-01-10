@@ -140,7 +140,7 @@ def execution(self, context):
             stream.write('name_descriptors 1\n')
 
         subjects = [str(x.get('subject')) for x in self.data_graphs]
-        stream.write('subjects ' + string.join(subjects) + "\n")
+        stream.write('subjects ' + ' '.join(subjects) + "\n")
 
         stream.write('*END\n')
         stream.close()
