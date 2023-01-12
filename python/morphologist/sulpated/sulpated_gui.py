@@ -501,6 +501,8 @@ class SulcalPatternsEditor(Qt.QWidget):
         # print('Cancel:', subject, side, pattern)
         self.annot_widget.set_pattern(subject, side, pattern)
         row, col = self.get_table_item(subject, side, pattern)
+        if row is None or col is None:
+            return
         item = self.summary_table.item(row, col)
         self.update_pattern(item, subject, side, pattern)
 
