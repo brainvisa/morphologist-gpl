@@ -135,7 +135,7 @@ def execution(self, context):
             'graphFiles\t')
     base = [x.fullPath() for x in self.learningbase_data_graphs
             + self.testbase_data_graphs]
-    f.write(string.join(base) + '\n')
+    f.write(' '.join(base) + '\n')
     f.write('clear\t1\n'
             '*END\n')
     f.close()
@@ -154,7 +154,7 @@ def execution(self, context):
             'model\t' + self.model_graph.fullPath() + '\n'
             'labels\t' + self.labels_translation_map.fullPath() + '\n'
             'adap\t' + self.template_rel_model.fullPath() + '\n'
-            'graphs\t' + string.join(base) + '\n'
+            'graphs\t' + ' '.join(base) + '\n'
             'frequency_min\t0.15\n'
             'remove_brain\t1\n'
             'set_weights\t1\n'
@@ -177,7 +177,7 @@ def execution(self, context):
     f.write('*BEGIN TREE 1.0 siLearn\n'
             'modelFile\t' + self.model_graph.fullPath() + '\n'
             'trainschemeFile\t' + stlrn.fullPath() + '\n'
-            'graphFiles\t' + string.join(base) + '\n'
+            'graphFiles\t' + ' '.join(base) + '\n'
             'mode\ttrainStats\n'
             'stats\t1\n'
             'cycles\t1\n'

@@ -356,8 +356,9 @@ def save_csv(database_checker, logdir='/neurospin/cati/Users/operto/logs', datet
                               quotechar='|', quoting=csv.QUOTE_MINIMAL)
         mywriter.writerow(
             ['device', 'size', 'used', 'available', 'percent', 'computation time'])
-        device, size, used, available, percent \
-            = database_checker.global_disk_space.split(' ')
+        device, size, used, available, percent = (
+            database_checker.global_disk_space.split(' ')
+        )
         mywriter.writerow([device, size, used, available,
                            percent, database_checker.execution_time])
 
@@ -476,13 +477,13 @@ def save_table(checkbase, logdir='/neurospin/cati/Users/operto/logs/existingfile
 #   fields_names.extend(j['key_items'])
 #   csv = []
 #   t = {True: '1', False:'0'}
-#   csv.append(string.join(fields_names, ';'))
+#   csv.append(';'.join(fields_names))
 #   for subject in inv.keys():
 #      subject_row = [unicode(subject).encode("utf-8")]
 #      for each in j['key_items']:
 #         subject_row.append(t[inv[subject][each]])
 #
-#      csv.append(string.join(subject_row, ';'))
+#      csv.append(';'.join(subject_row))
 #
 #   html = json2html(csv, with_head_tags=False)
 #   return html
@@ -499,7 +500,7 @@ def json_to_measures_tables(j):
         fields_names = ['subject']
         fields_names.extend(inv['key_items'])
         csv = []
-        csv.append(string.join(fields_names, ';'))
+        csv.append(';'.join(fields_names))
         for subject in inv['identified_items'].keys():
             subject_row = [six.text_type(subject).encode("utf-8")]
             for each in inv['key_items']:
@@ -508,7 +509,7 @@ def json_to_measures_tables(j):
                 else:
                     subject_row.append('0')
 
-            csv.append(string.join(subject_row, ';'))
+            csv.append(';'.join(subject_row))
 
         html = csv2html(csv, with_head_tags=False)
         tables[directory] = html
@@ -591,8 +592,9 @@ def jsons_for_web(json, _type='existence'):
             inv[subject] = {}
             for k, v in items.items():
                 if isinstance(v, list):
-                    inv[subject][k] = string.join(
-                        [getfilepath(k, attributes=each, patterns=patterns) for each in v], ',')
+                    inv[subject][k] = ','.join(
+                        getfilepath(k, attributes=each, patterns=patterns)
+                        for each in v)
                 else:
                     inv[subject][k] = getfilepath(
                         k, attributes=v, patterns=patterns)

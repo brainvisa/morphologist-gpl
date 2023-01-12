@@ -90,7 +90,7 @@ def processregexp(regexp, attributes, wildcards=True):
             res.append('%s%s' % (
                 attributes[field], each[_findmatchingparenthesis(each)+1:].rstrip('$)')))
 
-    return string.join(res, '')
+    return ''.join(res)
 
 
 def get_files(databasedir):
