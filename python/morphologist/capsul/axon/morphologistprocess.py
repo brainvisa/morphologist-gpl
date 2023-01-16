@@ -119,6 +119,8 @@ class morphologistProcess(Process):
         self.add_trait('left_posterior_probabilities', File(
             allowed_extensions=['.csv'], output=True))
         self.add_trait('left_labels_priors', File(allowed_extensions=['.dat']))
+        self.add_trait('left_model_file', File(allowed_extensions=['.mdsm']))
+        self.add_trait('left_param_file', File(allowed_extensions=['.json']))
         self.add_trait('left_global_model', File(allowed_extensions=['.dat']))
         self.add_trait('left_tal_to_global_transform', File(
             allowed_extensions=['.trm'], output=True))
@@ -140,6 +142,8 @@ class morphologistProcess(Process):
             allowed_extensions=['.csv'], output=True))
         self.add_trait('right_labels_priors', File(
             allowed_extensions=['.dat']))
+        self.add_trait('right_model_file', File(allowed_extensions=['.mdsm']))
+        self.add_trait('right_param_file', File(allowed_extensions=['.json']))
         self.add_trait('right_global_model', File(allowed_extensions=['.dat']))
         self.add_trait('right_tal_to_global_transform', File(
             allowed_extensions=['.trm'], output=True))
@@ -162,7 +166,7 @@ class morphologistProcess(Process):
         # initialization section
         self.perform_segmentation = True
         self.method_ACPC = 'With SPM12 Normalization'
-        self.anatomical_template = '/i2bm/local/spm12-standalone/spm12_mcr/spm12/toolbox/OldNorm/T1.nii'
+        self.anatomical_template = '/i2bm/local/spm12-standalone/spm12_mcr/spm12/spm12/toolbox/OldNorm/T1.nii'
         #self.anatomical_template = u'/usr/local/spm12-standalone/spm8_mcr/spm8/templates/T1.nii'
         self.tal_to_normalized_transform = []
         self.anatomical_template_skull_stripped = '/casa/host/build/share/brainvisa-share-5.1/anatomical_templates/MNI152_T1_2mm_brain.nii' #'/home/riviere/build-cmake/build-trunk-release/share/brainvisa-share-4.6/anatomical_templates/MNI152_T1_2mm_brain.nii'
@@ -170,6 +174,10 @@ class morphologistProcess(Process):
         self.perform_meshes_and_graphs = True
         self.perform_sulci_recognition = 'DeepCNN'
         self.labels_translation_map = '/casa/host/build/share/brainvisa-share-5.1/nomenclature/translation/sulci_model_2008.trl' #'/home/riviere/build-cmake/build-trunk-release/share/brainvisa-share-4.6/nomenclature/translation/sulci_model_2008.trl'
+        self.left_model_file = '/casa/host/build/share/brainvisa-share-5.1/models/models_2019/cnn_models/sulci_unet_model_left.mdsm'
+        self.left_param_file = '/casa/host/build/share/brainvisa-share-5.1/models/models_2019/cnn_models/sulci_unet_model_params_left.json'
+        self.right_model_file = '/casa/host/build/share/brainvisa-share-5.1/models/models_2019/cnn_models/sulci_unet_model_right.mdsm'
+        self.right_param_file = '/casa/host/build/share/brainvisa-share-5.1/models/models_2019/cnn_models/sulci_unet_model_params_right.json'
         self.sulci_file = '/casa/host/build/share/brainvisa-share-5.1/nomenclature/translation/sulci_default_list.json' #'/home/riviere/build-cmake/build-trunk-release/share/brainvisa-share-4.6/nomenclature/translation/sulci_default_list.json'
 
     def _run_process(self):
