@@ -117,11 +117,11 @@ def execution(self, context):
             for sulcus in sulci:
                 if sulcus in meas_by_sulcus:
                     meas_by_sulcus[sulcus][subject] = list(
-                        csv[sulci_arr == sulcus][0])[1:]
+                        csv[sulci_arr == sulcus.encode()][0])[1:]
                 else:
                     # if the sulci doesn't exist yet, we create it.
                     meas_by_sulcus[sulcus] = {subject: list(
-                        csv[sulci_arr == sulcus][0])[1:]}
+                        csv[sulci_arr == sulcus.encode()][0])[1:]}
 
     if self.sort_by == 'measure':
         fi.close()
