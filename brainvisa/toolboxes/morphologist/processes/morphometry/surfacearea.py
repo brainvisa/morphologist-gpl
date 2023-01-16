@@ -52,7 +52,8 @@ def initialization(self):
 def execution(self, context):
     def areaVolSurface(context, surface):
         cmd = ['AimsMeshArea', surface.fullPath()]
-        output = subprocess.check_output(cmd).split('\n')
+        output = subprocess.check_output(cmd)
+        output = output.decode().split('\n')
         a = float(output[0].split()[1])
         v = float(output[1].split()[1])
         return [a, v]
