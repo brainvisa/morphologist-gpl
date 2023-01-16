@@ -184,8 +184,15 @@ Morphologist 2021 does not change in terms of segmentation, but now switches to 
 <p>Older versions of the pipeline are still available in the sub-directory <a href="categories/morphologist/segmentationpipeline/older_pipelines/category_documentation.html">"segmentation Pipeline / Older pipelines"</a>, and should normally work as they used to.
 </p>
 
-<div class="note"><h4>News in 2022:</h4>
-A modification has been added in the bias correction step to avoid failures with thresholded images (which is sometimes used to remove the background noise).
+<div class="note"><h4>News in 2023:</h4>
+  <ul>
+    <li>
+    A modification has been added in the bias correction step to avoid failures with thresholded images (which is sometimes used to remove the background noise).
+    </li>
+    <li>
+    The CNN sulci recognition could produce (in rare bad cases) both sulcus vertices with disconnected voxels, and adjacent cut vertices with the same label (which was not severe but useless). This has been reworked and fixed. As a consequence, the outputs of CNN sulci recognition are different in 5.1 and 5.0.
+    </li>
+  </ul>
 </div>
 
 <div class="note"><h4>News in 2021 vs. 2015:</h4>
