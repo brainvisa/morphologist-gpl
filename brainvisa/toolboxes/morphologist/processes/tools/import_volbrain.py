@@ -230,7 +230,6 @@ def execution(self, context):
     
         files_list = glob.glob(os.path.join(dir_mni.fullPath(), '*mni*'))
         for f in files_list:
-            #print f
             p = os.path.basename(f).split('_')
             if p[0] != 'n':
                 p_out = [x for x in self.signature.keys() if p[0] in x and 'mni' in x][0]
@@ -243,12 +242,11 @@ def execution(self, context):
                             #'-o', self.signature[p_out],
             if p_out[4:] in ['lab', 'hemi', 'mask', 'crisp']:
                 command_list += ['-t', 'S16']
-            print(command_list)
             context.system(*command_list)
     
         native_filtered = glob.glob(os.path.join(dir_mni.fullPath(), 'fjob*'))[0]
         command_list = ['AimsFileConvert',
-                        '-i', f,
+                        '-i', native_filtered,
                         '-o', self.native_filtered]
         context.system(*command_list)
         
@@ -285,7 +283,6 @@ def execution(self, context):
                                 '-i', f,
                                 '-o', self.__dict__[p_out],
                                 '-t', 'S16']
-            print(command_list)
             context.system(*command_list)
             
         shutil.copy(os.path.join(dir_native.fullPath(), 'READMEnat.pdf'),
