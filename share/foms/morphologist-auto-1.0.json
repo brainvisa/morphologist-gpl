@@ -737,6 +737,10 @@
                     }
                 ]
             ],
+            "left_model_file": [["shared:models/models_2019/cnn_models/sulci_unet_model_left",
+                 "Deep model file", {"side": "L"}]],
+            "left_param_file": [["shared:models/models_2019/cnn_models/sulci_unet_model_params_left",
+                 "JSON file", {"side": "L"}]],
             "left_global_model": [
                 [
                     "shared:models/models_<sulci_database>/descriptive_models/segments/<sulci_segments_model_type>_left/spam_distribs",
@@ -841,6 +845,10 @@
                     ]
                 ]
             ],
+            "right_model_file": [["shared:models/models_2019/cnn_models/sulci_unet_model_right",
+                 "Deep model file", {"side": "R"}]],
+            "right_param_file": [["shared:models/models_2019/cnn_models/sulci_unet_model_params_right",
+                 "JSON file", {"side": "R"}]],
             "right_posterior_probabilities": [
                 [
                     "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/R<subject>_<sulci_recognition_session>_auto_proba",
