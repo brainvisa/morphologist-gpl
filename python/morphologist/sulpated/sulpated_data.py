@@ -52,7 +52,7 @@ class SulcalPattern(object):
         The sulcal graph file is stored (optionally) as an Axon DiskItem.
     '''
     def __init__(self, filename, sulci_di=None, out_db=None,
-                 sulci_db=None, force_sulci_lock=None):
+                 sulci_db=None, force_sulci_lock=None, out_db_filter={}):
         self.filename = filename
         self.sulci_di = sulci_di
         self.sulci_db = sulci_db
@@ -66,6 +66,7 @@ class SulcalPattern(object):
         self.sulci = None
         self.out_db = out_db
         self.force_sulci_lock = force_sulci_lock
+        self.out_db_filter = out_db_filter
 
         self.load()
 
@@ -254,6 +255,7 @@ class SulcalPattern(object):
             sel['_database'] = self.sulci_db
             sel['automatically_labelled'] = 'No'
             sel['manually_labelled'] = 'Yes'
+            sel.update(self.out_db_filter)
             wdi = WriteDiskItem('Labelled Cortical Folds Graph',
                                 'Graph and data')
             di = wdi.findValue(sel)
@@ -474,6 +476,7 @@ class SulcalPatternsData(Qt.QObject):
         self.ro_database = ro_db
         self.region = region
         self.db_filter = db_filter
+        self.out_db_filter = {}
 
         self.lock = threading.RLock()
         self.updating = False
@@ -572,6 +575,8 @@ class SulcalPatternsData(Qt.QObject):
             self.db_def = db_def
             if not self.db_filter:
                 self.db_filter = db_def.get('database_filter', {})
+            if not self.out_db_filter:
+                self.out_db_filter = db_def.get('output_database_filter', {})
             if 'sulci_database' in db_def:
                 self.sulci_database \
                     = osp.realpath(db_def['sulci_database'])
@@ -604,25 +609,39 @@ class SulcalPatternsData(Qt.QObject):
             db_settings_ro = None
             graphs_ro = []
             if self.ro_database:
+                print('ro_database:', self.ro_database)
                 db_settings_ro = [ds for ds in neuroConfig.dataPath
                                   if osp.realpath(ds.directory)
                                       == self.ro_database]
                 if db_settings_ro:
                     db_settings_ro = db_settings_ro[0]
                     self.ro_database = db_settings_ro.directory
+                    print('found ro:', self.ro_database)
 
             sel = {'_database': db_settings.directory}
             sel.update(self.db_filter)
+            if self.out_db_filter:
+                sel_bak = dict(sel)
+                sel.update(self.out_db_filter)
             print('sel filter:', sel)
             graphs = list(rdi.findValues({}, requiredAttributes=sel))
             print('1st query done.:', len(graphs))
             self._check_abort()
+            if self.out_db_filter:
+                # look for input graphs
+                sel = sel_bak
+                ingraphs = list(rdi.findValues({}, requiredAttributes=sel))
+                ingraphs = [g for g in ingraphs if g not in graphs]
+                print('2nd query done:', len(ingraphs))
+                # TODO: eliminate duplicates differing only on
+                # self.out_db_filter attributes
+                graphs += ingraphs
 
             if db_settings_ro:
                 sel['_database'] = db_settings_ro.directory
                 print('sel filter RO:', sel)
                 graphs_ro = list(rdi.findValues({}, requiredAttributes=sel))
-                print('2nd query done.:', len(graphs_ro))
+                print('RO query done.:', len(graphs_ro))
                 graphs += graphs_ro
                 del graphs_ro
                 self._check_abort()
@@ -649,13 +668,16 @@ class SulcalPatternsData(Qt.QObject):
                     # replace it
                     if old_ro and not readonly:
                         replace = True
-                    elif not old_ro and not readonly:
+                    elif not old_ro and readonly:
                         replace = False
                     elif old_man and not man_label:
                         replace = False
                     elif not old_man and man_label:
                         replace = True
                     else:
+                        print('conflicting sulci:')
+                        print(old_ro, old_man, old[2].fullPath())
+                        print(readonly, man_label, graph.fullPath())
                         raise ValueError(
                             'Several sulci graphs for subject %s and side '
                             '%s: you should focus your query for input '
@@ -717,7 +739,8 @@ class SulcalPatternsData(Qt.QObject):
                         pat = SulcalPattern(
                             pat_file, graph, self.out_database,
                             db_settings.directory,
-                            force_sulci_lock=force_sulci_locks_state)
+                            force_sulci_lock=force_sulci_locks_state,
+                            out_db_filter=self.out_db_filter)
                         if old_pat:
                             if old_pat.sulci and not old_pat.modified:
                                 pat.set_sulci_graph(old_pat.sulci)
