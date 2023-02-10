@@ -244,7 +244,9 @@ class SulcalPattern(object):
             return False
         graph_di = self.sulci_di
 
-        if self.sulci_db and (graph_di.get('_database') != self.sulci_db or graph_di.get('automatically_labelled') == 'Yes'):
+        if self.sulci_db \
+                and (graph_di.get('_database') != self.sulci_db
+                     or graph_di.get('automatically_labelled') == 'Yes'):
             # was in a read-only database, convert it into the output one
             from brainvisa.data.writediskitem import WriteDiskItem
 
