@@ -165,11 +165,24 @@ class SulcalPatternsEditor(Qt.QWidget):
         hlay.addWidget(self.export_patterns_btn)
         hlay.addWidget(self.quit_btn)
 
+        hlay.addStretch(1)
+        vbox = Qt.QGroupBox('Display sulci model:')
+        hlay.addWidget(vbox)
+        mlay = Qt.QHBoxLayout()
+        vbox.setLayout(mlay)
+        smodel_l = Qt.QCheckBox('left')
+        smodel_r = Qt.QCheckBox('right')
+        mlay.addWidget(smodel_l)
+        mlay.addWidget(smodel_r)
+
         self.save_btn.clicked.connect(self.save_all)
         self.show_conflict_btn.clicked.connect(self.show_conflicts)
         self.export_patterns_btn.clicked.connect(
             self.export_patterns_table_gui)
         self.quit_btn.clicked.connect(self.close)
+
+        smodel_l.stateChanged.connect(self.display_left_model)
+        smodel_r.stateChanged.connect(self.display_right_model)
 
         self.data_model.start_polling_thread(1.)
         self.resize(1100, 800)  # for now...
@@ -349,8 +362,14 @@ class SulcalPatternsEditor(Qt.QWidget):
                     status = 'C'
                 elif pats.sulci_modified():
                     status = 'M'
-                table.setItem(row, sulci_status_col + sidecol,
-                              Qt.QTableWidgetItem(status))
+                item = Qt.QTableWidgetItem(status)
+                table.setItem(row, sulci_status_col + sidecol, item)
+
+                if pats.is_output_graph:
+                    color = [255, 255, 180]  # graph has been saved in R/W
+                else:
+                    color = [255, 255, 255]
+                item.setBackground(Qt.QBrush(Qt.QColor(*color)))
 
                 table.setItem(row, save_sulci_col + sidecol,
                               Qt.QTableWidgetItem(save_icon, None))
@@ -704,6 +723,7 @@ class SulcalPatternsEditor(Qt.QWidget):
         row, col = self.get_table_item(subject, side, 'sulci status')
         item = self.summary_table.item(row, col)
         item.setText(sm)
+        item.setBackground(Qt.QBrush(Qt.QColor(255, 255, 150)))
         self.update_sulci_view(subject, side)
 
     def get_table_item(self, subject, side=None, pattern_or_button=None):
@@ -835,6 +855,7 @@ class SulcalPatternsEditor(Qt.QWidget):
             viewer = processes.getProcessInstance('AnatomistShowFoldGraph')
             # initialize using database graph in order to have completion
             viewer.graph = org_graph_file
+            viewer.mesh_opacity = 0.7
             # then lock all params and set the backup, if any
             if graph_file not in(org_graph_file, org_graph_file.fullPath()):
                 for param in viewer.signature:
@@ -939,6 +960,69 @@ class SulcalPatternsEditor(Qt.QWidget):
                         if item.text() != status:
                             item.setText(status)
                             self.update_sulci_view(subject, side)
+                        if pat.is_output_graph:
+                            color = [255, 255, 180]
+                        else:
+                            color = [255, 255, 255]
+                        item.setBackground(Qt.QBrush(Qt.QColor(*color)))
+
+    def display_left_model(self, state):
+        self.display_model('left', state == Qt.Qt.Checked)
+
+    def display_right_model(self, state):
+        self.display_model('right', state == Qt.Qt.Checked)
+
+    def display_model(self, side, is_on):
+        if is_on:
+            with self.data_model.bv_lock:
+                from brainvisa import processes
+                from brainvisa import anatomist
+            import time
+
+            a = anatomist.Anatomist()
+            w = getattr(self, 'model_window', None)
+            if w is not None:
+                print('existing model_window:', w)
+                #w = w()
+            if w is None:
+                w = a.createWindow('3D', block=self.sulci_window())
+                self.model_window = w
+            context = processes.defaultContext()
+            try:
+                with self.data_model.bv_lock:
+                    viewer = processes.getProcessInstance(
+                        'AnatomistShowDescriptiveModel')
+            except KeyError:
+                print('model viewer not found yet.')
+                viewer = None
+                while viewer is None:
+                    time.sleep(1.)
+                    try:
+                        with self.data_model.bv_lock:
+                            viewer = processes.getProcessInstance(
+                                'AnatomistShowDescriptiveModel')
+                    except KeyError:
+                        print('model viewer not found yet.')
+                        pass
+
+            di = viewer.signature['read']
+            rdi = list(di.findValues({
+                'side': side,
+                'sulci_seghments_model_type':
+                    'locally_from_global_registred_spam'}))[0]
+            viewer.read = rdi
+            viewer.show_unknown = True
+            items = context.runProcess(viewer)
+            obj_items = items[1].objects
+            items = [item for item in items if not isinstance(item, a.AWindow)]
+            w.addObjects(items)
+            moddata = getattr(self, 'sulci_model_data', {})
+            moddata[side] = items
+            self.sulci_model_data = moddata
+        else:  # is_on == False, remove
+            moddata = getattr(self, 'sulci_model_data', {})
+            if side in moddata:
+                del moddata[side]
 
     def get_conflicts(self):
         return self.data_model.get_conflicts()

@@ -197,7 +197,9 @@ class SulcalPattern(object):
         if not self.sulci_di:
             return None
         backup_filename = self.sulci_backup_filename()
+        print('sulci_load_filename', self.sulci_di, ':', backup_filename)
         if osp.exists(backup_filename):
+            print('backup exists')
             return backup_filename
         return self.sulci_di.fullPath()
 
@@ -292,6 +294,7 @@ class SulcalPattern(object):
             os.makedirs(osp.dirname(filename), exist_ok=True)
 
         graph.save(filename)
+        self.is_output_graph = True  # now it has been written in output loc.
         # reset load date to avoid marking it as a conflict
         graph.setLoadDate(int(os.stat(filename).st_mtime) + 1)
         if self.sulci_di == filename:
@@ -479,6 +482,7 @@ class SulcalPatternsData(Qt.QObject):
         self.out_db_filter = {}
 
         self.lock = threading.RLock()
+        self.bv_lock = threading.RLock()
         self.updating = False
         self.update_thread = None
         self.bv_started = False
@@ -541,13 +545,14 @@ class SulcalPatternsData(Qt.QObject):
 
         try:
             # start brainvisa
-            if not self.bv_started:
-                from brainvisa.axon import processes
-                processes.initializeProcesses()
-                self.bv_started = True
-                with self.lock:
-                    if not self.updating:
-                        return
+            with self.bv_lock:
+                if not self.bv_started:
+                    from brainvisa.axon import processes
+                    processes.initializeProcesses()
+                    self.bv_started = True
+                    with self.lock:
+                        if not self.updating:
+                            return
 
             from brainvisa.configuration import neuroConfig
             from brainvisa.data import neuroHierarchy
@@ -626,6 +631,7 @@ class SulcalPatternsData(Qt.QObject):
             print('sel filter:', sel)
             graphs = list(rdi.findValues({}, requiredAttributes=sel))
             print('1st query done.:', len(graphs))
+            out_graphs = set(graphs)
             self._check_abort()
             if self.out_db_filter:
                 # look for input graphs
@@ -760,6 +766,8 @@ class SulcalPatternsData(Qt.QObject):
                                 if old_pat.sulci:
                                     old_pat.update_sulci_status()
                                 pat = old_pat
+
+                    pat.is_output_graph = (graph in out_graphs)
 
                     patterns.setdefault(sub, {})[side] = pat
 
