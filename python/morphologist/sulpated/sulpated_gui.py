@@ -840,8 +840,8 @@ class SulcalPatternsEditor(Qt.QWidget):
         checked = (item.checkState() == Qt.Qt.Checked)
         # print('show sulci', subject, side, checked)
         if checked:
-            from brainvisa import processes
             from brainvisa import anatomist
+            from brainvisa import processes
 
             a = anatomist.Anatomist()
 
@@ -873,10 +873,13 @@ class SulcalPatternsEditor(Qt.QWidget):
             self.displayed_sulci.setdefault(subject, {})[side] = items
             w.focusView()
             w.setControl('SelectionControl')
+            w.setReferential(a.centralReferential())
             pat_wid = self.add_pattern_widget_to_win(items[-1], subject, side)
             items.append(pat_wid)
 
         else:
+            from anatomist import cpp as anacpp
+
             # check modified
             save = True
             with self.data_model.lock:
@@ -914,6 +917,9 @@ class SulcalPatternsEditor(Qt.QWidget):
                     del s[side]
                     if len(s) == 0:
                         del self.displayed_sulci[subject]
+
+            if hasattr(anacpp.Referential, 'clearUnusedReferentials'):
+                anacpp.Referential.clearUnusedReferentials()
 
             # update status
             row, col = self.get_table_item(subject, side, 'sulci status')
