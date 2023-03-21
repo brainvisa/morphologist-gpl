@@ -965,6 +965,7 @@
                     ]
                 ]
             ],
+            "sulci_file": "{shared.sulcal_morphometry_sulci_file}",
             "sulcal_morpho_measures": [
                 [
                     "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/<subject>_<sulci_recognition_session>_auto_sulcal_morphometry",
