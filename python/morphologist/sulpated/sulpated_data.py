@@ -468,6 +468,8 @@ class SulcalPatternsData(Qt.QObject):
                  ro_db=None):
         super().__init__()
 
+        if out_db is None:
+            out_db = os.getcwd()
         if sulci_db is None:
             sulci_db = out_db
         if sulci_db:

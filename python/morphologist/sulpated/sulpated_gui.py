@@ -1,4 +1,6 @@
 
+from soma.qt_gui import qt_backend
+qt_backend.set_qt_backend(compatible_qt5=True)
 from soma.qt_gui.qt_backend import Qt
 import threading
 from soma.qt_gui import qtThread
@@ -201,7 +203,7 @@ class SulcalPatternsEditor(Qt.QWidget):
 
     def update_started(self):
         print('update_started')
-        # Qt.qApp.setOverrideCursor(Qt.Qt.BusyCursor)
+        # Qt.QApplication.instance().setOverrideCursor(Qt.Qt.BusyCursor)
 
     def item_color(self, subject, side, pattern, checked):
         if not self.pattern_def:
@@ -223,10 +225,10 @@ class SulcalPatternsEditor(Qt.QWidget):
     def update_gui(self, aborted):
         if aborted:
             print('update_gui aborted')
-            # Qt.qApp.restoreOverrideCursor()
+            # Qt.QApplication.instance().restoreOverrideCursor()
             return
         print('update_gui')
-        Qt.qApp.setOverrideCursor(Qt.Qt.BusyCursor)
+        Qt.QApplication.instance().setOverrideCursor(Qt.Qt.BusyCursor)
         self.validate_annotation()
         self.annot_widget.clear()
         with self.lock:
@@ -404,7 +406,7 @@ class SulcalPatternsEditor(Qt.QWidget):
             for side in side_names:
                 self.update_sulci_view(subject, side, full=True)
 
-        Qt.qApp.restoreOverrideCursor()
+        Qt.QApplication.instance().restoreOverrideCursor()
 
     def item_id(self, item):
         col = item.column()
