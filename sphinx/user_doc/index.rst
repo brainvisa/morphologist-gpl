@@ -39,6 +39,14 @@ Morpho-DeepSulci
 * :morphodeep_dev:`The new (2019) sulcal identification algorithms and processes <index.html>`
 
 
+SulPatEd
+--------
+
+Sulpated, "Sulcal Patterns Editor" is a graphical interface to manually label sulci and sulcal patterns. See the doc in the dedicated page.
+
+:doc:`sulpated`
+
+
 BSA Atlas (Brainvisa Sulci atlas) v.2011
 ----------------------------------------
 
@@ -78,8 +86,8 @@ This atlas gives the probability of finding various cortical folds or gray nucle
 
     A high-resolution full-brain probabilistic atlas of regions based on cortical folds
 
-.. figure:: _static/images/bsa/brainvisa_sulci_atlas_with_table_small.jpg
-    :target: _static/images/bsa/brainvisa_sulci_atlas_with_table_150dpi-r90.png
+.. figure:: _static/images/bsa/nomenclature_translation_small.png
+    :target: _static/images/bsa/nomenclature_translation.png
     :width: 50%
 
     Atlas of Sulci with nomenclature table
