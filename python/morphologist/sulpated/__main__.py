@@ -98,8 +98,7 @@ parser = ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
     'user has to do it by his own. Normally it should not happen often.'
 )
 parser.add_argument('-o', '--output',
-                    help='output brainvisa database location '
-                    '[default: current directory]')
+                    help='output data location [default: current directory]')
 parser.add_argument('-s', '--sulci_db',
                     help='input/output sulci brainvisa database location')
 parser.add_argument('-i', '--input_db',
