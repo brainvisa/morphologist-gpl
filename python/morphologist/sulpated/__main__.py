@@ -94,7 +94,7 @@ parser = ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
     'different place in order to avoid overwriting and losing the other user '
     'modifications. The backup location is always in the output database, and '
     'suffixed with ".backup.<user>", "<user>" being the user login.\n'
-    'There is currently no tool to displaty diffs and resolve conflicts: the '
+    'There is currently no tool to display diffs and resolve conflicts: the '
     'user has to do it by his own. Normally it should not happen often.'
 )
 parser.add_argument('-o', '--output',
