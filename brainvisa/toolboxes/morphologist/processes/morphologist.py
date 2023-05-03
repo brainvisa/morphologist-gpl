@@ -35,7 +35,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 from brainvisa.processes import *
 
-name = 'Morphologist 2021'
+name = 'Morphologist 2023'
 userLevel = 0
 
 signature = Signature(
@@ -281,6 +281,10 @@ def initialization(self):
         eNode.addChild('SulcalMorphometry',
                        ProcessExecutionNode('sulcigraphmorphometrybysubject',
                                             optional=1, selected=0))
+
+    eNode.addChild('GlobalMorphometry',
+                   ProcessExecutionNode('brainvolumes', optional=1,
+                                        selected=1))
 
     # Links
     # Commissures Coordinates
@@ -670,6 +674,34 @@ def initialization(self):
                             rhemi + '.SulciRecognition.output_graph')
 
         eNode.SulcalMorphometry._selectionChange.add(linkCheckModels(self))
+
+    # brain volumes
+    eNode.GlobalMorphometry.removeLink('left_grey_white', 'split_brain')
+    eNode.GlobalMorphometry.removeLink('right_grey_white', 'split_brain')
+    eNode.GlobalMorphometry.removeLink('left_labelled_graph', 'split_brain')
+    eNode.GlobalMorphometry.removeLink('right_labelled_graph', 'split_brain')
+    eNode.GlobalMorphometry.removeLink('left_gm_mesh', 'split_brain')
+    eNode.GlobalMorphometry.removeLink('right_gm_mesh', 'split_brain')
+    eNode.GlobalMorphometry.removeLink('left_wm_mesh', 'split_brain')
+    eNode.GlobalMorphometry.removeLink('right_wm_mesh', 'split_brain')
+    eNode.addDoubleLink('SplitBrain.split_brain',
+                        'GlobalMorphometry.split_brain')
+    eNode.addDoubleLink(lhemi + '.GreyWhiteClassification.grey_white',
+                        'GlobalMorphometry.left_grey_white')
+    eNode.addDoubleLink(rhemi + '.GreyWhiteClassification.grey_white',
+                        'GlobalMorphometry.right_grey_white')
+    eNode.addDoubleLink(lhemi + '.SulciRecognition.output_graph',
+                        'GlobalMorphometry.left_labelled_graph')
+    eNode.addDoubleLink(rhemi + '.SulciRecognition.output_graph',
+                        'GlobalMorphometry.right_labelled_graph')
+    eNode.addDoubleLink(lhemi + '.PialMesh.pial_mesh',
+                        'GlobalMorphometry.left_gm_mesh')
+    eNode.addDoubleLink(rhemi + '.PialMesh.pial_mesh',
+                        'GlobalMorphometry.right_gm_mesh')
+    eNode.addDoubleLink(lhemi + '.GreyWhiteMesh.white_mesh',
+                        'GlobalMorphometry.left_wm_mesh')
+    eNode.addDoubleLink(rhemi + '.GreyWhiteMesh.white_mesh',
+                        'GlobalMorphometry.right_wm_mesh')
 
     self.perform_sulci_recognition = False
     self.setOptional('left_labelled_graph')
