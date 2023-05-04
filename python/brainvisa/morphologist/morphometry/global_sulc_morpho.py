@@ -299,7 +299,7 @@ def sulcal_and_brain_morpho(
                   'both.hemi_closed_volume', 'both.eTIV',
                   'both.cerebellum_stem_volume',
                   'left.brain_volume', 'right.brain_volume')
-        res2 = {k: res[k] for k in sort_k}
+        res2 = {k: res[k] for k in sort_k if k in res}
         res2.update({k: v for k, v in res.items() if k not in sort_k})
         res = res2
     ress = brain_surfaces(left_gm_mesh, right_gm_mesh, left_wm_mesh,
