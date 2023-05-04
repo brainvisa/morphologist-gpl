@@ -242,3 +242,6 @@ FileType('MINC transformation matrix',
 #-----------Sulci masks---------------------------
 FileType('Left Sulci Mask', 'Label Volume')
 FileType('Right Sulci Mask', 'Label Volume')
+
+#-----------Report file---------------------------
+FileType('Morphologist report', 'Any type', 'PDF file')

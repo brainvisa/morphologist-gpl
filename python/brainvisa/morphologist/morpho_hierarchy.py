@@ -164,6 +164,8 @@ t1mri_acq_content = lambda: (
         "nobias_<subject>", SetType('Histogram'),
         "nobias_<subject>", SetType('Histo Analysis'),
 
+        'morphologist_report', SetType('Morphologist report'),
+
         'segmentation', SetContent(*segmentation_content()),
 
         'folds', SetContent(  # sulci, gyri
