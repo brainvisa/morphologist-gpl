@@ -88,6 +88,7 @@ def initialization(self):
                                                  'Yes')
         return {'Yes': 'label', 'No': 'name'}.get(auto, 'label')
 
+    self.sulci_label_attribute = 'label'
     self.setOptional('left_labelled_graph', 'right_labelled_graph',
                      'left_gm_mesh', 'right_gm_mesh',
                      'left_wm_mesh', 'right_wm_mesh')
