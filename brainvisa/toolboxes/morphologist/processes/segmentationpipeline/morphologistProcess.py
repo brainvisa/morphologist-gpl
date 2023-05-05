@@ -230,6 +230,15 @@ signature = Signature(
     'sulci_file', ReadDiskItem('Sulci groups list', 'JSON file'),
     'sulcal_morpho_measures', WriteDiskItem(
         'Sulcal morphometry measurements', 'CSV File'),
+    'left_csf', WriteDiskItem('Left CSF Mask',
+                              'Aims writable volume formats'),
+    'right_csf', WriteDiskItem('Right CSF Mask',
+                               'Aims writable volume formats'),
+    'subject', String(),
+    'sulci_label_attribute', String(),
+    'brain_volumes_file', WriteDiskItem(
+        'Brain volumetry measurements', 'CSV file'),
+    'report', WriteDiskItem('Morphologist report', 'PDF file'),
 )
 
 
@@ -267,6 +276,21 @@ def linkOldNormalization(self, proc, dummy):
         required['acquisition'] = acquisition
     return self.signature['older_MNI_normalization'].findValue(
         self.t1mri, requiredAttributes=required)
+
+def linkSubject(self, proc, dummy):
+    if self.split_brain is not None:
+        subject = self.split_brain.get('subject')
+        return subject
+
+def linkSulciLabelAtt(self, proc, dummy):
+    auto = 'Yes'
+    if self.left_labelled_graph is not None:
+        auto = self.left_labelled_graph.get('automatically_labelled',
+                                            'Yes')
+    elif self.right_labelled_graph is not None:
+        auto = self.right_labelled_graph.get('automatically_labelled',
+                                              'Yes')
+    return {'Yes': 'label', 'No': 'name'}.get(auto, 'label')
 
 
 def initialization(self):
@@ -522,6 +546,14 @@ def initialization(self):
     self.sulci_file = self.signature['sulci_file'].findValue(
         {'version': 'default'})
     self.linkParameters('sulcal_morpho_measures', 'left_labelled_graph')
+    self.linkParameters('left_csf', 't1mri')
+    self.linkParameters('right_csf', 't1mri')
+    self.linkParameters('subject', 't1mri', self.linkSubject)
+    self.linkParameters('sulci_label_attribute',
+                        ('left_labelled_graph', 'right_labelled_graph'),
+                        self.linkSulciLabelAtt)
+    self.linkParameters('brain_volumes_file', 't1mri')
+    self.linkParameters('report', 't1mri')
 
 
 def execution(self, context):
@@ -837,3 +869,33 @@ def execution(self, context):
                            sulci_file=self.sulci_file,
                            use_attribute='label',
                            sulcal_morpho_measures=self.sulcal_morpho_measures)
+    # global stats
+    context.runProcess('brainvolumes',
+                       split_brain=self.split_brain,
+                       left_grey_white=self.left_grey_white,
+                       right_grey_white=self.right_grey_white,
+                       left_csf=self.left_csf,
+                       right_csf=self.right_csf,
+                       left_labelled_graph=self.left_labelled_graph,
+                       right_labelled_graph=self.right_labelled_graph,
+                       left_gm_mesh=self.left_pial_mesh,
+                       right_gm_mesh=self.right_pial_mesh,
+                       left_wm_mesh=self.left_white_mesh,
+                       right_wm_mesh=self.right_white_mesh,
+                       subject=self.subject,
+                       sulci_label_attribute=self.sulci_label_attribute,
+                       brain_volumes_file=self.brain_volumes_file)
+    # report
+    context.runProcess('morpho_report',
+                       t1mri=self.t1mri,
+                       left_grey_white=self.left_grey_white,
+                       right_grey_white=self.right_grey_white,
+                       left_gm_mesh=self.left_pial_mesh,
+                       right_gm_mesh=self.right_pial_mesh,
+                       left_wm_mesh=self.left_white_mesh,
+                       right_wm_mesh=self.right_white_mesh,
+                       left_labelled_graph=self.left_labelled_graph,
+                       right_labelled_graph=self.right_labelled_graph,
+                       brain_volumes_file=self.brain_volumes_file,
+                       report=self.report,
+                       subject=self.subject)
