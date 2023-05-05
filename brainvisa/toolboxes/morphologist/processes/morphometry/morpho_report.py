@@ -52,7 +52,7 @@ def initialization(self):
     def linkSubject(self, proc):
         if self.t1mri is not None:
             subject = self.t1mri.get('subject')
-        return subject
+            return subject
 
     self.setOptional('left_grey_white', 'right_grey_white',
                      'left_gm_mesh', 'right_gm_mesh',
@@ -100,8 +100,9 @@ def execution(self, context):
     pdf.drawString(30, 720, 'Subject ID:')
     pdf.drawString(250, 720, self.subject)
 
-    bbox = (78, 100, 100)
-    bbmin = tuple(-b for b in bbox)
+    bbox = (80, 120, 90)
+    bbmin = (-80, -100, -120)
+    obs_pos = tuple((x+y)/2 for x, y in zip(bbox, bbmin))
 
     a = anatomist.Anatomist()
     t1mri = a.loadObject(self.t1mri)
@@ -111,7 +112,7 @@ def execution(self, context):
     a.execute('WindowConfig', windows=[w], cursor_visibility=0)
     w.focusView()
     w.camera(boundingbox_min=bbmin, boundingbox_max=bbox,
-             cursor_position=(0, 0, 0), zoom=1)
+             cursor_position=(0, 0, 0), zoom=1, observer_position=obs_pos)
     tmpimage = context.temporary('JPEG image')
     w.snapshot(tmpimage.fullPath(), 192, 256)
     w.removeObjects(t1mri)
@@ -150,7 +151,7 @@ def execution(self, context):
         w.setReferential(anacpp.Referential.acPcReferential())
         w.focusView()
         w.camera(boundingbox_min=bbmin, boundingbox_max=bbox,
-                 cursor_position=(0, 0, 0), zoom=1)
+                 cursor_position=(0, 0, 0), zoom=1, observer_position=obs_pos)
         tmpimage2 = context.temporary('JPEG image')
         w.snapshot(tmpimage2.fullPath(), 192, 256)
         pdf.drawImage(tmpimage2.fullPath(), 130, 580, width=96, height=128)
@@ -176,7 +177,7 @@ def execution(self, context):
         w.focusView()
         w.camera(boundingbox_min=bbmin, boundingbox_max=bbox,
                  cursor_position=(0, 0, 0), view_quaternion=[0, 0, 1, 0],
-                 zoom=1)
+                 zoom=1, observer_position=obs_pos)
         tmpimage3 = context.temporary('JPEG image')
         w.snapshot(tmpimage3.fullPath(), 192, 256)
         pdf.drawImage(tmpimage3.fullPath(), 230, 580, width=96, height=128)
@@ -201,7 +202,7 @@ def execution(self, context):
         w.focusView()
         w.camera(boundingbox_min=bbmin, boundingbox_max=bbox,
                  cursor_position=(0, 0, 0), view_quaternion=[0, 0, 1, 0],
-                 zoom=1)
+                 zoom=1, observer_position=obs_pos)
         tmpimage4 = context.temporary('JPEG image')
         w.snapshot(tmpimage4.fullPath(), 192, 256)
         pdf.drawImage(tmpimage4.fullPath(), 330, 580, width=96, height=128)
@@ -228,7 +229,7 @@ def execution(self, context):
         w.focusView()
         w.camera(boundingbox_min=bbmin, boundingbox_max=bbox,
                  cursor_position=(0, 0, 0), view_quaternion=[0, 0, 1, 0],
-                 zoom=1)
+                 zoom=1, observer_position=obs_pos)
         tmpimage5 = context.temporary('JPEG image')
         w.snapshot(tmpimage5.fullPath(), 192, 256)
         pdf.drawImage(tmpimage5.fullPath(), 430, 580, width=96, height=128)
