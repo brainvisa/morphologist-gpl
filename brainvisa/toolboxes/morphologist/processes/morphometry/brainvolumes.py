@@ -76,7 +76,7 @@ def initialization(self):
     def linkSubject(self, proc):
         if self.split_brain is not None:
             subject = self.split_brain.get('subject')
-        return subject
+            return subject
 
     def linkSulciLabelAtt(self, proc):
         auto = 'Yes'
