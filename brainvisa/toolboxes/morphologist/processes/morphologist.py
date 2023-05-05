@@ -285,6 +285,9 @@ def initialization(self):
     eNode.addChild('GlobalMorphometry',
                    ProcessExecutionNode('brainvolumes', optional=1,
                                         selected=1))
+    eNode.addChild('Report',
+                   ProcessExecutionNode('morpho_report', optional=1,
+                                        selected=1))
 
     # Links
     # Commissures Coordinates
@@ -702,6 +705,37 @@ def initialization(self):
                         'GlobalMorphometry.left_wm_mesh')
     eNode.addDoubleLink(rhemi + '.GreyWhiteMesh.white_mesh',
                         'GlobalMorphometry.right_wm_mesh')
+
+    # PDF report
+    eNode.Report.removeLink('left_grey_white', 't1mri')
+    eNode.Report.removeLink('right_grey_white', 't1mri')
+    eNode.Report.removeLink('left_gm_mesh', 't1mri')
+    eNode.Report.removeLink('right_gm_mesh', 't1mri')
+    eNode.Report.removeLink('left_wm_mesh', 't1mri')
+    eNode.Report.removeLink('right_wm_mesh', 't1mri')
+    eNode.Report.removeLink('left_labelled_graph', 't1mri')
+    eNode.Report.removeLink('right_labelled_graph', 't1mri')
+    eNode.Report.removeLink('brain_volumes_file', 't1mri')
+    eNode.addDoubleLink('t1mri',
+                        'Report.t1mri')
+    eNode.addDoubleLink(lhemi + '.GreyWhiteClassification.grey_white',
+                        'Report.left_grey_white')
+    eNode.addDoubleLink(rhemi + '.GreyWhiteClassification.grey_white',
+                        'Report.right_grey_white')
+    eNode.addDoubleLink(lhemi + '.PialMesh.pial_mesh',
+                        'Report.left_gm_mesh')
+    eNode.addDoubleLink(rhemi + '.PialMesh.pial_mesh',
+                        'Report.right_gm_mesh')
+    eNode.addDoubleLink(lhemi + '.GreyWhiteMesh.white_mesh',
+                        'Report.left_wm_mesh')
+    eNode.addDoubleLink(rhemi + '.GreyWhiteMesh.white_mesh',
+                        'Report.right_wm_mesh')
+    eNode.addDoubleLink(lhemi + '.SulciRecognition.output_graph',
+                        'Report.left_labelled_graph')
+    eNode.addDoubleLink(rhemi + '.SulciRecognition.output_graph',
+                        'Report.right_labelled_graph')
+    eNode.addDoubleLink('GlobalMorphometry.brain_volumes_file',
+                        'Report.brain_volumes_file')
 
     self.perform_sulci_recognition = False
     self.setOptional('left_labelled_graph')
