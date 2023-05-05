@@ -1,5 +1,6 @@
 
 from brainvisa.processes import *
+import os.path as osp
 try:
     import reportlab
     from reportlab.pdfgen import canvas
@@ -128,15 +129,17 @@ def execution(self, context):
 
     fusiono = []
     gwfusion = None
-    if self.left_grey_white is not None:
+    if self.left_grey_white is not None \
+            and osp.exists(self.left_grey_white.fullPath()):
         lgw = a.loadObject(self.left_grey_white)
         lgw.setPalette('RAINBOW')
         fusiono.append(lgw)
-    if self.right_grey_white is not None:
+    if self.right_grey_white is not None \
+            and osp.exists(self.right_grey_white.fullPath()):
         rgw = a.loadObject(self.right_grey_white)
         rgw.setPalette('RAINBOW')
         fusiono.append(rgw)
-    if self.left_grey_white is not None or self.right_grey_white is not None:
+    if fusiono:
         a.execute('TexturingParams', objects=fusiono, value_interpolation=0)
         fusiono.insert(0, t1mri)
         gwfusion = a.fusionObjects(fusiono, method='Fusion2DMethod')
@@ -158,15 +161,17 @@ def execution(self, context):
     objs = []
     wmeshes = []
     w.mute3D()
-    if self.left_wm_mesh is not None:
+    if self.left_wm_mesh is not None \
+            and osp.exists(self.left_wm_mesh.fullPath()):
         lwm = a.loadObject(self.left_wm_mesh)
         w.addObjects(lwm)
         objs.append(lwm)
-    if self.right_wm_mesh is not None:
+    if self.right_wm_mesh is not None \
+            and osp.exists(self.right_wm_mesh.fullPath()):
         rwm = a.loadObject(self.right_wm_mesh)
         w.addObjects(rwm)
         objs.append(rwm)
-    if self.left_wm_mesh is not None or self.right_wm_mesh is not None:
+    if objs:
         w.addObjects(objs)
         w.focusView()
         w.camera(boundingbox_min=bbmin, boundingbox_max=bbox,
@@ -182,15 +187,17 @@ def execution(self, context):
 
 
     objs = []
-    if self.left_gm_mesh is not None:
+    if self.left_gm_mesh is not None \
+            and osp.exists(self.left_gm_mesh.fullPath()):
         lgm = a.loadObject(self.left_gm_mesh)
         w.addObjects(lgm)
         objs.append(lgm)
-    if self.right_gm_mesh is not None:
+    if self.right_gm_mesh is not None \
+            and osp.exists(self.right_gm_mesh.fullPath()):
         rgm = a.loadObject(self.right_gm_mesh)
         w.addObjects(rgm)
         objs.append(rgm)
-    if self.left_gm_mesh is not None or self.right_gm_mesh is not None:
+    if objs:
         w.focusView()
         w.camera(boundingbox_min=bbmin, boundingbox_max=bbox,
                  cursor_position=(0, 0, 0), view_quaternion=[0, 0, 1, 0],
@@ -207,14 +214,15 @@ def execution(self, context):
     hie_file = aims.carto.Paths.findResourceFile(
         'nomenclature/hierarchy/sulcal_root_colors.hie')
     hie = a.loadObject(hie_file)
-    if self.left_labelled_graph is not None:
+    if self.left_labelled_graph is not None \
+            and osp.exists(self.left_labelled_graph.fullPath()):
         lg = a.loadObject(self.left_labelled_graph)
         objs.append(lg)
-    if self.right_labelled_graph is not None:
+    if self.right_labelled_graph is not None \
+            and osp.exists(self.right_labelled_graph.fullPath()):
         rg = a.loadObject(self.right_labelled_graph)
         objs.append(rg)
-    if self.left_labelled_graph is not None \
-            or self.right_labelled_graph is not None:
+    if objs:
         objs = wmeshes + objs
         w.addObjects(objs)
         w.focusView()
@@ -231,8 +239,10 @@ def execution(self, context):
 
     pdf.setFillColorRGB(0., 0., 0.)
 
-    if self.brain_volumes_file is not None:
-        morph = []
+    hdr = []
+    morph = []
+    if self.brain_volumes_file is not None \
+            and osp.exists(self.brain_volumes_file.fullPath()):
         with open(self.brain_volumes_file.fullPath()) as f:
             csv_reader = csv.reader(f, csv.Sniffer().sniff(f.read(1024)))
             f.seek(0)
@@ -241,30 +251,30 @@ def execution(self, context):
                 row = [row[0]] + [float(x) for x in row[1:]]
                 morph.append(row)
 
-        keymap = {
-            'both.brain_volume': 'brain volume',
-            'both.GM': 'GM volume',
-            'both.WM': 'WM volume',
-            'both.eTIV': 'eTIV',
-            'both.GM_area': 'GM area',
-            'both.WM_area': 'WM area',
-            'left.gi_native_space': 'gyration index',
-            'both.fold_length': 'total folds length',
-            'both.mean_depth': 'avg. folds depth',
-            'both.mean_thickness': 'avg. cortical thickness',
-            'both.mean_opening': 'avg. folds opening',
-        }
+    keymap = {
+        'both.brain_volume': 'brain volume',
+        'both.GM': 'GM volume',
+        'both.WM': 'WM volume',
+        'both.eTIV': 'eTIV',
+        'both.GM_area': 'GM area',
+        'both.WM_area': 'WM area',
+        'left.gi_native_space': 'gyration index',
+        'both.fold_length': 'total folds length',
+        'both.mean_depth': 'avg. folds depth',
+        'both.mean_thickness': 'avg. cortical thickness',
+        'both.mean_opening': 'avg. folds opening',
+    }
 
-        for i, (k, tk) in enumerate(keymap.items()):
-            try:
-                j = morph_hdr.index(k)
-                v = morph[0][j]
-                v = str(round(v, 2))
-            except Exception as e:
-                v = '<MISSING>'
-            h = 530 - i * 12
-            pdf.drawString(30, h, '%s:' % tk)
-            pdf.drawRightString(200, h, v)
+    for i, (k, tk) in enumerate(keymap.items()):
+        try:
+            j = morph_hdr.index(k)
+            v = morph[0][j]
+            v = str(round(v, 2))
+        except Exception as e:
+            v = '<MISSING>'
+        h = 530 - i * 12
+        pdf.drawString(30, h, '%s:' % tk)
+        pdf.drawRightString(200, h, v)
 
     pdf.save()
 

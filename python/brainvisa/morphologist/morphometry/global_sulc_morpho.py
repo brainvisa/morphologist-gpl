@@ -16,52 +16,77 @@ def global_sulcal_morphometry(l_graph, r_graph, remove_nonfold=True,
     res = {}
 
     if isinstance(l_graph, str):
-        l_graph = aims.read(l_graph)
+        try:
+            l_graph = aims.read(l_graph)
+        except FileNotFoundError:
+            l_graph = {}
     if isinstance(r_graph, str):
-        r_graph = aims.read(r_graph)
+        try:
+            r_graph = aims.read(r_graph)
+        except FileNotFoundError:
+            r_graph = {}
 
-    lrawfolds = l_graph['folds_area']
-    lreffolds = l_graph['reffolds_area']
-    lrawhull = l_graph['brain_hull_area']
-    lrefhull = l_graph['refbrain_hull_area']
-    rrawfolds = r_graph['folds_area']
-    rreffolds = r_graph['reffolds_area']
-    rrawhull = r_graph['brain_hull_area']
-    rrefhull = r_graph['refbrain_hull_area']
+    lrawfolds = l_graph.get('folds_area')
+    lreffolds = l_graph.get('reffolds_area')
+    lrawhull = l_graph.get('brain_hull_area')
+    lrefhull = l_graph.get('refbrain_hull_area')
+    rrawfolds = r_graph.get('folds_area')
+    rreffolds = r_graph.get('reffolds_area')
+    rrawhull = r_graph.get('brain_hull_area')
+    rrefhull = r_graph.get('refbrain_hull_area')
 
-    lrawSI = lrawfolds / lrawhull
-    lrefSI = lreffolds / lrefhull
-    res['left.gi_native_space'] = lrawSI
-    res['left.gi_talairach_space'] = lrefSI
+    if lrawfolds is not None and lrawhull is not None:
+        lrawSI = lrawfolds / lrawhull
+        res['left.gi_native_space'] = lrawSI
+    if lreffolds is not None and lrefhull is not None:
+        lrefSI = lreffolds / lrefhull
+        res['left.gi_talairach_space'] = lrefSI
 
-    rrawSI = rrawfolds / rrawhull
-    rrefSI = rreffolds / rrefhull
-    res['left.gi_native_space'] = rrawSI
-    res['left.gi_talairach_space'] = rrefSI
+    if rrawfolds is not None and rrawhull is not None:
+        rrawSI = rrawfolds / rrawhull
+        res['left.gi_native_space'] = rrawSI
+    if rreffolds is not None and rrefhull is not None:
+        rrefSI = rreffolds / rrefhull
+        res['left.gi_talairach_space'] = rrefSI
 
-    rawSI = (lrawfolds + rrawfolds) / (lrawhull + rrawhull)
-    refSI = (lreffolds + rreffolds) / (lrefhull + rrefhull)
-    res['both.gi_native_space'] = rawSI
-    res['both.gi_talairach_space'] = refSI
+    if lrawfolds is not None and rrawfolds is not None \
+            and lrawhull is not None and rrawhull is not None:
+        rawSI = (lrawfolds + rrawfolds) / (lrawhull + rrawhull)
+        res['both.gi_native_space'] = rawSI
+    if lreffolds is not None and rreffolds is not None \
+            and lrefhull is not None and rrefhull is not None:
+        refSI = (lreffolds + rreffolds) / (lrefhull + rrefhull)
+        res['both.gi_talairach_space'] = refSI
 
-    lgm = l_graph['GM_volume']
-    lcsf = l_graph['CSF_volume']
-    rgm = r_graph['GM_volume']
-    rcsf = r_graph['CSF_volume']
-    res['left.GM'] = lgm
-    res['right.GM'] = rgm
-    res['both.GM'] = lgm + rgm
-    res['left.CSF'] = lcsf
-    res['right.CSF'] = rcsf
-    res['both.CSF'] = lcsf + rcsf
+    lgm = l_graph.get('GM_volume')
+    lcsf = l_graph.get('CSF_volume')
+    rgm = r_graph.get('GM_volume')
+    rcsf = r_graph.get('CSF_volume')
+    if lgm is not None:
+        res['left.GM'] = lgm
+    if rgm is not None:
+        res['right.GM'] = rgm
+        if lgm is not None:
+            res['both.GM'] = lgm + rgm
+    if lcsf is not None:
+        res['left.CSF'] = lcsf
+    if rcsf is not None:
+        res['right.CSF'] = rcsf
+        if lcsf is not None:
+            res['both.CSF'] = lcsf + rcsf
 
-    lhullv = l_graph['brain_hull_volume']
-    lbrain = lhullv - lcsf
-    res['left.brain_volume'] = lbrain
-    rhullv = r_graph['brain_hull_volume']
-    rbrain = rhullv - rcsf
-    res['right.brain_volume'] = rbrain
-    res['both.brain_volume'] = lbrain + rbrain
+    lhullv = l_graph.get('brain_hull_volume')
+    lbrain = None
+    rbrain = None
+    if lhullv is not None and lcsf is not None:
+        lbrain = lhullv - lcsf
+        res['left.brain_volume'] = lbrain
+    rhullv = r_graph.get('brain_hull_volume')
+    if rhullv is not None and rcsf is not None:
+        rbrain = rhullv - rcsf
+        res['right.brain_volume'] = rbrain
+    if lbrain is not None and rbrain is not None:
+        res['both.brain_volume'] = lbrain + rbrain
 
     if remove_nonfold:
         labels_to_remove = set(removed_labels)
@@ -77,49 +102,62 @@ def global_sulcal_morphometry(l_graph, r_graph, remove_nonfold=True,
     open_mass = [0, 0]
 
     for side, graph in enumerate((l_graph, r_graph)):
-        for v in graph.vertices():
-            if remove_nonfold and v.get(label_att) in labels_to_remove:
-                continue
-            vmass = v.get('point_number')
-            if vmass is None:
-                continue
-            vdepth = v.get('mean_depth')
-            if vdepth is not None:
-                depth[side] += vdepth * vmass
-                depth_mass[side] += vmass
-            vthick = v.get('thickness_mean')
-            if vthick is not None:
-                thickness[side] += vthick * vmass
-                thick_mass[side] += vmass
-            csf = v.get('CSF_volume')
-            surf = v.get('surface_area')
-            if csf is not None and surf is not None:
-                opening[side] += csf / surf * vmass
-                open_mass[side] += vmass
+        if hasattr(graph, 'vertices'):
+            for v in graph.vertices():
+                if remove_nonfold and v.get(label_att) in labels_to_remove:
+                    continue
+                vmass = v.get('point_number')
+                if vmass is None:
+                    continue
+                vdepth = v.get('mean_depth')
+                if vdepth is not None:
+                    depth[side] += vdepth * vmass
+                    depth_mass[side] += vmass
+                vthick = v.get('thickness_mean')
+                if vthick is not None:
+                    thickness[side] += vthick * vmass
+                    thick_mass[side] += vmass
+                csf = v.get('CSF_volume')
+                surf = v.get('surface_area')
+                if csf is not None and surf is not None:
+                    opening[side] += csf / surf * vmass
+                    open_mass[side] += vmass
 
-            for e in v.edges():
-                if e.getSyntax() == 'hull_junction':
-                    vlen = e['length']
-                    length[side] += vlen
+                for e in v.edges():
+                    if e.getSyntax() == 'hull_junction':
+                        vlen = e['length']
+                        length[side] += vlen
 
-    res['left.fold_length'] = length[0]
-    res['right.fold_length'] = length[1]
-    res['both.fold_length'] = length[0] + length[1]
+    if length[0] != 0.:
+        res['left.fold_length'] = length[0]
+    if length[1] != 0.:
+        res['right.fold_length'] = length[1]
+        if length[0] != 0.:
+            res['both.fold_length'] = length[0] + length[1]
 
-    res['left.mean_depth'] = depth[0] / depth_mass[0]
-    res['right.mean_depth'] = depth[1] / depth_mass[1]
-    res['both.mean_depth'] \
-        = (depth[0] + depth[1]) / (depth_mass[0] + depth_mass[1])
+    if depth_mass[0] != 0.:
+        res['left.mean_depth'] = depth[0] / depth_mass[0]
+    if depth_mass[1] != 0.:
+        res['right.mean_depth'] = depth[1] / depth_mass[1]
+        if depth_mass[0] != 0.:
+            res['both.mean_depth'] \
+                = (depth[0] + depth[1]) / (depth_mass[0] + depth_mass[1])
 
-    res['left.mean_thickness'] = thickness[0] / thick_mass[0]
-    res['right.mean_thickness'] = thickness[1] / thick_mass[1]
-    res['both.mean_thickness'] \
-        = (thickness[0] + thickness[1]) / (thick_mass[0] + thick_mass[1])
+    if thick_mass[0] != 0.:
+        res['left.mean_thickness'] = thickness[0] / thick_mass[0]
+    if thick_mass[1] != 0.:
+        res['right.mean_thickness'] = thickness[1] / thick_mass[1]
+        if thick_mass[0] != 0.:
+            res['both.mean_thickness'] \
+                = (thickness[0] + thickness[1]) / (thick_mass[0] + thick_mass[1])
 
-    res['left.mean_opening'] = opening[0] / open_mass[0]
-    res['right.mean_opening'] = opening[1] / open_mass[1]
-    res['both.mean_opening'] \
-        = (opening[0] + opening[1]) / (open_mass[0] + open_mass[1])
+    if open_mass[0] != 0.:
+        res['left.mean_opening'] = opening[0] / open_mass[0]
+    if open_mass[1] != 0.:
+        res['right.mean_opening'] = opening[1] / open_mass[1]
+        if open_mass[0] != 0.:
+            res['both.mean_opening'] \
+                = (opening[0] + opening[1]) / (open_mass[0] + open_mass[1])
 
     return res
 
@@ -132,16 +170,26 @@ def brain_volumes(split_brain, left_grey_white, right_grey_white, left_csf,
     instances, or as filenames (.nii files for instance).
     '''
 
-    if isinstance(split_brain, str) and os.path.exists(split_brain):
-        split_brain = aims.read(split_brain)
-    if isinstance(left_grey_white, str) and os.path.exists(left_grey_white):
-        left_grey_white = aims.read(left_grey_white)
-    if isinstance(right_grey_white, str) and os.path.exists(right_grey_white):
-        right_grey_white = aims.read(right_grey_white)
-    if isinstance(left_csf, str) and os.path.exists(left_csf):
-        left_csf = aims.read(left_csf)
-    if isinstance(right_csf, str) and os.path.exists(right_csf):
-        right_csf = aims.read(right_csf)
+    try:
+        if isinstance(split_brain, str) and os.path.exists(split_brain):
+            split_brain = aims.read(split_brain)
+        if isinstance(left_grey_white, str) \
+                and os.path.exists(left_grey_white):
+            left_grey_white = aims.read(left_grey_white)
+        if isinstance(right_grey_white, str) \
+                and os.path.exists(right_grey_white):
+            right_grey_white = aims.read(right_grey_white)
+        if isinstance(left_csf, str) and os.path.exists(left_csf):
+            left_csf = aims.read(left_csf)
+        if isinstance(right_csf, str) and os.path.exists(right_csf):
+            right_csf = aims.read(right_csf)
+    except FileNotFoundError:
+        return {}
+
+    if split_brain is None or left_grey_white is None \
+            or right_grey_white is None or left_csf is None \
+            or right_csf is None:
+        return {}
 
     # Morphological closing of the brain in order to obtain the CSF volume
     # inside sulci and thus compute an approximate TIV (ICV).
@@ -253,21 +301,39 @@ def brain_surfaces(left_gm_mesh, right_gm_mesh, left_wm_mesh, right_wm_mesh):
     '''
 
     if isinstance(left_gm_mesh, str) and os.path.exists(left_gm_mesh):
-        left_gm_mesh = aims.read(left_gm_mesh)
+        try:
+            left_gm_mesh = aims.read(left_gm_mesh)
+        except FileNotFoundError:
+            left_gm_mesh = None
     if isinstance(right_gm_mesh, str) and os.path.exists(right_gm_mesh):
-        right_gm_mesh = aims.read(right_gm_mesh)
+        try:
+            right_gm_mesh = aims.read(right_gm_mesh)
+        except FileNotFoundError:
+            right_gm_mesh = None
     if isinstance(left_wm_mesh, str) and os.path.exists(left_wm_mesh):
-        left_wm_mesh = aims.read(left_wm_mesh)
+        try:
+            left_wm_mesh = aims.read(left_wm_mesh)
+        except FileNotFoundError:
+            left_wm_mesh = None
     if isinstance(right_wm_mesh, str) and os.path.exists(right_wm_mesh):
-        right_wm_mesh = aims.read(right_wm_mesh)
+        try:
+            right_wm_mesh = aims.read(right_wm_mesh)
+        except FileNotFoundError:
+            right_wm_mesh = None
 
     res = {}
-    res['left.GM_area'] = aims.SurfaceManip.meshArea(left_gm_mesh)
-    res['right.GM_area'] = aims.SurfaceManip.meshArea(right_gm_mesh)
-    res['left.WM_area'] = aims.SurfaceManip.meshArea(left_wm_mesh)
-    res['right.WM_area'] = aims.SurfaceManip.meshArea(right_wm_mesh)
-    res['both.GM_area'] = res['left.GM_area'] + res['right.GM_area']
-    res['both.WM_area'] = res['left.WM_area'] + res['right.WM_area']
+    if left_gm_mesh:
+        res['left.GM_area'] = aims.SurfaceManip.meshArea(left_gm_mesh)
+    if right_gm_mesh:
+        res['right.GM_area'] = aims.SurfaceManip.meshArea(right_gm_mesh)
+        if left_gm_mesh:
+            res['both.GM_area'] = res['left.GM_area'] + res['right.GM_area']
+    if left_wm_mesh:
+        res['left.WM_area'] = aims.SurfaceManip.meshArea(left_wm_mesh)
+    if right_wm_mesh:
+        res['right.WM_area'] = aims.SurfaceManip.meshArea(right_wm_mesh)
+        if left_wm_mesh:
+            res['both.WM_area'] = res['left.WM_area'] + res['right.WM_area']
 
     return res
 
@@ -291,7 +357,7 @@ def sulcal_and_brain_morpho(
         res = {}
     if split_brain is not None:
         resv = brain_volumes(split_brain, left_grey_white, right_grey_white,
-                            left_csf, right_csf)
+                             left_csf, right_csf)
         res.update(resv)
         sort_k = ('left.WM', 'right.WM', 'both.WM', 'left.GM', 'right.GM',
                   'both.GM','left.CSF', 'right.CSF', 'both.CSF',
