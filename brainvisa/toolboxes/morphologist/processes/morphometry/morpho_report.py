@@ -76,7 +76,7 @@ def execution(self, context):
     pdf = canvas.Canvas(self.report.fullPath())
     pdf.setStrokeColorRGB(0.5, 0.53, 0.6)
     pdf.setFillColorRGB(0.78, 0.82, 0.93)
-    pdf.roundRect(10, 750, 570, 70, 5, stroke=1, fill=1)
+    pdf.roundRect(10, 750, 575, 70, 5, stroke=1, fill=1)
     pdf.setStrokeColorRGB(0., 0., 0.)
     pdf.setFillColorRGB(0., 0., 0.)
     logo = os.path.join(neuroConfig.iconPath, 'brainvisa.png')
@@ -266,15 +266,21 @@ def execution(self, context):
     }
 
     for i, (k, tk) in enumerate(keymap.items()):
+        missing = False
         try:
             j = morph_hdr.index(k)
             v = morph[0][j]
             v = str(round(v, 2))
         except Exception as e:
             v = '<MISSING>'
+            missing = True
         h = 530 - i * 12
         pdf.drawString(30, h, '%s:' % tk)
+        if missing:
+            pdf.setFillColorRGB(0.6, 0., 0.)
         pdf.drawRightString(200, h, v)
+        if missing:
+            pdf.setFillColorRGB(0., 0., 0.)
 
     pdf.save()
 
