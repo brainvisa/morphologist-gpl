@@ -350,6 +350,8 @@ tables_content = lambda: (
     SetWeakAttr('processing', 'morphologist'),
     "snapshots_features_{processing}",
     SetType('Snapshots Features Table'),
+    "morphologist_normative_brain_volumes_stats",
+    SetType('Normative brain volumes stats'),
 )
 
 

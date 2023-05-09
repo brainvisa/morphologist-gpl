@@ -43,6 +43,8 @@ signature = Signature(
         requiredAttributes={'side': 'right'}),
     'brain_volumes_file', ReadDiskItem(
         'Brain volumetry measurements', 'CSV file'),
+    'normative_brain_stats', ReadDiskItem('Normative brain volumes stats',
+                                          'JSON file'),
     'report', WriteDiskItem('Morphologist report', 'PDF file'),
     'subject', String(),
 )
@@ -58,7 +60,7 @@ def initialization(self):
                      'left_gm_mesh', 'right_gm_mesh',
                      'left_wm_mesh', 'right_wm_mesh',
                      'left_labelled_graph', 'right_labelled_graph',
-                     'brain_volumes_file')
+                     'brain_volumes_file', 'normative_brain_stats')
     self.linkParameters('subject', 't1mri', linkSubject)
     self.linkParameters('left_grey_white', 't1mri')
     self.linkParameters('right_grey_white', 't1mri')
@@ -70,6 +72,7 @@ def initialization(self):
     self.linkParameters('right_labelled_graph', 't1mri')
     self.linkParameters('brain_volumes_file', 't1mri')
     self.linkParameters('report', 't1mri')
+    self.linkParameters('normative_brain_stats', 't1mri')
 
 def execution(self, context):
     context.write('<h1>Morphologist report</h1>')
@@ -218,10 +221,12 @@ def execution(self, context):
     if self.left_labelled_graph is not None \
             and osp.exists(self.left_labelled_graph.fullPath()):
         lg = a.loadObject(self.left_labelled_graph)
+        lg.setLabelProperty('label')
         objs.append(lg)
     if self.right_labelled_graph is not None \
             and osp.exists(self.right_labelled_graph.fullPath()):
         rg = a.loadObject(self.right_labelled_graph)
+        rg.setLabelProperty('label')
         objs.append(rg)
     if objs:
         objs = wmeshes + objs
@@ -242,6 +247,7 @@ def execution(self, context):
 
     hdr = []
     morph = []
+    morph_z = []
     if self.brain_volumes_file is not None \
             and osp.exists(self.brain_volumes_file.fullPath()):
         with open(self.brain_volumes_file.fullPath()) as f:
@@ -251,6 +257,22 @@ def execution(self, context):
             for row in csv_reader:
                 row = [row[0]] + [float(x) for x in row[1:]]
                 morph.append(row)
+        if self.normative_brain_stats is not None:
+            with open(self.normative_brain_stats.fullPath()) as f:
+                norm_stat = json.load(f)
+            ncols = {c: i for i, c in enumerate(norm_stat.get('columns', []))}
+            morph_z = [None] * len(morph[0])
+            avg = norm_stat.get('averages')
+            std = norm_stat.get('std')
+            if avg and std:
+                for i, mv in enumerate(morph[0]):
+                    c = ncols.get(morph_hdr[i])
+                    if c is not None:
+                        z0 = avg[c]
+                        zs = std[c]
+                        if z0 is not None and zs != 0:
+                            z = (mv - z0) / zs
+                            morph_z[i] = z
 
     keymap = {
         'both.brain_volume': 'brain volume',
@@ -265,23 +287,67 @@ def execution(self, context):
         'both.mean_thickness': 'avg. cortical thickness',
         'both.mean_opening': 'avg. folds opening',
     }
+    units = {
+        'both.brain_volume': 'mm3',
+        'both.GM': 'mm3',
+        'both.WM': 'mm3',
+        'both.GM_area': 'mm2',
+        'both.WM_area': 'mm2',
+        'both.fold_length': 'mm',
+        'both.mean_depth': 'mm',
+        'both.mean_thickness': 'mm',
+        'both.mean_opening': 'mm',
+    }
 
+    zvals = [None] * len(keymap)
     for i, (k, tk) in enumerate(keymap.items()):
         missing = False
+        z = None
+        unit = None
         try:
             j = morph_hdr.index(k)
             v = morph[0][j]
             v = str(round(v, 2))
+            unit = units.get(k)
+            if morph_z:
+                z = morph_z[j]
+                zvals[i] = z
         except Exception as e:
             v = '<MISSING>'
+            unit = None
             missing = True
         h = 530 - i * 12
         pdf.drawString(30, h, '%s:' % tk)
         if missing:
             pdf.setFillColorRGB(0.6, 0., 0.)
+        else:
+            pdf.drawRightString(270, h, '%+1.2f σ' % z)
         pdf.drawRightString(200, h, v)
+        if unit is not None:
+            pdf.setFontSize(8)
+            pdf.drawString(210, h, unit)
+            pdf.setFontSize(10)
         if missing:
             pdf.setFillColorRGB(0., 0., 0.)
+
+    if morph_z:
+        import matplotlib
+        import matplotlib.pyplot as plt
+        fig, ax = plt.subplots()
+        fig.subplots_adjust(bottom=0.31, top=1., left=0.05)
+        ax.add_patch(plt.Rectangle((-0.5, -1), len(keymap), 2.,
+                                   facecolor='#d0f0d0', fill=True,
+                                   edgecolor='#d0f0d0'))
+        plt.xticks(rotation=60)
+        ax.set_xticks(range(len(keymap)))
+        ax.set_xticklabels(keymap.values())
+        #ax.plot([-0.7, len(keymap) + 0.7], [0, 0], '-', color='black')
+        ax.stem(range(len(zvals)), zvals, 'o')
+        tmpimage6 = context.temporary('PNG image')
+        fig.savefig(tmpimage6.fullPath())
+
+        pdf.drawImage(tmpimage6.fullPath(), 290, 290, width=310, height=250)
+        pdf.drawString(400, 275, 'Z scores')
 
     pdf.save()
 

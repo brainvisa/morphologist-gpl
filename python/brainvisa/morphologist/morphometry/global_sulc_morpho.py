@@ -1,6 +1,8 @@
 from soma import aims, aimsalgo
 import tempfile
 import os
+import csv
+import numpy as np
 
 
 removed_labels = ['ventricle']
@@ -374,5 +376,74 @@ def sulcal_and_brain_morpho(
 
     return res
 
+
+# -- inter-subject part --
+
+def read_multiple_csv(csv_list):
+    '''
+    Read multiple CSV files with compatible headers.
+
+    The final header includes all fields of all files, with columns missing in
+    some files filled with None values.
+
+    Returns
+    -------
+    hdr: list of str
+        list of header fields names
+    table: list of list
+        table elements. The 1st column is suposed to be the subject name and is
+        left as a sting, others are converted to float.
+    '''
+    table = []
+    hdr = {}
+    for csv_file in csv_list:
+        with open(csv_file) as f:
+            csv_reader = csv.reader(f, csv.Sniffer().sniff(f.read(1024)))
+            f.seek(0)
+            hdr2 = next(iter(csv_reader))
+            resized = False
+            for col in hdr2:
+                if col not in hdr:
+                    hdr[col] = len(hdr)
+                    resized = True
+            if resized:
+                nc = len(hdr)
+                for row in table:
+                    row += [None] * (nc - len(row))
+            for row in csv_reader:
+                row = [row[0]] + [float(x) for x in row[1:]]
+                trow = [None] * len(hdr)
+                for i, v in enumerate(row):
+                    trow[hdr[hdr2[i]]] = v
+                table.append(trow)
+    return list(hdr.keys()), table
+
+
+def build_normative_brain_vol_stats(csv_files):
+    '''
+    Computes averages and std deviations for the given CSV files list.
+
+    Returns
+    -------
+    hdr: list of str
+        columns names
+    morph: list of list
+        CSV data, all but the 1st col converted to float (1st column is normally the subject name)
+    avg: numpy array
+        averages for columns [1:]. Nan/None values are excluded from the
+        average.
+    std: numpy array
+        std dev for columns [1:]
+    sums: numpy array (1 line)
+        number of elements in the average for each column, taking into account
+        missing and discarded ones (NaN/None values)
+    '''
+    hdr, morph = read_multiple_csv(csv_files)
+    npmorph = np.array([row[1:] for row in morph], dtype=float)
+    wh = np.isnan(npmorph) != True
+    avg = np.mean(npmorph, axis=0, where=wh)
+    std = np.std(npmorph, axis=0, where=wh)
+    sums = np.sum(wh, axis=0)
+    return hdr, morph, avg, std, sums
 
 
