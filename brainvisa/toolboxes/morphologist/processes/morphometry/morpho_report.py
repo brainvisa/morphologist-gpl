@@ -291,6 +291,7 @@ def execution(self, context):
         'both.brain_volume': 'mm3',
         'both.GM': 'mm3',
         'both.WM': 'mm3',
+        'both.eTIV': 'mm3',
         'both.GM_area': 'mm2',
         'both.WM_area': 'mm2',
         'both.fold_length': 'mm',
