@@ -297,6 +297,19 @@
           "sulcal_morphometry_sulci_file":
             "{shared.sulcal_morphometry_sulci_file}",
 
+          # Global morphometry
+          "GlobalMorphometry_left_csf":
+              [["output:{analysis}/segmentation/<side>csf_<subject>","images",{"side":"L"}]],
+          "GlobalMorphometry_right_csf":
+              [["output:{analysis}/segmentation/<side>csf_<subject>","images",{"side":"R"}]],
+          "GlobalMorphometry_brain_volumes_file":
+              [["output:{analysis}/segmentation/brain_volumes_<subject>","CSV file"]],
+          "GlobalMorphometry_subject": [["none:<subject>", "no ext"]],
+
+          # PDF report
+          "Report_report":
+              [["output:{analysis}/morphologist_report","PDF File"]],
+          "Report_subject": [["none:<subject>", "no ext"]]
         },
 
         #Bias Correction, internal
