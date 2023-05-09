@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
 try:
     from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
         List, Any, Undefined
@@ -13,9 +12,9 @@ import six
 
 class TalairachTransformation(Process):
     def __init__(self, **kwargs):
-        super(TalairachTransformation, self).__init__()
-        self.add_trait('split_mask', File(allowed_extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg',
-                                                              '.scn', '.mnc', '.mng', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz']))
+        super(TalairachTransformation, self).__init__(**kwargs)
+        self.add_trait('split_mask', File(allowed_extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu',
+                       '.jpg', '.scn', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz']))
         self.add_trait('commissure_coordinates',
                        File(allowed_extensions=['.APC']))
         self.add_trait('Talairach_transform', File(
@@ -37,7 +36,7 @@ class TalairachTransformation(Process):
             value = getattr(self, name)
             if value is Undefined:
                 continue
-            if isinstance(self.trait(name).trait_type, File) and value != '' and value is not Undefined:
+            if isinstance(self.trait(name).trait_type, File) and value != '':
                 kwargs[name] = value
             elif isinstance(self.trait(name).trait_type, List):
                 kwargs[name] = list(value)

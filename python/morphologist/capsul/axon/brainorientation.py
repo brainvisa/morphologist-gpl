@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
 try:
     from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
         List, Any, Undefined
@@ -35,7 +34,7 @@ class BrainOrientation(Pipeline):
 
         # switches section
         self.add_switch('select_AC_PC_Or_Normalization', ['StandardACPC', 'Normalization'], ['commissure_coordinates', 'reoriented_t1mri', 'talairach_transformation'], output_types=[File(optional=True, allowed_extensions=['.APC']), File(allowed_extensions=[
-                        '.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.gif', '.ima', '.dim', '.jpg', '.mnc', '.mng', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz']), File(allowed_extensions=['.trm'])])
+                        '.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.gif', '.ima', '.dim', '.jpg', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz']), File(allowed_extensions=['.trm'])])
 
         # exports section
         # export input parameter
@@ -72,13 +71,13 @@ class BrainOrientation(Pipeline):
         self.add_link(
             'TalairachFromNormalization.Talairach_transform->select_AC_PC_Or_Normalization.Normalization_switch_talairach_transformation')
         self.add_link(
-            'Normalization.reoriented_t1mri->TalairachFromNormalization.t1mri')
-        self.add_link(
             'Normalization.transformation->TalairachFromNormalization.normalization_transformation')
+        self.add_link(
+            'Normalization.reoriented_t1mri->TalairachFromNormalization.t1mri')
 
         # initialization section
         if 'Normalization' in self.nodes:
-            self.nodes['select_AC_PC_Or_Normalization'].switch = 'Normalization'
+            self.select_AC_PC_Or_Normalization = 'Normalization'
         # export orphan parameters
         if not hasattr(self, '_autoexport_nodes_parameters') \
                 or self._autoexport_nodes_parameters:
@@ -86,7 +85,7 @@ class BrainOrientation(Pipeline):
 
     def autoexport_nodes_parameters(self):
         '''export orphan and internal output parameters'''
-        for node_name, node in six.iteritems(self.nodes):
+        for node_name, node in self.nodes.items():
             if node_name == '':
                 continue  # skip main node
             if hasattr(node, '_weak_outputs'):

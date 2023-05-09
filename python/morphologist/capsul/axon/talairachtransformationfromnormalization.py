@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
 try:
     from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
         List, Any, Undefined
@@ -13,7 +12,7 @@ import six
 
 class TalairachTransformationFromNormalization(Process):
     def __init__(self, **kwargs):
-        super(TalairachTransformationFromNormalization, self).__init__()
+        super(TalairachTransformationFromNormalization, self).__init__(**kwargs)
         self.add_trait('normalization_transformation',
                        File(allowed_extensions=['.trm']))
         self.add_trait('Talairach_transform', File(
@@ -21,7 +20,7 @@ class TalairachTransformationFromNormalization(Process):
         self.add_trait('commissure_coordinates', File(
             allowed_extensions=['.APC'], output=True, optional=True))
         self.add_trait('t1mri', File(allowed_extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg', '.scn',
-                                                         '.mnc', '.mng', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz'], optional=True))
+                       '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz'], optional=True))
         self.add_trait('source_referential', File())
         self.add_trait('normalized_referential', File())
         self.add_trait('transform_chain_ACPC_to_Normalized', List())
@@ -29,7 +28,7 @@ class TalairachTransformationFromNormalization(Process):
 
         # initialization section
         self.transform_chain_ACPC_to_Normalized = []
-        self.acpc_referential = '/volatile/riviere/brainvisa/build-stable-qt5/share/brainvisa-share-4.6/registration/Talairach-AC_PC-Anatomist.referential'
+        self.acpc_referential = '/casa/host/build/share/brainvisa-share-5.2/registration/Talairach-AC_PC-Anatomist.referential'
 
     def _run_process(self):
         from brainvisa import axon
@@ -47,7 +46,7 @@ class TalairachTransformationFromNormalization(Process):
             value = getattr(self, name)
             if value is Undefined:
                 continue
-            if isinstance(self.trait(name).trait_type, File) and value != '' and value is not Undefined:
+            if isinstance(self.trait(name).trait_type, File) and value != '':
                 kwargs[name] = value
             elif isinstance(self.trait(name).trait_type, List):
                 kwargs[name] = list(value)

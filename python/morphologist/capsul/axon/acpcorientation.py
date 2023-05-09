@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
 try:
     from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
         List, Any, Undefined
@@ -13,13 +12,13 @@ import six
 
 class AcpcOrientation(Process):
     def __init__(self, **kwargs):
-        super(AcpcOrientation, self).__init__()
+        super(AcpcOrientation, self).__init__(**kwargs)
         self.add_trait('T1mri', File(allowed_extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg',
-                                                         '.scn', '.mnc', '.mng', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz']))
+                       '.scn', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz']))
         self.add_trait('commissure_coordinates', File(
             allowed_extensions=['.APC'], output=True))
         self.add_trait('Normalised', Enum('No', 'MNI from SPM',
-                                          'MNI from Mritotal', 'Marseille from SPM'))
+                       'MNI from Mritotal', 'Marseille from SPM'))
         self.add_trait('Anterior_Commissure', List(
             trait=Float(), minlen=3, maxlen=3, value=[0, 0, 0], optional=True))
         self.add_trait('Posterior_Commissure', List(
@@ -30,7 +29,7 @@ class AcpcOrientation(Process):
             trait=Float(), minlen=3, maxlen=3, value=[0, 0, 0], optional=True))
         self.add_trait('allow_flip_initial_MRI', Bool())
         self.add_trait('reoriented_t1mri', File(allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.gif', '.ima', '.dim', '.jpg', '.mnc',
-                                                                    '.mng', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'], output=True))
+                       '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'], output=True))
         self.add_trait('remove_older_MNI_normalization', Bool())
         self.add_trait('older_MNI_normalization', File(
             allowed_extensions=['.trm'], optional=True))
@@ -56,7 +55,7 @@ class AcpcOrientation(Process):
             value = getattr(self, name)
             if value is Undefined:
                 continue
-            if isinstance(self.trait(name).trait_type, File) and value != '' and value is not Undefined:
+            if isinstance(self.trait(name).trait_type, File) and value != '':
                 kwargs[name] = value
             elif isinstance(self.trait(name).trait_type, List):
                 kwargs[name] = list(value)

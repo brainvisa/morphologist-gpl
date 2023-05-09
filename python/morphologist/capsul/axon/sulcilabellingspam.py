@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
 try:
     from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
         List, Any, Undefined
@@ -49,34 +48,34 @@ class SulciLabellingSPAM(Pipeline):
         self.export_parameter('global_recognition', 'labels_translation_map',
                               'global_recognition_labels_translation_map')
         # export input parameter
-        self.export_parameter('global_recognition', 'initial_transformation',
-                              'global_recognition_initial_transformation')
-        # export input parameter
         self.export_parameter(
             'global_recognition', 'labels_priors', 'global_recognition_labels_priors')
+        # export input parameter
+        self.export_parameter('global_recognition', 'initial_transformation',
+                              'global_recognition_initial_transformation')
 
         # links section
         self.add_link('global_recognition.output_graph->output_graph')
+        self.add_link(
+            'global_recognition.output_graph->local_recognition.data_graph')
+        self.add_link(
+            'global_recognition.output_graph->markovian_recognition.data_graph')
         self.add_link(
             'global_recognition_labels_translation_map->local_recognition.labels_translation_map')
         self.add_link(
             'global_recognition_labels_translation_map->markovian_recognition.labels_translation_map')
         self.add_link(
-            'global_recognition_initial_transformation->local_recognition.initial_transformation')
-        self.add_link(
-            'global_recognition_initial_transformation->markovian_recognition.initial_transformation')
-        self.add_link(
             'global_recognition_labels_priors->local_recognition.labels_priors')
         self.add_link(
             'global_recognition_labels_priors->markovian_recognition.labels_priors')
         self.add_link(
+            'global_recognition_initial_transformation->local_recognition.initial_transformation')
+        self.add_link(
+            'global_recognition_initial_transformation->markovian_recognition.initial_transformation')
+        self.add_link(
             'global_recognition.output_transformation->local_recognition.global_transformation')
         self.add_link(
             'global_recognition.output_transformation->markovian_recognition.global_transformation')
-        self.add_link(
-            'global_recognition.output_graph->local_recognition.data_graph')
-        self.add_link(
-            'global_recognition.output_graph->markovian_recognition.data_graph')
         self.add_link(
             'local_recognition.output_graph->local_or_markovian.local_recognition_switch_output_graph')
         self.add_link(
@@ -84,13 +83,13 @@ class SulciLabellingSPAM(Pipeline):
         self.add_link(
             'global_recognition_labels_translation_map->local_recognition.labels_translation_map')
         self.add_link(
-            'global_recognition_initial_transformation->local_recognition.initial_transformation')
-        self.add_link(
             'global_recognition_labels_priors->local_recognition.labels_priors')
+        self.add_link(
+            'global_recognition_initial_transformation->local_recognition.initial_transformation')
 
         # initialization section
         if 'local_recognition' in self.nodes:
-            self.nodes['local_or_markovian'].switch = 'local_recognition'
+            self.local_or_markovian = 'local_recognition'
         # export orphan parameters
         if not hasattr(self, '_autoexport_nodes_parameters') \
                 or self._autoexport_nodes_parameters:
@@ -98,7 +97,7 @@ class SulciLabellingSPAM(Pipeline):
 
     def autoexport_nodes_parameters(self):
         '''export orphan and internal output parameters'''
-        for node_name, node in six.iteritems(self.nodes):
+        for node_name, node in self.nodes.items():
             if node_name == '':
                 continue  # skip main node
             if hasattr(node, '_weak_outputs'):

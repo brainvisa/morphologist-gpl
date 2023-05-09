@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
 try:
     from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
         List, Any, Undefined
@@ -13,7 +12,7 @@ import six
 
 class SulciLabellingSPAMLocal(Process):
     def __init__(self, **kwargs):
-        super(SulciLabellingSPAMLocal, self).__init__()
+        super(SulciLabellingSPAMLocal, self).__init__(**kwargs)
         self.add_trait('data_graph', File(
             allowed_extensions=['.arg', '.data']))
         self.add_trait('output_graph', File(
@@ -36,7 +35,7 @@ class SulciLabellingSPAMLocal(Process):
             allowed_extensions=['.trm'], optional=True))
 
         # initialization section
-        self.labels_translation_map = '/volatile/riviere/brainvisa/build-stable-qt5/share/brainvisa-share-4.6/nomenclature/translation/sulci_model_2008.trl'
+        self.labels_translation_map = '/casa/host/build/share/brainvisa-share-5.2/nomenclature/translation/sulci_model_2008.trl'
 
     def _run_process(self):
         from brainvisa import axon
@@ -54,7 +53,7 @@ class SulciLabellingSPAMLocal(Process):
             value = getattr(self, name)
             if value is Undefined:
                 continue
-            if isinstance(self.trait(name).trait_type, File) and value != '' and value is not Undefined:
+            if isinstance(self.trait(name).trait_type, File) and value != '':
                 kwargs[name] = value
             elif isinstance(self.trait(name).trait_type, List):
                 kwargs[name] = list(value)

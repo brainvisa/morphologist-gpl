@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
 try:
     from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
         List, Any, Undefined
@@ -55,13 +54,13 @@ class NormalizationSkullStripped(Pipeline):
 
         # links section
         self.add_link('t1mri->TalairachFromNormalization.t1mri')
+        self.add_link('SkullStripping.skull_stripped->Normalization.t1mri')
+        self.add_link(
+            'Normalization.transformation->TalairachFromNormalization.normalization_transformation')
         self.add_link('template->Normalization.NormalizeSPM_template')
         self.add_link('template->Normalization.NormalizeBaladin_template')
         self.add_link(
             'template->Normalization.Normalization_AimsMIRegister_anatomical_template')
-        self.add_link('SkullStripping.skull_stripped->Normalization.t1mri')
-        self.add_link(
-            'Normalization.transformation->TalairachFromNormalization.normalization_transformation')
 
         # initialization section
         self.nodes['Normalization'].allow_flip_initial_MRI = False
@@ -72,7 +71,7 @@ class NormalizationSkullStripped(Pipeline):
 
     def autoexport_nodes_parameters(self):
         '''export orphan and internal output parameters'''
-        for node_name, node in six.iteritems(self.nodes):
+        for node_name, node in self.nodes.items():
             if node_name == '':
                 continue  # skip main node
             if hasattr(node, '_weak_outputs'):

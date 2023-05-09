@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
 try:
     from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
         List, Any, Undefined
@@ -13,7 +12,7 @@ import six
 
 class SulciLabellingANN(Process):
     def __init__(self, **kwargs):
-        super(SulciLabellingANN, self).__init__()
+        super(SulciLabellingANN, self).__init__(**kwargs)
         self.add_trait('data_graph', File(
             allowed_extensions=['.arg', '.data']))
         self.add_trait('model', File(allowed_extensions=['.arg', '.data']))
@@ -29,7 +28,7 @@ class SulciLabellingANN(Process):
         self.add_trait('fix_random_seed', Bool())
 
         # initialization section
-        self.model = '/volatile/riviere/brainvisa/build-stable-qt5/share/brainvisa-share-4.6/models/models_2008/discriminative_models/3.0/Rfolds_noroots/Rfolds_noroots.arg'
+        self.model = '/casa/host/build/share/brainvisa-share-5.2/models/models_2008/discriminative_models/3.0/Lfolds_noroots/Lfolds_noroots.arg'
         self.model_hint = 0
         self.rate = 0.98
         self.stopRate = 0.05
@@ -53,7 +52,7 @@ class SulciLabellingANN(Process):
             value = getattr(self, name)
             if value is Undefined:
                 continue
-            if isinstance(self.trait(name).trait_type, File) and value != '' and value is not Undefined:
+            if isinstance(self.trait(name).trait_type, File) and value != '':
                 kwargs[name] = value
             elif isinstance(self.trait(name).trait_type, List):
                 kwargs[name] = list(value)

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
 try:
     from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
         List, Any, Undefined
@@ -68,7 +67,7 @@ class BaladinNormalizationPipeline(Pipeline):
 
     def autoexport_nodes_parameters(self):
         '''export orphan and internal output parameters'''
-        for node_name, node in six.iteritems(self.nodes):
+        for node_name, node in self.nodes.items():
             if node_name == '':
                 continue  # skip main node
             if hasattr(node, '_weak_outputs'):

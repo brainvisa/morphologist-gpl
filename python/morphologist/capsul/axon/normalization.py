@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
 try:
     from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
         List, Any, Undefined
@@ -37,8 +36,8 @@ class Normalization(Pipeline):
         self.nodes['Normalization_AimsMIRegister']._weak_outputs = True
 
         # switches section
-        self.add_switch('select_Normalization_pipeline', ['NormalizeFSL', 'NormalizeSPM', 'NormalizeBaladin', 'Normalization_AimsMIRegister'], ['transformation', 'normalized', 'reoriented_t1mri'], output_types=[File(optional=True, allowed_extensions=['.trm']), File(optional=True, allowed_extensions=['.nii.gz', '.nii', '.img', '.hdr', '.ima', '.dim', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.gif', '.jpg', '.mnc', '.mng', '.pbm', '.pgm',
-                                                                                                                                                                                                                                                                                                             '.png', '.ppm', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz']), File(allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.gif', '.ima', '.dim', '.jpg', '.mnc', '.mng', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz', '.svs', '.mgh', '.mgz', '.ndpi', '.vms', '.vmu', '.scn', '.svslide', '.bif', '.czi'])])
+        self.add_switch('select_Normalization_pipeline', ['NormalizeFSL', 'NormalizeSPM', 'NormalizeBaladin', 'Normalization_AimsMIRegister'], ['transformation', 'normalized', 'reoriented_t1mri'], output_types=[File(optional=True, allowed_extensions=['.trm']), File(optional=True, allowed_extensions=['.nii.gz', '.nii', '.img', '.hdr', '.ima', '.dim', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.gif', '.jpg', '.mnc', '.pbm', '.pgm',
+                        '.png', '.ppm', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz']), File(allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.gif', '.ima', '.dim', '.jpg', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz', '.svs', '.mgh', '.mgz', '.ndpi', '.vms', '.vmu', '.scn', '.svslide', '.bif', '.czi'])])
 
         # exports section
         # export input parameter
@@ -72,7 +71,9 @@ class Normalization(Pipeline):
         self.add_link('t1mri->NormalizeBaladin.t1mri')
         self.add_link('t1mri->Normalization_AimsMIRegister.anatomy_data')
         self.add_link(
-            'init_translation_origin->NormalizeSPM.init_translation_origin')
+            'allow_flip_initial_MRI->NormalizeSPM.allow_flip_initial_MRI')
+        self.add_link(
+            'allow_flip_initial_MRI->NormalizeBaladin.allow_flip_initial_MRI')
         self.add_link(
             'commissures_coordinates->NormalizeSPM.ReorientAnatomy_commissures_coordinates')
         self.add_link(
@@ -82,9 +83,7 @@ class Normalization(Pipeline):
         self.add_link(
             'NormalizeBaladin.ReorientAnatomy_output_commissures_coordinates->output_commissures_coordinates')
         self.add_link(
-            'allow_flip_initial_MRI->NormalizeSPM.allow_flip_initial_MRI')
-        self.add_link(
-            'allow_flip_initial_MRI->NormalizeBaladin.allow_flip_initial_MRI')
+            'init_translation_origin->NormalizeSPM.init_translation_origin')
         self.add_link(
             'NormalizeFSL.transformation->select_Normalization_pipeline.NormalizeFSL_switch_transformation')
         self.add_link(
@@ -112,7 +111,10 @@ class Normalization(Pipeline):
 
         # initialization section
         if 'NormalizeSPM' in self.nodes:
-            self.nodes['select_Normalization_pipeline'].switch = 'NormalizeSPM'
+            self.select_Normalization_pipeline = 'NormalizeSPM'
+        self.nodes['NormalizeFSL'].allow_flip_initial_MRI = False
+        self.nodes['NormalizeSPM'].allow_flip_initial_MRI = False
+        self.nodes['NormalizeBaladin'].allow_flip_initial_MRI = False
         # export orphan parameters
         if not hasattr(self, '_autoexport_nodes_parameters') \
                 or self._autoexport_nodes_parameters:
@@ -120,7 +122,7 @@ class Normalization(Pipeline):
 
     def autoexport_nodes_parameters(self):
         '''export orphan and internal output parameters'''
-        for node_name, node in six.iteritems(self.nodes):
+        for node_name, node in self.nodes.items():
             if node_name == '':
                 continue  # skip main node
             if hasattr(node, '_weak_outputs'):

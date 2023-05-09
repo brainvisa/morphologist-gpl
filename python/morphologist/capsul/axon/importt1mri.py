@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
 try:
     from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
         List, Any, Undefined
@@ -13,20 +12,20 @@ import six
 
 class ImportT1MRI(Process):
     def __init__(self, **kwargs):
-        super(ImportT1MRI, self).__init__()
+        super(ImportT1MRI, self).__init__(**kwargs)
         self.add_trait('input', File(allowed_extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg',
-                                                         '.scn', '.mnc', '.mng', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz']))
-        self.add_trait('output', File(allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.gif', '.ima', '.dim', '.jpg', '.mnc', '.mng',
-                                                          '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'], output=True))
+                       '.scn', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz']))
+        self.add_trait('output', File(allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.gif', '.ima', '.dim', '.jpg', '.mnc',
+                       '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'], output=True))
         self.add_trait('referential', File(output=True, optional=True))
         self.add_trait('output_database', Enum(
-            u'/neurospin/lnao/PClean/database_learnclean', u'/volatile/riviere/basetests-3.1.0'))
+            '/neurospin/dico/data/bv_databases/human/not_labeled/hcp', '/volatile/riviere/hcp_output', optional=True))
         self.add_trait('attributes_merging', Enum(
-            'BrainVisa', 'header', 'selected_from_header'))
-        self.add_trait('selected_attributes_from_header', List())
+            'BrainVisa', 'header', 'selected_from_header', optional=True))
+        self.add_trait('selected_attributes_from_header', List(optional=True))
 
         # initialization section
-        self.output_database = u'/neurospin/lnao/PClean/database_learnclean'
+        self.output_database = '/neurospin/dico/data/bv_databases/human/not_labeled/hcp'
         self.attributes_merging = 'BrainVisa'
         self.selected_attributes_from_header = []
 
@@ -46,7 +45,7 @@ class ImportT1MRI(Process):
             value = getattr(self, name)
             if value is Undefined:
                 continue
-            if isinstance(self.trait(name).trait_type, File) and value != '' and value is not Undefined:
+            if isinstance(self.trait(name).trait_type, File) and value != '':
                 kwargs[name] = value
             elif isinstance(self.trait(name).trait_type, List):
                 kwargs[name] = list(value)

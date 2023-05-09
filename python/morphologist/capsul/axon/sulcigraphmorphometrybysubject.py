@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
 try:
     from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
         List, Any, Undefined
@@ -13,7 +12,7 @@ import six
 
 class sulcigraphmorphometrybysubject(Process):
     def __init__(self, **kwargs):
-        super(sulcigraphmorphometrybysubject, self).__init__()
+        super(sulcigraphmorphometrybysubject, self).__init__(**kwargs)
         self.add_trait('left_sulci_graph', File(
             allowed_extensions=['.arg', '.data']))
         self.add_trait('right_sulci_graph', File(
@@ -24,7 +23,7 @@ class sulcigraphmorphometrybysubject(Process):
             allowed_extensions=['.csv'], output=True))
 
         # initialization section
-        self.sulci_file = '/volatile/riviere/brainvisa/build-stable-qt5/share/brainvisa-share-4.6/nomenclature/translation/sulci_default_list.json'
+        self.sulci_file = '/casa/host/build/share/brainvisa-share-5.2/nomenclature/translation/sulci_default_list.json'
         self.use_attribute = 'label'
 
     def _run_process(self):
@@ -43,7 +42,7 @@ class sulcigraphmorphometrybysubject(Process):
             value = getattr(self, name)
             if value is Undefined:
                 continue
-            if isinstance(self.trait(name).trait_type, File) and value != '' and value is not Undefined:
+            if isinstance(self.trait(name).trait_type, File) and value != '':
                 kwargs[name] = value
             elif isinstance(self.trait(name).trait_type, List):
                 kwargs[name] = list(value)

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
 try:
     from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
         List, Any, Undefined
@@ -41,6 +40,10 @@ class AxonMorphologist(Pipeline):
             'HeadMesh', 'morphologist.capsul.axon.scalpmesh.ScalpMesh')
         self.add_process(
             'SulcalMorphometry', 'morphologist.capsul.axon.sulcigraphmorphometrybysubject.sulcigraphmorphometrybysubject')
+        self.add_process('GlobalMorphometry',
+                         'morphologist.capsul.axon.brainvolumes.brainvolumes')
+        self.add_process(
+            'Report', 'morphologist.capsul.axon.morpho_report.morpho_report')
         self.add_process('GreyWhiteClassification',
                          'morphologist.capsul.axon.greywhiteclassificationhemi.GreyWhiteClassificationHemi')
         self.add_process(
@@ -112,11 +115,10 @@ class AxonMorphologist(Pipeline):
             [('GreyWhiteClassification', 'side'), ('GreyWhiteClassification_1', 'side')])
 
         # links section
+        self.add_link('t1mri->Report.t1mri')
         self.add_link('SplitBrain.split_brain->CorticalFoldsGraph.split_brain')
         self.add_link(
             'SplitBrain.split_brain->CorticalFoldsGraph_1.split_brain')
-        self.add_link('PrepareSubject.reoriented_t1mri->BiasCorrection.t1mri')
-        self.add_link('PrepareSubject.reoriented_t1mri->Renorm.t1mri')
         self.add_link(
             'PrepareSubject.commissure_coordinates->BiasCorrection.commissure_coordinates')
         self.add_link(
@@ -135,15 +137,8 @@ class AxonMorphologist(Pipeline):
             'PrepareSubject.commissure_coordinates->CorticalFoldsGraph.commissure_coordinates')
         self.add_link(
             'PrepareSubject.commissure_coordinates->CorticalFoldsGraph_1.commissure_coordinates')
-        self.add_link(
-            'BiasCorrection.white_ridges->HistoAnalysis.white_ridges')
-        self.add_link(
-            'BiasCorrection.white_ridges->BrainSegmentation.white_ridges')
-        self.add_link('BiasCorrection.white_ridges->SplitBrain.white_ridges')
-        self.add_link('BiasCorrection.hfiltered->HistoAnalysis.hfiltered')
-        self.add_link('BiasCorrection.edges->BrainSegmentation.edges')
-        self.add_link('BiasCorrection.edges->GreyWhiteClassification.edges')
-        self.add_link('BiasCorrection.edges->GreyWhiteClassification_1.edges')
+        self.add_link('PrepareSubject.reoriented_t1mri->BiasCorrection.t1mri')
+        self.add_link('PrepareSubject.reoriented_t1mri->Renorm.t1mri')
         self.add_link(
             'BiasCorrection.t1mri_nobias->HistoAnalysis.t1mri_nobias')
         self.add_link(
@@ -164,7 +159,16 @@ class AxonMorphologist(Pipeline):
             'BiasCorrection.t1mri_nobias->SulciSkeleton_1.t1mri_nobias')
         self.add_link('BiasCorrection.t1mri_nobias->PialMesh.t1mri_nobias')
         self.add_link('BiasCorrection.t1mri_nobias->PialMesh_1.t1mri_nobias')
+        self.add_link('BiasCorrection.hfiltered->HistoAnalysis.hfiltered')
+        self.add_link(
+            'BiasCorrection.white_ridges->HistoAnalysis.white_ridges')
+        self.add_link(
+            'BiasCorrection.white_ridges->BrainSegmentation.white_ridges')
+        self.add_link('BiasCorrection.white_ridges->SplitBrain.white_ridges')
         self.add_link('BiasCorrection.variance->BrainSegmentation.variance')
+        self.add_link('BiasCorrection.edges->BrainSegmentation.edges')
+        self.add_link('BiasCorrection.edges->GreyWhiteClassification.edges')
+        self.add_link('BiasCorrection.edges->GreyWhiteClassification_1.edges')
         self.add_link(
             'HistoAnalysis.histo_analysis->BrainSegmentation.histo_analysis')
         self.add_link(
@@ -186,6 +190,7 @@ class AxonMorphologist(Pipeline):
             'SplitBrain.split_brain->GreyWhiteClassification.split_brain')
         self.add_link(
             'SplitBrain.split_brain->GreyWhiteClassification_1.split_brain')
+        self.add_link('SplitBrain.split_brain->GlobalMorphometry.split_brain')
         self.add_link(
             'TalairachTransformation.Talairach_transform->CorticalFoldsGraph.talairach_transform')
         self.add_link(
@@ -194,6 +199,34 @@ class AxonMorphologist(Pipeline):
             'SulciRecognition.output_graph->SulcalMorphometry.left_sulci_graph')
         self.add_link(
             'SulciRecognition_1.output_graph->SulcalMorphometry.right_sulci_graph')
+        self.add_link(
+            'SulciRecognition.output_graph->GlobalMorphometry.left_labelled_graph')
+        self.add_link(
+            'SulciRecognition_1.output_graph->GlobalMorphometry.right_labelled_graph')
+        self.add_link(
+            'GreyWhiteClassification.grey_white->GlobalMorphometry.left_grey_white')
+        self.add_link(
+            'GreyWhiteClassification_1.grey_white->GlobalMorphometry.right_grey_white')
+        self.add_link('PialMesh.pial_mesh->GlobalMorphometry.left_gm_mesh')
+        self.add_link('PialMesh_1.pial_mesh->GlobalMorphometry.right_gm_mesh')
+        self.add_link(
+            'GreyWhiteMesh.white_mesh->GlobalMorphometry.left_wm_mesh')
+        self.add_link(
+            'GreyWhiteMesh_1.white_mesh->GlobalMorphometry.right_wm_mesh')
+        self.add_link(
+            'GlobalMorphometry.brain_volumes_file->Report.brain_volumes_file')
+        self.add_link(
+            'GreyWhiteClassification.grey_white->Report.left_grey_white')
+        self.add_link(
+            'GreyWhiteClassification_1.grey_white->Report.right_grey_white')
+        self.add_link('PialMesh.pial_mesh->Report.left_gm_mesh')
+        self.add_link('PialMesh_1.pial_mesh->Report.right_gm_mesh')
+        self.add_link('GreyWhiteMesh.white_mesh->Report.left_wm_mesh')
+        self.add_link('GreyWhiteMesh_1.white_mesh->Report.right_wm_mesh')
+        self.add_link(
+            'SulciRecognition.output_graph->Report.left_labelled_graph')
+        self.add_link(
+            'SulciRecognition_1.output_graph->Report.right_labelled_graph')
         self.add_link(
             'GreyWhiteClassification.grey_white->GreyWhiteTopology.grey_white')
         self.add_link(
@@ -256,11 +289,8 @@ class AxonMorphologist(Pipeline):
 
         # initialization section
         self.nodes_activation.TalairachTransformation = False
-        self.nodes_activation.SulcalMorphometry = False
         self.nodes['GreyWhiteClassification'].side = 'left'
-        self.nodes_activation.SulciRecognition = False
         self.nodes['GreyWhiteClassification_1'].side = 'right'
-        self.nodes_activation.SulciRecognition_1 = False
         # export orphan parameters
         if not hasattr(self, '_autoexport_nodes_parameters') \
                 or self._autoexport_nodes_parameters:
@@ -268,7 +298,7 @@ class AxonMorphologist(Pipeline):
 
     def autoexport_nodes_parameters(self):
         '''export orphan and internal output parameters'''
-        for node_name, node in six.iteritems(self.nodes):
+        for node_name, node in self.nodes.items():
             if node_name == '':
                 continue  # skip main node
             if hasattr(node, '_weak_outputs'):

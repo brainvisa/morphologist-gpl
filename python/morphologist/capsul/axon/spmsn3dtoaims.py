@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
 try:
     from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
         List, Any, Undefined
@@ -13,7 +12,7 @@ import six
 
 class SPMsn3dToAims(Process):
     def __init__(self, **kwargs):
-        super(SPMsn3dToAims, self).__init__()
+        super(SPMsn3dToAims, self).__init__(**kwargs)
         self.add_trait('read', File(allowed_extensions=['.mat']))
         self.add_trait('write', File(allowed_extensions=['.trm'], output=True))
         self.add_trait('target', Enum(
@@ -44,7 +43,7 @@ class SPMsn3dToAims(Process):
             value = getattr(self, name)
             if value is Undefined:
                 continue
-            if isinstance(self.trait(name).trait_type, File) and value != '' and value is not Undefined:
+            if isinstance(self.trait(name).trait_type, File) and value != '':
                 kwargs[name] = value
             elif isinstance(self.trait(name).trait_type, List):
                 kwargs[name] = list(value)

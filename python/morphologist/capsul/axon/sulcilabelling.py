@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
 try:
     from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
         List, Any, Undefined
@@ -49,10 +48,10 @@ class SulciLabelling(Pipeline):
             'recognition2000', 'fix_random_seed', 'fix_random_seed')
 
         # links section
-        self.add_link('fix_random_seed->SPAM_recognition09.fix_random_seed')
-        self.add_link('fix_random_seed->CNN_recognition19.fix_random_seed')
         self.add_link('data_graph->recognition2000.data_graph')
         self.add_link('data_graph->CNN_recognition19.graph')
+        self.add_link('fix_random_seed->SPAM_recognition09.fix_random_seed')
+        self.add_link('fix_random_seed->CNN_recognition19.fix_random_seed')
         self.add_link(
             'recognition2000.output_graph->select_Sulci_Recognition.recognition2000_switch_output_graph')
         self.add_link(
@@ -61,8 +60,8 @@ class SulciLabelling(Pipeline):
             'CNN_recognition19.labeled_graph->select_Sulci_Recognition.CNN_recognition19_switch_output_graph')
 
         # initialization section
-        if 'SPAM_recognition09' in self.nodes:
-            self.nodes['select_Sulci_Recognition'].switch = 'SPAM_recognition09'
+        if 'CNN_recognition19' in self.nodes:
+            self.select_Sulci_Recognition = 'CNN_recognition19'
         # export orphan parameters
         if not hasattr(self, '_autoexport_nodes_parameters') \
                 or self._autoexport_nodes_parameters:
@@ -70,7 +69,7 @@ class SulciLabelling(Pipeline):
 
     def autoexport_nodes_parameters(self):
         '''export orphan and internal output parameters'''
-        for node_name, node in six.iteritems(self.nodes):
+        for node_name, node in self.nodes.items():
             if node_name == '':
                 continue  # skip main node
             if hasattr(node, '_weak_outputs'):

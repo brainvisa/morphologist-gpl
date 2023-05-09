@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
 try:
     from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
         List, Any, Undefined
@@ -13,7 +12,7 @@ import six
 
 class Normalization_Baladin(Process):
     def __init__(self, **kwargs):
-        super(Normalization_Baladin, self).__init__()
+        super(Normalization_Baladin, self).__init__(**kwargs)
         self.add_trait('anatomy_data', File(
             allowed_extensions=['.ima', '.dim']))
         self.add_trait('anatomical_template', File(
@@ -24,7 +23,7 @@ class Normalization_Baladin(Process):
                        '.ima', '.dim', '.nii', '.nii.gz'], output=True))
 
         # initialization section
-        self.anatomical_template = '/usr/share/fsl/data/standard/MNI152_T1_1mm.nii.gz'
+        self.anatomical_template = '/casa/host/build/share/brainvisa-share-5.2/anatomical_templates/MNI152_T1_1mm.nii.gz'
 
     def _run_process(self):
         from brainvisa import axon
@@ -42,7 +41,7 @@ class Normalization_Baladin(Process):
             value = getattr(self, name)
             if value is Undefined:
                 continue
-            if isinstance(self.trait(name).trait_type, File) and value != '' and value is not Undefined:
+            if isinstance(self.trait(name).trait_type, File) and value != '':
                 kwargs[name] = value
             elif isinstance(self.trait(name).trait_type, List):
                 kwargs[name] = list(value)

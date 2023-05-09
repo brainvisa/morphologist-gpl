@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
 try:
     from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
         List, Any, Undefined
@@ -13,13 +12,13 @@ import six
 
 class Normalization_FSL_reinit(Process):
     def __init__(self, **kwargs):
-        super(Normalization_FSL_reinit, self).__init__()
+        super(Normalization_FSL_reinit, self).__init__(**kwargs)
         self.add_trait('anatomy_data', File(
             allowed_extensions=['.nii', '.nii.gz']))
         self.add_trait('anatomical_template', File(
             allowed_extensions=['.nii', '.nii.gz']))
         self.add_trait('Alignment', Enum('Already Virtually Aligned',
-                                         'Not Aligned but Same Orientation', 'Incorrectly Oriented'))
+                       'Not Aligned but Same Orientation', 'Incorrectly Oriented'))
         self.add_trait('transformation_matrix', File(
             allowed_extensions=['.mat'], output=True))
         self.add_trait('normalized_anatomy_data', File(
@@ -32,7 +31,6 @@ class Normalization_FSL_reinit(Process):
         self.add_trait('init_translation_origin', Enum(0, 1))
 
         # initialization section
-        self.anatomical_template = '/usr/share/fsl/data/standard/MNI152_T1_2mm_brain.nii.gz'
         self.Alignment = 'Not Aligned but Same Orientation'
         self.cost_function = 'corratio'
         self.search_cost_function = 'corratio'
@@ -55,7 +53,7 @@ class Normalization_FSL_reinit(Process):
             value = getattr(self, name)
             if value is Undefined:
                 continue
-            if isinstance(self.trait(name).trait_type, File) and value != '' and value is not Undefined:
+            if isinstance(self.trait(name).trait_type, File) and value != '':
                 kwargs[name] = value
             elif isinstance(self.trait(name).trait_type, List):
                 kwargs[name] = list(value)

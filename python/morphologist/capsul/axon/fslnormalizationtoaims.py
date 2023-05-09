@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
 try:
     from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
         List, Any, Undefined
@@ -13,18 +12,17 @@ import six
 
 class FSLnormalizationToAims(Process):
     def __init__(self, **kwargs):
-        super(FSLnormalizationToAims, self).__init__()
+        super(FSLnormalizationToAims, self).__init__(**kwargs)
         self.add_trait('read', File(allowed_extensions=['.mat']))
-        self.add_trait('source_volume', File(allowed_extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg',
-                                                                 '.scn', '.mnc', '.mng', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz']))
+        self.add_trait('source_volume', File(allowed_extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu',
+                       '.jpg', '.scn', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz']))
         self.add_trait('write', File(allowed_extensions=['.trm'], output=True))
         self.add_trait('registered_volume', File(
             allowed_extensions=['.nii', '.nii.gz']))
-        self.add_trait('standard_template', Enum(0))
+        self.add_trait('standard_template', Enum(0, 1, 2))
         self.add_trait('set_transformation_in_source_volume', Bool())
 
         # initialization section
-        self.registered_volume = '/usr/share/fsl/data/standard/MNI152_T1_2mm_brain.nii.gz'
         self.standard_template = 0
         self.set_transformation_in_source_volume = True
 
@@ -44,7 +42,7 @@ class FSLnormalizationToAims(Process):
             value = getattr(self, name)
             if value is Undefined:
                 continue
-            if isinstance(self.trait(name).trait_type, File) and value != '' and value is not Undefined:
+            if isinstance(self.trait(name).trait_type, File) and value != '':
                 kwargs[name] = value
             elif isinstance(self.trait(name).trait_type, List):
                 kwargs[name] = list(value)

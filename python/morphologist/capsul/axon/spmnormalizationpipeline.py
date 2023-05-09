@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
 try:
     from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
         List, Any, Undefined
@@ -78,19 +77,19 @@ class SPMnormalizationPipeline(Pipeline):
         self.do_not_export.update([('ConvertSPMnormalizationToAIMS', 'write')])
 
         # links section
-        self.add_link('nbiteration->normalization_t1_spm8_reinit.nbiteration')
-        self.add_link(
-            'init_translation_origin->normalization_t1_spm8_reinit.init_translation_origin')
         self.add_link('t1mri->normalization_t1_spm8_reinit.anatomy_data')
         self.add_link('t1mri->ConvertSPMnormalizationToAIMS.source_volume')
         self.add_link('t1mri->ReorientAnatomy.t1mri')
         self.add_link(
             'allow_retry_initialization->normalization_t1_spm8_reinit.allow_retry_initialization')
-        self.add_link('voxel_size->normalization_t1_spm8_reinit.voxel_size')
         self.add_link(
             'template->normalization_t1_spm8_reinit.anatomical_template')
         self.add_link(
+            'init_translation_origin->normalization_t1_spm8_reinit.init_translation_origin')
+        self.add_link(
             'cutoff_option->normalization_t1_spm8_reinit.cutoff_option')
+        self.add_link('nbiteration->normalization_t1_spm8_reinit.nbiteration')
+        self.add_link('voxel_size->normalization_t1_spm8_reinit.voxel_size')
         self.add_link(
             'normalization_t1_spm12_reinit.transformations_informations->NormalizeSPM.normalization_t1_spm12_reinit_switch_spm_transformation')
         self.add_link(
@@ -106,7 +105,7 @@ class SPMnormalizationPipeline(Pipeline):
 
         # initialization section
         if 'normalization_t1_spm12_reinit' in self.nodes:
-            self.nodes['NormalizeSPM'].switch = 'normalization_t1_spm12_reinit'
+            self.NormalizeSPM = 'normalization_t1_spm12_reinit'
         self.nodes_activation.ReorientAnatomy = False
         # export orphan parameters
         if not hasattr(self, '_autoexport_nodes_parameters') \
@@ -115,7 +114,7 @@ class SPMnormalizationPipeline(Pipeline):
 
     def autoexport_nodes_parameters(self):
         '''export orphan and internal output parameters'''
-        for node_name, node in six.iteritems(self.nodes):
+        for node_name, node in self.nodes.items():
             if node_name == '':
                 continue  # skip main node
             if hasattr(node, '_weak_outputs'):
