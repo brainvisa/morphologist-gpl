@@ -321,7 +321,7 @@ def execution(self, context):
         pdf.drawString(30, h, '%s:' % tk)
         if missing:
             pdf.setFillColorRGB(0.6, 0., 0.)
-        else:
+        elif z is not None:
             pdf.drawRightString(270, h, '%+1.2f σ' % z)
         pdf.drawRightString(200, h, v)
         if unit is not None:
