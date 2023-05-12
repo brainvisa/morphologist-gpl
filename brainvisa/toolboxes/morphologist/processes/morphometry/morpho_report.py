@@ -41,6 +41,9 @@ signature = Signature(
     'right_labelled_graph', ReadDiskItem(
         'labelled Cortical Folds Graph', 'Graph and data',
         requiredAttributes={'side': 'right'}),
+    'talairach_transform', ReadDiskItem(
+        'Transform Raw T1 MRI to Talairach-AC/PC-Anatomist',
+        'Transformation matrix'),
     'brain_volumes_file', ReadDiskItem(
         'Brain volumetry measurements', 'CSV file'),
     'normative_brain_stats', ReadDiskItem('Normative brain volumes stats',
@@ -60,7 +63,8 @@ def initialization(self):
                      'left_gm_mesh', 'right_gm_mesh',
                      'left_wm_mesh', 'right_wm_mesh',
                      'left_labelled_graph', 'right_labelled_graph',
-                     'brain_volumes_file', 'normative_brain_stats')
+                     'brain_volumes_file', 'normative_brain_stats',
+                     'talairach_transform')
     self.linkParameters('subject', 't1mri', linkSubject)
     self.linkParameters('left_grey_white', 't1mri')
     self.linkParameters('right_grey_white', 't1mri')
@@ -70,6 +74,7 @@ def initialization(self):
     self.linkParameters('right_wm_mesh', 't1mri')
     self.linkParameters('left_labelled_graph', 't1mri')
     self.linkParameters('right_labelled_graph', 't1mri')
+    self.linkParameters('talairach_transform', 't1mri')
     self.linkParameters('brain_volumes_file', 't1mri')
     self.linkParameters('report', 't1mri')
     self.linkParameters('normative_brain_stats', 't1mri')
@@ -109,6 +114,17 @@ def execution(self, context):
 
     a = anatomist.Anatomist()
     t1mri = a.loadObject(self.t1mri)
+    new_ref = None
+    if t1mri.getReferential().uuid() \
+                == anacpp.Referential.acPcReferential().uuid() \
+            and self.talairach_transform is not None \
+            and osp.exists(self.talairach_transform.fullPath()):
+        # if we are running without databasing, this is not done automatically
+        # by brainvisa.anatomist. Do it manually.
+        new_ref = a.createReferential()
+        tr = a.loadTransformation(self.talairach_transform.fullPath(), new_ref,
+                                  anacpp.Referential.acPcReferential())
+        t1mri.assignReferential(new_ref)
     w = a.createWindow('Axial')
     w.addObjects(t1mri)
     w.setReferential(anacpp.Referential.acPcReferential())
@@ -136,11 +152,15 @@ def execution(self, context):
     if self.left_grey_white is not None \
             and osp.exists(self.left_grey_white.fullPath()):
         lgw = a.loadObject(self.left_grey_white)
+        if new_ref:
+            lgw.assignReferential(new_ref)
         lgw.setPalette('RAINBOW')
         fusiono.append(lgw)
     if self.right_grey_white is not None \
             and osp.exists(self.right_grey_white.fullPath()):
         rgw = a.loadObject(self.right_grey_white)
+        if new_ref:
+            rgw.assignReferential(new_ref)
         rgw.setPalette('RAINBOW')
         fusiono.append(rgw)
     if fusiono:
@@ -168,11 +188,15 @@ def execution(self, context):
     if self.left_wm_mesh is not None \
             and osp.exists(self.left_wm_mesh.fullPath()):
         lwm = a.loadObject(self.left_wm_mesh)
+        if new_ref:
+            lwm.assignReferential(new_ref)
         w.addObjects(lwm)
         objs.append(lwm)
     if self.right_wm_mesh is not None \
             and osp.exists(self.right_wm_mesh.fullPath()):
         rwm = a.loadObject(self.right_wm_mesh)
+        if new_ref:
+            rwm.assignReferential(new_ref)
         w.addObjects(rwm)
         objs.append(rwm)
     if objs:
@@ -194,11 +218,15 @@ def execution(self, context):
     if self.left_gm_mesh is not None \
             and osp.exists(self.left_gm_mesh.fullPath()):
         lgm = a.loadObject(self.left_gm_mesh)
+        if new_ref:
+            lgm.assignReferential(new_ref)
         w.addObjects(lgm)
         objs.append(lgm)
     if self.right_gm_mesh is not None \
             and osp.exists(self.right_gm_mesh.fullPath()):
         rgm = a.loadObject(self.right_gm_mesh)
+        if new_ref:
+            rgm.assignReferential(new_ref)
         w.addObjects(rgm)
         objs.append(rgm)
     if objs:
@@ -221,11 +249,15 @@ def execution(self, context):
     if self.left_labelled_graph is not None \
             and osp.exists(self.left_labelled_graph.fullPath()):
         lg = a.loadObject(self.left_labelled_graph)
+        if new_ref:
+            lg.assignReferential(new_ref)
         lg.setLabelProperty('label')
         objs.append(lg)
     if self.right_labelled_graph is not None \
             and osp.exists(self.right_labelled_graph.fullPath()):
         rg = a.loadObject(self.right_labelled_graph)
+        if new_ref:
+            rg.assignReferential(new_ref)
         rg.setLabelProperty('label')
         objs.append(rg)
     if objs:
