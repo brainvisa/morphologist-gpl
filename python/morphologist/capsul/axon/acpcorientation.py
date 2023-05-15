@@ -8,18 +8,26 @@ from capsul.api import Process
 class AcpcOrientation(Process):
     def __init__(self, **kwargs):
         super(AcpcOrientation, self).__init__(**kwargs)
-        self.add_field('T1mri', File, read=True, allowed_extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg', '.scn', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz'])
-        self.add_field('commissure_coordinates', File, write=True, allowed_extensions=['.APC'])
-        self.add_field('Normalised', Literal['No', 'MNI from SPM', 'MNI from Mritotal', 'Marseille from SPM'])
-        self.add_field('Anterior_Commissure', conlist(float, min_items=3, max_items=3), default_factory=lambda: [0, 0, 0], optional=True)
-        self.add_field('Posterior_Commissure', conlist(float, min_items=3, max_items=3), default_factory=lambda: [0, 0, 0], optional=True)
-        self.add_field('Interhemispheric_Point', conlist(float, min_items=3, max_items=3), default_factory=lambda: [0, 0, 0], optional=True)
-        self.add_field('Left_Hemisphere_Point', conlist(float, min_items=3, max_items=3), default_factory=lambda: [0, 0, 0], optional=True)
+        self.add_field('T1mri', File, read=True, allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim',
+                       '.jpg', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'])
+        self.add_field('commissure_coordinates', File,
+                       write=True, allowed_extensions=['.APC'])
+        self.add_field(
+            'Normalised', Literal['No', 'MNI from SPM', 'MNI from Mritotal', 'Marseille from SPM'])
+        self.add_field('Anterior_Commissure', conlist(
+            float, min_items=3, max_items=3), default_factory=lambda: [0, 0, 0], optional=True)
+        self.add_field('Posterior_Commissure', conlist(
+            float, min_items=3, max_items=3), default_factory=lambda: [0, 0, 0], optional=True)
+        self.add_field('Interhemispheric_Point', conlist(
+            float, min_items=3, max_items=3), default_factory=lambda: [0, 0, 0], optional=True)
+        self.add_field('Left_Hemisphere_Point', conlist(
+            float, min_items=3, max_items=3), default_factory=lambda: [0, 0, 0], optional=True)
         self.add_field('allow_flip_initial_MRI', bool)
-        self.add_field('reoriented_t1mri', File, write=True, allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.gif', '.ima', '.dim', '.jpg', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'])
+        self.add_field('reoriented_t1mri', File, write=True, allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.gif', '.ima', '.dim',
+                       '.jpg', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'])
         self.add_field('remove_older_MNI_normalization', bool)
-        self.add_field('older_MNI_normalization', File, read=True, allowed_extensions=['.trm'], optional=True)
-
+        self.add_field('older_MNI_normalization', File, read=True,
+                       allowed_extensions=['.trm'], optional=True)
 
         # initialization section
         self.Normalised = 'No'

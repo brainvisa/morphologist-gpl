@@ -12,6 +12,11 @@
 #             # patch forbidden field name "field"
 #             if name == 'b_field':
 #                 name = 'field'
+#
+# using:
+#
+# sed -i "s/'field'/'b_field'/" t1biascorrection.py
+# sed -i "s/                continue/                continue\n            # patch forbidden field name \"field\"\n            if name == 'b_field':\n                name = 'field'/" /tmp/t1biascorrection.py
 
 
 

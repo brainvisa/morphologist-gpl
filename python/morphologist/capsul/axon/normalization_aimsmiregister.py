@@ -8,19 +8,24 @@ from capsul.api import Process
 class normalization_aimsmiregister(Process):
     def __init__(self, **kwargs):
         super(normalization_aimsmiregister, self).__init__(**kwargs)
-        self.add_field('anatomy_data', File, read=True, allowed_extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg', '.scn', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz'])
-        self.add_field('anatomical_template', File, read=True, allowed_extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg', '.scn', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz'])
-        self.add_field('transformation_to_template', File, write=True, allowed_extensions=['.trm'], optional=True)
-        self.add_field('normalized_anatomy_data', File, write=True, allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.gif', '.ima', '.dim', '.jpg', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'], optional=True)
-        self.add_field('transformation_to_MNI', File, write=True, allowed_extensions=['.trm'], optional=True)
-        self.add_field('transformation_to_ACPC', File, write=True, allowed_extensions=['.trm'], optional=True)
-        self.add_field('mni_to_acpc', File, read=True, allowed_extensions=['.trm'], optional=True)
+        self.add_field('anatomy_data', File, read=True, allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima',
+                       '.dim', '.jpg', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'])
+        self.add_field('anatomical_template', File, read=True, allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima',
+                       '.dim', '.jpg', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'])
+        self.add_field('transformation_to_template', File,
+                       write=True, allowed_extensions=['.trm'], optional=True)
+        self.add_field('normalized_anatomy_data', File, write=True, allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.gif', '.ima', '.dim', '.jpg',
+                       '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'], optional=True)
+        self.add_field('transformation_to_MNI', File, write=True,
+                       allowed_extensions=['.trm'], optional=True)
+        self.add_field('transformation_to_ACPC', File, write=True,
+                       allowed_extensions=['.trm'], optional=True)
+        self.add_field('mni_to_acpc', File, read=True,
+                       allowed_extensions=['.trm'], optional=True)
         self.add_field('smoothing', float)
 
-
         # initialization section
-        self.anatomical_template = '/casa/host/build/share/brainvisa-share-5.1/anatomical_templates/MNI152_T1_2mm.nii.gz'
-        self.mni_to_acpc = '/casa/host/build/share/brainvisa-share-5.1/transformation/talairach_TO_spm_template_novoxels.trm'
+        self.anatomical_template = '/host/usr/local/spm12-standalone/spm12_mcr/spm12/spm12/toolbox/OldNorm/T1.nii'
         self.smoothing = 1.0
 
     def execution(self, context=None):

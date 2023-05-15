@@ -8,20 +8,22 @@ from capsul.api import Process
 class SulciLabellingANN(Process):
     def __init__(self, **kwargs):
         super(SulciLabellingANN, self).__init__(**kwargs)
-        self.add_field('data_graph', File, read=True, allowed_extensions=['.arg', '.data'])
-        self.add_field('model', File, read=True, allowed_extensions=['.arg', '.data'])
-        self.add_field('output_graph', File, write=True, allowed_extensions=['.arg', '.data'])
+        self.add_field('data_graph', File, read=True,
+                       allowed_extensions=['.arg', '.data'])
+        self.add_field('model', File, read=True,
+                       allowed_extensions=['.arg', '.data'])
+        self.add_field('output_graph', File, write=True,
+                       allowed_extensions=['.arg', '.data'])
         self.add_field('model_hint', Literal[0, 1])
-        self.add_field('energy_plot_file', File, write=True, allowed_extensions=['.nrj'])
+        self.add_field('energy_plot_file', File, write=True,
+                       allowed_extensions=['.nrj'])
         self.add_field('rate', float)
         self.add_field('stopRate', float)
         self.add_field('niterBelowStopProp', int)
         self.add_field('forbid_unknown_label', bool)
         self.add_field('fix_random_seed', bool)
 
-
         # initialization section
-        self.model = '/casa/host/build/share/brainvisa-share-5.1/models/models_2008/discriminative_models/3.0/Lfolds_noroots/Lfolds_noroots.arg'
         self.model_hint = 0
         self.rate = 0.98
         self.stopRate = 0.05

@@ -8,18 +8,22 @@ from capsul.api import Process
 class normalization_t1_spm12_reinit(Process):
     def __init__(self, **kwargs):
         super(normalization_t1_spm12_reinit, self).__init__(**kwargs)
-        self.add_field('anatomy_data', File, read=True, allowed_extensions=['.nii', '.img', '.hdr'])
-        self.add_field('anatomical_template', File, read=True, allowed_extensions=['.nii', '.mnc', '.img', '.hdr'], optional=True)
+        self.add_field('anatomy_data', File, read=True,
+                       allowed_extensions=['.nii', '.img', '.hdr'])
+        self.add_field('anatomical_template', File, read=True, allowed_extensions=[
+                       '.nii', '.mnc', '.img', '.hdr'], optional=True)
         self.add_field('voxel_size', Literal['[1 1 1]'])
         self.add_field('cutoff_option', int)
         self.add_field('nbiteration', int)
-        self.add_field('transformations_informations', File, write=True, allowed_extensions=['.mat'])
-        self.add_field('normalized_anatomy_data', File, write=True, allowed_extensions=['.nii', '.img', '.hdr'])
+        self.add_field('transformations_informations', File,
+                       write=True, allowed_extensions=['.mat'])
+        self.add_field('normalized_anatomy_data', File, write=True,
+                       allowed_extensions=['.nii', '.img', '.hdr'])
         self.add_field('allow_retry_initialization', bool)
         self.add_field('init_translation_origin', Literal[0, 1])
 
-
         # initialization section
+        self.anatomical_template = '/host/usr/local/spm12-standalone/spm12_mcr/spm12/spm12/toolbox/OldNorm/T1.nii'
         self.voxel_size = '[1 1 1]'
         self.cutoff_option = 25
         self.nbiteration = 16
