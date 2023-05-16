@@ -57,6 +57,7 @@ signature = Signature(
     'transform_chain_ACPC_to_Normalized', ListOf(
         ReadDiskItem('Transformation', 'Transformation matrix')),
     'acpc_referential', ReadDiskItem('Referential', 'Referential'),
+    'run_morphologist', Choice('run', 'show', 'none'),
 )
 
 
@@ -131,121 +132,164 @@ def execution(self, context):
     }
     context.write(att)
 
-    t2w = osp.join(sessd, 'anat',
-                   'sub-%(subject)s_ses-%(session)s_desc-restore_T2w.nii'
-                   % att)
-    if not osp.exists(t2w):
-        t2w += '.gz'
-    context.write('T2w:', t2w)
-    context.runProcess('ImportT1MRI', input=t2w, output=self.t1mri,
-                       referential=self.referential)
-    context.system('AimsFileConvert', self.t1mri, self.t1mri_nobias)
-    tm.copyReferential(self.t1mri, self.t1mri_nobias)
+    #t2w = osp.join(sessd, 'anat',
+                   #'sub-%(subject)s_ses-%(session)s_desc-restore_T2w.nii'
+                   #% att)
+    #if not osp.exists(t2w):
+        #t2w += '.gz'
+    #context.write('T2w:', t2w)
+    #context.runProcess('ImportT1MRI', input=t2w, output=self.t1mri,
+                       #referential=self.referential)
+    #context.system('AimsFileConvert', self.t1mri, self.t1mri_nobias)
+    #tm.copyReferential(self.t1mri, self.t1mri_nobias)
 
-    dseg = osp.join(sessd, 'anat',
-                   'sub-%(subject)s_ses-%(session)s_desc-ribbon_dseg.nii'
-                   % att)
-    if not osp.exists(dseg):
-        dseg += '.gz'
-    context.system('AimsFileConvert', dseg, self.left_grey_white, '-t', 'S16')
-    context.system('AimsReplaceLevel', '-i', self.left_grey_white,
-                   '-o', self.split_brain,
-                   '-g', 2, '-g', 3, '-g', 41, '-g', 42,
-                   '-n', 2, '-n', 2, '-n', 1, '-n', 1)
-    tm.copyReferential(self.t1mri, self.split_brain)
+    #dseg = osp.join(sessd, 'anat',
+                   #'sub-%(subject)s_ses-%(session)s_desc-ribbon_dseg.nii'
+                   #% att)
+    #if not osp.exists(dseg):
+        #dseg += '.gz'
+    #context.system('AimsFileConvert', dseg, self.left_grey_white, '-t', 'S16')
+    #context.system('AimsReplaceLevel', '-i', self.left_grey_white,
+                   #'-o', self.split_brain,
+                   #'-g', 2, '-g', 3, '-g', 41, '-g', 42,
+                   #'-n', 2, '-n', 2, '-n', 1, '-n', 1)
+    #tm.copyReferential(self.t1mri, self.split_brain)
 
-    context.write('running skull-stripped normalization')
-    # note: we are using split_brain.fullPath() (filename string) here because
-    # using directly the DiskItem would result in a type mismatch, and the
-    # parameter would be rejected and erased.
-    p = getProcessInstance('normalization_skullstripped')
-    p.t1mri=self.t1mri
-    p.brain_mask=self.split_brain.fullPath()
-    p.template=self.skull_stripped_template
-    p.skull_stripped=self.skull_stripped
-    p.transformation=self.mni_transform
-    p.talairach_transformation=self.talairach_transformation
-    p.commissure_coordinates=self.commissure_coordinates
-    en = p.executionNode()
-    en.Normalization.reoriented_t1mri = self.t1mri
-    en.TalairachFromNormalization.source_referential = self.referential
-    en.TalairachFromNormalization.transform_chain_ACPC_to_Normalized \
-        = self.transform_chain_ACPC_to_Normalized
-    en.TalairachFromNormalization.acpc_referential = self.acpc_referential
-    en.Normalization.NormalizeSPM.spm_transformation = self.spm_transformation
-    en.Normalization.NormalizeSPM.normalized_t1mri = self.normalized_t1mri
+    #context.write('running skull-stripped normalization')
+    ## note: we are using split_brain.fullPath() (filename string) here because
+    ## using directly the DiskItem would result in a type mismatch, and the
+    ## parameter would be rejected and erased.
+    #p = getProcessInstance('normalization_skullstripped')
+    #p.t1mri = self.t1mri
+    #p.brain_mask = self.split_brain.fullPath()
+    #p.template = self.skull_stripped_template
+    #p.skull_stripped = self.skull_stripped
+    #p.transformation = self.mni_transform
+    #p.talairach_transformation = self.talairach_transformation
+    #p.commissure_coordinates = self.commissure_coordinates
+    #en = p.executionNode()
+    #en.Normalization.reoriented_t1mri = self.t1mri
+    #en.TalairachFromNormalization.source_referential = self.referential
+    #en.TalairachFromNormalization.transform_chain_ACPC_to_Normalized \
+        #= self.transform_chain_ACPC_to_Normalized
+    #en.TalairachFromNormalization.acpc_referential = self.acpc_referential
+    #en.Normalization.NormalizeSPM.spm_transformation = self.spm_transformation
+    #en.Normalization.NormalizeSPM.normalized_t1mri = self.normalized_t1mri
 
-    context.runProcess(p)
+    #context.runProcess(p)
 
-    context.system('AimsReplaceLevel', '-i', self.left_grey_white,
-                   '-o', self.left_grey_white,
-                   '-g', 2, '-g', 3, '-g', 41, '-g', 42,
-                   '-n', 200, '-n', 100, '-n', 0, '-n', 0)
-    tm.copyReferential(self.t1mri, self.left_grey_white)
-    context.system('AimsFileConvert', dseg, self.right_grey_white, '-t', 'S16')
-    context.system('AimsReplaceLevel', '-i', self.right_grey_white,
-                   '-o', self.right_grey_white,
-                   '-g', 2, '-g', 3, '-g', 41, '-g', 42,
-                   '-n', 0, '-n', 0, '-n', 200, '-n', 100)
-    tm.copyReferential(self.t1mri, self.right_grey_white)
+    #context.system('AimsReplaceLevel', '-i', self.left_grey_white,
+                   #'-o', self.left_grey_white,
+                   #'-g', 2, '-g', 3, '-g', 41, '-g', 42,
+                   #'-n', 200, '-n', 100, '-n', 0, '-n', 0)
+    #tm.copyReferential(self.t1mri, self.left_grey_white)
+    #context.system('AimsFileConvert', dseg, self.right_grey_white, '-t', 'S16')
+    #context.system('AimsReplaceLevel', '-i', self.right_grey_white,
+                   #'-o', self.right_grey_white,
+                   #'-g', 2, '-g', 3, '-g', 41, '-g', 42,
+                   #'-n', 0, '-n', 0, '-n', 200, '-n', 100)
+    #tm.copyReferential(self.t1mri, self.right_grey_white)
 
-    context.runProcess('NobiasHistoAnalysis',
-                       t1mri_nobias=self.t1mri_nobias,
-                       use_hfiltered=False,
-                       use_wridges=False,
-                       histo_analysis=self.histo_analysis,
-                       histo=self.histo)
+    #context.runProcess('NobiasHistoAnalysis',
+                       #t1mri_nobias=self.t1mri_nobias,
+                       #use_hfiltered=False,
+                       #use_wridges=False,
+                       #histo_analysis=self.histo_analysis,
+                       #histo=self.histo)
 
-    lhm = osp.join(sessd, 'anat',
-                   'sub-%(subject)s_ses-%(session)s_hemi-left_wm.surf.gii'
-                   % att)
-    # meshes seem to be in scanner-based ref
-    context.system('AimsApplyTransform', '-i', lhm, '-o', self.left_white_mesh,
-                   '-d', '%s.trmhdr?index=0&inv=1' % self.t1mri.fullPath())
-    mesh = aims.read(self.left_white_mesh.fullPath())
-    aims.SurfaceManip.invertSurfacePolygons(mesh)
-    aims.write(mesh, self.left_white_mesh.fullPath())
-    tm.copyReferential(self.t1mri, self.left_white_mesh)
+    #lhm = osp.join(sessd, 'anat',
+                   #'sub-%(subject)s_ses-%(session)s_hemi-left_wm.surf.gii'
+                   #% att)
+    ## meshes seem to be in scanner-based ref
+    #context.system('AimsApplyTransform', '-i', lhm, '-o', self.left_white_mesh,
+                   #'-d', '%s.trmhdr?index=0&inv=1' % self.t1mri.fullPath())
+    #mesh = aims.read(self.left_white_mesh.fullPath())
+    #aims.SurfaceManip.invertSurfacePolygons(mesh)
+    #aims.write(mesh, self.left_white_mesh.fullPath())
+    #tm.copyReferential(self.t1mri, self.left_white_mesh)
 
-    rhm = osp.join(sessd, 'anat',
-                   'sub-%(subject)s_ses-%(session)s_hemi-right_wm.surf.gii'
-                   % att)
-    context.system('AimsApplyTransform', '-i', rhm,
-                   '-o', self.right_white_mesh,
-                   '-d', '%s.trmhdr?index=0&inv=1' % self.t1mri.fullPath())
-    mesh = aims.read(self.right_white_mesh.fullPath())
-    aims.SurfaceManip.invertSurfacePolygons(mesh)
-    aims.write(mesh, self.right_white_mesh.fullPath())
-    tm.copyReferential(self.t1mri, self.right_white_mesh)
+    #rhm = osp.join(sessd, 'anat',
+                   #'sub-%(subject)s_ses-%(session)s_hemi-right_wm.surf.gii'
+                   #% att)
+    #context.system('AimsApplyTransform', '-i', rhm,
+                   #'-o', self.right_white_mesh,
+                   #'-d', '%s.trmhdr?index=0&inv=1' % self.t1mri.fullPath())
+    #mesh = aims.read(self.right_white_mesh.fullPath())
+    #aims.SurfaceManip.invertSurfacePolygons(mesh)
+    #aims.write(mesh, self.right_white_mesh.fullPath())
+    #tm.copyReferential(self.t1mri, self.right_white_mesh)
 
-    lhm = osp.join(sessd, 'anat',
-                   'sub-%(subject)s_ses-%(session)s_hemi-left_pial.surf.gii'
-                   % att)
-    if osp.exists(lhm):
-        context.system('AimsApplyTransform', '-i', lhm,
-                       '-o', self.left_pial_mesh,
-                       '-d', '%s.trmhdr?index=0&inv=1' % self.t1mri.fullPath())
-        mesh = aims.read(self.left_pial_mesh.fullPath())
-        aims.SurfaceManip.invertSurfacePolygons(mesh)
-        aims.write(mesh, self.left_pial_mesh.fullPath())
-        tm.copyReferential(self.t1mri, self.left_pial_mesh)
+    #lhm = osp.join(sessd, 'anat',
+                   #'sub-%(subject)s_ses-%(session)s_hemi-left_pial.surf.gii'
+                   #% att)
+    #if osp.exists(lhm):
+        #context.system('AimsApplyTransform', '-i', lhm,
+                       #'-o', self.left_pial_mesh,
+                       #'-d', '%s.trmhdr?index=0&inv=1' % self.t1mri.fullPath())
+        #mesh = aims.read(self.left_pial_mesh.fullPath())
+        #aims.SurfaceManip.invertSurfacePolygons(mesh)
+        #aims.write(mesh, self.left_pial_mesh.fullPath())
+        #tm.copyReferential(self.t1mri, self.left_pial_mesh)
 
-    rhm = osp.join(sessd, 'anat',
-                   'sub-%(subject)s_ses-%(session)s_hemi-right_pial.surf.gii'
-                   % att)
-    if osp.exists(rhm):
-        context.system('AimsApplyTransform', '-i', rhm,
-                      '-o', self.right_pial_mesh,
-                      '-d', '%s.trmhdr?index=0&inv=1' % self.t1mri.fullPath())
-        mesh = aims.read(self.right_pial_mesh.fullPath())
-        aims.SurfaceManip.invertSurfacePolygons(mesh)
-        aims.write(mesh, self.right_pial_mesh.fullPath())
-        tm.copyReferential(self.t1mri, self.right_pial_mesh)
+    #rhm = osp.join(sessd, 'anat',
+                   #'sub-%(subject)s_ses-%(session)s_hemi-right_pial.surf.gii'
+                   #% att)
+    #if osp.exists(rhm):
+        #context.system('AimsApplyTransform', '-i', rhm,
+                      #'-o', self.right_pial_mesh,
+                      #'-d', '%s.trmhdr?index=0&inv=1' % self.t1mri.fullPath())
+        #mesh = aims.read(self.right_pial_mesh.fullPath())
+        #aims.SurfaceManip.invertSurfacePolygons(mesh)
+        #aims.write(mesh, self.right_pial_mesh.fullPath())
+        #tm.copyReferential(self.t1mri, self.right_pial_mesh)
 
-    context.write('<br/><b style="color: #008000">Done.</b> <b>You should '
-                  'now run the Morphologist main pipeline</b> '
-                  'with the following steps disabled:')
-    context.write('''<ul><li>All steps before "Hemispheres processing"</li>
+    if self.run_morphologist in ('run', 'show'):
+
+        mp = getProcessInstance('morphologist')
+        en = mp.executionNode()
+        en.PrepareSubject.setSelected(False)
+        en.BiasCorrection.setSelected(False)
+        en.HistoAnalysis.setSelected(False)
+        en.BrainSegmentation.setSelected(False)
+        en.Renorm.setSelected(False)
+        en.SplitBrain.setSelected(False)
+        en.TalairachTransformation.setSelected(False)
+        en.HeadMesh.setSelected(False)
+
+        lh = en.HemispheresProcessing.LeftHemisphere
+        rh = en.HemispheresProcessing.RightHemisphere
+
+        lh.GreyWhiteClassification.setSelected(False)
+        lh.GreyWhiteMesh.setSelected(False)
+        lh.PialMesh.setSelected(False)
+        rh.GreyWhiteClassification.setSelected(False)
+        rh.GreyWhiteMesh.setSelected(False)
+        rh.PialMesh.setSelected(False)
+
+        mp.t1mri = self.t1mri
+        en.PrepareSubject.commissure_coordinates = self.commissure_coordinates
+        mp.t1mri_nobias = self.t1mri_nobias
+        mp.histo_analysis = self.histo_analysis
+        mp.split_brain = self.split_brain
+        lh.GreyWhiteClassification.grey_white = self.left_grey_white
+        lh.CorticalFoldsGraph.white_mesh = self.left_white_mesh
+        lh.CorticalFoldsGraph.pial_mesh = self.left_pial_mesh
+        lh.CorticalFoldsGraph.talairach_transformation \
+            = self.talairach_transformation
+
+        if self.run_morphologist == 'show':
+            from brainvisa.processing.qtgui.neuroProcessesGUI \
+                import showProcess
+            return mainThreadActions().call(showProcess, mp)
+        else:
+            context.runProcess(mp)
+
+    else:
+
+        context.write('<br/><b style="color: #008000">Done.</b> <b>You should '
+                      'now run the Morphologist main pipeline</b> '
+                      'with the following steps disabled:')
+        context.write('''<ul><li>All steps before "Hemispheres processing"</li>
 <li>In each hemisphere:
   <ul><li>"Grey White Classification"</li>
   <li>"Grey White Mesh"</li>
