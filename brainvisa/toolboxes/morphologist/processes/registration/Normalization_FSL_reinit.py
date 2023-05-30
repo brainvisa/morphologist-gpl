@@ -36,13 +36,17 @@ from brainvisa.processes import *
 from brainvisa import registration
 import os
 from soma.wip.application.api import Application
+import shutil
 
 
 def validation():
     configuration = Application().configuration
     import distutils.spawn
-    if not distutils.spawn.find_executable(
-            configuration.FSL.fsl_commands_prefix + 'flirt'):
+    if not shutil.which(
+            configuration.FSL.fsl_commands_prefix + 'flirt',
+            path=os.pathsep.join(
+                [os.path.join(configuration.FSL.fsldir, 'bin'),
+                 os.environ['PATH']])):
         raise ValidationError(_t_('FSL flirt commandline could not be found'))
 
 
@@ -59,7 +63,7 @@ signature = Signature(
     'transformation_matrix', WriteDiskItem(
         "FSL Transformation", 'Matlab file'),
     'normalized_anatomy_data', WriteDiskItem(
-        "Raw T1 MRI", ['gz compressed NIFTI-1 image']),
+        "Raw T1 MRI", ['gz compressed NIFTI-1 image', 'NIFTI-1 image']),
     'cost_function', Choice(('Correlation ration', 'corratio'),
                             ('Mutual information', 'mutualinfo'),
                             'normcorr', 'normmi', ('Least square', 'leastsq'), 'labeldiff'),

@@ -37,13 +37,16 @@ from brainvisa.tools import aimsGlobals
 from brainvisa import registration
 import os
 from soma.wip.application.api import Application
+import shutil
 
 
 def validation():
     configuration = Application().configuration
-    import distutils.spawn
-    if not distutils.spawn.find_executable(
-            configuration.FSL.fsl_commands_prefix + 'flirt'):
+    if not shutil.which(
+            configuration.FSL.fsl_commands_prefix + 'flirt',
+            path=os.pathsep.join(
+                [os.path.join(configuration.FSL.fsldir, 'bin'),
+                 os.environ['PATH']])):
         raise ValidationError(_t_('FSL flirt commandline could not be found'))
 
 
@@ -72,7 +75,11 @@ def NormalizeAnat(context, anat, templatet1, normAnat, norm_matrix,
     if normAnat is not None:
         s1 += ['-out', normAnat]
     configuration = Application().configuration
-    cmd = [configuration.FSL.fsl_commands_prefix + 'flirt',
+    exe = shutil.which(
+        configuration.FSL.fsl_commands_prefix + 'flirt',
+        path=os.pathsep.join([os.path.join(configuration.FSL.fsldir, 'bin'),
+                              os.environ['PATH']]))
+    cmd = [exe,
            '-in', anat, '-ref', templatet1, '-omat', norm_matrix, '-bins', 1024,
            '-cost', cost, '-searchcost', searchcost] + s1 + ['-dof', 12]
     context.system(*cmd)
@@ -88,7 +95,7 @@ signature = Signature(
     'transformation_matrix', WriteDiskItem(
         "FSL Transformation", 'Matlab file'),
     'normalized_anatomy_data', WriteDiskItem(
-        "Raw T1 MRI", ['gz compressed NIFTI-1 image']),
+        "Raw T1 MRI", ['gz compressed NIFTI-1 image', 'NIFTI-1 image']),
     'cost_function', Choice(('Correlation ration', 'corratio'),
                             ('Mutual information', 'mutualinfo'),
                             'normcorr', 'normmi', ('Least square', 'leastsq'), 'labeldiff'),
