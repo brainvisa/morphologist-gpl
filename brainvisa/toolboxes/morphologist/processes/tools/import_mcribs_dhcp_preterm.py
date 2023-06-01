@@ -210,7 +210,7 @@ def execution(self, context):
     aims.write(t2_to_mni, self.mni_transform.fullPath())
     context.runProcess('TalairachTransformationFromNormalization',
                        normalization_transformation=self.mni_transform,
-                       Talairach_transformation=self.talairach_transformation,
+                       Talairach_transform=self.talairach_transformation,
                        commissure_coordinates=self.commissure_coordinates,
                        t1mri=self.t1mri,
                        source_referential=self.referential,
