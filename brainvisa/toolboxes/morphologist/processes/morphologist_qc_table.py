@@ -44,7 +44,8 @@ def execution(self, context):
               'Left Hemisphere Mesh', 'Right Hemisphere Mesh',
               'Cortical folds graph', 'Cortical folds graph',
               'Labelled Cortical folds graph', 'Labelled Cortical folds graph',
-              'Sulcal morphometry measurements']
+              'Sulcal morphometry measurements',
+              'Brain volumetry measurements', 'Morphologist report']
 
     tlabels = ['Raw T1 MRI', 'Bias Corrected', 'Histo Analysis',
                'Brain Mask', 'Hemispheres Split', 'Head Mesh',
@@ -55,7 +56,7 @@ def execution(self, context):
                'Left Hemisphere Mesh', 'Right Hemisphere Mesh',
                'Left Cortical Sulci', 'Right Cortical Sulci',
                'Left Labelled Sulci', 'Right Labelled Sulci',
-               'Sulcal morphometry measurements']
+               'Sulcal morphometry measurements', 'Brain volumes', 'Report']
 
     custom_filt = [eval(filt) for filt in self.data_filters]
     if len(custom_filt) == 1:
