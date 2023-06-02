@@ -22,7 +22,7 @@ The program is run using the follwing base command, with additional options (see
 
     python3 -m morphologist.sulpated
 
-A config file is expected in the output database directory, this file should be named ``patterns_def.json``. See the :ref:`Write a config file` section for details.
+A config file is expected in the output database directory, this file should be named ``patterns_def.json``. See the `Write a config file`_ section for details.
 
 If the config file contains the sulci and input database locations, then the sulci and input databases commandline parameters (``-s``/``-i`` options) are not needed.
 If the config file contains the region information, then the region commandline parameter (``-r``) is not needed.
@@ -87,7 +87,7 @@ Config file contents:
           "graph_vsersion": "3.1"
       }
 
-  * ``output_database_filter``: optional dict with brainvisa filter values, like for database_filter, but applies to output sulci graphs, in addition to database_filter (and higher priority). Having an output filter allows to write output data with different atteributes, like sulci_recognition_session or graph_version for instance.
+  * ``output_database_filter``: optional dict with brainvisa filter values, like for database_filter, but applies to output sulci graphs, in addition to database_filter (and higher priority). Having an output filter allows to write output data with different attributes, like ``sulci_recognition_session`` or ``graph_version`` for instance.
   * ``region``: optional string, specifies the working region name. ex::
 
       "region": "orbito_frontal"

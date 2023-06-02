@@ -138,5 +138,10 @@ Functional connectivity
 
 .. [VAROQUAUX2010] Gaël Varoquaux, Alexandre Gramfort, Jean-Baptiste Poline, Bertrand Thirion. **Brain covariance selection : better individual functional connectivity models using population prior**. *NIPS* 2010 `paper <https://arxiv.org/pdf/1008.5071>`_
 
+.. toctree::
+    :hidden:
+
+    sulpated
+
 
 
