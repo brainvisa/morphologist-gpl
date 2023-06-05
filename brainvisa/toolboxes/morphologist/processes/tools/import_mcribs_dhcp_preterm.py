@@ -60,6 +60,8 @@ signature = Signature(
     'transform_chain_ACPC_to_Normalized', ListOf(
         ReadDiskItem('Transformation', 'Transformation matrix')),
     'acpc_referential', ReadDiskItem('Referential', 'Referential'),
+    'histo_undersampling', Choice('2', '4', '8', '16', '32', 'auto',
+                                  'iteration'),
     'run_morphologist', Choice('run', 'show', 'none'),
 )
 
@@ -120,6 +122,7 @@ def initialization(self):
     trManager = registration.getTransformationManager()
     self.acpc_referential = trManager.referential(
         registration.talairachACPCReferentialId)
+    self.histo_undersampling = 'iteration'
 
 def execution(self, context):
     tm = registration.getTransformationManager()
@@ -262,7 +265,8 @@ def execution(self, context):
                        use_hfiltered=False,
                        use_wridges=False,
                        histo_analysis=self.histo_analysis,
-                       histo=self.histo)
+                       histo=self.histo,
+                       undersampling=self.histo_undersampling)
 
     lhm = osp.join(sessd, 'anat',
                    'sub-%(subject)s_ses-%(session)s_hemi-left_wm.surf.gii'
