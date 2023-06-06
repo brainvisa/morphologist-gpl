@@ -122,7 +122,7 @@ def initialization(self):
     trManager = registration.getTransformationManager()
     self.acpc_referential = trManager.referential(
         registration.talairachACPCReferentialId)
-    self.histo_undersampling = 'iteration'
+    self.histo_undersampling = 'auto'
 
 def execution(self, context):
     tm = registration.getTransformationManager()
@@ -293,6 +293,8 @@ def execution(self, context):
     lhm = osp.join(sessd, 'anat',
                    'sub-%(subject)s_ses-%(session)s_hemi-left_pial.surf.gii'
                    % att)
+    do_l_pial = True
+    do_r_pial = True
     if osp.exists(lhm):
         context.system('AimsApplyTransform', '-i', lhm,
                        '-o', self.left_pial_mesh,
@@ -301,6 +303,7 @@ def execution(self, context):
         aims.SurfaceManip.invertSurfacePolygons(mesh)
         aims.write(mesh, self.left_pial_mesh.fullPath())
         tm.copyReferential(self.t1mri, self.left_pial_mesh)
+        do_l_pial = False
 
     rhm = osp.join(sessd, 'anat',
                    'sub-%(subject)s_ses-%(session)s_hemi-right_pial.surf.gii'
@@ -313,6 +316,7 @@ def execution(self, context):
         aims.SurfaceManip.invertSurfacePolygons(mesh)
         aims.write(mesh, self.right_pial_mesh.fullPath())
         tm.copyReferential(self.t1mri, self.right_pial_mesh)
+        do_r_pial = False
 
     if self.run_morphologist in ('run', 'show'):
 
@@ -332,10 +336,10 @@ def execution(self, context):
 
         lh.GreyWhiteClassification.setSelected(False)
         lh.GreyWhiteMesh.setSelected(False)
-        lh.PialMesh.setSelected(False)
+        lh.PialMesh.setSelected(do_l_pial)
         rh.GreyWhiteClassification.setSelected(False)
         rh.GreyWhiteMesh.setSelected(False)
-        rh.PialMesh.setSelected(False)
+        rh.PialMesh.setSelected(do_r_pial)
 
         mp.t1mri = self.t1mri
         en.PrepareSubject.commissure_coordinates = self.commissure_coordinates
@@ -367,6 +371,6 @@ def execution(self, context):
   <li>"Pial Mesh"</li></ul></ul><br/>
 Or, <b>using Brainvisa >= 5.1.2</b>, run the commandline:<br/>
 <tt>
-axon-runprocess --enabledb morphologist t1mri=%s PrepareSubject.selected=False BiasCorrection.selected=False HistoAnalysis.selected=False BrainSegmentation.selected=False Renorm.selected=False SplitBrain.selected=False TalairachTransformation.selected=False HeadMesh.selected=False HemispheresProcessing.LeftHemisphere.GreyWhiteClassification.selected=False HemispheresProcessing.LeftHemisphere.GreyWhiteMesh.selected=False HemispheresProcessing.LeftHemisphere.PialMesh.selected=False HemispheresProcessing.RightHemisphere.GreyWhiteClassification.selected=False HemispheresProcessing.RightHemisphere.GreyWhiteMesh.selected=False HemispheresProcessing.RightHemisphere.PialMesh.selected=False
-</tt>''' % self.t1mri.fullPath())
+axon-runprocess --enabledb morphologist t1mri=%s PrepareSubject.selected=False BiasCorrection.selected=False HistoAnalysis.selected=False BrainSegmentation.selected=False Renorm.selected=False SplitBrain.selected=False TalairachTransformation.selected=False HeadMesh.selected=False HemispheresProcessing.LeftHemisphere.GreyWhiteClassification.selected=False HemispheresProcessing.LeftHemisphere.GreyWhiteMesh.selected=False HemispheresProcessing.LeftHemisphere.PialMesh.selected=%s HemispheresProcessing.RightHemisphere.GreyWhiteClassification.selected=False HemispheresProcessing.RightHemisphere.GreyWhiteMesh.selected=False HemispheresProcessing.RightHemisphere.PialMesh.selected=%s
+</tt>''' % (self.t1mri.fullPath(), str(do_l_pial), str(do_r_pial)))
 
