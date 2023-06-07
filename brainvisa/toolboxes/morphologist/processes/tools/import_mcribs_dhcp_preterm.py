@@ -2,6 +2,7 @@
 from __future__ import print_function
 from brainvisa.processes import *
 from brainvisa import registration
+from brainvisa.processing import fsl_run
 from soma import aims
 import os
 import os.path as osp
@@ -172,18 +173,12 @@ def execution(self, context):
         # if FSL is allowed/available, use fnirtfileutils to get a deformation
         # field without the affine part, and we will estimate the affine .trm
         # from the difference between warp fields (with and without affine).
-        configuration = Application().configuration
         tmp_templ_to_t2_wo_aff = context.temporary('NIFTI-1 image')
-        exe = shutil.which(
-            configuration.FSL.fsl_commands_prefix + 'fnirtfileutils',
-            path=os.pathsep.join(
-                [os.path.join(configuration.FSL.fsldir, 'bin'),
-                 os.environ['PATH']]))
         context.write('get FSL warping field affine part...')
-        cmd = [exe,
+        cmd = ['fnirtfileutils',
                '-r', t2w, '-o', tmp_templ_to_t2_wo_aff.fullPath(),
                '-i', template_to_t2_fsl, '-f', 'field']
-        context.system(*cmd)
+        fsl_run.run_fsl_command(context, cmd)
         context.system('cartoLinearComb.py', '-i', template_to_t2_fsl,
                        '-i', tmp_templ_to_t2_wo_aff.fullPath(),
                        '-o', tmp_templ_to_t2_wo_aff.fullPath(), '-f', 'I1-I2')
