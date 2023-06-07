@@ -37,6 +37,7 @@ from brainvisa.tools import aimsGlobals
 from brainvisa import registration
 import os
 from soma.wip.application.api import Application
+from brainvisa.processing import fsl_run
 import shutil
 
 
@@ -74,15 +75,10 @@ def NormalizeAnat(context, anat, templatet1, normAnat, norm_matrix,
         s1 = []
     if normAnat is not None:
         s1 += ['-out', normAnat]
-    configuration = Application().configuration
-    exe = shutil.which(
-        configuration.FSL.fsl_commands_prefix + 'flirt',
-        path=os.pathsep.join([os.path.join(configuration.FSL.fsldir, 'bin'),
-                              os.environ['PATH']]))
-    cmd = [exe,
+    cmd = ['flirt',
            '-in', anat, '-ref', templatet1, '-omat', norm_matrix, '-bins', 1024,
            '-cost', cost, '-searchcost', searchcost] + s1 + ['-dof', 12]
-    context.system(*cmd)
+    fsl_run.run_fsl_command(context, cmd)
 
 
 signature = Signature(
