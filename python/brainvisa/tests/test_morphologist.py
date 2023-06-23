@@ -12,15 +12,11 @@ in other tests.
 
 There are a few more options for to tune the behaviour of the test.
 """
-from __future__ import print_function
-from __future__ import absolute_import
 import unittest
 import os
 import sys
-import tempfile
 from shutil import rmtree
 import time
-import numpy as np
 
 import zipfile
 from soma.path import relative_path
@@ -34,7 +30,6 @@ import soma.test_utils
 # imported before setUpModule_axon is called, they would perform an incorrect
 # initialization of BrainVISA.
 import brainvisa.test_utils
-
 
 from six.moves.urllib.request import urlretrieve
 
@@ -94,7 +89,6 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
         self.cnn_pipeline = self.create_cnn_pipeline()
         # Call setUp_ref_mode or setUp_run_mode depending on the current mode.
         super(TestMorphologistPipeline, self).setUp()
-
 
     @staticmethod
     def create_spam_pipeline():
@@ -221,8 +215,8 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
         old_cwd = os.getcwd()
         os.chdir(dir_)
         if not os.path.exists("demo_data.zip"):
-            print("* Download ftp://ftp.cea.fr/pub/dsv/anatomist/data/demo_data.zip to",
-                  dir_)
+            print("* Download ftp://ftp.cea.fr/pub/dsv/anatomist/data/"
+                  "demo_data.zip to", dir_)
             urlretrieve(
                 "ftp://ftp.cea.fr/pub/dsv/anatomist/data/demo_data.zip",
                 "demo_data.zip")
@@ -232,7 +226,7 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
             rmtree("data_unprocessed")
         zf = zipfile.ZipFile("demo_data.zip")
         zf.extractall()
-        
+
         # Reset current working directory to previous one
         os.chdir(old_cwd)
 
@@ -258,7 +252,7 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
         try:
             database.clear(context=defaultContext())
             database.update(context=defaultContext())
-        except:
+        except Exception:
             if not allow_ro:
                 raise
         return database
@@ -370,7 +364,6 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
                   'dependencies --')
 
     def setUp_ref_mode(self):
-        import brainvisa.config
         # ref mode ignores options test_only, no_ann and no_spam
         ref_data_dir = self.private_ref_data_dir()
         ref_database_dir = os.path.join(
@@ -400,12 +393,10 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
             print('(not doing CNN sulci recognition tests)')
         skip_cnn = not self.do_cnn
 
-
         # Run the pipelines (always use ANN)
         self.run_pipelines(self.ref_database, skip_ann, skip_cnn)
 
     def setUp_run_mode(self):
-        import brainvisa.config
         # Get the ref database
         ref_data_dir = self.private_ref_data_dir()
         ref_database_dir = os.path.join(
@@ -459,6 +450,10 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
             # skip .data directories for graphs because their contents order is
             # not always the same
             ".data"]
+        skipped_files = [
+            # the PDF contains the creation date and thus cannot be the same
+            'morphologist_report.pdf',
+        ]
         if not self.do_ann or not self.do_sulci_today():
             skipped_dirs.append('ann_auto')
         if not self.do_spam or not self.do_sulci_today():
@@ -482,6 +477,8 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
             if len([1 for ext in skipped_dirs if dirpath.endswith(ext)]) != 0:
                 continue
             for f in filenames:
+                if f in skipped_files:
+                    continue
                 f_ref = os.path.join(dirpath, f)
                 f_test = os.path.join(test_dir,
                                       relative_path(dirpath, ref_dir), f)
