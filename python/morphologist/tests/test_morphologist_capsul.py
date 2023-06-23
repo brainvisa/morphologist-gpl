@@ -9,26 +9,20 @@ TODO:
   - pass arguments to unittest
 """
 
-from __future__ import print_function
-from __future__ import absolute_import
 import os
 import sys
 import shutil
 import unittest
 import tempfile
 import platform
-
-import numpy as np
-
 import soma_workflow.client as swclient
-import soma_workflow.constants as swconstants
 import soma_workflow.configuration as swconfig
 from soma.path import relative_path
 from soma.aims import filetools
 import soma.test_utils
 
 # CAUTION: all imports from the main brainvisa package must be done in
-# functions, *after* calling setUpModule_axon has been called, which takes care
+# functions, *after* setUpModule_axon has been called, which takes care
 # of properly initializing axon for the test environment. If these modules were
 # imported before setUpModule_axon is called, they would perform an incorrect
 # initialization of BrainVISA.
@@ -169,7 +163,7 @@ class TestMorphologistCapsul(soma.test_utils.SomaTestCase):
             self.run_database_dir, self.test_only)
         if self.test_only:
             return
-         # Import data
+        # Import data
         TestMorphologistPipeline.download_data(run_data_dir)
         TestMorphologistPipeline.import_data(run_data_dir,
                                              self.run_database.name)
@@ -317,6 +311,10 @@ class TestMorphologistCapsul(soma.test_utils.SomaTestCase):
             ".data",
             # skip ANN recognition results (not run in this test)
             "ann_auto"]
+        skipped_files = [
+            # the PDF contains the creation date and thus cannot be the same
+            'morphologist_report.pdf',
+        ]
         ref_dir = os.path.join(self.ref_database_dir, 'test', 'sujet01',
                                't1mri', 'default_acquisition',
                                'default_analysis')
@@ -333,12 +331,13 @@ class TestMorphologistCapsul(soma.test_utils.SomaTestCase):
             self.assertTrue(os.path.exists(os.path.join(ref_dir, ref_item)),
                             msg='Reference data missing.')
 
-
         test_dir = self.analysis_dir
         for (dirpath, dirnames, filenames) in os.walk(ref_dir):
             if len([1 for ext in skipped_dirs if dirpath.endswith(ext)]) != 0:
                 continue
             for f in filenames:
+                if f in skipped_files:
+                    continue
                 f_ref = os.path.join(dirpath, f)
                 f_test = os.path.join(test_dir,
                                       relative_path(dirpath, ref_dir), f)
@@ -347,7 +346,7 @@ class TestMorphologistCapsul(soma.test_utils.SomaTestCase):
                     "The content of " + f_test + " in test is different from "
                     "the reference results " + f_ref + "."
                 )
-                #print('file', f_test, 'OK.')
+                # print('file', f_test, 'OK.')
         print('** all OK.')
 
 
