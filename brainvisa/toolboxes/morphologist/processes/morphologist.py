@@ -716,6 +716,7 @@ def initialization(self):
     eNode.Report.removeLink('left_labelled_graph', 't1mri')
     eNode.Report.removeLink('right_labelled_graph', 't1mri')
     eNode.Report.removeLink('brain_volumes_file', 't1mri')
+    eNode.Report.removeLink('talairach_transform', 't1mri')
     eNode.addDoubleLink('t1mri',
                         'Report.t1mri')
     eNode.addDoubleLink(lhemi + '.GreyWhiteClassification.grey_white',
@@ -734,6 +735,8 @@ def initialization(self):
                         'Report.left_labelled_graph')
     eNode.addDoubleLink(rhemi + '.SulciRecognition.output_graph',
                         'Report.right_labelled_graph')
+    eNode.addDoubleLink('Renorm.talairach_transformation',
+                        'Report.talairach_transform')
     eNode.addDoubleLink('GlobalMorphometry.brain_volumes_file',
                         'Report.brain_volumes_file')
 
