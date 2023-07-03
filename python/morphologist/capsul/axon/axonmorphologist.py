@@ -185,6 +185,8 @@ class AxonMorphologist(Pipeline):
         self.add_link('BrainSegmentation.brain_mask->Renorm.brain_mask')
         self.add_link('BrainSegmentation.brain_mask->SplitBrain.brain_mask')
         self.add_link(
+            'Renorm.talairach_transformation->Report.talairach_transform')
+        self.add_link(
             'SplitBrain.split_brain->TalairachTransformation.split_mask')
         self.add_link(
             'SplitBrain.split_brain->GreyWhiteClassification.split_brain')

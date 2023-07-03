@@ -31,6 +31,8 @@ class morpho_report(Process):
             allowed_extensions=['.arg', '.data'], optional=True))
         self.add_trait('right_labelled_graph', File(
             allowed_extensions=['.arg', '.data'], optional=True))
+        self.add_trait('talairach_transform', File(
+            allowed_extensions=['.trm'], optional=True))
         self.add_trait('brain_volumes_file', File(
             allowed_extensions=['.csv'], optional=True))
         self.add_trait('normative_brain_stats', File(
