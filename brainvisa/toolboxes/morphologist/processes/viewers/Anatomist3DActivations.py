@@ -100,8 +100,18 @@ class UpdateActivation3D(Qt.QWidget):
             binary = os.path.join(self._tmp.fullPath(), 'binary.ima')
             self._context.system('AimsThreshold', '-i', self._values.activations.fullPath(), '-o',
                                  os.path.join(self._tmp.fullPath(), 'binary.ima'), '-m', 'gt', '-t', self._values.threshold, '-b')
-            self._context.system('VipConnexFilter', '-i', os.path.join(self._tmp.fullPath(), 'binary'),
-                                 '-o', os.path.join(self._tmp.fullPath(), 'binary'), '-s', self._values.minimumSize, '-c', '6', '-w', 't')
+            self._context.system('AimsConnectComp',
+                                 '-i', os.path.join(self._tmp.fullPath(),
+                                                    'binary.ima'),
+                                 '-o', os.path.join(self._tmp.fullPath(),
+                                                    'binary.ima'),
+                                 '-s', self._values.minimumSize, '-c', '6')
+            self._context.system('AimsThreshold',
+                                 '-i', os.path.join(self._tmp.fullPath(),
+                                                    'binary.ima'),
+                                 '-o', os.path.join(self._tmp.fullPath(),
+                                                    'binary.ima'),
+                                 '-t', '1', '-b')
             self._context.system('AimsMesh', '-i', binary,
                                  '-o', os.path.join(self._tmp.fullPath(), 'mesh'))
             self._oldThreshold = self._values.threshold

@@ -348,7 +348,7 @@ def execution(self, context):
                                                           + flipmat[4:7] + flipmat[8:11])
                         + ', T = ' + str(flipmat[3:12:4]))
 
-            context.system('AimsResample', '-i', self.T1mri.fullPath(),
+            context.system('AimsApplyTransform', '-i', self.T1mri.fullPath(),
                            '-o', self.reoriented_t1mri.fullPath(),
                            '-m', mfile.fullPath(),
                            '--sx', vs2[0], '--sy', vs2[1], '--sz', vs2[2],

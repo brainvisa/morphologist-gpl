@@ -114,7 +114,7 @@ def execution(self, context):
 
     if self.label_attributes == 'custom':
         if self.custom_label_attributes:
-            la = string.split(self.custom_label_attributes)
+            la = self.custom_label_attributes.split()
         else:
             la = ()
     elif self.label_attributes == '(label, name)':
@@ -132,7 +132,7 @@ def execution(self, context):
     a = ()
     if self.node_edge_types == 'custom':
         if self.custom_node_edge_types:
-            a = string.split(self.custom_node_edge_types)
+            a = self.custom_node_edge_types.split()
     elif self.node_edge_types == 'Nodes (fold, cluster, roi, nucleus)':
         a = ('fold', 'cluster', 'roi', 'nucleus')
     elif self.node_edge_types == 'Relations (junction, cortical, etc.)':
@@ -142,7 +142,7 @@ def execution(self, context):
         cmd += ['-s', i]
 
     if self.label_values:
-        a = string.split(self.label_values)
+        a = self.label_values.split()
         for i in a:
             cmd += ['-l', i]
 
@@ -153,7 +153,7 @@ def execution(self, context):
             raise Exception('<em>custom_buckets</em> must be non-empty '
                             'in custom bucket mode')
         cmd += ['-o', self.sulci.fullPath()]
-        a = string.split(self.custom_buckets)
+        a = self.custom_buckets.split()
         for i in a:
             cmd += ['-b', i]
         context.system(*cmd)
@@ -175,7 +175,8 @@ def execution(self, context):
                 for i in self.sulci.fullPaths():
                     context.system('gzip', '--force', i)
             if self.transformation == 'Yes':
-                context.system('AimsResample', '-i', self.sulci.fullPath(),
+                context.system('AimsApplyTransform',
+                               '-i', self.sulci.fullPath(),
                                '-o', self.sulci.fullPath(),
                                '-m', self.transformation_matrix.fullPath(),
                                '-t', '0',
@@ -198,7 +199,8 @@ def execution(self, context):
                 for i in self.bottom.fullPaths():
                     context.system('gzip', '--force', i)
             if self.transformation == 'Yes':
-                context.system('AimsResample', '-i', self.bottom.fullPath(),
+                context.system('AimsApplyTransform',
+                               '-i', self.bottom.fullPath(),
                                '-o', self.bottom.fullPath(),
                                '-m', self.transformation_matrix.fullPath(),
                                '-t', '0',
@@ -222,7 +224,8 @@ def execution(self, context):
                 for i in self.hull_junction.fullPaths():
                     context.system('gzip', '--force', i)
             if self.transformation == 'Yes':
-                context.system('AimsResample', '-i', self.hull_junction.fullPath(),
+                context.system('AimsApplyTransform',
+                               '-i', self.hull_junction.fullPath(),
                                '-o', self.hull_junction.fullPath(),
                                '-m', self.transformation_matrix.fullPath(),
                                '-t', '0',
@@ -245,7 +248,8 @@ def execution(self, context):
                 for i in self.simple_surface.fullPaths():
                     context.system('gzip', '--force', i)
             if self.transformation == 'Yes':
-                context.system('AimsResample', '-i', self.simple_surface.fullPath(),
+                context.system('AimsApplyTransform',
+                               '-i', self.simple_surface.fullPath(),
                                '-o', self.simple_surface.fullPath(),
                                '-m', self.transformation_matrix.fullPath(),
                                '-t', '0',

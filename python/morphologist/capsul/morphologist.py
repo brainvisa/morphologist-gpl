@@ -571,7 +571,9 @@ class Morphologist(
                                 'SulciSkeleton_1', 'CorticalFoldsGraph_1'])
         self.add_pipeline_step('sulci_labelling',
                                ['SulciRecognition', 'SulciRecognition_1'])
-        self.add_pipeline_step('sulcal_morphometry', ['SulcalMorphometry'])
+        self.add_pipeline_step('sulcal_morphometry',
+                               ['SulcalMorphometry', 'GlobalMorphometry',
+                                'Report'])
 
         # customize params order for nicer user GUI
         self.reorder_fields([

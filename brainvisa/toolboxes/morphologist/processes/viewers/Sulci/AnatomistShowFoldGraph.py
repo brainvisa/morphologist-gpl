@@ -56,7 +56,8 @@ signature = Signature(
     'load_MRI', Choice("Yes", "No"),
     'two_windows', Choice("Yes", "No"),
     'mri_corrected', ReadDiskItem('T1 MRI Bias Corrected',
-                                  'Anatomist volume formats')
+                                  'Anatomist volume formats'),
+    'mesh_opacity', Float(),
 )
 
 
@@ -71,6 +72,7 @@ def initialization(self):
     self.linkParameters('hemi_mesh', 'graph')
     self.linkParameters('mri_corrected', 'graph')
     self.nomenclature = self.signature['nomenclature'].findValue({})
+    self.mesh_opacity = 1.
 
 
 def execution(self, context):
@@ -105,17 +107,17 @@ def execution(self, context):
     if self.white_mesh is not None:
         mesh = a.loadObject(self.white_mesh, duplicate=True)
         selfdestroy.append(mesh)
-        mesh.setMaterial(a.Material(diffuse=[0.8, 0.8, 0.8, 1.]))
     elif self.hemi_mesh is not None:
         mesh = a.loadObject(self.hemi_mesh, duplicate=True)
         selfdestroy.append(mesh)
-        mesh.setMaterial(a.Material(diffuse=[0.8, 0.8, 0.8, 0.5]))
     win3 = a.createWindow('3D')
     graphRef = graph.referential
     win3.assignReferential(graphRef)
     selfdestroy.append(win3)
     win3.addObjects([graph], add_graph_nodes=True)
     if mesh is not None:
+        if self.mesh_opacity < 1.:
+            mesh.setMaterial(diffuse=[0.8, 0.8, 0.8, self.mesh_opacity])
         win3.addObjects([mesh])
         if self.two_windows == "Yes":
             win2 = a.createWindow('3D')

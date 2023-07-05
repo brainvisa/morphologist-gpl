@@ -20,9 +20,9 @@ signature = Signature(
 
 def initialization(self):
     # list of possible databases, while respecting the ontology
-    # ontology: brainvisa-3.2.0
+    allowed_ontologies = ("brainvisa-3.2.0", "morphologist-bids-1.0")
     databases = [h.name for h in neuroHierarchy.hierarchies()
-                 if h.fso.name == "brainvisa-3.2.0"]
+                 if h.fso.name in allowed_ontologies]
     self.signature["database"].setChoices(*databases)
     if len(databases) >= 1:
         self.database = databases[0]
@@ -44,7 +44,8 @@ def execution(self, context):
               'Left Hemisphere Mesh', 'Right Hemisphere Mesh',
               'Cortical folds graph', 'Cortical folds graph',
               'Labelled Cortical folds graph', 'Labelled Cortical folds graph',
-              'Sulcal morphometry measurements']
+              'Sulcal morphometry measurements',
+              'Brain volumetry measurements', 'Morphologist report']
 
     tlabels = ['Raw T1 MRI', 'Bias Corrected', 'Histo Analysis',
                'Brain Mask', 'Hemispheres Split', 'Head Mesh',
@@ -54,8 +55,8 @@ def execution(self, context):
                'Left Cortex Skeleton', 'Right Cortex Skeleton',
                'Left Hemisphere Mesh', 'Right Hemisphere Mesh',
                'Left Cortical Sulci', 'Right Cortical Sulci',
-               'Left Labelled Sulci', 'Right Labelled Cortical Sulci',
-               'Sulcal morphometry measurements']
+               'Left Labelled Sulci', 'Right Labelled Sulci',
+               'Sulcal morphometry measurements', 'Brain volumes', 'Report']
 
     custom_filt = [eval(filt) for filt in self.data_filters]
     if len(custom_filt) == 1:

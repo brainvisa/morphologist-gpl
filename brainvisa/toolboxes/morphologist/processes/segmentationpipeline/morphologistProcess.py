@@ -49,7 +49,6 @@ signature = Signature(
 
     # Commissures Coordinates
     'method_ACPC', Choice('Manually',
-                          'With SPM8 Normalization',
                           'With SPM12 Normalization',
                           'Already done'),
     'commissure_coordinates', WriteDiskItem(
@@ -164,7 +163,9 @@ signature = Signature(
     'right_cortex_mid_interface', WriteDiskItem('Grey White Mid-Interface Volume',
                                                 'Aims writable volume formats', requiredAttributes={'side': 'right'}),
     # Sulci Recognition
-    'perform_sulci_SPAM_recognition', Boolean(),
+    'perform_sulci_recognition', Choice('No',
+                                        'SPAM',
+                                        'DeepCNN'),
     'labels_translation_map', ReadDiskItem('Label Translation',
                                            ['Label Translation', 'DEF Label translation']),
     # Left
@@ -174,6 +175,8 @@ signature = Signature(
                                                   'CSV file', requiredAttributes={'side': 'left'}),
     'left_labels_priors', ReadDiskItem('Sulci Labels Priors',
                                        'Text Data Table', requiredAttributes={'side': 'left'}),
+    'left_model_file', ReadDiskItem('Any Type', 'mdsm file'),
+    'left_param_file', ReadDiskItem('Any Type', 'JSON file'),
     # Global
     'left_global_model', ReadDiskItem('Sulci Segments Model',
                                       'Text Data Table', requiredAttributes={'side': 'left'}),
@@ -201,6 +204,8 @@ signature = Signature(
                                                    'CSV file', requiredAttributes={'side': 'right'}),
     'right_labels_priors', ReadDiskItem('Sulci Labels Priors',
                                         'Text Data Table', requiredAttributes={'side': 'right'}),
+    'right_model_file', ReadDiskItem('Any Type', 'mdsm file'),
+    'right_param_file', ReadDiskItem('Any Type', 'JSON file'),
     # Global
     'right_global_model', ReadDiskItem('Sulci Segments Model',
                                        'Text Data Table', requiredAttributes={'side': 'right'}),
@@ -225,6 +230,15 @@ signature = Signature(
     'sulci_file', ReadDiskItem('Sulci groups list', 'JSON file'),
     'sulcal_morpho_measures', WriteDiskItem(
         'Sulcal morphometry measurements', 'CSV File'),
+    'left_csf', WriteDiskItem('Left CSF Mask',
+                              'Aims writable volume formats'),
+    'right_csf', WriteDiskItem('Right CSF Mask',
+                               'Aims writable volume formats'),
+    'subject', String(),
+    'sulci_label_attribute', String(),
+    'brain_volumes_file', WriteDiskItem(
+        'Brain volumetry measurements', 'CSV file'),
+    'report', WriteDiskItem('Morphologist report', 'PDF file'),
 )
 
 
@@ -263,13 +277,28 @@ def linkOldNormalization(self, proc, dummy):
     return self.signature['older_MNI_normalization'].findValue(
         self.t1mri, requiredAttributes=required)
 
+def linkSubject(self, proc, dummy):
+    if self.split_brain is not None:
+        subject = self.split_brain.get('subject')
+        return subject
+
+def linkSulciLabelAtt(self, proc, dummy):
+    auto = 'Yes'
+    if self.left_labelled_graph is not None:
+        auto = self.left_labelled_graph.get('automatically_labelled',
+                                            'Yes')
+    elif self.right_labelled_graph is not None:
+        auto = self.right_labelled_graph.get('automatically_labelled',
+                                              'Yes')
+    return {'Yes': 'label', 'No': 'name'}.get(auto, 'label')
+
 
 def initialization(self):
     self.perform_segmentation = True
     self.perform_bias_correction = True
 
     # Commissures Coordinates
-    self.method_ACPC = 'With SPM8 Normalization'
+    self.method_ACPC = 'With SPM12 Normalization'
     self.linkParameters('commissure_coordinates', 't1mri')
     self.linkParameters('anterior_commissure',
                         'commissure_coordinates', APCReader('AC'))
@@ -430,21 +459,32 @@ def initialization(self):
     self.signature['right_cortex_mid_interface'].userLevel = 100
 
     # Sulci Recognition
-    self.perform_sulci_SPAM_recognition = False
+    self.perform_sulci_recognition = 'No'
     self.labels_translation_map = self.signature['labels_translation_map'].findValue(
         {'filename_variable': 'sulci_model_2008'})
     self.signature['labels_translation_map'].userLevel = 100
     # Left
     self.linkParameters('left_labelled_graph', 'left_graph')
-    self.linkParameters('left_posterior_probabilities', 'left_graph')
+    self.linkParameters('left_posterior_probabilities', 'left_labelled_graph')
     self.linkParameters('left_labels_priors', 'left_graph')
     self.signature['left_posterior_probabilities'].userLevel = 100
     self.signature['left_labels_priors'].userLevel = 100
+    
+    self.left_model_file = os.path.normpath(os.path.join(mainPath, '..', 'share',
+                                                         'brainvisa-share-%s.%s'% tuple(versionString().split('.')[:2]),
+                                                         'models', 'models_2019',
+                                                         'cnn_models', 'sulci_unet_model_left.mdsm'))
+    self.signature['left_model_file'].userLevel = 100
+    self.left_param_file = os.path.normpath(os.path.join(mainPath, '..', 'share',
+                                                         'brainvisa-share-%s.%s'% tuple(versionString().split('.')[:2]),
+                                                         'models', 'models_2019',
+                                                         'cnn_models', 'sulci_unet_model_params_left.json'))
+    self.signature['left_param_file'].userLevel = 100
     # Global
     self.left_global_model = self.signature['left_global_model'].findValue(
         {'sulci_segments_model_type': 'global_registered_spam'})
-    self.linkParameters('left_tal_to_global_transform', 'left_graph')
-    self.linkParameters('left_t1_to_global_transform', 'left_graph')
+    self.linkParameters('left_tal_to_global_transform', 'left_labelled_graph')
+    self.linkParameters('left_t1_to_global_transform', 'left_labelled_graph')
     self.signature['left_global_model'].userLevel = 100
     self.signature['left_tal_to_global_transform'].userLevel = 100
     self.signature['left_t1_to_global_transform'].userLevel = 100
@@ -455,7 +495,7 @@ def initialization(self):
     self.linkParameters('left_direction_priors', 'left_graph')
     self.linkParameters('left_angle_priors', 'left_graph')
     self.linkParameters('left_translation_priors', 'left_graph')
-    self.linkParameters('left_global_to_local_transforms', 'left_graph')
+    self.linkParameters('left_global_to_local_transforms', 'left_labelled_graph')
     self.signature['left_local_model'].userLevel = 100
     self.signature['left_local_referentials'].userLevel = 100
     self.signature['left_direction_priors'].userLevel = 100
@@ -463,16 +503,27 @@ def initialization(self):
     self.signature['left_translation_priors'].userLevel = 100
     self.signature['left_global_to_local_transforms'].userLevel = 100
     # Right
-    self.linkParameters('right_labelled_graph', 'right_graph')
-    self.linkParameters('right_posterior_probabilities', 'right_graph')
+    self.linkParameters('right_labelled_graph', 'left_labelled_graph')
+    self.linkParameters('right_posterior_probabilities', 'right_labelled_graph')
     self.linkParameters('right_labels_priors', 'right_graph')
     self.signature['right_posterior_probabilities'].userLevel = 100
     self.signature['right_labels_priors'].userLevel = 100
+    
+    self.right_model_file = os.path.normpath(os.path.join(mainPath, '..', 'share',
+                                                         'brainvisa-share-%s.%s'% tuple(versionString().split('.')[:2]),
+                                                         'models', 'models_2019',
+                                                         'cnn_models', 'sulci_unet_model_right.mdsm'))
+    self.signature['right_model_file'].userLevel = 100
+    self.right_param_file = os.path.normpath(os.path.join(mainPath, '..', 'share',
+                                                         'brainvisa-share-%s.%s'% tuple(versionString().split('.')[:2]),
+                                                         'models', 'models_2019',
+                                                         'cnn_models', 'sulci_unet_model_params_right.json'))
+    self.signature['right_param_file'].userLevel = 100
     # Global
     self.right_global_model = self.signature['right_global_model'].findValue(
         {'sulci_segments_model_type': 'global_registered_spam'})
-    self.linkParameters('right_tal_to_global_transform', 'right_graph')
-    self.linkParameters('right_t1_to_global_transform', 'right_graph')
+    self.linkParameters('right_tal_to_global_transform', 'right_labelled_graph')
+    self.linkParameters('right_t1_to_global_transform', 'right_labelled_graph')
     self.signature['right_global_model'].userLevel = 100
     self.signature['right_tal_to_global_transform'].userLevel = 100
     self.signature['right_t1_to_global_transform'].userLevel = 100
@@ -483,7 +534,7 @@ def initialization(self):
     self.linkParameters('right_direction_priors', 'right_graph')
     self.linkParameters('right_angle_priors', 'right_graph')
     self.linkParameters('right_translation_priors', 'right_graph')
-    self.linkParameters('right_global_to_local_transforms', 'right_graph')
+    self.linkParameters('right_global_to_local_transforms', 'right_labelled_graph')
     self.signature['right_local_model'].userLevel = 100
     self.signature['right_local_referentials'].userLevel = 100
     self.signature['right_direction_priors'].userLevel = 100
@@ -495,6 +546,14 @@ def initialization(self):
     self.sulci_file = self.signature['sulci_file'].findValue(
         {'version': 'default'})
     self.linkParameters('sulcal_morpho_measures', 'left_labelled_graph')
+    self.linkParameters('left_csf', 't1mri')
+    self.linkParameters('right_csf', 't1mri')
+    self.linkParameters('subject', 't1mri', self.linkSubject)
+    self.linkParameters('sulci_label_attribute',
+                        ('left_labelled_graph', 'right_labelled_graph'),
+                        self.linkSulciLabelAtt)
+    self.linkParameters('brain_volumes_file', 't1mri')
+    self.linkParameters('report', 't1mri')
 
 
 def execution(self, context):
@@ -510,21 +569,13 @@ def execution(self, context):
                                Interhemispheric_Point=self.interhemispheric_point,
                                Left_Hemisphere_Point=self.left_hemisphere_point,
                                older_MNI_normalization=self.older_MNI_normalization)
-        elif self.method_ACPC == 'With SPM8 Normalization' or self.method_ACPC == 'With SPM12 Normalization':
-            if self.method_ACPC == 'With SPM8 Normalization':
-                context.runProcess('normalization_t1_spm8_reinit',
-                                   anatomy_data=self.t1mri,
-                                   anatomical_template=self.anatomical_template,
-                                   transformations_informations=self.transformations_information,
-                                   normalized_anatomy_data=self.normalized_t1mri,
-                                   allow_retry_initialization=True)
-            elif self.method_ACPC == 'With SPM12 Normalization':
-                context.runProcess('normalization_t1_spm12_reinit',
-                                   anatomy_data=self.t1mri,
-                                   anatomical_template=self.anatomical_template,
-                                   transformations_informations=self.transformations_information,
-                                   normalized_anatomy_data=self.normalized_t1mri,
-                                   allow_retry_initialization=True)
+        elif self.method_ACPC == 'With SPM12 Normalization':
+            context.runProcess('normalization_t1_spm12_reinit',
+                                anatomy_data=self.t1mri,
+                                anatomical_template=self.anatomical_template,
+                                transformations_informations=self.transformations_information,
+                                normalized_anatomy_data=self.normalized_t1mri,
+                                allow_retry_initialization=True)
             context.runProcess('SPMsn3dToAims',
                                read=self.transformations_information,
                                write=self.talairach_MNI_transform,
@@ -737,7 +788,7 @@ def execution(self, context):
                            cortex_mid_interface=self.right_cortex_mid_interface)
 
     # Sulci Recognition
-    if self.perform_sulci_SPAM_recognition:
+    if self.perform_sulci_recognition=='SPAM':
         context.write(
             '<b>' + 'Computing Sulci Recognition with SPAM global+local...' + '</b>')
         # Left
@@ -767,7 +818,6 @@ def execution(self, context):
                            output_local_transformations=self.left_global_to_local_transforms,
                            initial_transformation=None,
                            global_transformation=self.left_tal_to_global_transform)
-
         # Right
         # Global
         context.runProcess('spam_recognitionglobal',
@@ -795,7 +845,23 @@ def execution(self, context):
                            output_local_transformations=self.right_global_to_local_transforms,
                            initial_transformation=None,
                            global_transformation=self.right_tal_to_global_transform)
-
+    
+    elif self.perform_sulci_recognition=='DeepCNN':
+        context.runProcess('capsul://deepsulci.sulci_labeling.capsul.labeling',
+                           graph=self.left_graph,
+                           model_file=self.left_model_file,
+                           param_file=self.left_param_file,
+                           roots=self.left_roots,
+                           skeleton=self.left_skeleton,
+                           labeled_graph=self.left_labelled_graph)
+        context.runProcess('capsul://deepsulci.sulci_labeling.capsul.labeling',
+                           graph=self.right_graph,
+                           model_file=self.right_model_file,
+                           param_file=self.right_param_file,
+                           roots=self.right_roots,
+                           skeleton=self.right_skeleton,
+                           labeled_graph=self.right_labelled_graph)
+    if self.perform_sulci_recognition!='No':
         # Sulcal Morphometry
         context.runProcess('sulcigraphmorphometrybysubject',
                            left_sulci_graph=self.left_labelled_graph,
@@ -803,3 +869,33 @@ def execution(self, context):
                            sulci_file=self.sulci_file,
                            use_attribute='label',
                            sulcal_morpho_measures=self.sulcal_morpho_measures)
+    # global stats
+    context.runProcess('brainvolumes',
+                       split_brain=self.split_brain,
+                       left_grey_white=self.left_grey_white,
+                       right_grey_white=self.right_grey_white,
+                       left_csf=self.left_csf,
+                       right_csf=self.right_csf,
+                       left_labelled_graph=self.left_labelled_graph,
+                       right_labelled_graph=self.right_labelled_graph,
+                       left_gm_mesh=self.left_pial_mesh,
+                       right_gm_mesh=self.right_pial_mesh,
+                       left_wm_mesh=self.left_white_mesh,
+                       right_wm_mesh=self.right_white_mesh,
+                       subject=self.subject,
+                       sulci_label_attribute=self.sulci_label_attribute,
+                       brain_volumes_file=self.brain_volumes_file)
+    # report
+    context.runProcess('morpho_report',
+                       t1mri=self.t1mri,
+                       left_grey_white=self.left_grey_white,
+                       right_grey_white=self.right_grey_white,
+                       left_gm_mesh=self.left_pial_mesh,
+                       right_gm_mesh=self.right_pial_mesh,
+                       left_wm_mesh=self.left_white_mesh,
+                       right_wm_mesh=self.right_white_mesh,
+                       left_labelled_graph=self.left_labelled_graph,
+                       right_labelled_graph=self.right_labelled_graph,
+                       brain_volumes_file=self.brain_volumes_file,
+                       report=self.report,
+                       subject=self.subject)

@@ -71,9 +71,8 @@ def execution(self, context):
     trManager = registration.getTransformationManager()
 
     braing = context.temporary('NIFTI-1 Image')
-    context.system("VipMask", "-i", self.t1mri_nobias,
-                   "-m", self.grey_white, "-o", braing,
-                   "-w", "t")
+    context.system("AimsMask", "-i", self.t1mri_nobias,
+                   "-m", self.grey_white, "-o", braing)
 
     side = self.hemi_cortex.get('side')
     if side is not None:
@@ -99,9 +98,8 @@ def execution(self, context):
     else:
         context.write("Reconstructing pial mesh...")
 
-    context.system("VipSingleThreshold", "-i", hemi,
-                   "-o", hemi, "-t", "0", "-c", "b",
-                   "-m", "ne", "-w", "t")
+    context.system("AimsThreshold", "-i", hemi,
+                   "-o", hemi, "-t", "0", "-b", "-m", "di")
 
     context.system("AimsMeshBrain", "-i", hemi.fullPath(), "-o", self.pial_mesh,
                    "--internalinterface", "--smoothIt", 50)

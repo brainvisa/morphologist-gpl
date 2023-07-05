@@ -117,7 +117,7 @@ def execution(self, context):
 
         if self.label_attributes == 'custom':
             if self.custom_label_attributes:
-                la = string.split(self.custom_label_attributes)
+                la = self.custom_label_attributes.split()
             else:
                 la = ()
         elif self.label_attributes == '(label, name)':
@@ -133,7 +133,7 @@ def execution(self, context):
         a = ()
         if self.node_edge_types == 'custom':
             if self.custom_node_edge_types:
-                a = string.split(self.custom_node_edge_types)
+                a = self.custom_node_edge_types.split()
         elif self.node_edge_types == 'Nodes (fold, cluster, roi, nucleus)':
             a = ('fold', 'cluster', 'roi', 'nucleus')
         elif self.node_edge_types == 'Relations (junction, cortical, etc.)':
@@ -143,7 +143,7 @@ def execution(self, context):
             cmd += ['-s', i]
 
         if self.label_values:
-            a = string.split(self.label_values)
+            a = self.label_values.split()
             for i in a:
                 cmd += ['-l', i]
 
@@ -152,7 +152,7 @@ def execution(self, context):
                 raise Exception('<em>custom_buckets</em> must be non-empty '
                                 'in custom bucket mode')
             cmd += ['-o', self.temp]
-            a = string.split(self.custom_buckets)
+            a = self.custom_buckets.split()
             for i in a:
                 cmd += ['-b', i]
         else:
@@ -179,14 +179,14 @@ def execution(self, context):
         aims.write(trans, temp_tr.fullPath())
 
         if ok == 0:
-            context.system('AimsResample', '-i', temp,
+            context.system('AimsApplyTransform', '-i', temp,
                            '-o', self.SPAM.fullPath(), '-m', temp_tr,
                            '--dx', dim[0], '--dy', dim[1], '--dz', dim[2],
                            '--sx', vs[0], '--sy', vs[1], '--sz', vs[2],
                            '-t', 'n')
             ok = 1
         else:
-            context.system('AimsResample', '-i', temp,
+            context.system('AimsApplyTransform', '-i', temp,
                            '-o', temp, '-m', temp_tr,
                            '--dx', dim[0], '--dy', dim[1], '--dz', dim[2],
                            '--sx', vs[0], '--sy', vs[1], '--sz', vs[2],

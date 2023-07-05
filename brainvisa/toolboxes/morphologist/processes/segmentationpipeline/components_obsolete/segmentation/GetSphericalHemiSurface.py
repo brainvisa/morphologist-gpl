@@ -81,8 +81,8 @@ def execution(self, context):
             context.write(
                 "Masking Bias corrected image with left hemisphere mask...")
             braing = context.temporary('NIFTI-1 Image')
-            context.system("VipMask", "-i", self.mri_corrected, "-m",
-                           self.split_mask, "-o", braing, "-w", "t", "-l", "2")
+            context.system("AimsMask", "-i", self.mri_corrected, "-m",
+                           self.split_mask, "-o", braing, "-l", "2")
 
             context.write("Computing skeleton...")
             skeleton = context.temporary('NIFTI-1 Image')
@@ -102,8 +102,8 @@ def execution(self, context):
                 command.extend(['-srand', 10])
             context.system(*command)
 
-            context.system("VipSingleThreshold", "-i", hemi, "-o",
-                           hemi, "-t", "0", "-c", "b", "-m", "ne", "-w", "t")
+            context.system("AimsThreshold", "-i", hemi, "-o",
+                           hemi, "-t", "0", "-b", "-m", "di")
 
             context.system("AimsMeshBrain", "-i", hemi.fullPath(),
                            "-o", self.left_hemi_mesh,
@@ -128,8 +128,8 @@ def execution(self, context):
             context.write(
                 "Masking Bias corrected image with right hemisphere mask...")
             braing = context.temporary('NIFTI-1 Image')
-            context.system("VipMask", "-i", self.mri_corrected, "-m",
-                           self.split_mask, "-o", braing, "-w", "t", "-l", "1")
+            context.system("AimsMask", "-i", self.mri_corrected, "-m",
+                           self.split_mask, "-o", braing, "-l", "1")
 
             context.write("Computing skeleton...")
             skeleton = context.temporary('NIFTI-1 Image')
@@ -148,8 +148,8 @@ def execution(self, context):
                 command.extend(['-srand', 10])
             context.system(*command)
 
-            context.system("VipSingleThreshold", "-i", hemi, "-o",
-                           hemi, "-t", "0", "-c", "b", "-m", "ne", "-w", "t")
+            context.system("AimsThreshold", "-i", hemi, "-o",
+                           hemi, "-t", "0", "-b", "-m", "di")
 
             context.system("AimsMeshBrain", "-i", hemi.fullPath(),
                            "-o", self.right_hemi_mesh,

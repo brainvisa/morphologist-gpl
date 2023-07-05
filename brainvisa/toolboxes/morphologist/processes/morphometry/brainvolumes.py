@@ -33,6 +33,7 @@
 from __future__ import absolute_import
 from brainvisa.processes import *
 from soma import aims
+from brainvisa.morphologist.morphometry import global_sulc_morpho
 import os
 
 name = 'Brain Volumes'
@@ -49,7 +50,23 @@ signature = Signature(
                               'Aims writable volume formats'),
     'right_csf', WriteDiskItem('Right CSF Mask',
                                'Aims writable volume formats'),
+    'left_labelled_graph', ReadDiskItem(
+        'labelled Cortical Folds Graph', 'Graph and data',
+        requiredAttributes={'side': 'left'}),
+    'right_labelled_graph', ReadDiskItem(
+        'labelled Cortical Folds Graph', 'Graph and data',
+        requiredAttributes={'side': 'right'}),
+    'left_gm_mesh', ReadDiskItem('Hemisphere mesh', 'aims mesh formats',
+                                 requiredAttributes={'side': 'left'}),
+    'right_gm_mesh', ReadDiskItem('Hemisphere mesh', 'aims mesh formats',
+                                 requiredAttributes={'side': 'right'}),
+    'left_wm_mesh', ReadDiskItem('Hemisphere white mesh', 'aims mesh formats',
+                                 requiredAttributes={'side': 'left'}),
+    'right_wm_mesh', ReadDiskItem('Hemisphere white mesh', 'aims mesh formats',
+                                 requiredAttributes={'side': 'right'}),
     'subject', String(),
+    'sulci_label_attribute', String(),
+    'table_format', Choice('2023', 'old'),
     'brain_volumes_file', WriteDiskItem(
         'Brain volumetry measurements', 'CSV file'),
 )
@@ -59,41 +76,40 @@ def initialization(self):
     def linkSubject(self, proc):
         if self.split_brain is not None:
             subject = self.split_brain.get('subject')
-        return subject
+            return subject
 
+    def linkSulciLabelAtt(self, proc):
+        auto = 'Yes'
+        if self.left_labelled_graph is not None:
+            auto = self.left_labelled_graph.get('automatically_labelled',
+                                                'Yes')
+        elif self.right_labelled_graph is not None:
+            auto = self.right_labelled_graph.get('automatically_labelled',
+                                                 'Yes')
+        return {'Yes': 'label', 'No': 'name'}.get(auto, 'label')
+
+    self.sulci_label_attribute = 'label'
+    self.setOptional('left_labelled_graph', 'right_labelled_graph',
+                     'left_gm_mesh', 'right_gm_mesh',
+                     'left_wm_mesh', 'right_wm_mesh')
     self.linkParameters('subject', 'split_brain', linkSubject)
     self.linkParameters('left_grey_white', 'split_brain')
     self.linkParameters('right_grey_white', 'split_brain')
     self.linkParameters('left_csf', 'split_brain')
     self.linkParameters('right_csf', 'split_brain')
     self.linkParameters('brain_volumes_file', 'split_brain')
+    self.linkParameters('left_labelled_graph', 'split_brain')
+    self.linkParameters('right_labelled_graph', 'split_brain')
+    self.linkParameters('left_gm_mesh', 'split_brain')
+    self.linkParameters('right_gm_mesh', 'split_brain')
+    self.linkParameters('left_wm_mesh', 'split_brain')
+    self.linkParameters('right_wm_mesh', 'split_brain')
+    self.linkParameters('sulci_label_attribute',
+                        ('left_labelled_graph', 'right_labelled_graph'),
+                        linkSulciLabelAtt)
 
 
 def execution(self, context):
-    # Fermeture morphologisque du cerveau pour optenir le volume de csf contenu dans les sillons et ainsi calculer un TIV (ICV) approximatif.
-    brain_closed = context.temporary('NIFTI-1 Image')
-    context.system('AimsThreshold',
-                   '-i', self.split_brain.fullPath(),
-                   '-o', brain_closed,
-                   '-m', 'di', '-t', '0', '-b')
-    context.system('AimsMorphoMath',
-                   '-i', brain_closed,
-                   '-o', brain_closed,
-                   '-m', 'clo', '-r', '20')
-    # On s'assure qu'il n'y a pas de trous surtout au niveau des ventricules.
-    context.system('AimsThreshold',
-                   '-i', brain_closed,
-                   '-o', brain_closed,
-                   '-m', 'eq', '-t', '0', '-b')
-    context.system('AimsConnectComp',
-                   '-i', brain_closed,
-                   '-o', brain_closed,
-                   '-c', '6', '-n', '1', '-b')
-    context.system('AimsThreshold',
-                   '-i', brain_closed,
-                   '-o', brain_closed,
-                   '-m', 'eq', '-t', '0', '-b')
-
     context.write('Extracting left and right CSF inside sulci.\n')
     context.runProcess('AnaComputeLCRClassif',
                        left_grey_white=self.left_grey_white,
@@ -101,82 +117,97 @@ def execution(self, context):
                        left_csf=self.left_csf,
                        right_csf=self.right_csf,
                        split_mask=self.split_brain)
+    context.write('Computing volumes.\n')
 
-    # Calcul des volumes
-    if os.path.exists(self.split_brain.fullPath()) and \
-            os.path.exists(self.left_grey_white.fullPath()) and \
-            os.path.exists(self.right_grey_white.fullPath()) and \
-            os.path.exists(self.left_csf.fullPath()) and \
-            os.path.exists(self.right_csf.fullPath()):
-        split_img = aims.read(self.split_brain.fullPath())
-        lgw_img = aims.read(self.left_grey_white.fullPath())
-        rgw_img = aims.read(self.right_grey_white.fullPath())
-        lcsf_img = aims.read(self.left_csf.fullPath())
-        rcsf_img = aims.read(self.right_csf.fullPath())
-        eTIV_img = aims.read(brain_closed.fullPath())
+    lg = None
+    rg = None
+    lgm = None
+    rgm = None
+    lwm = None
+    rlm = None
+    if self.left_labelled_graph is not None:
+        lg = self.left_labelled_graph.fullPath()
+    if self.right_labelled_graph is not None:
+        rg = self.right_labelled_graph.fullPath()
+    if self.left_gm_mesh is not None:
+        lgm = self.left_gm_mesh.fullPath()
+    if self.right_gm_mesh is not None:
+        rgm = self.right_gm_mesh.fullPath()
+    if self.left_wm_mesh is not None:
+        lwm = self.left_wm_mesh.fullPath()
+    if self.right_wm_mesh is not None:
+        rwm = self.right_wm_mesh.fullPath()
 
-        vox_sizes = split_img.header()['voxel_size']
-        vox_vol = vox_sizes[0]*vox_sizes[1]*vox_sizes[2]
+    res = global_sulc_morpho.sulcal_and_brain_morpho(
+        lg, rg,
+        self.split_brain.fullPath(),
+        self.left_grey_white.fullPath(),
+        self.right_grey_white.fullPath(),
+        self.left_csf.fullPath(),
+        self.right_csf.fullPath(),
+        lgm, rgm, lwm, rwm,
+        remove_nonfold=True, label_att=self.sulci_label_attribute)
 
-        split_arr = split_img.arraydata()
-        lgw_arr = lgw_img.arraydata()
-        rgw_arr = rgw_img.arraydata()
-        lcsf_arr = lcsf_img.arraydata()
-        rcsf_arr = rcsf_img.arraydata()
-        eTIV_arr = eTIV_img.arraydata()
+    res['subject'] = self.subject
 
-        # Classify
-        lgm_vox = (lgw_arr == 100)
-        lwm_vox = (lgw_arr == 200)
-        rgm_vox = (rgw_arr == 100)
-        rwm_vox = (rgw_arr == 200)
-        lcsf_vox = (lcsf_arr == 32767)
-        rcsf_vox = (rcsf_arr == 32767)
-        cerebellum_vox = (split_arr == 3)
+    table = []
+    th = []
+    csvh = []
+    csvt = []
+    col_names = {'subject': 'subject'}
+    vols_cm3 = []
+    if self.table_format == 'old':
+        col_names = {
+          'subject': 'subject',
+          'left.WM': 'left_wm',
+          'right.WM': 'right_wm',
+          'left.GM': 'left_gm',
+          'right.GM': 'right_gm',
+          'left.CSF': 'left_csf',
+          'right.CSF': 'right_csf',
+          'left.hemi_volume': 'lh',
+          'right.hemi_volume': 'rh',
+          'both.brain_volume': 'brain',
+          'both.hemi_closed_volume': 'bothhemi_closed',
+          'both.eTIV': 'eTIV',
+          'both.WM': 'both_wm',
+          'both.GM': 'both_gm',
+          'both.CSF': 'both_csf',
+          'both.cerebellum_stem_volume': 'cereb_stem',
+          'left.brain_volume': 'left_filled_brain',
+          'right.brain_volume': 'right_filled_brain',
+        }
+        vols_cm3 = [k for k in col_names.keys() if k != 'subject']
 
-        rh_vox = rgm_vox + rwm_vox
-        lh_vox = lgm_vox + lwm_vox
-        rh_closed_vox = rh_vox + rcsf_vox
-        lh_closed_vox = lh_vox + lcsf_vox
-        hemi_closed_vox = rh_closed_vox + lh_closed_vox
+    for k, cn in col_names.items():
+        th.append('<td>' + cn + '</td>')
+        csvh.append(cn)
+        v = res[k]
+        if not isinstance(v, str):
+            if k in vols_cm3:
+                v = str(round(v / 1000., 3))
+            else:
+                v = str(round(v, 3))
+        table.append('<td>' + v + '</td>')
+        csvt.append(v)
 
-        brain_vox = (split_arr == 1) | (split_arr == 2) | (split_arr == 3)
-        eTIV_vox = (eTIV_arr == 32767)
+    for k, v in res.items():
+        if k not in col_names:
+            th.append('<td>' + k + '</td>')
+            csvh.append(k)
+            if not isinstance(v, str):
+                if k in vols_cm3:
+                    v = str(round(v / 1000., 3))
+                else:
+                    v = str(round(v, 3))
+            table.append('<td>' + v + '</td>')
+            csvt.append(v)
 
-        # Calculation of the volumes
-        lgm_vol = lgm_vox.sum()*vox_vol/1000.
-        lwm_vol = lwm_vox.sum()*vox_vol/1000.
-        rgm_vol = rgm_vox.sum()*vox_vol/1000.
-        rwm_vol = rwm_vox.sum()*vox_vol/1000.
-        rh_vol = rh_vox.sum()*vox_vol/1000.
-        lh_vol = lh_vox.sum()*vox_vol/1000.
-        cerebellum_vol = cerebellum_vox.sum()*vox_vol/1000.
-        brain_vol = brain_vox.sum()*vox_vol/1000.
-        rh_closed_vol = rh_closed_vox.sum()*vox_vol/1000.
-        lh_closed_vol = lh_closed_vox.sum()*vox_vol/1000.
-        hemi_closed_vol = hemi_closed_vox.sum()*vox_vol/1000.
-        eTIV = eTIV_vox.sum()*vox_vol/1000.
-    else:
-        lgm_vol = 0.
-        lwm_vol = 0.
-        rgm_vol = 0.
-        rwm_vol = 0.
-        rh_vol = 0.
-        lh_vol = 0.
-        cerebellum_vol = 0.
-        brain_vol = 0.
-        rh_closed_vol = 0.
-        lh_closed_vol = 0.
-        hemi_closed_vol = 0.
-        eTIV = 0.
+    context.write('<table style="border: 1px"><th>' + ''.join(th)
+                  + '</th><tr>' + ''.join(table) + '</tr></table>')
 
     if self.brain_volumes_file is not None:
         f = open(self.brain_volumes_file.fullPath(), 'w')
-        f.write(
-            'subject;left_wm;right_wm;left_gm;right_gm;lh;rh;brain;bothhemi_closed;eTIV\n')
-        f.write(self.subject+';'+str(round(lwm_vol, 3))+';' +
-                str(round(rwm_vol, 3))+';'+str(round(lgm_vol, 3))+';' +
-                str(round(rgm_vol, 3))+';'+str(round(lh_vol, 3))+';' +
-                str(round(rh_vol, 3))+';'+str(round(brain_vol, 3))+';' +
-                str(round(hemi_closed_vol))+';'+str(round(eTIV, 3)))
+        f.write(';'.join(csvh) + '\n')
+        f.write(';'.join(csvt))
         f.close()

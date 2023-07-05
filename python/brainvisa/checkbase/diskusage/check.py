@@ -64,8 +64,8 @@ def check_disk_usage(directory, get_sizes=True, studies_list=studies_list, users
     output = df.communicate()[0]
     device, size, used, available, percent, mountpoint = \
         output.split("\n")[1].split()
-    global_disk_space = string.join(
-        [device, size, used, available, percent[:-1]], ' ')
+    global_disk_space = ' '.join(
+        [device, size, used, available, percent[:-1]])
 
     # initialize some list and dictionaries
     studies_space = {}

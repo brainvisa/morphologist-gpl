@@ -74,7 +74,8 @@ def customize_process(self):
         self._edited_pipeline.nodes_activation.SulciRecognition_1 = True
     elif self.capsul_process_type \
             == 'morphologist.capsul.morphologist_simple.MorphologistSimple':
-        self._edited_pipeline.method_ACPC = 'With SPM Normalization'
+        self._edited_pipeline.method_ACPC = 'With SPM12 Normalization'
+        self._edited_pipeline.perform_sulci_recognition = 'DeepCNN'
 
 
 def get_edited_pipeline(self):

@@ -74,13 +74,11 @@ def initialization(self):
 def execution(self, context):
     context.write("Masking Bias corrected image with hemisphere masks...")
     Lbraing = context.temporary('GIS Image')
-    context.system('VipMask', '-i', self.mri_corrected, "-m",
-                   self.split_mask, "-o", Lbraing, "-w",
-                   "t", "-l", "2")
+    context.system('AimsMask', '-i', self.mri_corrected, "-m",
+                   self.split_mask, "-o", Lbraing, "-l", "2")
     Rbraing = context.temporary('GIS Image')
-    context.system("VipMask", "-i", self.mri_corrected, "-m",
-                   self.split_mask, "-o", Rbraing,
-                   "-w", "t", "-l", "1")
+    context.system("AimsMask", "-i", self.mri_corrected, "-m",
+                   self.split_mask, "-o", Rbraing, "-l", "1")
     tm = registration.getTransformationManager()
     if self.Side in ('Left', 'Both'):
 

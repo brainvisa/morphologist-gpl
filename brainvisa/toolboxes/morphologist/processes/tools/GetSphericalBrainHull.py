@@ -82,17 +82,17 @@ def execution(self, context):
     context.write("Extracting hemispheres hull...")
     Hhull = context.temporary('NIFTI-1 Image')
 
-    context.system("VipDoubleThreshold",
+    context.system("AimsThreshold",
                    "-i", self.split_mask, "-o", Hhull,
-                   "-tl", "1", "-th", "2", "-m", "be",
-                   "-c", "b", "-w", "t")
+                   "-t", "1", "-u", "2", "-m", "be",
+                   "-b")
     context.system("VipClosing",
                    "-i", Hhull, "-o", Hhull,
                    "-s", "10", "-w", "t")
-    context.system("VipSingleThreshold",
+    context.system("AimsThreshold",
                    "-i", Hhull, "-o", Hhull,
                    "-t", "0", "-m", "eq",
-                   "-c", "b", "-w", "t")
+                   "-b")
 
     context.system("AimsMeshBrain",
                    "-i", Hhull, "-o", self.both_hemi_hull,
@@ -109,17 +109,17 @@ def execution(self, context):
     context.write("Extracting brain hull...")
     Bhull = context.temporary('NIFTI-1 Image')
 
-    context.system("VipSingleThreshold",
+    context.system("AimsThreshold",
                    "-i", self.split_mask, "-o", Bhull,
                    "-t", "0", "-m", "gt",
-                   "-c", "b", "-w", "t")
+                   "-b")
     context.system("VipClosing",
                    "-i", Bhull, "-o", Bhull,
                    "-s", "10", "-w", "t")
-    context.system("VipSingleThreshold",
+    context.system("AimsThreshold",
                    "-i", Bhull, "-o", Bhull,
                    "-t", "0", "-m", "eq",
-                   "-c", "b", "-w", "t")
+                   "-b")
 
     context.system("AimsMeshBrain",
                    "-i", Bhull, "-o", self.brain_hull,

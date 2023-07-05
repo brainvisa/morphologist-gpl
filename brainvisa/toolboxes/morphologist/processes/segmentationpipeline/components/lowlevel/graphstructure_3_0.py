@@ -82,10 +82,10 @@ def execution(self, context):
         braing = lbraing
     else:
         braing = rbraing
-    context.system('VipMask', '-i', self.mri_corrected, "-m",
-                   self.split_mask, "-o", lbraing, "-w", "t", "-l", 2)
-    context.system('VipMask', '-i', self.mri_corrected, "-m",
-                   self.split_mask, "-o", rbraing, "-w", "t", "-l", 1)
+    context.system('AimsMask', '-i', self.mri_corrected, "-m",
+                   self.split_mask, "-o", lbraing, "-l", 2)
+    context.system('AimsMask', '-i', self.mri_corrected, "-m",
+                   self.split_mask, "-o", rbraing, "-l", 1)
 
     context.write("Computing skeleton and buried gyrus watershed...")
     context.system("VipSkeleton", "-i", self.hemi_cortex,

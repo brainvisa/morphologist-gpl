@@ -15,6 +15,7 @@
       "acquisition": "<center>/<subject>/t1mri/<acquisition>",
       "analysis": "{acquisition}/<analysis>",
       "recognition_analysis": "{analysis}/folds/<graph_version>/<sulci_recognition_session>_auto",
+      "subject": "<subject>",
     },
 
     "processes" : {
@@ -298,6 +299,19 @@
           "sulcal_morphometry_sulci_file":
             "{shared.sulcal_morphometry_sulci_file}",
 
+          # Global morphometry
+          "GlobalMorphometry_left_csf":
+              [["output:{analysis}/segmentation/<side>csf_<subject>","images",{"side":"L"}]],
+          "GlobalMorphometry_right_csf":
+              [["output:{analysis}/segmentation/<side>csf_<subject>","images",{"side":"R"}]],
+          "GlobalMorphometry_brain_volumes_file":
+              [["output:{analysis}/segmentation/brain_volumes_<subject>","CSV file"]],
+          "GlobalMorphometry_subject": [["none:<subject>", "no ext"]],
+
+          # PDF report
+          "Report_report":
+              [["output:{analysis}/morphologist_report","PDF File"]],
+          "Report_subject": [["none:<subject>", "no ext"]]
         },
 
         #Bias Correction, internal
@@ -718,6 +732,10 @@
                     ]
                 ]
             ],
+            "left_model_file": [["shared:models/models_2019/cnn_models/sulci_unet_model_left",
+                 "Deep model file", {"side": "L"}]],
+            "left_param_file": [["shared:models/models_2019/cnn_models/sulci_unet_model_params_left",
+                 "JSON file", {"side": "L"}]],
             "left_posterior_probabilities": [
                 [
                     "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/L<subject>_<sulci_recognition_session>_auto_proba",
@@ -842,6 +860,10 @@
                     ]
                 ]
             ],
+            "right_model_file": [["shared:models/models_2019/cnn_models/sulci_unet_model_right",
+                 "Deep model file", {"side": "R"}]],
+            "right_param_file": [["shared:models/models_2019/cnn_models/sulci_unet_model_params_right",
+                 "JSON file", {"side": "R"}]],
             "right_posterior_probabilities": [
                 [
                     "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/R<subject>_<sulci_recognition_session>_auto_proba",

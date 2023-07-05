@@ -34,6 +34,7 @@
 from __future__ import absolute_import
 from brainvisa.processes import *
 from brainvisa import registration
+import shutil
 
 name = 'FSL Normalization Pipeline'
 userLevel = 1
@@ -45,9 +46,11 @@ def validation():
     except:
         raise ValidationError('aims module not here')
     configuration = Application().configuration
-    import distutils.spawn
-    if not distutils.spawn.find_executable(
-            configuration.FSL.fsl_commands_prefix + 'flirt'):
+    if not shutil.which(
+            configuration.FSL.fsl_commands_prefix + 'flirt',
+            path=os.pathsep.join(
+                [os.path.join(configuration.FSL.fsldir, 'bin'),
+                 os.environ['PATH']])):
         raise ValidationError(_t_('FSL flirt commandline could not be found'))
     # the previous test seems not to be good enough...
     try:

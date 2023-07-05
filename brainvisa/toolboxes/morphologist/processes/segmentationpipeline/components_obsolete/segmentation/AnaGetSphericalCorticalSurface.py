@@ -121,18 +121,18 @@ def execution(self, context):
         newdimz = int((dimz+1)*voxz/newvox)
         context.write("Computing oversampled MR image to improve cortical "
                       "surface definition (cubic spline)")
-        context.system("VipSplineResamp", "-i", self.mri_corrected,
-                       "-ord", "3", "-dx", str(newdimx), "-dy", str(newdimy),
-                       "-dz", str(newdimz), "-sx", str(newvox), "-sy",
-                       str(newvox), "-sz", str(newvox), "-did", "-o",
-                       over_nobias)
+        context.system("AimsApplyTransform", "-i", self.mri_corrected,
+                       "-n", "3", "--dx", str(newdimx), "--dy", str(newdimy),
+                       "--dz", str(newdimz), "--sx", str(newvox),
+                       "--sy", str(newvox), "--sz", str(newvox), "--vol_id",
+                       "-o", over_nobias)
         context.write(
             "Computing oversampled split brain mask (nearest neighbor)")
-        context.system("VipSplineResamp", "-i", self.split_mask,
-                       "-ord", "0", "-dx", str(newdimx), "-dy", str(newdimy),
-                       "-dz", str(newdimz), "-sx", str(newvox), "-sy",
-                       str(newvox), "-sz", str(newvox), "-did", "-o",
-                       over_split)
+        context.system("AimsApplyTransform", "-i", self.split_mask,
+                       "-n", "0", "--dx", str(newdimx), "--dy", str(newdimy),
+                       "--dz", str(newdimz), "--sx", str(newvox),
+                       "--sy", str(newvox), "--sz", str(newvox), "--vol_id",
+                       "-o", over_split)
     trManager = registration.getTransformationManager()
     if self.Side in ('Left', 'Both'):
         if os.path.exists(self.left_white_mesh.fullName() + '.loc'):
@@ -141,9 +141,9 @@ def execution(self, context):
             context.write(
                 "Masking Bias corrected image with left hemisphere mask...")
             braing = context.temporary('GIS Image')
-            context.system("VipMask", "-i", over_nobias, "-m",
+            context.system("AimsMask", "-i", over_nobias, "-m",
                            over_split, "-o", braing,
-                           "-w", "t", "-l", "2")
+                           "-l", "2")
 
             hemi_cortex = context.temporary('GIS Image')
             context.write("Detecting left grey/white interface...")
@@ -155,9 +155,8 @@ def execution(self, context):
 
             context.write("Reconstructing left hemisphere white surface...")
             white = context.temporary('GIS Image')
-            context.system("VipSingleThreshold", "-i", hemi_cortex,
-                           "-o", white, "-t", "0", "-c", "b", "-m",
-                           "ne", "-w", "t")
+            context.system("AimsThreshold", "-i", hemi_cortex,
+                           "-o", white, "-t", "0", "-b", "-m", "di")
             del hemi_cortex
 
             context.write("Triangulation and Decimation...")
@@ -185,9 +184,9 @@ def execution(self, context):
             context.write(
                 "Masking Bias corrected image with right hemisphere mask...")
             braing = context.temporary('GIS Image')
-            context.system("VipMask", "-i", over_nobias, "-m",
+            context.system("AimsMask", "-i", over_nobias, "-m",
                            over_split, "-o", braing,
-                           "-w", "t", "-l", "1")
+                           "-l", "1")
 
             hemi_cortex = context.temporary('GIS Image')
             context.write("Detecting right grey/white interface...")
@@ -199,9 +198,8 @@ def execution(self, context):
 
             context.write("Reconstructing right hemisphere white surface...")
             white = context.temporary('GIS Image')
-            context.system("VipSingleThreshold", "-i", hemi_cortex,
-                           "-o", white, "-t", "0", "-c", "b", "-m",
-                           "ne", "-w", "t")
+            context.system("AimsThreshold", "-i", hemi_cortex,
+                           "-o", white, "-t", "0", "-b", "-m", "di")
             del hemi_cortex
 
             context.write("Triangulation and Decimation...")

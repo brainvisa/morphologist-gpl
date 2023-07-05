@@ -63,10 +63,9 @@ def execution(self, context):
         context.write("Reconstructing white mesh...")
 
     white = context.temporary('NIFTI-1 Image')
-    context.system("VipSingleThreshold", "-i",
+    context.system("AimsThreshold", "-i",
                    self.hemi_cortex, "-o",
-                   white, "-t", "0", "-c", "b",
-                   "-m", "eq", "-w", "t")
+                   white, "-t", "0", "-b", "-m", "eq")
 
     context.system("AimsMeshBrain", "-i", white, "-o", self.white_mesh)
     context.system("AimsMeshCleaner", "-i", self.white_mesh, "-o",

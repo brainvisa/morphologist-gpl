@@ -1,6 +1,6 @@
-#!/usr/bin/python2
-from __future__ import absolute_import, print_function
+#!/usr/bin/python
 
+from __future__ import absolute_import, print_function
 import pyinotify
 import sys
 import os
@@ -127,7 +127,7 @@ if __name__ == '__main__':
     qt_app = Qt.QApplication(sys.argv)
 
     for root, dirs, files in os.walk(cbdir):
-        if '.svn' in string.split(root, os.path.sep):
+        if '.svn' in root.split(os.path.sep):
             continue
         directories.append(root)
     print(directories)

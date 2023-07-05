@@ -154,9 +154,9 @@ def execution(self, context):
         va = aimsGlobals.aimsVolumeAttributes(self.t1mri)
         vs = va.get('voxel_size', [1., 1., 1.])
         trinv = t1toACPC.inverse()
-        acmm = trinv.transform([0, 0, 0])
-        pcmm = trinv.transform([0, 30, 0])
-        ipmm = trinv.transform([0, 40, -60])
+        acmm = trinv.transform([0., 0., 0.])
+        pcmm = trinv.transform([0., 30., 0.])
+        ipmm = trinv.transform([0., 40., -60.])
         ac = [int(round(x / y)) for x, y in zip(acmm, vs)]
         pc = [int(round(x / y)) for x, y in zip(pcmm, vs)]
         ip = [int(round(x / y)) for x, y in zip(ipmm, vs)]

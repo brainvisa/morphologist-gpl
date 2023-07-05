@@ -79,16 +79,15 @@ def execution(self, context):
             context.write(
                 "Masking Bias corrected image with left hemisphere mask...")
             braing = context.temporary('GIS Image')
-            context.system("VipMask", "-i", self.mri_corrected, "-m",
+            context.system("AimsMask", "-i", self.mri_corrected, "-m",
                            self.split_mask, "-o",
-                           braing, "-w", "t", "-l", "2")
+                           braing, "-l", "2")
 
             context.write("Reconstructing left hemisphere surface...")
             white = context.temporary('GIS Image')
-            context.system("VipSingleThreshold", "-i",
+            context.system("AimsThreshold", "-i",
                            self.left_hemi_cortex, "-o",
-                           white, "-t", "0", "-c", "b", "-m", "eq",
-                           "-w", "t")
+                           white, "-t", "0", "-b", "-m", "eq")
             openbrain = context.temporary('GIS Image')
             context.system("VipOpenFold", "-i", braing, "-s",
                            white, "-o", openbrain,
@@ -111,16 +110,14 @@ def execution(self, context):
             context.write(
                 "Masking Bias corrected image with right hemisphere mask...")
             braing = context.temporary('GIS Image')
-            context.system("VipMask", "-i", self.mri_corrected, "-m",
-                           self.split_mask, "-o",
-                           braing, "-w", "t", "-l", "1")
+            context.system("AimsMask", "-i", self.mri_corrected, "-m",
+                           self.split_mask, "-o", braing, "-l", "1")
 
             context.write("Reconstructing right hemisphere surface...")
             white = context.temporary('GIS Image')
-            context.system("VipSingleThreshold", "-i",
+            context.system("AimsThreshold", "-i",
                            self.right_hemi_cortex, "-o",
-                           white, "-t", "0", "-c", "b", "-m", "eq",
-                           "-w", "t")
+                           white, "-t", "0", "-b", "-m", "eq")
             openbrain = context.temporary('GIS Image')
             context.system("VipOpenFold", "-i", braing, "-s",
                            white, "-o", openbrain,

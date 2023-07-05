@@ -77,7 +77,7 @@ def processregexp(regexp, attributes, wildcards=True):
 
     import string
     import re
-    s = string.split(regexp, '(?P')
+    s = regexp.split('(?P')
     res = []
     for each in s:
         m = re.match('^[=<](?P<field>\w+)', each)
@@ -90,7 +90,7 @@ def processregexp(regexp, attributes, wildcards=True):
             res.append('%s%s' % (
                 attributes[field], each[_findmatchingparenthesis(each)+1:].rstrip('$)')))
 
-    return string.join(res, '')
+    return ''.join(res)
 
 
 def get_files(databasedir):

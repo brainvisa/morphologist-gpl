@@ -442,7 +442,7 @@ def import_mask(self, context, t1aims2mni, mridone, nobiasdone, nobias,
                 if nobiasdone:
                     context.write(_t_('Resampling bias corrected volume to '
                                       'the mask space...'))
-                    context.system('AimsResample', '-i', nobias,
+                    context.system('AimsApplyTransform', '-i', nobias,
                                    '-o', self.output_bias_corrected, '-m', trm,
                                    '-r', self.output_brain_mask)
                     trManager.copyReferential(self.output_raw_t1_mri,
@@ -461,7 +461,7 @@ def import_mask(self, context, t1aims2mni, mridone, nobiasdone, nobias,
                         'AimsFileConvert', '-i', self.output_raw_t1_mri,
                         '-o', temp)
                     context.system(
-                        'AimsResample', '-i', temp,
+                        'AimsApplyTransform', '-i', temp,
                         '-o', self.output_raw_t1_mri, '-m', trm,
                         '-r', self.output_brain_mask)
                 # update the T1 -> ACPC transform
@@ -500,7 +500,7 @@ def import_mask(self, context, t1aims2mni, mridone, nobiasdone, nobias,
                 aims.write(mask2t1, trm.fullPath())
                 context.write(_t_('Resampling brain mask volume to '
                                   'native space...'))
-                context.system('AimsResample',
+                context.system('AimsApplyTransform',
                                '-i', self.output_brain_mask,
                                '-o', self.output_brain_mask, '-m', trm,
                                '-r', native, '-t', 'n')
@@ -546,7 +546,7 @@ def import_grey_white(self, context, gw_from_meshes, t1pipeline, trManager,
                 aims.write(mask2t1, temp.fullPath())
                 if mask2t1 is not None:
                     # resample to native space
-                    context.system('AimsResample',
+                    context.system('AimsApplyTransform',
                                    '-i', gw, '-o', gw,
                                    '-m', temp, '-r', self.output_brain_mask,
                                    '-t', 'n')

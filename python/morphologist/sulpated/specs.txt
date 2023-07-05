@@ -1,0 +1,107 @@
+Sulci patterns editor
+
+Requirements
+
+* used by several users concurrently. Each user should see updated data (real time), modify, save without side effect on other users (working on different subjects)
+
+* table displaying all subject, todo, existing data, done (validated + locked)
+                                                                    [mostly OK]
+
+* locking system for both concurrent access and protection of validated data
+                                                                          [OK]
+
+* [auto-save ?]                                                     [not done]
+
+* edit sulci manual labelings                                             [OK]
+  * convert auto to manual labelings                                      [OK]
+
+* enter labels for a subject, with possible annotations
+  * multiple labels                                                       [OK]
+  * confidence                                                            [OK]
+  * notes                                                                 [OK]
+  the GUI should be very easy to use (single button?) and should display info clearly                                                                 [OK]
+
+* conflicts handling
+  - backup save                                                           [OK]
+  - conflicts list                                                        [OK]
+  - conflicts resolution interface ?                                [not done]
+  - force write: unlock                                                   [OK]
+  - abort user version                                                  [TODO]
+
+* multi-subject 3D views window
+  in each, display:
+  - subject name/ID                                                       [OK]
+  - 3D sulci                                                              [OK]
+  - buttons for labels                                                    [OK]
+    - one color per label ?                                               [OK]
+    - with label names displayed only once in the window ?
+    - label name as tooltip ?
+  - [labels confidence / annotations ?] or this can be opened specifically and temporarily on a user action (menu, button)
+  - save button, displaying unsaved state                                 [OK]
+  - save / load in a separate output database                             [OK]
+  - validate / lock button                                                [OK]
+  - unlocking should require a confirmation                               [OK]
+  - notification / update when data (sulci graph or labels file) is modified externally by another user                                              [OK]
+  - handle conflicts: I have modified, not saved yet, but someone else has, in the meantime
+    - change colors / grey the whole subject
+    - allow / suggest to save things at another place to resolve conflicts [OK]
+- allow to discard unsaved changes (with confirmation)                   [TODO]
+  - [notify when starting to edit a subject, other users will be notified] ?
+    - means to "unlock" if the edition is aborted (qui the program, close the subject, or user action to tell that we abort)
+    - tool to manually unlock a subject after a crash which has not unlocked it
+  - [undo / redo capabilities] (difficult to implement in the short term)
+  - [back up older files ?]
+
+
+Tech
+
+- JSON or YAML file for each subject / region                             [OK]
+- or single inter-subject file
+- or database
+
+- file locking system                                                     [OK]
+- file modification notification system to update GUI, (or database modification notification)                                                [OK]
+
+- use brainvisa/Axon API to query data ?
+- but NFS locking issue prevents it for being reliable
+- use a locking wrapper to database access ? -> will slow things down even more... but if we limit the accesses it might do the job                  [OK]
+
+
+- data states:
+  - to do
+  - editing (temp. locked)
+  - saved                                                                 [OK?]
+  - validated (permanently locked)                                        [OK]
+
+- actions:
+  - edit labels list (global, for all subjects / users)         [no interface]
+  - start edit [auto] (temp lock)
+  - change a label state                                                  [OK]
+  - edit label confidence                                                 [OK]
+  - edit label annotation                                                 [OK]
+  - save (unlock temp)                                                    [OK]
+  - abort (revert to saved, unlock temp)    [TODO for patterns, done for sulci]
+  - lock                                                                  [OK]
+  - unlock                                                                [OK]
+  - edit sulci labels (temp lock)                                     [no lock]
+  - abort sulci labels (revert, unlock temp)                          [no lock]
+  - save sulci labels (unlock temp)                                   [no lock]
+  - validate sulci labels ?                                         [OK: lock]
+
+- all lock / unlock actions must notify something, or anyway be listened by other users
+  - global version/date database file, used for notification/polling, with lock
+    maybe including all data dates/versions in order to quickly know what has
+    changed                                                 [OK, basic version]
+  - subject/hemi sulci graph lock                                 [not needed?]
+  - subject patterns file lock                                    [not needed?]
+  - database "version file" lock                                          [OK]
+
+Open questions:
+
+  - do we want to auto-reload loaded sulci graphs when they are changed externally ? If not, what should be displayed ?
+  - do we need to have a lock during edition ? (temp lock)
+  - do we want to auto-save sulci graphs ? Where ?
+  - is "validaton" and "locking" the same ?
+  - do we want to keep track of who has modified a data ? (would almost need a RCS to be done correctly)
+  - is it a bottleneck to poll every file when the global version file is touched, or do we need to cache every data state in the version file ? (could involve additional sync issues)
+

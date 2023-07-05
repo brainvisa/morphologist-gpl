@@ -205,12 +205,12 @@ def execution(self, context):
         f.write('cycles\t' + str(self.cycles) + '\n'
                 'cycles_tst\t' + str(self.cycles_tst) + '\n'
                 'graphFiles\t')
-        f.write(string.join([x.fullPath()
-                             for x in self.learningbase_data_graphs]) + '\n')
+        f.write(' '.join(x.fullPath()
+                         for x in self.learningbase_data_graphs) + '\n')
         if len(self.testbase_data_graphs) != 0:
             f.write('testGraphFiles\t')
-            f.write(string.join([x.fullPath()
-                                 for x in self.testbase_data_graphs]) + '\n')
+            f.write(' '.join(x.fullPath()
+                             for x in self.testbase_data_graphs) + '\n')
     if self.labels_translation_map is not None:
         f.write('labelsMapFile\t' + self.labels_translation_map.fullPath()
                 + '\n')
