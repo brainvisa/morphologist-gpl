@@ -1,51 +1,46 @@
 # -*- coding: utf-8 -*-
-try:
-    from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
-        List, Any, Undefined
-except ImportError:
-    from enthought.traits.api import File, Directory, Float, Int, Bool, Enum, \
-        Str, List, Any, Undefined
-
+from soma.controller import File, Directory, undefined, Any, \
+    Literal, field
+from pydantic import conlist
 from capsul.api import Process
-import six
 
 
 class brainvolumes(Process):
     def __init__(self, **kwargs):
         super(brainvolumes, self).__init__(**kwargs)
-        self.add_trait('split_brain', File(allowed_extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu',
-                       '.jpg', '.scn', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz']))
-        self.add_trait('left_grey_white', File(allowed_extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu',
-                       '.jpg', '.scn', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz']))
-        self.add_trait('right_grey_white', File(allowed_extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu',
-                       '.jpg', '.scn', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz']))
-        self.add_trait('left_csf', File(allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.gif', '.ima', '.dim', '.jpg', '.mnc',
-                       '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'], output=True))
-        self.add_trait('right_csf', File(allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.gif', '.ima', '.dim', '.jpg', '.mnc',
-                       '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'], output=True))
-        self.add_trait('left_labelled_graph', File(
-            allowed_extensions=['.arg', '.data'], optional=True))
-        self.add_trait('right_labelled_graph', File(
-            allowed_extensions=['.arg', '.data'], optional=True))
-        self.add_trait('left_gm_mesh', File(allowed_extensions=[
-                       '.gii', '.mesh', '.obj', '.ply', '.tri'], optional=True))
-        self.add_trait('right_gm_mesh', File(allowed_extensions=[
-                       '.gii', '.mesh', '.obj', '.ply', '.tri'], optional=True))
-        self.add_trait('left_wm_mesh', File(allowed_extensions=[
-                       '.gii', '.mesh', '.obj', '.ply', '.tri'], optional=True))
-        self.add_trait('right_wm_mesh', File(allowed_extensions=[
-                       '.gii', '.mesh', '.obj', '.ply', '.tri'], optional=True))
-        self.add_trait('subject', Str())
-        self.add_trait('sulci_label_attribute', Str())
-        self.add_trait('table_format', Enum('2023', 'old'))
-        self.add_trait('brain_volumes_file', File(
-            allowed_extensions=['.csv'], output=True))
+        self.add_field('split_brain', File, read=True, allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima',
+                       '.dim', '.jpg', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'])
+        self.add_field('left_grey_white', File, read=True, allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima',
+                       '.dim', '.jpg', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'])
+        self.add_field('right_grey_white', File, read=True, allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima',
+                       '.dim', '.jpg', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'])
+        self.add_field('left_csf', File, write=True, allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.gif', '.ima', '.dim', '.jpg',
+                       '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'])
+        self.add_field('right_csf', File, write=True, allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.gif', '.ima', '.dim',
+                       '.jpg', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'])
+        self.add_field('left_labelled_graph', File, read=True,
+                       allowed_extensions=['.arg', '.data'], optional=True)
+        self.add_field('right_labelled_graph', File, read=True,
+                       allowed_extensions=['.arg', '.data'], optional=True)
+        self.add_field('left_gm_mesh', File, read=True, allowed_extensions=[
+                       '.gii', '.mesh', '.obj', '.ply', '.tri'], optional=True)
+        self.add_field('right_gm_mesh', File, read=True, allowed_extensions=[
+                       '.gii', '.mesh', '.obj', '.ply', '.tri'], optional=True)
+        self.add_field('left_wm_mesh', File, read=True, allowed_extensions=[
+                       '.gii', '.mesh', '.obj', '.ply', '.tri'], optional=True)
+        self.add_field('right_wm_mesh', File, read=True, allowed_extensions=[
+                       '.gii', '.mesh', '.obj', '.ply', '.tri'], optional=True)
+        self.add_field('subject', str)
+        self.add_field('sulci_label_attribute', str)
+        self.add_field('table_format', Literal['2023', 'old'])
+        self.add_field('brain_volumes_file', File, write=True,
+                       allowed_extensions=['.csv'])
 
         # initialization section
         self.sulci_label_attribute = 'label'
         self.table_format = '2023'
 
-    def _run_process(self):
+    def execution(self, context=None):
         from brainvisa import axon
         from brainvisa.configuration import neuroConfig
         import brainvisa.processes
@@ -57,13 +52,14 @@ class brainvolumes(Process):
         axon.initializeProcesses()
 
         kwargs = {}
-        for name in self.user_traits():
+        for field in self.fields():
+            name = field.name
             value = getattr(self, name)
-            if value is Undefined:
+            if value is undefined:
                 continue
-            if isinstance(self.trait(name).trait_type, File) and value != '':
+            if is_path(field) and value != '':
                 kwargs[name] = value
-            elif isinstance(self.trait(name).trait_type, List):
+            elif is_list(field):
                 kwargs[name] = list(value)
             else:
                 kwargs[name] = value

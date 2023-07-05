@@ -18,7 +18,7 @@ class Normalization_Baladin(Process):
                        allowed_extensions=['.ima', '.dim', '.nii', '.nii.gz'])
 
         # initialization section
-        self.anatomical_template = '/host/usr/local/spm12-standalone/spm12_mcr/spm12/spm12/toolbox/OldNorm/T1.nii'
+        self.anatomical_template = '/casa/host/build/share/brainvisa-share-5.2/anatomical_templates/MNI152_T1_1mm.nii.gz'
 
     def execution(self, context=None):
         from brainvisa import axon

@@ -19,6 +19,7 @@ class sulcigraphmorphometrybysubject(Process):
                        write=True, allowed_extensions=['.csv'])
 
         # initialization section
+        self.sulci_file = '/casa/host/build/share/brainvisa-share-5.2/nomenclature/translation/sulci_default_list.json'
         self.use_attribute = 'label'
 
     def execution(self, context=None):

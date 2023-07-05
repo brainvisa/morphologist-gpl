@@ -28,6 +28,7 @@ class SulciLabellingSPAMMarkov(Process):
         self.add_field('fix_random_seed', bool)
 
         # initialization section
+        self.labels_translation_map = '/casa/host/build/share/brainvisa-share-5.2/nomenclature/translation/sulci_model_2008.trl'
         self.fix_random_seed = False
 
     def execution(self, context=None):

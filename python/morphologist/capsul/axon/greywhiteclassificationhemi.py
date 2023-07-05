@@ -27,7 +27,7 @@ class GreyWhiteClassificationHemi(Process):
         self.add_field('fix_random_seed', bool)
 
         # initialization section
-        self.side = 'right'
+        self.side = 'left'
         self.lesion_mask_mode = 'e'
         self.fix_random_seed = False
 

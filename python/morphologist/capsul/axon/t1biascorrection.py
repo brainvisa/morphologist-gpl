@@ -87,6 +87,9 @@ class T1BiasCorrection(Process):
             value = getattr(self, name)
             if value is undefined:
                 continue
+            # patch forbidden field name "field"
+            if name == 'b_field':
+                name = 'field'
             if is_path(field) and value != '':
                 kwargs[name] = value
             elif is_list(field):

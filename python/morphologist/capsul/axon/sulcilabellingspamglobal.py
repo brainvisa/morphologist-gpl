@@ -30,6 +30,7 @@ class SulciLabellingSPAMGlobal(Process):
 
         # initialization section
         self.model_type = 'Global registration'
+        self.labels_translation_map = '/casa/host/build/share/brainvisa-share-5.2/nomenclature/translation/sulci_model_2008.trl'
 
     def execution(self, context=None):
         from brainvisa import axon

@@ -34,6 +34,9 @@ class SulciLabellingSPAMLocal(Process):
         self.add_field('global_transformation', File, read=True,
                        allowed_extensions=['.trm'], optional=True)
 
+        # initialization section
+        self.labels_translation_map = '/casa/host/build/share/brainvisa-share-5.2/nomenclature/translation/sulci_model_2008.trl'
+
     def execution(self, context=None):
         from brainvisa import axon
         from brainvisa.configuration import neuroConfig

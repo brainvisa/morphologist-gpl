@@ -24,6 +24,7 @@ class SulciLabellingANN(Process):
         self.add_field('fix_random_seed', bool)
 
         # initialization section
+        self.model = '/casa/host/build/share/brainvisa-share-5.2/models/models_2008/discriminative_models/3.0/Lfolds_noroots/Lfolds_noroots.arg'
         self.model_hint = 0
         self.rate = 0.98
         self.stopRate = 0.05

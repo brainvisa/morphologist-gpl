@@ -16,8 +16,8 @@ class Normalization_FSL_reinit(Process):
                        'Not Aligned but Same Orientation', 'Incorrectly Oriented'])
         self.add_field('transformation_matrix', File,
                        write=True, allowed_extensions=['.mat'])
-        self.add_field('normalized_anatomy_data', File,
-                       write=True, allowed_extensions=['.nii.gz'])
+        self.add_field('normalized_anatomy_data', File, write=True,
+                       allowed_extensions=['.nii.gz', '.nii'])
         self.add_field(
             'cost_function', Literal['corratio', 'mutualinfo', 'normcorr', 'normmi', 'leastsq', 'labeldiff'])
         self.add_field('search_cost_function',
@@ -26,7 +26,6 @@ class Normalization_FSL_reinit(Process):
         self.add_field('init_translation_origin', Literal[0, 1])
 
         # initialization section
-        self.anatomical_template = '/host/usr/local/spm12-standalone/spm12_mcr/spm12/spm12/toolbox/OldNorm/T1.nii'
         self.Alignment = 'Not Aligned but Same Orientation'
         self.cost_function = 'corratio'
         self.search_cost_function = 'corratio'
