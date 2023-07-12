@@ -8,8 +8,8 @@ from capsul.api import Process
 class morphologistProcess(Process):
     def __init__(self, **kwargs):
         super(morphologistProcess, self).__init__(**kwargs)
-        self.add_field('t1mri', File, read=True, allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim',
-                       '.jpg', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'])
+        self.add_field('t1mri', File, read=True, allowed_extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu',
+                       '.jpg', '.scn', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz'])
         self.add_field('perform_segmentation', bool)
         self.add_field('perform_bias_correction', bool)
         self.add_field(
@@ -62,8 +62,8 @@ class morphologistProcess(Process):
                        allowed_extensions=['.nii', '.mnc', '.img', '.hdr'], optional=True)
         self.add_field('split_brain', File, write=True, allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.gif', '.ima', '.dim',
                        '.jpg', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'])
-        self.add_field('split_template', File, read=True, allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima',
-                       '.dim', '.jpg', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'])
+        self.add_field('split_template', File, read=True, allowed_extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms',
+                       '.vmu', '.jpg', '.scn', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz'])
         self.add_field('talairach_ACPC_transform', File,
                        write=True, allowed_extensions=['.trm'])
         self.add_field('left_grey_white', File, write=True, allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.gif', '.ima', '.dim',
@@ -190,8 +190,12 @@ class morphologistProcess(Process):
         self.labels_translation_map = '/casa/host/build/share/brainvisa-share-5.2/nomenclature/translation/sulci_model_2008.trl'
         self.left_model_file = '/casa/host/build/share/brainvisa-share-5.2/models/models_2019/cnn_models/sulci_unet_model_left.mdsm'
         self.left_param_file = '/casa/host/build/share/brainvisa-share-5.2/models/models_2019/cnn_models/sulci_unet_model_params_left.json'
+        self.left_global_model = '/casa/host/build/share/brainvisa-share-5.2/models/models_2008/descriptive_models/segments/global_registered_spam_left/spam_distribs.dat'
+        self.left_local_model = '/casa/host/build/share/brainvisa-share-5.2/models/models_2008/descriptive_models/segments/locally_from_global_registred_spam_left/spam_distribs.dat'
         self.right_model_file = '/casa/host/build/share/brainvisa-share-5.2/models/models_2019/cnn_models/sulci_unet_model_right.mdsm'
         self.right_param_file = '/casa/host/build/share/brainvisa-share-5.2/models/models_2019/cnn_models/sulci_unet_model_params_right.json'
+        self.right_global_model = '/casa/host/build/share/brainvisa-share-5.2/models/models_2008/descriptive_models/segments/global_registered_spam_right/spam_distribs.dat'
+        self.right_local_model = '/casa/host/build/share/brainvisa-share-5.2/models/models_2008/descriptive_models/segments/locally_from_global_registred_spam_right/spam_distribs.dat'
         self.sulci_file = '/casa/host/build/share/brainvisa-share-5.2/nomenclature/translation/sulci_default_list.json'
 
     def execution(self, context=None):

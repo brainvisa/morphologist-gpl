@@ -23,9 +23,13 @@ class SulciLabelling(Pipeline):
         self.add_process(
             'SPAM_recognition09', 'morphologist.capsul.axon.sulcilabellingspam.SulciLabellingSPAM')
         self.nodes['SPAM_recognition09']._weak_outputs = True
+        self.add_process(
+            'CNN_recognition19', 'deepsulci.sulci_labeling.capsul.labeling.SulciDeepLabeling', skip_invalid=True)
+        if 'CNN_recognition19' in self.nodes:
+            self.nodes['CNN_recognition19']._weak_outputs = True
 
         # switches section
-        self.add_switch('select_Sulci_Recognition', ['recognition2000', 'SPAM_recognition09'], [
+        self.add_switch('select_Sulci_Recognition', ['recognition2000', 'SPAM_recognition09', 'CNN_recognition19'], [
                         'output_graph'], output_types=[field(type_=File, write=True, allowed_extensions=['.arg', '.data'])])
 
         # exports section
@@ -40,12 +44,20 @@ class SulciLabelling(Pipeline):
 
         # links section
         self.add_link('data_graph->recognition2000.data_graph')
+        self.add_link('data_graph->CNN_recognition19.graph')
         self.add_link('fix_random_seed->SPAM_recognition09.fix_random_seed')
+        self.add_link('fix_random_seed->CNN_recognition19.fix_random_seed')
+        self.add_link(
+            'SPAM_recognition09.output_graph->select_Sulci_Recognition.SPAM_recognition09_switch_output_graph')
+        self.add_link(
+            'recognition2000.output_graph->select_Sulci_Recognition.recognition2000_switch_output_graph')
+        self.add_link(
+            'CNN_recognition19.labeled_graph->select_Sulci_Recognition.CNN_recognition19_switch_output_graph')
 
         # initialization section
-        if 'recognition2000' in self.nodes:
+        if 'CNN_recognition19' in self.nodes:
             self.dispatch_value(
-                self, 'select_Sulci_Recognition', 'recognition2000')
+                self, 'select_Sulci_Recognition', 'CNN_recognition19')
         # export orphan parameters
         if not hasattr(self, '_autoexport_nodes_parameters') \
                 or self._autoexport_nodes_parameters:
