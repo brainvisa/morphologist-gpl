@@ -3,10 +3,9 @@ from __future__ import print_function
 from brainvisa.processes import *
 from brainvisa import registration
 from brainvisa.processing import fsl_run
-from soma import aims
-import os
+from soma import aims, aimsalgo
 import os.path as osp
-import glob
+import numpy as np
 
 
 name = 'Import MCRIBS dHCP preterm subject into a brainvisa database'
@@ -140,11 +139,16 @@ def execution(self, context):
     }
     context.write(att)
 
-    t2w = osp.join(sessd, 'anat',
-                   'sub-%(subject)s_ses-%(session)s_desc-restore_T2w.nii'
-                   % att)
-    if not osp.exists(t2w):
-        t2w += '.gz'
+    to_try = ['sub-%(subject)s_ses-%(session)s_desc-restore_T2w.nii.gz',
+              'sub-%(subject)s_ses-%(session)s_desc-restore_T2w.nii',
+              'sub-%(subject)s_ses-%(session)s_T2w_restore.nii.gz',
+              'sub-%(subject)s_ses-%(session)s_T2w_restore.nii']
+    for t2w_s in to_try:
+        t2w = osp.join(sessd, 'anat',t2w_s % att)
+        if osp.exists(t2w):
+            break
+    else:
+        raise FileNotFoundError('The input T2w image cannot be found')
     context.write('T2w:', t2w)
     context.runProcess('ImportT1MRI', input=t2w, output=self.t1mri,
                        referential=self.referential)
@@ -156,11 +160,82 @@ def execution(self, context):
                    % att)
     if not osp.exists(dseg):
         dseg += '.gz'
-    context.system('AimsFileConvert', dseg, self.left_grey_white, '-t', 'S16')
-    context.system('AimsReplaceLevel', '-i', self.left_grey_white,
-                   '-o', self.split_brain,
-                   '-g', 2, '-g', 3, '-g', 41, '-g', 42,
-                   '-n', 2, '-n', 2, '-n', 1, '-n', 1)
+    use_all_labels = False
+    if osp.exists(dseg):
+        context.system('AimsFileConvert', dseg, self.left_grey_white,
+                       '-t', 'S16')
+        context.system('AimsReplaceLevel', '-i', self.left_grey_white,
+                       '-o', self.split_brain,
+                       '-g', 2, '-g', 3, '-g', 41, '-g', 42,
+                       '-n', 2, '-n', 2, '-n', 1, '-n', 1)
+    else:
+        # no ribbon image, look for tissue_labels instead
+        context.write('no "ribbon" image, using all_labels instead.')
+        use_all_labels = True
+        dseg = osp.join(
+            sessd, 'anat',
+            'sub-%(subject)s_ses-%(session)s_drawem_all_labels.nii'
+            % att)
+        if not osp.exists(dseg):
+            dseg += '.gz'
+        if not osp.exists(dseg):
+            raise FileNotFoundError(
+                'No ribbon / tissues segmentation image found')
+        labels = {
+            'lgm': [6, 8, 10, 12, 14, 16, 20, 22, 24, 26, 28, 30, 32, 34, 36,
+                    38, ],
+            'lwm': [2, 4, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 62,
+                    63, 65, 67, 69, 71, 73, 75, 77, 79, 81, 85, 86,
+                    148, 184, 185 ],
+            'rwm': [1, 3, 41, 43, 45, 47, 48, 49, 51, 53, 55, 57, 59, 61,
+                    64, 66, 68, 70, 72, 74, 76, 78, 80, 82, 85, 87, ],
+            'rgm': [5, 7, 9, 11, 13, 15, 21, 23, 25, 27, 29, 31, 33, 35, 37,
+                    39, ],
+        }
+        context.system('AimsFileConvert', dseg, self.left_grey_white,
+                       '-t', 'S16')
+        seg = aims.read(self.left_grey_white.fullPath())
+        aseg = aims.Volume(seg)
+        seg.fill(0)
+        repl = {l: 1 for l in labels['lgm']}
+        repl.update({l: 1 for l in labels['lwm']})
+        repl.update({l: 2 for l in labels['rgm']})
+        repl.update({l: 2 for l in labels['rwm']})
+        aims.Replacer_S16.replace(aseg, seg, repl)
+
+        # labels 48, 84, 85 are not lateralized. We need to close the left
+        # hemisphere and fill it
+        ch = aims.Volume(seg.shape, [2, 2, 2], dtype='S16')
+        ch.copyHeaderFrom(seg.header())
+        ch.fill(0)
+        ch[seg.np == 1] = 32767
+        mm = aimsalgo.MorphoGreyLevel_S16()
+        cl = mm.doClosing(ch, 10)
+        for label in (48, 85):
+            w = np.where(aseg.np == label)
+            w2 = np.where(cl[w] == 32767)
+            seg[tuple(y[w2] for y in w)] = 1
+            aseg[tuple(y[w2] for y in w)] = 100 + label
+            labels['lwm'].remove(label)
+
+        ch.fill(0)
+        ch[seg.np == 1] = 32767
+        cl = mm.doErosion(ch, 2)
+        ch.fill(0)
+        ch[seg.np == 2] = 32767
+        cl2 = mm.doErosion(ch, 2)
+        ch.fill(0)
+        ch[seg.np != 0] = 10
+        ch[cl.np != 0] = 1
+        ch[cl2.np != 0] = 2
+        del cl, cl2
+        fm = aims.FastMarching('6')
+        fm.doit(ch, [10], [1, 2])
+        seg = fm.voronoiVol()
+        del ch
+
+        aims.write(seg, self.split_brain.fullPath())
+
     tm.copyReferential(self.t1mri, self.split_brain)
 
     # extract normalization transformation and AC/PC file
@@ -169,6 +244,10 @@ def execution(self, context):
         sessd, 'xfm',
         'sub-%(subject)s_ses-%(session)s_from-serag40wk_to-T2w_mode-'
         'image.nii.gz' % att)
+    if not osp.exists(template_to_t2_fsl):
+        template_to_t2_fsl = osp.join(
+            sessd, 'anat', 'xfms',
+            'sub-%(subject)s_ses-%(session)s_std40w2anat.nii.gz' % att)
     if self.use_fsl:
         # if FSL is allowed/available, use fnirtfileutils to get a deformation
         # field without the affine part, and we will estimate the affine .trm
@@ -243,16 +322,30 @@ def execution(self, context):
     #context.runProcess(p)
 
     context.write('Import segmentations...')
-    context.system('AimsReplaceLevel', '-i', self.left_grey_white,
-                   '-o', self.left_grey_white,
-                   '-g', 2, '-g', 3, '-g', 41, '-g', 42,
-                   '-n', 200, '-n', 100, '-n', 0, '-n', 0)
+    if use_all_labels:
+        seg.fill(0)
+        repl = {l: 100 for l in labels['lgm']}
+        repl.update({l: 200 for l in labels['lwm']})
+        aims.Replacer_S16.replace(aseg, seg, repl)
+        aims.write(seg, self.left_grey_white.fullPath())
+        seg.fill(0)
+        repl = {l: 100 for l in labels['rgm']}
+        repl.update({l: 200 for l in labels['rwm']})
+        aims.Replacer_S16.replace(aseg, seg, repl)
+        aims.write(seg, self.right_grey_white.fullPath())
+
+    else:
+        context.system('AimsReplaceLevel', '-i', self.left_grey_white,
+                       '-o', self.left_grey_white,
+                       '-g', 2, '-g', 3, '-g', 41, '-g', 42,
+                       '-n', 200, '-n', 100, '-n', 0, '-n', 0)
+        context.system('AimsFileConvert', dseg, self.right_grey_white,
+                       '-t', 'S16')
+        context.system('AimsReplaceLevel', '-i', self.right_grey_white,
+                       '-o', self.right_grey_white,
+                       '-g', 2, '-g', 3, '-g', 41, '-g', 42,
+                       '-n', 0, '-n', 0, '-n', 200, '-n', 100)
     tm.copyReferential(self.t1mri, self.left_grey_white)
-    context.system('AimsFileConvert', dseg, self.right_grey_white, '-t', 'S16')
-    context.system('AimsReplaceLevel', '-i', self.right_grey_white,
-                   '-o', self.right_grey_white,
-                   '-g', 2, '-g', 3, '-g', 41, '-g', 42,
-                   '-n', 0, '-n', 0, '-n', 200, '-n', 100)
     tm.copyReferential(self.t1mri, self.right_grey_white)
 
     context.runProcess('NobiasHistoAnalysis',
