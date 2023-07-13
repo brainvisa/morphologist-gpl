@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<minf expander="minf_2.0">
+<d>
+  <d name="en">
+    <xhtml name="short">Import the outputs of the MCRIBS segmentation tool dedicated to babies T2 MRI images, and generate a Morphologist-compatible dataset.</xhtml>
+    <xhtml name="long">It supports dHCP processed images, and work is in progress to support outputs of the dHCP MCRIBS anatomical pipeline, which appaently produces results in a different shape.</xhtml>
+    <d name="parameters">
+    </d>
+  </d>
+</d>
+</minf>
