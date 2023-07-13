@@ -389,9 +389,16 @@ def execution(self, context):
                        histo=self.histo,
                        undersampling=self.histo_undersampling)
 
-    lhm = osp.join(sessd, 'anat',
-                   'sub-%(subject)s_ses-%(session)s_hemi-left_wm.surf.gii'
-                   % att)
+
+    to_try = ['anat/sub-%(subject)s_ses-%(session)s_hemi-left_wm.surf.gii',
+              'anat/Native/sub-%(subject)s_ses-%(session)s_left_white.surf.gii']
+    for lhm_s in to_try:
+        lhm = osp.join(sessd, lhm_s % att)
+        if osp.exists(lhm):
+            break
+    else:
+        raise FileNotFoundError('The input left white mesh cannot be found')
+    context.write('lhm:', lhm)
     # meshes seem to be in scanner-based ref
     context.system('AimsApplyTransform', '-i', lhm, '-o', self.left_white_mesh,
                    '-d', '%s.trmhdr?index=0&inv=1' % self.t1mri.fullPath())
@@ -400,9 +407,15 @@ def execution(self, context):
     aims.write(mesh, self.left_white_mesh.fullPath())
     tm.copyReferential(self.t1mri, self.left_white_mesh)
 
-    rhm = osp.join(sessd, 'anat',
-                   'sub-%(subject)s_ses-%(session)s_hemi-right_wm.surf.gii'
-                   % att)
+    to_try = ['anat/sub-%(subject)s_ses-%(session)s_hemi-right_wm.surf.gii',
+              'anat/Native/sub-%(subject)s_ses-%(session)s_right_white.surf.gii']
+    for rhm_s in to_try:
+        rhm = osp.join(sessd, rhm_s % att)
+        if osp.exists(rhm):
+            break
+    else:
+        raise FileNotFoundError('The input right white mesh cannot be found')
+    context.write('rhm:', rhm)
     context.system('AimsApplyTransform', '-i', rhm,
                    '-o', self.right_white_mesh,
                    '-d', '%s.trmhdr?index=0&inv=1' % self.t1mri.fullPath())
@@ -411,9 +424,14 @@ def execution(self, context):
     aims.write(mesh, self.right_white_mesh.fullPath())
     tm.copyReferential(self.t1mri, self.right_white_mesh)
 
-    lhm = osp.join(sessd, 'anat',
-                   'sub-%(subject)s_ses-%(session)s_hemi-left_pial.surf.gii'
-                   % att)
+    to_try = ['anat/sub-%(subject)s_ses-%(session)s_hemi-left_pial.surf.gii',
+              'anat/Native/sub-%(subject)s_ses-%(session)s_left_pial.surf.gii']
+    for lhm_s in to_try:
+        lhm = osp.join(sessd, lhm_s % att)
+        if osp.exists(lhm):
+            break
+    else:
+        raise FileNotFoundError('The input left pial mesh cannot be found')
     do_l_pial = True
     do_r_pial = True
     if osp.exists(lhm):
@@ -426,9 +444,14 @@ def execution(self, context):
         tm.copyReferential(self.t1mri, self.left_pial_mesh)
         do_l_pial = False
 
-    rhm = osp.join(sessd, 'anat',
-                   'sub-%(subject)s_ses-%(session)s_hemi-right_pial.surf.gii'
-                   % att)
+    to_try = ['anat/sub-%(subject)s_ses-%(session)s_hemi-right_pial.surf.gii',
+              'anat/Native/sub-%(subject)s_ses-%(session)s_right_pial.surf.gii']
+    for rhm_s in to_try:
+        rhm = osp.join(sessd, rhm_s % att) 
+        if osp.exists(rhm):
+            break
+    else:
+        raise FileNotFoundError('The input right pial mesh cannot be found')
     if osp.exists(rhm):
         context.system('AimsApplyTransform', '-i', rhm,
                       '-o', self.right_pial_mesh,
