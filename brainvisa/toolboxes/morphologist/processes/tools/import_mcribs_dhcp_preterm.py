@@ -191,14 +191,14 @@ def execution(self, context):
             raise FileNotFoundError(
                 'No ribbon / tissues segmentation image found')
         labels = {
-            'lgm': [6, 8, 10, 12, 14, 16, 20, 22, 24, 26, 28, 30, 32, 34, 36,
+            'rgm': [6, 8, 10, 12, 14, 16, 20, 22, 24, 26, 28, 30, 32, 34, 36,
                     38, ],
-            'lwm': [2, 4, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 62,
+            'rwm': [2, 4, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 62,
                     63, 65, 67, 69, 71, 73, 75, 77, 79, 81, 85, 86,
                     148, 184, 185 ],
-            'rwm': [1, 3, 41, 43, 45, 47, 48, 49, 51, 53, 55, 57, 59, 61,
+            'lwm': [1, 3, 41, 43, 45, 47, 48, 49, 51, 53, 55, 57, 59, 61,
                     64, 66, 68, 70, 72, 74, 76, 78, 80, 82, 85, 87, ],
-            'rgm': [5, 7, 9, 11, 13, 15, 21, 23, 25, 27, 29, 31, 33, 35, 37,
+            'lgm': [5, 7, 9, 11, 13, 15, 21, 23, 25, 27, 29, 31, 33, 35, 37,
                     39, ],
         }
         context.system('AimsFileConvert', dseg, self.left_grey_white,
@@ -206,10 +206,10 @@ def execution(self, context):
         seg = aims.read(self.left_grey_white.fullPath())
         aseg = aims.Volume(seg)
         seg.fill(0)
-        repl = {l: 1 for l in labels['lgm']}
-        repl.update({l: 1 for l in labels['lwm']})
-        repl.update({l: 2 for l in labels['rgm']})
-        repl.update({l: 2 for l in labels['rwm']})
+        repl = {l: 1 for l in labels['rgm']}
+        repl.update({l: 1 for l in labels['rwm']})
+        repl.update({l: 2 for l in labels['lgm']})
+        repl.update({l: 2 for l in labels['lwm']})
         aims.Replacer_S16.replace(aseg, seg, repl)
 
         # labels 48, 84, 85 are not lateralized. We need to close the left
@@ -225,7 +225,7 @@ def execution(self, context):
             w2 = np.where(cl[w] == 32767)
             seg[tuple(y[w2] for y in w)] = 1
             aseg[tuple(y[w2] for y in w)] = 100 + label
-            labels['lwm'].remove(label)
+            labels['rwm'].remove(label)
 
         ch.fill(0)
         ch[seg.np == 1] = 32767
