@@ -329,14 +329,14 @@ def execution(self, context):
     elif self.normalization_type == 'morphologist':
         # read .trm from a source morphologist file, and write it back
         t2_to_mni = aims.read(self.input_normalization.fullPath())
-        aims.write(self.mni_transform.fullPath())
+        aims.write(t2_to_mni, self.mni_transform.fullPath())
 
     elif self.normalization_type == 'in_source_image':
         # read it in an image header
         t2_to_mni = aims.read(
             '{}.trmhdr?target=Talairach-MNI template-SPM'.format(
                 self.normalization_source_image.fullPath()))
-        aims.write(self.mni_transform.fullPath())
+        aims.write(t2_to_mni, self.mni_transform.fullPath())
 
     else:
         # unknown normalization method
