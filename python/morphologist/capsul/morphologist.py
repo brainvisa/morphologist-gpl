@@ -3,6 +3,27 @@ import distutils.spawn
 import morphologist.capsul.axon.axonmorphologist
 from soma.controller import undefined, File
 
+# fix requirements
+from .axon.normalization_t1_spm12_reinit import normalization_t1_spm12_reinit
+from .axon.normalization_t1_spm8_reinit import normalization_t1_spm8_reinit
+
+
+normalization_t1_spm12_reinit.requirements = {
+    'spm': {
+        'version': '12'
+    }
+}
+
+normalization_t1_spm8_reinit.requirements = {
+    'spm': {
+        'version': '8'
+    }
+}
+
+# cleanup in order to leave only Morphologist as a Process class in the
+# module (facilitates naming)
+del normalization_t1_spm8_reinit, normalization_t1_spm12_reinit
+
 
 class Morphologist(
         morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
@@ -435,8 +456,8 @@ class Morphologist(
         self.on_attribute_change.add(self._check_renormalization,
                                      'select_Talairach')
         self.Normalization_select_Normalization_pipeline = 'NormalizeSPM'
-        # enable values dispatch
-        self.enable_parameter_links = True
+        ## enable values dispatch
+        # self.enable_parameter_links = True
 
         # default settings
         self.select_Talairach = 'Normalization'

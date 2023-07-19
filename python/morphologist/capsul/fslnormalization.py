@@ -1,6 +1,15 @@
 
-from morphologist.capsul.axon.fslnormalizationpipeline \
-    import FSLnormalizationPipeline
+from .axon.fslnormalizationpipeline import FSLnormalizationPipeline
+from .axon.normalization_fsl_reinit import Normalization_FSL_reinit
+
+
+Normalization_FSL_reinit.requirements = {
+    'fsl': 'any'
+}
+
+# cleanup in order to leave only Morphologist as a Process class in the
+# module (facilitates naming)
+del Normalization_FSL_reinit
 
 
 class FSLNormalization(FSLnormalizationPipeline):
@@ -42,6 +51,3 @@ class FSLNormalization(FSLnormalizationPipeline):
 
     def change_flip(self, value):
         self.nodes_activation.ReorientAnatomy = value
-
-    def requirements(self):
-        return {'fsl': 'any'}
