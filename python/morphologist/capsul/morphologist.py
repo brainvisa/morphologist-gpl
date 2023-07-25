@@ -164,6 +164,8 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
         self.remove_link(
             'Renorm.commissure_coordinates->Renorm_commissure_coordinates')
         self.remove_trait('Renorm_commissure_coordinates')
+        self.remove_link(
+            'Renorm.talairach_transformation->Report.talairach_transform')
 
         # why does this one exist ? FIXME
         # self.remove_link('PrepareSubject.commissure_coordinates->Renorm_TalairachFromNormalization_commissure_coordinates')
@@ -172,6 +174,8 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
             'select_renormalization_transform.Talairach_transform->CorticalFoldsGraph.talairach_transform')
         self.add_link(
             'select_renormalization_transform.Talairach_transform->CorticalFoldsGraph_1.talairach_transform')
+        self.add_link(
+            'select_renormalization_transform.Talairach_transform->Report.talairach_transform')
 
         self.remove_link(
             'PrepareSubject.commissure_coordinates->SplitBrain.commissure_coordinates')
