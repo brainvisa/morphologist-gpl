@@ -4,6 +4,7 @@ from capsul.api import Capsul
 from soma.qt_gui.qt_backend import Qt
 from capsul.schemas.brainvisa import (declare_morpho_schemas,
                                       morphologist_datasets)
+from capsul.dataset import ProcessMetadata
 import time
 
 
@@ -13,8 +14,8 @@ show_pipeline = False
 
 real_morpho_module = 'morphologist.capsul'
 fake_morpho_module = 'capsul.pipeline.test.fake_morphologist'
-#morpho_module = fake_morpho_module
-morpho_module = real_morpho_module
+morpho_module = fake_morpho_module
+#morpho_module = real_morpho_module
 
 
 def get_shared_path():
@@ -144,6 +145,7 @@ metadata = ProcessMetadata(pipeline, execution_context,
 metadata.bids = iter_meta_bids
 t0 = time.time()
 metadata.generate_paths(pipeline)
+pipeline.resolve_paths(execution_context)
 print('completion for', len(paths), ':', time.time() - t0, 's.')
 
 if show_fom_gui and Qt.QApplication.instance() is not None:
