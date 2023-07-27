@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 
 from capsul.api import Capsul
-import json
 from soma.qt_gui.qt_backend import Qt
-from capsul.dataset import ProcessMetadata, BrainVISASchema
 from capsul.schemas.brainvisa import (declare_morpho_schemas,
                                       morphologist_datasets)
+import time
 
 
 show_links_debugger = False
@@ -133,7 +132,7 @@ paths = [
     'sub-calimero_ses-m10_T1w.nii.gz',
     '/tmp/morpho-bids/rawdata/sub-calimero/ses-m18/anat/'
     'sub-calimero_ses-m18_T1w.nii.gz',
-]
+] * 100
 iter_meta_bids = []
 
 for path in paths:
@@ -143,7 +142,9 @@ for path in paths:
 metadata = ProcessMetadata(pipeline, execution_context,
                            datasets=morphologist_datasets, debug=False)
 metadata.bids = iter_meta_bids
+t0 = time.time()
 metadata.generate_paths(pipeline)
+print('completion for', len(paths), ':', time.time() - t0, 's.')
 
 if show_fom_gui and Qt.QApplication.instance() is not None:
     pcvi = AttributedProcessWidget(pipeline, enable_attr_from_filename=True,
