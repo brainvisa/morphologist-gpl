@@ -60,15 +60,15 @@ class BrainOrientation(Pipeline):
         self.add_link(
             'Normalization.reoriented_t1mri->TalairachFromNormalization.t1mri')
         self.add_link(
-            'TalairachFromNormalization.Talairach_transform->select_AC_PC_Or_Normalization.Normalization_switch_talairach_transformation')
+            'StandardACPC.commissure_coordinates->select_AC_PC_Or_Normalization.StandardACPC_switch_commissure_coordinates')
         self.add_link(
             'Normalization.reoriented_t1mri->select_AC_PC_Or_Normalization.Normalization_switch_reoriented_t1mri')
         self.add_link(
             'StandardACPC.reoriented_t1mri->select_AC_PC_Or_Normalization.StandardACPC_switch_reoriented_t1mri')
         self.add_link(
-            'StandardACPC.commissure_coordinates->select_AC_PC_Or_Normalization.StandardACPC_switch_commissure_coordinates')
-        self.add_link(
             'TalairachFromNormalization.commissure_coordinates->select_AC_PC_Or_Normalization.Normalization_switch_commissure_coordinates')
+        self.add_link(
+            'TalairachFromNormalization.Talairach_transform->select_AC_PC_Or_Normalization.Normalization_switch_talairach_transformation')
 
         # initialization section
         if 'Normalization' in self.nodes:

@@ -50,9 +50,9 @@ class SulciLabelling(Pipeline):
         self.add_link(
             'SPAM_recognition09.output_graph->select_Sulci_Recognition.SPAM_recognition09_switch_output_graph')
         self.add_link(
-            'recognition2000.output_graph->select_Sulci_Recognition.recognition2000_switch_output_graph')
-        self.add_link(
             'CNN_recognition19.labeled_graph->select_Sulci_Recognition.CNN_recognition19_switch_output_graph')
+        self.add_link(
+            'recognition2000.output_graph->select_Sulci_Recognition.recognition2000_switch_output_graph')
 
         # initialization section
         if 'CNN_recognition19' in self.nodes:

@@ -23,14 +23,13 @@ class normalization_t1_spm8_reinit(Process):
         self.add_field('init_translation_origin', Literal[0, 1])
 
         # initialization section
-        self.anatomical_template = '/volatile/local/spm12-standalone/spm12_mcr/spm12/spm12/toolbox/OldNorm/T1.nii'
         self.voxel_size = '[1 1 1]'
         self.cutoff_option = 25
         self.nbiteration = 16
         self.allow_retry_initialization = True
         self.init_translation_origin = 0
 
-    def execution(self, context=None):
+    def execute(self, context=None):
         from brainvisa import axon
         from brainvisa.configuration import neuroConfig
         import brainvisa.processes
@@ -47,9 +46,9 @@ class normalization_t1_spm8_reinit(Process):
             value = getattr(self, name)
             if value is undefined:
                 continue
-            if is_path(field) and value != '':
+            if field.path_type and value != '':
                 kwargs[name] = value
-            elif is_list(field):
+            elif field.is_list():
                 kwargs[name] = list(value)
             else:
                 kwargs[name] = value

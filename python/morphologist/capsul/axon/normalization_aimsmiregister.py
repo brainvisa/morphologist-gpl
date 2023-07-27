@@ -29,7 +29,7 @@ class normalization_aimsmiregister(Process):
         self.mni_to_acpc = '/casa/host/build/share/brainvisa-share-5.2/transformation/talairach_TO_spm_template_novoxels.trm'
         self.smoothing = 1.0
 
-    def execution(self, context=None):
+    def execute(self, context=None):
         from brainvisa import axon
         from brainvisa.configuration import neuroConfig
         import brainvisa.processes
@@ -46,9 +46,9 @@ class normalization_aimsmiregister(Process):
             value = getattr(self, name)
             if value is undefined:
                 continue
-            if is_path(field) and value != '':
+            if field.path_type and value != '':
                 kwargs[name] = value
-            elif is_list(field):
+            elif field.is_list():
                 kwargs[name] = list(value)
             else:
                 kwargs[name] = value

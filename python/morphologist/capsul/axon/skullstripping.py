@@ -15,7 +15,7 @@ class skullstripping(Process):
         self.add_field('skull_stripped', File, write=True, allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.gif', '.ima', '.dim',
                        '.jpg', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'])
 
-    def execution(self, context=None):
+    def execute(self, context=None):
         from brainvisa import axon
         from brainvisa.configuration import neuroConfig
         import brainvisa.processes
@@ -32,9 +32,9 @@ class skullstripping(Process):
             value = getattr(self, name)
             if value is undefined:
                 continue
-            if is_path(field) and value != '':
+            if field.path_type and value != '':
                 kwargs[name] = value
-            elif is_list(field):
+            elif field.is_list():
                 kwargs[name] = list(value)
             else:
                 kwargs[name] = value

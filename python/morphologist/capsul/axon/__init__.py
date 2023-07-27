@@ -7,7 +7,7 @@
 # THEN a few edits are needed:
 # in t1biascorrection.py:
 # - self.add_field('field' -> self.add_field('b_field'
-# - in execution():
+# - in execute():
 #   add lines after if value is undefined: continue
 #             # patch forbidden field name "field"
 #             if name == 'b_field':

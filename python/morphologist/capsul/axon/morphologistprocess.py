@@ -198,7 +198,7 @@ class morphologistProcess(Process):
         self.right_local_model = '/casa/host/build/share/brainvisa-share-5.2/models/models_2008/descriptive_models/segments/locally_from_global_registred_spam_right/spam_distribs.dat'
         self.sulci_file = '/casa/host/build/share/brainvisa-share-5.2/nomenclature/translation/sulci_default_list.json'
 
-    def execution(self, context=None):
+    def execute(self, context=None):
         from brainvisa import axon
         from brainvisa.configuration import neuroConfig
         import brainvisa.processes
@@ -215,9 +215,9 @@ class morphologistProcess(Process):
             value = getattr(self, name)
             if value is undefined:
                 continue
-            if is_path(field) and value != '':
+            if field.path_type and value != '':
                 kwargs[name] = value
-            elif is_list(field):
+            elif field.is_list():
                 kwargs[name] = list(value)
             else:
                 kwargs[name] = value

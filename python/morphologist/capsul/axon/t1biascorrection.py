@@ -70,7 +70,7 @@ class T1BiasCorrection(Process):
         self.modality = 'T1'
         self.use_existing_ridges = False
 
-    def execution(self, context=None):
+    def execute(self, context=None):
         from brainvisa import axon
         from brainvisa.configuration import neuroConfig
         import brainvisa.processes
@@ -90,9 +90,9 @@ class T1BiasCorrection(Process):
             # patch forbidden field name "field"
             if name == 'b_field':
                 name = 'field'
-            if is_path(field) and value != '':
+            if field.path_type and value != '':
                 kwargs[name] = value
-            elif is_list(field):
+            elif field.is_list():
                 kwargs[name] = list(value)
             else:
                 kwargs[name] = value

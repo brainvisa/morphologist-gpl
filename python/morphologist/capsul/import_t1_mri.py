@@ -24,6 +24,6 @@ class ImportT1Mri(Process):
         self.add_field('referential', File,
             allowed_extensions=['.referential'], output=True, optional=True)
 
-    def execution(self, context=None):
+    def execute(self, context=None):
         from brainvisa.tools.data_management.image_importation import Importer
         Importer.import_t1mri(self.input, self.output, self.referential)

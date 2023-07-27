@@ -35,7 +35,7 @@ class morpho_report(Process):
         self.add_field('report', File, write=True, allowed_extensions=['.pdf'])
         self.add_field('subject', str)
 
-    def execution(self, context=None):
+    def execute(self, context=None):
         from brainvisa import axon
         from brainvisa.configuration import neuroConfig
         import brainvisa.processes
@@ -52,9 +52,9 @@ class morpho_report(Process):
             value = getattr(self, name)
             if value is undefined:
                 continue
-            if is_path(field) and value != '':
+            if field.path_type and value != '':
                 kwargs[name] = value
-            elif is_list(field):
+            elif field.is_list():
                 kwargs[name] = list(value)
             else:
                 kwargs[name] = value
