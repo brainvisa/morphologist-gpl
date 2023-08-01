@@ -7,22 +7,25 @@ class ImportT1Mri(Process):
 
     def __init__(self, **kwargs):
         super(ImportT1Mri, self).__init__(**kwargs)
-        self.add_field('input', File,
-            allowed_extensions=['.nii.gz', '.img', '.hdr', '.v', '.i', '.mnc',
-                                '.mnc.gz', '.nii', '.jpg', '.gif', '.png',
-                                '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm',
-                                '.xpm', '.tiff', '.tif', '.ima', '.dim',
-                                '.vimg', '.vinfo', '.vhdr', ''],
+        self.add_field(
+            'input', File,
+            extensions=['.nii.gz', '.img', '.hdr', '.v', '.i', '.mnc',
+                        '.mnc.gz', '.nii', '.jpg', '.gif', '.png',
+                        '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm',
+                        '.xpm', '.tiff', '.tif', '.ima', '.dim',
+                        '.vimg', '.vinfo', '.vhdr', ''],
             output=False)
-        self.add_field('output', File,
-            allowed_extensions=['.nii.gz', '.img', '.hdr', '.v', '.i', '.mnc',
-                                '.mnc.gz', '.nii', '.jpg', '.gif', '.png',
-                                '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm',
-                                '.xpm', '.tiff', '.tif', '.ima', '.dim',
-                                '.vimg', '.vinfo', '.vhdr', ''],
+        self.add_field(
+            'output', File,
+            extensions=['.nii.gz', '.img', '.hdr', '.v', '.i', '.mnc',
+                        '.mnc.gz', '.nii', '.jpg', '.gif', '.png',
+                        '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm',
+                        '.xpm', '.tiff', '.tif', '.ima', '.dim',
+                        '.vimg', '.vinfo', '.vhdr', ''],
             output=True)
-        self.add_field('referential', File,
-            allowed_extensions=['.referential'], output=True, optional=True)
+        self.add_field(
+            'referential', File,
+            extensions=['.referential'], output=True, optional=True)
 
     def execute(self, context=None):
         from brainvisa.tools.data_management.image_importation import Importer

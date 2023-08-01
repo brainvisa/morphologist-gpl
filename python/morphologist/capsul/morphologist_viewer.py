@@ -1,66 +1,78 @@
-from __future__ import print_function
 
-from __future__ import absolute_import
-import traits.api as traits
 import anatomist.capsul as acap
 import math
 from six.moves import zip
+from soma.controller import File, field
 
 
 class MorphologistView(acap.AnatomistMultipleViewsProcess):
 
-    t1mri = traits.File(
-        allowed_extensions=['.nii.gz', '.mnc.gz', '.nii', '.ima', '.dim',
-                            '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.dcm',
-                            '.mnc', ''])
-    nobias = traits.File(
-        allowed_extensions=['.nii.gz', '.mnc.gz', '.nii', '.ima', '.dim',
-                            '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.dcm',
-                            '.mnc', ''],
+    t1mri: File = field(
+        type_=File,
+        extensions=['.nii.gz', '.mnc.gz', '.nii', '.ima', '.dim',
+                    '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.dcm',
+                    '.mnc', ''])
+    nobias: File = field(
+        type_=File,
+        extensions=['.nii.gz', '.mnc.gz', '.nii', '.ima', '.dim',
+                    '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.dcm', '.mnc',
+                    ''],
         optional=True)
-    mask = traits.File(
-        allowed_extensions=['.nii.gz', '.mnc.gz', '.nii', '.ima', '.dim',
-                            '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.dcm',
-                            '.mnc', ''],
+    mask: File = field(
+        type_=File,
+        extensions=['.nii.gz', '.mnc.gz', '.nii', '.ima', '.dim',
+                    '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.dcm', '.mnc',
+                    ''],
         optional=True)
-    split = traits.File(
-        allowed_extensions=['.nii.gz', '.mnc.gz', '.nii', '.ima', '.dim',
-                            '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.dcm',
-                            '.mnc', ''],
+    split: File = field(
+        type_=File,
+        extensions=['.nii.gz', '.mnc.gz', '.nii', '.ima', '.dim',
+                    '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.dcm',
+                    '.mnc', ''],
         optional=True)
-    gw_classif_l = traits.File(
-        allowed_extensions=['.nii.gz', '.mnc.gz', '.nii', '.ima', '.dim',
-                            '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.dcm',
-                            '.mnc', ''],
+    gw_classif_l: File = field(
+        type_=File,
+        extensions=['.nii.gz', '.mnc.gz', '.nii', '.ima', '.dim',
+                    '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.dcm',
+                    '.mnc', ''],
         optional=True)
-    gw_classif_r = traits.File(
-        allowed_extensions=['.nii.gz', '.mnc.gz', '.nii', '.ima', '.dim',
-                            '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.dcm',
-                            '.mnc', ''],
+    gw_classif_r: File = field(
+        type_=File,
+        extensions=['.nii.gz', '.mnc.gz', '.nii', '.ima', '.dim',
+                    '.vimg', '.vinfo', '.vhdr', '.img', '.hdr', '.dcm',
+                    '.mnc', ''],
         optional=True)
-    wmesh_l = traits.File(
-        allowed_extensions=['.gii', '.mesh', '.obj', '.tri'],
+    wmesh_l: File = field(
+        type_=File,
+        extensions=['.gii', '.mesh', '.obj', '.tri'],
         optional=True)
-    wmesh_r = traits.File(
-        allowed_extensions=['.gii', '.mesh', '.obj', '.tri'],
+    wmesh_r: File = field(
+        type_=File,
+        extensions=['.gii', '.mesh', '.obj', '.tri'],
         optional=True)
-    gmesh_l = traits.File(
-        allowed_extensions=['.gii', '.mesh', '.obj', '.tri'],
+    gmesh_l: File = field(
+        type_=File,
+        extensions=['.gii', '.mesh', '.obj', '.tri'],
         optional=True)
-    gmesh_r = traits.File(
-        allowed_extensions=['.gii', '.mesh', '.obj', '.tri'],
+    gmesh_r: File = field(
+        type_=File,
+        extensions=['.gii', '.mesh', '.obj', '.tri'],
         optional=True)
-    sulci_l = traits.File(
-        allowed_extensions=['.arg'],
+    sulci_l: File = field(
+        type_=File,
+        extensions=['.arg'],
         optional=True)
-    sulci_r = traits.File(
-        allowed_extensions=['.arg'],
+    sulci_r: File = field(
+        type_=File,
+        extensions=['.arg'],
         optional=True)
-    sulci_labelled_l = traits.File(
-        allowed_extensions=['.arg'],
+    sulci_labelled_l: File = field(
+        type_=File,
+        extensions=['.arg'],
         optional=True)
-    sulci_labelled_r = traits.File(
-        allowed_extensions=['.arg'],
+    sulci_labelled_r: File = field(
+        type_=File,
+        extensions=['.arg'],
         optional=True)
 
     def create_anatomist_view(self):

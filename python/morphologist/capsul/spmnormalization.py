@@ -32,7 +32,7 @@ class SPMNormalization(SPMnormalizationPipeline):
         self.nodes_activation.ReorientAnatomy = True
         self.on_attribute_change.add(self.change_flip,
                                      'allow_flip_initial_MRI')
-        self.nodes['converter'].field('write').allowed_extensions = ['.nii']
+        self.nodes['converter'].field('write').extensions = ['.nii']
         self.nodes['converter'].field('write').optional = False
         self.nodes['converter'].field('removeSource').optional = True
         self.nodes['converter'].field('ascii').optional = True

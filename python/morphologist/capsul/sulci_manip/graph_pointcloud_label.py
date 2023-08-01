@@ -1,10 +1,8 @@
 
 # -*- coding: utf-8
 
-from __future__ import absolute_import
-from __future__ import print_function
 from capsul.api import Process
-import traits.api as traits
+from soma.controller import File, field
 
 
 class GraphPointCloudLabel(Process):
@@ -12,27 +10,28 @@ class GraphPointCloudLabel(Process):
     (from Léonie Borne's automatic labelings).
     '''
 
-    graph = traits.File(output=False, allowed_extensions=['.arg'],
-                        desc='cortical folds graph')
-    voxel_labels = traits.File(
-        output=False, allowed_extensions=['.csv'],
-        desc='voxel-wise CSV data. Row should include "point_x", "point_y", '
+    graph: File = field(type_=File, extensions=['.arg'],
+                        doc='cortical folds graph')
+    voxel_labels: File = field(
+        type_=File,
+        extensions=['.csv'],
+        doc='voxel-wise CSV data. Row should include "point_x", "point_y", '
         '"point_z" for voxels coordinates *in Talairach space* (they are '
         'transformed back into native space during the process), and '
         '"after_cutting" for labels.')
-    roots = traits.File(
-        output=False,
-        allowed_extensions=['.nii.gz', '.img', '.hdr', '.v', '.i', '.mnc',
-                            '.mnc.gz', '.nii', '.jpg', '.gif', '.png',
-                            '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm',
-                            '.xpm', '.tiff', '.tif', '.ima', '.dim',
-                            '.vimg', '.vinfo', '.vhdr', ''],
-        desc='folds skeleton roots regions, from Morphologist pipeline')
-    output_graph = traits.File(
-        output=True, allowed_extensions=['.arg'],
-        desc='output split and relabelled sulci graph')
+    roots: File = field(
+        type_=File,
+        extensions=['.nii.gz', '.img', '.hdr', '.v', '.i', '.mnc',
+                    '.mnc.gz', '.nii', '.jpg', '.gif', '.png',
+                    '.mng', '.bmp', '.pbm', '.pgm', '.ppm', '.xbm',
+                    '.xpm', '.tiff', '.tif', '.ima', '.dim',
+                    '.vimg', '.vinfo', '.vhdr', ''],
+        doc='folds skeleton roots regions, from Morphologist pipeline')
+    output_graph: File = field(
+        type_=File, extensions=['.arg'],
+        doc='output split and relabelled sulci graph')
 
-    def _run_process(self):
+    def execute(self):
         from soma import aims
         from soma.aimsalgo.sulci import graph_pointcloud
         import pandas
