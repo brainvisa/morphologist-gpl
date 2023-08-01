@@ -30,7 +30,7 @@ class SPMnormalizationPipeline(Pipeline):
 
         # switches section
         self.add_switch('NormalizeSPM', ['normalization_t1_spm12_reinit', 'normalization_t1_spm8_reinit'], ['spm_transformation', 'normalized_t1mri'], output_types=[
-                        field(type_=File, write=True, allowed_extensions=['.mat']), field(type_=File, write=True, allowed_extensions=['.nii', '.img', '.hdr'])])
+                        field(type_=File, write=True, extensions=['.mat']), field(type_=File, write=True, extensions=['.nii', '.img', '.hdr'])])
 
         # exports section
         # export input parameter
@@ -90,16 +90,15 @@ class SPMnormalizationPipeline(Pipeline):
         self.add_link(
             'ConvertSPMnormalizationToAIMS.write->ReorientAnatomy.transformation')
         self.add_link(
-            'normalization_t1_spm12_reinit.transformations_informations->NormalizeSPM.normalization_t1_spm12_reinit_switch_spm_transformation')
-        self.add_link(
             'normalization_t1_spm12_reinit.normalized_anatomy_data->NormalizeSPM.normalization_t1_spm12_reinit_switch_normalized_t1mri')
         self.add_link(
-            'normalization_t1_spm8_reinit.transformations_informations->NormalizeSPM.normalization_t1_spm8_reinit_switch_spm_transformation')
+            'normalization_t1_spm12_reinit.transformations_informations->NormalizeSPM.normalization_t1_spm12_reinit_switch_spm_transformation')
         self.add_link(
             'normalization_t1_spm8_reinit.normalized_anatomy_data->NormalizeSPM.normalization_t1_spm8_reinit_switch_normalized_t1mri')
+        self.add_link(
+            'normalization_t1_spm8_reinit.transformations_informations->NormalizeSPM.normalization_t1_spm8_reinit_switch_spm_transformation')
 
         # initialization section
-        self.nodes['ReorientAnatomy'].allow_flip_initial_MRI = False
         self.nodes_activation.ReorientAnatomy = False
         if 'normalization_t1_spm12_reinit' in self.nodes:
             self.dispatch_value(self, 'NormalizeSPM',

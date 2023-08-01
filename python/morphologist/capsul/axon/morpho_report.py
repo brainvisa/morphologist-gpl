@@ -8,31 +8,31 @@ from capsul.api import Process
 class morpho_report(Process):
     def __init__(self, **kwargs):
         super(morpho_report, self).__init__(**kwargs)
-        self.add_field('t1mri', File, read=True, allowed_extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu',
+        self.add_field('t1mri', File, read=True, extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu',
                        '.jpg', '.scn', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz'])
-        self.add_field('left_grey_white', File, read=True, allowed_extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu',
-                       '.jpg', '.scn', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz'], optional=True)
-        self.add_field('right_grey_white', File, read=True, allowed_extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu',
-                       '.jpg', '.scn', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz'], optional=True)
-        self.add_field('left_gm_mesh', File, read=True, allowed_extensions=[
+        self.add_field('left_grey_white', File, read=True, extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg',
+                       '.scn', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz'], optional=True)
+        self.add_field('right_grey_white', File, read=True, extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg',
+                       '.scn', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz'], optional=True)
+        self.add_field('left_gm_mesh', File, read=True, extensions=[
                        '.gii', '.mesh', '.obj', '.ply', '.tri'], optional=True)
-        self.add_field('right_gm_mesh', File, read=True, allowed_extensions=[
+        self.add_field('right_gm_mesh', File, read=True, extensions=[
                        '.gii', '.mesh', '.obj', '.ply', '.tri'], optional=True)
-        self.add_field('left_wm_mesh', File, read=True, allowed_extensions=[
+        self.add_field('left_wm_mesh', File, read=True, extensions=[
                        '.gii', '.mesh', '.obj', '.ply', '.tri'], optional=True)
-        self.add_field('right_wm_mesh', File, read=True, allowed_extensions=[
+        self.add_field('right_wm_mesh', File, read=True, extensions=[
                        '.gii', '.mesh', '.obj', '.ply', '.tri'], optional=True)
         self.add_field('left_labelled_graph', File, read=True,
-                       allowed_extensions=['.arg', '.data'], optional=True)
+                       extensions=['.arg', '.data'], optional=True)
         self.add_field('right_labelled_graph', File, read=True,
-                       allowed_extensions=['.arg', '.data'], optional=True)
+                       extensions=['.arg', '.data'], optional=True)
         self.add_field('talairach_transform', File, read=True,
-                       allowed_extensions=['.trm'], optional=True)
+                       extensions=['.trm'], optional=True)
         self.add_field('brain_volumes_file', File, read=True,
-                       allowed_extensions=['.csv'], optional=True)
+                       extensions=['.csv'], optional=True)
         self.add_field('normative_brain_stats', File, read=True,
-                       allowed_extensions=['.json'], optional=True)
-        self.add_field('report', File, write=True, allowed_extensions=['.pdf'])
+                       extensions=['.json'], optional=True)
+        self.add_field('report', File, write=True, extensions=['.pdf'])
         self.add_field('subject', str)
 
     def execute(self, context=None):

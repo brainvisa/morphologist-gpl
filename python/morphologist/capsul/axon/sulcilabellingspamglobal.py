@@ -9,24 +9,23 @@ class SulciLabellingSPAMGlobal(Process):
     def __init__(self, **kwargs):
         super(SulciLabellingSPAMGlobal, self).__init__(**kwargs)
         self.add_field('data_graph', File, read=True,
-                       allowed_extensions=['.arg', '.data'])
+                       extensions=['.arg', '.data'])
         self.add_field('output_graph', File, write=True,
-                       allowed_extensions=['.arg', '.data'])
+                       extensions=['.arg', '.data'])
         self.add_field(
             'model_type', Literal['Talairach', 'Global registration'])
-        self.add_field('model', File, read=True, allowed_extensions=['.dat'])
+        self.add_field('model', File, read=True, extensions=['.dat'])
         self.add_field('posterior_probabilities', File,
-                       write=True, allowed_extensions=['.csv'])
-        self.add_field('labels_translation_map', File, read=True,
-                       allowed_extensions=['.trl', '.def'])
-        self.add_field('labels_priors', File, read=True,
-                       allowed_extensions=['.dat'])
+                       write=True, extensions=['.csv'])
+        self.add_field('labels_translation_map', File,
+                       read=True, extensions=['.trl', '.def'])
+        self.add_field('labels_priors', File, read=True, extensions=['.dat'])
         self.add_field('output_transformation', File, write=True,
-                       allowed_extensions=['.trm'], optional=True)
+                       extensions=['.trm'], optional=True)
         self.add_field('initial_transformation', File, read=True,
-                       allowed_extensions=['.trm'], optional=True)
+                       extensions=['.trm'], optional=True)
         self.add_field('output_t1_to_global_transformation', File,
-                       write=True, allowed_extensions=['.trm'], optional=True)
+                       write=True, extensions=['.trm'], optional=True)
 
         # initialization section
         self.model_type = 'Global registration'

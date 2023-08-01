@@ -9,30 +9,28 @@ class SulciLabellingSPAMLocal(Process):
     def __init__(self, **kwargs):
         super(SulciLabellingSPAMLocal, self).__init__(**kwargs)
         self.add_field('data_graph', File, read=True,
-                       allowed_extensions=['.arg', '.data'])
+                       extensions=['.arg', '.data'])
         self.add_field('output_graph', File, write=True,
-                       allowed_extensions=['.arg', '.data'])
-        self.add_field('model', File, read=True, allowed_extensions=['.dat'])
+                       extensions=['.arg', '.data'])
+        self.add_field('model', File, read=True, extensions=['.dat'])
         self.add_field('posterior_probabilities', File,
-                       write=True, allowed_extensions=['.csv'])
-        self.add_field('labels_translation_map', File, read=True,
-                       allowed_extensions=['.trl', '.def'])
-        self.add_field('labels_priors', File, read=True,
-                       allowed_extensions=['.dat'])
-        self.add_field('local_referentials', File, read=True,
-                       allowed_extensions=['.dat'])
-        self.add_field('direction_priors', File, read=True,
-                       allowed_extensions=['.dat'])
-        self.add_field('angle_priors', File, read=True,
-                       allowed_extensions=['.dat'])
-        self.add_field('translation_priors', File, read=True,
-                       allowed_extensions=['.dat'])
+                       write=True, extensions=['.csv'])
+        self.add_field('labels_translation_map', File,
+                       read=True, extensions=['.trl', '.def'])
+        self.add_field('labels_priors', File, read=True, extensions=['.dat'])
+        self.add_field('local_referentials', File,
+                       read=True, extensions=['.dat'])
+        self.add_field('direction_priors', File,
+                       read=True, extensions=['.dat'])
+        self.add_field('angle_priors', File, read=True, extensions=['.dat'])
+        self.add_field('translation_priors', File,
+                       read=True, extensions=['.dat'])
         self.add_field('output_local_transformations', Directory,
-                       write=True, allowed_extensions=[''], optional=True)
+                       write=True, extensions=[''], optional=True)
         self.add_field('initial_transformation', File, read=True,
-                       allowed_extensions=['.trm'], optional=True)
+                       extensions=['.trm'], optional=True)
         self.add_field('global_transformation', File, read=True,
-                       allowed_extensions=['.trm'], optional=True)
+                       extensions=['.trm'], optional=True)
 
         # initialization section
         self.labels_translation_map = '/casa/host/build/share/brainvisa-share-5.2/nomenclature/translation/sulci_model_2008.trl'

@@ -28,7 +28,7 @@ class SulciLabellingSPAM(Pipeline):
 
         # switches section
         self.add_switch('local_or_markovian', ['local_recognition', 'markovian_recognition'], [
-                        'output_graph'], output_types=[field(type_=File, write=True, allowed_extensions=['.arg', '.data'])])
+                        'output_graph'], output_types=[field(type_=File, write=True, extensions=['.arg', '.data'])])
 
         # exports section
         # export input parameter
@@ -78,9 +78,9 @@ class SulciLabellingSPAM(Pipeline):
         self.add_link(
             'global_recognition_initial_transformation->local_recognition.initial_transformation')
         self.add_link(
-            'local_recognition.output_graph->local_or_markovian.local_recognition_switch_output_graph')
-        self.add_link(
             'markovian_recognition.output_graph->local_or_markovian.markovian_recognition_switch_output_graph')
+        self.add_link(
+            'local_recognition.output_graph->local_or_markovian.local_recognition_switch_output_graph')
 
         # initialization section
         if 'local_recognition' in self.nodes:

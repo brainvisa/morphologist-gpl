@@ -8,12 +8,12 @@ from capsul.api import Process
 class FSLnormalizationToAims(Process):
     def __init__(self, **kwargs):
         super(FSLnormalizationToAims, self).__init__(**kwargs)
-        self.add_field('read', File, read=True, allowed_extensions=['.mat'])
-        self.add_field('source_volume', File, read=True, allowed_extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms',
-                       '.vmu', '.jpg', '.scn', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz'])
-        self.add_field('write', File, write=True, allowed_extensions=['.trm'])
+        self.add_field('read', File, read=True, extensions=['.mat'])
+        self.add_field('source_volume', File, read=True, extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu',
+                       '.jpg', '.scn', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz'])
+        self.add_field('write', File, write=True, extensions=['.trm'])
         self.add_field('registered_volume', File, read=True,
-                       allowed_extensions=['.nii', '.nii.gz'])
+                       extensions=['.nii', '.nii.gz'])
         self.add_field('standard_template', Literal[0, 1, 2])
         self.add_field('set_transformation_in_source_volume', bool)
 

@@ -8,18 +8,17 @@ from capsul.api import Process
 class ReorientAnatomy(Process):
     def __init__(self, **kwargs):
         super(ReorientAnatomy, self).__init__(**kwargs)
-        self.add_field('t1mri', File, read=True, allowed_extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu',
+        self.add_field('t1mri', File, read=True, extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu',
                        '.jpg', '.scn', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz'])
-        self.add_field('output_t1mri', File, write=True, allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.gif', '.ima', '.dim',
-                       '.jpg', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'])
-        self.add_field('transformation', File, read=True,
-                       allowed_extensions=['.trm'])
+        self.add_field('output_t1mri', File, write=True, extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.gif', '.ima', '.dim', '.jpg',
+                       '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'])
+        self.add_field('transformation', File, read=True, extensions=['.trm'])
         self.add_field('output_transformation', File,
-                       write=True, allowed_extensions=['.trm'])
-        self.add_field('commissures_coordinates', File, read=True,
-                       allowed_extensions=['.APC'], optional=True)
+                       write=True, extensions=['.trm'])
+        self.add_field('commissures_coordinates', File,
+                       read=True, extensions=['.APC'], optional=True)
         self.add_field('output_commissures_coordinates', File,
-                       write=True, allowed_extensions=['.APC'], optional=True)
+                       write=True, extensions=['.APC'], optional=True)
         self.add_field('allow_flip_initial_MRI', bool)
 
         # initialization section

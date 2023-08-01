@@ -30,7 +30,7 @@ class SulciLabelling(Pipeline):
 
         # switches section
         self.add_switch('select_Sulci_Recognition', ['recognition2000', 'SPAM_recognition09', 'CNN_recognition19'], [
-                        'output_graph'], output_types=[field(type_=File, write=True, allowed_extensions=['.arg', '.data'])])
+                        'output_graph'], output_types=[field(type_=File, write=True, extensions=['.arg', '.data'])])
 
         # exports section
         # export input parameter

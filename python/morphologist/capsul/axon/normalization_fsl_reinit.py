@@ -9,15 +9,15 @@ class Normalization_FSL_reinit(Process):
     def __init__(self, **kwargs):
         super(Normalization_FSL_reinit, self).__init__(**kwargs)
         self.add_field('anatomy_data', File, read=True,
-                       allowed_extensions=['.nii', '.nii.gz'])
+                       extensions=['.nii', '.nii.gz'])
         self.add_field('anatomical_template', File, read=True,
-                       allowed_extensions=['.nii', '.nii.gz'])
+                       extensions=['.nii', '.nii.gz'])
         self.add_field('Alignment', Literal['Already Virtually Aligned',
                        'Not Aligned but Same Orientation', 'Incorrectly Oriented'])
         self.add_field('transformation_matrix', File,
-                       write=True, allowed_extensions=['.mat'])
-        self.add_field('normalized_anatomy_data', File, write=True,
-                       allowed_extensions=['.nii.gz', '.nii'])
+                       write=True, extensions=['.mat'])
+        self.add_field('normalized_anatomy_data', File,
+                       write=True, extensions=['.nii.gz', '.nii'])
         self.add_field(
             'cost_function', Literal['corratio', 'mutualinfo', 'normcorr', 'normmi', 'leastsq', 'labeldiff'])
         self.add_field('search_cost_function',

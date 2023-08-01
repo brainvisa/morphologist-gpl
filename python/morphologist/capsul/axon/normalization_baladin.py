@@ -9,16 +9,13 @@ class Normalization_Baladin(Process):
     def __init__(self, **kwargs):
         super(Normalization_Baladin, self).__init__(**kwargs)
         self.add_field('anatomy_data', File, read=True,
-                       allowed_extensions=['.ima', '.dim'])
-        self.add_field('anatomical_template', File, read=True,
-                       allowed_extensions=['.ima', '.dim'])
+                       extensions=['.ima', '.dim'])
+        self.add_field('anatomical_template', File,
+                       read=True, extensions=['.ima', '.dim'])
         self.add_field('transformation_matrix', File,
-                       write=True, allowed_extensions=['.txt'])
+                       write=True, extensions=['.txt'])
         self.add_field('normalized_anatomy_data', File, write=True,
-                       allowed_extensions=['.ima', '.dim', '.nii', '.nii.gz'])
-
-        # initialization section
-        self.anatomical_template = '/casa/host/build/share/brainvisa-share-5.2/anatomical_templates/MNI152_T1_1mm.nii.gz'
+                       extensions=['.ima', '.dim', '.nii', '.nii.gz'])
 
     def execute(self, context=None):
         from brainvisa import axon
