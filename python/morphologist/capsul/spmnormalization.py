@@ -14,8 +14,6 @@ class SPMNormalization(SPMnormalizationPipeline):
         self.add_link(
             'NormalizeSPM.spm_transformation'
             '->ConvertSPMnormalizationToAIMS.read')
-        self.add_link(
-            'ConvertSPMnormalizationToAIMS.write->transformation')
 
         # add converter as 1st step
         self.remove_link('t1mri->normalization_t1_spm12_reinit.anatomy_data')
@@ -56,14 +54,16 @@ class SPMNormalization(SPMnormalizationPipeline):
                 #self.NormalizeSPM = 'normalization_t1_spm8_reinit'
 
         self.node_position = {
-            'ConvertSPMnormalizationToAIMS': (1179.07095, 117.05630000000008),
-            'NormalizeSPM': (789.94195, 219.44370000000004),
-            'ReorientAnatomy': (1441.4117, 20.306299999999965),
-            'converter': (377.5439, 228.88740000000007),
-            'inputs': (0.0, 0.0),
-            'normalization_t1_spm12_reinit': (549.6002, 193.44370000000004),
-            'normalization_t1_spm8_reinit': (549.6002, 475.3998),
-            'outputs': (1703.7257, 179.375)}
+            'ConvertSPMnormalizationToAIMS':
+                (1813.678349526814, 93.33386790220817),
+            'NormalizeSPM': (1178.4839657334387, 220.82146790220816),
+            'ReorientAnatomy': (2168.1605009069403, 134.07556419558358),
+            'converter': (341.7590504731861, 224.84488395110424),
+            'inputs': (-263.40589132492113, -2.842170943040401e-14),
+            'normalization_t1_spm12_reinit': (674.1066, 193.56869999999992),
+            'normalization_t1_spm8_reinit': (672.6066, 526.7061),
+            'outputs': (2740.6161075315463, 303.35412961356474)
+        }
 
     def change_flip(self, value):
         self.nodes_activation.ReorientAnatomy = value
