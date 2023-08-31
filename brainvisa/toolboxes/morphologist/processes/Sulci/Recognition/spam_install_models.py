@@ -67,7 +67,7 @@ def initialization(self):
         if self.install_in_compatible_database == chc[- 1][1]:
             return chc[0][1]
         return self.install_in_compatible_database
-    self.download_url = 'ftp://ftp.cea.fr/pub/dsv/anatomist/data'
+    self.download_url = 'https://brainvisa.info/download/data'
     self.install_talairach_models = True
     self.install_global_models = True
     self.install_local_models = True
