@@ -98,7 +98,7 @@ This atlas gives the probability of finding various cortical folds or gray nucle
 Downloads
 +++++++++
 
-* `Download the Atlas <ftp://ftp.cea.fr/pub/dsv/anatomist/data/anat_landmark_atlas.nii.gz>`_ (nii.gz file, 71Mo, in MNI space, 2mm isotropic voxels)
+* `Download the Atlas <https://brainvisa.info/download/data/anat_landmark_atlas.nii.gz>`_ (nii.gz file, 71Mo, in MNI space, 2mm isotropic voxels)
 
 * `Table giving the names of the anatomical structures <_static/images/bsa/anat_landmark_atlas.csv>`_ (csv file)
 

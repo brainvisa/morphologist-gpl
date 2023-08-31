@@ -215,10 +215,10 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
         old_cwd = os.getcwd()
         os.chdir(dir_)
         if not os.path.exists("demo_data.zip"):
-            print("* Download ftp://ftp.cea.fr/pub/dsv/anatomist/data/"
+            print("* Download https://brainvisa.info/download/data/"
                   "demo_data.zip to", dir_)
             urlretrieve(
-                "ftp://ftp.cea.fr/pub/dsv/anatomist/data/demo_data.zip",
+                "https://brainvisa.info/download/data/demo_data.zip",
                 "demo_data.zip")
         if os.path.exists("data_for_anatomist"):
             rmtree("data_for_anatomist")
