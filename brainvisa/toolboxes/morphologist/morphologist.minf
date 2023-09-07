@@ -3,7 +3,7 @@
 <l length="6">
   <f type="ProcessTree">
     <s name="name">morphologist</s>
-    <l length="2" name="content">
+    <l length="3" name="content">
       <f type="ProcessTree.Branch">
         <l length="4" name="content">
           <f type="ProcessTree.Leaf">
@@ -49,6 +49,22 @@
           <f type="ProcessTree.Leaf">
             <s name="id">morphologist-ui_database</s>
             <none name="name" />
+          </f>
+        </l>
+      </f>
+      <f type="ProcessTree.Branch">
+        <s name="id">morphologist/viewers</s>
+        <s name="name">viewers</s>
+        <l length="1" name="content">
+          <f type="ProcessTree.Branch">
+            <s name="id">morphologist/viewers/snapshots</s>
+            <s name="name">snapshots</s>
+            <l length="1" name="content">
+              <f type="ProcessTree.Leaf">
+                <s name="id">snapbase</s>
+                <none name="name" />
+              </f>
+            </l>
           </f>
         </l>
       </f>
