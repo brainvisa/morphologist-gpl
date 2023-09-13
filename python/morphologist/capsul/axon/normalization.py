@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 from soma.controller import File, Directory, undefined, Any, \
     Literal, field
-from pydantic import conlist
+try:
+    from pydantic.v1 import conlist
+except ImportError:
+    from pydantic import conlist
 from capsul.api import Process
 from capsul.api import Pipeline
 from capsul.api import Switch
@@ -82,27 +85,27 @@ class Normalization(Pipeline):
         self.add_link(
             'NormalizeFSL.reoriented_t1mri->select_Normalization_pipeline.NormalizeFSL_switch_reoriented_t1mri')
         self.add_link(
-            'NormalizeBaladin.transformation->select_Normalization_pipeline.NormalizeBaladin_switch_transformation')
-        self.add_link(
-            't1mri->select_Normalization_pipeline.Normalization_AimsMIRegister_switch_reoriented_t1mri')
+            'NormalizeFSL.transformation->select_Normalization_pipeline.NormalizeFSL_switch_transformation')
         self.add_link(
             'Normalization_AimsMIRegister.normalized_anatomy_data->select_Normalization_pipeline.Normalization_AimsMIRegister_switch_normalized')
         self.add_link(
-            'NormalizeSPM.normalized_t1mri->select_Normalization_pipeline.NormalizeSPM_switch_normalized')
+            'NormalizeFSL.NormalizeFSL_normalized_anatomy_data->select_Normalization_pipeline.NormalizeFSL_switch_normalized')
         self.add_link(
             'Normalization_AimsMIRegister.transformation_to_MNI->select_Normalization_pipeline.Normalization_AimsMIRegister_switch_transformation')
         self.add_link(
-            'NormalizeFSL.NormalizeFSL_normalized_anatomy_data->select_Normalization_pipeline.NormalizeFSL_switch_normalized')
+            't1mri->select_Normalization_pipeline.Normalization_AimsMIRegister_switch_reoriented_t1mri')
+        self.add_link(
+            'NormalizeSPM.normalized_t1mri->select_Normalization_pipeline.NormalizeSPM_switch_normalized')
+        self.add_link(
+            'NormalizeSPM.transformation->select_Normalization_pipeline.NormalizeSPM_switch_transformation')
+        self.add_link(
+            'NormalizeBaladin.reoriented_t1mri->select_Normalization_pipeline.NormalizeBaladin_switch_reoriented_t1mri')
         self.add_link(
             'NormalizeBaladin.NormalizeBaladin_normalized_anatomy_data->select_Normalization_pipeline.NormalizeBaladin_switch_normalized')
         self.add_link(
             'NormalizeSPM.reoriented_t1mri->select_Normalization_pipeline.NormalizeSPM_switch_reoriented_t1mri')
         self.add_link(
-            'NormalizeBaladin.reoriented_t1mri->select_Normalization_pipeline.NormalizeBaladin_switch_reoriented_t1mri')
-        self.add_link(
-            'NormalizeSPM.transformation->select_Normalization_pipeline.NormalizeSPM_switch_transformation')
-        self.add_link(
-            'NormalizeFSL.transformation->select_Normalization_pipeline.NormalizeFSL_switch_transformation')
+            'NormalizeBaladin.transformation->select_Normalization_pipeline.NormalizeBaladin_switch_transformation')
 
         # initialization section
         self.nodes['NormalizeFSL'].allow_flip_initial_MRI = False

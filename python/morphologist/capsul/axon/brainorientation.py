@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 from soma.controller import File, Directory, undefined, Any, \
     Literal, field
-from pydantic import conlist
+try:
+    from pydantic.v1 import conlist
+except ImportError:
+    from pydantic import conlist
 from capsul.api import Process
 from capsul.api import Pipeline
 from capsul.api import Switch
@@ -60,15 +63,15 @@ class BrainOrientation(Pipeline):
         self.add_link(
             'Normalization.reoriented_t1mri->TalairachFromNormalization.t1mri')
         self.add_link(
+            'StandardACPC.commissure_coordinates->select_AC_PC_Or_Normalization.StandardACPC_switch_commissure_coordinates')
+        self.add_link(
             'StandardACPC.reoriented_t1mri->select_AC_PC_Or_Normalization.StandardACPC_switch_reoriented_t1mri')
         self.add_link(
-            'TalairachFromNormalization.commissure_coordinates->select_AC_PC_Or_Normalization.Normalization_switch_commissure_coordinates')
+            'Normalization.reoriented_t1mri->select_AC_PC_Or_Normalization.Normalization_switch_reoriented_t1mri')
         self.add_link(
             'TalairachFromNormalization.Talairach_transform->select_AC_PC_Or_Normalization.Normalization_switch_talairach_transformation')
         self.add_link(
-            'StandardACPC.commissure_coordinates->select_AC_PC_Or_Normalization.StandardACPC_switch_commissure_coordinates')
-        self.add_link(
-            'Normalization.reoriented_t1mri->select_AC_PC_Or_Normalization.Normalization_switch_reoriented_t1mri')
+            'TalairachFromNormalization.commissure_coordinates->select_AC_PC_Or_Normalization.Normalization_switch_commissure_coordinates')
 
         # initialization section
         if 'Normalization' in self.nodes:

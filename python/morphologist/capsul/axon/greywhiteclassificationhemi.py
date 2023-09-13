@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 from soma.controller import File, Directory, undefined, Any, \
     Literal, field
-from pydantic import conlist
+try:
+    from pydantic.v1 import conlist
+except ImportError:
+    from pydantic import conlist
 from capsul.api import Process
 
 
@@ -26,7 +29,7 @@ class GreyWhiteClassificationHemi(Process):
         self.add_field('fix_random_seed', bool)
 
         # initialization section
-        self.side = 'right'
+        self.side = 'left'
         self.lesion_mask_mode = 'e'
         self.fix_random_seed = False
 

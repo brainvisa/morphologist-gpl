@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 from soma.controller import File, Directory, undefined, Any, \
     Literal, field
-from pydantic import conlist
+try:
+    from pydantic.v1 import conlist
+except ImportError:
+    from pydantic import conlist
 from capsul.api import Process
 from capsul.api import Pipeline
 from capsul.api import Switch
@@ -99,6 +102,7 @@ class SPMnormalizationPipeline(Pipeline):
             'normalization_t1_spm8_reinit.transformations_informations->NormalizeSPM.normalization_t1_spm8_reinit_switch_spm_transformation')
 
         # initialization section
+        self.nodes['ReorientAnatomy'].allow_flip_initial_MRI = False
         self.nodes_activation.ReorientAnatomy = False
         if 'normalization_t1_spm12_reinit' in self.nodes:
             self.dispatch_value(self, 'NormalizeSPM',

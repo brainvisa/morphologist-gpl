@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 from soma.controller import File, Directory, undefined, Any, \
     Literal, field
-from pydantic import conlist
+try:
+    from pydantic.v1 import conlist
+except ImportError:
+    from pydantic import conlist
 from capsul.api import Process
 from capsul.api import Pipeline
 from capsul.api import Switch
@@ -78,9 +81,9 @@ class SulciLabellingSPAM(Pipeline):
         self.add_link(
             'global_recognition_initial_transformation->local_recognition.initial_transformation')
         self.add_link(
-            'markovian_recognition.output_graph->local_or_markovian.markovian_recognition_switch_output_graph')
-        self.add_link(
             'local_recognition.output_graph->local_or_markovian.local_recognition_switch_output_graph')
+        self.add_link(
+            'markovian_recognition.output_graph->local_or_markovian.markovian_recognition_switch_output_graph')
 
         # initialization section
         if 'local_recognition' in self.nodes:

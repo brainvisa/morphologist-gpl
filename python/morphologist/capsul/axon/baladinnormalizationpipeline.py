@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 from soma.controller import File, Directory, undefined, Any, \
     Literal, field
-from pydantic import conlist
+try:
+    from pydantic.v1 import conlist
+except ImportError:
+    from pydantic import conlist
 from capsul.api import Process
 from capsul.api import Pipeline
 from capsul.api import Switch
@@ -54,7 +57,6 @@ class BaladinNormalizationPipeline(Pipeline):
             'ConvertBaladinNormalizationToAIMS.write->ReorientAnatomy.transformation')
 
         # initialization section
-        self.nodes['ReorientAnatomy'].allow_flip_initial_MRI = False
         self.nodes_activation.ReorientAnatomy = False
         # export orphan parameters
         if not hasattr(self, '_autoexport_nodes_parameters') \
