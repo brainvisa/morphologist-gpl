@@ -336,6 +336,9 @@ class Morphologist(
                               'sulcal_morphometry_sulci_file')
         self.nodes['SulcalMorphometry'].enabled = True
 
+        self.export_parameter('GlobalMorphometry', 'subject')
+        self.add_link('subject->Report.subject')
+
         self.export_parameter(
             'PrepareSubject', 'reoriented_t1mri', is_optional=True)
         self.nodes['PrepareSubject'].nodes['select_AC_PC_Or_Normalization'].plugs['talairach_transformation'].optional = True
