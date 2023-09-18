@@ -988,5 +988,14 @@
                 ]
             ]
         },
+
+        "ImportT1Mri": {
+            "input":
+                [["input:{acquisition}/<subject>", "images"]],
+            "output":
+                [["output:{acquisition}/<subject>", "images"]],
+            "referential":
+                [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>", "Referential"]],
+        }
     }
 }
