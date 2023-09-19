@@ -35,8 +35,6 @@ capsul = Capsul()
 engine = capsul.engine()
 config = capsul.config
 
-config.builtin.add_module('spm')
-config.builtin.add_module('axon')
 config.import_dict({
     'builtin': {
         'config_modules': [
