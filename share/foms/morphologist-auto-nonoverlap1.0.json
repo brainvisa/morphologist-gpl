@@ -580,6 +580,7 @@
                     "Aims writable volume formats"
                 ]
             ],
+            "anatomical_template": "{shared.anatomical_template_t1}",
             "anatomical_template_skull_stripped": "{shared.anatomical_template_t1_skull_stripped}",
             "split_brain": [
                 [
@@ -987,7 +988,17 @@
                         "CSV file"
                     ]
                 ]
-            ]
+            ],
+          "left_csf":
+              [["output:{analysis}/segmentation/<side>csf_<subject>","images",{"side":"L"}]],
+          "right_csf":
+              [["output:{analysis}/segmentation/<side>csf_<subject>","images",{"side":"R"}]],
+          "brain_volumes_file":
+              [["output:{analysis}/segmentation/brain_volumes_<subject>","CSV file"]],
+          "subject": [["none:<subject>", "no ext"]],
+
+          "report":
+              [["output:{analysis}/morphologist_report","PDF File"]]
         },
 
         "ImportT1Mri": {
