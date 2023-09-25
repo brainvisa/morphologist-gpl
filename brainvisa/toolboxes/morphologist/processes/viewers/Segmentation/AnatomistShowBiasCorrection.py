@@ -68,6 +68,7 @@ def execution(self, context):
         selfdestroy.append(a.viewBias(self.t1mri, forceReload=1,
                                       hanfile=self.histo_analysis,
                                       parent=block))
-    selfdestroy.append(a.viewBias(self.mri_corrected,
-                                  hanfile=self.histo_analysis, parent=block))
+    selfdestroy.insert(0, a.viewBias(self.mri_corrected,
+                                     hanfile=self.histo_analysis,
+                                     parent=block))
     return selfdestroy
