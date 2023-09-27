@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<minf expander="minf_2.0">
+<d>
+  <d name="en">
+    <xhtml name="short">Set normalization transformation info into an image or mesh file</xhtml>
+    <xhtml name="long">Transformation info is read from a <tt>.trm</tt> file and written into the data file, if the data format supports it (anyway it will be in the <tt>.minf</tt> file attached to the data).
+<br/>
+
+It will typically work for NIFTI images or GIFTI meshes, and will allow exchanging these files, with normalization information inside, with other teams and tools.
+<br/>
+
+It will work only on AIMS supported types (volumes, meshes...) but will fail on other unsupported data types.</xhtml>
+    <d name="parameters">
+    </d>
+  </d>
+</d>
+</minf>

@@ -61,6 +61,11 @@ signature = Signature(
 )
 
 
+capsul_param_options = {
+    'commissures_coordinates': ['dataset=None'],
+}
+
+
 def linkCommissures(self, proc, dummy):
     if proc.commissures_coordinates is None:
         return None
@@ -98,7 +103,7 @@ def execution(self, context):
     r = -M
     #context.write( 'M:', M )
     #context.write( 'r:', r )
-    R = aims.Motion()
+    R = aims.AffineTransformation3d()
     R.rotation().fill(0.)
     rot = r.rotation().np[:, :, 0, 0]
     # snap/binarize
@@ -143,11 +148,11 @@ def execution(self, context):
     dims2 = [abs(int(round(x))) for x in R.transform(dims)]
     #context.write( 'dims: ', str( dims ), ' -> ', str( dims2 ) )
     #context.write( 'vs: ', str( vs ), ' -> ', str( vs2 ) )
-    s = aims.Motion(R)
+    s = aims.AffineTransformation3d(R)
     a = s.rotation()
-    a[a > 0] = 0.
+    a[a.np > 0] = 0.
     #context.write( 's:', s )
-    p = -s.transform(dimm)
+    p = -(s.transform(dimm).np)
     #context.write( 'translation:', p )
     R.toMatrix()[:3, 3] = p
     context.write('apply resampling matrix:')

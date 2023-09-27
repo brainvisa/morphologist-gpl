@@ -1,6 +1,6 @@
-# -*- coding: utf-8 -*-
-from __future__ import print_function
 from brainvisa.processes import *
+import os
+import shutil
 import zipfile
 import glob
 
@@ -16,7 +16,7 @@ report = 'VolBrain Reports'
 
 signature = Signature(
     # Inputs
-    'volBrain_mni_zip', ReadDiskItem(
+    'volBrain_zip', ReadDiskItem(
         'Any Type',
         'ZIP file',
         section=inputs),
@@ -160,12 +160,13 @@ def initialization(self):
         #return subject
     
     def linkNativeZip(self, proc):
-        if self.volBrain_mni_zip is not None:
-            directory = os.path.dirname(self.volBrain_mni_zip.fullPath())
-            basename = os.path.basename(self.volBrain_mni_zip.fullPath())
+        if self.volBrain_zip is not None:
+            directory = os.path.dirname(self.volBrain_zip.fullPath())
+            basename = os.path.basename(self.volBrain_zip.fullPath())
             zip_native = os.path.join(directory,
                                       'native_' + basename)
-            return zip_native
+            if os.path.exists(zip_native):
+                return zip_native
     
     def linkVolBrainOutput(self, proc):
         if self.subject and self.acquisition:
@@ -178,7 +179,7 @@ def initialization(self):
             return self.signature['report_csv'].findValue(d)
     
     #self.linkParameters('subject', 'volBrain_mni_zip', linkSubject)
-    self.linkParameters('volBrain_native_zip', 'volBrain_mni_zip', linkNativeZip)
+    self.linkParameters('volBrain_native_zip', 'volBrain_zip', linkNativeZip)
     
     #self.linkParameters('mni_lab', ('subject', 'acquisition'), linkVolBrainOutput)
     self.linkParameters('report_csv', ('subject', 'acquisition'), linkVolBrainOutput)
@@ -197,36 +198,41 @@ def initialization(self):
     self.linkParameters('mni_readme', 'mni_lab')
     self.linkParameters('affine_transformation', 'mni_lab')
     
-    
     self.linkParameters('native_lab', 'mni_lab')
-    self.linkParameters('native_hemi','native_lab')
-    self.linkParameters('native_mask','native_lab')
-    self.linkParameters('native_crisp','native_lab')
-    self.linkParameters('native_filtered','native_lab')
-    self.linkParameters('native_normalised','native_lab')
-    self.linkParameters('native_readme','native_lab')
+    self.linkParameters('native_hemi', 'native_lab')
+    self.linkParameters('native_mask', 'native_lab')
+    self.linkParameters('native_crisp', 'native_lab')
+    self.linkParameters('native_filtered', 'native_lab')
+    self.linkParameters('native_normalised', 'native_lab')
+    self.linkParameters('native_readme', 'native_lab')
     
-    self.signature['volBrain_mni_zip'].mandatory = False
-    self.signature['volBrain_native_zip'].mandatory = False
+    self.setOptional('volBrain_native_zip', 'native_filtered', 'native_normalised', 'native_readme')
     
 
 def execution(self, context):
+    if (self.check_subject_name_in_zipfile and self.volBrain_zip and
+            self.volBrain_zip.fullPath().find(self.subject.get('subject')) < 0):
+        context.write("The zip files path do not match with the subject's name, verify your file or disable the check.")
+        return
+
+    if self.volBrain_native_zip:
+        # Old way
+        self.extract_volbrain_in_space_zip(context)
+    elif self.get_volbrain_zip_version(self.volBrain_zip.fullPath()) == 'space':
+        # Old way
+        self.extract_volbrain_in_space_zip(context)
+    else:
+        # New way
+        self.extract_volbrain_all_in_zip(context)
     
-    if self.check_subject_name_in_zipfile:
-        if self.volBrain_mni_zip:
-            p = self.volBrain_mni_zip.fullPath()
-        elif self.volBrain_native_zip:
-            p = self.volBrain_native_zip.fullPath()
-        if p:
-            if p.find(self.subject.get('subject')) < 0:
-                context.write("The zip files path do not match with the subject's name, verify your file or disable the check.")
-                return
     
-    # MNI directoy
-    if self.volBrain_mni_zip:
-        dir_mni = context.temporary('Directory')
-        with zipfile.ZipFile(self.volBrain_mni_zip.fullPath(), 'r') as zip_mni:
-            zip_mni.extractall(dir_mni.fullPath())
+def extract_volbrain_in_space_zip(self, context):
+    """Extract files from volBrain result zip.
+    It follows old zip hierarchy with mni and native results in separated zip.
+    """
+    # MNI directory
+    if self.volBrain_zip:
+        dir_mni = self.extract_zip(context, self.volBrain_zip)
     
         files_list = glob.glob(os.path.join(dir_mni.fullPath(), '*mni*'))
         for f in files_list:
@@ -239,7 +245,6 @@ def execution(self, context):
             command_list = ['AimsFileConvert',
                             '-i', f,
                             '-o', self.__dict__[p_out]]
-                            #'-o', self.signature[p_out],
             if p_out[4:] in ['lab', 'hemi', 'mask', 'crisp']:
                 command_list += ['-t', 'S16']
             context.system(*command_list)
@@ -250,24 +255,19 @@ def execution(self, context):
                         '-o', self.native_filtered]
         context.system(*command_list)
         
-        transfo = glob.glob(os.path.join(dir_mni.fullPath(), 'affine_mfjob*'))[0]
-        shutil.copy(transfo, self.affine_transformation.fullPath())
-
-        shutil.copy(os.path.join(dir_mni.fullPath(), 'README.pdf'),
-                    self.mni_readme.fullPath())
-        
-        job_id = os.path.basename(glob.glob(os.path.join(dir_mni.fullPath(), 'job*'))[0])
-        report = 'report_' + job_id
-        shutil.copy(os.path.join(dir_mni.fullPath(), report.replace('.nii', '.csv')),
-                    self.report_csv.fullPath())
-        shutil.copy(os.path.join(dir_mni.fullPath(), report.replace('.nii', '.pdf')),
-                    self.report_pdf.fullPath())
+        other_files = [
+            ('affine_mfjob*', self.affine_transformation),
+            ('README.pdf', self.mni_readme),
+            ('report_job*csv', self.report_csv),
+            ('report_job*pdf', self.report_pdf)
+        ]
+        for pattern, output_file in other_files:
+            input_file = glob.glob(os.path.join(dir_mni.fullPath(), pattern))[0]
+            shutil.copy(input_file, output_file.fullPath())
     
     # Native directory
     if self.volBrain_native_zip:
-        dir_native = context.temporary('Directory')
-        with zipfile.ZipFile(self.volBrain_native_zip.fullPath(), 'r') as zip_native:
-            zip_native.extractall(dir_native.fullPath())
+        dir_native = self.extract_zip(context, self.volBrain_native_zip)
         
         files_list = glob.glob(os.path.join(dir_native.fullPath(), '*native*'))
         for f in files_list:
@@ -288,5 +288,58 @@ def execution(self, context):
         shutil.copy(os.path.join(dir_native.fullPath(), 'READMEnat.pdf'),
                     self.native_readme.fullPath())
 
+
+def extract_volbrain_all_in_zip(self, context):
+    """Extract files from volBrain result zip.
+    It follows recent zip hierarchy.
+    """
+    dir_zip = self.extract_zip(context, self.volBrain_zip)
     
+    file_correspondance = {
+        'mni_structures': 'mni_lab',
+        'native_structures': 'native_lab',
+        'mni_t1': 'mni_normalised',
+        'mni_tissues': 'mni_crisp',
+        'native_tissues': 'native_crisp'
+    }
+    files_list = glob.glob(os.path.join(dir_zip.fullPath(), '*nii.gz'))
+    for f in files_list:
+        file_type = '_'.join(os.path.basename(f).split('_')[:2])
+        p_out = file_correspondance.get(file_type, file_type)
+            
+        command_list = ['AimsFileConvert',
+                        '-i', f,
+                        '-o', self.__dict__[p_out]]
+        if p_out[4:] in ['lab', 'hemi', 'mask', 'crisp']:
+            command_list += ['-t', 'S16']
+        context.system(*command_list)
     
+    other_files = [
+        ('matrix_affine*', self.affine_transformation),
+        ('README.pdf', self.mni_readme),
+        ('report_job*csv', self.report_csv),
+        ('report_job*pdf', self.report_pdf)
+    ]
+    for pattern, output_file in other_files:
+        input_file = glob.glob(os.path.join(dir_zip.fullPath(), pattern))[0]
+        shutil.copy(input_file, output_file.fullPath())
+
+
+def extract_zip(self, context, zip_path):
+    if zip_path:
+        dir_mni = context.temporary('Directory')
+        with zipfile.ZipFile(zip_path.fullPath(), 'r') as zip_file:
+            zip_file.extractall(dir_mni.fullPath())
+        return dir_mni
+
+
+def get_volbrain_zip_version(self, zip_path):
+    """Read files in zip_path to know which volbrain zip is:
+    - 'all': recent volbrain zip version, which native and mni space results
+    - 'space': old volbrain zip version, which contain only native or only mni space results
+    """
+    with zipfile.ZipFile(zip_path, 'r') as zip_file:
+        if [i for i in zip_file.namelist() if i.startswith('native_')]:
+            return 'all'
+        else:
+            return 'space'

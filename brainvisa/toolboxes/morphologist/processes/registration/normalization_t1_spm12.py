@@ -77,6 +77,11 @@ signature = Signature(
 )
 
 
+capsul_param_options = {
+    'anatomical_template': ['dataset="shared"'],
+}
+
+
 def initialization(self):
     configuration.SPM.spm12_path  # trigger the spmpathcheck process if needed
     self.linkParameters("transformations_informations", "anatomy_data")

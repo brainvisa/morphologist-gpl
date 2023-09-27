@@ -67,6 +67,11 @@ signature = Signature(
 )
 
 
+capsul_param_options = {
+    'older_MNI_normalization': ['dataset=None'],
+}
+
+
 class APCReader(object):
     def __init__(self, key):
         self._key = key

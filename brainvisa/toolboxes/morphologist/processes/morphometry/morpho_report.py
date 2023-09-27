@@ -53,6 +53,12 @@ signature = Signature(
 )
 
 
+capsul_param_options = {
+    'subject': ['dataset="output"'],
+    'normative_brain_stats': ['dataset=None'],
+}
+
+
 def initialization(self):
     def linkSubject(self, proc):
         if self.t1mri is not None:

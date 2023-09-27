@@ -55,6 +55,12 @@ signature = Signature(
                              ('% of grey peak', 'grey')),
 )
 
+
+capsul_param_options = {
+    'remove_mask': ['dataset=None'],
+}
+
+
 # Default values
 
 

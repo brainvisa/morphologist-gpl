@@ -73,6 +73,18 @@ signature = Signature(
 )
 
 
+capsul_param_options = {
+    'model': ['dataset="shared"'],
+    'labels_translation_map': ['dataset="shared"'],
+    'labels_priors': ['dataset="shared"'],
+    'local_referentials': ['dataset="shared"'],
+    'direction_priors': ['dataset="shared"'],
+    'angle_priors': ['dataset="shared"'],
+    'translation_priors': ['dataset="shared"'],
+    'initial_transformation': ['dataset=None'],
+}
+
+
 def initialization(self):
     def linkModelType(self, proc):
         di = ReadDiskItem('Sulci Segments Model', 'Text Data Table',
