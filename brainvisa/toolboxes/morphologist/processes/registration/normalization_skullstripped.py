@@ -65,6 +65,11 @@ signature = Signature(
 )
 
 
+capsul_param_options = {
+    'template': ['dataset="shared"'],
+}
+
+
 def initialization(self):
     self.linkParameters('brain_mask', 't1mri')
     self.linkParameters('transformation', 't1mri')

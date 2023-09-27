@@ -67,6 +67,15 @@ signature = Signature(
 )
 
 
+capsul_param_options = {
+    'model': ['dataset="shared"'],
+    'labels_translation_map': ['dataset="shared"'],
+    'labels_priors': ['dataset="shared"'],
+    'segments_relations_model': ['dataset="shared"'],
+    'initial_transformation': ['dataset=None'],
+}
+
+
 def initialization(self):
     self.linkParameters('output_graph', 'data_graph')
     self.linkParameters('model', 'data_graph')

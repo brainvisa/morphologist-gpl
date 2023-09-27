@@ -61,6 +61,11 @@ signature = Signature(
 )
 
 
+capsul_param_options = {
+    'commissures_coordinates': ['dataset=None'],
+}
+
+
 def linkCommissures(self, proc, dummy):
     if proc.commissures_coordinates is None:
         return None

@@ -59,6 +59,11 @@ signature = Signature(
 )
 
 
+capsul_param_options = {
+    'model': ['dataset="shared"'],
+}
+
+
 def modelValue(proc, procbis):
     """
     the input graph which is linked to the model has not necessarily the same

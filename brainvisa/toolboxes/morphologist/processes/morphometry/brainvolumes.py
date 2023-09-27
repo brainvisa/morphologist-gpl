@@ -72,6 +72,11 @@ signature = Signature(
 )
 
 
+capsul_param_options = {
+    'subject': ['dataset="output"'],
+}
+
+
 def initialization(self):
     def linkSubject(self, proc):
         if self.split_brain is not None:

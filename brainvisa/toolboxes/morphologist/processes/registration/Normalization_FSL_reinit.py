@@ -76,6 +76,11 @@ signature = Signature(
 )
 
 
+capsul_param_options = {
+    'anatomical_template': ['dataset="shared"'],
+}
+
+
 def initialization(self):
     def anat2results(self, process):
         if self.anatomy_data != None:

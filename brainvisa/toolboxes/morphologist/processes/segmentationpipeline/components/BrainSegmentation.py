@@ -83,6 +83,12 @@ signature = Signature(
     'fix_random_seed', Boolean(),
 )
 
+
+capsul_param_options = {
+    'lesion_mask': ['dataset=None'],
+}
+
+
 # Default values
 
 

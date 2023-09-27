@@ -64,6 +64,11 @@ signature = Signature(
 )
 
 
+capsul_param_options = {
+    'anatomical_template': ['dataset="shared"'],
+}
+
+
 def initialization(self):
     self.linkParameters("transformation_matrix", "anatomy_data")
     self.linkParameters("normalized_anatomy_data", "anatomy_data")

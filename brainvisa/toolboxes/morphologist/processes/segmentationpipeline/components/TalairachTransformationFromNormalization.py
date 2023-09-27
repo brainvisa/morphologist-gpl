@@ -66,6 +66,13 @@ signature = Signature(
 )
 
 
+capsul_param_options = {
+    'normalized_referential': ['dataset="shared"'],
+    'acpc_referential': ['dataset="shared"'],
+    'transform_chain_ACPC_to_Normalized': ['dataset="shared"'],
+}
+
+
 def initialization(self):
     def linkRef(proc, param):
         if proc.normalization_transformation:

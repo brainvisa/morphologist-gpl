@@ -60,6 +60,12 @@ signature = Signature(
 )
 
 
+capsul_param_options = {
+    'anatomical_template': ['dataset="shared"'],
+    'mni_to_acpc': ['dataset="shared"'],
+}
+
+
 def initialization(self):
     def anat2results(self, process):
         if self.anatomy_data != None:

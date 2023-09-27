@@ -67,6 +67,11 @@ signature = Signature(
 )
 
 
+capsul_param_options = {
+    'sulci_file': ['dataset="shared"'],
+}
+
+
 def initialization(self):
     def linkAttribute(proc, dummy):
         if proc.left_sulci_graph is not None:

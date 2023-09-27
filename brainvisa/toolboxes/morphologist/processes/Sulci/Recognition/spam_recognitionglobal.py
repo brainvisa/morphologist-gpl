@@ -64,6 +64,13 @@ signature = Signature(
                   'Transformation matrix'),
 )
 
+capsul_param_options = {
+    'model': ['dataset="shared"'],
+    'labels_translation_map': ['dataset="shared"'],
+    'labels_priors': ['dataset="shared"'],
+    'initial_transformation': ['dataset=None'],
+}
+
 
 def initialization(self):
     def linkModelType(proc, dummy):

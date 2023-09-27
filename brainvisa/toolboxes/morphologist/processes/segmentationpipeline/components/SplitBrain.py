@@ -64,6 +64,11 @@ signature = Signature(
 )
 
 
+capsul_param_options = {
+    'split_template': ['dataset="shared"'],
+}
+
+
 def updateSignatureAboutVariant(self, proc):
     if self.variant == 'GW Barycentre':
         self.showAndMandadesSignatureFieldList(['bary_factor'])
