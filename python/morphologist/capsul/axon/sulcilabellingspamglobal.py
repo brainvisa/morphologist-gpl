@@ -17,16 +17,18 @@ class SulciLabellingSPAMGlobal(Process):
                        extensions=['.arg', '.data'])
         self.add_field(
             'model_type', Literal['Talairach', 'Global registration'])
-        self.add_field('model', File, read=True, extensions=['.dat'])
+        self.add_field('model', File, read=True, extensions=[
+                       '.dat'], dataset="shared")
         self.add_field('posterior_probabilities', File,
                        write=True, extensions=['.csv'])
-        self.add_field('labels_translation_map', File,
-                       read=True, extensions=['.trl', '.def'])
-        self.add_field('labels_priors', File, read=True, extensions=['.dat'])
+        self.add_field('labels_translation_map', File, read=True,
+                       extensions=['.trl', '.def'], dataset="shared")
+        self.add_field('labels_priors', File, read=True,
+                       extensions=['.dat'], dataset="shared")
         self.add_field('output_transformation', File, write=True,
                        extensions=['.trm'], optional=True)
         self.add_field('initial_transformation', File, read=True,
-                       extensions=['.trm'], optional=True)
+                       extensions=['.trm'], optional=True, dataset=None)
         self.add_field('output_t1_to_global_transformation', File,
                        write=True, extensions=['.trm'], optional=True)
 

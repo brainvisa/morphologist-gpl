@@ -33,7 +33,7 @@ class brainvolumes(Process):
                        '.gii', '.mesh', '.obj', '.ply', '.tri'], optional=True)
         self.add_field('right_wm_mesh', File, read=True, extensions=[
                        '.gii', '.mesh', '.obj', '.ply', '.tri'], optional=True)
-        self.add_field('subject', str)
+        self.add_field('subject', str, dataset="output")
         self.add_field('sulci_label_attribute', str)
         self.add_field('table_format', Literal['2023', 'old'])
         self.add_field('brain_volumes_file', File,

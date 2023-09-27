@@ -13,8 +13,8 @@ class Normalization_Baladin(Process):
         super(Normalization_Baladin, self).__init__(**kwargs)
         self.add_field('anatomy_data', File, read=True,
                        extensions=['.ima', '.dim'])
-        self.add_field('anatomical_template', File,
-                       read=True, extensions=['.ima', '.dim'])
+        self.add_field('anatomical_template', File, read=True,
+                       extensions=['.ima', '.dim'], dataset="shared")
         self.add_field('transformation_matrix', File,
                        write=True, extensions=['.txt'])
         self.add_field('normalized_anatomy_data', File, write=True,

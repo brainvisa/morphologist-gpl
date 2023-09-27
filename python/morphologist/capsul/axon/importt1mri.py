@@ -17,7 +17,7 @@ class ImportT1MRI(Process):
                        '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'])
         self.add_field('referential', File, write=True, optional=True)
         self.add_field('output_database', Literal['/host/home/dr144257/data/baseessai', '/casa/home/data/baseessai-bids',
-                       '/home/dr144257/data/archi-sulci', '/home/dr144257/data/archi-sulci-sulpat/archi-sulci-2023', '/tmp/morpho-bv/derivative'], optional=True)
+                       '/home/dr144257/data/archi-sulci', '/home/dr144257/data/archi-sulci-sulpat/archi-sulci-2023'], optional=True)
         self.add_field('attributes_merging',
                        Literal['BrainVisa', 'header', 'selected_from_header'], optional=True)
         self.add_field('selected_attributes_from_header', list, optional=True)

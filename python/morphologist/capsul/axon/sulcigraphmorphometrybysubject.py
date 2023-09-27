@@ -15,7 +15,8 @@ class sulcigraphmorphometrybysubject(Process):
                        extensions=['.arg', '.data'])
         self.add_field('right_sulci_graph', File, read=True,
                        extensions=['.arg', '.data'])
-        self.add_field('sulci_file', File, read=True, extensions=['.json'])
+        self.add_field('sulci_file', File, read=True,
+                       extensions=['.json'], dataset="shared")
         self.add_field('use_attribute', Literal['label', 'name'])
         self.add_field('sulcal_morpho_measures', File,
                        write=True, extensions=['.csv'])

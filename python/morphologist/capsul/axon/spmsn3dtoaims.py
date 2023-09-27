@@ -18,7 +18,7 @@ class SPMsn3dToAims(Process):
         self.add_field('source_volume', File, read=True, extensions=[
                        '.nii', '.img', '.hdr'], optional=True)
         self.add_field('normalized_volume', File, read=True, extensions=[
-                       '.nii', '.img', '.hdr'], optional=True)
+                       '.nii', '.img', '.hdr'], optional=True, dataset=None)
         self.add_field('removeSource', bool)
 
         # initialization section

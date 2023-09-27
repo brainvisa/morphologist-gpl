@@ -34,9 +34,9 @@ class morpho_report(Process):
         self.add_field('brain_volumes_file', File, read=True,
                        extensions=['.csv'], optional=True)
         self.add_field('normative_brain_stats', File, read=True,
-                       extensions=['.json'], optional=True)
+                       extensions=['.json'], optional=True, dataset=None)
         self.add_field('report', File, write=True, extensions=['.pdf'])
-        self.add_field('subject', str)
+        self.add_field('subject', str, dataset="output")
 
     def execute(self, context=None):
         from brainvisa import axon

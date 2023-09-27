@@ -13,7 +13,8 @@ class SulciLabellingANN(Process):
         super(SulciLabellingANN, self).__init__(**kwargs)
         self.add_field('data_graph', File, read=True,
                        extensions=['.arg', '.data'])
-        self.add_field('model', File, read=True, extensions=['.arg', '.data'])
+        self.add_field('model', File, read=True, extensions=[
+                       '.arg', '.data'], dataset="shared")
         self.add_field('output_graph', File, write=True,
                        extensions=['.arg', '.data'])
         self.add_field('model_hint', Literal[0, 1])

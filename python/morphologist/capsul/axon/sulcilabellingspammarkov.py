@@ -15,16 +15,18 @@ class SulciLabellingSPAMMarkov(Process):
                        extensions=['.arg', '.data'])
         self.add_field('output_graph', File, write=True,
                        extensions=['.arg', '.data'])
-        self.add_field('model', File, read=True, extensions=['.dat'])
+        self.add_field('model', File, read=True, extensions=[
+                       '.dat'], dataset="shared")
         self.add_field('posterior_probabilities', File,
                        write=True, extensions=['.csv'])
-        self.add_field('labels_translation_map', File,
-                       read=True, extensions=['.trl', '.def'])
-        self.add_field('labels_priors', File, read=True, extensions=['.dat'])
+        self.add_field('labels_translation_map', File, read=True,
+                       extensions=['.trl', '.def'], dataset="shared")
+        self.add_field('labels_priors', File, read=True,
+                       extensions=['.dat'], dataset="shared")
         self.add_field('segments_relations_model', File,
-                       read=True, extensions=['.dat'])
+                       read=True, extensions=['.dat'], dataset="shared")
         self.add_field('initial_transformation', File, read=True,
-                       extensions=['.trm'], optional=True)
+                       extensions=['.trm'], optional=True, dataset=None)
         self.add_field('global_transformation', File, read=True,
                        extensions=['.trm'], optional=True)
         self.add_field('fix_random_seed', bool)

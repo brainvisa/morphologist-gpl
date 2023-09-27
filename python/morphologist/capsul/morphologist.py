@@ -466,6 +466,25 @@ class Morphologist(
         ## enable values dispatch
         # self.enable_parameter_links = True
 
+        # fix datasets
+        self.field('PrepareSubject_Normalization_Normalization_AimsMIRegister_anatomical_template'). \
+            dataset = 'shared'
+        self.field('PrepareSubject_TalairachFromNormalization_normalized_referential').dataset = 'shared'
+        self.field('PrepareSubject_TalairachFromNormalization_transform_chain_ACPC_to_Normalized').dataset = 'shared'
+        self.field('PrepareSubject_TalairachFromNormalization_acpc_referential').dataset = 'shared'
+        self.field('PrepareSubject_StandardACPC_older_MNI_normalization').dataset = None
+        self.field('PrepareSubject_Normalization_commissures_coordinates').dataset = None
+        self.field('PrepareSubject_Normalization_NormalizeBaladin_template').dataset = 'shared'
+        self.field('PrepareSubject_Normalization_Normalization_AimsMIRegister_mni_to_acpc').dataset = 'shared'
+        self.field('BrainSegmentation_lesion_mask').dataset = None
+        self.field('Renorm_template').dataset = 'shared'
+        self.field('Renorm_Normalization_NormalizeSPM_ConvertSPMnormalizationToAIMS_normalized_volume').dataset = None
+        self.field('Renorm_Normalization_Normalization_AimsMIRegister_mni_to_acpc').dataset = 'shared'
+        self.field('HeadMesh_remove_mask').dataset = None
+        self.field('SplitBrain_split_template').dataset = 'shared'
+        self.field('GreyWhiteClassification_lesion_mask').dataset = None
+        #self.field('SulciRecognition_SPAM_recognition09_global_recognition_labels_priors').dataset = 'shared'
+
         # default settings
         self.select_Talairach = 'Normalization'
         self.normalization_allow_retry_initialization = True

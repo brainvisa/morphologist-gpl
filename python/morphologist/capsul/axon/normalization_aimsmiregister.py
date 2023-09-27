@@ -13,8 +13,8 @@ class normalization_aimsmiregister(Process):
         super(normalization_aimsmiregister, self).__init__(**kwargs)
         self.add_field('anatomy_data', File, read=True, extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu',
                        '.jpg', '.scn', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz'])
-        self.add_field('anatomical_template', File, read=True, extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu',
-                       '.jpg', '.scn', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz'])
+        self.add_field('anatomical_template', File, read=True, extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg',
+                       '.scn', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz'], dataset="shared")
         self.add_field('transformation_to_template', File,
                        write=True, extensions=['.trm'], optional=True)
         self.add_field('normalized_anatomy_data', File, write=True, extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.gif', '.ima', '.dim', '.jpg',
@@ -23,8 +23,8 @@ class normalization_aimsmiregister(Process):
                        extensions=['.trm'], optional=True)
         self.add_field('transformation_to_ACPC', File,
                        write=True, extensions=['.trm'], optional=True)
-        self.add_field('mni_to_acpc', File, read=True,
-                       extensions=['.trm'], optional=True)
+        self.add_field('mni_to_acpc', File, read=True, extensions=[
+                       '.trm'], optional=True, dataset="shared")
         self.add_field('smoothing', float)
 
         # initialization section

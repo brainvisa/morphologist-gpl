@@ -20,9 +20,12 @@ class TalairachTransformationFromNormalization(Process):
         self.add_field('t1mri', File, read=True, extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg',
                        '.scn', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz'], optional=True)
         self.add_field('source_referential', File, read=True)
-        self.add_field('normalized_referential', File, read=True)
-        self.add_field('transform_chain_ACPC_to_Normalized', list)
-        self.add_field('acpc_referential', File, read=True, optional=True)
+        self.add_field('normalized_referential', File,
+                       read=True, dataset="shared")
+        self.add_field('transform_chain_ACPC_to_Normalized',
+                       list, dataset="shared")
+        self.add_field('acpc_referential', File, read=True,
+                       optional=True, dataset="shared")
 
         # initialization section
         self.transform_chain_ACPC_to_Normalized = []
