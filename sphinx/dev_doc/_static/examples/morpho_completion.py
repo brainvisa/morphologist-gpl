@@ -3,11 +3,11 @@
 from capsul.api import capsul_engine
 from capsul.attributes.completion_engine import ProcessCompletionEngine
 from soma.qt_gui.qt_backend import Qt
-from soma.qt_gui.controller_widget import ScrollControllerWidget
-import pickle
+# import pickle
+import time
 
 show_links_debugger = False
-show_fom_gui = True
+show_fom_gui = False
 show_pipeline = False
 
 engine = capsul_engine()
@@ -67,8 +67,12 @@ if Qt.QApplication.instance() is not None:
 
 pipeline = engine.get_iteration_pipeline('iter', 'morpho', mp, ['t1mri'])
 cm = ProcessCompletionEngine.get_completion_engine(pipeline)
-cm.get_attribute_values().subject = ['s1', 's2', 's3']
+cm.get_attribute_values().subject = ['s1', 's2', 's3', 's4', 's5'] * 100
+t0 = time.time()
 cm.complete_parameters()
+print('completion for', len(cm.get_attribute_values().subject), ':',
+      time.time() - t0, 's.')
+
 if show_fom_gui and Qt.QApplication.instance() is not None:
     pcvi = AttributedProcessWidget(pipeline, enable_attr_from_filename=True,
                                   enable_load_buttons=True)
