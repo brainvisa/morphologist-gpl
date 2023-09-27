@@ -2,8 +2,7 @@
 
 from capsul.api import Capsul
 from soma.qt_gui.qt_backend import Qt
-from capsul.schemas.brainvisa import (declare_morpho_schemas,
-                                      morphologist_datasets)
+from capsul.schemas.brainvisa import declare_morpho_schemas
 from capsul.dataset import ProcessMetadata
 import time
 
@@ -17,8 +16,8 @@ output_schema = 'morphologist_bids'  # or "brainvisa'
 
 real_morpho_module = 'morphologist.capsul'
 fake_morpho_module = 'capsul.pipeline.test.fake_morphologist'
-#morpho_module = fake_morpho_module
-morpho_module = real_morpho_module
+morpho_module = fake_morpho_module
+#morpho_module = real_morpho_module
 
 
 def get_shared_path():
@@ -79,8 +78,7 @@ input = '/tmp/morpho-bids/rawdata/sub-aleksander/ses-m0/anat/' \
 # completion API
 input_metadata = execution_context.dataset['input'].schema.metadata(input)
 
-metadata = ProcessMetadata(mp, execution_context,
-                           datasets=morphologist_datasets)
+metadata = ProcessMetadata(mp, execution_context)
 # set input metadata in the pipeline metadata set
 metadata.bids = input_metadata
 # run completion
@@ -114,8 +112,7 @@ if Qt.QApplication.instance() is not None:
 
 # iteration
 non_iterative_plugs = [f.name for f in mp.fields()
-                       if f.name in morphologist_datasets
-                       and morphologist_datasets.get(f.name)
+                       if metadata.parameter_dataset_name(mp, f)
                             in ('shared', None)]
 pipeline = capsul.executable_iteration(
     '%s.morphologist.Morphologist' % morpho_module,
@@ -142,8 +139,7 @@ for path in paths:
     input_metadata = execution_context.dataset['input'].schema.metadata(path)
     iter_meta_bids.append(input_metadata)
 
-metadata = ProcessMetadata(pipeline, execution_context,
-                           datasets=morphologist_datasets, debug=False)
+metadata = ProcessMetadata(pipeline, execution_context)
 metadata.bids = iter_meta_bids
 t0 = time.time()
 metadata.generate_paths(pipeline)
