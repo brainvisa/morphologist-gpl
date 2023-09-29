@@ -1,5 +1,4 @@
 
-from __future__ import absolute_import
 from brainvisa.processes import *
 from soma.qt_gui.qtThread import MainThreadLife
 from brainvisa.processing import capsul_process
@@ -32,9 +31,6 @@ def onEditPipeline(self, process, dummy):
         mainThreadActions().push(self.openPipeline)
     else:
         self._pipeline_view = None
-    from capsul.attributes.completion_engine \
-                import ProcessCompletionEngine
-    pce = ProcessCompletionEngine.get_completion_engine(self.get_edited_pipeline())
 
 
 def openPipeline(self):
@@ -80,43 +76,53 @@ def customize_process(self):
 
 def get_edited_pipeline(self):
     if self._edited_pipeline is None:
-        from capsul import info as cinfo
-        cversion = (cinfo.version_major, cinfo.version_minor,
-                    cinfo.version_micro)
-        if cversion[0] >= 2:
-            from capsul.api import get_process_instance
-        else:
-            from capsul.process import get_process_instance
-        if cversion >= (2, 1):
-            from capsul.attributes.completion_engine \
-                import ProcessCompletionEngine
-        if cversion >= (2, 1):
-            from capsul.study_config.study_config import StudyConfig
+        from capsul.api import Capsul
+        from capsul.dataset import ProcessMetadata
+        from capsul.schemas.brainvisa import declare_morpho_schemas
+        import sys
+        import os.path as osp
 
-            study_config = getattr(defaultContext(), 'study_config', None)
-            if study_config is None:
-                init_study_config = {}
-            else:
-                init_study_config = study_config.export_to_dict()
+        # morphologist may be imported as a toolbox. Here we need the regular
+        # module
+        old_morpho = None
+        if 'morphologist' in sys.modules \
+                and sys.modules['morphologist'].__file__.endswith(
+                    osp.join('brainvisa', 'toolboxes', 'morphologist',
+                             'processes', 'morphologist.py')):
+            print('change morphologist module')
+            old_morpho = sys.modules['morphologist']
+            del sys.modules['morphologist']
+        declare_morpho_schemas('morphologist.capsul')
 
-            init_study_config.update(capsul_process.get_initial_study_config())
-            study_config = StudyConfig(
-                init_config=init_study_config,
-                modules=StudyConfig.default_modules
-                + ['BrainVISAConfig', 'FomConfig'])
-            study_config.axon_link = \
-                axon_capsul_config_link.AxonCapsulConfSynchronizer(study_config)
-            study_config.axon_link.sync_axon_to_capsul()
-            study_config.on_trait_change(
-                study_config.axon_link.sync_capsul_to_axon)
-            self._edited_pipeline = get_process_instance(
-                self.capsul_process_type, study_config)
-            pf = ProcessCompletionEngine.get_completion_engine(
-                self._edited_pipeline)
+        capsul = getattr(defaultContext(), 'capsul', None)
+        if capsul is None:
+            capsul = Capsul()
+            init_config = {}
         else:
-            self._edited_pipeline = get_process_instance(
-                self.capsul_process_type)
+            init_config = capsul.config.asdict()
+
+        init_config.update(capsul_process.get_initial_capsul())
+        capsul.config.import_dict(init_config)
+        if not hasattr(capsul, 'axon_link'):
+            capsul.axon_link = \
+                axon_capsul_config_link.AxonCapsulConfSynchronizer(capsul)
+            capsul.axon_link.sync_axon_to_capsul()
+            capsul.config.builtin.on_attribute_change.add(
+                capsul.axon_link.sync_capsul_to_axon)
+
+        self._edited_pipeline = capsul.executable(
+            self.capsul_process_type)
+        self.capsul = capsul
+
+        execution_context = capsul.engine().execution_context(
+            self._edited_pipeline)
+
+        ProcessMetadata(self._edited_pipeline, execution_context)
         self.customize_process()
+
+        if old_morpho is not None:
+            # restore toolbox module
+            sys.modules['morphologist'] = old_morpho
 
     return self._edited_pipeline
 
@@ -124,40 +130,11 @@ def get_edited_pipeline(self):
 def execution(self, context):
     self._pipeline_view = None  # close the GUI, if any
 
-    import time
-    from soma.application import Application
-    from capsul.study_config.study_config import StudyConfig
-    from capsul import info as cinfo
-    cversion = (cinfo.version_major, cinfo.version_minor, cinfo.version_micro)
-    if cversion < (2, 1):
-        from capsul.process import process_with_fom
     from soma_workflow import client as swclient
-    from soma.wip.application.api import Application as Appli2
+    from capsul.execution_context import CapsulWorkflow
+    from capsul.dataset import ProcessMetadata
     import numpy as np
 
-    #soma_app = Application('soma.fom', '1.0')
-    # soma_app.plugin_modules.append('soma.fom')
-    # soma_app.initialize()
-    configuration = Appli2().configuration
-
-    #if self.capsul_process_type \
-            #== 'morphologist.capsul.morphologist.Morphologist':
-        ## Morphologist uses the hand-written Capsul formats
-        ## formats-brainvisa-1.0
-        #axon_to_capsul_formats = {
-            #'NIFTI-1 image': "NIFTI",
-            #'gz compressed NIFTI-1 image': "NIFTI gz",
-            #'GIS image': "GIS",
-            #'MINC image': "MINC",
-            #'SPM image': "SPM",
-            #'GIFTI file': "GIFTI",
-            #'MESH mesh': "MESH",
-            #'PLY mesh': "PLY",
-            #'siRelax Fold Energy': "Energy",
-        #}
-    #else:
-        ## other processes use the directly translated formats
-        ## brainvisa-formats-3.2.0
     axon_to_capsul_formats = {}
 
     # dirs and formats have to be handled sorted since
@@ -167,7 +144,6 @@ def execution(self, context):
         t1mri.format.name, t1mri.format.name) for t1mri in self.t1mri]
     aformats = np.array(formats)
     dirs = np.array([t1mri['_database'] for t1mri in self.t1mri])
-    items_order = np.argsort(dirs)
     sorted_items = []
     for d in sorted(np.unique(dirs)):
         sub_items = np.where(dirs == d)[0]
@@ -175,100 +151,79 @@ def execution(self, context):
 
     old_database = self.t1mri[sorted_items[0]]['_database']
 
-
     mp = self.get_edited_pipeline()
-    if cversion >= (2, 1):
-        study_config = mp.get_study_config()
-        study_config.input_directory = old_database
-        study_config.output_directory = old_database
-        from capsul.attributes.completion_engine \
-            import ProcessCompletionEngine
-        pf = ProcessCompletionEngine.get_completion_engine(mp)
-    else:
-        init_study_config = capsul_process.get_initial_study_config()
-        init_study_config["input_directory"] = old_database
-        init_study_config["output_directory"] = old_database
-        study_config = StudyConfig(
-            init_config=init_study_config,
-            modules=StudyConfig.default_modules
-            + ['BrainVISAConfig', 'FomConfig'])
-        pf = process_with_fom.ProcessWithFom(mp, study_config)
+    capsul = self.capsul
+    datasets = capsul.config.builtin.dataset
+    datasets.input.path = old_database
+    datasets.input.metadata_schema = 'brainvisa'  # FIXME hard-coded
+    datasets.output.path = old_database
+    datasets.output.metadata_schema = 'brainvisa'  # FIXME hard-coded
+    metadata = ProcessMetadata(mp, capsul.engine().execution_context(mp))
 
-    # activate normalization methods disabling
-    if hasattr(mp, 'attach_config_activations'):
-        mp.attach_config_activations()
+    # TODO FIXME: ?
+    ## activate normalization methods disabling
+    #if hasattr(mp, 'attach_config_activations'):
+        #mp.attach_config_activations()
 
     # workflow config
-    from capsul.pipeline import pipeline_workflow
-    study_config.somaworkflow_computing_resource = 'localhost'
-    if self.use_translated_shared_directory:
-        path_translations = {
-            'path_translations': {
-                study_config.shared_directory:
-                    ['brainvisa', 'de25977f-abf5-9f1c-4384-2585338cd7af']}}
-    else:
-        path_translations = {}
-    study_config.somaworkflow_computing_resources_config.localhost \
-        = path_translations
-
     workflow = swclient.Workflow(name='%s CAPSUL iteration' % mp.name, jobs=[])
     workflow.root_group = []
 
     context.progress(0, len(self.t1mri), process=self)
-    for item in six.moves.xrange(len(self.t1mri)):
+    for item in range(len(self.t1mri)):
         i = sorted_items[item]
         t1mri = self.t1mri[i]
-        format = formats[i]
         database = t1mri['_database']
-        if cversion >= (2, 1):
-            attributes = pf.get_attribute_values().export_to_dict()
-        else:
-            attributes = pf.attributes
-        attributes['center'] = t1mri['center']
-        attributes['subject'] = t1mri['subject']
-        attributes['acquisition'] = t1mri['acquisition']
+        schema_name = 'brainvisa'  # FIXME
+        #metadata = ProcessMetadata(mp, capsul.engine().execution_context(mp))
+        schema = getattr(metadata, schema_name)
+        schema.center = t1mri['center']
+        schema.subject = t1mri['subject']
+        schema.acquisition = t1mri['acquisition']
         j = i
         if len(self.analysis) <= j:
             j = -1
-        attributes['analysis'] = self.analysis[j]
+        schema.analysis = self.analysis[j]
         if len(self.sulci_recognition_session) <= j:
             j = -1
-        attributes['sulci_recognition_session'] \
-            = self.sulci_recognition_session[j]
+        schema.sulci_recognition_session = self.sulci_recognition_session[j]
         # handle input format
-        if database != study_config.input_directory \
-                or database != study_config.output_directory \
-                or format != study_config.volumes_format:
-            # need to reconfigure FOMs for this new dirs/format
-            study_config.input_directory = database
-            study_config.output_directory = database
-            study_config.volumes_format = format
-            study_config.initialize_modules()
-        format = axon_to_capsul_formats.get(t1mri.format.name,
-                                            t1mri.format.name)
-        if cversion >= (2, 1):
-            pf.complete_parameters({'capsul_attributes': attributes})
-        else:
-            pf.create_completion()
+        ext = t1mri.fullPath().rsplit('.', 1)[-1]
+        if ext == 'gz':
+            ext = '.'.join(t1mri.fullPath().rsplit('.', 2)[-2:])
+        context.write('ext:', ext)
+        schema.extension = ext
+        if database != datasets.input.path \
+                or database != datasets.output.path:
+            datasets.input.path = database
+            datasets.output.path = database
+        context.write('config:', capsul.config.builtin.asdict())
+        context.write('meta:', metadata.asdict())
+        metadata.generate_paths(mp)
+        mp.resolve_paths(metadata.execution_context)
+        context.write('imported T1:', mp.imported_t1mri)
 
-        transfers = []
-        if self.transfer_inputs \
-                and study_config.input_directory not in transfers:
-            transfers.append(study_config.input_directory)
-        if self.transfer_outputs \
-                and study_config.output_directory not in transfers:
-            transfers.append(study_config.output_directory)
+        #transfers = []
+        #if self.transfer_inputs \
+                #and study_config.input_directory not in transfers:
+            #transfers.append(study_config.input_directory)
+        #if self.transfer_outputs \
+                #and study_config.output_directory not in transfers:
+            #transfers.append(study_config.output_directory)
 
-        if len(transfers) != 0:
-            study_config.somaworkflow_computing_resources_config.localhost \
-                .transfer_paths = transfers
-        else:
-            study_config.somaworkflow_computing_resources_config.localhost \
-                .transfer_paths = []
+        #if len(transfers) != 0:
+            #study_config.somaworkflow_computing_resources_config.localhost \
+                #.transfer_paths = transfers
+        #else:
+            #study_config.somaworkflow_computing_resources_config.localhost \
+                #.transfer_paths = []
 
-        priority = (len(self.t1mri) - item - 1) * 100
-        wf = pipeline_workflow.workflow_from_pipeline(
-            mp, study_config=study_config)  # , jobs_priority=priority)
+        cwf = CapsulWorkflow(mp)
+        wf = capsul_process.CapsulProcess.capsul_workflow_to_somaworkflow(
+            mp.name, cwf)
+        for job in wf.jobs:
+            job.priority += (len(self.t1mri) - item) * 100
+
         workflow.jobs += wf.jobs
         workflow.dependencies += wf.dependencies
         group = swclient.Group(wf.root_group,

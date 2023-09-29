@@ -16,8 +16,8 @@ output_schema = 'morphologist_bids'  # or "brainvisa'
 
 real_morpho_module = 'morphologist.capsul'
 fake_morpho_module = 'capsul.pipeline.test.fake_morphologist'
-morpho_module = fake_morpho_module
-#morpho_module = real_morpho_module
+#morpho_module = fake_morpho_module
+morpho_module = real_morpho_module
 
 
 def get_shared_path():
