@@ -191,17 +191,16 @@ def execution(self, context):
         ext = t1mri.fullPath().rsplit('.', 1)[-1]
         if ext == 'gz':
             ext = '.'.join(t1mri.fullPath().rsplit('.', 2)[-2:])
-        context.write('ext:', ext)
         schema.extension = ext
         if database != datasets.input.path \
                 or database != datasets.output.path:
             datasets.input.path = database
             datasets.output.path = database
-        context.write('config:', capsul.config.builtin.asdict())
-        context.write('meta:', metadata.asdict())
+        # context.write('config:', capsul.config.builtin.asdict())
+        # context.write('meta:', metadata.asdict())
         metadata.generate_paths(mp)
         mp.resolve_paths(metadata.execution_context)
-        context.write('imported T1:', mp.imported_t1mri)
+        # context.write('imported T1:', mp.imported_t1mri)
 
         #transfers = []
         #if self.transfer_inputs \
@@ -219,8 +218,7 @@ def execution(self, context):
                 #.transfer_paths = []
 
         cwf = CapsulWorkflow(mp)
-        wf = capsul_process.CapsulProcess.capsul_workflow_to_somaworkflow(
-            mp.name, cwf)
+        wf = cwf.to_soma_workflow(mp.name)
         for job in wf.jobs:
             job.priority += (len(self.t1mri) - item) * 100
 
