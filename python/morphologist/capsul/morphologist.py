@@ -667,38 +667,50 @@ class Morphologist(
         self._change_graph_version(self.CorticalFoldsGraph_graph_version)
         self.visible_groups = set()
 
-    def attach_config_activations(self):
+    def attach_config_activations(self, capsul):
         '''
-        Set notification handlers on study_config variables use_spm, use_fsl
+        Set notification handlers on Capsul variables use_spm, use_fsl
         to adapt activation of SPM and FSL nodes in the normalization steps,
         and the normalization switches values.
         Any previous notification will be removed first.
         '''
-        study_config = self.get_study_config()
-        self.detach_config_activation()
-        study_config.on_attribute_change.add(
-            self._change_spm_activation, 'use_spm')
-        study_config.on_attribute_change.add(
-            self._change_fsl_activation, 'use_fsl')
-        self._change_spm_activation(study_config.use_spm)
-        self._change_fsl_activation(study_config.use_fsl)
+        self.detach_config_activation(capsul)
+        config = capsul.engine().config
+        config.spm.on_attribute_change.add(self._change_spm_activation)
+        config.fsl.on_attribute_change.add(self._change_fsl_activation)
+        self._change_spm_activation(None, None, None, config.spm)
+        self._change_fsl_activation(None, None, None, config.fsl)
 
-    def detach_config_activation(self):
+    def detach_config_activation(self, capsul):
         '''
         Remove SPM and FSL notification handlers, and release the reference to
         the study config.
         '''
-        study_config = self.study_config
-        study_config.on_attribute_change.remove(
-            self._change_spm_activation, 'use_spm')
-        study_config.on_attribute_change.remove(
-            self._change_fsl_activation, 'use_fsl')
+        config = capsul.engine().config
+        if not hasattr(config, 'spm'):
+            config.add_module('spm')
+        if not hasattr(config, 'fsl'):
+            config.add_module('fsl')
+        try:
+            config.spm.on_attribute_change.remove(self._change_spm_activation)
+        except KeyError:
+            pass  # was not attached, it's OK
+        try:
+            config.on_attribute_change.remove(self._change_fsl_activation)
+        except KeyError:
+            pass  # was not attached, it's OK
 
-    def _change_spm_activation(self, dummy):
+    def _change_spm_activation(self, new_value, old_value, attribute_name,
+                               spm):
         '''
-        Callback for study_config.use_spm state change
+        Callback for spm state change
         '''
-        enabled = self.study_config.use_spm
+        enabled = False
+        for kfield in spm.fields():
+            conf = getattr(spm, kfield.name)
+            if conf.directory and conf.version:
+                enabled = True
+                break
         if 'NormalizeSPM' in self.nodes['PrepareSubject'] \
                 .nodes['Normalization'].nodes:
             self.nodes['PrepareSubject'] \
@@ -709,11 +721,17 @@ class Morphologist(
                 = enabled
         self.ensure_use_allowed_normalization()
 
-    def _change_fsl_activation(self, dummy):
+    def _change_fsl_activation(self,  new_value, old_value, attribute_name,
+                               fsl):
         '''
-        Callback for study_config.use_fsl state change
+        Callback for fsl state change
         '''
-        enabled = self.study_config.use_fsl
+        enabled = False
+        for kfield in fsl.fields():
+            conf = getattr(fsl, kfield.name)
+            if (conf.directory and conf.setup_script) or conf.prefix:
+                enabled = True
+                break
         if 'NormalizeFSL' in self.nodes['PrepareSubject'] \
                 .nodes['Normalization'].nodes:
             self.nodes['PrepareSubject'] \
