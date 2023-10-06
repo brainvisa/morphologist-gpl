@@ -8,6 +8,6 @@ class MorphologistSimple(
 
     def __init__(self, autoexport_nodes_parameters=True, **kwargs):
         super(MorphologistSimple, self).__init__(**kwargs)
-        self.remove_trait('tal_to_normalized_transform')
-        self.add_trait('tal_to_normalized_transform', File())
+        self.remove_field('tal_to_normalized_transform')
+        self.add_field('tal_to_normalized_transform', type_=File)
         self.tal_to_normalized_transform = undefined
