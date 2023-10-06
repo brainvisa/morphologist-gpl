@@ -13,10 +13,15 @@
 #             if name == 'b_field':
 #                 name = 'field'
 #
+# in morphologistprocess.py:
+# exact same patches
+#
 # using:
 #
 # sed -i "s/'field'/'b_field'/" t1biascorrection.py
 # sed -i "s/                continue/                continue\n            # patch forbidden field name \"field\"\n            if name == 'b_field':\n                name = 'field'/" t1biascorrection.py
+# sed -i "s/'field'/'b_field'/" morphologistprocess.py
+# sed -i "s/                continue/                continue\n            # patch forbidden field name \"field\"\n            if name == 'b_field':\n                name = 'field'/" morphologistprocess.py
 
 
 
