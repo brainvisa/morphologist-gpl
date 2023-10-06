@@ -2,7 +2,7 @@
 import anatomist.capsul as acap
 import math
 from six.moves import zip
-from soma.controller import File, field
+from soma.controller import File, field, undefined
 
 
 class MorphologistView(acap.AnatomistMultipleViewsProcess):
@@ -78,13 +78,13 @@ class MorphologistView(acap.AnatomistMultipleViewsProcess):
     def create_anatomist_view(self):
 
         def check_file(filename):
-            return filename not in ('', traits.Undefined, None) \
+            return filename not in ('', undefined, None) \
                 and os.path.exists(filename)
 
         a = self.anatomist
 
         # should not be imported in the module to avoid loading Qt too early
-        from soma.qt_gui.qt_backend import QtGui, QtCore
+        from soma.qt_gui.qt_backend import QtGui
         from soma import aims
 
         block = None
