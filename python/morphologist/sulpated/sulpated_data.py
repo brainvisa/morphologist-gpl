@@ -564,6 +564,7 @@ class SulcalPatternsData(Qt.QObject):
 
             rdi = ReadDiskItem('Labelled Cortical Folds Graph',
                                'Graph and data')
+            db_def = {}
 
             with self.database_lock:
 
