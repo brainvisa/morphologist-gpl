@@ -138,12 +138,19 @@ Patterns are displayed in columns, as defined in the config ``patterns_def.json`
 
 Status columns will show when data have been modified by the user.
 
+The status background is light yellow if the data has been saved (after edition).
+
 Locked data are not editable, so it's a reasonable and convenient way to mark validated data.
 
 Sulci columns checkboxes allow to load / show sulci graphs.
 
 Save buttons allow to save each corresponding data. **Beware** there is as "save" (patterns) column, and a "save sulci" column.
 
+To avoid confusions, **pattern-oriented colums** have a background with a pattern icon (light hexagonal tiles), while **sulci-oriented columns** have a "sulci" background. It's not very pretty, but it makes things clearer.
+
+Display sulci model: allows to show in the 3D views the sulci models from Morphologist, with all available labels.
+
+Annotations are associated with each pattern of each subject / hemisphere. They are saved with the patterns of each subject (in a JSON file).
 
 Sulci views window
 ------------------

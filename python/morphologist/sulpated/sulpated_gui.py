@@ -306,6 +306,24 @@ class SulcalPatternsEditor(Qt.QWidget):
                                                         'axon')
         save_icon = Qt.QIcon(save_icon_f)
 
+        pat_icon_f = aims.carto.Paths.findResourceFile('icons/pattern.png',
+                                                       'morphologist')
+        pat_icon = Qt.QImage(pat_icon_f)
+        pat_brush = Qt.QBrush(pat_icon)
+
+        sul_icon_f = aims.carto.Paths.findResourceFile('icons/sulci.png',
+                                                       'morphologist')
+        sul_icon = Qt.QImage(sul_icon_f)
+        sul_brush = Qt.QBrush(sul_icon)
+        sul_w_icon_f = aims.carto.Paths.findResourceFile('icons/sulci_w.png',
+                                                         'morphologist')
+        sul_w_icon = Qt.QImage(sul_w_icon_f)
+        sul_w_brush = Qt.QBrush(sul_w_icon)
+
+        self.sul_brush = sul_brush
+        self.sul_w_brush = sul_w_brush
+
+
         colsizes = [None for c in range(len(cols))]
 
         for row, subject in enumerate(subjects):
@@ -341,18 +359,22 @@ class SulcalPatternsEditor(Qt.QWidget):
                 if pstatus == 'conflict':
                     status = 'C'
                 sidecol = len(base_cols) * s + 1
-                table.setItem(row, pat_status_col + sidecol,
-                              Qt.QTableWidgetItem(status))
+                item = Qt.QTableWidgetItem(status)
+                item.setBackground(pat_brush)
+                table.setItem(row, pat_status_col + sidecol, item)
                 item = Qt.QTableWidgetItem(save_icon, None)
+                item.setBackground(pat_brush)
                 table.setItem(row, save_pat_col + sidecol, item)
                 if pats.locked():
                     locked = Qt.Qt.Checked
                 else:
                     locked = Qt.Qt.Unchecked
                 item = Qt.QTableWidgetItem()
+                item.setBackground(pat_brush)
                 item.setCheckState(locked)
                 table.setItem(row, lock_pat_col + sidecol, item)
                 item = Qt.QTableWidgetItem('')
+                item.setBackground(sul_brush)
                 checked = Qt.Qt.Checked if side in \
                     self.displayed_sulci.get(subject, {}) else Qt.Qt.Unchecked
                 item.setCheckState(checked)
@@ -368,14 +390,18 @@ class SulcalPatternsEditor(Qt.QWidget):
                 table.setItem(row, sulci_status_col + sidecol, item)
 
                 if pats.is_output_graph:
-                    color = [255, 255, 180]  # graph has been saved in R/W
+                    item.setBackground(sul_w_brush)
+                    # color = [255, 255, 180]  # graph has been saved in R/W
                 else:
-                    color = [255, 255, 255]
-                item.setBackground(Qt.QBrush(Qt.QColor(*color)))
+                    item.setBackground(sul_brush)
+                    # color = [255, 255, 255]
+                # item.setBackground(Qt.QBrush(Qt.QColor(*color)))
 
-                table.setItem(row, save_sulci_col + sidecol,
-                              Qt.QTableWidgetItem(save_icon, None))
+                item = Qt.QTableWidgetItem(save_icon, None)
+                item.setBackground(sul_brush)
+                table.setItem(row, save_sulci_col + sidecol, item)
                 item = Qt.QTableWidgetItem(None)
+                item.setBackground(sul_brush)
                 if pats.sulci_locked:
                     checked = Qt.Qt.Checked
                 else:
@@ -725,7 +751,8 @@ class SulcalPatternsEditor(Qt.QWidget):
         row, col = self.get_table_item(subject, side, 'sulci status')
         item = self.summary_table.item(row, col)
         item.setText(sm)
-        item.setBackground(Qt.QBrush(Qt.QColor(255, 255, 150)))
+        # item.setBackground(Qt.QBrush(Qt.QColor(255, 255, 150)))
+        item.setBackground(self.sul_w_brush)
         self.update_sulci_view(subject, side)
 
     def get_table_item(self, subject, side=None, pattern_or_button=None):
@@ -969,10 +996,13 @@ class SulcalPatternsEditor(Qt.QWidget):
                             item.setText(status)
                             self.update_sulci_view(subject, side)
                         if pat.is_output_graph:
-                            color = [255, 255, 180]
+                            brush = self.sul_w_brush
+                            # color = [255, 255, 180]
                         else:
-                            color = [255, 255, 255]
-                        item.setBackground(Qt.QBrush(Qt.QColor(*color)))
+                            brush = self.sul_brush
+                            # color = [255, 255, 255]
+                        # item.setBackground(Qt.QBrush(Qt.QColor(*color)))
+                        item.setBackground(brush)
 
     def display_left_model(self, state):
         self.display_model('left', state == Qt.Qt.Checked)
