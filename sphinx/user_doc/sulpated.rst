@@ -2,11 +2,23 @@
 SulPatEd
 ========
 
+Introduction
+============
+
 Sulcal Patterns Editor: edit patterns labels for a brainvisa database.
 
 Sulpated, is a graphical interface to manually label sulci and sulcal patterns.
 
 It is originally a "small tool program" and its setup is not completely automatic. This means there is a config file to write.
+
+It may be used also to perform manual edition or correction of sulci labels, before or after automatic identification in Morphologist.
+
+Sulcal patterns
+---------------
+
+Sulcal patterns are local folding configurations that we identify manually. Thus, it is merely a matter of annotating a brain with patterns which are present. Going a bit further we can also write a confidence factor and text notes associated with each pattern.
+
+.. image:: images/sulpated_main.png
 
 
 Summary
@@ -56,6 +68,8 @@ Setup Brainvisa databases
 
 * Optionnally, an additional read-only database can be defined and enabled in BrainVisa. It is the "input" database. It will be used to read input sulci graphs from. Nothing will be written into it, everything will be written in the "sulci" database.
 
+If a read-only "input" database is used, then the "sulci" database may be empty at the beginning. However all databases used **must have been created, defined and enabled in BrainVISA**. If not, Sulpated will fail with an error, which is not always very explicit (it is just a small program).
+
 
 Write a config file
 -------------------
@@ -100,6 +114,8 @@ Config file contents:
 
     for large databases, reading the locks simply takes too long, and we need to use this option. Forcing the value to ``true`` is riskier, but anyway locks will be really checked before saving any data.
 
+See `Example of full config file`_
+
 
 The GUI
 =======
@@ -111,6 +127,186 @@ Then run the following command from a terminal inside the BrainVisa container
     python3 -m morphologist.sulpated -o /path/to/data
 
 The ``-o`` option is not needed if it is started from the output patterns directory.
+
+
+Main window
+-----------
+
+.. image:: images/sulpated_main.png
+
+Patterns are displayed in columns, as defined in the config ``patterns_def.json`` file. Colors are also defined in the config (thus if they are ugly, it's just because I have set them almost randomly in this example).
+
+Status columns will show when data have been modified by the user.
+
+Locked data are not editable, so it's a reasonable and convenient way to mark validated data.
+
+Sulci columns checkboxes allow to load / show sulci graphs.
+
+Save buttons allow to save each corresponding data. **Beware** there is as "save" (patterns) column, and a "save sulci" column.
+
+
+Sulci views window
+------------------
+
+.. image:: images/sulpated_sulci.png
+
+
+Features and status of the implementation
+=========================================
+
+.. |ok| raw:: html
+
+    <span style="color: #009000; text-align: right; font-weight: bold; float: right">[ok]</span>
+
+.. |notok| raw:: html
+
+    <span style="color: #a00000; text-align: right; font-weight: bold; float: right">[Not done]</span>
+
+.. |todo| raw:: html
+
+    <span style="color: #a00000; text-align: right; font-weight: bold; float: right">[TO DO]</span>
+
+.. |partly| raw:: html
+
+    <span style="color: #b06000; text-align: right; font-weight: bold; float: right">[Partly done]</span>
+
+.. |mostly| raw:: html
+
+    <span style="color: #90a000; text-align: right; font-weight: bold; float: right">[Mostly done]</span>
+
+.. |notneeded| raw:: html
+
+    <span style="color: #90a000; text-align: right; font-weight: bold; float: right">[Not needed ?]</span>
+
+.. |todo_1| raw:: html
+
+    <span style="color: #b06000; text-align: right; font-weight: bold; float: right">[no interface]</span>
+
+.. |todo_2| raw:: html
+
+    <span style="color: #b06000; text-align: right; font-weight: bold; float: right">[TODO for patterns, done for sulci]</span>
+
+.. |nolock| raw:: html
+
+    <span style="color: #b06000; text-align: right; font-weight: bold; float: right">[no lock]</span>
+
+* used by several users concurrently. Each user should see updated data (real time), modify, save without side effect on other users (working on different subjects)
+
+* table displaying all subject, todo, existing data, done (validated + locked) |mostly|
+
+* locking system for both concurrent access and protection of validated data |ok|
+
+* [auto-save ?]                                                        |notok|
+
+* edit sulci manual labelings                                             |ok|
+
+  * convert auto to manual labelings                                      |ok|
+
+* enter labels for a subject, with possible annotations                   |ok|
+
+  * multiple labels                                                       |ok|
+  * confidence                                                            |ok|
+  * notes                                                                 |ok|
+
+* the GUI should be very easy to use (single button?) and should display info clearly                                                                   |ok|
+
+  * Use clear icons                                                     |todo|
+
+* conflicts handling                                                  |mostly|
+
+  - backup save                                                           |ok|
+  - conflicts list                                                        |ok|
+  - conflicts resolution interface ?                                   |notok|
+  - force write: unlock |ok|
+  - abort / revert user version                                         |todo|
+
+* multi-subject 3D views window                                       |partly|
+
+  in each, display:
+
+  - subject name/ID                                                       |ok|
+  - 3D sulci                                                              |ok|
+  - buttons for labels                                                    |ok|
+
+    - one color per label ?                                               |ok|
+    - with label names displayed only once in the window ?
+    - label name as tooltip ?                                           |todo|
+
+  - [labels confidence / annotations ?] or this can be opened specifically and temporarily on a user action (menu, button)                          |notok|
+  - save button, displaying unsaved state                                 |ok|
+  - save / load in a separate output database                             |ok|
+  - validate / lock button                                                |ok|
+  - unlocking should require a confirmation                               |ok|
+  - notification / update when data (sulci graph or labels file) is modified externally by another user                                              |ok|
+  - handle conflicts: I have modified, not saved yet, but someone else has, in the meantime
+
+    - change colors / grey the whole subject                           |notok|
+    - allow / suggest to save things at another place to resolve conflicts |ok|
+
+- allow to discard unsaved changes (with confirmation)                |partly|
+
+  - [notify when starting to edit a subject, other users will be notified] ? |notok|
+
+    - means to "unlock" if the edition is aborted (quit the program, close the subject, or user action to tell that we abort)
+    - tool to manually unlock a subject after a crash which has not unlocked it
+
+  - [undo / redo capabilities] (difficult to implement in the short term)
+  - [back up older files ?]
+
+
+Technical
+
+- JSON or YAML file for each subject / region                             |ok|
+- or single inter-subject file [not implemented this way]
+- or database [not implemented this way; impractical for end users]
+
+- file locking system                                                     |ok|
+- file modification notification system to update GUI, (or database modification notification)                                                |ok|
+
+  - use brainvisa/Axon API to query data ?
+  - but NFS locking issue prevents it for being reliable
+  - use a locking wrapper to database access ? -> will slow things down even more... but if we limit the accesses it might do the job                |ok|
+
+- data states:
+
+  - to do
+  - editing (temp. locked)                                             |notok|
+  - saved                                                                 |ok|
+  - validated (permanently locked)                                        |ok|
+
+- actions:
+
+  - edit labels list (global, for all subjects / users)               |todo_1|
+  - start edit [auto] (temp lock)                                      |notok|
+  - change a label state                                                  |ok|
+  - edit label confidence                                                 |ok|
+  - edit label annotation                                                 |ok|
+  - save (unlock temp)                                                    |ok|
+  - abort (revert to saved, unlock temp)                              |todo_2|
+  - lock                                                                  |ok|
+  - unlock                                                                |ok|
+  - edit sulci labels (temp lock)                                     |nolock|
+  - abort sulci labels (revert, unlock temp)                          |nolock|
+  - save sulci labels (unlock temp)                                   |nolock|
+  - validate sulci labels ?                                               |ok|
+
+- all lock / unlock actions must notify something, or anyway be listened by other users
+
+  - global version/date database file, used for notification/polling, with lock
+    maybe including all data dates/versions in order to quickly know what has
+    changed                                                               |ok|
+  - subject/hemi sulci graph lock                                  |notneeded|
+  - subject patterns file lock                                     |notneeded|
+  - database "version file" lock                                          |ok|
+
+Open questions:
+
+  - do we want to auto-reload loaded sulci graphs when they are changed externally ? If not, what should be displayed ?
+  - do we need to have a lock during edition ? (temp lock)
+  - do we want to auto-save sulci graphs ? Where ?
+  - is "validaton" and "locking" the same ?
+  - do we want to keep track of who has modified a data ? (would almost need a RCS to be done correctly)
+  - is it a bottleneck to poll every file when the global version file is touched, or do we need to cache every data state in the version file ? (could involve additional sync issues)
 
 
 Example of full config file
