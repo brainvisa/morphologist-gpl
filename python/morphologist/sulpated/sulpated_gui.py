@@ -415,10 +415,16 @@ class SulcalPatternsEditor(Qt.QWidget):
                 item = Qt.QTableWidgetItem(None)
                 item.setBackground(sul_brush)
                 if pats.sulci_locked:
-                    checked = Qt.Qt.Checked
+                    locked_icn = self.lock_icon
+                    locked = True
+                    # checked = Qt.Qt.Checked
                 else:
-                    checked = Qt.Qt.Unchecked
-                item.setCheckState(checked)
+                    locked_icn = self.unlock_icon
+                    locked = False
+                    # checked = Qt.Qt.Unchecked
+                #item.setCheckState(checked)
+                item.setIcon(locked_icn)
+                item.setData(Qt.Qt.UserRole, locked)
                 table.setItem(row, lock_sulci_col + sidecol, item)
 
         if len(subjects) != 0:
@@ -478,7 +484,7 @@ class SulcalPatternsEditor(Qt.QWidget):
             self.save_sulci(subject, side)
         elif control_btn == 'locked':
             self.toggle_lock_pattern(item, subject, side)
-        elif control_btn == 'suli lock':
+        elif control_btn == 'sulci lock':
             self.toggle_lock_sulci(item, subject, side)
         elif pattern is not None:
             self.summary_table.setCurrentItem(item)
@@ -737,28 +743,38 @@ class SulcalPatternsEditor(Qt.QWidget):
 
     def lock_sulci(self, item, subject, side):
         # locked = item.checkState() == Qt.Qt.Checked
-        locked = item.data(Qt.Qt.UserRole)
-        if not locked:
-            # confirm unlock
-            res = Qt.QMessageBox.question(
-                self, 'Unlock',
-                'Sulci are locked for subject %s, side %s. Do you want to '
-                'unlock them ?' % (subject, side),
-                Qt.QMessageBox.Yes | Qt.QMessageBox.No)
-            if res != Qt.QMessageBox.Yes:
-                self.summary_table.blockSignals(True)
-                item.setCheckState(Qt.Qt.Checked)
-                self.summary_table.blockSignals(False)
-                self.update_sulci_view(subject, side)
-                return
-        graph = self.data_model.get_sulci_graph_file(subject, side)
-        if graph:
-            if locked:
-                graph.lockData()
-            else:
-                graph.unlockData()
-            self.data_model.save_version()
-        self.update_sulci_view(subject, side)
+        if getattr(self, '_locking_item', None):
+            return
+        self._locking_item = item
+        try:
+            locked = item.data(Qt.Qt.UserRole)
+            if not locked:
+                # confirm unlock
+                res = Qt.QMessageBox.question(
+                    self, 'Unlock',
+                    'Sulci are locked for subject %s, side %s. Do you want to '
+                    'unlock them ?' % (subject, side),
+                    Qt.QMessageBox.Yes | Qt.QMessageBox.No)
+                if res != Qt.QMessageBox.Yes:
+                    self.summary_table.blockSignals(True)
+                    # item.setCheckState(Qt.Qt.Checked)
+                    item.setData(Qt.Qt.UserRole, True)
+                    self.summary_table.blockSignals(False)
+                    self.update_sulci_view(subject, side)
+                    return
+            graph = self.data_model.get_sulci_graph_file(subject, side)
+            if graph:
+                if locked:
+                    graph.lockData()
+                    lock_icn = self.lock_icon
+                else:
+                    graph.unlockData()
+                    lock_icn = self.unlock_icon
+                self.data_model.save_version()
+                item.setIcon(lock_icn)
+            self.update_sulci_view(subject, side)
+        finally:
+            del self._locking_item
 
     def save_sulci(self, subject, side, silent=False, modified_only=True):
         r = self.data_model.save_sulci(subject, side,
