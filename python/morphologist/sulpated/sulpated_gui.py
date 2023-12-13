@@ -10,6 +10,7 @@ from functools import partial
 import weakref
 import getpass
 import sip
+import sys
 
 
 # FIXME: taken from database_qc_table process, should move to soma-base
@@ -320,9 +321,15 @@ class SulcalPatternsEditor(Qt.QWidget):
         sul_w_icon = Qt.QImage(sul_w_icon_f)
         sul_w_brush = Qt.QBrush(sul_w_icon)
 
+        lock_icon_f = aims.carto.Paths.findResourceFile('icons/lock.png',
+                                                        'morphologist')
+        self.lock_icon = Qt.QIcon(lock_icon_f)
+        unlock_icon_f = aims.carto.Paths.findResourceFile(
+            'icons/lock_open.png', 'morphologist')
+        self.unlock_icon = Qt.QIcon(unlock_icon_f)
+
         self.sul_brush = sul_brush
         self.sul_w_brush = sul_w_brush
-
 
         colsizes = [None for c in range(len(cols))]
 
@@ -366,12 +373,17 @@ class SulcalPatternsEditor(Qt.QWidget):
                 item.setBackground(pat_brush)
                 table.setItem(row, save_pat_col + sidecol, item)
                 if pats.locked():
-                    locked = Qt.Qt.Checked
+                    locked_icn = self.lock_icon
+                    locked = True
+                    # locked = Qt.Qt.Checked
                 else:
-                    locked = Qt.Qt.Unchecked
-                item = Qt.QTableWidgetItem()
+                    locked_icn = self.unlock_icon
+                    locked = False
+                    # locked = Qt.Qt.Unchecked
+                item = Qt.QTableWidgetItem(locked_icn, None)
+                item.setData(Qt.Qt.UserRole, locked)
                 item.setBackground(pat_brush)
-                item.setCheckState(locked)
+                #item.setCheckState(locked)
                 table.setItem(row, lock_pat_col + sidecol, item)
                 item = Qt.QTableWidgetItem('')
                 item.setBackground(sul_brush)
@@ -457,12 +469,17 @@ class SulcalPatternsEditor(Qt.QWidget):
         return subject, side, pattern, control_btn
 
     def item_clicked(self, item):
-        #print('CLICK')
+        # print('CLICK')
         subject, side, pattern, control_btn = self.item_id(item)
+        # print('control_btn:', control_btn)
         if control_btn == 'save':
             self.save_pattern_item(item, subject, side)
         elif control_btn == 'save sulci':
             self.save_sulci(subject, side)
+        elif control_btn == 'locked':
+            self.toggle_lock_pattern(item, subject, side)
+        elif control_btn == 'suli lock':
+            self.toggle_lock_sulci(item, subject, side)
         elif pattern is not None:
             self.summary_table.setCurrentItem(item)
             self.summary_table.editItem(item)
@@ -660,31 +677,49 @@ class SulcalPatternsEditor(Qt.QWidget):
         self.summary_table.item(row, status_col).setText(status)
         self.update_sulci_view(subject, side)
 
+    def toggle_lock_pattern(self, item, subject, side):
+        locked = item.data(Qt.Qt.UserRole)
+        # print('toggle locked:', locked)
+        item.setData(Qt.Qt.UserRole, not locked)
+        #self.lock_pattern(item, subject, side)
+
     def lock_pattern(self, item, subject, side):
-        locked = item.checkState() == Qt.Qt.Checked
-        if not locked:
-            # confirm unlock
-            res = Qt.QMessageBox.question(
-                self, 'Unlock',
-                'Patterns are locked for subject %s, side %s. Do you want to '
-                'unlock them ?' % (subject, side),
-                Qt.QMessageBox.Yes | Qt.QMessageBox.No)
-            if res != Qt.QMessageBox.Yes:
-                self.summary_table.blockSignals(True)
-                item.setCheckState(Qt.Qt.Checked)
-                self.summary_table.blockSignals(False)
-                self.update_sulci_view(subject, side)
-                return
-        with self.data_model.lock:
-            patterns = self.data_model.patterns.get(subject, {}).get(side)
-            if not patterns:
-                return  # updated in the meantime
-            if locked:
-                patterns.lock()
-            else:
-                patterns.unlock()
-            self.data_model.save_version()
-        self.update_sulci_view(subject, side)
+        # locked = item.checkState() == Qt.Qt.Checked
+        if getattr(self, '_locking_item', None):
+            return
+        self._locking_item = item
+        try:
+            locked = item.data(Qt.Qt.UserRole)
+            # print('lock_pattern:', locked)
+            if not locked:
+                # confirm unlock
+                res = Qt.QMessageBox.question(
+                    self, 'Unlock',
+                    'Patterns are locked for subject %s, side %s. Do you want '
+                    'to unlock them ?' % (subject, side),
+                    Qt.QMessageBox.Yes | Qt.QMessageBox.No)
+                if res != Qt.QMessageBox.Yes:
+                    self.summary_table.blockSignals(True)
+                    #item.setCheckState(Qt.Qt.Checked)
+                    item.setData(Qt.Qt.UserRole, True)
+                    self.summary_table.blockSignals(False)
+                    self.update_sulci_view(subject, side)
+                    return
+            with self.data_model.lock:
+                patterns = self.data_model.patterns.get(subject, {}).get(side)
+                if not patterns:
+                    return  # updated in the meantime
+                if locked:
+                    patterns.lock()
+                    lock_icn = self.lock_icon
+                else:
+                    patterns.unlock()
+                    lock_icn = self.unlock_icon
+                item.setIcon(lock_icn)
+                self.data_model.save_version()
+            self.update_sulci_view(subject, side)
+        finally:
+            del self._locking_item
 
     def update_sulci_view(self, subject, side, full=False):
         view_items = self.displayed_sulci.get(subject, {}).get(side)
@@ -695,8 +730,14 @@ class SulcalPatternsEditor(Qt.QWidget):
             else:
                 pat_wid.update_gui_state()
 
+    def toggle_lock_sulci(self, item, subject, side):
+        locked = item.data(Qt.Qt.UserRole)
+        item.setData(Qt.Qt.UserRole, not locked)
+        #self.lock_sulci(item, subject, side)
+
     def lock_sulci(self, item, subject, side):
-        locked = item.checkState() == Qt.Qt.Checked
+        # locked = item.checkState() == Qt.Qt.Checked
+        locked = item.data(Qt.Qt.UserRole)
         if not locked:
             # confirm unlock
             res = Qt.QMessageBox.question(
