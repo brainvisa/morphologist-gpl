@@ -140,13 +140,23 @@ Status columns will show when data have been modified by the user.
 
 The status background is light yellow if the data has been saved (after edition).
 
-Locked data are not editable, so it's a reasonable and convenient way to mark validated data.
+Locked data cannot be saved (even if they cas be edited, actually), so it's a reasonable and convenient way to mark validated data.
 
 Sulci columns checkboxes allow to load / show sulci graphs.
 
 Save buttons allow to save each corresponding data. **Beware** there is as "save" (patterns) column, and a "save sulci" column.
 
-To avoid confusions, **pattern-oriented colums** have a background with a pattern icon (light hexagonal tiles), while **sulci-oriented columns** have a "sulci" background. It's not very pretty, but it makes things clearer.
+To avoid confusions, **pattern-oriented colums** and buttons have a background with a pattern icon (light hexagonal tiles), while **sulci-oriented columns** have a "sulci" background. It's not very pretty, but it makes things clearer.
+
+.. |pat| image:: images/pattern.png
+
+.. |sul| image:: images/sulci.png
+
++---------------------+-------------------+
+| pattern background: | sulci background: |
++---------------------+-------------------+
+| |pat|               | |sul|             |
++---------------------+-------------------+
 
 Display sulci model: allows to show in the 3D views the sulci models from Morphologist, with all available labels.
 
@@ -237,7 +247,7 @@ Features and status of the implementation
 
     - one color per label ?                                               |ok|
     - with label names displayed only once in the window ?
-    - label name as tooltip ?                                           |todo|
+    - label name as tooltip ?                                             |ok|
 
   - [labels confidence / annotations ?] or this can be opened specifically and temporarily on a user action (menu, button)                          |notok|
   - save button, displaying unsaved state                                 |ok|

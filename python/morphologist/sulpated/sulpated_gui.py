@@ -395,7 +395,6 @@ class SulcalPatternsEditor(Qt.QWidget):
                 table.setItem(row, lock_pat_col + sidecol, item)
 
                 visible = side in self.displayed_sulci.get(subject, {})
-                print('visible:', visible)
                 visible_icn = self.visible_icons[int(visible)]
                 item = Qt.QTableWidgetItem(visible_icn, None)
                 item.setData(Qt.Qt.UserRole, visible)
@@ -971,7 +970,7 @@ class SulcalPatternsEditor(Qt.QWidget):
             viewer.graph = org_graph_file
             viewer.mesh_opacity = 0.7
             # then lock all params and set the backup, if any
-            if graph_file not in(org_graph_file, org_graph_file.fullPath()):
+            if graph_file not in (org_graph_file, org_graph_file.fullPath()):
                 for param in viewer.signature:
                     viewer.setDefault(param, False)
                 viewer.graph = graph_file
@@ -1211,6 +1210,7 @@ class PatternsWidget(Qt.QWidget):
             checked = item.checkState()
             button.setChecked(checked)
             button.setObjectName('btn-%s-%s' % (self.subject, self.side))
+            button.setToolTip(f'Pattern: {pattern} {self.side}')
             active = (checked == Qt.Qt.Checked)
             color = self.editor.item_color(self.subject, self.side, pattern,
                                            True)
