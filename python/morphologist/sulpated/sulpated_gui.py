@@ -311,6 +311,8 @@ class SulcalPatternsEditor(Qt.QWidget):
                                                        'morphologist')
         pat_icon = Qt.QImage(pat_icon_f)
         pat_brush = Qt.QBrush(pat_icon)
+        self.pattern_brush = pat_brush
+        self.pattern_image_file = pat_icon_f
 
         sul_icon_f = aims.carto.Paths.findResourceFile('icons/sulci.png',
                                                        'morphologist')
@@ -320,13 +322,26 @@ class SulcalPatternsEditor(Qt.QWidget):
                                                          'morphologist')
         sul_w_icon = Qt.QImage(sul_w_icon_f)
         sul_w_brush = Qt.QBrush(sul_w_icon)
+        self.sulci_brushes = [sul_brush, sul_w_brush]
+        self.sulci_image_files = [sul_icon_f, sul_w_icon_f]
 
         lock_icon_f = aims.carto.Paths.findResourceFile('icons/lock.png',
                                                         'morphologist')
-        self.lock_icon = Qt.QIcon(lock_icon_f)
+        lock_icon = Qt.QIcon(lock_icon_f)
         unlock_icon_f = aims.carto.Paths.findResourceFile(
             'icons/lock_open.png', 'morphologist')
-        self.unlock_icon = Qt.QIcon(unlock_icon_f)
+        unlock_icon = Qt.QIcon(unlock_icon_f)
+        self.lock_icons = [unlock_icon, lock_icon]
+
+        eye_icon_f = aims.carto.Paths.findResourceFile('icons/eye.png',
+                                                       'morphologist')
+        eye_icon = Qt.QIcon(eye_icon_f)
+        eye_c_icon_f = aims.carto.Paths.findResourceFile(
+            'icons/eye_closed.png', 'morphologist')
+        print('eye_icon_f:', eye_icon_f)
+        print('eye_c_icon_f:', eye_c_icon_f)
+        eye_c_icon = Qt.QIcon(eye_c_icon_f)
+        self.visible_icons = [eye_c_icon, eye_icon]
 
         self.sul_brush = sul_brush
         self.sul_w_brush = sul_w_brush
@@ -372,24 +387,19 @@ class SulcalPatternsEditor(Qt.QWidget):
                 item = Qt.QTableWidgetItem(save_icon, None)
                 item.setBackground(pat_brush)
                 table.setItem(row, save_pat_col + sidecol, item)
-                if pats.locked():
-                    locked_icn = self.lock_icon
-                    locked = True
-                    # locked = Qt.Qt.Checked
-                else:
-                    locked_icn = self.unlock_icon
-                    locked = False
-                    # locked = Qt.Qt.Unchecked
+                locked_icn = self.lock_icons[int(pats.locked())]
+                locked = pats.locked()
                 item = Qt.QTableWidgetItem(locked_icn, None)
                 item.setData(Qt.Qt.UserRole, locked)
                 item.setBackground(pat_brush)
-                #item.setCheckState(locked)
                 table.setItem(row, lock_pat_col + sidecol, item)
-                item = Qt.QTableWidgetItem('')
+
+                visible = side in self.displayed_sulci.get(subject, {})
+                print('visible:', visible)
+                visible_icn = self.visible_icons[int(visible)]
+                item = Qt.QTableWidgetItem(visible_icn, None)
+                item.setData(Qt.Qt.UserRole, visible)
                 item.setBackground(sul_brush)
-                checked = Qt.Qt.Checked if side in \
-                    self.displayed_sulci.get(subject, {}) else Qt.Qt.Unchecked
-                item.setCheckState(checked)
                 table.setItem(row, sulci_col + sidecol, item)
 
                 sstatus = pats.sulci_status
@@ -403,26 +413,19 @@ class SulcalPatternsEditor(Qt.QWidget):
 
                 if pats.is_output_graph:
                     item.setBackground(sul_w_brush)
-                    # color = [255, 255, 180]  # graph has been saved in R/W
                 else:
                     item.setBackground(sul_brush)
-                    # color = [255, 255, 255]
-                # item.setBackground(Qt.QBrush(Qt.QColor(*color)))
 
                 item = Qt.QTableWidgetItem(save_icon, None)
                 item.setBackground(sul_brush)
                 table.setItem(row, save_sulci_col + sidecol, item)
                 item = Qt.QTableWidgetItem(None)
                 item.setBackground(sul_brush)
+                locked_icn = self.lock_icons[int(pats.sulci_locked)]
                 if pats.sulci_locked:
-                    locked_icn = self.lock_icon
                     locked = True
-                    # checked = Qt.Qt.Checked
                 else:
-                    locked_icn = self.unlock_icon
                     locked = False
-                    # checked = Qt.Qt.Unchecked
-                #item.setCheckState(checked)
                 item.setIcon(locked_icn)
                 item.setData(Qt.Qt.UserRole, locked)
                 table.setItem(row, lock_sulci_col + sidecol, item)
@@ -477,7 +480,7 @@ class SulcalPatternsEditor(Qt.QWidget):
     def item_clicked(self, item):
         # print('CLICK')
         subject, side, pattern, control_btn = self.item_id(item)
-        # print('control_btn:', control_btn)
+        print('control_btn:', control_btn)
         if control_btn == 'save':
             self.save_pattern_item(item, subject, side)
         elif control_btn == 'save sulci':
@@ -486,6 +489,8 @@ class SulcalPatternsEditor(Qt.QWidget):
             self.toggle_lock_pattern(item, subject, side)
         elif control_btn == 'sulci lock':
             self.toggle_lock_sulci(item, subject, side)
+        elif control_btn == 'sulci':
+            self.toggle_show_sulci(item, subject, side)
         elif pattern is not None:
             self.summary_table.setCurrentItem(item)
             self.summary_table.editItem(item)
@@ -686,16 +691,20 @@ class SulcalPatternsEditor(Qt.QWidget):
     def toggle_lock_pattern(self, item, subject, side):
         locked = item.data(Qt.Qt.UserRole)
         # print('toggle locked:', locked)
-        item.setData(Qt.Qt.UserRole, not locked)
-        #self.lock_pattern(item, subject, side)
+        #item.setData(Qt.Qt.UserRole, not locked)
+        self.lock_pattern(item, subject, side, not locked)
 
-    def lock_pattern(self, item, subject, side):
+    def lock_pattern(self, item, subject, side, state=-1):
         # locked = item.checkState() == Qt.Qt.Checked
         if getattr(self, '_locking_item', None):
             return
         self._locking_item = item
         try:
-            locked = item.data(Qt.Qt.UserRole)
+            if state != -1:
+                locked = state
+                item.setData(Qt.Qt.UserRole, locked)
+            else:
+                locked = item.data(Qt.Qt.UserRole)
             # print('lock_pattern:', locked)
             if not locked:
                 # confirm unlock
@@ -715,12 +724,11 @@ class SulcalPatternsEditor(Qt.QWidget):
                 patterns = self.data_model.patterns.get(subject, {}).get(side)
                 if not patterns:
                     return  # updated in the meantime
+                lock_icn = self.lock_icons[int(locked)]
                 if locked:
                     patterns.lock()
-                    lock_icn = self.lock_icon
                 else:
                     patterns.unlock()
-                    lock_icn = self.unlock_icon
                 item.setIcon(lock_icn)
                 self.data_model.save_version()
             self.update_sulci_view(subject, side)
@@ -738,16 +746,20 @@ class SulcalPatternsEditor(Qt.QWidget):
 
     def toggle_lock_sulci(self, item, subject, side):
         locked = item.data(Qt.Qt.UserRole)
-        item.setData(Qt.Qt.UserRole, not locked)
-        #self.lock_sulci(item, subject, side)
+        # item.setData(Qt.Qt.UserRole, not locked)
+        self.lock_sulci(item, subject, side, not locked)
 
-    def lock_sulci(self, item, subject, side):
+    def lock_sulci(self, item, subject, side, state=-1):
         # locked = item.checkState() == Qt.Qt.Checked
         if getattr(self, '_locking_item', None):
             return
         self._locking_item = item
         try:
-            locked = item.data(Qt.Qt.UserRole)
+            if state != -1:
+                locked = state
+                item.setData(Qt.Qt.UserRole, locked)
+            else:
+                locked = item.data(Qt.Qt.UserRole)
             if not locked:
                 # confirm unlock
                 res = Qt.QMessageBox.question(
@@ -764,12 +776,11 @@ class SulcalPatternsEditor(Qt.QWidget):
                     return
             graph = self.data_model.get_sulci_graph_file(subject, side)
             if graph:
+                lock_icn = self.lock_icons[int(locked)]
                 if locked:
                     graph.lockData()
-                    lock_icn = self.lock_icon
                 else:
                     graph.unlockData()
-                    lock_icn = self.unlock_icon
                 self.data_model.save_version()
                 item.setIcon(lock_icn)
             self.update_sulci_view(subject, side)
@@ -922,8 +933,25 @@ class SulcalPatternsEditor(Qt.QWidget):
         self.sulci_window_block = block
         return block
 
-    def show_sulci(self, item, subject, side):
-        checked = (item.checkState() == Qt.Qt.Checked)
+    def toggle_show_sulci(self, item, subject, side):
+        visible = side in self.displayed_sulci.get(subject, {})
+        self.show_sulci(item, subject, side, not visible)
+
+    def show_sulci(self, item, subject, side, state=-1):
+        if getattr(self, '_updating_show_sulci', None):
+            return
+        self._updating_show_sulci = True
+        try:
+            self._show_sulci(item, subject, side, state)
+        finally:
+            del self._updating_show_sulci
+
+    def _show_sulci(self, item, subject, side, state=-1):
+        if state != -1:
+            checked = state
+            item.setIcon(self.visible_icons[int(checked)])
+        else:
+            checked = side in self.displayed_sulci.get(subject, {})
         # print('show sulci', subject, side, checked)
         if checked:
             from brainvisa import anatomist
@@ -982,7 +1010,7 @@ class SulcalPatternsEditor(Qt.QWidget):
                         | Qt.QMessageBox.Cancel)
                 if res == Qt.QMessageBox.Cancel:
                     self.summary_table.blockSignals(True)
-                    item.setCheckState(Qt.Qt.Checked)
+                    item.setIcon(self.visible_icons[1])
                     self.summary_table.blockSignals(False)
                     self.update_sulci_view(subject, side)
                     return
@@ -1108,7 +1136,7 @@ class SulcalPatternsEditor(Qt.QWidget):
             viewer.read = rdi
             viewer.show_unknown = True
             items = context.runProcess(viewer)
-            obj_items = items[1].objects
+            # obj_items = items[1].objects
             items = [item for item in items if not isinstance(item, a.AWindow)]
             w.addObjects(items)
             moddata = getattr(self, 'sulci_model_data', {})
@@ -1153,6 +1181,9 @@ class PatternsWidget(Qt.QWidget):
 
         layout = Qt.QHBoxLayout()
         self.setLayout(layout)
+        #self.setContentsMargins(5, 5, 5, 5)
+        self.setContentsMargins(5, 0, 5, 0)
+        layout.setContentsMargins(0, 0, 0, 0)
 
         self.update_gui()
 
@@ -1194,57 +1225,91 @@ class PatternsWidget(Qt.QWidget):
             layout.addWidget(button)
             button.toggled.connect(partial(self.pattern_changed, pattern))
 
+        pat_wid = Qt.QGroupBox()
+        pat_wid.setStyleSheet(
+            f'background-image:url({self.editor.pattern_image_file});')
+        pat_wid.setContentsMargins(5, 2, 5, 2)
+        layout.addWidget(pat_wid)
+        layout2 = Qt.QHBoxLayout()
+        layout2.setContentsMargins(0, 0, 0, 0)
+        pat_wid.setLayout(layout2)
+
         row, col = self.editor.get_table_item(self.subject, self.side,
                                               'status')
         item = self.editor.summary_table.item(row, col)
         state_l = Qt.QLabel(item.text())
-        layout.addWidget(state_l)
+        layout2.addWidget(state_l)
 
         save_icon_f = aims.carto.Paths.findResourceFile('icons/save.png',
-                                                        'axon')
+                                                        'morphologist')
         save_icon = Qt.QIcon(save_icon_f)
-        button = Qt.QPushButton(save_icon, 'P.')
+        button = Qt.QPushButton(save_icon, None)  # 'P.')
         button.setObjectName('savepat-%s-%s' % (self.subject, self.side))
         button.setStyleSheet(
-            'QPushButton#%s {margin-left: 0px; margin-right: 0px}'
-            % button.objectName())
-        layout.addWidget(button)
+            f'background-image:url({self.editor.pattern_image_file});')
+        layout2.addWidget(button)
         button.clicked.connect(self.save_pattern)
+        button.setToolTip('Save patterns')
 
-        lock_icon_f = aims.carto.Paths.findResourceFile('icons/lock.png',
-                                                        'axon')
-        lock_icon = Qt.QIcon(lock_icon_f)
-        button = Qt.QCheckBox('P.')
-        button.setIcon(lock_icon)
         row, col = self.editor.get_table_item(self.subject, self.side,
                                               'locked')
         item = self.editor.summary_table.item(row, col)
-        button.setCheckState(item.checkState())
-        layout.addWidget(button)
+        button = Qt.QToolButton()
+        locked = item.data(Qt.Qt.UserRole)
+        icon = self.editor.lock_icons[int(locked)]
+        button.setIcon(icon)
+        button.setStyleSheet(
+            f'background-image:url({self.editor.pattern_image_file});')
+        button.setCheckable(True)
+        checked = Qt.Qt.Checked if locked else Qt.Qt.Unchecked
+        button.setChecked(checked)
+        layout2.addWidget(button)
         button.toggled.connect(self.lock_pattern)
+        button.setToolTip('[un] Lock patterns')
+
+        sul_wid = Qt.QGroupBox()
+        sul_wid.setStyleSheet(
+            f'background-image:url({self.editor.sulci_image_files[0]});')
+        sul_wid.setContentsMargins(5, 2, 5, 2)
+        layout.addWidget(sul_wid)
+        layout2 = Qt.QHBoxLayout()
+        layout2.setContentsMargins(0, 0, 0, 0)
+        sul_wid.setLayout(layout2)
 
         row, col = self.editor.get_table_item(self.subject, self.side,
                                               'sulci status')
         item = self.editor.summary_table.item(row, col)
         sstate_l = Qt.QLabel(item.text())
-        layout.addWidget(sstate_l)
+        layout2.addWidget(sstate_l)
 
-        button = Qt.QPushButton(save_icon, 'S.')
+        button = Qt.QPushButton(save_icon, None)  # 'S.')
         button.setObjectName('savesulci-%s-%s' % (self.subject, self.side))
+        #button.setStyleSheet(
+            #'QPushButton#%s {margin-left: 1px; margin-right: 2px;'
+            #'margin-top: 2px; margin-bottom: 2px; '
+            #'background-image:url(%s);};'
+            #% (button.objectName(), self.editor.sulci_image_files[0]))
         button.setStyleSheet(
-            'QPushButton#%s {margin-left: 0px; margin-right: 0px}'
-            % button.objectName())
-        layout.addWidget(button)
+            f'background-image:url({self.editor.sulci_image_files[0]});')
+        layout2.addWidget(button)
         button.clicked.connect(self.save_sulci)
+        button.setToolTip('Save sulci')
 
-        button = Qt.QCheckBox('S.')
-        button.setIcon(lock_icon)
         row, col = self.editor.get_table_item(self.subject, self.side,
                                               'sulci lock')
         item = self.editor.summary_table.item(row, col)
-        button.setCheckState(item.checkState())
-        layout.addWidget(button)
-        button.stateChanged.connect(self.lock_sulci)
+        locked = item.data(Qt.Qt.UserRole)
+        checked = Qt.Qt.Checked if locked else Qt.Qt.Unchecked
+        button = Qt.QToolButton()
+        button.setStyleSheet(
+            f'background-image:url({self.editor.sulci_image_files[0]});')
+        button.setCheckable(True)
+        button.setIcon(self.editor.lock_icons[locked])
+        button.setChecked(checked)
+        layout2.addWidget(button)
+        button.toggled.connect(self.lock_sulci)
+        button.setToolTip('[un] Lock sulci')
+
         self.blockSignals(False)
 
     def update_gui_state(self):
@@ -1262,32 +1327,35 @@ class PatternsWidget(Qt.QWidget):
             button.setChecked(checked)
             num += 1
 
-        label = layout.itemAt(num).widget()
+        label = layout.itemAt(num).widget().layout().itemAt(0).widget()
         row, col = self.editor.get_table_item(self.subject, self.side,
                                               'status')
         item = self.editor.summary_table.item(row, col)
         label.setText(item.text())
 
-        num += 2
-        button = layout.itemAt(num).widget()
+        button = layout.itemAt(num).widget().layout().itemAt(2).widget()
         row, col = self.editor.get_table_item(self.subject, self.side,
                                               'locked')
         item = self.editor.summary_table.item(row, col)
-        button.setCheckState(item.checkState())
+        locked = item.data(Qt.Qt.UserRole)
+        checked = Qt.Qt.Checked if locked else Qt.Qt.Unchecked
+        button.setChecked(checked)
+        button.setIcon(self.editor.lock_icons[int(locked)])
 
-        num += 1
-        label = layout.itemAt(num).widget()
+        label = layout.itemAt(num + 1).widget().layout().itemAt(0).widget()
         row, col = self.editor.get_table_item(self.subject, self.side,
                                               'sulci status')
         item = self.editor.summary_table.item(row, col)
         label.setText(item.text())
 
-        num += 2
-        button = layout.itemAt(num).widget()
+        button = layout.itemAt(num + 1).widget().layout().itemAt(2).widget()
         row, col = self.editor.get_table_item(self.subject, self.side,
                                               'sulci lock')
         item = self.editor.summary_table.item(row, col)
-        button.setCheckState(item.checkState())
+        locked = item.data(Qt.Qt.UserRole)
+        checked = Qt.Qt.Checked if locked else Qt.Qt.Unchecked
+        button.setChecked(checked)
+        button.setIcon(self.editor.lock_icons[int(locked)])
 
         self.blockSignals(False)
 
@@ -1327,10 +1395,11 @@ class PatternsWidget(Qt.QWidget):
         if row is None or col is None:
             return
         item = self.editor.summary_table.item(row, col)
-        pindex = len(self.editor.pattern_def.keys()) + 3
-        button = self.layout().itemAt(pindex).widget()
-        checked = button.checkState()
-        item.setCheckState(checked)
+        pindex = len(self.editor.pattern_def.keys()) + 1
+        button \
+            = self.layout().itemAt(pindex).widget().layout().itemAt(2).widget()
+        self.editor.lock_pattern(item, self.subject, self.side,
+                                 button.isChecked())
 
     def save_sulci(self):
         self.editor.save_sulci(self.subject, self.side)
@@ -1338,13 +1407,13 @@ class PatternsWidget(Qt.QWidget):
     def lock_sulci(self):
         row, col = self.editor.get_table_item(self.subject, self.side,
                                               'sulci lock')
-        print('lock sulci item:', row, col)
         if row is None or col is None:
             return
         item = self.editor.summary_table.item(row, col)
-        pindex = len(self.editor.pattern_def.keys()) + 5
-        button = self.layout().itemAt(pindex).widget()
-        checked = button.checkState()
-        item.setCheckState(checked)
+        pindex = len(self.editor.pattern_def.keys()) + 2
+        button \
+            = self.layout().itemAt(pindex).widget().layout().itemAt(2).widget()
+        self.editor.lock_sulci(item, self.subject, self.side,
+                               button.isChecked())
 
 

@@ -358,7 +358,7 @@ class SulcalPattern(object):
                 print(datetime.datetime.now(), file=f)
 
     def unlock(self):
-        if osp.exists(osp.dirname(self.lock_file)):
+        if osp.exists(self.lock_file):
             os.unlink(self.lock_file)
 
 
