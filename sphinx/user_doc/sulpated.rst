@@ -13,6 +13,18 @@ It is originally a "small tool program" and its setup is not completely automati
 
 It may be used also to perform manual edition or correction of sulci labels, before or after automatic identification in Morphologist.
 
+Main use cases
+--------------
+
+* Display sulci labelled from Morphologist
+* Edit sulci labels
+
+  * Multi-users on the same dataset
+  * write a manual identification session which doesn't overwrite the initial automatic one
+
+* Label and annotate "patterns", possiby with confidence ratings
+
+
 Sulcal patterns
 ---------------
 
@@ -36,7 +48,7 @@ The program is run using the follwing base command, with additional options (see
 
 A config file is expected in the output database directory, this file should be named ``patterns_def.json``. See the `Write a config file`_ section for details.
 
-If the config file contains the sulci and input database locations, then the sulci and input databases commandline parameters (``-s``/``-i`` options) are not needed.
+If the config file contains the sulci and input (read-only) database locations, then the sulci and input databases commandline parameters (``-s``/``-i`` options) are not needed.
 If the config file contains the region information, then the region commandline parameter (``-r``) is not needed.
 An input database query filter is applied to select data we are working on (for instance select a sulci recognition session). This query may be either passed on the commandline (``-f`` option), or given in the config file.
 
@@ -74,7 +86,7 @@ If a read-only "input" database is used, then the "sulci" database may be empty 
 Write a config file
 -------------------
 
-``patterns_def.json`` is a JSON format file. It should contain, at least, the patterns definition, plus optionally input database information.
+``patterns_def.json`` is a JSON format file. It should contain, at least, the patterns definition, plus optionally input read-only database information.
 
 Config file contents:
 
@@ -107,7 +119,7 @@ Config file contents:
       "region": "orbito_frontal"
 
   * ``sulci_database``: optional string, specifies the location of the sulci database (read/write to allow saving modified labeled sulci graphs)
-  * ``input_database``: optional string, specifies the location of an additional input, read-only, sulci database. Sulci will be read from here only if they are not found in the sulci_database, and all will be written in the sulci_database.
+  * ``ro_database``: optional string, specifies the location of an additional input, read-only, sulci database. Sulci will be read from here only if they are not found in the sulci_database, and all will be written in the sulci_database.
   * ``force_sulci_locks_state``: optional boolean, specifies if locks should be assumed to a given value instead of all read from disk::
 
       "force_sulci_locks_state": true
@@ -227,7 +239,7 @@ Features and status of the implementation
 
 * the GUI should be very easy to use (single button?) and should display info clearly                                                                   |ok|
 
-  * Use clear icons                                                     |todo|
+  * Use clear icons                                                       |ok|
 
 * conflicts handling                                                  |mostly|
 

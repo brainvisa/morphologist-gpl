@@ -612,7 +612,10 @@ class SulcalPatternsData(Qt.QObject):
                     self.last_poll = last_poll
                 # we can make this error fatal
                 raise ValueError(
-                    'Database %s not found.' % self.sulci_database)
+                    'Database %s not found. Maybe it is not declared, or not '
+                    'enabled in BrainVISA, or not declared with the same path '
+                    '/ mount point. Please check there.'
+                    % self.sulci_database)
             db_settings = db_settings[0]
             self.sulci_database = db_settings.directory
 
@@ -641,6 +644,7 @@ class SulcalPatternsData(Qt.QObject):
             if self.out_db_filter:
                 # look for input graphs
                 sel = sel_bak
+                print('now try filter;', sel)
                 ingraphs = list(rdi.findValues({}, requiredAttributes=sel))
                 ingraphs = [g for g in ingraphs if g not in graphs]
                 print('2nd query done:', len(ingraphs))
