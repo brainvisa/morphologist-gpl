@@ -311,7 +311,7 @@ class SulcalPatternsEditor(Qt.QWidget):
         #table.setVerticalHeaderLabels(sorted(subjects))
         save_icon_f = aims.carto.Paths.findResourceFile('icons/save.png',
                                                         'morphologist')
-        save_icon = Qt.QIcon(save_icon_f)
+        self.save_icon = Qt.QIcon(save_icon_f)
         save_d_icon_f = aims.carto.Paths.findResourceFile(
             'icons/save_disabled.png', 'morphologist')
         self.save_dis_icon = Qt.QIcon(save_d_icon_f)
@@ -393,8 +393,11 @@ class SulcalPatternsEditor(Qt.QWidget):
                 # status, lock, save patterns button
                 pstatus = pats.status
                 status_icn = null_icon
+                save_icon = self.save_dis_icon
                 if pstatus == 'conflict':
                     status_icn = self.conflict_icon
+                elif pstatus == 'modified':
+                    save_icon = self.save_icon
                 sidecol = len(base_cols) * s + 1
                 item = Qt.QTableWidgetItem()
                 item.setIcon(status_icn)
@@ -419,10 +422,13 @@ class SulcalPatternsEditor(Qt.QWidget):
 
                 sstatus = pats.sulci_status
                 status_icn = null_icon
+                save_icon = self.save_dis_icon
                 if sstatus == 'conflict':
                     status_icn = self.conflict_icon
                 elif pats.sulci_modified():
                     status_icn = self.modified_icon
+                if pats.sulci_modified():
+                    save_icon = self.save_icon
                 item = Qt.QTableWidgetItem()
                 item.setIcon(status_icn)
                 table.setItem(row, sulci_status_col + sidecol, item)
@@ -666,6 +672,10 @@ class SulcalPatternsEditor(Qt.QWidget):
                                               remove_keys=remove_keys)
             mod = pat.modified
             status = pat.status
+        if mod:
+            save_icon = self.save_icon
+        else:
+            save_icon = self.save_dis_icon
         side_i = self.side_names.index(side)
         status_col \
             = self.pat_status_col + len(self.pattern_def) * (side_i + 1) + 1
@@ -677,6 +687,7 @@ class SulcalPatternsEditor(Qt.QWidget):
         elif mod:
             status_icn = self.modified_icon
         self.summary_table.item(item.row(), status_col).setIcon(status_icn)
+        self.summary_table.item(item.row(), status_col + 1).setIcon(save_icon)
         # update view
         self.update_sulci_view(subject, side)
 
@@ -702,16 +713,16 @@ class SulcalPatternsEditor(Qt.QWidget):
         if side_i != 0:
             status_col += 7  # control buttons for side 0
         self.summary_table.item(row, status_col).setIcon(status_icn)
+        self.summary_table.item(row, status_col + 1).setIcon(
+            self.save_dis_icon)
         self.update_sulci_view(subject, side)
 
     def toggle_lock_pattern(self, item, subject, side):
         locked = item.data(Qt.Qt.UserRole)
         # print('toggle locked:', locked)
-        #item.setData(Qt.Qt.UserRole, not locked)
         self.lock_pattern(item, subject, side, not locked)
 
     def lock_pattern(self, item, subject, side, state=-1):
-        # locked = item.checkState() == Qt.Qt.Checked
         if getattr(self, '_locking_item', None):
             return
         self._locking_item = item
@@ -835,8 +846,9 @@ class SulcalPatternsEditor(Qt.QWidget):
         row, col = self.get_table_item(subject, side, 'sulci status')
         item = self.summary_table.item(row, col)
         item.setIcon(status_icon)
-        # item.setBackground(Qt.QBrush(Qt.QColor(255, 255, 150)))
         item.setBackground(self.sul_w_brush)
+        item = self.summary_table.item(row, col + 1)
+        item.setIcon(self.save_dis_icon)
         self.update_sulci_view(subject, side)
 
     def get_table_item(self, subject, side=None, pattern_or_button=None):
@@ -1094,13 +1106,14 @@ class SulcalPatternsEditor(Qt.QWidget):
                         item = self.summary_table.item(row, col)
                         if pat.sulci_modified():
                             status_icn = self.modified_icon
+                            save_icon = self.save_icon
                         else:
-                            status = ''
                             status_icn = null_icn
-                        #if item.text() != status:
+                            save_icon = self.save_dis_icon
                         if item.icon() != status_icn:
-                            #item.setText(status)
                             item.setIcon(status_icn)
+                            sitem = self.summary_table.item(row, col + 1)
+                            sitem.setIcon(save_icon)
                             self.update_sulci_view(subject, side)
                         if pat.is_output_graph:
                             brush = self.sul_w_brush
@@ -1246,7 +1259,8 @@ class PatternsWidget(Qt.QWidget):
                                            True)
             if color:
                 button.setStyleSheet(
-                    'QPushButton#%s {background-color: rgb(%d, %d, %d); margin-left: 0px; margin-right: 0px}'
+                    'QPushButton#%s {background-color: rgb(%d, %d, %d); '
+                    'margin-left: 0px; margin-right: 0px;}'
                     % (button.objectName(), color[0], color[1], color[2]))
             else:
                 button.setStyleSheet(
@@ -1256,18 +1270,22 @@ class PatternsWidget(Qt.QWidget):
             button.toggled.connect(partial(self.pattern_changed, pattern))
 
         pat_wid = Qt.QGroupBox()
+        pat_wid.setObjectName('pat_gbx-%s-%s' % (self.subject, self.side))
         pat_wid.setStyleSheet(
-            f'background-image:url({self.editor.pattern_image_file});')
-        pat_wid.setContentsMargins(5, 2, 5, 2)
+            f'QGroupBox#{pat_wid.objectName()} '
+            '{padding-top: 7px; padding-bottom: 3px; padding-left: 3px; padding-right: 3px; '
+            f'background-image:url({self.editor.pattern_image_file});}}')
+        pat_wid.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(pat_wid)
         layout2 = Qt.QHBoxLayout()
-        layout2.setContentsMargins(0, 0, 0, 0)
+        layout2.setContentsMargins(2, 2, 2, 2)
         pat_wid.setLayout(layout2)
 
         row, col = self.editor.get_table_item(self.subject, self.side,
                                               'status')
         item = self.editor.summary_table.item(row, col)
         state_l = Qt.QLabel()
+        state_l.setAutoFillBackground(False)
         icn = item.icon()
         if icn.isNull():
             pix = Qt.QPixmap()
@@ -1276,10 +1294,9 @@ class PatternsWidget(Qt.QWidget):
         state_l.setPixmap(pix)
         layout2.addWidget(state_l)
 
-        save_icon_f = aims.carto.Paths.findResourceFile('icons/save.png',
-                                                        'morphologist')
-        save_icon = Qt.QIcon(save_icon_f)
-        button = Qt.QPushButton(save_icon, None)  # 'P.')
+        sitem = self.editor.summary_table.item(row, col + 1)
+        save_icon = sitem.icon()
+        button = Qt.QPushButton(save_icon, None)
         button.setObjectName('savepat-%s-%s' % (self.subject, self.side))
         button.setStyleSheet(
             f'background-image:url({self.editor.pattern_image_file});')
@@ -1304,12 +1321,15 @@ class PatternsWidget(Qt.QWidget):
         button.setToolTip('[un] Lock patterns')
 
         sul_wid = Qt.QGroupBox()
+        sul_wid.setObjectName('sul_gbx-%s-%s' % (self.subject, self.side))
         sul_wid.setStyleSheet(
-            f'background-image:url({self.editor.sulci_image_files[0]});')
-        sul_wid.setContentsMargins(5, 2, 5, 2)
+            f'QGroupBox#{sul_wid.objectName()} '
+            '{padding-top: 7px; padding-bottom: 3px; padding-left: 3px; padding-right: 3px; '
+            f'background-image:url({self.editor.sulci_image_files[0]});}}')
+        sul_wid.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(sul_wid)
         layout2 = Qt.QHBoxLayout()
-        layout2.setContentsMargins(0, 0, 0, 0)
+        layout2.setContentsMargins(2, 2, 2, 2)
         sul_wid.setLayout(layout2)
 
         row, col = self.editor.get_table_item(self.subject, self.side,
@@ -1324,7 +1344,8 @@ class PatternsWidget(Qt.QWidget):
         sstate_l.setPixmap(pix)
         layout2.addWidget(sstate_l)
 
-        button = Qt.QPushButton(save_icon, None)  # 'S.')
+        sitem = self.editor.summary_table.item(row, col + 1)
+        button = Qt.QPushButton(sitem.icon(), None)
         button.setObjectName('savesulci-%s-%s' % (self.subject, self.side))
         #button.setStyleSheet(
             #'QPushButton#%s {margin-left: 1px; margin-right: 2px;'
@@ -1380,6 +1401,10 @@ class PatternsWidget(Qt.QWidget):
             pix = icn.pixmap(icn.availableSizes()[0])
         label.setPixmap(pix)
 
+        save_btn = layout.itemAt(num).widget().layout().itemAt(1).widget()
+        sitem = self.editor.summary_table.item(row, col + 1)
+        save_btn.setIcon(sitem.icon())
+
         button = layout.itemAt(num).widget().layout().itemAt(2).widget()
         row, col = self.editor.get_table_item(self.subject, self.side,
                                               'locked')
@@ -1399,6 +1424,10 @@ class PatternsWidget(Qt.QWidget):
         else:
             pix = icn.pixmap(icn.availableSizes()[0])
         label.setPixmap(pix)
+
+        save_btn = layout.itemAt(num + 1).widget().layout().itemAt(1).widget()
+        sitem = self.editor.summary_table.item(row, col + 1)
+        save_btn.setIcon(sitem.icon())
 
         button = layout.itemAt(num + 1).widget().layout().itemAt(2).widget()
         row, col = self.editor.get_table_item(self.subject, self.side,
