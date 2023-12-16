@@ -397,6 +397,8 @@ class SulcalPatternsEditor(Qt.QWidget):
                 if pstatus == 'conflict':
                     status_icn = self.conflict_icon
                 elif pstatus == 'modified':
+                    status_icn = self.modified_icon
+                if pats.modified:
                     save_icon = self.save_icon
                 sidecol = len(base_cols) * s + 1
                 item = Qt.QTableWidgetItem()
@@ -1093,13 +1095,15 @@ class SulcalPatternsEditor(Qt.QWidget):
     def poll_modified_sulci(self):
         if not self.displayed_sulci:
             return
+        # print('poll_modified_sulci')
         null_icn = Qt.QIcon()
         with self.data_model.lock:
             for subject, sides in self.displayed_sulci.items():
                 for side in sides:
                     pat = self.get_pattern(subject, side)
                     if pat:
-                        if pat.sulci_status != 'ok':
+                        # print(subject, side, pat.sulci_status)
+                        if pat.sulci_status == 'missing':
                             continue
                         row, col = self.get_table_item(subject, side,
                                                        'sulci status')
@@ -1110,10 +1114,16 @@ class SulcalPatternsEditor(Qt.QWidget):
                         else:
                             status_icn = null_icn
                             save_icon = self.save_dis_icon
+                        if pat.sulci_status == 'conflict':
+                            status_icn = self.conflict_icon
+                        sitem = self.summary_table.item(row, col + 1)
+                        update = False
+                        if sitem.icon() != save_icon:
+                            sitem.setIcon(save_icon)
+                            update = True
                         if item.icon() != status_icn:
                             item.setIcon(status_icn)
-                            sitem = self.summary_table.item(row, col + 1)
-                            sitem.setIcon(save_icon)
+                        if update:
                             self.update_sulci_view(subject, side)
                         if pat.is_output_graph:
                             brush = self.sul_w_brush
@@ -1145,6 +1155,7 @@ class SulcalPatternsEditor(Qt.QWidget):
             if w is None:
                 w = a.createWindow('3D', block=self.sulci_window())
                 self.model_window = w
+                w.setControl('SelectionControl')
             context = processes.defaultContext()
             try:
                 with self.data_model.bv_lock:

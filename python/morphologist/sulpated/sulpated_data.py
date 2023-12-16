@@ -200,6 +200,7 @@ class SulcalPattern(object):
         print('sulci_load_filename', self.sulci_di, ':', backup_filename)
         if osp.exists(backup_filename):
             print('backup exists')
+            self.sulci_status = 'conflict'
             return backup_filename
         return self.sulci_di.fullPath()
 
