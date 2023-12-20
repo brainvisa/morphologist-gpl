@@ -996,6 +996,10 @@ class SulcalPatternsEditor(Qt.QWidget):
             org_graph_file = self.data_model.get_sulci_graph_file(
                 subject, side, use_backup=False)
             w = a.createWindow('3D', block=self.sulci_window())
+            # remove the save button
+            tb = w.findChild(Qt.QToolBar, 'save')
+            if tb is not None:
+                tb.hide()
             a.setReusableWindow(w, True)
             context = processes.defaultContext()
             viewer = processes.getProcessInstance('AnatomistShowFoldGraph')
