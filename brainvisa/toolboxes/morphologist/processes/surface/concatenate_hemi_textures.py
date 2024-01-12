@@ -30,9 +30,8 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
-from __future__ import absolute_import
 from brainvisa.processes import *
-from six.moves import range
+
 
 name = 'Concatenate both hemisphere textures'
 userLevel = 0
@@ -61,7 +60,7 @@ def execution(self, context):
     import numpy as np
     left = aims.read(self.left_texture.fullPath())
     right = aims.read(self.right_texture.fullPath())
-    dtype = left[0].arraydata().dtype
+    dtype = left[0].np.dtype
     both = aims.TimeTexture(dtype=dtype)
     loff = type(left[0][0])(self.left_offset)
     roff = type(left[0][0])(self.right_offset)
@@ -69,11 +68,11 @@ def execution(self, context):
         if t >= len(left):
             l = np.zeros((len(left[0]), ), dtype=dtype)
         else:
-            l = left[t].arraydata()
+            l = left[t].np
         if t >= len(right):
             r = np.zeros((len(right[0]), ), dtype=dtype)
         else:
-            r = right[t].arraydata()
+            r = right[t].np
 
         b = np.hstack((l + loff, r + roff))
         both[t].assign(b)
