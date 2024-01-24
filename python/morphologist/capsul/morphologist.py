@@ -336,6 +336,7 @@ class Morphologist(
                               'sulcal_morphometry_sulci_file')
         self.nodes['SulcalMorphometry'].enabled = True
 
+        self.nodes['GlobalMorphometry'].field('subject').dataset = 'output'
         self.export_parameter('GlobalMorphometry', 'subject')
         self.add_link('subject->Report.subject')
 
