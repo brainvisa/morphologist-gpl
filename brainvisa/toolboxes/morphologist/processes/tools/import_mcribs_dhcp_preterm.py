@@ -431,7 +431,7 @@ def execution(self, context):
         if osp.exists(lhm):
             break
     else:
-        raise FileNotFoundError('The input left pial mesh cannot be found')
+        context.warning('The input left pial mesh cannot be found')
     do_l_pial = True
     do_r_pial = True
     if osp.exists(lhm):
@@ -451,7 +451,7 @@ def execution(self, context):
         if osp.exists(rhm):
             break
     else:
-        raise FileNotFoundError('The input right pial mesh cannot be found')
+        context.warning('The input right pial mesh cannot be found')
     if osp.exists(rhm):
         context.system('AimsApplyTransform', '-i', rhm,
                       '-o', self.right_pial_mesh,
