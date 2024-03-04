@@ -120,6 +120,9 @@ FileType('Moment Vector', 'Any Type', 'Moment Vector')
 FileType('T1 MRI Denoised', '3D Volume')
 FileType('T1 MRI Denoised and Bias Corrected', '3D Volume')
 
+FileType('Brain Structures', 'Label Volume')
+FileType('Brain Lobes', 'Label Volume')
+
 #--------------------- Mesh ---------------------
 
 FileType('Hemisphere Mesh', 'Mesh')

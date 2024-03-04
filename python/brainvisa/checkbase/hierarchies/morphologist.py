@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import absolute_import
+
 import os
 from brainvisa.checkbase.hierarchies import *
 from brainvisa.checkbase.hierarchies.checkbase import Checkbase
-from six.moves import zip
+
 
 patterns = {'raw': os.path.join('(?P<database>[\w -/]+)', '(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', '(?P=subject).(?P<extension>%s)' % image_extensions),
             'acpc': os.path.join('(?P<database>[\w -/]+)', '(?P<group>[\w -]+)', '(?P<subject>\w+)', '(?P<modality>\w+)', '(?P<acquisition>[\w -]+)', '(?P=subject).APC$'),
@@ -154,7 +153,7 @@ class MorphologistCheckbase(Checkbase):
                     import numpy as np
                     data = aims.read(getfilepath(
                         key, self.existingfiles[0][subject][key]))
-                    n = data.arraydata()
+                    n = data.np
                     r = n.ravel()
                     voxel_size = np.prod(data.header()['voxel_size'])
                     if key[:3] == 'spm':
@@ -178,16 +177,16 @@ class MorphologistCheckbase(Checkbase):
                             data, v) * voxel_size
 
 
-# compute the total intre cranial volume (Clara Fischer - Olivier Colliot)
+# compute the total intracranial volume (Clara Fischer - Olivier Colliot)
 def get_volumes(wc_gray, wc_white, wc_csf, mwc_gray, mwc_white, mwc_csf):
     # Compute an approximate intracranial mask from unmodulated segmentations
     from soma import aims
     wc_gm_im = aims.read(wc_gray)
     wc_wm_im = aims.read(wc_white)
     wc_csf_im = aims.read(wc_csf)
-    wc_gm_arr = wc_gm_im.arraydata()
-    wc_wm_arr = wc_wm_im.arraydata()
-    wc_csf_arr = wc_csf_im.arraydata()
+    wc_gm_arr = wc_gm_im.np
+    wc_wm_arr = wc_wm_im.np
+    wc_csf_arr = wc_csf_im.np
 
     wc_sum_arr = wc_gm_arr + wc_wm_arr + wc_csf_arr
     mask = (wc_sum_arr > 0.5)
@@ -196,9 +195,9 @@ def get_volumes(wc_gray, wc_white, wc_csf, mwc_gray, mwc_white, mwc_csf):
     mwc_gm_im = aims.read(mwc_gray)
     mwc_wm_im = aims.read(mwc_white)
     mwc_csf_im = aims.read(mwc_csf)
-    mwc_gm_arr = mwc_gm_im.arraydata()
-    mwc_wm_arr = mwc_wm_im.arraydata()
-    mwc_csf_arr = mwc_csf_im.arraydata()
+    mwc_gm_arr = mwc_gm_im.np
+    mwc_wm_arr = mwc_wm_im.np
+    mwc_csf_arr = mwc_csf_im.np
     mwc_gm_arr = mwc_gm_arr.astype('float64')
     mwc_wm_arr = mwc_wm_arr.astype('float64')
     mwc_csf_arr = mwc_csf_arr.astype('float64')
@@ -213,7 +212,7 @@ def get_volumes(wc_gray, wc_white, wc_csf, mwc_gray, mwc_white, mwc_csf):
     mwc_wm_arr[mwc_wm_arr < 0] = 0.
     mwc_csf_arr[mwc_csf_arr < 0] = 0.
 
-    vox_sizes = mwc_gm_im.header()['voxel_size'].arraydata()
+    vox_sizes = mwc_gm_im.header()['voxel_size'].np
     vox_vol = vox_sizes[0]*vox_sizes[1]*vox_sizes[2]
 
     mwc_sum_arr_mm3 = mwc_sum_arr*vox_vol
@@ -236,12 +235,12 @@ def pixelsOfValue(data, value):
 
     '''
 
-    n = data.arraydata()
+    n = data.np
     r = n.ravel()
     if isinstance(value, float) or isinstance(value, int):
         s = r[r == value]
         return s.size
-    elif (type(value) == type(list())):
+    elif isinstance(value, list):
         res = {}
         for val in value:
             s = r[r == float(val)]
