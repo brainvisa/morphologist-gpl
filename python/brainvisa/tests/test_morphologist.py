@@ -18,10 +18,9 @@ import sys
 from shutil import rmtree
 import time
 
-import zipfile
 from soma.path import relative_path
-
 from soma.aims import filetools
+from soma.aims import demotools
 import soma.test_utils
 
 # CAUTION: all imports from the main brainvisa package must be done in
@@ -30,8 +29,6 @@ import soma.test_utils
 # imported before setUpModule_axon is called, they would perform an incorrect
 # initialization of BrainVISA.
 import brainvisa.test_utils
-
-from six.moves.urllib.request import urlretrieve
 
 
 def setUpModule():
@@ -210,25 +207,7 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
 
     @staticmethod
     def download_data(dir_):
-        if not os.path.exists(dir_):
-            os.makedirs(dir_)
-        old_cwd = os.getcwd()
-        os.chdir(dir_)
-        if not os.path.exists("demo_data.zip"):
-            print("* Download https://brainvisa.info/download/data/"
-                  "demo_data.zip to", dir_)
-            urlretrieve(
-                "https://brainvisa.info/download/data/demo_data.zip",
-                "demo_data.zip")
-        if os.path.exists("data_for_anatomist"):
-            rmtree("data_for_anatomist")
-        if os.path.exists("data_unprocessed"):
-            rmtree("data_unprocessed")
-        zf = zipfile.ZipFile("demo_data.zip")
-        zf.extractall()
-
-        # Reset current working directory to previous one
-        os.chdir(old_cwd)
+        demotools.install_demo_data("demo_data.zip", install_dir=dir_)
 
     @staticmethod
     def create_database(database_directory, allow_ro=False):

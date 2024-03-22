@@ -133,6 +133,23 @@ def initialization(self):
 def execution(self, context):
     from soma import aims
     t1toMni = aims.read(self.normalization_transformation.fullPath())
+    if self.t1mri is not None:
+        # write it to initial image header
+        try:
+            t1 = aims.read(self.t1mri.fullPath())
+            refs = t1.header().get('referentials', [])
+            trans = t1.header().get('transformations', [])
+            if aims.StandardReferentials.mniTemplateReferential() in refs:
+                i = refs.index(
+                    aims.StandardReferentials.mniTemplateReferential())
+                trans[i] = t1toMni.toVector()
+            else:
+                refs.append(aims.StandardReferentials.mniTemplateReferential())
+                trans.append(t1toMni.toVector())
+            aims.write(t1, self.t1mri.fullPath())
+        except Exception:
+            # probably read-only
+            pass
     trManager = registration.getTransformationManager()
     if not self.transform_chain_ACPC_to_Normalized:
         raise RuntimeError('No transformation found between AC/PC and the '

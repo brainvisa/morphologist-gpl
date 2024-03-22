@@ -14,7 +14,8 @@ signature = Signature(
     'analysis', String(),
     'graph_version', String(),
     'data_filters', ListOf(String()),
-    'output_file', WriteDiskItem('Text File', 'HTML PDF'),
+    'output_file', WriteDiskItem(
+        'Text File', ['HTML', 'PDF file', 'CSV file']),
 )
 
 

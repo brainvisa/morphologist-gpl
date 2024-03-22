@@ -126,6 +126,7 @@ db_filter = {}
 if options.filter:
     db_filter = json.loads(options.filter)
 
+qapp.setApplicationName('SulPatEd: Sulcal Patterns Editor')
 spe = sulpated_gui.SulcalPatternsEditor(sulci_db=options.sulci_db,
                                         region=options.region,
                                         out_db=options.output,

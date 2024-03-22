@@ -200,6 +200,7 @@ class SulcalPattern(object):
         print('sulci_load_filename', self.sulci_di, ':', backup_filename)
         if osp.exists(backup_filename):
             print('backup exists')
+            self.sulci_status = 'conflict'
             return backup_filename
         return self.sulci_di.fullPath()
 
@@ -353,11 +354,13 @@ class SulcalPattern(object):
         return osp.exists(self.lock_file)
 
     def lock(self):
-        with open(self.lock_file, 'w') as f:
-            print(datetime.datetime.now(), file=f)
+        if osp.exists(osp.dirname(self.lock_file)):
+            with open(self.lock_file, 'w') as f:
+                print(datetime.datetime.now(), file=f)
 
     def unlock(self):
-        os.unlink(self.lock_file)
+        if osp.exists(self.lock_file):
+            os.unlink(self.lock_file)
 
 
 class FileLock(object):
@@ -564,6 +567,7 @@ class SulcalPatternsData(Qt.QObject):
 
             rdi = ReadDiskItem('Labelled Cortical Folds Graph',
                                'Graph and data')
+            db_def = {}
 
             with self.database_lock:
 
@@ -609,7 +613,10 @@ class SulcalPatternsData(Qt.QObject):
                     self.last_poll = last_poll
                 # we can make this error fatal
                 raise ValueError(
-                    'Database %s not found.' % self.sulci_database)
+                    'Database %s not found. Maybe it is not declared, or not '
+                    'enabled in BrainVISA, or not declared with the same path '
+                    '/ mount point. Please check there.'
+                    % self.sulci_database)
             db_settings = db_settings[0]
             self.sulci_database = db_settings.directory
 
@@ -638,6 +645,7 @@ class SulcalPatternsData(Qt.QObject):
             if self.out_db_filter:
                 # look for input graphs
                 sel = sel_bak
+                print('now try filter;', sel)
                 ingraphs = list(rdi.findValues({}, requiredAttributes=sel))
                 ingraphs = [g for g in ingraphs if g not in graphs]
                 print('2nd query done:', len(ingraphs))
