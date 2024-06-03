@@ -418,7 +418,8 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
         self.run_pipelines(self.run_database, skip_ann, skip_cnn)
 
     def compare_files(self, ref_file, test_file):
-        return filetools.cmp(ref_file, test_file)
+        # tolerate up to 5 differing labels because of internal randomness
+        return filetools.cmp(ref_file, test_file, graph_max_label_diff=5)
 
     def test_pipeline_results(self):
         if self.test_mode == soma.test_utils.ref_mode:

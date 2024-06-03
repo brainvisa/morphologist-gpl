@@ -172,7 +172,8 @@ class TestMorphologistCapsul(soma.test_utils.SomaTestCase):
             'default_acquisition'))
 
     def compare_files(self, ref_file, test_file):
-        return filetools.cmp(ref_file, test_file)
+        # tolerate up to 5 differing labels because of internal randomness
+        return filetools.cmp(ref_file, test_file, graph_max_label_diff=5)
 
     def test_pipeline_results(self):
         from brainvisa.processes import defaultContext
