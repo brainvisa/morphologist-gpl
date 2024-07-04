@@ -75,8 +75,7 @@ def initialization(self):
     self.instll_in_brainvisa_distribution = True
     dbs = []
     for d in databases.iterDatabases():
-        if os.path.basename(d.name).startswith('brainvisa-share') \
-                and d.name.startswith(neuroConfig.mainPath):
+        if d.directory == neuroConfig.sharedDatabasePath():
             dbs.insert(0, ('Internal database (recommended) '
                            + os.path.basename(d.name), d.directory))
         elif d.fso.name == 'shared':

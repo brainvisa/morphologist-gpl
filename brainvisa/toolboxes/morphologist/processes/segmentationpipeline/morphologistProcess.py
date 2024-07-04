@@ -398,9 +398,7 @@ def initialization(self):
         'anatomical_template_skull_stripped'].findValue(
             {'_ontology': 'shared',
              'skull_stripped': 'yes', 'Size': '2 mm',
-             '_database': os.path.normpath(os.path.join(
-                 mainPath, '..', 'share', 'brainvisa-share-%s.%s'
-                 % tuple(versionString().split('.')[:2])))})
+             '_database': neuroConfig.sharedDatabasePath()})
     self.setOptional('anatomical_template_skull_stripped')
 
     self.signature['skull_stripped'].userLevel = 100
@@ -470,15 +468,14 @@ def initialization(self):
     self.signature['left_posterior_probabilities'].userLevel = 100
     self.signature['left_labels_priors'].userLevel = 100
     
-    self.left_model_file = os.path.normpath(os.path.join(mainPath, '..', 'share',
-                                                         'brainvisa-share-%s.%s'% tuple(versionString().split('.')[:2]),
-                                                         'models', 'models_2019',
-                                                         'cnn_models', 'sulci_unet_model_left.mdsm'))
+    self.left_model_file = os.path.normpath(os.path.join(
+        neuroConfig.sharedDatabasePath(),
+        'models', 'models_2019', 'cnn_models', 'sulci_unet_model_left.mdsm'))
     self.signature['left_model_file'].userLevel = 100
-    self.left_param_file = os.path.normpath(os.path.join(mainPath, '..', 'share',
-                                                         'brainvisa-share-%s.%s'% tuple(versionString().split('.')[:2]),
-                                                         'models', 'models_2019',
-                                                         'cnn_models', 'sulci_unet_model_params_left.json'))
+    self.left_param_file = os.path.normpath(os.path.join(
+        neuroConfig.sharedDatabasePath(),
+        'models', 'models_2019', 'cnn_models',
+        'sulci_unet_model_params_left.json'))
     self.signature['left_param_file'].userLevel = 100
     # Global
     self.left_global_model = self.signature['left_global_model'].findValue(
@@ -508,16 +505,15 @@ def initialization(self):
     self.linkParameters('right_labels_priors', 'right_graph')
     self.signature['right_posterior_probabilities'].userLevel = 100
     self.signature['right_labels_priors'].userLevel = 100
-    
-    self.right_model_file = os.path.normpath(os.path.join(mainPath, '..', 'share',
-                                                         'brainvisa-share-%s.%s'% tuple(versionString().split('.')[:2]),
-                                                         'models', 'models_2019',
-                                                         'cnn_models', 'sulci_unet_model_right.mdsm'))
+
+    self.right_model_file = os.path.normpath(os.path.join(
+        neuroConfig.sharedDatabasePath(),
+        'models', 'models_2019', 'cnn_models', 'sulci_unet_model_right.mdsm'))
     self.signature['right_model_file'].userLevel = 100
-    self.right_param_file = os.path.normpath(os.path.join(mainPath, '..', 'share',
-                                                         'brainvisa-share-%s.%s'% tuple(versionString().split('.')[:2]),
-                                                         'models', 'models_2019',
-                                                         'cnn_models', 'sulci_unet_model_params_right.json'))
+    self.right_param_file = os.path.normpath(os.path.join(
+        neuroConfig.sharedDatabasePath(),
+        'models', 'models_2019', 'cnn_models',
+        'sulci_unet_model_params_right.json'))
     self.signature['right_param_file'].userLevel = 100
     # Global
     self.right_global_model = self.signature['right_global_model'].findValue(
