@@ -76,8 +76,7 @@ def initialization(self):
     self.linkParameters('skull_stripped', 't1mri')
     self.linkParameters('talairach_transformation', 't1mri')
     self.template = self.signature['template'].findValue({
-        '_database': os.path.normpath(os.path.join(mainPath, '..', 'share',
-                                                   'brainvisa-share-%s.%s' % tuple(versionString().split('.')[:2]))),
+        '_database': neuroConfig.sharedDatabasePath(),
         'Size': '2 mm'})
 
     eNode = SerialExecutionNode(self.name, parameterized=self)

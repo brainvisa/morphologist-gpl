@@ -60,6 +60,7 @@ signature = Signature(
                                          'Graph', requiredAttributes={'labelled': 'Yes', 'side': 'left'}),
     'right_labelled_graph', WriteDiskItem('Labelled Cortical Folds Graph',
                                           'Graph', requiredAttributes={'labelled': 'Yes', 'side': 'right'}),
+    'allow_multithreading', Boolean(),
 )
 
 
@@ -664,6 +665,14 @@ def initialization(self):
                 'SulciRecognition.CNN_recognition19.skeleton')
             rightNode.addDoubleLink('SulciSkeleton.roots',
                                     'SulciRecognition.CNN_recognition19.roots')
+            eNode.addDoubleLink(
+                'allow_multithreading',
+                lhemi
+                + '.SulciRecognition.CNN_recognition19.allow_multithreading')
+            eNode.addDoubleLink(
+                'allow_multithreading',
+                rhemi
+                + '.SulciRecognition.CNN_recognition19.allow_multithreading')
 
         leftNode.SulciRecognition._selectionChange.add(linkCheckModels(self))
         rightNode.SulciRecognition._selectionChange.add(linkCheckModels(self))
@@ -767,6 +776,11 @@ def initialization(self):
 
     eNode.TalairachTransformation.setSelected(False)
     self.perform_sulci_recognition = True
+
+    eNode.addDoubleLink('allow_multithreading',
+                        lhemi + '.CorticalFoldsGraph.allow_multithreading')
+    eNode.addDoubleLink('allow_multithreading',
+                        rhemi + '.CorticalFoldsGraph.allow_multithreading')
 
     self.capsul_do_not_export = [
         ('GreyWhiteClassification', 'side'),

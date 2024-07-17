@@ -123,7 +123,7 @@ def initialization(self):
     #self.skull_stripped_template \
         #= self.signature['skull_stripped_template'].findValue({
             #'_database': os.path.normpath(os.path.join(
-                #mainPath, '..', 'share',
+                #neuroConfig.getSharePath(),
                 #'brainvisa-share-%s.%s'
                     #% tuple(versionString().split('.')[:2]))),
             #'Size': '2 mm'})
