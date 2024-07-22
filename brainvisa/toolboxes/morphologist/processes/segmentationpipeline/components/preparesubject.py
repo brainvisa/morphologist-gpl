@@ -104,7 +104,10 @@ def linkOldNormalization(self, proc, dummy):
         # this forced acquisition is meant to avoid confusion with a different one
         # when there is no older normalization in the same acquisition
     required = {}
-    acquisition = self.T1mri.get('acquisition')
+    if self.T1mri is not None:
+        acquisition = self.T1mri.get('acquisition')
+    else:
+        acquisition = None
     if acquisition:
         required['acquisition'] = acquisition
     return self.signature['older_MNI_normalization'].findValue(
