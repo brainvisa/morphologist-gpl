@@ -114,7 +114,7 @@ def execution(self, context):
     # find script filename (since it is not in the PATH)
     import soma.config as sconf
     progname = os.path.join(
-        sconf, 'scripts', 'sigraph', 'sulci_registration',
+        sconf.INSTALL_ROOT, 'scripts', 'sigraph', 'sulci_registration',
         'independent_tag_with_registration.py')
     cmd = [sys.executable, progname, '-i', self.data_graph, '-o',
            self.output_graph, '-t', self.labels_translation_map, '-d', self.model,
