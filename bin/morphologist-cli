@@ -1,0 +1,62 @@
+#!/usr/bin/env python
+import argparse
+import pathlib
+
+from capsul.api import StudyConfig
+from capsul.attributes.completion_engine import ProcessCompletionEngine
+
+import morphologist.info
+morphologist_version = morphologist.info.__version__.rsplit(".", 1)[0]
+
+
+def morphologist(mri, output_dir, subject=None, pipeline="morphologist", variant=morphologist_version):
+    """Process a T1 MR image with BrainVISA/Morphologist pipeline
+    and put the result in an output directory using the following
+    BIDS organization:
+
+    \b
+    {OUTPUT_DIR}/derivatives/{pipeline}-{variant}/sub-{subject}/...
+
+    \b
+    MRI is the input T1 MR file name.
+    OUTPUT_DIR is the BIDS output directory.
+    """
+
+    mri = pathlib.Path(mri).absolute()
+    output_dir = pathlib.Path(output_dir).absolute()
+    if subject is None:
+        subject = mri.name.split(".", 1)[0]
+    print("MRI :", mri)
+    print("output :", f"{output_dir}/derivatives/{pipeline}-{variant}/sub-{subject}")
+
+    study_config = StudyConfig("morphologist", modules=["FomConfig"])
+    study_config.output_fom = "morphologist-bids-1.0"
+    study_config.output_directory = f"{output_dir}/derivatives/{pipeline}-{variant}"
+    study_config.input_directory = study_config.output_directory
+
+    process = study_config.get_process_instance("morphologist.capsul.morphologist")
+    compl_engine = ProcessCompletionEngine.get_completion_engine(process)
+    attributes = compl_engine.get_attribute_values()
+    attributes.subject = subject
+    compl_engine.complete_parameters()
+    process.t1mri = str(mri)
+    for k in process.user_traits():
+        print(k, "=", getattr(process, k, None))
+    process()
+
+
+
+description = f"""Process a T1 MR image with BrainVISA/Morphologist pipeline
+and put the result in an output directory using the following
+BIDS organization:
+
+
+{{output_dir}}/derivatives/morphologist-{morphologist_version}/sub-{{subject}}/..."""
+parser = argparse.ArgumentParser(
+    description=description,
+)
+parser.add_argument("--subject", "-s", default=None)
+parser.add_argument('mri')
+parser.add_argument('output_dir')
+args = parser.parse_args()
+morphologist(mri=args.mri, output_dir=args.output_dir, subject=args.subject)
