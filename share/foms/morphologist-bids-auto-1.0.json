@@ -260,7 +260,7 @@
         "Morphologist.Renorm.TalairachFromNormalization": {
             "source_referential": [
                 [
-                    "input:<center>/<subject>/t1mri/<acquisition>/registration/RawT1-<subject>_<acquisition>",
+                    "input:sub-<subject>/ses-<session>/t1mri/<acquisition>/registration/RawT1-<subject>_<acquisition>",
                     [
                         "Referential"
                     ]
@@ -286,7 +286,7 @@
         "Morphologist.PrepareSubject.TalairachFromNormalization": {
             "source_referential": [
                 [
-                    "input:<center>/<subject>/t1mri/<acquisition>/registration/RawT1-<subject>_<acquisition>",
+                    "input:sub-<subject>/ses-<session>/t1mri/<acquisition>/registration/RawT1-<subject>_<acquisition>",
                     [
                         "Referential"
                     ]
@@ -780,7 +780,7 @@
             ],
             "output_local_transformations": [
                 [
-                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/L<subject>_<sulci_recognition_session>_auto_global_TO_local",
+                    "output:sub-<subject>/ses-<session>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/L<subject>_<sulci_recognition_session>_auto_global_TO_local",
                     [
                         "Directory"
                     ]
@@ -880,7 +880,7 @@
             ],
             "output_local_transformations": [
                 [
-                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/R<subject>_<sulci_recognition_session>_auto_global_TO_local",
+                    "output:sub-<subject>/ses-<session>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/R<subject>_<sulci_recognition_session>_auto_global_TO_local",
                     [
                         "Directory"
                     ]
