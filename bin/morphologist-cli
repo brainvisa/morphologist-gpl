@@ -1,15 +1,20 @@
 #!/usr/bin/env python
 import argparse
 import pathlib
+import uuid
 
-from capsul.api import StudyConfig
+from capsul.api import capsul_engine
 from capsul.attributes.completion_engine import ProcessCompletionEngine
 
 import morphologist.info
+
+
 morphologist_version = morphologist.info.__version__.rsplit(".", 1)[0]
 
 
-def morphologist(mri, output_dir, subject=None, pipeline="morphologist", variant=morphologist_version):
+def morphologist(
+    mri, output_dir, subject=None, pipeline="morphologist", variant=morphologist_version
+):
     """Process a T1 MR image with BrainVISA/Morphologist pipeline
     and put the result in an output directory using the following
     BIDS organization:
@@ -26,24 +31,40 @@ def morphologist(mri, output_dir, subject=None, pipeline="morphologist", variant
     output_dir = pathlib.Path(output_dir).absolute()
     if subject is None:
         subject = mri.name.split(".", 1)[0]
-    print("MRI :", mri)
-    print("output :", f"{output_dir}/derivatives/{pipeline}-{variant}/sub-{subject}")
 
-    study_config = StudyConfig("morphologist", modules=["FomConfig"])
-    study_config.output_fom = "morphologist-bids-1.0"
-    study_config.output_directory = f"{output_dir}/derivatives/{pipeline}-{variant}"
-    study_config.input_directory = study_config.output_directory
+    # Create input referential
+    referential = (
+        output_dir
+        / "derivatives"
+        / f"{pipeline}-{variant}"
+        / f"sub-{subject}"
+        / "ses-1"
+        / "anat"
+        / "t1mri"
+        / "default_acquisition"
+        / "registration"
+        / f"RawT1-{subject}_default_acquisition.referential"
+    )
+    referential.parent.mkdir(parents=True, exist_ok=True)
+    with open(referential, "w") as f:
+        f.write(f"attributes = {{'uuid': '{str(uuid.uuid4())}'}}")
 
-    process = study_config.get_process_instance("morphologist.capsul.morphologist")
+    engine = capsul_engine()
+    engine.load_modules(["fom", "axon"])
+    with engine.settings as session:
+        config = session.config("fom", "global")
+        config.input_fom = "morphologist-auto-nonoverlap-1.0"
+        config.output_fom = "morphologist-auto-nonoverlap-1.0"
+        config.input_directory = f"{output_dir}/derivatives/{pipeline}-{variant}"
+        config.output_directory = f"{output_dir}/derivatives/{pipeline}-{variant}"
+    process = engine.get_process_instance("morphologist.capsul.morphologist")
     compl_engine = ProcessCompletionEngine.get_completion_engine(process)
     attributes = compl_engine.get_attribute_values()
     attributes.subject = subject
     compl_engine.complete_parameters()
     process.t1mri = str(mri)
-    for k in process.user_traits():
-        print(k, "=", getattr(process, k, None))
-    process()
 
+    process()
 
 
 description = f"""Process a T1 MR image with BrainVISA/Morphologist pipeline
@@ -56,7 +77,7 @@ parser = argparse.ArgumentParser(
     description=description,
 )
 parser.add_argument("--subject", "-s", default=None)
-parser.add_argument('mri')
-parser.add_argument('output_dir')
+parser.add_argument("mri")
+parser.add_argument("output_dir")
 args = parser.parse_args()
 morphologist(mri=args.mri, output_dir=args.output_dir, subject=args.subject)
