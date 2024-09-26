@@ -32,29 +32,12 @@ def morphologist(
     if subject is None:
         subject = mri.name.split(".", 1)[0]
 
-    # Create input referential
-    referential = (
-        output_dir
-        / "derivatives"
-        / f"{pipeline}-{variant}"
-        / f"sub-{subject}"
-        / "ses-1"
-        / "anat"
-        / "t1mri"
-        / "default_acquisition"
-        / "registration"
-        / f"RawT1-{subject}_default_acquisition.referential"
-    )
-    referential.parent.mkdir(parents=True, exist_ok=True)
-    with open(referential, "w") as f:
-        f.write(f"attributes = {{'uuid': '{str(uuid.uuid4())}'}}")
-
     engine = capsul_engine()
-    engine.load_modules(["fom", "axon"])
+    engine.load_modules(["fom", "axon", "spm"])
     with engine.settings as session:
         config = session.config("fom", "global")
-        config.input_fom = "morphologist-auto-nonoverlap-1.0"
-        config.output_fom = "morphologist-auto-nonoverlap-1.0"
+        config.input_fom = "morphologist-bids-1.0"
+        config.output_fom = "morphologist-bids-1.0"
         config.input_directory = f"{output_dir}/derivatives/{pipeline}-{variant}"
         config.output_directory = f"{output_dir}/derivatives/{pipeline}-{variant}"
     process = engine.get_process_instance("morphologist.capsul.morphologist")
