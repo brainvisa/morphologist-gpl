@@ -39,7 +39,7 @@
             ],
             "imported_t1mri": [
                 [
-                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<subject>",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<subject>",
                     "Aims readable volume formats"
                 ]
             ],
