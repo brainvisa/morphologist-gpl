@@ -70,6 +70,13 @@ def morphologist(
         else:
             subject_args = ["-a", f"subject={subject[0]}"]
 
+    # if iterations are involved, disable any in-process multithreading
+    # in order to contain the CPU usage, unless it is forced in user-specified
+    # morpho_args.
+    if iter_options and len([x for x in morpho_args
+                             if x.startswith("allow_multithreading=")]) == 0:
+        t1mri_args.append("allow_multithreading=False")
+
     capsul_cmd = [sys.executable, "-m", "capsul"] \
         + conf_options \
         + ['--if', input_fom, '--of', 'morphologist-bids-1.0'] \
