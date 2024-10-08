@@ -2,7 +2,8 @@
     "fom_name": "morphologist-bids-1.0",
     "fom_import": [
         "brainvisa-formats-3.2.0",
-        "shared-brainvisa-1.0"
+        "shared-brainvisa-1.0",
+        "raw-bids-1.0"
     ],
     "attribute_definitions": {
         "session": {
@@ -31,18 +32,21 @@
 
     "processes": {
         "Morphologist": {
-            "t1mri": [
-                [
-                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<subject>",
-                    "Aims readable volume formats"
-                ]
-            ],
+            #"t1mri": [
+                #[
+                    #"input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<subject>",
+                    #"Aims readable volume formats"
+                #]
+            #],
             "imported_t1mri": [
                 [
                     "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<subject>",
                     "Aims readable volume formats"
                 ]
             ],
+            #### NormalizeSPM
+            "normalization_spm_native_transformation_pass1": [["output:{acquisition}/<subject>_sn_pass1", "Matlab file"]],
+
             "t1mri_nobias": [
                 [
                     "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/nobias_<subject>",

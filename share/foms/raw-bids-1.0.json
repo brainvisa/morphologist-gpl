@@ -7,6 +7,9 @@
     "attribute_definitions": {
         "session": {
             "default_value": "1"
+        },
+        "acquisition": {
+            "default_value": "default_acquisition"
         }
     },
     "processes": {

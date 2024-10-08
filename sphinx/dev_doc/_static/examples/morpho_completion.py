@@ -14,7 +14,7 @@ engine = capsul_engine()
 engine.load_modules(['fom', 'axon'])
 with engine.settings as session:
     config = session.config('fom', 'global')
-    config.input_fom = 'raw-bids-1.0'
+    config.input_fom = 'morphologist-bids-1.0'
     config.output_fom = 'morphologist-bids-1.0'
     #config.input_fom = 'morphologist-auto-nonoverlap-1.0'
     #config.output_fom = 'morphologist-auto-nonoverlap-1.0'
@@ -27,6 +27,11 @@ mp = engine.get_process_instance(
 # set this if you want to use custom individual files as input(s): this
 # will disable completion for the input T1 parameter (before importation):
 # mp.trait('t1mri').forbid_completion = True
+
+# (just to ensure empty values, so we see that they are completed again)
+for p in ('SplitBrain_split_template',
+          'PrepareSubject_Normalization_NormalizeBaladin_template'):
+    setattr(mp, p, '')
 
 # completion API
 pc = ProcessCompletionEngine.get_completion_engine(mp)
