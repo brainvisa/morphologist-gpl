@@ -19,7 +19,7 @@ morphologist_version = morphologist.info.__version__.rsplit(".", 1)[0]
 def morphologist(
     mri, output_dir, input_dir=None, subject=[], pipeline="morphologist",
     variant=morphologist_version, capsul_args=[], morpho_args=[],
-    dry_run=False, input_fom="raw-bids-1.0"
+    dry_run=False, input_fom="morphologist-bids-1.0"
 ):
     """Process T1 MR images with BrainVISA/Morphologist pipeline
     and put the result in an output directory using the following
@@ -188,7 +188,7 @@ args = parser.parse_args(argv)
 mris = args.mri
 subjects = args.subject
 input_dir = None
-input_fom = 'raw-bids-1.0'
+input_fom = 'morphologist-bids-1.0'
 if len(args.mri) == 0:
     input_dir = osp.join(args.output_dir, 'sourcedata', 'raw')
 elif len(args.mri) == 1 and osp.isdir(args.mri[0]):
