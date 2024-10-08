@@ -257,7 +257,9 @@
                         "CSV file"
                     ]
                 ]
-            ]
+            ],
+            "sulci_file":
+            "{shared.sulcal_morphometry_sulci_file}"
         },
         "Morphologist.GlobalMorphometry": {
           "left_csf":
