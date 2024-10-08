@@ -63,7 +63,7 @@ def morphologist(
     subject_args = []
     if len(mri) != 0:
         mri = [m.as_posix() for m in mri]
-        t1mri_args = [f"t1mri={mri}"]
+        t1mri_args = [f"t1mri={(mri if len(mri) > 1 else mri[0])}"]
     if len(subject) != 0:
         if len(iter_options) != 0:
             subject_args = ["-a", f"subject={subject}"]
