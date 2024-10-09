@@ -495,7 +495,7 @@
             ],
             "source_referential": [
                 [
-                    "input:<center>/<subject>/t1mri/<acquisition>/registration/RawT1-<subject>_<acquisition>",
+                    "output:<center>/<subject>/t1mri/<acquisition>/registration/RawT1-<subject>_<acquisition>",
                     [
                         "Referential"
                     ]

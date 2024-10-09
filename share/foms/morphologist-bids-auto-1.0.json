@@ -46,6 +46,8 @@
                     "Aims readable volume formats"
                 ]
             ],
+            "reoriented_t1mri":
+                [["output:{acquisition}/<subject>", "Aims writable volume formats"]],
             #### NormalizeSPM
             "normalization_spm_native_transformation_pass1": [["output:{acquisition}/<subject>_sn_pass1", "Matlab file"]],
 
@@ -290,7 +292,7 @@
         "Morphologist.Renorm.TalairachFromNormalization": {
             "source_referential": [
                 [
-                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/registration/RawT1-<subject>_<acquisition>",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/registration/RawT1-<subject>_<acquisition>",
                     [
                         "Referential"
                     ]
@@ -316,7 +318,7 @@
         "Morphologist.PrepareSubject.TalairachFromNormalization": {
             "source_referential": [
                 [
-                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/registration/RawT1-<subject>_<acquisition>",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/registration/RawT1-<subject>_<acquisition>",
                     [
                         "Referential"
                     ]
