@@ -32,12 +32,14 @@
 
     "processes": {
         "Morphologist": {
-            #"t1mri": [
-                #[
+            # t1mri should be defined through the import process
+            "t1mri": [
+                [
                     #"input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<subject>",
-                    #"Aims readable volume formats"
-                #]
-            #],
+                    "input:sub-<subject>/ses-<session>/anat/sub-<subject>_ses-<session>_acq-<acquisition>_T1w",
+                    "Aims readable volume formats"
+                ]
+            ],
             "imported_t1mri": [
                 [
                     "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<subject>",
