@@ -90,7 +90,7 @@ def execution(self, context):
         if p.returncode != 0:
             raise RuntimeError('AimsMassCenter failed')
         m = re.search('^General:\t([^\t]+)\t([^\t]+)\t([^\t]+)', pout, re.M)
-        tr.setTranslation([float(x) * v for x, v in zip(m.groups(), vs)])
+        tr.setTranslation([float(x) for x in m.groups()])
     trans = [tr.toVector()]
     h['referentials'] = refs
     h['transformations'] = trans
