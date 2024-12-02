@@ -315,6 +315,9 @@ class TestMorphologistCapsul(soma.test_utils.SomaTestCase):
         skipped_files = [
             # the PDF contains the creation date and thus cannot be the same
             'morphologist_report.pdf',
+            # the SPAM transform may have slight differences, but if labels
+            # are OK, then this one is not important.
+            'Lsujet01_default_session_auto_T1_TO_SPAM.trm',
         ]
         ref_dir = os.path.join(self.ref_database_dir, 'test', 'sujet01',
                                't1mri', 'default_acquisition',

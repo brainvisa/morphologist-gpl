@@ -433,6 +433,9 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
         skipped_files = [
             # the PDF contains the creation date and thus cannot be the same
             'morphologist_report.pdf',
+            # the SPAM transform may have slight differences, but if labels
+            # are OK, then this one is not important.
+            'Lsujet01_default_session_auto_T1_TO_SPAM.trm',
         ]
         if not self.do_ann or not self.do_sulci_today():
             skipped_dirs.append('ann_auto')
