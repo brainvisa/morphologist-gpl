@@ -437,6 +437,8 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
             # are OK, then this one is not important.
             'Lsujet01_default_session_auto_T1_TO_SPAM.trm',
             'Rsujet01_default_session_auto_T1_TO_SPAM.trm',
+            'Lsujet01_default_session_auto_Tal_TO_SPAM.trm',
+            'Rsujet01_default_session_auto_Tal_TO_SPAM.trm',
         ]
         if not self.do_ann or not self.do_sulci_today():
             skipped_dirs.append('ann_auto')
