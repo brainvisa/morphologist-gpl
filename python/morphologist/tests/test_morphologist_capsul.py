@@ -318,6 +318,7 @@ class TestMorphologistCapsul(soma.test_utils.SomaTestCase):
             # the SPAM transform may have slight differences, but if labels
             # are OK, then this one is not important.
             'Lsujet01_default_session_auto_T1_TO_SPAM.trm',
+            'Rsujet01_default_session_auto_T1_TO_SPAM.trm',
         ]
         ref_dir = os.path.join(self.ref_database_dir, 'test', 'sujet01',
                                't1mri', 'default_acquisition',
