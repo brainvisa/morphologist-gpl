@@ -322,6 +322,7 @@ class TestMorphologistCapsul(soma.test_utils.SomaTestCase):
             'Lsujet01_default_session_auto_Tal_TO_SPAM.trm',
             'Rsujet01_default_session_auto_Tal_TO_SPAM.trm',
             'sujet01_default_session_auto_sulcal_morphometry.csv',
+            'sujet01_cnn_auto_sulcal_morphometry.csv',
         ]
         ref_dir = os.path.join(self.ref_database_dir, 'test', 'sujet01',
                                't1mri', 'default_acquisition',
