@@ -493,7 +493,27 @@ if __name__ == "__main__":
     print(sys.argv)
     ret = test(sys.argv[1:])
     print("RETURNCODE: ", ret)
+
+    # a bit of cleanup
+    try:
+        import anatomist.api as ana
+        import sip
+        if hasattr(ana.Anatomist, 'anatomistinstance') \
+                and ana.Anatomist.anatomistinstance is not None:
+            a = ana.Anatomist()
+            a.close()
+            sip.delete(a)
+            # sip.delete(qapp)
+            del a
+            # del qapp
+    except Exception:
+        pass
+
     if ret:
+        # no error, do a dirty exit, but avoid cleanup crashes after the
+        # process has succeeded...
+        # os._exit(0)
         sys.exit(0)
+
     else:
         sys.exit(1)
