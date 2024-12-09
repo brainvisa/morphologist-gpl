@@ -512,8 +512,8 @@ if __name__ == "__main__":
     if ret:
         # no error, do a dirty exit, but avoid cleanup crashes after the
         # process has succeeded...
-        # os._exit(0)
-        sys.exit(0)
+        os._exit(0)
+        # sys.exit(0)
 
     else:
         sys.exit(1)
