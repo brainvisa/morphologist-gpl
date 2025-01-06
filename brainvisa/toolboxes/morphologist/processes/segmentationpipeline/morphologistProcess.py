@@ -892,6 +892,7 @@ def execution(self, context):
                        right_wm_mesh=self.right_white_mesh,
                        left_labelled_graph=self.left_labelled_graph,
                        right_labelled_graph=self.right_labelled_graph,
+                       talairach_transform=self.talairach_ACPC_transform,
                        brain_volumes_file=self.brain_volumes_file,
                        report=self.report,
                        subject=self.subject)
