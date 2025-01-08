@@ -1,6 +1,5 @@
 #!/usr/bin/python
 
-from __future__ import absolute_import, print_function
 import pyinotify
 import sys
 import os
@@ -14,9 +13,10 @@ def process_module(c):
     global read_modules
     html = ''
     from inspect import getmembers, isfunction, getdoc, ismethod, isclass, ismodule
-    import imp
+    import importlib
     import sys
-    imp.reload(c)
+
+    importlib.reload(c)
     print(c.__name__)
 
     functions_html = '<h3>%s</h3><br/>' % c.__name__
@@ -62,11 +62,12 @@ def update(ev):
     read_modules = []
 
     from brainvisa import checkbase as c
-    import imp
+    import importlib
     import time
     import sys
+
     time.sleep(1)
-    imp.reload(c)
+    importlib.reload(c)
 
     html = ''
     html = process_module(c)
