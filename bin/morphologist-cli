@@ -176,9 +176,17 @@ if "--" in argv:
     capsul_args = argv[i + 1:]
     argv = argv[:i]
     # args with shape "param=value" are passed after the process
+    capsul_flags = set([
+        '-a', '--attribute', '-r', '--resource', '-p', '--password', '-w',
+        '--write-workflow', '--rsa-pass', '--queue'])
     for i in range(len(capsul_args) - 1, -1, -1):
         p = capsul_args[i]
         if '=' not in p:
+            break
+        prev = None
+        if i > 0:
+            prev = capsul_args[i - 1]
+        if prev in capsul_flags:
             break
         morpho_args.append(p)
         del capsul_args[i]
