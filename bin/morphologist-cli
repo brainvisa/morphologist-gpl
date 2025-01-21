@@ -181,7 +181,7 @@ if "--" in argv:
         '--write-workflow', '--rsa-pass', '--queue'])
     for i in range(len(capsul_args) - 1, -1, -1):
         p = capsul_args[i]
-        if '=' not in p:
+        if '=' not in p or p.startswith('-'):
             break
         prev = None
         if i > 0:
