@@ -42,6 +42,8 @@ class morpho_report(Process):
         self.add_trait('subject', Str())
 
     def _run_process(self):
+        from soma.qt_gui import qt_backend
+        qt_backend.set_headless()
         from brainvisa import axon
         from brainvisa.configuration import neuroConfig
         import brainvisa.processes
