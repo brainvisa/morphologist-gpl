@@ -1,8 +1,6 @@
 
-from __future__ import absolute_import
-import distutils.spawn
 import morphologist.capsul.axon.morphologistprocess
-from traits.api import Undefined, Bool, File
+from traits.api import Undefined, File
 
 
 class MorphologistSimple(

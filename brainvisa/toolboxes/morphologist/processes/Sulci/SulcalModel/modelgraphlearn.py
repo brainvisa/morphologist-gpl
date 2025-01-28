@@ -31,14 +31,10 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
-from __future__ import print_function
-from __future__ import absolute_import
 from brainvisa.processes import *
-from brainvisa import shelltools
 import os
-import string
-import stat
 import sys
+import shutil
 
 name = 'Sulcal Model Graph Learning'
 userLevel = 2
@@ -225,7 +221,7 @@ def execution(self, context):
     f.close()
 
     if not hasattr(self, 'package') or self.package == 'default':
-        silcmd = distutils.spawn.find_executable('siLearn.py')
+        silcmd = shutil.which('siLearn.py')
     else:
         silcmd = os.path.join(package_dir, self.package, 'bin', 'siLearn.py')
     try:
@@ -238,14 +234,14 @@ def execution(self, context):
         context.pythonSystem(silcmd, conf)
     elif self.parallelism_mode == 'grid':
         context.write('Grid (Matthieu) parallelism mode')
-        sglt = distutils.spawn.find_executable('siGenerateLearningTasks.py')
+        sglt = shutil.which('siGenerateLearningTasks.py')
         batchname = 'siLearn-' + self.learning_mode + '-grid_batch'
         batchout = os.path.join(odir, batchname)
         context.pythonSystem(sglt, '-m', self.model_graph, '-o', batchout,
                              '-p', 'grid', '-c', conf, '-b', silcmd)
         scriptname = 'siLearn-' + self.learning_mode + '-grid.sh'
         scriptout = os.path.join(odir, scriptname)
-        distcmd = distutils.spawn.find_executable('grid.py')
+        distcmd = shutil.which('grid.py')
         if distcmd is None:
             context.write("<font color=red>error</font> : can't find "
                           "grid.py program. It may be found in "
@@ -259,7 +255,7 @@ def execution(self, context):
         os.chmod(scriptout, 0o0750)
     elif self.parallelism_mode == 'LSF':
         context.write('LSF (CCRT) mode')
-        sglt = distutils.spawn.find_executable('siGenerateLearningTasks.py')
+        sglt = shutil.which('siGenerateLearningTasks.py')
         out = os.path.join(odir, 'siLearn-' +
                            self.learning_mode + '-LSF_batch')
         context.pythonSystem(sglt, '-m', self.model_graph, '-o', out,
@@ -267,7 +263,7 @@ def execution(self, context):
                              '-t', self.time, '-e', self.email)
     elif self.parallelism_mode == 'soma.workflow':
         context.write('Lag (soma.workflow/Laguitton) mode')
-        sglt = distutils.spawn.find_executable('siGenerateLearningTasks.py')
+        sglt = shutil.which('siGenerateLearningTasks.py')
         out = os.path.join(odir, 'siLearn-' +
                            self.learning_mode + '-somaworkflow_batch')
         context.pythonSystem(sglt, '-m', self.model_graph, '-o', out,

@@ -1,9 +1,7 @@
 
-from __future__ import absolute_import
-import distutils.spawn
 import morphologist.capsul.axon.axonmorphologist
-from traits.api import Undefined, Bool, File, Set
-import six
+from traits.api import Undefined, Bool, File
+import shutil
 
 
 class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
@@ -398,7 +396,7 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
             self.do_not_export.add(
                 ('Renorm', 'Normalization_NormalizeBaladin_ReorientAnatomy_output_t1mri'))
             # disable it if baladin is not in the path
-            if not distutils.spawn.find_executable('baladin'):
+            if not shutil.which('baladin'):
                 self.nodes['PrepareSubject'].process.nodes['Normalization'].\
                     process.nodes['NormalizeBaladin'].enabled = False
 

@@ -31,10 +31,9 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
-from __future__ import absolute_import
 from brainvisa.processes import *
-from brainvisa import registration
 import sys
+import shutil
 
 name = 'SPM Normalization Pipeline'
 userLevel = 1
@@ -54,7 +53,7 @@ def validation():
             and (configuration.SPM.spm12_standalone_mcr_path
                  or sys.platform == "win32"):
         return  # OK
-    if not distutils.spawn.find_executable(configuration.matlab.executable):
+    if not shutil.which(configuration.matlab.executable):
         raise ValidationError('SPM standalone or matlab is not found')
     if not configuration.SPM.spm8_path and not configuration.SPM.spm12_path:
         raise ValidationError('SPM is not found')

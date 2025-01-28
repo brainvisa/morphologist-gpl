@@ -31,19 +31,14 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
-from __future__ import absolute_import
-from __future__ import print_function
 import os
-import re
-import sys
 from brainvisa.configuration import neuroConfig
 from brainvisa.data import neuroHierarchy
-import distutils.spawn
 from soma.wip.application.api import Application
 import brainvisa.processes
-import soma.subprocess
-import glob
 from brainvisa.configuration.sulci_configuration import SulciConfiguration
+import shutil
+
 
 configuration = Application().configuration
 
@@ -51,12 +46,12 @@ configuration = Application().configuration
 fsldir = configuration.FSL.fsldir
 if not fsldir:
     fsldir = os.getenv('FSLDIR')
-if not fsldir and distutils.spawn.find_executable('fslview'):
+if not fsldir and shutil.which('fslview'):
     # probably a system-wide linux installation like on Ubuntu
     if os.path.isdir('/usr/share/fsl/data'):
         fsldir = '/usr/share/fsl'
         if not configuration.FSL.fsl_commands_prefix \
-                and not distutils.spawn.find_executable('flirt'):
+                and not shutil.which('flirt'):
             versions = [v for v in os.listdir(os.path.join(fsldir))
                         if v != 'data']
             versionsi = [v.split('.') for v in versions]
@@ -64,7 +59,7 @@ if not fsldir and distutils.spawn.find_executable('fslview'):
                 versionsi = [int(v[0]) * 0x100 + int(v[1]) for v in versionsi]
                 version = versionsi.index(max(versionsi))
                 fsl_prefix = 'fsl' + versions[version] + '-'
-                if distutils.spawn.find_executable(fsl_prefix + 'flirt'):
+                if shutil.which(fsl_prefix + 'flirt'):
                     configuration.FSL.fsl_commands_prefix = fsl_prefix
             except:
                 print('could not read FSL versions')

@@ -31,17 +31,14 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
-from __future__ import absolute_import
 from brainvisa.processes import *
 from brainvisa.configuration import neuroConfig
-import brainvisa.tools.aimsGlobals as shfjGlobals
 from brainvisa import registration
-import os
+import shutil
 
 
 def validation():
-    import distutils.spawn
-    if not distutils.spawn.find_executable('baladin'):
+    if not shutil.which('baladin'):
         raise ValidationError(_t_("'baladin' commandline " +
                                   "could not be found in PATH"))
 

@@ -31,8 +31,6 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
-from __future__ import print_function
-from __future__ import absolute_import
 from brainvisa.processes import *
 import subprocess
 
@@ -118,7 +116,7 @@ def execution(self, context):
     if self.parent['manage_tasks']:
         package = self.parent['self'].package
         if package == 'default':
-            progname = distutils.spawn.find_executable(
+            progname = shutil.which(
                 'siErrorLightWrapper.py')
         else:
             progname = os.path.join(self.parent['package_dir'],
