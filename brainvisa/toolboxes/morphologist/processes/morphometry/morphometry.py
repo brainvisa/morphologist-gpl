@@ -35,6 +35,7 @@ from brainvisa.processes import *
 from brainvisa.data.labelSelection import LabelSelection
 import shutil
 import os
+import re
 
 
 name = 'Morphometry statistics'
@@ -155,8 +156,8 @@ def execution(self, context):
         if self.region_as_regexp:
             region = self.region
         else:
-            region = re.sub('(\.|\(|\)|\[|\])', '\\\\\\1', self.region)
-            region = re.sub('\*', '.*', region)
+            region = re.sub('(\\.|\\(|\\)|\\[|\\])', '\\\\\\1', self.region)
+            region = re.sub('\\*', '.*', region)
         stream.write('filter_pattern  ' + region + "\n")
     elif selectionmode == 1:
         self.region.writeSelection(context)
