@@ -13,22 +13,19 @@ import six
 class AimsConverter(Process):
     def __init__(self, **kwargs):
         super(AimsConverter, self).__init__(**kwargs)
-        self.add_trait('read', File(allowed_extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg',
-                       '.scn', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz']))
-        self.add_trait('write', File(allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.gif', '.ima', '.dim', '.jpg', '.mnc',
-                       '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'], output=True))
-        self.add_trait('preferredFormat', Enum(None, 'gz compressed NIFTI-1 image', 'NIFTI-1 image', 'GIS image', 'MINC image', 'gz compressed MINC image', 'SPM image', 'ECAT v image', 'ECAT i image', 'JPEG image',
-                       'GIF image', 'PNG image', 'BMP image', 'PBM image', 'PGM image', 'PPM image', 'XBM image', 'XPM image', 'TIFF image', 'TIFF(.tif) image', 'DICOM image', 'Directory', 'FDF image', 'VIDA image', optional=True))
+        self.add_trait('read', File(allowed_extensions=['.nii.gz', '.svs', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg', '.scn', '.mnc', '.nii', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.bif', '.czi', '.mnc.gz']))
+        self.add_trait('write', File(allowed_extensions=['.nii.gz', '.dcm', '', '.i', '.v', '.fdf', '.ima', '.dim', '.jpg', '.mnc', '.nii', '.img', '.hdr', '.tiff', '.tif', '.mnc.gz'], output=True))
+        self.add_trait('preferredFormat', Enum(None, 'gz compressed NIFTI-1 image', 'NIFTI-1 image', 'GIS image', 'MINC image', 'gz compressed MINC image', 'SPM image', 'ECAT v image', 'ECAT i image', 'JPEG image', 'TIFF image', 'TIFF(.tif) image', 'DICOM image', 'Directory', 'FDF image', optional=True))
         self.add_trait('removeSource', Bool())
         self.add_trait('ascii', Bool())
-        self.add_trait('voxelType', Enum(None, 'U8', 'S8', 'U16', 'S16', 'U32',
-                       'S32', 'FLOAT', 'DOUBLE', 'RGB', 'RGBA', 'HSV', optional=True))
+        self.add_trait('voxelType', Enum(None, 'U8', 'S8', 'U16', 'S16', 'U32', 'S32', 'FLOAT', 'DOUBLE', 'RGB', 'RGBA', 'HSV', optional=True))
         self.add_trait('rescaleDynamic', Bool())
         self.add_trait('useInputTypeLimits', Bool())
         self.add_trait('inputDynamicMin', Float(optional=True))
         self.add_trait('inputDynamicMax', Float(optional=True))
         self.add_trait('outputDynamicMin', Float(optional=True))
         self.add_trait('outputDynamicMax', Float(optional=True))
+
 
         # initialization section
         self.removeSource = False
@@ -48,6 +45,7 @@ class AimsConverter(Process):
         neuroConfig.gui = False
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
+
 
         axon.initializeProcesses()
 

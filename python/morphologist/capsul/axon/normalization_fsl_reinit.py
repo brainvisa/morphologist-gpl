@@ -13,24 +13,19 @@ import six
 class Normalization_FSL_reinit(Process):
     def __init__(self, **kwargs):
         super(Normalization_FSL_reinit, self).__init__(**kwargs)
-        self.add_trait('anatomy_data', File(
-            allowed_extensions=['.nii', '.nii.gz']))
-        self.add_trait('anatomical_template', File(
-            allowed_extensions=['.nii', '.nii.gz']))
-        self.add_trait('Alignment', Enum('Already Virtually Aligned',
-                       'Not Aligned but Same Orientation', 'Incorrectly Oriented'))
-        self.add_trait('transformation_matrix', File(
-            allowed_extensions=['.mat'], output=True))
-        self.add_trait('normalized_anatomy_data', File(
-            allowed_extensions=['.nii.gz'], output=True))
-        self.add_trait('cost_function', Enum(
-            'corratio', 'mutualinfo', 'normcorr', 'normmi', 'leastsq', 'labeldiff'))
-        self.add_trait('search_cost_function', Enum(
-            'corratio', 'mutualinfo', 'normcorr', 'normmi', 'leastsq', 'labeldiff'))
+        self.add_trait('anatomy_data', File(allowed_extensions=['.nii', '.nii.gz']))
+        self.add_trait('anatomical_template', File(allowed_extensions=['.nii', '.nii.gz']))
+        self.add_trait('Alignment', Enum('Already Virtually Aligned', 'Not Aligned but Same Orientation', 'Incorrectly Oriented'))
+        self.add_trait('transformation_matrix', File(allowed_extensions=['.mat'], output=True))
+        self.add_trait('normalized_anatomy_data', File(allowed_extensions=['.nii.gz', '.nii'], output=True))
+        self.add_trait('cost_function', Enum('corratio', 'mutualinfo', 'normcorr', 'normmi', 'leastsq', 'labeldiff'))
+        self.add_trait('search_cost_function', Enum('corratio', 'mutualinfo', 'normcorr', 'normmi', 'leastsq', 'labeldiff'))
         self.add_trait('allow_retry_initialization', Bool())
         self.add_trait('init_translation_origin', Enum(0, 1))
 
+
         # initialization section
+        self.anatomical_template = '/volatile/riviere/casa-distro/conda/brainvisa-6.0/build/share/brainvisa-share-5.2/anatomical_templates/MNI152_T1_2mm_brain.nii'
         self.Alignment = 'Not Aligned but Same Orientation'
         self.cost_function = 'corratio'
         self.search_cost_function = 'corratio'
@@ -45,6 +40,7 @@ class Normalization_FSL_reinit(Process):
         neuroConfig.gui = False
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
+
 
         axon.initializeProcesses()
 

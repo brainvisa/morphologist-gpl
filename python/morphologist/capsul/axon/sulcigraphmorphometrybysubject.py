@@ -13,17 +13,15 @@ import six
 class sulcigraphmorphometrybysubject(Process):
     def __init__(self, **kwargs):
         super(sulcigraphmorphometrybysubject, self).__init__(**kwargs)
-        self.add_trait('left_sulci_graph', File(
-            allowed_extensions=['.arg', '.data']))
-        self.add_trait('right_sulci_graph', File(
-            allowed_extensions=['.arg', '.data']))
+        self.add_trait('left_sulci_graph', File(allowed_extensions=['.arg', '.data']))
+        self.add_trait('right_sulci_graph', File(allowed_extensions=['.arg', '.data']))
         self.add_trait('sulci_file', File(allowed_extensions=['.json']))
         self.add_trait('use_attribute', Enum('label', 'name'))
-        self.add_trait('sulcal_morpho_measures', File(
-            allowed_extensions=['.csv'], output=True))
+        self.add_trait('sulcal_morpho_measures', File(allowed_extensions=['.csv'], output=True))
+
 
         # initialization section
-        self.sulci_file = '/casa/host/build/share/brainvisa-share-5.2/nomenclature/translation/sulci_default_list.json'
+        self.sulci_file = '/volatile/riviere/casa-distro/conda/brainvisa-6.0/build/share/brainvisa-share-5.2/nomenclature/translation/sulci_default_list.json'
         self.use_attribute = 'label'
 
     def _run_process(self):
@@ -34,6 +32,7 @@ class sulcigraphmorphometrybysubject(Process):
         neuroConfig.gui = False
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
+
 
         axon.initializeProcesses()
 

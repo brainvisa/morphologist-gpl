@@ -13,26 +13,20 @@ import six
 class SulciLabellingSPAMMarkov(Process):
     def __init__(self, **kwargs):
         super(SulciLabellingSPAMMarkov, self).__init__(**kwargs)
-        self.add_trait('data_graph', File(
-            allowed_extensions=['.arg', '.data']))
-        self.add_trait('output_graph', File(
-            allowed_extensions=['.arg', '.data'], output=True))
+        self.add_trait('data_graph', File(allowed_extensions=['.arg', '.data']))
+        self.add_trait('output_graph', File(allowed_extensions=['.arg', '.data'], output=True))
         self.add_trait('model', File(allowed_extensions=['.dat']))
-        self.add_trait('posterior_probabilities', File(
-            allowed_extensions=['.csv'], output=True))
-        self.add_trait('labels_translation_map', File(
-            allowed_extensions=['.trl', '.def']))
+        self.add_trait('posterior_probabilities', File(allowed_extensions=['.csv'], output=True))
+        self.add_trait('labels_translation_map', File(allowed_extensions=['.trl', '.def']))
         self.add_trait('labels_priors', File(allowed_extensions=['.dat']))
-        self.add_trait('segments_relations_model',
-                       File(allowed_extensions=['.dat']))
-        self.add_trait('initial_transformation', File(
-            allowed_extensions=['.trm'], optional=True))
-        self.add_trait('global_transformation', File(
-            allowed_extensions=['.trm'], optional=True))
+        self.add_trait('segments_relations_model', File(allowed_extensions=['.dat']))
+        self.add_trait('initial_transformation', File(allowed_extensions=['.trm'], optional=True))
+        self.add_trait('global_transformation', File(allowed_extensions=['.trm'], optional=True))
         self.add_trait('fix_random_seed', Bool())
 
+
         # initialization section
-        self.labels_translation_map = '/casa/host/build/share/brainvisa-share-5.2/nomenclature/translation/sulci_model_2008.trl'
+        self.labels_translation_map = '/volatile/riviere/casa-distro/conda/brainvisa-6.0/build/share/brainvisa-share-5.2/nomenclature/translation/sulci_model_2008.trl'
         self.fix_random_seed = False
 
     def _run_process(self):
@@ -43,6 +37,7 @@ class SulciLabellingSPAMMarkov(Process):
         neuroConfig.gui = False
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
+
 
         axon.initializeProcesses()
 

@@ -13,17 +13,14 @@ import six
 class Normalization_Baladin(Process):
     def __init__(self, **kwargs):
         super(Normalization_Baladin, self).__init__(**kwargs)
-        self.add_trait('anatomy_data', File(
-            allowed_extensions=['.ima', '.dim']))
-        self.add_trait('anatomical_template', File(
-            allowed_extensions=['.ima', '.dim']))
-        self.add_trait('transformation_matrix', File(
-            allowed_extensions=['.txt'], output=True))
-        self.add_trait('normalized_anatomy_data', File(allowed_extensions=[
-                       '.ima', '.dim', '.nii', '.nii.gz'], output=True))
+        self.add_trait('anatomy_data', File(allowed_extensions=['.ima', '.dim']))
+        self.add_trait('anatomical_template', File(allowed_extensions=['.ima', '.dim']))
+        self.add_trait('transformation_matrix', File(allowed_extensions=['.txt'], output=True))
+        self.add_trait('normalized_anatomy_data', File(allowed_extensions=['.ima', '.dim', '.nii', '.nii.gz'], output=True))
+
 
         # initialization section
-        self.anatomical_template = '/casa/host/build/share/brainvisa-share-5.2/anatomical_templates/MNI152_T1_1mm.nii.gz'
+        self.anatomical_template = '/volatile/riviere/casa-distro/conda/brainvisa-6.0/build/share/brainvisa-share-5.2/anatomical_templates/MNI152_T1_2mm_brain.nii'
 
     def _run_process(self):
         from brainvisa import axon
@@ -33,6 +30,7 @@ class Normalization_Baladin(Process):
         neuroConfig.gui = False
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
+
 
         axon.initializeProcesses()
 

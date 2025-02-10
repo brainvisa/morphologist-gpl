@@ -13,21 +13,17 @@ import six
 class ScalpMesh(Process):
     def __init__(self, **kwargs):
         super(ScalpMesh, self).__init__(**kwargs)
-        self.add_trait('t1mri_nobias', File(allowed_extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu',
-                       '.jpg', '.scn', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz']))
-        self.add_trait('histo_analysis', File(
-            allowed_extensions=['.han'], optional=True))
-        self.add_trait('head_mesh', File(allowed_extensions=[
-                       '.gii', '.mesh', '.obj', '.ply', '.tri'], output=True))
-        self.add_trait('head_mask', File(allowed_extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.gif', '.ima', '.dim', '.jpg', '.mnc', '.nii',
-                       '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'], output=True, optional=True))
+        self.add_trait('t1mri_nobias', File(allowed_extensions=['.nii.gz', '.svs', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg', '.scn', '.mnc', '.nii', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.bif', '.czi', '.mnc.gz']))
+        self.add_trait('histo_analysis', File(allowed_extensions=['.han'], optional=True))
+        self.add_trait('head_mesh', File(allowed_extensions=['.gii', '.mesh', '.obj', '.ply', '.tri'], output=True))
+        self.add_trait('head_mask', File(allowed_extensions=['.nii.gz', '.dcm', '', '.i', '.v', '.fdf', '.ima', '.dim', '.jpg', '.mnc', '.nii', '.img', '.hdr', '.tiff', '.tif', '.mnc.gz'], output=True, optional=True))
         self.add_trait('keep_head_mask', Bool())
-        self.add_trait('remove_mask', File(allowed_extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg',
-                       '.scn', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz'], optional=True))
+        self.add_trait('remove_mask', File(allowed_extensions=['.nii.gz', '.svs', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg', '.scn', '.mnc', '.nii', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.bif', '.czi', '.mnc.gz'], optional=True))
         self.add_trait('first_slice', Int(optional=True))
         self.add_trait('threshold', Int(optional=True))
         self.add_trait('closing', Float(optional=True))
         self.add_trait('threshold_mode', Enum('auto', 'abs', 'grey'))
+
 
         # initialization section
         self.keep_head_mask = False
@@ -44,6 +40,7 @@ class ScalpMesh(Process):
         neuroConfig.gui = False
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
+
 
         axon.initializeProcesses()
 

@@ -13,22 +13,19 @@ import six
 class TalairachTransformationFromNormalization(Process):
     def __init__(self, **kwargs):
         super(TalairachTransformationFromNormalization, self).__init__(**kwargs)
-        self.add_trait('normalization_transformation',
-                       File(allowed_extensions=['.trm']))
-        self.add_trait('Talairach_transform', File(
-            allowed_extensions=['.trm'], output=True))
-        self.add_trait('commissure_coordinates', File(
-            allowed_extensions=['.APC'], output=True, optional=True))
-        self.add_trait('t1mri', File(allowed_extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg', '.scn',
-                       '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz'], optional=True))
+        self.add_trait('normalization_transformation', File(allowed_extensions=['.trm']))
+        self.add_trait('Talairach_transform', File(allowed_extensions=['.trm'], output=True))
+        self.add_trait('commissure_coordinates', File(allowed_extensions=['.APC'], output=True, optional=True))
+        self.add_trait('t1mri', File(allowed_extensions=['.nii.gz', '.svs', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg', '.scn', '.mnc', '.nii', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.bif', '.czi', '.mnc.gz'], optional=True))
         self.add_trait('source_referential', File())
         self.add_trait('normalized_referential', File())
         self.add_trait('transform_chain_ACPC_to_Normalized', List())
         self.add_trait('acpc_referential', File(optional=True))
 
+
         # initialization section
         self.transform_chain_ACPC_to_Normalized = []
-        self.acpc_referential = '/casa/host/build/share/brainvisa-share-5.2/registration/Talairach-AC_PC-Anatomist.referential'
+        self.acpc_referential = '/volatile/riviere/casa-distro/conda/brainvisa-6.0/build/share/brainvisa-share-5.2/registration/Talairach-AC_PC-Anatomist.referential'
 
     def _run_process(self):
         from brainvisa import axon
@@ -38,6 +35,7 @@ class TalairachTransformationFromNormalization(Process):
         neuroConfig.gui = False
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
+
 
         axon.initializeProcesses()
 
@@ -54,5 +52,4 @@ class TalairachTransformationFromNormalization(Process):
                 kwargs[name] = value
 
         context = brainvisa.processes.defaultContext()
-        context.runProcess(
-            'TalairachTransformationFromNormalization', **kwargs)
+        context.runProcess('TalairachTransformationFromNormalization', **kwargs)

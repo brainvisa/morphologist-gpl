@@ -13,12 +13,10 @@ import six
 class TalairachTransformation(Process):
     def __init__(self, **kwargs):
         super(TalairachTransformation, self).__init__(**kwargs)
-        self.add_trait('split_mask', File(allowed_extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu',
-                       '.jpg', '.scn', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz']))
-        self.add_trait('commissure_coordinates',
-                       File(allowed_extensions=['.APC']))
-        self.add_trait('Talairach_transform', File(
-            allowed_extensions=['.trm'], output=True))
+        self.add_trait('split_mask', File(allowed_extensions=['.nii.gz', '.svs', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg', '.scn', '.mnc', '.nii', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.bif', '.czi', '.mnc.gz']))
+        self.add_trait('commissure_coordinates', File(allowed_extensions=['.APC']))
+        self.add_trait('Talairach_transform', File(allowed_extensions=['.trm'], output=True))
+
 
     def _run_process(self):
         from brainvisa import axon
@@ -28,6 +26,7 @@ class TalairachTransformation(Process):
         neuroConfig.gui = False
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
+
 
         axon.initializeProcesses()
 

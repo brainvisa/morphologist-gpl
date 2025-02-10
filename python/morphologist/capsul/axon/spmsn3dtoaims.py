@@ -15,13 +15,11 @@ class SPMsn3dToAims(Process):
         super(SPMsn3dToAims, self).__init__(**kwargs)
         self.add_trait('read', File(allowed_extensions=['.mat']))
         self.add_trait('write', File(allowed_extensions=['.trm'], output=True))
-        self.add_trait('target', Enum(
-            'MNI template', 'unspecified template', 'normalized_volume in AIMS orientation'))
-        self.add_trait('source_volume', File(allowed_extensions=[
-                       '.nii', '.img', '.hdr'], optional=True))
-        self.add_trait('normalized_volume', File(
-            allowed_extensions=['.nii', '.img', '.hdr'], optional=True))
+        self.add_trait('target', Enum('MNI template', 'unspecified template', 'normalized_volume in AIMS orientation'))
+        self.add_trait('source_volume', File(allowed_extensions=['.nii', '.img', '.hdr'], optional=True))
+        self.add_trait('normalized_volume', File(allowed_extensions=['.nii', '.img', '.hdr'], optional=True))
         self.add_trait('removeSource', Bool())
+
 
         # initialization section
         self.target = 'MNI template'
@@ -35,6 +33,7 @@ class SPMsn3dToAims(Process):
         neuroConfig.gui = False
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
+
 
         axon.initializeProcesses()
 
