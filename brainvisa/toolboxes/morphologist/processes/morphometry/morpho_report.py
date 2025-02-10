@@ -20,6 +20,7 @@ def validation():
 
 
 userLevel = 0
+needs_opengl = True
 
 signature = Signature(
     't1mri', ReadDiskItem('Raw T1 MRI', 'aims readable volume formats'),
