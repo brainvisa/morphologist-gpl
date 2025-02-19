@@ -150,13 +150,13 @@ class UpdateActivation3D(Qt.QWidget):
                 self._window.addObjects(self._objects3D)
 
             # Load fusion IRM+activ in window
-            if self._values.show_mri is "Yes" and not self._mriShown:
+            if self._values.show_mri == "Yes" and not self._mriShown:
                 self._window.removeObjects([self._fusion])
                 self._window.addObjects([self._fusion])
                 self._mriShown = 1
 
             # Remove fusion IRM+activ from window
-            if self._values.show_mri is "No" and self._mriShown:
+            if self._values.show_mri == "No" and self._mriShown:
                 self._window.removeObjects([self._fusion])
                 self._mriShown = 0
 
@@ -222,7 +222,7 @@ class UpdateActivation3D(Qt.QWidget):
 
             # Load fusion IRM+activ in window if required
             fusion = a.fusionObjects([mri, fmri], "Fusion2DMethod")
-            if self._values.show_mri is "Yes":
+            if self._values.show_mri == "Yes":
                 window.addObjects([fusion])
                 self._mriShown = 1
             else:

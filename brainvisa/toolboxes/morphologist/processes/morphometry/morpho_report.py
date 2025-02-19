@@ -20,6 +20,7 @@ def validation():
 
 
 userLevel = 0
+needs_opengl = True
 
 signature = Signature(
     't1mri', ReadDiskItem('Raw T1 MRI', 'aims readable volume formats'),
@@ -83,7 +84,7 @@ def initialization(self):
     self.linkParameters('talairach_transform', 't1mri')
     self.linkParameters('brain_volumes_file', 't1mri')
     self.linkParameters('report', 't1mri')
-    self.linkParameters('normative_brain_stats', 't1mri')
+    # self.linkParameters('normative_brain_stats', 't1mri')
 
 def execution(self, context):
     context.write('<h1>Morphologist report</h1>')

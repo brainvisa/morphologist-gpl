@@ -31,8 +31,9 @@ class SulciLabellingSPAMMarkov(Process):
                        extensions=['.trm'], optional=True)
         self.add_field('fix_random_seed', bool)
 
+
         # initialization section
-        self.labels_translation_map = '/casa/host/build/share/brainvisa-share-5.2/nomenclature/translation/sulci_model_2008.trl'
+        self.labels_translation_map = '/volatile/riviere/casa-distro/conda/brainvisa-6.0/build/share/brainvisa-share-5.2/nomenclature/translation/sulci_model_2008.trl'
         self.fix_random_seed = False
 
     def execute(self, context=None):
@@ -43,6 +44,7 @@ class SulciLabellingSPAMMarkov(Process):
         neuroConfig.gui = False
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
+
 
         axon.initializeProcesses()
 

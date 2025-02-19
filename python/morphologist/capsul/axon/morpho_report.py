@@ -47,6 +47,9 @@ class morpho_report(Process):
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
 
+        from soma.qt_gui import qt_backend
+        qt_backend.set_headless(True, needs_opengl=True)
+
         axon.initializeProcesses()
 
         kwargs = {}

@@ -2,7 +2,8 @@
     "fom_name": "morphologist-bids-1.0",
     "fom_import": [
         "brainvisa-formats-3.2.0",
-        "shared-brainvisa-1.0"
+        "shared-brainvisa-1.0",
+        "raw-bids-1.0"
     ],
     "attribute_definitions": {
         "session": {
@@ -24,20 +25,32 @@
             "default_value": "subjects"
         }
     },
+    "shared_patterns": {
+      "acquisition": "sub-<subject>/ses-<session>/anat/t1mri/<acquisition>",
+      "analysis": "{acquisition}/<analysis>"
+    },
+
     "processes": {
         "Morphologist": {
+            # t1mri should be defined through the import process
             "t1mri": [
                 [
-                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<subject>",
+                    #"input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<subject>",
+                    "input:sub-<subject>/ses-<session>/anat/sub-<subject>_ses-<session>_acq-<acquisition>_T1w",
                     "Aims readable volume formats"
                 ]
             ],
             "imported_t1mri": [
                 [
-                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<subject>",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<subject>",
                     "Aims readable volume formats"
                 ]
             ],
+            "reoriented_t1mri":
+                [["output:{acquisition}/<subject>", "Aims writable volume formats"]],
+            #### NormalizeSPM
+            "normalization_spm_native_transformation_pass1": [["output:{acquisition}/<subject>_sn_pass1", "Matlab file"]],
+
             "t1mri_nobias": [
                 [
                     "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/nobias_<subject>",
@@ -99,6 +112,9 @@
                 ]
             ],
 
+            ### TalairachFromNormalization
+            "PrepareSubject_TalairachFromNormalization_transform_chain_ACPC_to_Normalized": "{shared.talairach_TO_spm_transform}",
+
             ## CNN_recognition19
             #  (need to be forced because the generic process needs a side)
             "SulciRecognition_CNN_recognition19_model_file":
@@ -123,7 +139,11 @@
                         "Commissure coordinates"
                     ]
                 ]
-            ]
+            ],
+            "Normalization_NormalizeSPM_template": "{shared.anatomical_template_t1}",
+            "Normalization_Normalization_AimsMIRegister_anatomical_template": "{shared.anatomical_template_t1}",
+            "Normalization_NormalizeBaladin_template": "{shared.anatomical_template_t1}",
+            "Normalization_NormalizeFSL_template": "{shared.anatomical_template_t1}"
         },
         "Morphologist.BiasCorrection": {
             "field": [
@@ -203,15 +223,11 @@
                         "Transformation matrix"
                     ]
                 ]
-            ]
+            ],
+            "template": "{shared.anatomical_template_t1_skull_stripped}"
         },
         "Morphologist.SplitBrain": {
-            "split_template": [
-                [
-                    "shared:hemitemplate/closedvoronoi",
-                    "Aims readable volume formats"
-                ]
-            ]
+            "split_template": "{shared.split_template}",
         },
         "Morphologist.TalairachTransformation": {
             "Talairach_transform": [
@@ -245,7 +261,23 @@
                         "CSV file"
                     ]
                 ]
-            ]
+            ],
+            "sulci_file":
+            "{shared.sulcal_morphometry_sulci_file}"
+        },
+        "Morphologist.GlobalMorphometry": {
+          "left_csf":
+              [["output:{analysis}/segmentation/<side>csf_<subject>","images",{"side":"L"}]],
+          "right_csf":
+              [["output:{analysis}/segmentation/<side>csf_<subject>","images",{"side":"R"}]],
+          "brain_volumes_file":
+              [["output:{analysis}/segmentation/brain_volumes_<subject>","CSV file"]],
+          "subject": [["none:<subject>", "no ext"]],
+        },
+        "Morphologist.Report": {
+          "report":
+              [["output:{analysis}/morphologist_report","PDF File"]],
+          "subject": [["none:<subject>", "no ext"]]
         },
         "Morphologist.PrepareSubject.StandardACPC": {
             "older_MNI_normalization": [
@@ -260,7 +292,7 @@
         "Morphologist.Renorm.TalairachFromNormalization": {
             "source_referential": [
                 [
-                    "input:<center>/<subject>/t1mri/<acquisition>/registration/RawT1-<subject>_<acquisition>",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/registration/RawT1-<subject>_<acquisition>",
                     [
                         "Referential"
                     ]
@@ -286,7 +318,7 @@
         "Morphologist.PrepareSubject.TalairachFromNormalization": {
             "source_referential": [
                 [
-                    "input:<center>/<subject>/t1mri/<acquisition>/registration/RawT1-<subject>_<acquisition>",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/registration/RawT1-<subject>_<acquisition>",
                     [
                         "Referential"
                     ]
@@ -780,7 +812,7 @@
             ],
             "output_local_transformations": [
                 [
-                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/L<subject>_<sulci_recognition_session>_auto_global_TO_local",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/L<subject>_<sulci_recognition_session>_auto_global_TO_local",
                     [
                         "Directory"
                     ]
@@ -880,7 +912,7 @@
             ],
             "output_local_transformations": [
                 [
-                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/R<subject>_<sulci_recognition_session>_auto_global_TO_local",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/R<subject>_<sulci_recognition_session>_auto_global_TO_local",
                     [
                         "Directory"
                     ]

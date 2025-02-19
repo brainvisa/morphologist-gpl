@@ -36,6 +36,7 @@ class BrainSegmentation(Process):
                        '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'])
         self.add_field('fix_random_seed', bool)
 
+
         # initialization section
         self.lesion_mask_mode = 'e'
         self.variant = '2010'
@@ -54,6 +55,7 @@ class BrainSegmentation(Process):
         neuroConfig.gui = False
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
+
 
         axon.initializeProcesses()
 

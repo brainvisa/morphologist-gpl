@@ -129,7 +129,7 @@ def execution(self, context):
     lgm = None
     rgm = None
     lwm = None
-    rlm = None
+    rwm = None
     if self.left_labelled_graph is not None:
         lg = self.left_labelled_graph.fullPath()
     if self.right_labelled_graph is not None:

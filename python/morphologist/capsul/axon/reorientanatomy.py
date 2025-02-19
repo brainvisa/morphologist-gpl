@@ -24,6 +24,7 @@ class ReorientAnatomy(Process):
                        write=True, extensions=['.APC'], optional=True)
         self.add_field('allow_flip_initial_MRI', bool)
 
+
         # initialization section
         self.allow_flip_initial_MRI = False
 
@@ -35,6 +36,7 @@ class ReorientAnatomy(Process):
         neuroConfig.gui = False
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
+
 
         axon.initializeProcesses()
 

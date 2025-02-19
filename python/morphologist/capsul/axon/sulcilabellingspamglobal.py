@@ -34,7 +34,7 @@ class SulciLabellingSPAMGlobal(Process):
 
         # initialization section
         self.model_type = 'Global registration'
-        self.labels_translation_map = '/casa/host/build/share/brainvisa-share-5.2/nomenclature/translation/sulci_model_2008.trl'
+        self.labels_translation_map = '/volatile/riviere/casa-distro/conda/brainvisa-6.0/build/share/brainvisa-share-5.2/nomenclature/translation/sulci_model_2008.trl'
 
     def execute(self, context=None):
         from brainvisa import axon
@@ -44,6 +44,7 @@ class SulciLabellingSPAMGlobal(Process):
         neuroConfig.gui = False
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
+
 
         axon.initializeProcesses()
 

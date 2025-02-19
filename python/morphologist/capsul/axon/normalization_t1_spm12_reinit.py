@@ -25,7 +25,9 @@ class normalization_t1_spm12_reinit(Process):
         self.add_field('allow_retry_initialization', bool)
         self.add_field('init_translation_origin', Literal[0, 1])
 
+
         # initialization section
+        self.anatomical_template = '/volatile/riviere/casa-distro/conda/brainvisa-6.0/.pixi/envs/default/spm12/spm12_mcr/spm/spm12/toolbox/OldNorm/T1.nii'
         self.voxel_size = '[1 1 1]'
         self.cutoff_option = 25
         self.nbiteration = 16
@@ -40,6 +42,7 @@ class normalization_t1_spm12_reinit(Process):
         neuroConfig.gui = False
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
+
 
         axon.initializeProcesses()
 

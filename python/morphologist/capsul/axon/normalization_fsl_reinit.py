@@ -28,7 +28,9 @@ class Normalization_FSL_reinit(Process):
         self.add_field('allow_retry_initialization', bool)
         self.add_field('init_translation_origin', Literal[0, 1])
 
+
         # initialization section
+        self.anatomical_template = '/volatile/riviere/casa-distro/conda/brainvisa-6.0/build/share/brainvisa-share-5.2/anatomical_templates/MNI152_T1_2mm_brain.nii'
         self.Alignment = 'Not Aligned but Same Orientation'
         self.cost_function = 'corratio'
         self.search_cost_function = 'corratio'
@@ -43,6 +45,7 @@ class Normalization_FSL_reinit(Process):
         neuroConfig.gui = False
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
+
 
         axon.initializeProcesses()
 

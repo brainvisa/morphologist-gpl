@@ -22,7 +22,7 @@ class sulcigraphmorphometrybysubject(Process):
                        write=True, extensions=['.csv'])
 
         # initialization section
-        self.sulci_file = '/casa/host/build/share/brainvisa-share-5.2/nomenclature/translation/sulci_default_list.json'
+        self.sulci_file = '/volatile/riviere/casa-distro/conda/brainvisa-6.0/build/share/brainvisa-share-5.2/nomenclature/translation/sulci_default_list.json'
         self.use_attribute = 'label'
 
     def execute(self, context=None):
@@ -33,6 +33,7 @@ class sulcigraphmorphometrybysubject(Process):
         neuroConfig.gui = False
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
+
 
         axon.initializeProcesses()
 

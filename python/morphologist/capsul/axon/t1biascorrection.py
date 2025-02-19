@@ -52,6 +52,7 @@ class T1BiasCorrection(Process):
         self.add_field('modality', Literal['T1', 'T2'])
         self.add_field('use_existing_ridges', bool)
 
+
         # initialization section
         self.sampling = 16.0
         self.field_rigidity = 20.0
@@ -81,6 +82,7 @@ class T1BiasCorrection(Process):
         neuroConfig.gui = False
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
+
 
         axon.initializeProcesses()
 

@@ -20,7 +20,9 @@ class FSLnormalizationToAims(Process):
         self.add_field('standard_template', Literal[0, 1, 2])
         self.add_field('set_transformation_in_source_volume', bool)
 
+
         # initialization section
+        self.registered_volume = '/volatile/riviere/casa-distro/conda/brainvisa-6.0/build/share/brainvisa-share-5.2/anatomical_templates/MNI152_T1_2mm_brain.nii'
         self.standard_template = 0
         self.set_transformation_in_source_volume = True
 
@@ -32,6 +34,7 @@ class FSLnormalizationToAims(Process):
         neuroConfig.gui = False
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
+
 
         axon.initializeProcesses()
 

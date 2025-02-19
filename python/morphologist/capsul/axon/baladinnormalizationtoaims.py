@@ -19,6 +19,7 @@ class BaladinNormalizationToAims(Process):
                        '.scn', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz'], optional=True)
         self.add_field('set_transformation_in_source_volume', bool)
 
+
         # initialization section
         self.set_transformation_in_source_volume = True
 
@@ -30,6 +31,7 @@ class BaladinNormalizationToAims(Process):
         neuroConfig.gui = False
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
+
 
         axon.initializeProcesses()
 

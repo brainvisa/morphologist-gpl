@@ -27,9 +27,10 @@ class TalairachTransformationFromNormalization(Process):
         self.add_field('acpc_referential', File, read=True,
                        optional=True, dataset="shared")
 
+
         # initialization section
         self.transform_chain_ACPC_to_Normalized = []
-        self.acpc_referential = '/casa/host/build/share/brainvisa-share-5.2/registration/Talairach-AC_PC-Anatomist.referential'
+        self.acpc_referential = '/volatile/riviere/casa-distro/conda/brainvisa-6.0/build/share/brainvisa-share-5.2/registration/Talairach-AC_PC-Anatomist.referential'
 
     def execute(self, context=None):
         from brainvisa import axon
@@ -39,6 +40,7 @@ class TalairachTransformationFromNormalization(Process):
         neuroConfig.gui = False
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
+
 
         axon.initializeProcesses()
 
@@ -56,5 +58,4 @@ class TalairachTransformationFromNormalization(Process):
                 kwargs[name] = value
 
         context = brainvisa.processes.defaultContext()
-        context.runProcess(
-            'TalairachTransformationFromNormalization', **kwargs)
+        context.runProcess('TalairachTransformationFromNormalization', **kwargs)

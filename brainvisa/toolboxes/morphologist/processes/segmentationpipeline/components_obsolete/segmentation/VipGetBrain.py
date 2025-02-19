@@ -89,7 +89,7 @@ def execution(self, context):
             option_list += ['-Points', self.Commissure_coordinates.fullPath()]
         if self.lesion_mask is not None:
             option_list += ['-patho', self.lesion_mask.fullPath()]
-        if self.regularization is not 1:
+        if self.regularization != 1:
             option_list += ['-niter', 0]
         if self.mode == "standard+iterative":
             themode = "Standard"

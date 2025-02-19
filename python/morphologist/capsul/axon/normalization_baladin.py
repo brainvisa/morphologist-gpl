@@ -29,6 +29,7 @@ class Normalization_Baladin(Process):
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
 
+
         axon.initializeProcesses()
 
         kwargs = {}

@@ -28,6 +28,7 @@ class AimsConverter(Process):
         self.add_field('outputDynamicMin', float, optional=True)
         self.add_field('outputDynamicMax', float, optional=True)
 
+
         # initialization section
         self.removeSource = False
         self.ascii = False
@@ -46,6 +47,7 @@ class AimsConverter(Process):
         neuroConfig.gui = False
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
+
 
         axon.initializeProcesses()
 

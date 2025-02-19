@@ -27,6 +27,7 @@ class ScalpMesh(Process):
         self.add_field('closing', float, optional=True)
         self.add_field('threshold_mode', Literal['auto', 'abs', 'grey'])
 
+
         # initialization section
         self.keep_head_mask = False
         self.first_slice = undefined
@@ -42,6 +43,7 @@ class ScalpMesh(Process):
         neuroConfig.gui = False
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
+
 
         axon.initializeProcesses()
 

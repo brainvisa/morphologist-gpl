@@ -112,9 +112,9 @@ def initialization(self):
 def execution(self, context):
     tmpfile = context.temporary('Text file')
     # find script filename (since it is not in the PATH)
-    import brainvisa
-    progname = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(
-        brainvisa.__file__))), 'scripts', 'sigraph', 'sulci_registration',
+    import soma.config as sconf
+    progname = os.path.join(
+        sconf.INSTALL_ROOT, 'scripts', 'sigraph', 'sulci_registration',
         'independent_tag_with_registration.py')
     cmd = [sys.executable, progname, '-i', self.data_graph, '-o',
            self.output_graph, '-t', self.labels_translation_map, '-d', self.model,

@@ -31,21 +31,19 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
-from __future__ import absolute_import
 from brainvisa.processes import *
-from brainvisa import registration
+import shutil
 
 name = 'Baladin Normalization Pipeline'
 userLevel = 1
 
 
 def validation():
-    import distutils.spawn
     try:
         from soma import aims
     except:
         raise ValidationError('aims module not here')
-    if not distutils.spawn.find_executable('baladin'):
+    if not shutil.which('baladin'):
         raise ValidationError(_t_("'baladin' commandline " +
                                   "could not be found in PATH"))
 

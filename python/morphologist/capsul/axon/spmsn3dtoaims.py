@@ -21,6 +21,7 @@ class SPMsn3dToAims(Process):
                        '.nii', '.img', '.hdr'], optional=True, dataset=None)
         self.add_field('removeSource', bool)
 
+
         # initialization section
         self.target = 'MNI template'
         self.removeSource = False
@@ -33,6 +34,7 @@ class SPMsn3dToAims(Process):
         neuroConfig.gui = False
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
+
 
         axon.initializeProcesses()
 

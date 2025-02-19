@@ -31,13 +31,14 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
-from __future__ import absolute_import
 import os
 import sys
 
 from brainvisa.processes import *
 from brainvisa.data import neuroData
-from six.moves import zip
+import shutil
+
+
 name = 'Automatic recognition iterator'
 userLevel = 1
 
@@ -231,7 +232,7 @@ class GridParallelTaskManager(ParallelTaskManager):
 
     def finalize(self):
         ParallelTaskManager.finalize(self)
-        distcmd = distutils.spawn.find_executable(
+        distcmd = shutil.which(
             'grid.py')
         scriptname = os.path.join(self.dir, 'siRelax-grid.sh')
         stream = open(scriptname, 'w')
@@ -265,7 +266,7 @@ class DuchParallelTaskManager(ParallelTaskManager):
 
     def finalize(self):
         ParallelTaskManager.finalize(self)
-        distcmd = distutils.spawn.find_executable(
+        distcmd = shutil.which(
             'distributed_computing.py')
         scriptname = os.path.join(self.dir, 'siRelax-duch.sh')
         stream = open(scriptname, 'w')

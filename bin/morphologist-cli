@@ -1,0 +1,216 @@
+#!/usr/bin/env python
+import argparse
+import pathlib
+import sys
+import textwrap
+import os
+import os.path as osp
+import subprocess
+
+#from capsul.api import capsul_engine
+#from capsul.attributes.completion_engine import ProcessCompletionEngine
+
+import morphologist.info
+
+
+morphologist_version = morphologist.info.__version__.rsplit(".", 1)[0]
+
+
+def morphologist(
+    mri, output_dir, input_dir=None, subject=[], pipeline="morphologist",
+    variant=morphologist_version, capsul_args=[], morpho_args=[],
+    dry_run=False, input_fom="morphologist-bids-1.0"
+):
+    """Process T1 MR images with BrainVISA/Morphologist pipeline
+    and put the result in an output directory using the following
+    BIDS organization:
+
+    \b
+    {OUTPUT_DIR}/derivatives/{pipeline}-{variant}/sub-{subject}/...
+
+    \b
+    MRI is the input T1 MR file name.
+    OUTPUT_DIR is the BIDS output directory.
+    """
+
+    mri = [pathlib.Path(m).absolute() for m in mri]
+    output_dir = (pathlib.Path(output_dir).absolute() / "derivatives" /
+                  f"{pipeline}-{variant}").as_posix()
+    if not subject:
+        subject = [m.name.split(".", 1)[0] for m in mri]
+
+    conf_options = []
+    if "--config" not in capsul_args and "--studyconfig" not in capsul_args:
+        conf_options = ["--config", "axon"]
+
+    print('participants:', subject)
+    print('mri:', mri)
+    print('input_dir:', input_dir)
+    print('output_dir:', output_dir)
+    print('capsul:', capsul_args)
+    print('morpho:', morpho_args)
+    print('config options:', conf_options)
+
+    conf_options += ['-o', output_dir]
+    if input_dir:
+        conf_options += ['-i', input_dir]
+
+    iter_options = []
+    if len(mri) > 1 or len(subject) > 1:
+        iter_options = ["-I", "t1mri"]
+
+    t1mri_args = []
+    subject_args = []
+    if len(mri) != 0:
+        mri = [m.as_posix() for m in mri]
+        t1mri_args = [f"t1mri={(mri if len(iter_options) > 1 else mri[0])}"]
+    if len(subject) != 0:
+        if len(iter_options) != 0:
+            subject_args = ["-a", f"subject={subject}"]
+        else:
+            subject_args = ["-a", f"subject={subject[0]}"]
+
+    # if iterations are involved, disable any in-process multithreading
+    # in order to contain the CPU usage, unless it is forced in user-specified
+    # morpho_args.
+    if iter_options and len([x for x in morpho_args
+                             if x.startswith("allow_multithreading=")]) == 0:
+        t1mri_args.append("allow_multithreading=False")
+
+    capsul_cmd = [sys.executable, "-m", "capsul"] \
+        + conf_options \
+        + ['--if', input_fom, '--of', 'morphologist-bids-1.0'] \
+        + iter_options + subject_args + capsul_args \
+        + ["morphologist.capsul.morphologist"] + t1mri_args + morpho_args
+
+    print(capsul_cmd)
+    if not dry_run:
+        subprocess.check_call(capsul_cmd)
+
+
+    #engine = capsul_engine()
+    #engine.load_modules(["fom", "axon", "spm"])
+    #with engine.settings as session:
+        #config = session.config("fom", "global")
+        #config.input_fom = "morphologist-bids-1.0"
+        #config.output_fom = "morphologist-bids-1.0"
+        #config.input_directory = f"{output_dir}/derivatives/{pipeline}-{variant}"
+        #config.output_directory = f"{output_dir}/derivatives/{pipeline}-{variant}"
+    #process = engine.get_process_instance("morphologist.capsul.morphologist")
+    #compl_engine = ProcessCompletionEngine.get_completion_engine(process)
+    #attributes = compl_engine.get_attribute_values()
+    #attributes.subject = subject
+    #compl_engine.complete_parameters()
+    #process.t1mri = str(mri)
+
+    #process()
+
+
+description = f"""Process one or several T1 MR image(s) with
+BrainVISA/Morphologist pipeline and put the result in an output directory using
+the following BIDS organization:
+
+
+{{output_dir}}/derivatives/morphologist-{morphologist_version}/sub-{{subject}}/...
+
+There are actually three ways to specify inputs:
+
+- either as independent MRI file names
+- or as a BIDS raw data input directory. If only one input is given, and if   participants labels are provided, and if the input is a directory, then it is   interpreted as a raw input data directory, organized in BIDS layout.
+- if no mri or input_directory arguments are given, assume input_directory=output_directory: subjects are taken from the same data directory as the output one, in a raw data subdirectory (sourcedata/raw/).
+
+In addition to this commandline options, other options may be passed to the CAPSUL general commandline which is run under the hood. See "python -m capsul -h" for help about them.
+Such options are separated by a "--". Ex:
+
+morphologist-cli input_dir output_dir -s subject01 subject02 subject03 -- --swf
+
+in this example, --swf specifies the use of Soma-Workflow to distribute processing across the cores of the local machine (which is recommended).
+"""
+
+
+class MultilineFormatter(argparse.HelpFormatter):
+    def _fill_text(self, text, width, indent):
+        text = text.replace('\n* ', '|n * ')
+        text = text.replace('\n', '|n')
+        text = self._whitespace_matcher.sub(' ', text).strip()
+        paragraphs = text.split('|n')
+        multiline_text = ''
+        for paragraph in paragraphs:
+            formatted_paragraph = textwrap.fill(
+                paragraph, width, initial_indent=indent,
+                subsequent_indent=indent) + '\n'
+            multiline_text = multiline_text + formatted_paragraph
+        return multiline_text
+
+
+parser = argparse.ArgumentParser(
+    description=description, formatter_class=MultilineFormatter
+)
+parser.add_argument(
+    "--subject", "--participant_label", "-s", default=[], nargs='*',
+    help="The label(s) of the participant(s) that should be analyzed. The "
+    "label corresponds to sub-<participant_label> from the BIDS spec (so it "
+    "does not include \"sub-\"). If this parameter is not provided all "
+    "subjects should be analyzed. Multiple participants can be specified with "
+    "a space separated list. If not specified, and if mri arguments are "
+    "given, participants names will be created according to mri file names.")
+parser.add_argument(
+    "--dry-run", action="store_true",
+    help="don't actually run Morphologist, just print the commandline which "
+    "should be started.")
+
+parser.add_argument(
+    "mri", default=[], nargs="*",
+    help="Either the directory with the input dataset formatted according to "
+    "the BIDS standard, or a list of T1 MRI image files to be imported.")
+parser.add_argument(
+    "output_dir",
+    help="The directory where the output files should be stored.")
+
+argv = sys.argv[1:]
+capsul_args = []
+morpho_args = []
+
+if "--" in argv:
+    i = len(argv) - 1 - argv[::-1].index("--")
+    capsul_args = argv[i + 1:]
+    argv = argv[:i]
+    # args with shape "param=value" are passed after the process
+    capsul_flags = set([
+        '-a', '--attribute', '-r', '--resource', '-p', '--password', '-w',
+        '--write-workflow', '--rsa-pass', '--queue'])
+    for i in range(len(capsul_args) - 1, -1, -1):
+        p = capsul_args[i]
+        if '=' not in p or p.startswith('-'):
+            break
+        prev = None
+        if i > 0:
+            prev = capsul_args[i - 1]
+        if prev in capsul_flags:
+            break
+        morpho_args.append(p)
+        del capsul_args[i]
+
+args = parser.parse_args(argv)
+
+mris = args.mri
+subjects = args.subject
+input_dir = None
+input_fom = 'morphologist-bids-1.0'
+if len(args.mri) == 0:
+    input_dir = osp.join(args.output_dir, 'sourcedata', 'raw')
+elif len(args.mri) == 1 and osp.isdir(args.mri[0]):
+    input_dir = osp.join(args.mri[0], 'sourcedata', 'raw')
+if input_dir is not None and len(args.subject) == 0:
+    mris = []
+    # process all subjects in BIDS raw data
+    if not osp.isdir(input_dir):
+        raise ValueError(f"Input directory {input_dir} does not exist")
+    subjects = [s[4:] for s in os.listdir(input_dir)
+                if s.startswith('sub-')
+                and osp.isdir(osp.join(input_dir, s))]
+
+morphologist(mri=mris, output_dir=args.output_dir, input_dir=input_dir,
+             subject=subjects, capsul_args=capsul_args,
+             morpho_args=morpho_args, dry_run=args.dry_run,
+             input_fom=input_fom)

@@ -26,6 +26,7 @@ class SulciLabellingANN(Process):
         self.add_field('forbid_unknown_label', bool)
         self.add_field('fix_random_seed', bool)
 
+
         # initialization section
         self.model = '/casa/host/build/share/brainvisa-share-5.2/models/models_2008/discriminative_models/3.0/Rfolds_noroots/Rfolds_noroots.arg'
         self.model_hint = 0
@@ -43,6 +44,7 @@ class SulciLabellingANN(Process):
         neuroConfig.gui = False
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
+
 
         axon.initializeProcesses()
 

@@ -257,16 +257,12 @@ class Morphologist(
 
         self.export_parameter('CorticalFoldsGraph', 'compute_fold_meshes',
                               'compute_fold_meshes')
-        self.export_parameter('CorticalFoldsGraph', 'allow_multithreading',
-                              'allow_multithreading')
         self.export_parameter('CorticalFoldsGraph',
                               'write_cortex_mid_interface',
                               'CorticalFoldsGraph_write_cortex_mid_interface')
 
         self.add_link(
             'compute_fold_meshes->CorticalFoldsGraph_1.compute_fold_meshes')
-        self.add_link(
-            'allow_multithreading->CorticalFoldsGraph_1.allow_multithreading')
         self.add_link(
             'CorticalFoldsGraph_write_cortex_mid_interface->CorticalFoldsGraph_1.write_cortex_mid_interface')
 
@@ -325,8 +321,6 @@ class Morphologist(
               'SulciRecognition',
               'CNN_recognition19_rebuild_attributes',
               'rebuild_graph_attributes_after_split')
-          self.add_link(
-              'allow_multithreading->SulciRecognition_1.CNN_recognition19_allow_multithreading')
           self.add_link(
               'rebuild_graph_attributes_after_split->SulciRecognition_1.CNN_recognition19_rebuild_attributes')
           self.select_sulci_recognition = 'CNN_recognition19'

@@ -18,14 +18,12 @@ class NormalizationSkullStripped(Pipeline):
 #        if autoexport_nodes_parameters:
 #            self.autoexport_nodes_parameters()
 
+
     def pipeline_definition(self):
         # nodes section
-        self.add_process(
-            'SkullStripping', 'morphologist.capsul.axon.skullstripping.skullstripping')
-        self.add_process(
-            'Normalization', 'morphologist.capsul.axon.normalization.Normalization')
-        self.add_process('TalairachFromNormalization',
-                         'morphologist.capsul.talairachtransformationfromnormalization.TalairachTransformationFromNormalization')
+        self.add_process('SkullStripping', 'morphologist.capsul.axon.skullstripping.skullstripping')
+        self.add_process('Normalization', 'morphologist.capsul.axon.normalization.Normalization')
+        self.add_process('TalairachFromNormalization', 'morphologist.capsul.talairachtransformationfromnormalization.TalairachTransformationFromNormalization')
 
         # exports section
         # export input parameter
@@ -33,32 +31,24 @@ class NormalizationSkullStripped(Pipeline):
         # export input parameter
         self.export_parameter('SkullStripping', 'brain_mask', 'brain_mask')
         # export input parameter
-        self.export_parameter(
-            'Normalization', 'NormalizeFSL_template', 'template')
+        self.export_parameter('Normalization', 'NormalizeFSL_template', 'template')
         # export output parameter
-        self.export_parameter(
-            'SkullStripping', 'skull_stripped', 'skull_stripped')
+        self.export_parameter('SkullStripping', 'skull_stripped', 'skull_stripped')
         # export output parameter
-        self.export_parameter(
-            'Normalization', 'transformation', 'transformation')
+        self.export_parameter('Normalization', 'transformation', 'transformation')
         # export output parameter
-        self.export_parameter('TalairachFromNormalization',
-                              'Talairach_transform', 'talairach_transformation')
+        self.export_parameter('TalairachFromNormalization', 'Talairach_transform', 'talairach_transformation')
         # export output parameter
-        self.export_parameter('TalairachFromNormalization',
-                              'commissure_coordinates', 'commissure_coordinates')
-        self.do_not_export.update(
-            [('Normalization', 'output_commissures_coordinates')])
+        self.export_parameter('TalairachFromNormalization', 'commissure_coordinates', 'commissure_coordinates')
+        self.do_not_export.update([('Normalization', 'output_commissures_coordinates')])
 
         # links section
         self.add_link('t1mri->TalairachFromNormalization.t1mri')
         self.add_link('SkullStripping.skull_stripped->Normalization.t1mri')
-        self.add_link(
-            'Normalization.transformation->TalairachFromNormalization.normalization_transformation')
+        self.add_link('Normalization.transformation->TalairachFromNormalization.normalization_transformation')
         self.add_link('template->Normalization.NormalizeSPM_template')
         self.add_link('template->Normalization.NormalizeBaladin_template')
-        self.add_link(
-            'template->Normalization.Normalization_AimsMIRegister_anatomical_template')
+        self.add_link('template->Normalization.Normalization_AimsMIRegister_anatomical_template')
 
         # initialization section
         self.nodes['Normalization'].allow_flip_initial_MRI = False
@@ -67,11 +57,12 @@ class NormalizationSkullStripped(Pipeline):
                 or self._autoexport_nodes_parameters:
             self.autoexport_nodes_parameters()
 
+
     def autoexport_nodes_parameters(self):
         '''export orphan and internal output parameters'''
         for node_name, node in self.nodes.items():
             if node_name == '':
-                continue  # skip main node
+                continue # skip main node
             if hasattr(node, '_weak_outputs'):
                 weak_outputs = node._weak_outputs
             else:
@@ -84,13 +75,13 @@ class NormalizationSkullStripped(Pipeline):
                         continue
                     weak_link = False
                     if plug.output:
-                        if plug.links_to:  # or plug.links_from:
+                        if plug.links_to: # or plug.links_from:
                             # some links exist
-                            if [True for x in plug.links_to
-                                    if x[0] == '' or isinstance(x[2], Switch)] \
+                            if [True for x in plug.links_to \
+                                    if x[0]=='' or isinstance(x[2], Switch)] \
                                     or \
-                                    [True for x in plug.links_from
-                                     if x[0] == '' or isinstance(x[2], Switch)]:
+                                    [True for x in plug.links_from \
+                                    if x[0]=='' or isinstance(x[2], Switch)]:
                                 # a link to the main pipeline or to a switch
                                 # already exists
                                 continue
@@ -99,6 +90,6 @@ class NormalizationSkullStripped(Pipeline):
                     if weak_outputs and plug.output:
                         weak_link = True
                     self.export_parameter(node_name, parameter_name,
-                                          '_'.join(
-                                              (node_name, parameter_name)),
-                                          weak_link=weak_link, is_optional=True)
+                        '_'.join((node_name, parameter_name)),
+                        weak_link=weak_link, is_optional=True)
+

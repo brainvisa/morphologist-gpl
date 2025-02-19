@@ -37,10 +37,11 @@ class SplitBrain(Process):
                        '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz'])
         self.add_field('fix_random_seed', bool)
 
+
         # initialization section
         self.use_ridges = True
         self.use_template = True
-        self.split_template = '/casa/host/build/share/brainvisa-share-5.2/hemitemplate/closedvoronoi.ima'
+        self.split_template = '/volatile/riviere/casa-distro/conda/brainvisa-6.0/build/share/brainvisa-share-5.2/hemitemplate/closedvoronoi.ima'
         self.mode = 'Watershed (2011)'
         self.variant = 'GW Barycentre'
         self.bary_factor = 0.6
@@ -57,6 +58,7 @@ class SplitBrain(Process):
         neuroConfig.gui = False
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
+
 
         axon.initializeProcesses()
 

@@ -76,9 +76,10 @@ def initialization(self):
             format = self.t1mri_nobias.format
             if format:
                 reqatt['_format'] = set([format.name])
+        x = None
         if reqatt:
             x = p.findValue(self.histo_analysis, requiredAttributes=reqatt)
-        else:
+        if x is None:
             x = p.findValue(self.histo_analysis)
         return x
 

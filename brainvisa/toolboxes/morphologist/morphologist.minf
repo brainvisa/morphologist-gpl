@@ -5,9 +5,13 @@
     <s name="name">morphologist</s>
     <l length="3" name="content">
       <f type="ProcessTree.Branch">
-        <l length="4" name="content">
+        <l length="5" name="content">
           <f type="ProcessTree.Leaf">
             <s name="id">ImportT1MRI</s>
+            <none name="name"/>
+          </f>
+          <f type="ProcessTree.Leaf">
+            <s name="id">ImportT1MRI_multiple</s>
             <none name="name"/>
           </f>
           <f type="ProcessTree.Leaf">

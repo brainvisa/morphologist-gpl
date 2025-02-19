@@ -31,11 +31,9 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
-from __future__ import absolute_import
 from brainvisa.processes import *
 from brainvisa.validation import ValidationError
-from brainvisa import shelltools
-import distutils.spawn
+import shutil
 import os
 
 from soma.wip.application.api import Application
@@ -47,7 +45,7 @@ configuration = Application().configuration
 def validation():
     if((not configuration.SPM.spm8_standalone_command
         or not (configuration.SPM.spm8_standalone_mcr_path or (sys.platform == "win32")))) \
-            and not distutils.spawn.find_executable(
+            and not shutil.which(
             configuration.matlab.executable):
         raise ValidationError('SPM or matlab is not found')
 

@@ -27,9 +27,10 @@ class normalization_aimsmiregister(Process):
                        '.trm'], optional=True, dataset="shared")
         self.add_field('smoothing', float)
 
+
         # initialization section
-        self.anatomical_template = '/casa/host/build/share/brainvisa-share-5.2/anatomical_templates/MNI152_T1_2mm.nii.gz'
-        self.mni_to_acpc = '/casa/host/build/share/brainvisa-share-5.2/transformation/talairach_TO_spm_template_novoxels.trm'
+        self.anatomical_template = '/volatile/riviere/casa-distro/conda/brainvisa-6.0/build/share/brainvisa-share-5.2/anatomical_templates/MNI152_T1_2mm.nii.gz'
+        self.mni_to_acpc = '/volatile/riviere/casa-distro/conda/brainvisa-6.0/build/share/brainvisa-share-5.2/transformation/talairach_TO_spm_template_novoxels.trm'
         self.smoothing = 1.0
 
     def execute(self, context=None):
@@ -40,6 +41,7 @@ class normalization_aimsmiregister(Process):
         neuroConfig.gui = False
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
+
 
         axon.initializeProcesses()
 

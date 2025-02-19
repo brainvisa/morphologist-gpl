@@ -324,10 +324,9 @@ class HistoAnalysisWidget(QtGui.QWidget):
 
         # plot histogram
         if self._histo_view_mode == self.HISTO:
-            pyplot.bar(
+            self.mfig.axes[0].bar(
                 self.bins, self.bdata, width=self.bins[1] - self.bins[0],
-                color=histo_color, figure=self.mfig, axes=self.mfig.axes[0],
-                edgecolor=dark_blue)
+                color=histo_color, figure=self.mfig, edgecolor=dark_blue)
         else:  # curve draw
             self.mfig.axes[0].plot(self.histodata.data[:, 0],
                                    self.histodata.data[:, 1], '-', color=histo_color,
@@ -335,13 +334,13 @@ class HistoAnalysisWidget(QtGui.QWidget):
 
         if gx is not None and dgx is not None:
             # draw gray peak mean/sigma
-            gmean = pyplot.plot([gx, gx], [0, height * 1.2], gray_color,
-                                linewidth=2., figure=self.mfig, axes=axes)[0]
+            gmean = axes.plot([gx, gx], [0, height * 1.2], gray_color,
+                              linewidth=2., figure=self.mfig)[0]
 
         if wx is not None and dwx is not None:
             # draw white peak mean/sigma
-            wmean = pyplot.plot([wx, wx], [0, height * 1.2], white_color,
-                                linewidth=2., figure=self.mfig, axes=axes)[0]
+            wmean = axes.plot([wx, wx], [0, height * 1.2], white_color,
+                              linewidth=2., figure=self.mfig)[0]
 
         # rescale histogram
         axes.set_ybound(0, height * 1.3)
@@ -474,15 +473,15 @@ class HistoAnalysisWidget(QtGui.QWidget):
         '''internal.'''
         # plot gaussian parts
         axes = self.mfig.axes[0]
-        bg = pyplot.fill(absc1 * dx / sigma + x, data1,
-                         colors[0], edgecolor=edgecolors[0], figure=self.mfig,
-                         axes=axes, alpha=alpha)
-        fn = pyplot.fill(absc2 * dx / sigma + x, data2,
-                         colors[1], edgecolor=edgecolors[1], figure=self.mfig,
-                         axes=axes, alpha=alpha)
-        fp = pyplot.fill(absc3 * dx / sigma + x, data3,
-                         colors[2], edgecolor=edgecolors[2], figure=self.mfig,
-                         axes=axes, alpha=alpha)
+        bg = axes.fill(absc1 * dx / sigma + x, data1,
+                       colors[0], edgecolor=edgecolors[0], figure=self.mfig,
+                       alpha=alpha)
+        fn = axes.fill(absc2 * dx / sigma + x, data2,
+                       colors[1], edgecolor=edgecolors[1], figure=self.mfig,
+                       alpha=alpha)
+        fp = axes.fill(absc3 * dx / sigma + x, data3,
+                       colors[2], edgecolor=edgecolors[2], figure=self.mfig,
+                       alpha=alpha)
         return (bg[0], fn[0], fp[0])
 
     def _move_sigma(self, han, sigma):

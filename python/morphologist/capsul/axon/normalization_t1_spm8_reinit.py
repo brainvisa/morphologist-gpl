@@ -25,6 +25,7 @@ class normalization_t1_spm8_reinit(Process):
         self.add_field('allow_retry_initialization', bool)
         self.add_field('init_translation_origin', Literal[0, 1])
 
+
         # initialization section
         self.anatomical_template = '/volatile/local/spm12-standalone/spm12_mcr/spm12/spm12/toolbox/OldNorm/T1.nii'
         self.voxel_size = '[1 1 1]'
@@ -41,6 +42,7 @@ class normalization_t1_spm8_reinit(Process):
         neuroConfig.gui = False
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
+
 
         axon.initializeProcesses()
 

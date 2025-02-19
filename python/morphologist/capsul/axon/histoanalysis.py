@@ -25,6 +25,7 @@ class HistoAnalysis(Process):
         self.add_field('histo', File, write=True)
         self.add_field('fix_random_seed', bool)
 
+
         # initialization section
         self.use_hfiltered = True
         self.use_wridges = True
@@ -39,6 +40,7 @@ class HistoAnalysis(Process):
         neuroConfig.gui = False
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
+
 
         axon.initializeProcesses()
 

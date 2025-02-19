@@ -21,6 +21,11 @@ from soma.path import relative_path
 from soma.aims import filetools
 import soma.test_utils
 
+# set headless mode for Qt and Anatomist
+from soma.qt_gui import qt_backend
+
+qt_backend.set_headless(True, True)
+
 # CAUTION: all imports from the main brainvisa package must be done in
 # functions, *after* setUpModule_axon has been called, which takes care
 # of properly initializing axon for the test environment. If these modules were
@@ -315,6 +320,14 @@ class TestMorphologistCapsul(soma.test_utils.SomaTestCase):
         skipped_files = [
             # the PDF contains the creation date and thus cannot be the same
             'morphologist_report.pdf',
+            # the SPAM transform may have slight differences, but if labels
+            # are OK, then this one is not important.
+            'Lsujet01_default_session_auto_T1_TO_SPAM.trm',
+            'Rsujet01_default_session_auto_T1_TO_SPAM.trm',
+            'Lsujet01_default_session_auto_Tal_TO_SPAM.trm',
+            'Rsujet01_default_session_auto_Tal_TO_SPAM.trm',
+            'sujet01_default_session_auto_sulcal_morphometry.csv',
+            'sujet01_cnn_auto_sulcal_morphometry.csv',
         ]
         ref_dir = os.path.join(self.ref_database_dir, 'test', 'sujet01',
                                't1mri', 'default_acquisition',

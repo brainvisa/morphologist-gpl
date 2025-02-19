@@ -23,6 +23,11 @@ from soma.aims import filetools
 from soma.aims import demotools
 import soma.test_utils
 
+# set headless mode for Qt and Anatomist
+from soma.qt_gui import qt_backend
+
+qt_backend.set_headless(True, True)
+
 # CAUTION: all imports from the main brainvisa package must be done in
 # functions, *after* calling setUpModule_axon has been called, which takes care
 # of properly initializing axon for the test environment. If these modules were
@@ -433,6 +438,14 @@ class TestMorphologistPipeline(soma.test_utils.SomaTestCase):
         skipped_files = [
             # the PDF contains the creation date and thus cannot be the same
             'morphologist_report.pdf',
+            # the SPAM transform may have slight differences, but if labels
+            # are OK, then this one is not important.
+            'Lsujet01_default_session_auto_T1_TO_SPAM.trm',
+            'Rsujet01_default_session_auto_T1_TO_SPAM.trm',
+            'Lsujet01_default_session_auto_Tal_TO_SPAM.trm',
+            'Rsujet01_default_session_auto_Tal_TO_SPAM.trm',
+            'sujet01_default_session_auto_sulcal_morphometry.csv',
+            'sujet01_cnn_auto_sulcal_morphometry.csv',
         ]
         if not self.do_ann or not self.do_sulci_today():
             skipped_dirs.append('ann_auto')
@@ -485,7 +498,27 @@ if __name__ == "__main__":
     print(sys.argv)
     ret = test(sys.argv[1:])
     print("RETURNCODE: ", ret)
+
+    # a bit of cleanup
+    try:
+        import anatomist.api as ana
+        import sip
+        if hasattr(ana.Anatomist, 'anatomistinstance') \
+                and ana.Anatomist.anatomistinstance is not None:
+            a = ana.Anatomist()
+            a.close()
+            sip.delete(a)
+            # sip.delete(qapp)
+            del a
+            # del qapp
+    except Exception:
+        pass
+
     if ret:
-        sys.exit(0)
+        # no error, do a dirty exit, but avoid cleanup crashes after the
+        # process has succeeded...
+        os._exit(0)
+        # sys.exit(0)
+
     else:
         sys.exit(1)

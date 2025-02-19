@@ -24,6 +24,7 @@ class SulciSkeleton(Process):
         self.add_field('version', Literal['1', '2'])
         self.add_field('fix_random_seed', bool)
 
+
         # initialization section
         self.version = '2'
         self.fix_random_seed = False
@@ -36,6 +37,7 @@ class SulciSkeleton(Process):
         neuroConfig.gui = False
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
+
 
         axon.initializeProcesses()
 

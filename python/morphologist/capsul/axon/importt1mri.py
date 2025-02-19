@@ -22,6 +22,7 @@ class ImportT1MRI(Process):
                        Literal['BrainVisa', 'header', 'selected_from_header'], optional=True)
         self.add_field('selected_attributes_from_header', list, optional=True)
 
+
         # initialization section
         self.output_database = '/host/home/dr144257/data/baseessai'
         self.attributes_merging = 'BrainVisa'
@@ -35,6 +36,7 @@ class ImportT1MRI(Process):
         neuroConfig.gui = False
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
+
 
         axon.initializeProcesses()
 

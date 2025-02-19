@@ -27,6 +27,7 @@ class TalairachTransformation(Process):
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
 
+
         axon.initializeProcesses()
 
         kwargs = {}
