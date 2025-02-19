@@ -21,6 +21,11 @@ from soma.path import relative_path
 from soma.aims import filetools
 import soma.test_utils
 
+# set headless mode for Qt and Anatomist
+from soma.qt_gui import qt_backend
+
+qt_backend.set_headless(True, True)
+
 # CAUTION: all imports from the main brainvisa package must be done in
 # functions, *after* setUpModule_axon has been called, which takes care
 # of properly initializing axon for the test environment. If these modules were
