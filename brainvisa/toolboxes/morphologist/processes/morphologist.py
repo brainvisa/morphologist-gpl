@@ -652,9 +652,9 @@ def initialization(self):
             #rightNode.SulciSkeleton.addLink(None, 'hemi_cortex',
                                             #self.change_fom_format)
             leftNode.SulciRecognition.CNN_recognition19.forbid_completion(
-                ['skeleton', 'roots', 'graph', 'labeled_graph'])
+                ['skeleton', 'roots', 'graph', 'labelled_graph'])
             rightNode.SulciRecognition.CNN_recognition19.forbid_completion(
-                ['skeleton', 'roots', 'graph', 'labeled_graph'])
+                ['skeleton', 'roots', 'graph', 'labelled_graph'])
             leftNode.addDoubleLink(
                 'SulciSkeleton.skeleton',
                 'SulciRecognition.CNN_recognition19.skeleton')
