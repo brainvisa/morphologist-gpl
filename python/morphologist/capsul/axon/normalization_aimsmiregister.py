@@ -24,8 +24,8 @@ class normalization_aimsmiregister(Process):
 
 
         # initialization section
-        self.anatomical_template = '/volatile/riviere/casa-distro/conda/brainvisa-6.0/build/share/brainvisa-share-5.2/anatomical_templates/MNI152_T1_2mm.nii.gz'
-        self.mni_to_acpc = '/volatile/riviere/casa-distro/conda/brainvisa-6.0/build/share/brainvisa-share-5.2/transformation/talairach_TO_spm_template_novoxels.trm'
+        self.anatomical_template = '/volatile/home/dr144257/casa_distro/condadev/brainvisa-6.0/build/share/brainvisa-share-5.2/anatomical_templates/MNI152_T1_2mm.nii.gz'
+        self.mni_to_acpc = '/volatile/home/dr144257/casa_distro/condadev/brainvisa-6.0/build/share/brainvisa-share-5.2/transformation/talairach_TO_spm_template_novoxels.trm'
         self.smoothing = 1.0
 
     def _run_process(self):

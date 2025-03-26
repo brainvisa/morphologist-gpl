@@ -25,7 +25,6 @@ class normalization_t1_spm8_reinit(Process):
 
 
         # initialization section
-        self.anatomical_template = '/volatile/riviere/casa-distro/conda/brainvisa-6.0/.pixi/envs/default/spm12/spm12_mcr/spm/spm12/toolbox/OldNorm/T1.nii'
         self.voxel_size = '[1 1 1]'
         self.cutoff_option = 25
         self.nbiteration = 16
