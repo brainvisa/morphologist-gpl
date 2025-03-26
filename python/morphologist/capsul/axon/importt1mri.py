@@ -16,13 +16,13 @@ class ImportT1MRI(Process):
         self.add_trait('input', File(allowed_extensions=['.nii.gz', '.svs', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg', '.scn', '.mnc', '.nii', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.bif', '.czi', '.mnc.gz']))
         self.add_trait('output', File(allowed_extensions=['.nii.gz', '.dcm', '', '.i', '.v', '.fdf', '.ima', '.dim', '.jpg', '.mnc', '.nii', '.img', '.hdr', '.tiff', '.tif', '.mnc.gz'], output=True))
         self.add_trait('referential', File(output=True, optional=True))
-        self.add_trait('output_database', Enum('/volatile/riviere/basetests-3.1.0', optional=True))
+        self.add_trait('output_database', Enum('/home/dr144257/data/baseessai', '/home/dr144257/data/archi-sulci', '/volatile/home/dr144257/data/disco_templates_hbp_morpho', '/volatile/home/dr144257/data/morpho_bids/derivatives/morphologist-5.2', optional=True))
         self.add_trait('attributes_merging', Enum('BrainVisa', 'header', 'selected_from_header', optional=True))
         self.add_trait('selected_attributes_from_header', List(optional=True))
 
 
         # initialization section
-        self.output_database = '/volatile/riviere/basetests-3.1.0'
+        self.output_database = '/home/dr144257/data/baseessai'
         self.attributes_merging = 'BrainVisa'
         self.selected_attributes_from_header = []
 

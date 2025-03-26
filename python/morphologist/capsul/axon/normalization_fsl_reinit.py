@@ -25,7 +25,6 @@ class Normalization_FSL_reinit(Process):
 
 
         # initialization section
-        self.anatomical_template = '/volatile/riviere/casa-distro/conda/brainvisa-6.0/build/share/brainvisa-share-5.2/anatomical_templates/MNI152_T1_2mm_brain.nii'
         self.Alignment = 'Not Aligned but Same Orientation'
         self.cost_function = 'corratio'
         self.search_cost_function = 'corratio'

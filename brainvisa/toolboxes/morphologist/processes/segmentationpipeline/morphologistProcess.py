@@ -849,14 +849,14 @@ def execution(self, context):
                            param_file=self.left_param_file,
                            roots=self.left_roots,
                            skeleton=self.left_skeleton,
-                           labeled_graph=self.left_labelled_graph)
+                           labelled_graph=self.left_labelled_graph)
         context.runProcess('capsul://deepsulci.sulci_labeling.capsul.labeling',
                            graph=self.right_graph,
                            model_file=self.right_model_file,
                            param_file=self.right_param_file,
                            roots=self.right_roots,
                            skeleton=self.right_skeleton,
-                           labeled_graph=self.right_labelled_graph)
+                           labelled_graph=self.right_labelled_graph)
     if self.perform_sulci_recognition!='No':
         # Sulcal Morphometry
         context.runProcess('sulcigraphmorphometrybysubject',

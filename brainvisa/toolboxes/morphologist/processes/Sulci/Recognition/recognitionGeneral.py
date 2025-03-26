@@ -87,7 +87,7 @@ def initialization(self):
     self.linkParameters('output_graph', 'data_graph')
 
     # for "future" pipelines
-    eNode.selection_outputs = ['output_graph', 'output_graph', 'labeled_graph']
+    eNode.selection_outputs = ['output_graph', 'output_graph', 'labelled_graph']
     eNode.switch_output = 'output_graph'
 
     self.setExecutionNode(eNode)
@@ -107,7 +107,7 @@ def initialization(self):
         eNode3._process.name = 'CNN-based'
     eNode.addChild('CNN_recognition19', eNode3)
     eNode.addDoubleLink('data_graph', 'CNN_recognition19.graph')
-    eNode.addDoubleLink('output_graph', 'CNN_recognition19.labeled_graph')
+    eNode.addDoubleLink('output_graph', 'CNN_recognition19.labelled_graph')
     self.addDoubleLink('fix_random_seed', 'CNN_recognition19.fix_random_seed')
     eNode3.setSelected(True)
 
