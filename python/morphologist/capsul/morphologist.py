@@ -293,14 +293,6 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
         self.add_link('sulci_recognition_spam_global_model_type->'
                       'SulciRecognition_1.'
                       'SPAM_recognition09_global_recognition_model_type')
-        if 'CNN_recognition19' in self.nodes['SulciRecognition'].process.nodes:
-          self.export_parameter(
-              'SulciRecognition',
-              'CNN_recognition19_rebuild_attributes',
-              'rebuild_graph_attributes_after_split')
-          self.add_link(
-              'rebuild_graph_attributes_after_split->SulciRecognition_1.CNN_recognition19_rebuild_attributes')
-          self.select_sulci_recognition = 'CNN_recognition19'
 
         self.export_parameter('SulcalMorphometry', 'sulcal_morpho_measures')
         self.export_parameter('SulcalMorphometry', 'sulci_file',
