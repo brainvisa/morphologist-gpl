@@ -52,12 +52,12 @@ signature = Signature(
     'base_graph', ReadDiskItem('Labelled Cortical folds graph',
                                'Graph',
                                requiredAttributes={'labelled': 'Yes'}),
-    'labeled_graph', ReadDiskItem('Labelled Cortical folds graph',
+    'labelled_graph', ReadDiskItem('Labelled Cortical folds graph',
                                   'Graph',
                                   requiredAttributes={'labelled': 'Yes',
                                                       'automatically_labelled': 'Yes'}),
     'base_graph_labeling', Choice('Automatic', 'Manual'),
-    'labeled_graph_labeling', Choice('Automatic', 'Manual'),
+    'labelled_graph_labeling', Choice('Automatic', 'Manual'),
     'error_file', WriteDiskItem('Text File', 'Text File'),
 )
 
@@ -79,15 +79,15 @@ def link_base_label(self, proc, dummy):
     return 'Manual'
 
 
-def link_labeled_label(self, proc, dummy):
-    if self.labeled_graph is not None:
-        if self.labeled_graph.get('automatically_labelled') == 'No':
+def link_labelled_label(self, proc, dummy):
+    if self.labelled_graph is not None:
+        if self.labelled_graph.get('automatically_labelled') == 'No':
             return 'Manual'
     return 'Automatic'
 
 
 def initialization(self):
-    self.linkParameters('labeled_graph', 'base_graph')
+    self.linkParameters('labelled_graph', 'base_graph')
     self.labels_translation = \
         self.signature['labels_translation'].findValue(
             {'filename_variable': 'sulci_model_noroots'})
@@ -96,11 +96,11 @@ def initialization(self):
     self.parent['manage_tasks'] = False
     self.setOptional('error_file')
     self.base_graph_labeling = 'Manual'
-    self.labeled_graph_labeling = 'Automatic'
+    self.labelled_graph_labeling = 'Automatic'
     self.linkParameters('base_graph_labeling', 'base_graph',
                         self.link_base_label)
-    self.linkParameters('labeled_graph_labeling', 'labeled_graph',
-                        self.link_labeled_label)
+    self.linkParameters('labelled_graph_labeling', 'labelled_graph',
+                        self.link_labelled_label)
 
 
 def execution(self, context):
@@ -110,7 +110,7 @@ def execution(self, context):
     lg_label = 'label'
     if self.base_graph_labeling == 'Automatic':
         bg_label = 'label'
-    if self.labeled_graph_labeling == 'Manual':
+    if self.labelled_graph_labeling == 'Manual':
         lg_label = 'name'
 
     if self.parent['manage_tasks']:
@@ -121,9 +121,9 @@ def execution(self, context):
         else:
             progname = os.path.join(self.parent['package_dir'],
                                     package, 'bin', 'siErrorLightWrapper.py')
-        graphname = self.labeled_graph.get('subject')
+        graphname = self.labelled_graph.get('subject')
         args = [progname, '-m', self.model.fullPath(),
-                '-l', self.labeled_graph.fullPath(),
+                '-l', self.labelled_graph.fullPath(),
                 '-t', self.labels_translation.fullPath(),
                 '-b', self.base_graph.fullPath(),
                 '-c', self.parent['self'].Output.fullPath(),
@@ -136,11 +136,11 @@ def execution(self, context):
         import sigraph.nrj as sinrj
         error_rate = str(sierror.computeErrorRates(
             self.base_graph.fullPath(),
-            self.labeled_graph.fullPath(),
+            self.labelled_graph.fullPath(),
             self.labels_translation.fullPath()
         ))
         nrj = str(sinrj.computeNrj(self.model.fullPath(),
-                                   self.labeled_graph.fullPath(),
+                                   self.labelled_graph.fullPath(),
                                    self.labels_translation.fullPath()))
         self.parent['error_rate'] = error_rate
         self.parent['nrj'] = nrj
