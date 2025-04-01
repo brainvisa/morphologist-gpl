@@ -79,7 +79,7 @@ def morphologist(
 
     capsul_cmd = [sys.executable, "-m", "capsul"] \
         + conf_options \
-        + ['--if', input_fom, '--of', 'morphologist-bids-1.0'] \
+        + ['--opengl', '--if', input_fom, '--of', 'morphologist-bids-1.0'] \
         + iter_options + subject_args + capsul_args \
         + ["morphologist.capsul.morphologist"] + t1mri_args + morpho_args
 
