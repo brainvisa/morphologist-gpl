@@ -102,33 +102,44 @@ def global_sulcal_morphometry(l_graph, r_graph, remove_nonfold=True,
     thickness = [0., 0.]
     opening = [0., 0.]
     open_mass = [0, 0]
+    fold_skel = [0, 0]
+    fold_skel_label = [0, 0]
 
     for side, graph in enumerate((l_graph, r_graph)):
         if hasattr(graph, 'vertices'):
             for v in graph.vertices():
-                if remove_nonfold and v.get(label_att) in labels_to_remove:
-                    continue
-                vmass = v.get('point_number')
-                if vmass is None:
-                    continue
-                vdepth = v.get('mean_depth')
-                if vdepth is not None:
-                    depth[side] += vdepth * vmass
-                    depth_mass[side] += vmass
-                vthick = v.get('thickness_mean')
-                if vthick is not None:
-                    thickness[side] += vthick * vmass
-                    thick_mass[side] += vmass
-                csf = v.get('CSF_volume')
-                surf = v.get('surface_area')
-                if csf is not None and surf is not None:
-                    opening[side] += csf / surf * vmass
-                    open_mass[side] += vmass
+                skel = v.get('ss_point_number', 0)
+                skel += v.get('bottom_point_number', 0)
+                skel += v.get('other_point_number', 0)
+                skip = (remove_nonfold
+                        and v.get(label_att) in labels_to_remove)
+                if not skip:
+                    vmass = v.get('point_number')
+                    if vmass is None:
+                        continue
+                    vdepth = v.get('mean_depth')
+                    if vdepth is not None:
+                        depth[side] += vdepth * vmass
+                        depth_mass[side] += vmass
+                    vthick = v.get('thickness_mean')
+                    if vthick is not None:
+                        thickness[side] += vthick * vmass
+                        thick_mass[side] += vmass
+                    csf = v.get('CSF_volume')
+                    surf = v.get('surface_area')
+                    if csf is not None and surf is not None:
+                        opening[side] += csf / surf * vmass
+                        open_mass[side] += vmass
 
                 for e in v.edges():
                     if e.getSyntax() == 'hull_junction':
-                        vlen = e['length']
-                        length[side] += vlen
+                        skel += e.get('point_number', 0)
+                        if not skip:
+                            vlen = e['length']
+                            length[side] += vlen
+                fold_skel[side] += skel
+                if not skip:
+                    fold_skel_label[side] += skel
 
     if length[0] != 0.:
         res['left.fold_length'] = length[0]
@@ -151,7 +162,8 @@ def global_sulcal_morphometry(l_graph, r_graph, remove_nonfold=True,
         res['right.mean_thickness'] = thickness[1] / thick_mass[1]
         if thick_mass[0] != 0.:
             res['both.mean_thickness'] \
-                = (thickness[0] + thickness[1]) / (thick_mass[0] + thick_mass[1])
+                = (thickness[0] + thickness[1]) / (thick_mass[0]
+                                                   + thick_mass[1])
 
     if open_mass[0] != 0.:
         res['left.mean_opening'] = opening[0] / open_mass[0]
@@ -160,6 +172,24 @@ def global_sulcal_morphometry(l_graph, r_graph, remove_nonfold=True,
         if open_mass[0] != 0.:
             res['both.mean_opening'] \
                 = (opening[0] + opening[1]) / (open_mass[0] + open_mass[1])
+
+    if fold_skel[0] != 0:
+        res['left.skel_points'] = fold_skel[0]
+    if fold_skel[1] != 0:
+        res['right.skel_points'] = fold_skel[1]
+        if fold_skel[0] != 0:
+            res['both.skel_points'] = fold_skel[0] + fold_skel[1]
+            res['log_ratio.skel_points'] = np.log(fold_skel[0] / fold_skel[1])
+
+    if fold_skel_label[0] != 0:
+        res['left.skel_labelled_points'] = fold_skel_label[0]
+    if fold_skel_label[1] != 0:
+        res['right.skel_labelled_points'] = fold_skel_label[1]
+        if fold_skel_label[0] != 0:
+            res['both.skel_labelled_points'] = fold_skel_label[0] \
+                + fold_skel_label[1]
+            res['log_ratio.skel_labelled_points'] \
+                = np.log(fold_skel_label[0] / fold_skel_label[1])
 
     return res
 
@@ -366,7 +396,10 @@ def sulcal_and_brain_morpho(
                   'left.hemi_volume', 'right.hemi_volume', 'both.brain_volume',
                   'both.hemi_closed_volume', 'both.eTIV',
                   'both.cerebellum_stem_volume',
-                  'left.brain_volume', 'right.brain_volume')
+                  'left.brain_volume', 'right.brain_volume',
+                  'left.skel_points', 'right.skel_points',
+                  'left.skel_labelled_points', 'right.skel_labelled_points',
+                  'log_ratio.skel_points', 'log_ratio.skel_labelled_points')
         res2 = {k: res[k] for k in sort_k if k in res}
         res2.update({k: v for k, v in res.items() if k not in sort_k})
         res = res2
@@ -398,7 +431,7 @@ def read_multiple_csv(csv_list):
     hdr = {}
     for csv_file in csv_list:
         with open(csv_file) as f:
-            csv_reader = csv.reader(f, csv.Sniffer().sniff(f.read(1024)))
+            csv_reader = csv.reader(f, csv.Sniffer().sniff(f.read(2048)))
             f.seek(0)
             hdr2 = next(iter(csv_reader))
             resized = False
@@ -437,6 +470,9 @@ def build_normative_brain_vol_stats(csv_files):
     sums: numpy array (1 line)
         number of elements in the average for each column, taking into account
         missing and discarded ones (NaN/None values)
+    quantiles: numpy array (9 lines)
+        quantiles for 0%, 1%, 10%, 20%, 50%, 80%, 90%, 99%, 100% of the
+        population
     '''
     hdr, morph = read_multiple_csv(csv_files)
     npmorph = np.array([row[1:] for row in morph], dtype=float)
@@ -444,6 +480,25 @@ def build_normative_brain_vol_stats(csv_files):
     avg = np.mean(npmorph, axis=0, where=wh)
     std = np.std(npmorph, axis=0, where=wh)
     sums = np.sum(wh, axis=0)
-    return hdr, morph, avg, std, sums
+    quantiles = []
+    for col in range(npmorph.shape[1]):
+        mcol = npmorph[:, col]
+        mcol2 = mcol[np.where(np.logical_not(np.isnan(mcol)))]
+        if mcol2.shape[0] == 0:
+            quantiles.append([0., 0., 0., 0., 0., 0., 0., 0., 0.])
+        else:
+            quantiles.append(
+                np.quantile(mcol2,
+                            q=[0., 0.01, 0.1, 0.2, 0.5, 0.8, 0.9, 0.99, 1.]))
+    quantiles = np.array(quantiles).T
+    if np.any(np.isnan(quantiles)):
+        print('NaN in quantiles')
+        print(quantiles)
+        nw = np.where(np.isnan(npmorph))
+        col = nw[1][0]
+        print('col:', col, ', row:', np.unique(nw[0]))
+        print([csv_files[r] for r in np.unique(nw[0])])
+        print(npmorph[nw[0][0], nw[1][0]])
+    return hdr, morph, avg, std, sums, quantiles
 
 

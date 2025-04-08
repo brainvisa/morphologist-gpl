@@ -15,7 +15,7 @@ signature = Signature(
 
 
 def execution(self, context):
-    hdr, morph, avg, std, sums = global_sulc_morpho.build_normative_brain_vol_stats(
+    hdr, morph, avg, std, sums, quantiles = global_sulc_morpho.build_normative_brain_vol_stats(
         [d.fullPath() for d in self.brain_volumes_files])
     subj_row = hdr.index('subject')  # normally 0
     stat_dict = {
@@ -23,6 +23,7 @@ def execution(self, context):
       'columns': [c for c in hdr if c != 'subject'],
       'averages': list(avg.astype(float)),
       'std': list(std.astype(float)),
+      'quantiles': [list(x) for x in quantiles],
       'N': [int(x) for x in sums],
     }
     with open(self.stats.fullPath(), 'w') as f:

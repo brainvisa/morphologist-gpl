@@ -9,6 +9,7 @@ try:
     import csv
     import PIL
     from PIL import ImageDraw
+    import numpy as np
 except ImportError:
     pass
 
@@ -50,6 +51,7 @@ signature = Signature(
     'normative_brain_stats', ReadDiskItem('Normative brain volumes stats',
                                           'JSON file'),
     'report', WriteDiskItem('Morphologist report', 'PDF file'),
+    'report_json', WriteDiskItem('Morphologist JSON report', 'JSON file'),
     'subject', String(),
 )
 
@@ -71,7 +73,7 @@ def initialization(self):
                      'left_wm_mesh', 'right_wm_mesh',
                      'left_labelled_graph', 'right_labelled_graph',
                      'brain_volumes_file', 'normative_brain_stats',
-                     'talairach_transform')
+                     'talairach_transform', 'report_json')
     self.linkParameters('subject', 't1mri', linkSubject)
     self.linkParameters('left_grey_white', 't1mri')
     self.linkParameters('right_grey_white', 't1mri')
@@ -84,6 +86,7 @@ def initialization(self):
     self.linkParameters('talairach_transform', 't1mri')
     self.linkParameters('brain_volumes_file', 't1mri')
     self.linkParameters('report', 't1mri')
+    self.linkParameters('report_json', 't1mri')
     # self.linkParameters('normative_brain_stats', 't1mri')
 
 def execution(self, context):
@@ -287,10 +290,12 @@ def execution(self, context):
     hdr = []
     morph = []
     morph_z = []
+    norm_stat = {}
+    n_quant = None
     if self.brain_volumes_file is not None \
             and osp.exists(self.brain_volumes_file.fullPath()):
         with open(self.brain_volumes_file.fullPath()) as f:
-            csv_reader = csv.reader(f, csv.Sniffer().sniff(f.read(1024)))
+            csv_reader = csv.reader(f, csv.Sniffer().sniff(f.read(2048)))
             f.seek(0)
             morph_hdr = next(iter(csv_reader))
             for row in csv_reader:
@@ -303,7 +308,9 @@ def execution(self, context):
             morph_z = [None] * len(morph[0])
             avg = norm_stat.get('averages')
             std = norm_stat.get('std')
+            quantiles = norm_stat.get('quantiles')
             if avg and std:
+                # print('avg:', len(avg), ', quantiles:', len(quantiles))
                 for i, mv in enumerate(morph[0]):
                     c = ncols.get(morph_hdr[i])
                     if c is not None:
@@ -312,6 +319,11 @@ def execution(self, context):
                         if z0 is not None and zs != 0:
                             z = (mv - z0) / zs
                             morph_z[i] = z
+            if quantiles:
+                n_quant = np.array([(np.array(q) - avg) / std
+                                    for q in quantiles])
+            # morph and morph_z have the subject column,
+            # whereas n_quand, std, avg have not.
 
     keymap = {
         'both.brain_volume': 'brain volume',
@@ -325,6 +337,8 @@ def execution(self, context):
         'both.mean_depth': 'avg. folds depth',
         'both.mean_thickness': 'avg. cortical thickness',
         'both.mean_opening': 'avg. folds opening',
+        'both.skel_points': 'skel. pts',
+        'log_ratio.skel_points': 'skel. log. ratio',
     }
     units = {
         'both.brain_volume': 'mm3',
@@ -337,22 +351,70 @@ def execution(self, context):
         'both.mean_depth': 'mm',
         'both.mean_thickness': 'mm',
         'both.mean_opening': 'mm',
+        'both.skel_points': 'vox',
     }
 
+    status = 0
+    comments = []
     zvals = [None] * len(keymap)
+    quants = [None] * len(keymap)
+    #if n_quant is not None:
+        #print('n_quant:', n_quant.shape)
+    #if morph_z:
+        #print('morph_z:', len(morph_z))
     for i, (k, tk) in enumerate(keymap.items()):
         missing = False
         z = None
         unit = None
         try:
             j = morph_hdr.index(k)
-            v = morph[0][j]
-            v = str(round(v, 2))
+            val = morph[0][j]
+            v = str(round(val, 2))
             unit = units.get(k)
             if morph_z:
                 z = morph_z[j]
                 zvals[i] = z
+                if n_quant is not None:
+                    q = n_quant[:, j - 1]  # -1 to skip subject col
+                    # print(q)
+                    # add 2 values at each extrema
+                    # and remove extrema (0, 100% qantiles)
+                    print('q:', len(q), q)
+                    q = np.hstack((np.zeros((2, )), q[1: -1], np.zeros((2, ))))
+                    qv1 = quantiles[1][j - 1]
+                    qv99 = quantiles[-2][j - 1]
+                    if k == 'log_ratio.skel_points' and (val <= qv1 * 1.6
+                                                         or val >= qv99 * 1.6):
+                        # problem detection from the skel log ratio:
+                        # if value exceeds quantile(1%)) * 1.6
+                        qv1_6 = qv1 * 1.6
+                        qv99_6 = qv99 * 1.6
+                        q[1] = (qv1_6 - avg[j - 1]) / std[j - 1]
+                        q[-2] = (qv99_6 - avg[j - 1]) / std[j - 1]
+                        if val <= qv1:
+                            q[0] = z
+                        else:
+                            q[-1] = z
+                        status = 2  # segmentation problem
+                        comments += [
+                            'Possible segmentation problem or important '
+                            'anomaly:',
+                            '      large asymmetry in folds sizes.']
+                    elif val <= qv1 or val >= qv99:
+                        if val <= qv1:
+                            q[1] = z
+                        else:
+                            q[-2] = z
+                        if status <= 1:
+                            print('STATUS 1')
+                            status = 1
+                            comments.append(
+                                f'Possible problem: {tk} out of 1-99% '
+                                'percentile.')
+                    quants[i] = q
         except Exception as e:
+            context.write(e)
+            raise
             v = '<MISSING>'
             unit = None
             missing = True
@@ -373,11 +435,46 @@ def execution(self, context):
     if morph_z:
         import matplotlib
         import matplotlib.pyplot as plt
+
         fig, ax = plt.subplots()
         fig.subplots_adjust(bottom=0.31, top=1., left=0.05)
         ax.add_patch(plt.Rectangle((-0.5, -1), len(keymap), 2.,
                                    facecolor='#d0f0d0', fill=True,
                                    edgecolor='#d0f0d0'))
+        if quantiles:
+            nq = 0
+            for q in quants:
+                if q is not None:
+                    nq = len(q)
+                    break
+            for i, q in enumerate(quants):
+                if q is None:
+                    quants[i] = np.zeros(nq)
+            quants = np.array(quants).T
+            quant_colors = [
+                '#c04040ff',
+                '#ff7070ff',
+                '#f0f080ff',
+                '#a0ffa0ff',
+                '#c0ffc0ff',
+                '#e0ffe0ff',
+                '#c0ffc0ff',
+                '#a0ffa0ff',
+                '#f0f080ff',
+                '#ff7070ff',
+                '#c04040ff',
+            ]
+            while len(quant_colors) > len(quants):
+                quant_colors = quant_colors[1:-1]
+            # reorder quantiles 0->0.5 then 1->0.5 for good plot overlapping
+            quant_colors = quant_colors[:len(quants) // 2] \
+                + quant_colors[len(quants) - 1:len(quants) // 2 - 1:-1]
+            quants = np.vstack(
+                (quants[:len(quants) // 2],
+                 quants[len(quants) - 1:len(quants) // 2 - 1:-1]))
+            for i, q in enumerate(quants):
+                c = quant_colors[i]
+                ax.bar(np.arange(len(q)), q, width=0.5, color=c)
         plt.xticks(rotation=60)
         ax.set_xticks(range(len(keymap)))
         ax.set_xticklabels(keymap.values())
@@ -388,6 +485,13 @@ def execution(self, context):
 
         pdf.drawImage(tmpimage6.fullPath(), 290, 290, width=310, height=250)
         pdf.drawString(400, 275, 'Z scores')
+
+        statuses = ['OK', 'Warning', 'Suspicious']
+        status_colors = ['#000000ff', '#ffc080ff', '#ff6060ff']
+        pdf.drawString(30, 350, f'QC status: {statuses[status]}')
+        if comments:
+            for i, c in enumerate(comments):
+                pdf.drawString(30, 330 - 12 * i, c)
 
     pdf.save()
 

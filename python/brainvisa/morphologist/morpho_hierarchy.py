@@ -165,6 +165,7 @@ t1mri_acq_content = lambda: (
         "nobias_<subject>", SetType('Histo Analysis'),
 
         'morphologist_report', SetType('Morphologist report'),
+        'morphologist_json_report', SetType('Morphologist JSON report'),
 
         'segmentation', SetContent(*segmentation_content()),
 

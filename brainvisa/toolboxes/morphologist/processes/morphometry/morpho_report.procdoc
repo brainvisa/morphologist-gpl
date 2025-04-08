@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<minf expander="minf_2.0">
+<d>
+  <d name="en">
+    <xhtml name="short"/>
+    <xhtml name="long"/>
+    <d name="parameters">
+      <xhtml name="normative_brain_stats">Optional normative data. These normative stats may be built from a database (or several) using the process:
+<a href="bvprocess://normative_brainvolumes_stats">normative_brainvolumes_stats</a></xhtml>
+    </d>
+  </d>
+</d>
+</minf>
