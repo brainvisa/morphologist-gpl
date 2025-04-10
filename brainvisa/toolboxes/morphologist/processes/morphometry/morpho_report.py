@@ -4,6 +4,8 @@ import os.path as osp
 try:
     import reportlab
     from reportlab.pdfgen import canvas
+    from reportlab.pdfbase import pdfmetrics
+    from reportlab.pdfbase.ttfonts import TTFont
     from brainvisa import anatomist
     from anatomist import cpp as anacpp
     import csv
@@ -89,7 +91,16 @@ def initialization(self):
     self.linkParameters('report_json', 't1mri')
     # self.linkParameters('normative_brain_stats', 't1mri')
 
+
 def execution(self, context):
+    # status:
+    # 0: OK
+    # 1: Warning (stat out of 1-99% bounds)
+    # 2: Suspicious (stat out of bounds)
+    # 3: Bad (stat over limit, or missing data)
+    status = 0
+    comments = []
+
     context.write('<h1>Morphologist report</h1>')
     pdf = canvas.Canvas(self.report.fullPath())
     pdf.setStrokeColorRGB(0.5, 0.53, 0.6)
@@ -97,6 +108,7 @@ def execution(self, context):
     pdf.roundRect(10, 750, 575, 70, 5, stroke=1, fill=1)
     pdf.setStrokeColorRGB(0., 0., 0.)
     pdf.setFillColorRGB(0., 0., 0.)
+    pdf.setFont('Helvetica', 10)
     logo = os.path.join(neuroConfig.iconPath, 'brainvisa.png')
     # add circular transparency to logo
     logo_im = PIL.Image.open(logo)
@@ -191,6 +203,8 @@ def execution(self, context):
         w.removeObjects(gwfusion)
     else:
         pdf.drawString(160, 650, 'MISSING')
+        status = 3
+        comments.append('Missing segmentation file')
 
     objs = []
     wmeshes = []
@@ -222,6 +236,8 @@ def execution(self, context):
         wmeshes = objs
     else:
         pdf.drawString(260, 650, 'MISSING')
+        status = 3
+        comments.append('Missing G/W mesh file')
 
 
     objs = []
@@ -250,6 +266,8 @@ def execution(self, context):
         w.removeObjects(objs)
     else:
         pdf.drawString(360, 650, 'MISSING')
+        status = 3
+        comments.append('Missing pial mesh file')
 
 
     objs = []
@@ -283,6 +301,8 @@ def execution(self, context):
         w.removeObjects(objs)
     else:
         pdf.drawString(460, 650, 'MISSING')
+        status = 3
+        comments.append('Missing sulci graph file')
 
 
     pdf.setFillColorRGB(0., 0., 0.)
@@ -324,6 +344,8 @@ def execution(self, context):
                                     for q in quantiles])
             # morph and morph_z have the subject column,
             # whereas n_quand, std, avg have not.
+        #else:
+            #morph_z = [None] * len(morph[0])
 
     keymap = {
         'both.brain_volume': 'brain volume',
@@ -354,8 +376,9 @@ def execution(self, context):
         'both.skel_points': 'vox',
     }
 
-    status = 0
-    comments = []
+    skel_asym_low = [-0.097663, -0.169090]
+    skel_asym_high = [0.073922, 0.116971]
+
     zvals = [None] * len(keymap)
     quants = [None] * len(keymap)
     #if n_quant is not None:
@@ -377,45 +400,77 @@ def execution(self, context):
                 if n_quant is not None:
                     q = n_quant[:, j - 1]  # -1 to skip subject col
                     # print(q)
-                    # add 2 values at each extrema
+                    # add 3 values at each extrema
                     # and remove extrema (0, 100% qantiles)
-                    print('q:', len(q), q)
-                    q = np.hstack((np.zeros((2, )), q[1: -1], np.zeros((2, ))))
+                    q = np.hstack((np.zeros((3, )), q[1: -1], np.zeros((3, ))))
                     qv1 = quantiles[1][j - 1]
                     qv99 = quantiles[-2][j - 1]
                     if k == 'log_ratio.skel_points' and (val <= qv1 * 1.6
                                                          or val >= qv99 * 1.6):
                         # problem detection from the skel log ratio:
-                        # if value exceeds quantile(1%)) * 1.6
-                        qv1_6 = qv1 * 1.6
-                        qv99_6 = qv99 * 1.6
-                        q[1] = (qv1_6 - avg[j - 1]) / std[j - 1]
-                        q[-2] = (qv99_6 - avg[j - 1]) / std[j - 1]
+                        # use hard-coded empirical values
+                        # origin: if value exceeds quantile(1%)) * 1.6
+                        # qv1_6 = qv1 * 1.6
+                        # qv99_6 = qv99 * 1.6
+                        qv1_susp = skel_asym_low[0]
+                        qv99_susp = skel_asym_high[0]
+                        qv1_bad = skel_asym_low[1]
+                        qv99_bad = skel_asym_high[1]
+                        q[2] = (qv1_susp - avg[j - 1]) / std[j - 1]
+                        q[-3] = (qv99_susp - avg[j - 1]) / std[j - 1]
+                        q[1] = (qv1_bad - avg[j - 1]) / std[j - 1]
+                        q[-2] = (qv99_bad - avg[j - 1]) / std[j - 1]
                         if val <= qv1:
                             q[0] = z
                         else:
                             q[-1] = z
-                        status = 2  # segmentation problem
+                        if val <= qv1_bad or val >= qv99_bad:
+                            # segmentation problem almost certain
+                            status = np.max((3, status))
+                            comments += [
+                                'Probable segmentation problem or important '
+                                'anomaly:',
+                                '      large asymmetry in folds sizes.']
+                        else:
+                            # suspected segmentation problem
+                            status = np.max((2, status))
+                            comments += [
+                                'Possible segmentation problem or important '
+                                'anomaly:',
+                                '      large asymmetry in folds sizes.']
+                    elif val <= qv1 or val >= qv99:
+                        if val <= qv1:
+                            q[2] = z
+                        else:
+                            q[-3] = z
+                        status = np.max((1, status))
+                        comments.append(
+                            f'Possible problem: {tk} out of 1-99% percentile.')
+                    quants[i] = q
+            else:  # no normative stats
+                if k == 'log_ratio.skel_points' \
+                        and (val <= skel_asym_low[0]
+                             or val >= skel_asym_high[0]):
+                    if val <= skel_asym_low[1] or val >= skel_asym_high[1]:
+                        # segmentation problem almost certain
+                        status = np.max((3, status))
+                        comments += [
+                            'Probable segmentation problem or important '
+                            'anomaly:',
+                            '      large asymmetry in folds sizes.']
+                    else:
+                        # suspected segmentation problem
+                        status = np.max((2, status))
                         comments += [
                             'Possible segmentation problem or important '
                             'anomaly:',
                             '      large asymmetry in folds sizes.']
-                    elif val <= qv1 or val >= qv99:
-                        if val <= qv1:
-                            q[1] = z
-                        else:
-                            q[-2] = z
-                        if status <= 1:
-                            print('STATUS 1')
-                            status = 1
-                            comments.append(
-                                f'Possible problem: {tk} out of 1-99% '
-                                'percentile.')
-                    quants[i] = q
-        except Exception as e:
-            context.write(e)
-            raise
+        except Exception:
+            #context.write(e)
+            #raise
             v = '<MISSING>'
+            status = 3
+            comments.append('missing stat')
             unit = None
             missing = True
         h = 530 - i * 12
@@ -454,13 +509,15 @@ def execution(self, context):
             quant_colors = [
                 '#c04040ff',
                 '#ff7070ff',
-                '#f0f080ff',
+                '#f0d080ff',
+                '#e0ff90ff',
                 '#a0ffa0ff',
                 '#c0ffc0ff',
                 '#e0ffe0ff',
                 '#c0ffc0ff',
                 '#a0ffa0ff',
-                '#f0f080ff',
+                '#e0ff90ff',
+                '#f0d080ff',
                 '#ff7070ff',
                 '#c04040ff',
             ]
@@ -486,12 +543,20 @@ def execution(self, context):
         pdf.drawImage(tmpimage6.fullPath(), 290, 290, width=310, height=250)
         pdf.drawString(400, 275, 'Z scores')
 
-        statuses = ['OK', 'Warning', 'Suspicious']
-        status_colors = ['#000000ff', '#ffc080ff', '#ff6060ff']
-        pdf.drawString(30, 350, f'QC status: {statuses[status]}')
-        if comments:
-            for i, c in enumerate(comments):
-                pdf.drawString(30, 330 - 12 * i, c)
+    # status
+    statuses = ['OK', 'Warning', 'Suspicious', 'Bad']
+    status_colors = [(0., 0., 0.), (0.7, 0.7, 0.), (0.8, 0.5, 0.),
+                        (0.6, 0., 0.)]
+
+    pdf.drawString(30, 350, 'QC status:')
+    pdf.setFont('Helvetica-Bold', 10)
+    pdf.setFillColorRGB(*status_colors[status])
+    pdf.drawString(100, 350, statuses[status])
+    pdf.setFillColorRGB(0., 0., 0.)
+    pdf.setFont('Helvetica', 10)
+    if comments:
+        for i, c in enumerate(comments):
+            pdf.drawString(30, 330 - 12 * i, c)
 
     pdf.save()
 
