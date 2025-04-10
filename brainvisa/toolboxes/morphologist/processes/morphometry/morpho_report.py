@@ -524,11 +524,11 @@ def execution(self, context):
             while len(quant_colors) > len(quants):
                 quant_colors = quant_colors[1:-1]
             # reorder quantiles 0->0.5 then 1->0.5 for good plot overlapping
-            quant_colors = quant_colors[:len(quants) // 2] \
-                + quant_colors[len(quants) - 1:len(quants) // 2 - 1:-1]
+            quant_colors = quant_colors[:len(quants) // 2 + 1] \
+                + quant_colors[len(quants) - 1:len(quants) // 2:-1]
             quants = np.vstack(
-                (quants[:len(quants) // 2],
-                 quants[len(quants) - 1:len(quants) // 2 - 1:-1]))
+                (quants[:len(quants) // 2 + 1],
+                 quants[len(quants) - 1:len(quants) // 2:-1]))
             for i, q in enumerate(quants):
                 c = quant_colors[i]
                 ax.bar(np.arange(len(q)), q, width=0.5, color=c)
@@ -541,7 +541,26 @@ def execution(self, context):
         fig.savefig(tmpimage6.fullPath())
 
         pdf.drawImage(tmpimage6.fullPath(), 290, 290, width=310, height=250)
-        pdf.drawString(400, 275, 'Z scores')
+        pdf.drawString(380, 275, 'Z scores and quantiles')
+        pdf.drawString(370, 250, 'Quantiles:')
+        pdf.rotate(90)
+        w = 15
+        for i, s in enumerate(('Abn.', 'Susp.', '1%', '10%', '20%', 'avg.',
+                               'med.', '80%', '90%', '99%', 'Susp.', 'Abn.')):
+            pdf.drawString(200, -(390 + i * w), s)
+        pdf.rotate(-90)
+        status_colors_rgb = [tuple(int(c[1+i*2:3+i*2], base=16)/255.
+                                   for i in range(3))
+                             for c in quant_colors]
+        pdf.setStrokeColorRGB(0.5, 0.5, 0.5)
+        for i, c in enumerate(quant_colors):
+            j = i
+            if i > len(status_colors_rgb) / 2:
+                j = len(status_colors_rgb) - i - 1
+            pdf.setFillColorRGB(*status_colors_rgb[j])
+            pdf.rect(i * w + 370, 230, w, 10, fill=True)
+        pdf.setStrokeColorRGB(0., 0., 0.)
+        pdf.setFillColorRGB(0., 0., 0.)
 
     # status
     statuses = ['OK', 'Warning', 'Suspicious', 'Bad']
@@ -559,4 +578,20 @@ def execution(self, context):
             pdf.drawString(30, 330 - 12 * i, c)
 
     pdf.save()
+
+    report = {
+        'status': statuses[status],
+        'comments': comments
+    }
+
+    if self.report_json is not None:
+        with open(self.report_json.fullPath(), 'w') as f:
+            json.dump(report, f)
+
+    scol = ''.join('%02x' % round(int(status_colors[status][i] * 255))
+                   for i in range(3))
+    context.write(f'<b>Status: <font color="#{scol}">{statuses[status]}'
+                  '</font></b>')
+    for c in comments:
+        context.write(c)
 
