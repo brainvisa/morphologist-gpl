@@ -465,9 +465,9 @@ def execution(self, context):
                             'Possible segmentation problem or important '
                             'anomaly:',
                             '      large asymmetry in folds sizes.']
-        except Exception:
-            #context.write(e)
-            #raise
+        except Exception as e:
+            context.write(e)
+            raise
             v = '<MISSING>'
             status = 3
             comments.append('missing stat')
