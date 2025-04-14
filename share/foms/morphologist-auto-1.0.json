@@ -309,6 +309,8 @@
           # PDF report
           "Report_report":
               [["output:{analysis}/morphologist_report","PDF File"]],
+          "Report_report_json":
+              [["output:{analysis}/morphologist_json_report","JSON file"]],
           "Report_subject": [["none:<subject>", "no ext"]]
         },
 
@@ -997,7 +999,9 @@
           "subject": [["none:<subject>", "no ext"]],
 
           "report":
-              [["output:{analysis}/morphologist_report","PDF File"]]
+              [["output:{analysis}/morphologist_report","PDF File"]],
+          "report_json":
+              [["output:{analysis}/morphologist_json_report","JSON file"]],
         },
 
         "ImportT1Mri": {

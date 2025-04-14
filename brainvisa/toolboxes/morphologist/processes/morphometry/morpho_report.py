@@ -88,7 +88,7 @@ def initialization(self):
     self.linkParameters('talairach_transform', 't1mri')
     self.linkParameters('brain_volumes_file', 't1mri')
     self.linkParameters('report', 't1mri')
-    self.linkParameters('report_json', 't1mri')
+    self.linkParameters('report_json', 'report')
     # self.linkParameters('normative_brain_stats', 't1mri')
 
 

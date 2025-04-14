@@ -239,6 +239,7 @@ signature = Signature(
     'brain_volumes_file', WriteDiskItem(
         'Brain volumetry measurements', 'CSV file'),
     'report', WriteDiskItem('Morphologist report', 'PDF file'),
+    'report_json', WriteDiskItem('Morphologist JSON report', 'JSON file'),
 )
 
 
@@ -550,6 +551,7 @@ def initialization(self):
                         self.linkSulciLabelAtt)
     self.linkParameters('brain_volumes_file', 't1mri')
     self.linkParameters('report', 't1mri')
+    self.linkParameters('report_json', 'report')
 
 
 def execution(self, context):
@@ -895,4 +897,5 @@ def execution(self, context):
                        talairach_transform=self.talairach_ACPC_transform,
                        brain_volumes_file=self.brain_volumes_file,
                        report=self.report,
+                       report_json=self.report_json,
                        subject=self.subject)
