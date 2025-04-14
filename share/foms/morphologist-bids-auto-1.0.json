@@ -940,6 +940,86 @@
                     ]
                 ]
             ]
+        },
+        "brainvolumes": {
+            "split_brain": [
+                [
+                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/voronoi_<subject>",
+                    "Aims readable volume formats"
+                ]
+            ],
+            "left_grey_white": [
+                [
+                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/Lgrey_white_<subject>",
+                    "Aims readable volume formats"                ]
+            ],
+            "right_grey_white": [
+                [
+                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/Rgrey_white_<subject>",
+                    "Aims readable volume formats"
+                ]
+            ],
+            "left_csf": [
+                [
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/Lcsf_<subject>",
+                    "Aims readable volume formats"
+                ]
+            ],
+            "right_csf": [
+                [
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/Rcsf_<subject>",
+                    "Aims readable volume formats"
+                ]
+            ],
+            "left_labelled_graph": [
+                [
+                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/L<subject>_<sulci_recognition_session>_auto",
+                    [
+                        "Graph and data"
+                    ]
+                ]
+            ],
+            "right_labelled_graph": [
+                [
+                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/R<subject>_<sulci_recognition_session>_auto",
+                    [
+                        "Graph and data"
+                    ]
+                ]
+            ],
+            "left_gm_mesh": [
+                [
+                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_Lhemi",
+                    "Aims mesh formats"
+                ]
+            ],
+            "right_gm_mesh": [
+                [
+                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_Rhemi",
+                    "Aims mesh formats"
+                ]
+            ],
+            "left_wm_mesh": [
+                [
+                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_Lwhite",
+                    "Aims mesh formats"
+                ]
+            ],
+            "right_wm_mesh": [
+                [
+                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_Rwhite",
+                    "Aims mesh formats"
+                ]
+            ],
+            "subject": [["none:<subject>", "no ext"]],
+            "brain_volumes_file": [
+                [
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/brain_volumes_<subject>",
+                    [
+                        "CSV file"
+                    ]
+                ]
+            ]
         }
     }
 }
