@@ -72,10 +72,10 @@ class SPMnormalizationPipeline(Pipeline):
         self.add_link('voxel_size->normalization_t1_spm8_reinit.voxel_size')
         self.add_link('normalization_t1_spm12_reinit.transformations_informations->ConvertSPMnormalizationToAIMS.read')
         self.add_link('ConvertSPMnormalizationToAIMS.write->ReorientAnatomy.transformation')
-        self.add_link('normalization_t1_spm8_reinit.normalized_anatomy_data->NormalizeSPM.normalization_t1_spm8_reinit_switch_normalized_t1mri')
-        self.add_link('normalization_t1_spm12_reinit.transformations_informations->NormalizeSPM.normalization_t1_spm12_reinit_switch_spm_transformation')
-        self.add_link('normalization_t1_spm8_reinit.transformations_informations->NormalizeSPM.normalization_t1_spm8_reinit_switch_spm_transformation')
         self.add_link('normalization_t1_spm12_reinit.normalized_anatomy_data->NormalizeSPM.normalization_t1_spm12_reinit_switch_normalized_t1mri')
+        self.add_link('normalization_t1_spm8_reinit.transformations_informations->NormalizeSPM.normalization_t1_spm8_reinit_switch_spm_transformation')
+        self.add_link('normalization_t1_spm12_reinit.transformations_informations->NormalizeSPM.normalization_t1_spm12_reinit_switch_spm_transformation')
+        self.add_link('normalization_t1_spm8_reinit.normalized_anatomy_data->NormalizeSPM.normalization_t1_spm8_reinit_switch_normalized_t1mri')
 
         # initialization section
         self.nodes['ReorientAnatomy'].allow_flip_initial_MRI = False

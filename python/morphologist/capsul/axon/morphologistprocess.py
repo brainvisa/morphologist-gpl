@@ -117,8 +117,12 @@ class morphologistProcess(Process):
         self.labels_translation_map = '/volatile/home/dr144257/casa_distro/condadev/brainvisa-6.0/build/share/brainvisa-share-5.2/nomenclature/translation/sulci_model_2008.trl'
         self.left_model_file = '/volatile/home/dr144257/casa_distro/condadev/brainvisa-6.0/build/share/brainvisa-share-5.2/models/models_2019/cnn_models/sulci_unet_model_left.mdsm'
         self.left_param_file = '/volatile/home/dr144257/casa_distro/condadev/brainvisa-6.0/build/share/brainvisa-share-5.2/models/models_2019/cnn_models/sulci_unet_model_params_left.json'
+        self.left_global_model = '/volatile/home/dr144257/casa_distro/condadev/brainvisa-6.0/build/share/brainvisa-share-5.2/models/models_2008/descriptive_models/segments/global_registered_spam_left/spam_distribs.dat'
+        self.left_local_model = '/volatile/home/dr144257/casa_distro/condadev/brainvisa-6.0/build/share/brainvisa-share-5.2/models/models_2008/descriptive_models/segments/locally_from_global_registred_spam_left/spam_distribs.dat'
         self.right_model_file = '/volatile/home/dr144257/casa_distro/condadev/brainvisa-6.0/build/share/brainvisa-share-5.2/models/models_2019/cnn_models/sulci_unet_model_right.mdsm'
         self.right_param_file = '/volatile/home/dr144257/casa_distro/condadev/brainvisa-6.0/build/share/brainvisa-share-5.2/models/models_2019/cnn_models/sulci_unet_model_params_right.json'
+        self.right_global_model = '/volatile/home/dr144257/casa_distro/condadev/brainvisa-6.0/build/share/brainvisa-share-5.2/models/models_2008/descriptive_models/segments/global_registered_spam_right/spam_distribs.dat'
+        self.right_local_model = '/volatile/home/dr144257/casa_distro/condadev/brainvisa-6.0/build/share/brainvisa-share-5.2/models/models_2008/descriptive_models/segments/locally_from_global_registred_spam_right/spam_distribs.dat'
         self.sulci_file = '/volatile/home/dr144257/casa_distro/condadev/brainvisa-6.0/build/share/brainvisa-share-5.2/nomenclature/translation/sulci_default_list.json'
 
     def _run_process(self):
