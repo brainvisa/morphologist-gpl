@@ -32,11 +32,9 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
-from __future__ import absolute_import
-from brainvisa import shelltools
-
 from brainvisa.processes import *
 from six.moves import zip
+
 name = 'Volumic Sulcus SPAM'
 userLevel = 1
 
@@ -51,6 +49,7 @@ signature = Signature(
     'custom_buckets', String(),
     'label_translation', ReadDiskItem(
         'Label Translation', 'Label Translation'),
+    'input_int_to_label_translation', ReadDiskItem('log file', 'log file'),
     'int_to_label_translation', WriteDiskItem('log file', 'log file'),
     'label_attributes', Choice('custom', '(label, name)', 'label', 'name'),
     'custom_label_attributes', String(),
@@ -59,6 +58,10 @@ signature = Signature(
                               'Relations (junction, cortical, etc.)'),
     'custom_node_edge_types', String(),
     'label_values', String(),
+    'forbidden_labels', String(),
+    'time_as_label', Boolean(),
+    'output_space', Choice('Talairach', 'ICBM'),
+    'scaling', Float(),
 )
 
 
@@ -68,15 +71,22 @@ def initialization(self):
     self.label_attributes = '(label, name)'
     self.setOptional('mri')
     self.setOptional('label_translation')
+    self.setOptional('input_int_to_label_translation')
     self.setOptional('int_to_label_translation')
     self.setOptional('custom_buckets')
     self.setOptional('custom_node_edge_types')
     self.setOptional('custom_label_attributes')
     self.setOptional('label_values')
+    self.setOptional('forbidden_labels')
     self.smoothing_parameter = 0.25
+    self.time_as_label = False
+    self.output_space = 'Talairach'
+    self.scaling = 1.
 
 
 def execution(self, context):
+
+    from soma import aims
 
     NbGraph = len(self.graphs)
     inc = 1
@@ -87,6 +97,7 @@ def execution(self, context):
 
     temp = context.temporary('NIFTI-1 Image')
     ok = 0
+    template_vol = self.mri
     if self.mri is not None:
         f = aims.Finder()
         f.check(self.mri.fullPath())
@@ -96,24 +107,43 @@ def execution(self, context):
     else:
         dim = [256, 256, 124]
         vs = [1., 1., 1.]
-    sizes = [x * y for x, y in zip(dim, vs)]
-    context.write('ref vol sizes:', sizes)
-    translation = aims.AffineTransformation3d()
-    translation.setTranslation([float(sizes[0])/2, float(sizes[1])/2,
-                                float(sizes[2])*0.75])
+        template_vol = context.temporary('NIFTI-1 Image')
+        vol = aims.Volume(dim, dtype='S16')
+        vol.setVoxelSize(vs)
+        aims.write(vol, template_vol.fullPath())
+
+    if self.output_space == 'Talairach':
+        sizes = [x * y for x, y in zip(dim, vs)]
+        context.write('ref vol sizes:', sizes)
+        translation = aims.AffineTransformation3d()
+        translation.setTranslation([float(sizes[0])/2, float(sizes[1])/2,
+                                    float(sizes[2])*0.75])
+        transl_file = context.temporary('Transformation matrix')
+        aims.write(translation, transl_file.fullPath())
+
+    if self.time_as_label and self.int_to_label_translation is None:
+        label_trans = context.Temporary('Log file')
+    else:
+        label_trans = self.int_to_label_translation
 
     for graph in self.graphs:
 
         context.write('Subject : ', graph.get('subject'), '(', inc, '/',
                       NbGraph, ')')
 
-        cmd = ['siGraph2Label', '-g', graph.fullPath()]
+        space = self.output_space.lower()
+        cmd = ['siGraph2Label', '-g', graph,
+               '-tv', template_vol,
+               f'--{space}']
 
-        # if self.mri is not None:
-        #cmd += [ '-tv', self.mri.fullPath() ]
+        if self.output_space == 'Talairach':
+            cmd += ['--transform', transl_file]
+
+        if self.time_as_label:
+            cmd.append('--4d')
 
         if self.label_translation is not None:
-            cmd += ['-tr', self.label_translation.fullPath()]
+            cmd += ['-tr', self.label_translation]
 
         if self.label_attributes == 'custom':
             if self.custom_label_attributes:
@@ -127,8 +157,13 @@ def execution(self, context):
         for i in la:
             cmd += ['-a', i]
 
-        if self.int_to_label_translation is not None:
-            cmd += ['-ot', self.int_to_label_translation.fullPath()]
+        if ok == 0:
+            if self.input_int_to_label_translation is not None:
+                cmd += ['-it', self.input_int_to_label_translation.fullPath()]
+        elif label_trans is not None:
+            cmd += ['-it', label_trans.fullPath()]
+        if label_trans is not None:
+            cmd += ['-ot', label_trans.fullPath()]
 
         a = ()
         if self.node_edge_types == 'custom':
@@ -147,51 +182,65 @@ def execution(self, context):
             for i in a:
                 cmd += ['-l', i]
 
+        if self.forbidden_labels:
+            a = self.forbidden_labels.split()
+            for i in a:
+                cmd += ['-f', i]
+
+        output = temp
+        if self.time_as_label and ok == 0:
+            output = self.SPAM
+
         if self.bucket == 'custom':
             if not self.custom_buckets:
                 raise Exception('<em>custom_buckets</em> must be non-empty '
                                 'in custom bucket mode')
-            cmd += ['-o', self.temp]
+            cmd += ['-o', output]
             a = self.custom_buckets.split()
             for i in a:
                 cmd += ['-b', i]
         else:
             if self.bucket in ('Sulci',):
-                cmd += ['-o', temp, '-b', 'aims_ss', '-b', 'aims_bottom',
+                cmd += ['-o', output, '-b', 'aims_ss', '-b', 'aims_bottom',
                         '-b', 'aims_other']
             if self.bucket in ('Bottoms',):
-                cmd += ['-o', temp, '-b', 'aims_bottom']
+                cmd += ['-o', output, '-b', 'aims_bottom']
             if self.bucket in ('Junctions with brain hull',):
-                cmd += ['-o', temp, '-b',
+                cmd += ['-o', output, '-b',
                         'aims_junction', '-s', 'hull_junction']
             if self.bucket in ('Simple Surfaces',):
-                cmd += ['-o', temp, '-b', 'aims_ss']
+                cmd += ['-o', output, '-b', 'aims_ss']
         context.system(*cmd)
-        context.system('AimsThreshold', '-i', temp, '-m', 'gt', '-t', '0',
-                       '-b', '-o', temp)
-        context.system('AimsReplaceLevel', '-i', temp, '-g', '32767', '-n', '1',
-                       '-o', temp)
-        # Talairach transform
-        aims_graph = aims.read(graph.fullPath())
-        trans = aims.GraphManip.talairach(aims_graph)
-        trans = translation * trans
-        temp_tr = context.temporary('Transformation matrix')
-        aims.write(trans, temp_tr.fullPath())
+        if not self.time_as_label:
+            context.system('AimsThreshold', '-i', output, '-m', 'gt',
+                           '-t', '0', '-b', '-o', output)
+            output2 = output
+            if ok == 0:
+                output2 = self.SPAM
+            context.system('AimsReplaceLevel', '-i', output, '-g', '32767',
+                           '-n', '1', '-o', output2)
+
+        ## Talairach transform (now done in siGraph2Label)
+        #aims_graph = aims.read(graph.fullPath())
+        #trans = aims.GraphManip.talairach(aims_graph)
+        #trans = translation * trans
+        #temp_tr = context.temporary('Transformation matrix')
+        #aims.write(trans, temp_tr.fullPath())
 
         if ok == 0:
-            context.system('AimsApplyTransform', '-i', temp,
-                           '-o', self.SPAM.fullPath(), '-m', temp_tr,
-                           '--dx', dim[0], '--dy', dim[1], '--dz', dim[2],
-                           '--sx', vs[0], '--sy', vs[1], '--sz', vs[2],
-                           '-t', 'n')
+            #context.system('AimsApplyTransform', '-i', output,
+                           #'-o', self.SPAM.fullPath(), '-m', temp_tr,
+                           #'--dx', dim[0], '--dy', dim[1], '--dz', dim[2],
+                           #'--sx', vs[0], '--sy', vs[1], '--sz', vs[2],
+                           #'-t', 'n')
             ok = 1
         else:
-            context.system('AimsApplyTransform', '-i', temp,
-                           '-o', temp, '-m', temp_tr,
-                           '--dx', dim[0], '--dy', dim[1], '--dz', dim[2],
-                           '--sx', vs[0], '--sy', vs[1], '--sz', vs[2],
-                           '-t', 'n')
-            context.system('cartoLinearComb.py', '-i', temp,
+            #context.system('AimsApplyTransform', '-i', output,
+                           #'-o', output, '-m', temp_tr,
+                           #'--dx', dim[0], '--dy', dim[1], '--dz', dim[2],
+                           #'--sx', vs[0], '--sy', vs[1], '--sz', vs[2],
+                           #'-t', 'n')
+            context.system('cartoLinearComb.py', '-i', output,
                            '-i', self.SPAM.fullPath(),
                            '-f', 'I1+I2',
                            '-o', self.SPAM.fullPath())
@@ -199,7 +248,7 @@ def execution(self, context):
         inc = inc + 1
 
     context.system('cartoLinearComb.py', '-i', self.SPAM.fullPath(),
-                   '-f', 'I1 * 100. / %f' % NbGraph,
+                   '-f', f'I1.astype("FLOAT") * {self.scaling / NbGraph}',
                    '-o', self.SPAM.fullPath())
     if self.smoothing == 'Yes':
         context.system('AimsFileConvert', '-i', self.SPAM.fullPath(),
@@ -207,9 +256,13 @@ def execution(self, context):
         context.system('AimsImageSmoothing', '-i', self.SPAM.fullPath(),
                        '-o', self.SPAM.fullPath(),
                        '-t', self.smoothing_parameter, '-s', '0')
-    res_vol = aims.read(self.SPAM.fullPath())
-    res_vol.header()['referentials'] \
-        = [aims.StandardReferentials.acPcReferentialID()]
-    res_vol.header()['transformations'] \
-        = [list(translation.inverse().toVector())]
-    aims.write(res_vol, self.SPAM.fullPath())
+        # remove negative values introduced by smoothing filter
+        context.system('AimsThreshold', '-i', self.SPAM.fullPath(),
+                       '-o', self.SPAM.fullPath(),
+                       '-t', 0, '-m', 'ge')
+    #res_vol = aims.read(self.SPAM.fullPath())
+    #res_vol.header()['referentials'] \
+        #= [aims.StandardReferentials.acPcReferentialID()]
+    #res_vol.header()['transformations'] \
+        #= [list(translation.inverse().toVector())]
+    #aims.write(res_vol, self.SPAM.fullPath())
