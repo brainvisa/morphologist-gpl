@@ -466,8 +466,8 @@ def execution(self, context):
                             'anomaly:',
                             '      large asymmetry in folds sizes.']
         except Exception as e:
-            context.write(e)
-            raise
+            # context.write(e)
+            # raise
             v = '<MISSING>'
             status = 3
             comments.append('missing stat')
