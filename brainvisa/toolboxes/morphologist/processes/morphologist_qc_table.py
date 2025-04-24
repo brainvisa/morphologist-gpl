@@ -1,7 +1,7 @@
 
-from __future__ import absolute_import
 from brainvisa.processes import *
 from six.moves import zip
+import json
 
 name = 'Morphologist QC table'
 userLevel = 0
@@ -17,6 +17,19 @@ signature = Signature(
     'output_file', WriteDiskItem(
         'Text File', ['HTML', 'PDF file', 'CSV file']),
 )
+
+
+def get_qc_status(proc, di):
+    with open(di.fullPath()) as f:
+        report = json.load(f)
+    stat = {
+        'OK': proc.statuses.OK,
+        'Warning': proc.statuses.WARNING,
+        'Suspicious': proc.statuses.SUSPICIOUS,
+        'Bad': proc.statuses.BAD,
+    }
+    status = report.get('status', 'Bad')
+    return stat[status]
 
 
 def initialization(self):
@@ -46,7 +59,8 @@ def execution(self, context):
               'Cortical folds graph', 'Cortical folds graph',
               'Labelled Cortical folds graph', 'Labelled Cortical folds graph',
               'Sulcal morphometry measurements',
-              'Brain volumetry measurements', 'Morphologist report']
+              'Brain volumetry measurements', 'Morphologist report',
+              'Morphologist JSON report']
 
     tlabels = ['Raw T1 MRI', 'Bias Corrected', 'Histo Analysis',
                'Brain Mask', 'Hemispheres Split', 'Head Mesh',
@@ -57,7 +71,8 @@ def execution(self, context):
                'Left Hemisphere Mesh', 'Right Hemisphere Mesh',
                'Left Cortical Sulci', 'Right Cortical Sulci',
                'Left Labelled Sulci', 'Right Labelled Sulci',
-               'Sulcal morphometry measurements', 'Brain volumes', 'Report']
+               'Sulcal morphometry measurements', 'Brain volumes', 'Report',
+               'QC']
 
     custom_filt = [eval(filt) for filt in self.data_filters]
     if len(custom_filt) == 1:
@@ -95,6 +110,8 @@ def execution(self, context):
     filters = [repr(filt) for filt in filters]
 
     self.proc = getProcessInstance('database_qc_table')
+    self.proc.status_for_type['Morphologist JSON report'] = get_qc_status
+
     return context.runProcess(self.proc, database=self.database,
                               data_types=dtypes,
                               data_filters=filters,
