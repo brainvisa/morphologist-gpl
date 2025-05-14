@@ -116,6 +116,10 @@ sys.path.insert(0, mypath)
 
 from . import sulpated_gui
 from soma.qt_gui.qt_backend import Qt
+from soma.qt_gui import ipkernel_tools
+import anatomist.api as ana
+
+ipkernel_tools.before_start_ipkernel()
 
 run_loop = False
 if Qt.QApplication.instance() is None:
@@ -135,6 +139,7 @@ spe = sulpated_gui.SulcalPatternsEditor(sulci_db=options.sulci_db,
 spe.show()
 
 if run_loop:
-    qapp.exec()
+    # qapp.exec()
+    ipkernel_tools.start_ipkernel_qt_engine()
 
 
