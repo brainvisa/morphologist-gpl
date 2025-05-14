@@ -957,6 +957,8 @@ class SulcalPatternsEditor(Qt.QWidget):
             cw = a.getControlWindow()
             if cw:
                 cw.close()
+        # force exit since the ipython kernel doesn't exit
+        sys.exit(0)
 
     def sulci_window(self):
         if self.sulci_window_block \
@@ -999,6 +1001,7 @@ class SulcalPatternsEditor(Qt.QWidget):
             from brainvisa import processes
 
             a = anatomist.Anatomist()
+            a.setExitOnQuit(True)
 
             graph_file = self.data_model.get_sulci_graph_file(subject, side,
                                                               use_backup=True)
