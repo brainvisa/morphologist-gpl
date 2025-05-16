@@ -354,9 +354,10 @@ class SulcalPattern(object):
         return osp.exists(self.lock_file)
 
     def lock(self):
-        if osp.exists(osp.dirname(self.lock_file)):
-            with open(self.lock_file, 'w') as f:
-                print(datetime.datetime.now(), file=f)
+        if not osp.exists(osp.dirname(self.lock_file)):
+            os.makedirs(osp.dirname(self.lock_file))
+        with open(self.lock_file, 'w') as f:
+            print(datetime.datetime.now(), file=f)
 
     def unlock(self):
         if osp.exists(self.lock_file):
