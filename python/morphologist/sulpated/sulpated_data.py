@@ -633,7 +633,7 @@ class SulcalPatternsData(Qt.QObject):
                     self.ro_database = db_settings_ro.directory
                     print('found ro:', self.ro_database)
 
-            sel = {'_database': db_settings.directory}
+            sel = {'_database': self.sulci_database}
             sel.update(self.db_filter)
             if self.out_db_filter:
                 sel_bak = dict(sel)
@@ -813,6 +813,17 @@ class SulcalPatternsData(Qt.QObject):
         if self.update_thread:
             self.update_thread.join()
 
+    def _new_pattern(self, subject, side, graph):
+        pat_file = osp.join(
+            self.out_database, 'sub-%s' % subject, 'patterns',
+            self.region, side, 'patterns.json')
+        force_sulci_locks_state = self.db_def.get('force_sulci_locks_state')
+        pat = SulcalPattern(pat_file, graph, self.out_database,
+                            self.sulci_database,
+                            force_sulci_lock=force_sulci_locks_state,
+                            out_db_filter=self.out_db_filter)
+        return pat
+
     def set_pattern_state(self, subject, side, pattern, state_dict,
                           remove_keys=None):
         # print('set_pattern_state', subject, side, pattern, state_dict)
@@ -833,11 +844,12 @@ class SulcalPatternsData(Qt.QObject):
                 for key in remove_keys:
                     del sd[key]
             if sd != pd:
-                # print('MODIF:', subject, side, pattern, pd, sd)
+                print('MODIF:', subject, side, pattern, pd, sd)
                 pat.modified = True
                 pat.patterns[pattern] = sd
                 # import traceback
                 # traceback.print_stack()
+            else: print('no change:', sd, pd)
 
     def check_updated(self):
         if not osp.exists(self.version_file):
@@ -889,6 +901,29 @@ class SulcalPatternsData(Qt.QObject):
                 if saved:
                     self.save_version()
         return saved
+
+    def unsaved_data(self):
+        unsaved = {}
+        with self.lock:
+            for subject, mitems in self.patterns.items():
+                for side, patterns in mitems.items():
+                    if patterns.modified:
+                        unsaved.setdefault(subject, {})[side] \
+                            = {'patterns': True}
+                    if patterns.sulci_modified():
+                        unsaved.setdefault(subject, {}).setdefault(
+                            side, {})['sulci'] = True
+        return unsaved
+
+    def save_all(self):
+        # print('save all')
+        unsaved = self.unsaved_data()
+        for subject, sides in unsaved.items():
+            for side, items in sides.items():
+                if items.get('patterns'):
+                    self.save_individual_pattern(subject, side)
+                if items.get('sulci'):
+                    self.save_sulci(subject, side)
 
     def get_sulci_graph_file(self, subject, side, use_backup=False):
         with self.lock:

@@ -897,17 +897,7 @@ class SulcalPatternsEditor(Qt.QWidget):
         item.setIcon(self.conflict_icon)
 
     def unsaved_data(self):
-        unsaved = {}
-        with self.data_model.lock:
-            for subject, mitems in self.data_model.patterns.items():
-                for side, patterns in mitems.items():
-                    if patterns.modified:
-                        unsaved.setdefault(subject, {})[side] \
-                            = {'patterns': True}
-                    if patterns.sulci_modified():
-                        unsaved.setdefault(subject, {}).setdefault(
-                            side, {})['sulci'] = True
-        return unsaved
+        return self.data_model.unsaved_data()
 
     def save_all(self):
         # print('save all')
