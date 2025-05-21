@@ -28,8 +28,14 @@ def get_qc_status(proc, di):
         'Suspicious': proc.statuses.SUSPICIOUS,
         'Bad': proc.statuses.BAD,
     }
+    manual_stat = {
+        None: proc.statuses.OK,
+        'OK': proc.statuses.VALID_OK,
+        'Bad': proc.statuses.INVALID_OK,
+    }
     status = report.get('status', 'Bad')
-    return stat[status]
+    man_status = report.get('manual_status')
+    return stat[status] + manual_stat[man_status]
 
 
 def initialization(self):
