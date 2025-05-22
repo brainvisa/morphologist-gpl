@@ -115,11 +115,13 @@ class SulcalPattern(object):
     def save(self):
         print('SAVE')
         if self.locked():
+            print('locked')
             self.save_backup()
             raise LockedDataError(self.filename)
         if not os.path.exists(osp.dirname(self.filename)):
             os.makedirs(osp.dirname(self.filename), exist_ok=True)
         if self.status == 'conflict':
+            print('conflict')
             # try reload and resolve
             self.save_backup()
             if self.status == 'conflict':
@@ -329,13 +331,22 @@ class SulcalPattern(object):
                 patterns = json.load(f)
         except FileNotFoundError:
             # file has been removed in the meantime: just rewrite it
-            print('save_backup, orig file', self.filename, 'could not be read. Saving backup:', backup_file)
-            os.makedirs(osp.dirname(backup_file), exist_ok=True)
-            with open(backup_file, 'w') as f:
+
+            # this code was reusing the backup file, I don't remember why,
+            # and it contradicts the comment just 1 line above.
+            # I switch (again?) to the regular save. 2025-05-22
+            #print('save_backup, orig file', self.filename, 'could not be read. Saving backup:', backup_file)
+            #os.makedirs(osp.dirname(backup_file), exist_ok=True)
+            #with open(backup_file, 'w') as f:
+                #json.dump(self.patterns, f)
+
+            os.makedirs(osp.dirname(self.filename), exist_ok=True)
+            with open(self.filename, 'w') as f:
                 json.dump(self.patterns, f)
+
             patterns = self.patterns
 
-        if patterns == self.patterns:
+        if patterns == self.patterns and osp.exists(self.filename):
             # OK after all
             if osp.exists(backup_file):
                 os.unlink(backup_file)
@@ -888,6 +899,7 @@ class SulcalPatternsData(Qt.QObject):
                     self.save_version()
                 except (LockedDataError, OutdatedError):
                     backup_filename = pattern.backup_filename()
+                    # print('locked or outdated')
                     self.notify_backup_saved.emit(subject, side,
                                                   backup_filename)
 
