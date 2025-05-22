@@ -6,6 +6,7 @@ import sys
 import os
 import os.path as osp
 import json
+import numpy as np
 
 
 def merge_annotations(sources, dest):
@@ -76,13 +77,20 @@ def merge_annotations(sources, dest):
                 if side not in out_dat.patterns.setdefault(sub, {}):
                     pat = out_dat._new_pattern(sub, side, pattern.sulci_di)
                     out_dat.patterns[sub][side] = pat
-                print('before', sub, side, ':', out_dat.patterns[sub][side].patterns)
+                # print('before', sub, side, ':', out_dat.patterns[sub][side].patterns)
                 for label, p in pattern.patterns.items():
-                    print('set state', sub, side, f'{chr(65 + si)}_{label}', p)
+                    # print('set state', sub, side, f'{chr(65 + si)}_{label}', p)
                     out_dat.set_pattern_state(
                         sub, side, f'{chr(65 + si)}_{label}', p)
-                print('after:', out_dat.patterns[sub][side].patterns)
+                    # force implying <label>+ on -> <label> on
+                    if label.endswith('+') and p.get('enabled'):
+                        out_dat.set_pattern_state(
+                            sub, side, f'{chr(65 + si)}_{label[:-1]}', p)
+                # print('after:', out_dat.patterns[sub][side].patterns)
     print('patterns read')
+
+    avg_agreement = {}
+    npts = {}
 
     for sub, pitem in out_dat.patterns.items():
         for side, pattern in pitem.items():
@@ -92,12 +100,36 @@ def merge_annotations(sources, dest):
                     continue
                 slabel = label[2:]
                 # TODO we may use confidence factors to weight votes
-                votes.setdefault(slabel, []).append(int(p.get('enabled', 0)))
+                # w = p.get('confidence', 100.)
+                v = int(p.get('enabled', 0))
+                # if v == 0:
+                #     w = 100 - w
+                votes.setdefault(slabel, []).append(v)
             for label, values in votes.items():
-                value = bool(round(sum(values) / len(values)))
+                value = sum(values) / len(sources)
+                print(sub, side, label, ':', value, values)
                 p = pattern.patterns.get(label, {})
-                p['enabled'] = value
+                bval = bool(round(value))
+                value = value * 100
+                p['enabled'] = bval
+                if not bval:
+                    value = 100. - value
+                ag = avg_agreement.get(label, 0.)
+                ag += value / 100.  # rescale agreement to [0.,1.]
+                avg_agreement[label] = ag
+                n = npts.get(label, 0)
+                npts[label] = n + 1
+                p['confidence'] = value
+                values = values + [0] * (len(sources) - len(values))
+                sigma = np.std(values)
+                p['annotation'] = f'sigma: {sigma}'
                 out_dat.set_pattern_state(sub, side, label, p)
+
+    for label, n in npts.items():
+        ntot = len(out_dat.subjects) * 2
+        avg_a = (avg_agreement[label] + ntot - n) / ntot
+        print('label:', label, 'npts:', n, ', tot:', ntot,
+              ', agreement:', avg_a, avg_agreement[label])
 
     out_dat.save_all()
 
