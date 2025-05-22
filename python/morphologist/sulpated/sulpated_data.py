@@ -113,7 +113,7 @@ class SulcalPattern(object):
             #print('t:', time.time() - t0)
 
     def save(self):
-        print('SAVE')
+        # print('SAVE')
         if self.locked():
             print('locked')
             self.save_backup()
@@ -855,12 +855,12 @@ class SulcalPatternsData(Qt.QObject):
                 for key in remove_keys:
                     del sd[key]
             if sd != pd:
-                print('MODIF:', subject, side, pattern, pd, sd)
+                # print('MODIF:', subject, side, pattern, pd, sd)
                 pat.modified = True
                 pat.patterns[pattern] = sd
                 # import traceback
                 # traceback.print_stack()
-            else: print('no change:', sd, pd)
+            # else: print('no change:', sd, pd)
 
     def check_updated(self):
         if not osp.exists(self.version_file):
