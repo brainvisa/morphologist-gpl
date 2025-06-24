@@ -1,6 +1,7 @@
 
 from brainvisa.processes import *
 import os.path as osp
+import json
 try:
     import reportlab
     from reportlab.pdfgen import canvas
@@ -325,6 +326,8 @@ def execution(self, context):
             with open(self.normative_brain_stats.fullPath()) as f:
                 norm_stat = json.load(f)
             ncols = {c: i for i, c in enumerate(norm_stat.get('columns', []))}
+            col_ord = {j: ncols.get(morph_hdr[j])
+                       for j in range(len(morph[0]))}
             morph_z = [None] * len(morph[0])
             avg = norm_stat.get('averages')
             std = norm_stat.get('std')
@@ -332,7 +335,7 @@ def execution(self, context):
             if avg and std:
                 # print('avg:', len(avg), ', quantiles:', len(quantiles))
                 for i, mv in enumerate(morph[0]):
-                    c = ncols.get(morph_hdr[i])
+                    c = col_ord.get(i)
                     if c is not None:
                         z0 = avg[c]
                         zs = std[c]
@@ -398,13 +401,13 @@ def execution(self, context):
                 z = morph_z[j]
                 zvals[i] = z
                 if n_quant is not None:
-                    q = n_quant[:, j - 1]  # -1 to skip subject col
+                    q = n_quant[:, col_ord[j]]
                     # print(q)
                     # add 3 values at each extrema
                     # and remove extrema (0, 100% qantiles)
                     q = np.hstack((np.zeros((3, )), q[1: -1], np.zeros((3, ))))
-                    qv1 = quantiles[1][j - 1]
-                    qv99 = quantiles[-2][j - 1]
+                    qv1 = quantiles[1][col_ord[j]]
+                    qv99 = quantiles[-2][col_ord[j]]
                     if k == 'log_ratio.skel_points' and (val <= qv1 * 1.6
                                                          or val >= qv99 * 1.6):
                         # problem detection from the skel log ratio:
@@ -466,8 +469,8 @@ def execution(self, context):
                             'anomaly:',
                             '      large asymmetry in folds sizes.']
         except Exception as e:
-            # context.write(e)
-            # raise
+            context.write(e)
+            raise
             v = '<MISSING>'
             status = 3
             comments.append('missing stat')

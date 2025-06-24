@@ -90,6 +90,13 @@ def global_sulcal_morphometry(l_graph, r_graph, remove_nonfold=True,
     if lbrain is not None and rbrain is not None:
         res['both.brain_volume'] = lbrain + rbrain
 
+    lhulla = l_graph.get('brain_hull_area')
+    if lhulla is not None:
+        res['left.hull_area'] = lhulla
+    rhulla = r_graph.get('brain_hull_area')
+    if rhulla is not None:
+        res['right.hull_area'] = rhulla
+
     if remove_nonfold:
         labels_to_remove = set(removed_labels)
         labels_to_remove.update(['%s_left' % x for x in removed_labels])
@@ -397,6 +404,7 @@ def sulcal_and_brain_morpho(
                   'both.hemi_closed_volume', 'both.eTIV',
                   'both.cerebellum_stem_volume',
                   'left.brain_volume', 'right.brain_volume',
+                  'left.hull_area', 'right.hull_area',
                   'left.skel_points', 'right.skel_points',
                   'left.skel_labelled_points', 'right.skel_labelled_points',
                   'log_ratio.skel_points', 'log_ratio.skel_labelled_points')
