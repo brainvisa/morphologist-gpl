@@ -1008,6 +1008,133 @@
                 [["output:{acquisition}/<subject>", "images"]],
             "referential":
                 [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>", "Referential"]],
+        },
+
+        "brainvolumes": {
+            "split_brain": [["input:{analysis}/segmentation/voronoi_<subject>","images"]],
+            "left_grey_white": [
+                [
+                    "input:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/Lgrey_white_<subject>",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "right_grey_white": [
+                [
+                    "input:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/Rgrey_white_<subject>",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "left_csf": [["output:{analysis}/segmentation/<side>csf_<subject>","images",{"side":"L"}]],
+            "right_csf": [["output:{analysis}/segmentation/<side>csf_<subject>","images",{"side":"R"}]],
+            "left_labelled_graph": [["input:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto",
+                    "Graph and data", {"side": "L"}]],
+            "right_labelled_graph": [["input:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto",
+                    "Graph and data", {"side": "R"}]],
+            "left_gm_mesh":  [
+                [
+                    "input:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_Lhemi",
+                    "Aims mesh formats"
+                ]
+            ],
+            "right_gm_mesh":  [
+                [
+                    "input:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_Rhemi",
+                    "Aims mesh formats"
+                ]
+            ],
+            "left_wm_mesh": [
+                [
+                    "input:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_Lwhite",
+                    "Aims mesh formats"
+                ]
+            ],
+            "right_wm_mesh": [
+                [
+                    "input:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_Rwhite",
+                    "Aims mesh formats"
+                ]
+            ],
+            "subject": [["none:<subject>", "no ext"]],
+            "brain_volumes_file": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/brain_volumes_<subject>",
+                    [
+                        "CSV file"
+                    ]
+                ]
+            ]
+        },
+        "morpho_report": {
+            "t1mri": [["input:{acquisition}/<subject>", "images"]],
+            "left_grey_white": [
+                [
+                    "input:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/Lgrey_white_<subject>",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "right_grey_white": [
+                [
+                    "input:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/Rgrey_white_<subject>",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "left_gm_mesh":  [
+                [
+                    "input:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_Lhemi",
+                    "Aims mesh formats"
+                ]
+            ],
+            "right_gm_mesh":  [
+                [
+                    "input:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_Rhemi",
+                    "Aims mesh formats"
+                ]
+            ],
+            "left_wm_mesh": [
+                [
+                    "input:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_Lwhite",
+                    "Aims mesh formats"
+                ]
+            ],
+            "right_wm_mesh": [
+                [
+                    "input:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_Rwhite",
+                    "Aims mesh formats"
+                ]
+            ],
+            "left_labelled_graph": [["input:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto",
+                    "Graph and data", {"side": "L"}]],
+            "right_labelled_graph": [["input:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto",
+                    "Graph and data", {"side": "R"}]],
+            "talairach_transform":
+                [["input:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-ACPC",
+                    "Transformation matrix"]],
+
+            "brain_volumes_file": [
+                [
+                    "input:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/brain_volumes_<subject>",
+                    [
+                        "CSV file"
+                    ]
+                ]
+            ],
+            "report": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/morphologist_report",
+                    [
+                        "PDF File"
+                    ]
+                ]
+            ],
+            "report_json": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/morphologist_json_report",
+                    [
+                        "JSON file"
+                    ]
+                ]
+            ]
         }
+
     }
 }
