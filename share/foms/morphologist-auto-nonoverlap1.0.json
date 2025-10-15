@@ -1134,6 +1134,36 @@
                     ]
                 ]
             ]
+        },
+
+        "CorticalFoldsGraphUpgradeFromOld": {
+            "old_graph": [
+                ["input:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto", "Graph and data"],
+                ["input:{analysis}/folds/<graph_version>/<side><subject>", "Graph and data"]],
+            "skeleton": [[
+                "input:{analysis}/segmentation/<side>skeleton_<subject>","images"]],
+            "commissure_coordinates": [["input:{acquisition}/<subject>", "Commissure coordinates"]],
+            "Talairach_transform": [[
+                "input:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-ACPC",
+                "Transformation matrix"]],
+            "SulciVoronoi_hemi_cortex": [[
+                "input:{analysis}/segmentation/<side>cortex_<subject>","images"]],
+            "CorticalFoldsGraphThickness_GW_interface": [[
+                "input:{analysis}/segmentation/<side>grey_white_<subject>","images"]],
+            "CorticalFoldsGraphThickness_white_mesh": [[
+                "input:{analysis}/segmentation/mesh/<subject>_<side>white","mesh"]],
+            "CorticalFoldsGraphThickness_hemi_mesh": [[
+                "input:{analysis}/segmentation/mesh/<subject>_<side>hemi","mesh"]],
+            "graph": [
+                ["output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto", "Graph and data"],
+                ["output:{analysis}/folds/<graph_version>/<side><subject>", "Graph and data"]],
+            "SulciVoronoi_sulci_voronoi": [
+                ["output:{recognition_analysis}/<side>sulcivoronoi_<subject>", "images"],
+                ["output:{analysis}/folds/<graph_version>/<side>sulcivoronoi_<subject>", "images"]],
+            "CorticalFoldsGraphThickness_output_mid_interface": [
+                ["output:{recognition_analysis}/<side>gw_interface_<subject>", "images"],
+                ["output:{analysis}/segmentation/<side>gw_interface_<subject>",
+                "images"]]
         }
 
     }
