@@ -72,9 +72,9 @@ capsul_param_options = {
 
 def initialization(self):
     self.linkParameters('brain_mask', 't1mri')
-    self.linkParameters('transformation', 't1mri')
     self.linkParameters('skull_stripped', 't1mri')
-    self.linkParameters('talairach_transformation', 't1mri')
+    self.linkParameters('talairach_transformation', 'skull_stripped')
+    self.linkParameters('transformation', 'skull_stripped')
     self.template = self.signature['template'].findValue({
         '_database': neuroConfig.sharedDatabasePath(),
         'Size': '2 mm'})
