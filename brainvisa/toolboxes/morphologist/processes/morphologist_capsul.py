@@ -127,37 +127,14 @@ def execution(self, context):
     import time
     from soma.application import Application
     from capsul.study_config.study_config import StudyConfig
-    from capsul import info as cinfo
-    cversion = (cinfo.version_major, cinfo.version_minor, cinfo.version_micro)
-    if cversion < (2, 1):
-        from capsul.process import process_with_fom
+    # from capsul import info as cinfo
+    # cversion = (cinfo.version_major, cinfo.version_minor, cinfo.version_micro)
     from soma_workflow import client as swclient
     from soma.wip.application.api import Application as Appli2
     import numpy as np
 
-    #soma_app = Application('soma.fom', '1.0')
-    # soma_app.plugin_modules.append('soma.fom')
-    # soma_app.initialize()
     configuration = Appli2().configuration
 
-    #if self.capsul_process_type \
-            #== 'morphologist.capsul.morphologist.Morphologist':
-        ## Morphologist uses the hand-written Capsul formats
-        ## formats-brainvisa-1.0
-        #axon_to_capsul_formats = {
-            #'NIFTI-1 image': "NIFTI",
-            #'gz compressed NIFTI-1 image': "NIFTI gz",
-            #'GIS image': "GIS",
-            #'MINC image': "MINC",
-            #'SPM image': "SPM",
-            #'GIFTI file': "GIFTI",
-            #'MESH mesh': "MESH",
-            #'PLY mesh': "PLY",
-            #'siRelax Fold Energy': "Energy",
-        #}
-    #else:
-        ## other processes use the directly translated formats
-        ## brainvisa-formats-3.2.0
     axon_to_capsul_formats = {}
 
     # dirs and formats have to be handled sorted since
@@ -175,24 +152,13 @@ def execution(self, context):
 
     old_database = self.t1mri[sorted_items[0]]['_database']
 
-
     mp = self.get_edited_pipeline()
-    if cversion >= (2, 1):
-        study_config = mp.get_study_config()
-        study_config.input_directory = old_database
-        study_config.output_directory = old_database
-        from capsul.attributes.completion_engine \
-            import ProcessCompletionEngine
-        pf = ProcessCompletionEngine.get_completion_engine(mp)
-    else:
-        init_study_config = capsul_process.get_initial_study_config()
-        init_study_config["input_directory"] = old_database
-        init_study_config["output_directory"] = old_database
-        study_config = StudyConfig(
-            init_config=init_study_config,
-            modules=StudyConfig.default_modules
-            + ['BrainVISAConfig', 'FomConfig'])
-        pf = process_with_fom.ProcessWithFom(mp, study_config)
+    study_config = mp.get_study_config()
+    study_config.input_directory = old_database
+    study_config.output_directory = old_database
+    from capsul.attributes.completion_engine \
+        import ProcessCompletionEngine
+    pf = ProcessCompletionEngine.get_completion_engine(mp)
 
     # activate normalization methods disabling
     if hasattr(mp, 'attach_config_activations'):
@@ -220,10 +186,7 @@ def execution(self, context):
         t1mri = self.t1mri[i]
         format = formats[i]
         database = t1mri['_database']
-        if cversion >= (2, 1):
-            attributes = pf.get_attribute_values().export_to_dict()
-        else:
-            attributes = pf.attributes
+        attributes = pf.get_attribute_values().export_to_dict()
         attributes['center'] = t1mri['center']
         attributes['subject'] = t1mri['subject']
         attributes['acquisition'] = t1mri['acquisition']
@@ -246,10 +209,7 @@ def execution(self, context):
             study_config.initialize_modules()
         format = axon_to_capsul_formats.get(t1mri.format.name,
                                             t1mri.format.name)
-        if cversion >= (2, 1):
-            pf.complete_parameters({'capsul_attributes': attributes})
-        else:
-            pf.create_completion()
+        pf.complete_parameters({'capsul_attributes': attributes})
 
         transfers = []
         if self.transfer_inputs \
