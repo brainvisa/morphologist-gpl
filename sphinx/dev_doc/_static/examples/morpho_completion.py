@@ -82,7 +82,7 @@ print('completion for', len(cm.get_attribute_values().subject), ':',
 
 if show_fom_gui and Qt.QApplication.instance() is not None:
     pcvi = AttributedProcessWidget(pipeline, enable_attr_from_filename=True,
-                                  enable_load_buttons=True)
+                                   enable_load_buttons=True)
     pcvi.show()
 
 
