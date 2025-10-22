@@ -101,9 +101,15 @@ def execution(self, context):
                 'transformations_informations': self.transformations_informations,
                 'normalized_anatomy_data': self.normalized_anatomy_data,
                 }
+    previous = None
+    if os.path.exists(self.transformations_informations.fullPath()):
+        previous \
+            = os.stat(self.transformations_informations.fullPath()).st_mtime
     try:
         context.runProcess('normalization_t1_SPM12', **normproc)
-        if not os.path.exists(self.transformations_informations.fullPath()):
+        if not os.path.exists(self.transformations_informations.fullPath()) \
+                or previous == os.stat(
+                    self.transformations_informations.fullPath()).st_mtime:
             failed = True
         else:
             # sanity check
