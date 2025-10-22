@@ -105,6 +105,20 @@ def execution(self, context):
         context.runProcess('normalization_t1_SPM12', **normproc)
         if not os.path.exists(self.transformations_informations.fullPath()):
             failed = True
+        else:
+            # sanity check
+
+            from soma import aims
+            import numpy as np
+
+            vol = aims.read(self.anatomy_data.fullPath())
+            s_init = np.sum(vol_init.np)
+            vol = aims.read(self.normalized_anatomy_data.fullPath())
+            s = np.sum(vol_init.np)
+            if s < s_init * 0.6:
+                context.write('the normalization has probably failed and the '
+                              'field of view is wrong')
+                failed = True
     except:
         failed = True
         if not self.allow_retry_initialization:
