@@ -14,10 +14,10 @@ engine = capsul_engine()
 engine.load_modules(['fom', 'axon'])
 with engine.settings as session:
     config = session.config('fom', 'global')
-    config.input_fom = 'morphologist-bids-1.0'
-    config.output_fom = 'morphologist-bids-1.0'
-    #config.input_fom = 'morphologist-auto-nonoverlap-1.0'
-    #config.output_fom = 'morphologist-auto-nonoverlap-1.0'
+    config.input_fom = 'morphologist-bids-2.0'
+    config.output_fom = 'morphologist-bids-2.0'
+    # config.input_fom = 'morphologist-auto-nonoverlap-1.0'
+    # config.output_fom = 'morphologist-auto-nonoverlap-1.0'
     config.input_directory = '/tmp/input_data'
     config.output_directory = '/tmp/output_data'
 

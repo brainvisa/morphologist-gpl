@@ -40,7 +40,8 @@ def get_qc_status(proc, di):
 
 def initialization(self):
     # list of possible databases, while respecting the ontology
-    allowed_ontologies = ("brainvisa-3.2.0", "morphologist-bids-1.0")
+    allowed_ontologies = ("brainvisa-3.2.0", "morphologist-bids-1.0",
+                          "morphologist-bids-2.0")
     databases = [h.name for h in neuroHierarchy.hierarchies()
                  if h.fso.name in allowed_ontologies]
     self.signature["database"].setChoices(*databases)

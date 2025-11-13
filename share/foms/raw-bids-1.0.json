@@ -6,19 +6,46 @@
     ],
     "attribute_definitions": {
         "session": {
-            "default_value": "1"
+            "default_value": "0"
         },
         "acquisition": {
-            "default_value": "default_acquisition"
+            "default_value": "0"
+        },
+        "bids": {
+            "default_value": "run-0"
         }
     },
     "processes": {
         "ImportT1MRI": {
             "input": [
                 [
-                    "input:sub-<subject>/ses-<session>/anat/sub-<subject>_ses-<session>_acq-<acquisition>_T1w",
+                    "input:sub-<subject>/ses-<session>/anat/sub-<subject>_ses-<session>_<bids|((task|acq|ce|rec|run|echo|part|chunk)-.*)?>_T1w",
                     "Aims readable volume formats"
-                ]
+                ],
+                [
+                    "input:sub-<subject>/anat/sub-<subject>_ses-<session>_<bids|((task|acq|ce|rec|run|echo|part|chunk)-.*)?>_T1w",
+                    "Aims readable volume formats"
+                ],
+                [
+                    "input:sub-<subject>/ses-<session>/anat/sub-<subject>_ses-<session>_T1w",
+                    "Aims readable volume formats"
+                ],
+                [
+                    "input:sub-<subject>/anat/sub-<subject>_ses-<session>_T1w",
+                    "Aims readable volume formats"
+                ],
+                [
+                    "input:sub-<subject>/anat/sub-<subject>_T1w",
+                    "Aims readable volume formats"
+                ],
+                # [
+                #     "input:sub-<subject>/ses-<session>/anat/sub-<subject>_ses-<session><task|(?:_task-(.*))?><acq|(?:_acq-(.*))?><ce|(?:_ce-(.*))?><rec|(?:_rec-(.*))?><run|(?:_run-(.*))?><echo|(?:_echo-(.*))?><part|(?:_part-(.*))?><chunk|(?:_chunk-(.*))?>_T1w",
+                #     "Aims readable volume formats"
+                # ],
+                # [
+                #     "input:sub-<subject>/anat/sub-<subject>_ses-<session|(?:_ses-(.*))?><task|(?:_task-(.*))?><acq|(?:_acq-(.*))?><ce|(?:_ce-(.*))?><rec|(?:_rec-(.*))?><run|(?:_run-(.*))?><echo|(?:_echo-(.*))?><part|(?:_part-(.*))?><chunk|(?:_chunk-(.*))?>_T1w",
+                #     "Aims readable volume formats"
+                # ],
             ]
         }
     }
