@@ -55,12 +55,15 @@ signature = Signature(
                                           'JSON file'),
     'report', WriteDiskItem('Morphologist report', 'PDF file'),
     'report_json', WriteDiskItem('Morphologist JSON report', 'JSON file'),
+    'inter_subject_qc_table', WriteDiskItem('QC table', 'TSV file'),
     'subject', String(),
+    'bids', String(),
 )
 
 
 capsul_param_options = {
     'subject': ['dataset="output"'],
+    'bids': ['dataset="output"'],
     'normative_brain_stats': ['dataset=None'],
 }
 
@@ -71,13 +74,27 @@ def initialization(self):
             subject = self.t1mri.get('subject')
             return subject
 
+    def linkBids(self, proc):
+        if self.t1mri is not None:
+            bids = self.t1mri.get('bids')
+            if bids is None:
+                center = self.t1mri.get('center')
+                bids = self.t1mri.get('acquisition')
+                if center and bids:
+                    bids = f'cnt-{center}_{bids}'
+                elif bids is None:
+                    bids = f'cnt-{center}'
+            return bids
+
     self.setOptional('left_grey_white', 'right_grey_white',
                      'left_gm_mesh', 'right_gm_mesh',
                      'left_wm_mesh', 'right_wm_mesh',
                      'left_labelled_graph', 'right_labelled_graph',
                      'brain_volumes_file', 'normative_brain_stats',
-                     'talairach_transform', 'report_json')
+                     'talairach_transform', 'report_json',
+                     'inter_subject_qc_table')
     self.linkParameters('subject', 't1mri', linkSubject)
+    self.linkParameters('bids', 't1mri', linkBids)
     self.linkParameters('left_grey_white', 't1mri')
     self.linkParameters('right_grey_white', 't1mri')
     self.linkParameters('left_gm_mesh', 't1mri')
@@ -90,6 +107,7 @@ def initialization(self):
     self.linkParameters('brain_volumes_file', 't1mri')
     self.linkParameters('report', 't1mri')
     self.linkParameters('report_json', 'report')
+    self.linkParameters('inter_subject_qc_table', 'report_json')
     # self.linkParameters('normative_brain_stats', 't1mri')
 
 
@@ -598,3 +616,10 @@ def execution(self, context):
     for c in comments:
         context.write(c)
 
+    if self.inter_subject_qc_table is not None:
+        from morphologist.qc import global_qc_table
+
+        global_qc_table.update_qc_table(
+            {'subject': self.subject, 'bids': self.bids,
+             'status': statuses[status]},
+            self.inter_subject_qc_table.fullPath())
