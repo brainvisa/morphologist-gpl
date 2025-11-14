@@ -11,6 +11,7 @@ signature = Signature(
     'database', Choice(),
     'keys', ListOf(String()),
     'acquisition', String(),
+    'bids', String(),
     'analysis', String(),
     'graph_version', String(),
     'data_filters', ListOf(String()),
@@ -51,13 +52,17 @@ def initialization(self):
         self.signature["database"] = OpenChoice()
 
     self.setOptional('data_filters', 'acquisition', 'analysis',
-                     'graph_version', 'output_file')
-    self.keys = ['subject']
+                     'graph_version', 'bids', 'output_file')
+    self.keys = ['subject', 'bids', 'acquisition']
 
 
 def execution(self, context):
-    dtypes = ['Raw T1 MRI', 'T1 MRI Bias Corrected', 'Histo Analysis',
-              'T1 Brain Mask', 'Split Brain Mask', 'Head Mesh',
+    dtypes = ['Raw T1 MRI',
+              'T1 MRI Bias Corrected',
+              'Histo Analysis',
+              'T1 Brain Mask',
+              'Split Brain Mask',
+              'Head Mesh',
               'Left Grey White Mask', 'Right Grey White Mask',
               'Left CSF+GREY Mask', 'Right CSF+GREY Mask',
               'Left Hemisphere White Mesh', 'Right Hemisphere White Mesh',
@@ -90,6 +95,8 @@ def execution(self, context):
     filter1 = {}
     if self.acquisition:
         filter1.update({'acquisition': self.acquisition})
+    if self.bids:
+        filter1.update({'bids': self.bids})
     filter2 = dict(filter1)
     filter1['normalized'] = 'no'
     if self.analysis:
@@ -108,10 +115,16 @@ def execution(self, context):
     if self.graph_version:
         filter2.update({'graph_version': self.graph_version})
 
-    filters = [filter1, filter2, filter2, filter2, filter2, filter2,
-               filter3_l, filter3_r, filter3_l, filter3_r, filter3_l,
-               filter3_r, filter3_l, filter3_r, filter3_l, filter3_r,
-               filter4_l, filter4_r, filter4_l, filter4_r, filter5]
+    filters = [filter1,
+               filter2, filter2, filter2, filter2, filter2,
+               filter3_l, filter3_r,
+               filter3_l, filter3_r,
+               filter3_l, filter3_r,
+               filter3_l, filter3_r,
+               filter3_l, filter3_r,
+               filter4_l, filter4_r,
+               filter4_l, filter4_r,
+               filter5, filter5, filter5, filter5]
     for filt, custfilt in zip(filters, custom_filt):
         filt.update(custfilt)
     filters = [repr(filt) for filt in filters]
