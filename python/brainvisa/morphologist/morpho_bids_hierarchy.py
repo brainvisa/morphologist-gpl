@@ -13,7 +13,7 @@ default_sulci_version = '3.1'
 sub = 'sub-<subject>_ses-<session>_<bids>'
 
 raw_t1 = (
-    'sub-<subject>_ses-<session>_<bids>_T1w', SetType('Raw T1 MRI'), SetPriorityOffset(+1),
+    'sub-<subject>_ses-<session>_<bids>_desc-conform_T1w', SetType('Raw T1 MRI'), SetPriorityOffset(+1),
     SetWeakAttr('normalized', 'no'),
 )
 
@@ -21,50 +21,50 @@ raw_t1 = (
 def mesh_content():
     content = (
         f"{sub}_brain", SetType('Brain Mesh'), SetWeakAttr('side', 'both'),
-        f"{sub}_L_pial", SetType('Left Hemisphere Mesh'),
+        f"{sub}_hemi-left_pial.surf", SetType('Left Hemisphere Mesh'),
         SetWeakAttr('side', 'left', 'averaged', 'No', 'inflated', 'No',
                     'vertex_corr', 'No'), SetPriorityOffset(+1),
-        f"{sub}_R_pial", SetType('Right Hemisphere Mesh'),
+        f"{sub}_hemi-right_pial.surf", SetType('Right Hemisphere Mesh'),
         SetWeakAttr('side', 'right', 'averaged', 'No', 'inflated', 'No',
                     'vertex_corr', 'No'), SetPriorityOffset(+1),
-        f"{sub}_L_white", SetType('Left Hemisphere White Mesh'),
+        f"{sub}_hemi-left_white.surf", SetType('Left Hemisphere White Mesh'),
         SetWeakAttr('side', 'left', 'averaged', 'No', 'inflated', 'No',
                     'vertex_corr', 'No'), SetPriorityOffset(+1),
-        f"{sub}_R_white", SetType('Right Hemisphere White Mesh'),
+        f"{sub}_hemi-right_white.surf", SetType('Right Hemisphere White Mesh'),
         SetWeakAttr('side', 'right', 'averaged', 'No', 'inflated', 'No',
                     'vertex_corr', 'No'), SetPriorityOffset(+1),
-        f"{sub}_L_white_inflated", SetType('Inflated Hemisphere White Mesh'),
+        f"{sub}_hemi-left_white_inflated.surf", SetType('Inflated Hemisphere White Mesh'),
         SetWeakAttr('side', 'left', 'averaged', 'No', 'inflated', 'Yes',
                     'vertex_corr', 'No'),
-        f"{sub}_R_white_inflated", SetType('Inflated Hemisphere White Mesh'),
+        f"{sub}_hemi-right_white_inflated.surf", SetType('Inflated Hemisphere White Mesh'),
         SetWeakAttr('side', 'right', 'averaged', 'No', 'inflated', 'Yes',
                     'vertex_corr', 'No'),
-        f"{sub}_L_white_fine", SetType('Left Fine Hemisphere White Mesh'),
+        f"{sub}_hemi-left_white_fine.surf", SetType('Left Fine Hemisphere White Mesh'),
         SetWeakAttr('side', 'left', 'averaged', 'No', 'inflated', 'No',
                     'vertex_corr', 'No'),
-        f"{sub}_R_white_fine", SetType('Right Fine Hemisphere White Mesh'),
+        f"{sub}_hemi-right_white_fine.surf", SetType('Right Fine Hemisphere White Mesh'),
         SetWeakAttr('side', 'right', 'averaged', 'No', 'inflated', 'No',
                     'vertex_corr', 'No'),
-        f"{sub}_head", SetType('Head Mesh'), SetWeakAttr('side', 'both'),
-        f"{sub}_L_pial_hull", SetType('Hemisphere Hull Mesh'),
+        f"{sub}_head.surf", SetType('Head Mesh'), SetWeakAttr('side', 'both'),
+        f"{sub}_hemi-left_pial_hull.surf", SetType('Hemisphere Hull Mesh'),
         SetWeakAttr('side', 'left', 'averaged', 'No', 'inflated', 'No',
                     'vertex_corr', 'No'),
-        f"{sub}_R_pial_hull", SetType('Hemisphere Hull Mesh'),
+        f"{sub}_hemi-right_pial_hull.surf", SetType('Hemisphere Hull Mesh'),
         SetWeakAttr('side', 'right', 'averaged', 'No', 'inflated', 'No',
                     'vertex_corr', 'No'),
-        f"{sub}_B_pial_hull", SetType('Hemisphere Hull Mesh'),
+        f"{sub}_pial_hull.surf", SetType('Hemisphere Hull Mesh'),
         SetWeakAttr('side', 'both', 'averaged', 'No', 'inflated', 'No',
                     'vertex_corr', 'No'),
-        f"{sub}_brain_hull", SetType('Brain Hull Mesh'),
+        f"{sub}_brain_hull.surf", SetType('Brain Hull Mesh'),
         SetWeakAttr('side', 'both', 'averaged', 'No', 'inflated', 'No',
                     'vertex_corr', 'No'),
-        f"{sub}_L_median", SetType('Median Mesh'),
+        f"{sub}_hemi-left_median.surf", SetType('Median Mesh'),
         SetWeakAttr('side', 'left', 'averaged', 'No', 'inflated', 'No',
                     'vertex_corr', 'No'),
-        f"{sub}_R_median", SetType('Median Mesh'),
+        f"{sub}_hemi-right_median.surf", SetType('Median Mesh'),
         SetWeakAttr('side', 'right', 'averaged', 'No', 'inflated', 'No',
                     'vertex_corr', 'No'),
-        f"{sub}_cortex_mni", SetType('MNI Cortex Mesh'), SetWeakAttr(
+        f"{sub}_cortex_mni.surf", SetType('MNI Cortex Mesh'), SetWeakAttr(
             'side', 'both'),  # utilise en lecture seulement
         "*", SetType('Mesh'),
     )
@@ -86,47 +86,47 @@ def segmentation_content():
         f"{sub}_brain", SetType('T1 Brain Mask'), SetWeakAttr('side', 'both'),
         f"{sub}_skull_stripped", SetType('Raw T1 MRI Brain Masked'),
         SetWeakAttr('side', 'both', 'skull_stripped', 'yes'),
-        f"{sub}_L_grey_white",
+        f"{sub}_hemi-left_grey_white",
         SetType('Left Grey White Mask'), SetWeakAttr('side', 'left'),
-        f"{sub}_R_grey_white",
+        f"{sub}_hemi-right_grey_white",
         SetType('Right Grey White Mask'), SetWeakAttr('side', 'right'),
         f"{sub}_cortex",
         SetType('Both CSF+GREY Mask'), SetWeakAttr('side', 'both'),
-        f"{sub}_L_cortex",
+        f"{sub}_hemi-left_cortex",
         SetType('Left CSF+GREY Mask'), SetWeakAttr('side', 'left'),
-        f"{sub}_R_cortex",
+        f"{sub}_hemi-right_cortex",
         SetType('Right CSF+GREY Mask'), SetWeakAttr('side', 'right'),
         f"{sub}_csf", SetType('Both CSF Mask'), SetWeakAttr('side', 'both'),
-        f"{sub}_L_csf", SetType('Left CSF Mask'), SetWeakAttr('side', 'left'),
-        f"{sub}_R_csf", SetType('Right CSF Mask'), SetWeakAttr('side', 'right'),
-        f"{sub}_L_skeleton",
+        f"{sub}_hemi-left_csf", SetType('Left CSF Mask'), SetWeakAttr('side', 'left'),
+        f"{sub}_hemi-right_csf", SetType('Right CSF Mask'), SetWeakAttr('side', 'right'),
+        f"{sub}_hemi-left_skeleton",
         SetType('Left Cortex Skeleton'), SetWeakAttr('side', 'left'),
-        f"{sub}_R_skeleton",
+        f"{sub}_hemi-right_skeleton",
         SetType('Right Cortex Skeleton'), SetWeakAttr('side', 'right'),
-        f"{sub}_L_roots", SetType(
+        f"{sub}_hemi-left_roots", SetType(
             'Left Cortex Catchment Bassins'), SetWeakAttr('side', 'left'),
-        f"{sub}_R_roots", SetType(
+        f"{sub}_hemi-right_roots", SetType(
             'Right Cortex Catchment Bassins'), SetWeakAttr('side', 'right'),
         f"{sub}_voronoi", SetType(
             'Split Brain Mask'), SetWeakAttr('side', 'both'),
         f"{sub}_head", SetType('Head Mask'),
-        f"{sub}_L_white_curv", SetType(
+        f"{sub}_hemi-left_white_curv.texture", SetType(
             'White Curvature Texture'), SetWeakAttr('side', 'left'),
-        f"{sub}_R_white_curv", SetType(
+        f"{sub}_hemi-right_white_curv.texture", SetType(
             'White Curvature Texture'), SetWeakAttr('side', 'right'),
-        f"{sub}_L_white_depth", SetType(
+        f"{sub}_hemi-left_white_depth.texture", SetType(
             'White Depth Texture'), SetWeakAttr('side', 'left'),
-        f"{sub}_R_white_depth", SetType(
+        f"{sub}_hemi-right_white_depth.texture", SetType(
             'White Depth Texture'), SetWeakAttr('side', 'right'),
-        f"{sub}_L_gyri_resampled", SetType(
+        f"{sub}_hemi-left_gyri_resampled.texture", SetType(
             'Resampled Hemisphere Gyri Texture'), SetWeakAttr('side', 'left'),
-        f"{sub}_R_gyri_resampled", SetType(
+        f"{sub}_hemi-right_gyri_resampled.texture", SetType(
             'Resampled Hemisphere Gyri Texture'), SetWeakAttr('side', 'right'),
-        f"{sub}_B_gyri_resampled", SetType(
+        f"{sub}_gyri_resampled.texture", SetType(
             'Resampled Hemisphere Gyri Texture'), SetWeakAttr('side', 'both'),
-        f"{sub}_L_gw_interface", SetType(
+        f"{sub}_hemi-left_gw_interface", SetType(
             'Grey White Mid-Interface Volume'), SetWeakAttr('side', 'left'),
-        f"{sub}_R_gw_interface", SetType(
+        f"{sub}_hemi-right_gw_interface", SetType(
             'Grey White Mid-Interface Volume'), SetWeakAttr('side', 'right'),
         f"{sub}_lesiondistance", SetType('Lesion distance map'),
         f"{sub}_corpus_callosum_mask", SetType('Corpus Callosum mask'),
@@ -141,47 +141,47 @@ def labeled_sulci_content(auto):
     sulc = f'{sub}_sul-<sulci_recognition_session>'
     content = [
         # SULCI - labelled graphs, siRelax folds energy, segmentation
-        f'{sulc}_L_{auto}', SetType(
+        f'{sulc}_hemi-left_{auto}', SetType(
             'Labelled Cortical folds graph'), SetWeakAttr('side', 'left', 'parallel_recognition', 'No'),
-        f'{sulc}_R_{auto}', SetType(
+        f'{sulc}_hemi-right_{auto}', SetType(
             'Labelled Cortical folds graph'), SetWeakAttr('side', 'right', 'parallel_recognition', 'No'),
     ]
 
     if auto == 'auto':
         content += [
-            f'{sulc}_L_auto', SetType(
+            f'{sulc}_hemi-left_auto', SetType(
                 'siRelax Fold Energy'), SetWeakAttr('side', 'left'),
-            f'{sulc}_R_auto', SetType(
+            f'{sulc}_hemi-right_auto', SetType(
                 'siRelax Fold Energy'), SetWeakAttr('side', 'right'),
-            f'{sulc}_L_auto_proba',
+            f'{sulc}_hemi-left_auto_proba',
             SetType('Sulci Labels Segmentwise Posterior Probabilities'),
             SetWeakAttr('side', 'left'),
-            f'{sulc}_R_auto_proba',
+            f'{sulc}_hemi-right_auto_proba',
             SetType('Sulci Labels Segmentwise Posterior Probabilities'),
             SetWeakAttr('side', 'right'),
-            f'{sulc}_L_auto_Tal_TO_SPAM',
+            f'{sulc}_hemi-left_auto_Tal_TO_SPAM',
             SetType('Sulci Talairach to Global SPAM transformation'),
             SetWeakAttr('side', 'left'),
-            f'{sulc}_R_auto_Tal_TO_SPAM',
+            f'{sulc}_hemi-right_auto_Tal_TO_SPAM',
             SetType('Sulci Talairach to Global SPAM transformation'),
             SetWeakAttr('side', 'right'),
-            f'{sulc}_L_auto_T1_TO_SPAM',
+            f'{sulc}_hemi-left_auto_T1_TO_SPAM',
             SetType('Raw T1 to Global SPAM transformation'),
             SetWeakAttr('side', 'left'),
-            f'{sulc}_R_auto_T1_TO_SPAM',
+            f'{sulc}_hemi-right_auto_T1_TO_SPAM',
             SetType('Raw T1 to Global SPAM transformation'),
             SetWeakAttr('side', 'right'),
-            f'{sulc}_L_auto', SetType(
+            f'{sulc}_hemi-left_auto', SetType(
                 'Referential of Labelled Cortical folds graph'), SetWeakAttr('side', 'left', 'parallel_recognition', 'No'),
-            f'{sulc}_R_auto', SetType(
+            f'{sulc}_hemi-right_auto', SetType(
                 'Referential of Labelled Cortical folds graph'), SetWeakAttr('side', 'right', 'parallel_recognition', 'No'),
 
-            f'{sulc}_L_auto_global_TO_local',
+            f'{sulc}_hemi-left_auto_global_TO_local',
             SetType('Sulci Local SPAM transformations Directory'),
             SetWeakAttr('side', 'left'), SetContent(
                 '*_{sulcus}', SetType('Sulci Global to Local SPAM transformation'),
             ),
-            f'{sulc}_R_auto_global_TO_local',
+            f'{sulc}_hemi-right_auto_global_TO_local',
             SetType('Sulci Local SPAM transformations Directory'),
             SetWeakAttr('side', 'right'), SetContent(
                 '*_{sulcus}', SetType('Sulci Global to Local SPAM transformation'),
@@ -194,21 +194,21 @@ def labeled_sulci_content(auto):
         SetWeakAttr('side', 'both'),
 
         'segmentation', SetContent(
-            f'{sulc}_L_sulci_{auto}',
+            f'{sulc}_hemi-left_sulci_{auto}',
             SetType('Sulci Volume'), SetWeakAttr('side', 'left'),
-            f'{sulc}_R_sulci_{auto}',
+            f'{sulc}_hemi-right_sulci_{auto}',
             SetType('Sulci Volume'), SetWeakAttr('side', 'right'),
-            f'{sulc}_L_bottom_{auto}',
+            f'{sulc}_hemi-left_bottom_{auto}',
             SetType('Bottom Volume'), SetWeakAttr('side', 'left'),
-            f'{sulc}_R_bottom_{auto}',
+            f'{sulc}_hemi-right_bottom_{auto}',
             SetType('Bottom Volume'), SetWeakAttr('side', 'right'),
-            f'{sulc}_L_hull_junction_{auto}',
+            f'{sulc}_hemi-left_hull_junction_{auto}',
             SetType('Hull Junction Volume'), SetWeakAttr('side', 'left'),
-            f'{sulc}_R_hull_junction_{auto}',
+            f'{sulc}_hemi-right_hull_junction_{auto}',
             SetType('Hull Junction Volume'), SetWeakAttr('side', 'right'),
-            f'{sulc}_L_simple_surface_{auto}',
+            f'{sulc}_hemi-left_simple_surface_{auto}',
             SetType('Simple Surface Volume'), SetWeakAttr('side', 'left'),
-            f'{sulc}_R_simple_surface_{auto}',
+            f'{sulc}_hemi-right_simple_surface_{auto}',
             SetType('Simple Surface Volume'), SetWeakAttr('side', 'right'),
         ),
 
@@ -286,15 +286,15 @@ def t1mri_acq_content():
                 SetDefaultAttributeValue('graph_version',
                                          default_graph_version),
                 SetContent(
-                    f"{sub}_L", SetType('Cortical folds graph'), SetWeakAttr('side', 'left', 'labelled', 'No'),
-                    f"{sub}_R", SetType('Cortical folds graph'), SetWeakAttr('side', 'right', 'labelled', 'No'),
-                    f"{sub}_L_sulcivoronoi", SetType(
+                    f"{sub}_hemi-left", SetType('Cortical folds graph'), SetWeakAttr('side', 'left', 'labelled', 'No'),
+                    f"{sub}_hemi-right", SetType('Cortical folds graph'), SetWeakAttr('side', 'right', 'labelled', 'No'),
+                    f"{sub}_hemi-left_sulcivoronoi", SetType(
                         'Sulci Voronoi'), SetWeakAttr('side', 'left'),
-                    f"{sub}_R_sulcivoronoi", SetType(
+                    f"{sub}_hemi-right_sulcivoronoi", SetType(
                         'Sulci Voronoi'), SetWeakAttr('side', 'right'),
-                    f"{sub}_L_sulci_mask", SetType(
+                    f"{sub}_hemi-left_sulci_mask", SetType(
                         'Left Sulci Mask'), SetWeakAttr('side', 'left'),
-                    f"{sub}_R_sulci_mask", SetType(
+                    f"{sub}_hemi-right_sulci_mask", SetType(
                         'Right Sulci Mask'), SetWeakAttr('side', 'right'),
 
                     *sulci_content(),

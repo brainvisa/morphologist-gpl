@@ -101,38 +101,34 @@
             ],
             "left_graph": [
                 [
-                    "output:{fold}/{sub}_hemi-<side>",
+                    "output:{fold}/{sub}_L",
                     [
                         "Graph and data"
-                    ],
-                    {"side": "left"}
+                    ]
                 ]
             ],
             "right_graph": [
                 [
-                    "output:{fold}/{sub}_hemi-<side>",
+                    "output:{fold}/{sub}_R",
                     [
                         "Graph and data"
-                    ],
-                    {"side": "right"}
+                    ]
                 ]
             ],
             "left_labelled_graph": [
                 [
-                    "output:{foldauto}/{fautosub}_hemi-<side>_auto",
+                    "output:{foldauto}/{fautosub}_L_auto",
                     [
                         "Graph and data"
-                    ],
-                    {"side": "left"}
+                    ]
                 ]
             ],
             "right_labelled_graph": [
                 [
-                    "output:{foldauto}/{fautosub}_hemi-<side>_auto",
+                    "output:{foldauto}/{fautosub}_R_auto",
                     [
                         "Graph and data"
-                    ],
-                    {"side": "right"}
+                    ]
                 ]
             ],
 
@@ -266,7 +262,7 @@
         "Morphologist.HeadMesh": {
             "head_mesh": [
                 [
-                    "output:{mesh}/{sub}_head.surf",
+                    "output:{mesh}/{sub}_head",
                     "Aims mesh formats"
                 ]
             ],
@@ -291,9 +287,9 @@
         },
         "Morphologist.GlobalMorphometry": {
           "left_csf":
-              [["output:{seg}/{sub}_hemi-<side>_csf","images",{"side":"left"}]],
+              [["output:{seg}/{sub}_<side>_csf","images",{"side":"L"}]],
           "right_csf":
-              [["output:{seg}/{sub}_hemi-<side>_csf","images",{"side":"right"}]],
+              [["output:{seg}/{sub}_<side>_csf","images",{"side":"R"}]],
           "brain_volumes_file":
               [["output:{seg}/{sub}_brain_volumes","CSV file"]],
           "subject": [["none:<subject>", "no ext"]],
@@ -419,136 +415,120 @@
         "Morphologist.GreyWhiteClassification": {
             "grey_white": [
                 [
-                    "output:{seg}/{sub}_hemi-<side>_grey_white",
-                    "Aims writable volume formats",
-                    {"side": "left"}
+                    "output:{seg}/{sub}_L_grey_white",
+                    "Aims writable volume formats"
                 ]
             ]
         },
         "Morphologist.GreyWhiteTopology": {
             "hemi_cortex": [
                 [
-                    "output:{seg}/{sub}_hemi-<side>_cortex",
-                    "Aims writable volume formats",
-                    {"side": "left"}
+                    "output:{seg}/{sub}_L_cortex",
+                    "Aims writable volume formats"
                 ]
             ]
         },
         "Morphologist.GreyWhiteMesh": {
             "white_mesh": [
                 [
-                    "output:{mesh}/{sub}_hemi-<side>_white.surf",
-                    "Aims mesh formats",
-                    {"side": "left"}
+                    "output:{mesh}/{sub}_L_white",
+                    "Aims mesh formats"
                 ]
             ]
         },
         "Morphologist.SulciSkeleton": {
             "skeleton": [
                 [
-                    "output:{seg}/{sub}_hemi-<side>_skeleton",
-                    "Aims writable volume formats",
-                    {"side": "left"}
+                    "output:{seg}/{sub}_L_skeleton",
+                    "Aims writable volume formats"
                 ]
             ],
             "roots": [
                 [
-                    "output:{seg}/{sub}_hemi-<side>_roots",
-                    "Aims writable volume formats",
-                    {"side": "left"}
+                    "output:{seg}/{sub}_L_roots",
+                    "Aims writable volume formats"
                 ]
             ]
         },
         "Morphologist.PialMesh": {
             "pial_mesh": [
                 [
-                    "output:{mesh}/{sub}_hemi-<side>_pial.surf",
-                    "Aims mesh formats",
-                    {"side": "left"}
+                    "output:{mesh}/{sub}_L_pial",
+                    "Aims mesh formats"
                 ]
             ]
         },
         "Morphologist.CorticalFoldsGraph": {
             "sulci_voronoi": [
                 [
-                    "output:{fold}/{sub}_hemi-<side>_sulcivoronoi",
-                    "Aims writable volume formats",
-                    {"side": "left"}
+                    "output:{fold}/{sub}_L_sulcivoronoi",
+                    "Aims writable volume formats"
                 ]
             ],
             "cortex_mid_interface": [
                 [
-                    "output:{seg}/{sub}_hemi-<side>_gw_interface",
-                    "Aims writable volume formats",
-                    {"side": "left"}
+                    "output:{seg}/{sub}_L_gw_interface",
+                    "Aims writable volume formats"
                 ]
             ]
         },
         "Morphologist.GreyWhiteClassification_1": {
             "grey_white": [
                 [
-                    "output:{seg}/{sub}_hemi-<side>_grey_white",
-                    "Aims writable volume formats",
-                    {"side": "right"}
+                    "output:{seg}/{sub}_R_grey_white",
+                    "Aims writable volume formats"
                 ]
             ]
         },
         "Morphologist.GreyWhiteTopology_1": {
             "hemi_cortex": [
                 [
-                    "output:{seg}/{sub}_hemi-<side>_cortex",
-                    "Aims writable volume formats",
-                    {"side": "right"}
+                    "output:{seg}/{sub}_R_cortex",
+                    "Aims writable volume formats"
                 ]
             ]
         },
         "Morphologist.GreyWhiteMesh_1": {
             "white_mesh": [
                 [
-                    "output:{mesh}/{sub}_hemi-<side>_white.surf",
-                    "Aims mesh formats",
-                    {"side": "right"}
+                    "output:{mesh}/{sub}_R_white",
+                    "Aims mesh formats"
                 ]
             ]
         },
         "Morphologist.SulciSkeleton_1": {
             "skeleton": [
                 [
-                    "output:{seg}/{sub}_hemi-<side>_skeleton",
-                    "Aims writable volume formats",
-                    {"side": "right"}
+                    "output:{seg}/{sub}_R_skeleton",
+                    "Aims writable volume formats"
                 ]
             ],
             "roots": [
                 [
-                    "output:{seg}/{sub}_hemi-<side>_roots",
-                    "Aims writable volume formats",
-                    {"side": "right"}
+                    "output:{seg}/{sub}_R_roots",
+                    "Aims writable volume formats"
                 ]
             ]
         },
         "Morphologist.PialMesh_1": {
             "pial_mesh": [
                 [
-                    "output:{mesh}/{sub}_hemi-<side>_pial.surf",
-                    "Aims mesh formats",
-                    {"side": "right"}
+                    "output:{mesh}/{sub}_R_pial",
+                    "Aims mesh formats"
                 ]
             ]
         },
         "Morphologist.CorticalFoldsGraph_1": {
             "sulci_voronoi": [
                 [
-                    "output:{fold}/{sub}_hemi-<side>_sulcivoronoi",
-                    "Aims writable volume formats",
-                    {"side": "right"}
+                    "output:{fold}/{sub}_R_sulcivoronoi",
+                    "Aims writable volume formats"
                 ]
             ],
             "cortex_mid_interface": [
                 [
-                    "output:{seg}/{sub}_hemi-<side>_gw_interface",
-                    "Aims writable volume formats",
-                    {"side": "right"}
+                    "output:{seg}/{sub}_R_gw_interface",
+                    "Aims writable volume formats"
                 ]
             ]
         },
@@ -626,11 +606,10 @@
             ],
             "energy_plot_file": [
                 [
-                    "output:{foldauto}/{fautosub}_hemi-<side>_auto",
+                    "output:{foldauto}/{fautosub}_L_auto",
                     [
                         "siRelax Fold Energy"
-                    ],
-                    {"side": "left"}
+                    ]
                 ]
             ]
         },
@@ -649,11 +628,10 @@
             ],
             "energy_plot_file": [
                 [
-                    "output:{foldauto}/{fautosub}_hemi-<side>_auto",
+                    "output:{foldauto}/{fautosub}_R_auto",
                     [
                         "siRelax Fold Energy"
-                    ],
-                    {"side": "right"}
+                    ]
                 ]
             ]
         },
@@ -682,11 +660,10 @@
             ],
             "posterior_probabilities": [
                 [
-                    "output:{foldauto}/{fautosub}_hemi-<side>_auto_proba",
+                    "output:{foldauto}/{fautosub}_L_auto_proba",
                     [
                         "CSV file"
-                    ],
-                    {"side": "left"}
+                    ]
                 ]
             ],
             "labels_translation_map": [
@@ -700,7 +677,7 @@
             ],
             "labels_priors": [
                 [
-                    "shared:models/models_<sulci_database>/descriptive_models/labels_priors/frequency_segments_priors_hemi-<side>/frequency_segments_priors",
+                    "shared:models/models_<sulci_database>/descriptive_models/labels_priors/frequency_segments_priors_<side>/frequency_segments_priors",
                     [
                         "Text Data Table"
                     ],
@@ -712,20 +689,18 @@
             ],
             "output_transformation": [
                 [
-                    "output:{foldauto}/{fautosub}_hemi-<side>_auto_Tal_TO_SPAM",
+                    "output:{foldauto}/{fautosub}_L_auto_Tal_TO_SPAM",
                     [
                         "Transformation matrix"
-                    ],
-                    {"side": "left"}
+                    ]
                 ]
             ],
             "output_t1_to_global_transformation": [
                 [
-                    "output:{foldauto}/{fautosub}_hemi-<side>_auto_T1_TO_SPAM",
+                    "output:{foldauto}/{fautosub}_L_auto_T1_TO_SPAM",
                     [
                         "Transformation matrix"
-                    ],
-                    {"side": "left"}
+                    ]
                 ]
             ]
         },
@@ -744,11 +719,10 @@
             ],
             "posterior_probabilities": [
                 [
-                    "output:{foldauto}/{fautosub}_hemi-<side>_auto_proba",
+                    "output:{foldauto}/{fautosub}_R_auto_proba",
                     [
                         "CSV file"
-                    ],
-                    {"side": "right"}
+                    ]
                 ]
             ],
             "labels_translation_map": [
@@ -762,7 +736,7 @@
             ],
             "labels_priors": [
                 [
-                    "shared:models/models_<sulci_database>/descriptive_models/labels_priors/frequency_segments_priors_hemi-<side>/frequency_segments_priors",
+                    "shared:models/models_<sulci_database>/descriptive_models/labels_priors/frequency_segments_priors_<side>/frequency_segments_priors",
                     [
                         "Text Data Table"
                     ],
@@ -774,20 +748,18 @@
             ],
             "output_transformation": [
                 [
-                    "output:{foldauto}/{fautosub}_hemi-<side>_auto_Tal_TO_SPAM",
+                    "output:{foldauto}/{fautosub}_R_auto_Tal_TO_SPAM",
                     [
                         "Transformation matrix"
-                    ],
-                    {"side": "right"}
+                    ]
                 ]
             ],
             "output_t1_to_global_transformation": [
                 [
-                    "output:{foldauto}/{fautosub}_hemi-<side>_auto_T1_TO_SPAM",
+                    "output:{foldauto}/{fautosub}_R_auto_T1_TO_SPAM",
                     [
                         "Transformation matrix"
-                    ],
-                    {"side": "right"}
+                    ]
                 ]
             ]
         },
@@ -806,11 +778,10 @@
             ],
             "posterior_probabilities": [
                 [
-                    "output:{foldauto}/{fautosub}_hemi-<side>_auto_proba",
+                    "output:{foldauto}/{fautosub}_L_auto_proba",
                     [
                         "CSV file"
-                    ],
-                    {"side": "left"}
+                    ]
                 ]
             ],
             "local_referentials": [
@@ -863,11 +834,10 @@
             ],
             "output_local_transformations": [
                 [
-                    "output:{foldauto}/{fautosub}_hemi-<side>_auto_global_TO_local",
+                    "output:{foldauto}/{fautosub}_L_auto_global_TO_local",
                     [
                         "Directory"
-                    ],
-                    {"side": "left"}
+                    ]
                 ]
             ]
         },
@@ -886,11 +856,10 @@
             ],
             "posterior_probabilities": [
                 [
-                    "output:{foldauto}/{fautosub}_hemi-<side>_auto_proba",
+                    "output:{foldauto}/{fautosub}_L_auto_proba",
                     [
                         "CSV file"
-                    ],
-                    {"side": "left"}
+                    ]
                 ]
             ]
         },
@@ -909,11 +878,10 @@
             ],
             "posterior_probabilities": [
                 [
-                    "output:{foldauto}/{fautosub}_hemi-<side>_auto_proba",
+                    "output:{foldauto}/{fautosub}_R_auto_proba",
                     [
                         "CSV file"
-                    ],
-                    {"side": "right"}
+                    ]
                 ]
             ],
             "local_referentials": [
@@ -966,11 +934,10 @@
             ],
             "output_local_transformations": [
                 [
-                    "output:{foldauto}/{fautosub}_hemi-<side>_auto_global_TO_local",
+                    "output:{foldauto}/{fautosub}_R_auto_global_TO_local",
                     [
                         "Directory"
-                    ],
-                    {"side": "right"}
+                    ]
                 ]
             ]
         },
@@ -989,11 +956,10 @@
             ],
             "posterior_probabilities": [
                 [
-                    "output:{foldauto}/{fautosub}_hemi-<side>_auto_proba",
+                    "output:{foldauto}/{fautosub}_R_auto_proba",
                     [
                         "CSV file"
-                    ],
-                    {"side": "right"}
+                    ]
                 ]
             ]
         },
@@ -1006,76 +972,65 @@
             ],
             "left_grey_white": [
                 [
-                    "input:{seg}/{sub}_hemi-<side>_grey_white",
-                    "Aims readable volume formats",
-                    {"side": "left"}
-                ]
+                    "input:{seg}/{sub}_L_grey_white",
+                    "Aims readable volume formats"                ]
             ],
             "right_grey_white": [
                 [
-                    "input:{seg}/{sub}_hemi-<side>_grey_white",
-                    "Aims readable volume formats",
-                    {"side": "right"}
+                    "input:{seg}/{sub}_R_grey_white",
+                    "Aims readable volume formats"
                 ]
             ],
             "left_csf": [
                 [
-                    "output:{seg}/{sub}_hemi-<side>_csf",
-                    "Aims readable volume formats",
-                    {"side": "left"}
+                    "output:{seg}/{sub}_L_csf",
+                    "Aims readable volume formats"
                 ]
             ],
             "right_csf": [
                 [
-                    "output:{seg}/{sub}_hemi-<side>_csf",
-                    "Aims readable volume formats",
-                    {"side": "right"}
+                    "output:{seg}/{sub}_R_csf",
+                    "Aims readable volume formats"
                 ]
             ],
             "left_labelled_graph": [
                 [
-                    "input:{foldauto}/{fautosub}_hemi-<side>_auto",
+                    "input:{foldauto}/{fautosub}_L_auto",
                     [
                         "Graph and data"
-                    ],
-                    {"side": "left"}
+                    ]
                 ]
             ],
             "right_labelled_graph": [
                 [
-                    "input:{foldauto}/{fautosub}_hemi-<side>_auto",
+                    "input:{foldauto}/{fautosub}_R_auto",
                     [
                         "Graph and data"
-                    ],
-                    {"side": "right"}
+                    ]
                 ]
             ],
             "left_gm_mesh": [
                 [
-                    "input:{mesh}/{sub}_hemi-<side>_pial.surf",
-                    "Aims mesh formats",
-                    {"side": "left"}
+                    "input:{mesh}/{sub}_L_pial",
+                    "Aims mesh formats"
                 ]
             ],
             "right_gm_mesh": [
                 [
-                    "input:{mesh}/{sub}_hemi-<side>_pial.surf",
-                    "Aims mesh formats",
-                    {"side": "right"}
+                    "input:{mesh}/{sub}_R_pial",
+                    "Aims mesh formats"
                 ]
             ],
             "left_wm_mesh": [
                 [
-                    "input:{mesh}/{sub}_hemi-<side>_white.surf",
-                    "Aims mesh formats",
-                    {"side": "left"}
+                    "input:{mesh}/{sub}_L_white",
+                    "Aims mesh formats"
                 ]
             ],
             "right_wm_mesh": [
                 [
-                    "input:{mesh}/{sub}_hemi-<side>_white.surf",
-                    "Aims mesh formats",
-                    {"side": "right"}
+                    "input:{mesh}/{sub}_R_white",
+                    "Aims mesh formats"
                 ]
             ],
             "subject": [["none:<subject>", "no ext"]],
@@ -1097,62 +1052,54 @@
             ],
             "left_grey_white": [
                 [
-                    "input:{seg}/{sub}_hemi-<side>_grey_white",
-                    "Aims readable volume formats",
-                    {"side": "left"}
+                    "input:{seg}/{sub}_L_grey_white",
+                    "Aims readable volume formats"
                 ]
             ],
             "right_grey_white": [
                 [
-                    "input:{mesh}/{sub}_hemi-<side>_grey_white",
-                    "Aims readable volume formats",
-                    {"side": "right"}
+                    "input:{mesh}/{sub}_R_grey_white",
+                    "Aims readable volume formats"
                 ]
             ],
             "left_gm_mesh": [
                 [
-                    "input:{mesh}/{sub}_hemi-<side>_pial.surf",
-                    "Aims mesh formats",
-                    {"side": "left"}
+                    "input:{mesh}/{sub}_L_pial",
+                    "Aims mesh formats"
                 ]
             ],
             "right_gm_mesh": [
                 [
-                    "input:{mesh}/{sub}_hemi-<side>_pial.surf",
-                    "Aims mesh formats",
-                    {"side": "right"}
+                    "input:{mesh}/{sub}_R_pial",
+                    "Aims mesh formats"
                 ]
             ],
             "left_wm_mesh": [
                 [
-                    "input:{mesh}/{sub}_hemi-<side>_white.surf",
-                    "Aims mesh formats",
-                    {"side": "left"}
+                    "input:{mesh}/{sub}_L_white",
+                    "Aims mesh formats"
                 ]
             ],
             "right_wm_mesh": [
                 [
-                    "input:{mesh}/{sub}_hemi-<side>_white.surf",
-                    "Aims mesh formats",
-                    {"side": "right"}
+                    "input:{mesh}/{sub}_R_white",
+                    "Aims mesh formats"
                 ]
             ],
             "left_labelled_graph": [
                 [
-                    "input:{foldauto}/{fautosub}_hemi-<side>_auto",
+                    "input:{foldauto}/{fautosub}_L_auto",
                     [
                         "Graph and data"
-                    ],
-                    {"side": "left"}
+                    ]
                 ]
             ],
             "right_labelled_graph": [
                 [
-                    "input:{foldauto}/{fautosub}_hemi-<side>_auto",
+                    "input:{foldauto}/{fautosub}_R_auto",
                     [
                         "Graph and data"
-                    ],
-                    {"side": "right"}
+                    ]
                 ]
             ],
             "talairach_transform": [
@@ -1191,10 +1138,10 @@
 
         "CorticalFoldsGraphUpgradeFromOld": {
             "old_graph": [
-                ["input:{foldauto}/{fautosub}_hemi-<side>_auto", "Graph and data"],
-                ["input:{fold}/{sub}_hemi-<side>", "Graph and data"]],
+                ["input:{foldauto}/{fautosub}_<side>_auto", "Graph and data"],
+                ["input:{fold}/{sub}_<side>", "Graph and data"]],
             "skeleton": [[
-                "inut:{seg}/{sub}_hemi-<side>_skeleton",
+                "inut:{seg}/{sub}_<side>_skeleton",
                 "Aims writable volume formats"]],
             "commissure_coordinates": [[
                 "input:{acquisition}/{sub}",
@@ -1203,29 +1150,29 @@
                 "input:{reg}/{sub}_T1w_TO_Talairach-ACPC",
                 "Transformation matrix"]],
             "SulciVoronoi_hemi_cortex": [[
-                "input:{seg}/{sub}_hemi-<side>_cortex", "Aims writable volume formats"]],
+                "input:{seg}/{sub}_<side>_cortex", "Aims writable volume formats"]],
             "CorticalFoldsGraphThickness_GW_interface": [[
-                "input:{seg}/{sub}_hemi-<side>_grey_white",
+                "input:{seg}/{sub}_L_grey_white",
                 "Aims writable volume formats"]],
             "CorticalFoldsGraphThickness_white_mesh": [[
-                "input:{mesh}/{sub}_hemi-<side>_white.surf",
+                "input:{mesh}/{sub}_<side>_white",
                 "Aims mesh formats"]],
             "CorticalFoldsGraphThickness_hemi_mesh": [[
-                "input:{mesh}/{sub}_hemi-<side>_pial.surf",
+                "input:{mesh}/{sub}_<side>_pial",
                 "Aims mesh formats"]],
             "graph": [
-                ["output:{fold}/{sub}_hemi-<side>", "Graph and data"],
-                ["output:{foldauto}/{fautosub}_hemi-<side>_auto",
+                ["output:{fold}/{sub}_<side>", "Graph and data"],
+                ["output:{foldauto}/{fautosub}_<side>_auto",
                  "Graph and data"]],
             "SulciVoronoi_sulci_voronoi": [
-                ["output:{foldauto}/{fautosub}_hemi-<side>_sulcivoronoi",
+                ["output:{foldauto}/{fautosub}_<side>_sulcivoronoi",
                 "Aims writable volume formats"],
-                ["output:{fold}/{sub}_hemi-<side>_sulcivoronoi",
+                ["output:{fold}/{sub}_<side>_sulcivoronoi",
                  "Aims writable volume formats"]],
             "CorticalFoldsGraphThickness_output_mid_interface": [
-                ["output:{foldauto}/{fautosub}_hemi-<side>_gw_interface",
+                ["output:{foldauto}/{fautosub}_<side>_gw_interface",
                 "Aims writable volume formats"],
-                ["output:{fold}/{sub}_hemi-<side>_gw_interface",
+                ["output:{fold}/{sub}_<side>_gw_interface",
                  "Aims writable volume formats"]]
         }
 
