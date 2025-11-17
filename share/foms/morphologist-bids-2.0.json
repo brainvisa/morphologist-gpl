@@ -105,7 +105,7 @@
                     [
                         "Graph and data"
                     ],
-                    {"side": "left"}
+                    {"side": "L"}
                 ]
             ],
             "right_graph": [
@@ -114,7 +114,7 @@
                     [
                         "Graph and data"
                     ],
-                    {"side": "right"}
+                    {"side": "R"}
                 ]
             ],
             "left_labelled_graph": [
@@ -123,7 +123,7 @@
                     [
                         "Graph and data"
                     ],
-                    {"side": "left"}
+                    {"side": "L"}
                 ]
             ],
             "right_labelled_graph": [
@@ -132,7 +132,7 @@
                     [
                         "Graph and data"
                     ],
-                    {"side": "right"}
+                    {"side": "R"}
                 ]
             ],
 
@@ -291,9 +291,9 @@
         },
         "Morphologist.GlobalMorphometry": {
           "left_csf":
-              [["output:{seg}/{sub}_hemi-<side>_csf","images",{"side":"left"}]],
+              [["output:{seg}/{sub}_hemi-<side>_csf","images",{"side":"L"}]],
           "right_csf":
-              [["output:{seg}/{sub}_hemi-<side>_csf","images",{"side":"right"}]],
+              [["output:{seg}/{sub}_hemi-<side>_csf","images",{"side":"R"}]],
           "brain_volumes_file":
               [["output:{seg}/{sub}_brain_volumes","CSV file"]],
           "subject": [["none:<subject>", "no ext"]],
@@ -303,7 +303,10 @@
               [["output:{analysis}/{sub}_morphologist_report","PDF File"]],
           "report_json":
               [["output:{analysis}/{sub}_morphologist_report","JSON file"]],
-          "subject": [["none:<subject>", "no ext"]]
+          "inter_subject_qc_table":
+              [["output:qc/qc","TSV file"]],
+          "subject": [["none:<subject>", "no ext"]],
+          "bids": [["none:<bids>", "no ext"]]
         },
         "Morphologist.PrepareSubject.StandardACPC": {
             "older_MNI_normalization": [
@@ -421,7 +424,7 @@
                 [
                     "output:{seg}/{sub}_hemi-<side>_grey_white",
                     "Aims writable volume formats",
-                    {"side": "left"}
+                    {"side": "L"}
                 ]
             ]
         },
@@ -430,7 +433,7 @@
                 [
                     "output:{seg}/{sub}_hemi-<side>_cortex",
                     "Aims writable volume formats",
-                    {"side": "left"}
+                    {"side": "L"}
                 ]
             ]
         },
@@ -439,7 +442,7 @@
                 [
                     "output:{mesh}/{sub}_hemi-<side>_white.surf",
                     "Aims mesh formats",
-                    {"side": "left"}
+                    {"side": "L"}
                 ]
             ]
         },
@@ -448,14 +451,14 @@
                 [
                     "output:{seg}/{sub}_hemi-<side>_skeleton",
                     "Aims writable volume formats",
-                    {"side": "left"}
+                    {"side": "L"}
                 ]
             ],
             "roots": [
                 [
                     "output:{seg}/{sub}_hemi-<side>_roots",
                     "Aims writable volume formats",
-                    {"side": "left"}
+                    {"side": "L"}
                 ]
             ]
         },
@@ -464,7 +467,7 @@
                 [
                     "output:{mesh}/{sub}_hemi-<side>_pial.surf",
                     "Aims mesh formats",
-                    {"side": "left"}
+                    {"side": "L"}
                 ]
             ]
         },
@@ -473,14 +476,14 @@
                 [
                     "output:{fold}/{sub}_hemi-<side>_sulcivoronoi",
                     "Aims writable volume formats",
-                    {"side": "left"}
+                    {"side": "L"}
                 ]
             ],
             "cortex_mid_interface": [
                 [
                     "output:{seg}/{sub}_hemi-<side>_gw_interface",
                     "Aims writable volume formats",
-                    {"side": "left"}
+                    {"side": "L"}
                 ]
             ]
         },
@@ -489,7 +492,7 @@
                 [
                     "output:{seg}/{sub}_hemi-<side>_grey_white",
                     "Aims writable volume formats",
-                    {"side": "right"}
+                    {"side": "R"}
                 ]
             ]
         },
@@ -498,7 +501,7 @@
                 [
                     "output:{seg}/{sub}_hemi-<side>_cortex",
                     "Aims writable volume formats",
-                    {"side": "right"}
+                    {"side": "R"}
                 ]
             ]
         },
@@ -507,7 +510,7 @@
                 [
                     "output:{mesh}/{sub}_hemi-<side>_white.surf",
                     "Aims mesh formats",
-                    {"side": "right"}
+                    {"side": "R"}
                 ]
             ]
         },
@@ -516,14 +519,14 @@
                 [
                     "output:{seg}/{sub}_hemi-<side>_skeleton",
                     "Aims writable volume formats",
-                    {"side": "right"}
+                    {"side": "R"}
                 ]
             ],
             "roots": [
                 [
                     "output:{seg}/{sub}_hemi-<side>_roots",
                     "Aims writable volume formats",
-                    {"side": "right"}
+                    {"side": "R"}
                 ]
             ]
         },
@@ -532,7 +535,7 @@
                 [
                     "output:{mesh}/{sub}_hemi-<side>_pial.surf",
                     "Aims mesh formats",
-                    {"side": "right"}
+                    {"side": "R"}
                 ]
             ]
         },
@@ -541,14 +544,14 @@
                 [
                     "output:{fold}/{sub}_hemi-<side>_sulcivoronoi",
                     "Aims writable volume formats",
-                    {"side": "right"}
+                    {"side": "R"}
                 ]
             ],
             "cortex_mid_interface": [
                 [
                     "output:{seg}/{sub}_hemi-<side>_gw_interface",
                     "Aims writable volume formats",
-                    {"side": "right"}
+                    {"side": "R"}
                 ]
             ]
         },
@@ -630,7 +633,7 @@
                     [
                         "siRelax Fold Energy"
                     ],
-                    {"side": "left"}
+                    {"side": "L"}
                 ]
             ]
         },
@@ -653,7 +656,7 @@
                     [
                         "siRelax Fold Energy"
                     ],
-                    {"side": "right"}
+                    {"side": "R"}
                 ]
             ]
         },
@@ -686,7 +689,7 @@
                     [
                         "CSV file"
                     ],
-                    {"side": "left"}
+                    {"side": "L"}
                 ]
             ],
             "labels_translation_map": [
@@ -700,13 +703,13 @@
             ],
             "labels_priors": [
                 [
-                    "shared:models/models_<sulci_database>/descriptive_models/labels_priors/frequency_segments_priors_hemi-<side>/frequency_segments_priors",
+                    "shared:models/models_<sulci_database>/descriptive_models/labels_priors/frequency_segments_priors_left/frequency_segments_priors",
                     [
                         "Text Data Table"
                     ],
                     {
                         "sulci_database": "2008",
-                        "side": "left"
+                        "side": "L"
                     }
                 ]
             ],
@@ -716,7 +719,7 @@
                     [
                         "Transformation matrix"
                     ],
-                    {"side": "left"}
+                    {"side": "L"}
                 ]
             ],
             "output_t1_to_global_transformation": [
@@ -725,7 +728,7 @@
                     [
                         "Transformation matrix"
                     ],
-                    {"side": "left"}
+                    {"side": "L"}
                 ]
             ]
         },
@@ -748,7 +751,7 @@
                     [
                         "CSV file"
                     ],
-                    {"side": "right"}
+                    {"side": "R"}
                 ]
             ],
             "labels_translation_map": [
@@ -762,13 +765,13 @@
             ],
             "labels_priors": [
                 [
-                    "shared:models/models_<sulci_database>/descriptive_models/labels_priors/frequency_segments_priors_hemi-<side>/frequency_segments_priors",
+                    "shared:models/models_<sulci_database>/descriptive_models/labels_priors/frequency_segments_priors_right/frequency_segments_priors",
                     [
                         "Text Data Table"
                     ],
                     {
                         "sulci_database": "2008",
-                        "side": "right"
+                        "side": "R"
                     }
                 ]
             ],
@@ -778,7 +781,7 @@
                     [
                         "Transformation matrix"
                     ],
-                    {"side": "right"}
+                    {"side": "R"}
                 ]
             ],
             "output_t1_to_global_transformation": [
@@ -787,7 +790,7 @@
                     [
                         "Transformation matrix"
                     ],
-                    {"side": "right"}
+                    {"side": "R"}
                 ]
             ]
         },
@@ -810,7 +813,7 @@
                     [
                         "CSV file"
                     ],
-                    {"side": "left"}
+                    {"side": "L"}
                 ]
             ],
             "local_referentials": [
@@ -867,7 +870,7 @@
                     [
                         "Directory"
                     ],
-                    {"side": "left"}
+                    {"side": "L"}
                 ]
             ]
         },
@@ -890,7 +893,7 @@
                     [
                         "CSV file"
                     ],
-                    {"side": "left"}
+                    {"side": "L"}
                 ]
             ]
         },
@@ -913,7 +916,7 @@
                     [
                         "CSV file"
                     ],
-                    {"side": "right"}
+                    {"side": "R"}
                 ]
             ],
             "local_referentials": [
@@ -970,7 +973,7 @@
                     [
                         "Directory"
                     ],
-                    {"side": "right"}
+                    {"side": "R"}
                 ]
             ]
         },
@@ -993,7 +996,7 @@
                     [
                         "CSV file"
                     ],
-                    {"side": "right"}
+                    {"side": "R"}
                 ]
             ]
         },
@@ -1008,28 +1011,28 @@
                 [
                     "input:{seg}/{sub}_hemi-<side>_grey_white",
                     "Aims readable volume formats",
-                    {"side": "left"}
+                    {"side": "L"}
                 ]
             ],
             "right_grey_white": [
                 [
                     "input:{seg}/{sub}_hemi-<side>_grey_white",
                     "Aims readable volume formats",
-                    {"side": "right"}
+                    {"side": "R"}
                 ]
             ],
             "left_csf": [
                 [
                     "output:{seg}/{sub}_hemi-<side>_csf",
                     "Aims readable volume formats",
-                    {"side": "left"}
+                    {"side": "L"}
                 ]
             ],
             "right_csf": [
                 [
                     "output:{seg}/{sub}_hemi-<side>_csf",
                     "Aims readable volume formats",
-                    {"side": "right"}
+                    {"side": "R"}
                 ]
             ],
             "left_labelled_graph": [
@@ -1038,7 +1041,7 @@
                     [
                         "Graph and data"
                     ],
-                    {"side": "left"}
+                    {"side": "L"}
                 ]
             ],
             "right_labelled_graph": [
@@ -1047,35 +1050,35 @@
                     [
                         "Graph and data"
                     ],
-                    {"side": "right"}
+                    {"side": "R"}
                 ]
             ],
             "left_gm_mesh": [
                 [
                     "input:{mesh}/{sub}_hemi-<side>_pial.surf",
                     "Aims mesh formats",
-                    {"side": "left"}
+                    {"side": "L"}
                 ]
             ],
             "right_gm_mesh": [
                 [
                     "input:{mesh}/{sub}_hemi-<side>_pial.surf",
                     "Aims mesh formats",
-                    {"side": "right"}
+                    {"side": "R"}
                 ]
             ],
             "left_wm_mesh": [
                 [
                     "input:{mesh}/{sub}_hemi-<side>_white.surf",
                     "Aims mesh formats",
-                    {"side": "left"}
+                    {"side": "L"}
                 ]
             ],
             "right_wm_mesh": [
                 [
                     "input:{mesh}/{sub}_hemi-<side>_white.surf",
                     "Aims mesh formats",
-                    {"side": "right"}
+                    {"side": "R"}
                 ]
             ],
             "subject": [["none:<subject>", "no ext"]],
@@ -1099,42 +1102,42 @@
                 [
                     "input:{seg}/{sub}_hemi-<side>_grey_white",
                     "Aims readable volume formats",
-                    {"side": "left"}
+                    {"side": "L"}
                 ]
             ],
             "right_grey_white": [
                 [
                     "input:{mesh}/{sub}_hemi-<side>_grey_white",
                     "Aims readable volume formats",
-                    {"side": "right"}
+                    {"side": "R"}
                 ]
             ],
             "left_gm_mesh": [
                 [
                     "input:{mesh}/{sub}_hemi-<side>_pial.surf",
                     "Aims mesh formats",
-                    {"side": "left"}
+                    {"side": "L"}
                 ]
             ],
             "right_gm_mesh": [
                 [
                     "input:{mesh}/{sub}_hemi-<side>_pial.surf",
                     "Aims mesh formats",
-                    {"side": "right"}
+                    {"side": "R"}
                 ]
             ],
             "left_wm_mesh": [
                 [
                     "input:{mesh}/{sub}_hemi-<side>_white.surf",
                     "Aims mesh formats",
-                    {"side": "left"}
+                    {"side": "L"}
                 ]
             ],
             "right_wm_mesh": [
                 [
                     "input:{mesh}/{sub}_hemi-<side>_white.surf",
                     "Aims mesh formats",
-                    {"side": "right"}
+                    {"side": "R"}
                 ]
             ],
             "left_labelled_graph": [
@@ -1143,7 +1146,7 @@
                     [
                         "Graph and data"
                     ],
-                    {"side": "left"}
+                    {"side": "L"}
                 ]
             ],
             "right_labelled_graph": [
@@ -1152,7 +1155,7 @@
                     [
                         "Graph and data"
                     ],
-                    {"side": "right"}
+                    {"side": "R"}
                 ]
             ],
             "talairach_transform": [
@@ -1186,7 +1189,9 @@
                         "JSON file"
                     ]
                 ]
-            ]
+            ],
+            "inter_subject_qc_table": [[
+                "output:qc/qc", "TSV file"]]
         },
 
         "CorticalFoldsGraphUpgradeFromOld": {
