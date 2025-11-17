@@ -620,6 +620,6 @@ def execution(self, context):
         from morphologist.qc import global_qc_table
 
         global_qc_table.update_qc_table(
-            {'subject': self.subject, 'bids': self.bids,
+            {'subject': self.subject, 'bids_attributes': self.bids,
              'status': statuses[status]},
             self.inter_subject_qc_table.fullPath())

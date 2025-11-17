@@ -37,7 +37,7 @@ def update_qc_table(statuses, qc_file, prune=False):
                     sel = qc_table[(qc_table.subject == sub)
                                    & (qc_table.bids == bids)]
                     if sel.shape[0] != 0:
-                        qc_table.morpho_qc.iloc[sel.index] = status
+                        qc_table.loc[sel.index, 'morpho_qc'] = status
                         done = True
                 if not done:
                     print('add row')
