@@ -21,7 +21,7 @@ class sulcigraphmorphometrybysubject(Process):
 
 
         # initialization section
-        self.sulci_file = '/volatile/home/dr144257/casa_distro/condadev/brainvisa-6.0/build/share/brainvisa-share-5.2/nomenclature/translation/sulci_default_list.json'
+        self.sulci_file = '/volatile/home/dr144257/brainvisa-sf-master/build/share/brainvisa-share-5.2/nomenclature/translation/sulci_default_list.json'
         self.use_attribute = 'label'
 
     def _run_process(self):

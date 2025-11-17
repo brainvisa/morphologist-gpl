@@ -99,31 +99,34 @@ class morphologistProcess(Process):
         self.add_trait('left_csf', File(allowed_extensions=['.nii.gz', '.dcm', '', '.i', '.v', '.fdf', '.ima', '.dim', '.jpg', '.mnc', '.nii', '.img', '.hdr', '.tiff', '.tif', '.mnc.gz'], output=True))
         self.add_trait('right_csf', File(allowed_extensions=['.nii.gz', '.dcm', '', '.i', '.v', '.fdf', '.ima', '.dim', '.jpg', '.mnc', '.nii', '.img', '.hdr', '.tiff', '.tif', '.mnc.gz'], output=True))
         self.add_trait('subject', Str())
+        self.add_trait('bids', Str())
         self.add_trait('sulci_label_attribute', Str())
         self.add_trait('brain_volumes_file', File(allowed_extensions=['.csv'], output=True))
         self.add_trait('report', File(allowed_extensions=['.pdf'], output=True))
+        self.add_trait('report_json', File(allowed_extensions=['.json'], output=True, optional=True))
+        self.add_trait('inter_subject_qc_table', File(allowed_extensions=['.tsv'], output=True, optional=True))
 
 
         # initialization section
         self.perform_segmentation = True
         self.perform_bias_correction = True
         self.method_ACPC = 'With SPM12 Normalization'
-        self.anatomical_template = '/volatile/local/spm12-standalone/spm12_mcr/spm12/spm12/toolbox/OldNorm/T1.nii'
+        self.anatomical_template = '/volatile/home/dr144257/brainvisa-sf-master/.pixi/envs/default/spm12/spm12_mcr/spm/spm12/toolbox/OldNorm/T1.nii'
         self.tal_to_normalized_transform = []
-        self.anatomical_template_skull_stripped = '/volatile/home/dr144257/casa_distro/condadev/brainvisa-6.0/build/share/brainvisa-share-5.2/anatomical_templates/MNI152_T1_2mm_brain.nii'
-        self.split_template = '/volatile/home/dr144257/casa_distro/condadev/brainvisa-6.0/build/share/brainvisa-share-5.2/hemitemplate/closedvoronoi.ima'
+        self.anatomical_template_skull_stripped = '/volatile/home/dr144257/brainvisa-sf-master/build/share/brainvisa-share-5.2/anatomical_templates/MNI152_T1_2mm_brain.nii'
+        self.split_template = '/volatile/home/dr144257/brainvisa-sf-master/build/share/brainvisa-share-5.2/hemitemplate/closedvoronoi.ima'
         self.perform_meshes_and_graphs = True
         self.perform_sulci_recognition = 'No'
-        self.labels_translation_map = '/volatile/home/dr144257/casa_distro/condadev/brainvisa-6.0/build/share/brainvisa-share-5.2/nomenclature/translation/sulci_model_2008.trl'
-        self.left_model_file = '/volatile/home/dr144257/casa_distro/condadev/brainvisa-6.0/build/share/brainvisa-share-5.2/models/models_2019/cnn_models/sulci_unet_model_left.mdsm'
-        self.left_param_file = '/volatile/home/dr144257/casa_distro/condadev/brainvisa-6.0/build/share/brainvisa-share-5.2/models/models_2019/cnn_models/sulci_unet_model_params_left.json'
-        self.left_global_model = '/volatile/home/dr144257/casa_distro/condadev/brainvisa-6.0/build/share/brainvisa-share-5.2/models/models_2008/descriptive_models/segments/global_registered_spam_left/spam_distribs.dat'
-        self.left_local_model = '/volatile/home/dr144257/casa_distro/condadev/brainvisa-6.0/build/share/brainvisa-share-5.2/models/models_2008/descriptive_models/segments/locally_from_global_registred_spam_left/spam_distribs.dat'
-        self.right_model_file = '/volatile/home/dr144257/casa_distro/condadev/brainvisa-6.0/build/share/brainvisa-share-5.2/models/models_2019/cnn_models/sulci_unet_model_right.mdsm'
-        self.right_param_file = '/volatile/home/dr144257/casa_distro/condadev/brainvisa-6.0/build/share/brainvisa-share-5.2/models/models_2019/cnn_models/sulci_unet_model_params_right.json'
-        self.right_global_model = '/volatile/home/dr144257/casa_distro/condadev/brainvisa-6.0/build/share/brainvisa-share-5.2/models/models_2008/descriptive_models/segments/global_registered_spam_right/spam_distribs.dat'
-        self.right_local_model = '/volatile/home/dr144257/casa_distro/condadev/brainvisa-6.0/build/share/brainvisa-share-5.2/models/models_2008/descriptive_models/segments/locally_from_global_registred_spam_right/spam_distribs.dat'
-        self.sulci_file = '/volatile/home/dr144257/casa_distro/condadev/brainvisa-6.0/build/share/brainvisa-share-5.2/nomenclature/translation/sulci_default_list.json'
+        self.labels_translation_map = '/volatile/home/dr144257/brainvisa-sf-master/build/share/brainvisa-share-5.2/nomenclature/translation/sulci_model_2008.trl'
+        self.left_model_file = '/volatile/home/dr144257/brainvisa-sf-master/build/share/brainvisa-share-5.2/models/models_2019/cnn_models/sulci_unet_model_left.mdsm'
+        self.left_param_file = '/volatile/home/dr144257/brainvisa-sf-master/build/share/brainvisa-share-5.2/models/models_2019/cnn_models/sulci_unet_model_params_left.json'
+        self.left_global_model = '/volatile/home/dr144257/brainvisa-sf-master/build/share/brainvisa-share-5.2/models/models_2008/descriptive_models/segments/global_registered_spam_left/spam_distribs.dat'
+        self.left_local_model = '/volatile/home/dr144257/brainvisa-sf-master/build/share/brainvisa-share-5.2/models/models_2008/descriptive_models/segments/locally_from_global_registred_spam_left/spam_distribs.dat'
+        self.right_model_file = '/volatile/home/dr144257/brainvisa-sf-master/build/share/brainvisa-share-5.2/models/models_2019/cnn_models/sulci_unet_model_right.mdsm'
+        self.right_param_file = '/volatile/home/dr144257/brainvisa-sf-master/build/share/brainvisa-share-5.2/models/models_2019/cnn_models/sulci_unet_model_params_right.json'
+        self.right_global_model = '/volatile/home/dr144257/brainvisa-sf-master/build/share/brainvisa-share-5.2/models/models_2008/descriptive_models/segments/global_registered_spam_right/spam_distribs.dat'
+        self.right_local_model = '/volatile/home/dr144257/brainvisa-sf-master/build/share/brainvisa-share-5.2/models/models_2008/descriptive_models/segments/locally_from_global_registred_spam_right/spam_distribs.dat'
+        self.sulci_file = '/volatile/home/dr144257/brainvisa-sf-master/build/share/brainvisa-share-5.2/nomenclature/translation/sulci_default_list.json'
 
     def _run_process(self):
         from brainvisa import axon

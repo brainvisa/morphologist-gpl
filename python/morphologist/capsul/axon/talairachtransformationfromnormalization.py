@@ -25,7 +25,7 @@ class TalairachTransformationFromNormalization(Process):
 
         # initialization section
         self.transform_chain_ACPC_to_Normalized = []
-        self.acpc_referential = '/volatile/home/dr144257/casa_distro/condadev/brainvisa-6.0/build/share/brainvisa-share-5.2/registration/Talairach-AC_PC-Anatomist.referential'
+        self.acpc_referential = '/volatile/home/dr144257/brainvisa-sf-master/build/share/brainvisa-share-5.2/registration/Talairach-AC_PC-Anatomist.referential'
 
     def _run_process(self):
         from brainvisa import axon

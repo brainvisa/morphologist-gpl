@@ -27,7 +27,9 @@ class morpho_report(Process):
         self.add_trait('normative_brain_stats', File(allowed_extensions=['.json'], optional=True))
         self.add_trait('report', File(allowed_extensions=['.pdf'], output=True))
         self.add_trait('report_json', File(allowed_extensions=['.json'], output=True, optional=True))
+        self.add_trait('inter_subject_qc_table', File(allowed_extensions=['.tsv'], output=True, optional=True))
         self.add_trait('subject', Str())
+        self.add_trait('bids', Str())
 
 
     def _run_process(self):
