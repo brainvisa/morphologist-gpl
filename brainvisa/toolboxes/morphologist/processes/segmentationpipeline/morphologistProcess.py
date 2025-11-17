@@ -235,11 +235,13 @@ signature = Signature(
     'right_csf', WriteDiskItem('Right CSF Mask',
                                'Aims writable volume formats'),
     'subject', String(),
+    'bids', String(),
     'sulci_label_attribute', String(),
     'brain_volumes_file', WriteDiskItem(
         'Brain volumetry measurements', 'CSV file'),
     'report', WriteDiskItem('Morphologist report', 'PDF file'),
     'report_json', WriteDiskItem('Morphologist JSON report', 'JSON file'),
+    'inter_subject_qc_table', WriteDiskItem('QC table', 'TSV file'),
 )
 
 
@@ -283,6 +285,27 @@ def linkSubject(self, proc, dummy):
         subject = self.split_brain.get('subject')
         return subject
 
+def linkBids(self, proc, dummy):
+    if self.split_brain is not None:
+        ses = self.split_brain.get('session')
+        bids = self.split_brain.get('bids')
+        if ses is not None:
+            ses = f'ses-{ses}'
+        else:
+            ses = ''
+        if ses and bids:
+            all_bids = f'{ses}_{bids}'
+        if bids is None:
+            center = self.split_brain.get('center')
+            acq = self.split_brain.get('acquisition')
+            if center is not None and ses:
+                ses = f'_{ses}'
+            if center and acq:
+                all_bids = f'cnt-{center}{ses}_acq-{acq}'
+            elif acq is None:
+                all_bids = f'cnt-{center}{ses}'
+        return all_bids
+
 def linkSulciLabelAtt(self, proc, dummy):
     auto = 'Yes'
     if self.left_labelled_graph is not None:
@@ -315,6 +338,8 @@ def initialization(self):
     self.setOptional('interhemispheric_point')
     self.setOptional('left_hemisphere_point')
     self.setOptional('older_MNI_normalization')
+    self.setOptional('report_json')
+    self.setOptional('inter_subject_qc_table')
 
     self.signature['anterior_commissure'].add3DLink(self, 't1mri')
     self.signature['posterior_commissure'].add3DLink(self, 't1mri')
@@ -545,13 +570,15 @@ def initialization(self):
     self.linkParameters('sulcal_morpho_measures', 'left_labelled_graph')
     self.linkParameters('left_csf', 't1mri')
     self.linkParameters('right_csf', 't1mri')
-    self.linkParameters('subject', 't1mri', self.linkSubject)
+    self.linkParameters('subject', 'split_brain', self.linkSubject)
+    self.linkParameters('bids', 'split_brain', self.linkBids)
     self.linkParameters('sulci_label_attribute',
                         ('left_labelled_graph', 'right_labelled_graph'),
                         self.linkSulciLabelAtt)
     self.linkParameters('brain_volumes_file', 't1mri')
     self.linkParameters('report', 't1mri')
     self.linkParameters('report_json', 'report')
+    self.linkParameters('inter_subject_qc_table', 'report')
 
 
 def execution(self, context):
@@ -898,4 +925,6 @@ def execution(self, context):
                        brain_volumes_file=self.brain_volumes_file,
                        report=self.report,
                        report_json=self.report_json,
-                       subject=self.subject)
+                       inter_subject_qc_table=self.inter_subject_qc_table,
+                       subject=self.subject,
+                       bids=self.bids)

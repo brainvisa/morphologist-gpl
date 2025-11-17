@@ -76,15 +76,24 @@ def initialization(self):
 
     def linkBids(self, proc):
         if self.t1mri is not None:
+            ses = self.t1mri.get('session')
             bids = self.t1mri.get('bids')
+            if ses is not None:
+                ses = f'ses-{ses}'
+            else:
+                ses = ''
+            if ses and bids:
+                all_bids = f'{ses}_{bids}'
             if bids is None:
                 center = self.t1mri.get('center')
-                bids = self.t1mri.get('acquisition')
-                if center and bids:
-                    bids = f'cnt-{center}_{bids}'
-                elif bids is None:
-                    bids = f'cnt-{center}'
-            return bids
+                acq = self.t1mri.get('acquisition')
+                if center is not None and ses:
+                    ses = f'_{ses}'
+                if center and acq:
+                    all_bids = f'cnt-{center}{ses}_acq-{acq}'
+                elif acq is None:
+                    all_bids = f'cnt-{center}{ses}'
+            return all_bids
 
     self.setOptional('left_grey_white', 'right_grey_white',
                      'left_gm_mesh', 'right_gm_mesh',
