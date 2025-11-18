@@ -77,14 +77,14 @@ def morphologist(
         for att, attval in atts.items():
             while len(attval) < len(subjects_atts):
                 attval.append(traits.Undefined)
-        print('atts:', atts)
+        # print('atts:', atts)
         if len(iter_options) != 0:
             for att, val in atts.items():
                 subjects_args += ["-a", f"{att}={repr(val)}"]
         else:
             for att, val in atts.items():
                 subjects_args += ["-a", f"{att}=\"{val[0]}\""]
-    print('subjects_args:', subjects_args)
+    # print('subjects_args:', subjects_args)
 
     # if iterations are involved, disable any in-process multithreading
     # in order to contain the CPU usage, unless it is forced in user-specified
@@ -168,7 +168,7 @@ def parse_bids_input_dir(input_directory, subjects=None):
                 if attribs:
                     slist.append(attribs)
                     mris.append(os.path.join(p[0], f))
-    print('to be processed:', slist)
+    # print('to be processed:', slist)
     return mris, slist
 
 
@@ -191,6 +191,20 @@ Such options are separated by a "--". Ex:
 morphologist-cli input_dir output_dir -s subject01 subject02 subject03 -- --swf
 
 in this example, --swf specifies the use of Soma-Workflow to distribute processing across the cores of the local machine (which is recommended).
+
+Running part of the pipeline:
+
+Morphologist defines steps that can be enabled or disabled. The capsul commandline now has an easy syntax to specify them. Ex:
+
+morphologist-cli input_dir output_dir -s subject01 subject02 subject03 -- pipeline_steps="brain_extraction, head_mesh-, sulci_labelling=False"
+
+will do brain_extraction, then all steps from head_mesh, except sulci_labelling which is disabled.
+
+The list (ordered) of supported steps are:
+    importation, orientation, bias_correction, histogram_analysis,
+    brain_extraction, renormalization, hemispheres_split, head_mesh,
+    grey_white_segmentation, white_mesh, pial_mesh, sulci, sulci_labelling,
+    sulcal_morphometry.
 """
 
 
