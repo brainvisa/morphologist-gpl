@@ -2,22 +2,20 @@
 from brainvisa.processes import *
 import os.path as osp
 import json
+import numpy as np
 try:
-    import reportlab
     from reportlab.pdfgen import canvas
-    from reportlab.pdfbase import pdfmetrics
-    from reportlab.pdfbase.ttfonts import TTFont
+    # from reportlab.pdfbase import pdfmetrics
+    # from reportlab.pdfbase.ttfonts import TTFont
     from brainvisa import anatomist
     from anatomist import cpp as anacpp
     import csv
     import PIL
     from PIL import ImageDraw
-    import numpy as np
 except ImportError:
     pass
 
 def validation():
-    import reportlab
     from reportlab import pdfgen, platypus
     from brainvisa import anatomist
     import csv
@@ -352,6 +350,7 @@ def execution(self, context):
     morph = []
     morph_z = []
     norm_stat = {}
+    morph_hdr = None
     n_quant = None
     if self.brain_volumes_file is not None \
             and osp.exists(self.brain_volumes_file.fullPath()):
@@ -428,46 +427,76 @@ def execution(self, context):
         #print('n_quant:', n_quant.shape)
     #if morph_z:
         #print('morph_z:', len(morph_z))
-    for i, (k, tk) in enumerate(keymap.items()):
-        missing = False
-        z = None
-        unit = None
-        try:
-            j = morph_hdr.index(k)
-            val = morph[0][j]
-            v = str(round(val, 2))
-            unit = units.get(k)
-            if morph_z:
-                z = morph_z[j]
-                zvals[i] = z
-                if n_quant is not None:
-                    q = n_quant[:, col_ord[j]]
-                    # print(q)
-                    # add 3 values at each extrema
-                    # and remove extrema (0, 100% qantiles)
-                    q = np.hstack((np.zeros((3, )), q[1: -1], np.zeros((3, ))))
-                    qv1 = quantiles[1][col_ord[j]]
-                    qv99 = quantiles[-2][col_ord[j]]
-                    if k == 'log_ratio.skel_points' and (val <= qv1 * 1.6
-                                                         or val >= qv99 * 1.6):
-                        # problem detection from the skel log ratio:
-                        # use hard-coded empirical values
-                        # origin: if value exceeds quantile(1%)) * 1.6
-                        # qv1_6 = qv1 * 1.6
-                        # qv99_6 = qv99 * 1.6
-                        qv1_susp = skel_asym_low[0]
-                        qv99_susp = skel_asym_high[0]
-                        qv1_bad = skel_asym_low[1]
-                        qv99_bad = skel_asym_high[1]
-                        q[2] = (qv1_susp - avg[j - 1]) / std[j - 1]
-                        q[-3] = (qv99_susp - avg[j - 1]) / std[j - 1]
-                        q[1] = (qv1_bad - avg[j - 1]) / std[j - 1]
-                        q[-2] = (qv99_bad - avg[j - 1]) / std[j - 1]
-                        if val <= qv1:
-                            q[0] = z
-                        else:
-                            q[-1] = z
-                        if val <= qv1_bad or val >= qv99_bad:
+    if morph_hdr is not None:
+        for i, (k, tk) in enumerate(keymap.items()):
+            missing = False
+            z = None
+            unit = None
+            try:
+                j = morph_hdr.index(k)
+                val = morph[0][j]
+                v = str(round(val, 2))
+                unit = units.get(k)
+                if morph_z:
+                    z = morph_z[j]
+                    zvals[i] = z
+                    if n_quant is not None:
+                        q = n_quant[:, col_ord[j]]
+                        # print(q)
+                        # add 3 values at each extrema
+                        # and remove extrema (0, 100% qantiles)
+                        q = np.hstack((np.zeros((3, )), q[1: -1],
+                                       np.zeros((3, ))))
+                        qv1 = quantiles[1][col_ord[j]]
+                        qv99 = quantiles[-2][col_ord[j]]
+                        if k == 'log_ratio.skel_points' \
+                                and (val <= qv1 * 1.6 or val >= qv99 * 1.6):
+                            # problem detection from the skel log ratio:
+                            # use hard-coded empirical values
+                            # origin: if value exceeds quantile(1%)) * 1.6
+                            # qv1_6 = qv1 * 1.6
+                            # qv99_6 = qv99 * 1.6
+                            qv1_susp = skel_asym_low[0]
+                            qv99_susp = skel_asym_high[0]
+                            qv1_bad = skel_asym_low[1]
+                            qv99_bad = skel_asym_high[1]
+                            q[2] = (qv1_susp - avg[j - 1]) / std[j - 1]
+                            q[-3] = (qv99_susp - avg[j - 1]) / std[j - 1]
+                            q[1] = (qv1_bad - avg[j - 1]) / std[j - 1]
+                            q[-2] = (qv99_bad - avg[j - 1]) / std[j - 1]
+                            if val <= qv1:
+                                q[0] = z
+                            else:
+                                q[-1] = z
+                            if val <= qv1_bad or val >= qv99_bad:
+                                # segmentation problem almost certain
+                                status = np.max((3, status))
+                                comments += [
+                                    'Probable segmentation problem or '
+                                    'important anomaly:',
+                                    '      large asymmetry in folds sizes.']
+                            else:
+                                # suspected segmentation problem
+                                status = np.max((2, status))
+                                comments += [
+                                    'Possible segmentation problem or '
+                                    'important anomaly:',
+                                    '      large asymmetry in folds sizes.']
+                        elif val <= qv1 or val >= qv99:
+                            if val <= qv1:
+                                q[2] = z
+                            else:
+                                q[-3] = z
+                            status = np.max((1, status))
+                            comments.append(
+                                f'Possible problem: {tk} out of 1-99% '
+                                'percentile.')
+                        quants[i] = q
+                else:  # no normative stats
+                    if k == 'log_ratio.skel_points' \
+                            and (val <= skel_asym_low[0]
+                                or val >= skel_asym_high[0]):
+                        if val <= skel_asym_low[1] or val >= skel_asym_high[1]:
                             # segmentation problem almost certain
                             status = np.max((3, status))
                             comments += [
@@ -481,57 +510,29 @@ def execution(self, context):
                                 'Possible segmentation problem or important '
                                 'anomaly:',
                                 '      large asymmetry in folds sizes.']
-                    elif val <= qv1 or val >= qv99:
-                        if val <= qv1:
-                            q[2] = z
-                        else:
-                            q[-3] = z
-                        status = np.max((1, status))
-                        comments.append(
-                            f'Possible problem: {tk} out of 1-99% percentile.')
-                    quants[i] = q
-            else:  # no normative stats
-                if k == 'log_ratio.skel_points' \
-                        and (val <= skel_asym_low[0]
-                             or val >= skel_asym_high[0]):
-                    if val <= skel_asym_low[1] or val >= skel_asym_high[1]:
-                        # segmentation problem almost certain
-                        status = np.max((3, status))
-                        comments += [
-                            'Probable segmentation problem or important '
-                            'anomaly:',
-                            '      large asymmetry in folds sizes.']
-                    else:
-                        # suspected segmentation problem
-                        status = np.max((2, status))
-                        comments += [
-                            'Possible segmentation problem or important '
-                            'anomaly:',
-                            '      large asymmetry in folds sizes.']
-        except Exception as e:
-            context.write(e)
-            raise
-            v = '<MISSING>'
-            status = 3
-            comments.append('missing stat')
-            unit = None
-            missing = True
-        h = 530 - i * 12
-        pdf.drawString(30, h, '%s:' % tk)
-        if missing:
-            pdf.setFillColorRGB(0.6, 0., 0.)
-        elif z is not None:
-            pdf.drawRightString(270, h, '%+1.2f σ' % z)
-        pdf.drawRightString(200, h, v)
-        if unit is not None:
-            pdf.setFontSize(8)
-            pdf.drawString(210, h, unit)
-            pdf.setFontSize(10)
-        if missing:
-            pdf.setFillColorRGB(0., 0., 0.)
+            except Exception as e:
+                context.write(e)
+                raise
+                v = '<MISSING>'
+                status = 3
+                comments.append('missing stat')
+                unit = None
+                missing = True
+            h = 530 - i * 12
+            pdf.drawString(30, h, '%s:' % tk)
+            if missing:
+                pdf.setFillColorRGB(0.6, 0., 0.)
+            elif z is not None:
+                pdf.drawRightString(270, h, '%+1.2f σ' % z)
+            pdf.drawRightString(200, h, v)
+            if unit is not None:
+                pdf.setFontSize(8)
+                pdf.drawString(210, h, unit)
+                pdf.setFontSize(10)
+            if missing:
+                pdf.setFillColorRGB(0., 0., 0.)
 
     if morph_z:
-        import matplotlib
         import matplotlib.pyplot as plt
 
         fig, ax = plt.subplots()
@@ -616,9 +617,15 @@ def execution(self, context):
     pdf.drawString(100, 350, statuses[status])
     pdf.setFillColorRGB(0., 0., 0.)
     pdf.setFont('Helvetica', 10)
+    y = 330
+    if morph_z:
+        pdf.drawString(
+            30, 330,
+            f'normative reference: {osp.basename(osp.dirname(self.normative_brain_stats.fullName()))}')
+        y += 20
     if comments:
         for i, c in enumerate(comments):
-            pdf.drawString(30, 330 - 12 * i, c)
+            pdf.drawString(30, y - 12 * i, c)
 
     pdf.save()
 
