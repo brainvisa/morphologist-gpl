@@ -75,9 +75,12 @@ def initialization(self):
             return subject
 
     def linkBids(self, proc):
-        if self.t1mri is not None:
-            ses = self.t1mri.get('session')
-            bids = self.t1mri.get('bids')
+        item = self.left_labelled_graph
+        if item is None:
+            item = self.t1mri
+        if item is not None:
+            ses = item.get('session')
+            bids = item.get('bids')
             if ses is not None:
                 ses = f'ses-{ses}'
             else:
@@ -85,15 +88,25 @@ def initialization(self):
             if ses and bids:
                 all_bids = f'{ses}_{bids}'
             if bids is None:
-                center = self.t1mri.get('center')
-                acq = self.t1mri.get('acquisition')
+                center = item.get('center')
+                acq = item.get('acquisition')
                 if center is not None and ses:
                     ses = f'_{ses}'
                 if center and acq:
                     all_bids = f'cnt-{center}{ses}_acq-{acq}'
                 elif acq is None:
                     all_bids = f'cnt-{center}{ses}'
+            sulc = item.get('sulci_recognition_session')
+            if sulc is not None:
+                all_bids = f'{all_bids}_sul-{sulc}'
             return all_bids
+
+    def linkReport(self, proc):
+        item = self.left_labelled_graph
+        if item is None:
+            item = self.t1mri
+        if item is not None:
+            return self.signature['report'].findValue(item)
 
     self.setOptional('left_grey_white', 'right_grey_white',
                      'left_gm_mesh', 'right_gm_mesh',
@@ -103,7 +116,7 @@ def initialization(self):
                      'talairach_transform', 'report_json',
                      'inter_subject_qc_table')
     self.linkParameters('subject', 't1mri', linkSubject)
-    self.linkParameters('bids', 't1mri', linkBids)
+    self.linkParameters('bids', ('t1mri', 'left_labelled_graph'), linkBids)
     self.linkParameters('left_grey_white', 't1mri')
     self.linkParameters('right_grey_white', 't1mri')
     self.linkParameters('left_gm_mesh', 't1mri')
@@ -111,10 +124,10 @@ def initialization(self):
     self.linkParameters('left_wm_mesh', 't1mri')
     self.linkParameters('right_wm_mesh', 't1mri')
     self.linkParameters('left_labelled_graph', 't1mri')
-    self.linkParameters('right_labelled_graph', 't1mri')
+    self.linkParameters('right_labelled_graph', 'left_labelled_graph')
     self.linkParameters('talairach_transform', 't1mri')
     self.linkParameters('brain_volumes_file', 't1mri')
-    self.linkParameters('report', 't1mri')
+    self.linkParameters('report', ('t1mri', 'left_labelled_graph'), linkReport)
     self.linkParameters('report_json', 'report')
     self.linkParameters('inter_subject_qc_table', 'report_json')
     # self.linkParameters('normative_brain_stats', 't1mri')

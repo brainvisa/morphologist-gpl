@@ -294,19 +294,25 @@
               [["output:{seg}/{sub}_hemi-<side>_csf","images",{"side":"L"}]],
           "right_csf":
               [["output:{seg}/{sub}_hemi-<side>_csf","images",{"side":"R"}]],
-          "brain_volumes_file":
-              [["output:{seg}/{sub}_brain_volumes","CSV file"]],
+          "brain_volumes_file": [
+                ["output:{seg}/{sub}_sul-<sulci_recognition_session>_brain_volumes", "CSV file"],
+                ["output:{seg}/{sub}_brain_volumes", "CSV file"]
+          ],
           "subject": [["none:<subject>", "no ext"]],
         },
         "Morphologist.Report": {
-          "report":
-              [["output:{analysis}/{sub}_morphologist_report","PDF File"]],
-          "report_json":
-              [["output:{analysis}/{sub}_morphologist_report","JSON file"]],
+          "report":[
+                ["output:{analysis}/{sub}_sul-<sulci_recognition_session>_morphologist_report", "PDF File"],
+                ["output:{analysis}/{sub}_morphologist_report", "PDF File"]
+          ],
+          "report_json":[
+                ["output:{analysis}/{sub}_sul-<sulci_recognition_session>_morphologist_report", "JSON file"],
+                ["output:{analysis}/{sub}_morphologist_report", "JSON file"],
+          ],
           "inter_subject_qc_table":
               [["output:qc/qc","TSV file"]],
           "subject": [["none:<subject>", "no ext"]],
-          "bids": [["none:<bids>", "no ext"]]
+          "bids": [["none:<bids>_sul-<sulci_recognition_session>", "no ext"]]
         },
         "Morphologist.PrepareSubject.StandardACPC": {
             "older_MNI_normalization": [

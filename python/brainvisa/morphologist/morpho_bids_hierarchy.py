@@ -107,8 +107,7 @@ def segmentation_content():
             'Left Cortex Catchment Bassins'), SetWeakAttr('side', 'left'),
         f"{sub}_hemi-R_roots", SetType(
             'Right Cortex Catchment Bassins'), SetWeakAttr('side', 'right'),
-        f"{sub}_voronoi", SetType(
-            'Split Brain Mask'), SetWeakAttr('side', 'both'),
+        f"{sub}_voronoi", SetType('Split Brain Mask'),
         f"{sub}_head", SetType('Head Mask'),
         f"{sub}_hemi-L_white_curv.shape", SetType(
             'White Curvature Texture'), SetWeakAttr('side', 'left'),
@@ -131,6 +130,8 @@ def segmentation_content():
         f"{sub}_lesiondistance", SetType('Lesion distance map'),
         f"{sub}_corpus_callosum_mask", SetType('Corpus Callosum mask'),
         f"{sub}_ventricles", SetType('Ventricles Mask'),
+        f"{sub}_sul-{{sulci_recognition_session}}_brain_volumes",
+        SetType('Brain volumetry measurements'),
         f"{sub}_brain_volumes", SetType('Brain volumetry measurements'),
     )
 
@@ -275,7 +276,11 @@ def t1mri_acq_content():
         SetDefaultAttributeValue('analysis', default_analysis),
         SetNonMandatoryKeyAttribute('analysis'),
         SetContent(  # processing results in analysis
+            f'{sub}_sul-{{sulci_recognition_session}}_morphologist_report',
+            SetType('Morphologist report'),
             f'{sub}_morphologist_report', SetType('Morphologist report'),
+            f'{sub}_sul-{{sulci_recognition_session}}_morphologist_report',
+            SetType('Morphologist JSON report'),
             f'{sub}_morphologist_report', SetType('Morphologist JSON report'),
 
             'segmentation', SetContent(*segmentation_content()),

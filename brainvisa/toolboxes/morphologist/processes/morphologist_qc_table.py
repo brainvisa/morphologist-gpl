@@ -53,7 +53,7 @@ def initialization(self):
 
     self.setOptional('data_filters', 'acquisition', 'analysis',
                      'graph_version', 'bids', 'output_file')
-    self.keys = ['subject', 'bids', 'acquisition']
+    self.keys = ['subject', 'bids', 'acquisition', 'sulci_recognition_session']
 
 
 def execution(self, context):

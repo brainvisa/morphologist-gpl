@@ -93,6 +93,15 @@ def initialization(self):
                                                  'Yes')
         return {'Yes': 'label', 'No': 'name'}.get(auto, 'label')
 
+    def linkBrainVolumes(self, proc):
+        if self.left_labelled_graph is not None:
+            return self.signature['brain_volumes_file'].findValue(
+                self.left_labelled_graph)
+        if self.split_brain is not None:
+            return self.signature['brain_volumes_file'].findValue(
+                self.split_brain)
+        return None
+
     self.sulci_label_attribute = 'label'
     self.setOptional('left_labelled_graph', 'right_labelled_graph',
                      'left_gm_mesh', 'right_gm_mesh',
@@ -102,9 +111,11 @@ def initialization(self):
     self.linkParameters('right_grey_white', 'split_brain')
     self.linkParameters('left_csf', 'split_brain')
     self.linkParameters('right_csf', 'split_brain')
-    self.linkParameters('brain_volumes_file', 'split_brain')
     self.linkParameters('left_labelled_graph', 'split_brain')
-    self.linkParameters('right_labelled_graph', 'split_brain')
+    self.linkParameters('right_labelled_graph', 'left_labelled_graph')
+    self.linkParameters('brain_volumes_file',
+                        ('left_labelled_graph', 'split_brain'),
+                        linkBrainVolumes)
     self.linkParameters('left_gm_mesh', 'split_brain')
     self.linkParameters('right_gm_mesh', 'split_brain')
     self.linkParameters('left_wm_mesh', 'split_brain')
