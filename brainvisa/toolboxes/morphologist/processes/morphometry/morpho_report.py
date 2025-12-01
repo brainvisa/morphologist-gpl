@@ -62,7 +62,7 @@ signature = Signature(
 capsul_param_options = {
     'subject': ['dataset="output"'],
     'bids': ['dataset="output"'],
-    'normative_brain_stats': ['dataset=None'],
+    'normative_brain_stats': ['dataset="shared"'],
 }
 
 
@@ -128,7 +128,8 @@ def initialization(self):
     self.linkParameters('report', ('t1mri', 'left_labelled_graph'), linkReport)
     self.linkParameters('report_json', 'report')
     self.linkParameters('inter_subject_qc_table', 'report_json')
-    # self.linkParameters('normative_brain_stats', 't1mri')
+    self.normative_brain_stats = self.signature[
+        'normative_brain_stats'].findValue({})
 
 
 def execution(self, context):

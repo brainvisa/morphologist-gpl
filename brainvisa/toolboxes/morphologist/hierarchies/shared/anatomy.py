@@ -35,3 +35,15 @@ include('base')
 insert('hemitemplate',
        "closed*", SetType("Hemispheres Template"),
        )
+
+insert('normative_tables/morphologist',
+       'ukb_hcp', SetContent(
+              'morphologist_normative_brain_volumes_stats',
+              SetType('Normative brain volumes stats'),
+              SetPriorityOffset(+1),
+       ),
+       '*', SetContent(
+              'morphologist_normative_brain_volumes_stats',
+              SetType('Normative brain volumes stats'),
+       )
+)
