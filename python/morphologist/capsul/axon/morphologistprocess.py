@@ -102,6 +102,7 @@ class morphologistProcess(Process):
         self.add_trait('bids', Str())
         self.add_trait('sulci_label_attribute', Str())
         self.add_trait('brain_volumes_file', File(allowed_extensions=['.csv'], output=True))
+        self.add_trait('normative_brain_stats', File(allowed_extensions=['.json'], optional=True))
         self.add_trait('report', File(allowed_extensions=['.pdf'], output=True))
         self.add_trait('report_json', File(allowed_extensions=['.json'], output=True, optional=True))
         self.add_trait('inter_subject_qc_table', File(allowed_extensions=['.tsv'], output=True, optional=True))
@@ -127,6 +128,7 @@ class morphologistProcess(Process):
         self.right_global_model = '/volatile/home/dr144257/brainvisa-sf-master/build/share/brainvisa-share-5.2/models/models_2008/descriptive_models/segments/global_registered_spam_right/spam_distribs.dat'
         self.right_local_model = '/volatile/home/dr144257/brainvisa-sf-master/build/share/brainvisa-share-5.2/models/models_2008/descriptive_models/segments/locally_from_global_registred_spam_right/spam_distribs.dat'
         self.sulci_file = '/volatile/home/dr144257/brainvisa-sf-master/build/share/brainvisa-share-5.2/nomenclature/translation/sulci_default_list.json'
+        self.normative_brain_stats = '/volatile/home/dr144257/brainvisa-sf-master/build/share/brainvisa-share-5.2/normative_tables/morphologist/ukb_hcp/morphologist_normative_brain_volumes_stats.json'
 
     def _run_process(self):
         from brainvisa import axon

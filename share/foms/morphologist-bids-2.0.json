@@ -302,11 +302,11 @@
         },
         "Morphologist.Report": {
           "normative_brain_stats": "{shared.normative_brain_volumes_file}",
-          "report":[
+          "report": [
                 ["output:{analysis}/{sub}_sul-<sulci_recognition_session>_morphologist_report", "PDF File"],
                 ["output:{analysis}/{sub}_morphologist_report", "PDF File"]
           ],
-          "report_json":[
+          "report_json": [
                 ["output:{analysis}/{sub}_sul-<sulci_recognition_session>_morphologist_report", "JSON file"],
                 ["output:{analysis}/{sub}_morphologist_report", "JSON file"],
           ],
@@ -1240,7 +1240,607 @@
                 "Aims writable volume formats"],
                 ["output:{fold}/{sub}_hemi-<side>_gw_interface",
                  "Aims writable volume formats"]]
-        }
+        },
+
+        "MorphologistSimple": {
+            "t1mri": [
+                [
+                    "output:{acquisition}/{sub}_desc-conform_T1w",
+                    "Aims readable volume formats"
+                ]
+            ],
+            "commissure_coordinates": [
+                [
+                    "output:{acquisition}/{sub}",
+                    [
+                        "Commissure coordinates"
+                    ]
+                ]
+            ],
+            "older_MNI_normalization": [
+                [
+                    "input:{reg}/{sub}_T1w_TO_MNI152",
+                    [
+                        "Transformation matrix"
+                    ]
+                ]
+            ],
+            "job_file": [
+                [
+                    "output:{acquisition}/{sub}_job_anat_normalization",
+                    [
+                        "Matlab file"
+                    ]
+                ]
+            ],
+            "transformations_information": [["output:{acquisition}/{sub}_sn_pass1", "Matlab file"]],
+            "normalized_t1mri": [
+                [
+                    "output:{acquisition}/{sub}_normalized_<normalization>",
+                    [
+                        "NIFTI-1 image",
+                        "SPM image"
+                    ],
+                    {
+                        "normalization": "SPM"
+                    }
+                ]
+            ],
+            "talairach_MNI_transform": [
+                [
+                    "output:{reg}/{sub}_T1w_TO_MNI152",
+                    [
+                        "Transformation matrix"
+                    ]
+                ]
+            ],
+            "source_referential": [
+                [
+                    "output:{reg}/{sub}_T1w",
+                    [
+                        "Referential"
+                    ]
+                ]
+            ],
+            "normalized_referential": [
+                [
+                    "shared:registration/Talairach-MNI_template-SPM",
+                    [
+                        "Referential"
+                    ]
+                ]
+            ],
+            "tal_to_normalized_transform": "{shared.talairach_TO_spm_transform}",
+            "t1mri_nobias":  [
+                [
+                    "output:{seg}/{sub}_nobias",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "hfiltered": [
+                [
+                    "output:{seg}/{sub}_hfiltered",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "white_ridges": [
+                [
+                    "output:{seg}/{sub}_whiteridge",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "variance": [
+                [
+                    "output:{seg}/{sub}_variance",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "edges": [
+                [
+                    "output:{seg}/{sub}_edges",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "field": [
+                [
+                    "output:{seg}/{sub}_biasfield",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "meancurvature": [
+                [
+                    "output:{seg}/{sub}_mean_curvature",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "histo_analysis": [
+                [
+                    "output:{seg}/{sub}_nobias",
+                    [
+                        "Histo Analysis"
+                    ]
+                ]
+            ],
+            "histo": [
+                [
+                    "output:{seg}/{sub}_nobias",
+                    [
+                        "Histogram"
+                    ]
+                ]
+            ],
+            "brain_mask": [
+                [
+                    "output:{seg}/{sub}_brain",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "skull_stripped": [
+                [
+                    "output:{seg}/{sub}_skull_stripped",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "anatomical_template": "{shared.anatomical_template_t1}",
+            "anatomical_template_skull_stripped": "{shared.anatomical_template_t1_skull_stripped}",
+            "split_brain": [
+                [
+                    "output:{seg}/{sub}_voronoi",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "split_template": [
+                [
+                    "shared:hemitemplate/closedvoronoi",
+                    [
+                        "GIS image",
+                    ]
+                ]
+            ],
+            "talairach_ACPC_transform": [
+                [
+                    "output:{reg}/{sub}_T1w_TO_Talairach-ACPC",
+                    [
+                        "Transformation matrix"
+                    ]
+                ]
+            ],
+            "left_grey_white": [
+                [
+                    "input:{seg}/{sub}_hemi-<side>_grey_white",
+                    "Aims readable volume formats",
+                    {"side": "L"}
+                ]
+            ],
+            "right_grey_white": [
+                [
+                    "input:{seg}/{sub}_hemi-<side>_grey_white",
+                    "Aims readable volume formats",
+                    {"side": "R"}
+                ]
+            ],
+            "left_hemi_cortex": [
+                [
+                    "output:{seg}/{sub}_hemi-<side>_cortex",
+                    "Aims writable volume formats",
+                    {"side": "L"}
+                ]
+            ],
+            "right_hemi_cortex": [
+                [
+                    "output:{seg}/{sub}_hemi-<side>_cortex",
+                    "Aims writable volume formats",
+                    {"side": "R"}
+                ]
+            ],
+            "left_white_mesh": [
+                [
+                    "output:{mesh}/{sub}_hemi-<side>_white.surf",
+                    "Aims mesh formats",
+                    {"side": "L"}
+                ]
+            ],
+            "right_white_mesh": [
+                [
+                    "output:{mesh}/{sub}_hemi-<side>_white.surf",
+                    "Aims mesh formats",
+                    {"side": "R"}
+                ]
+            ],
+            "left_skeleton": [
+                [
+                    "output:{seg}/{sub}_hemi-<side>_skeleton",
+                    "Aims writable volume formats",
+                    {"side": "L"}
+                ]
+            ],
+            "left_roots": [
+                [
+                    "output:{seg}/{sub}_hemi-<side>_roots",
+                    "Aims writable volume formats",
+                    {"side": "L"}
+                ]
+            ],
+            "right_skeleton": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/Rskeleton_<subject>",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "right_roots": [
+                [
+                    "output:{seg}/{sub}_hemi-<side>_roots",
+                    "Aims writable volume formats",
+                    {"side": "R"}
+                ]
+            ],
+            "left_pial_mesh": [
+                [
+                    "output:{mesh}/{sub}_hemi-<side>_pial.surf",
+                    "Aims mesh formats",
+                    {"side": "L"}
+                ]
+            ],
+            "right_pial_mesh": [
+                [
+                    "output:{mesh}/{sub}_hemi-<side>_pial.surf",
+                    "Aims mesh formats",
+                    {"side": "R"}
+                ]
+            ],
+            "left_graph": [
+                [
+                    "output:{fold}/{sub}_hemi-<side>",
+                    [
+                        "Graph and data"
+                    ],
+                    {"side": "L"}
+                ]
+            ],
+            "left_sulci_voronoi": [
+                [
+                    "output:{fold}/{sub}_hemi-<side>_sulcivoronoi",
+                    "Aims writable volume formats",
+                    {"side": "L"}
+                ]
+            ],
+            "left_cortex_mid_interface": [
+                [
+                    "output:{seg}/{sub}_hemi-<side>_gw_interface",
+                    "Aims writable volume formats",
+                    {"side": "L"}
+                ]
+            ],
+            "right_graph": [
+                [
+                    "output:{fold}/{sub}_hemi-<side>",
+                    [
+                        "Graph and data"
+                    ],
+                    {"side": "R"}
+                ]
+            ],
+            "right_sulci_voronoi": [
+                [
+                    "output:{fold}/{sub}_hemi-<side>_sulcivoronoi",
+                    "Aims writable volume formats",
+                    {"side": "R"}
+                ]
+            ],
+            "right_cortex_mid_interface": [
+                [
+                    "output:{seg}/{sub}_hemi-<side>_gw_interface",
+                    "Aims writable volume formats",
+                    {"side": "R"}
+                ]
+            ],
+            "labels_translation_map": [
+                [
+                    "shared:nomenclature/translation/sulci_model_2008",
+                    [
+                        "Label Translation",
+                        "DEF Label Translation"
+                    ]
+                ]
+            ],
+            "left_labelled_graph": [
+                [
+                    "output:{foldauto}/{fautosub}_hemi-<side>_auto",
+                    [
+                        "Graph and data"
+                    ],
+                    {"side": "L"}
+                ]
+            ],
+            "left_model_file": [["shared:models/models_2019/cnn_models/sulci_unet_model_left",
+                 "Deep model file", {"side": "L"}]],
+            "left_param_file": [["shared:models/models_2019/cnn_models/sulci_unet_model_params_left",
+                 "JSON file", {"side": "L"}]],
+            "left_posterior_probabilities": [
+                [
+                    "output:{foldauto}/{fautosub}_hemi-<side>_auto_proba",
+                    [
+                        "CSV file"
+                    ],
+                    {"side": "L"}
+                ]
+            ],
+            "left_labels_priors": [
+                [
+                    "shared:models/models_<sulci_database>/descriptive_models/labels_priors/frequency_segments_priors_left/frequency_segments_priors",
+                    [
+                        "Text Data Table"
+                    ],
+                    {
+                        "sulci_database": "2008",
+                        "side": "L"
+                    }
+                ]
+            ],
+            "left_global_model": [
+                [
+                    "shared:models/models_<sulci_database>/descriptive_models/segments/<sulci_segments_model_type>_left/spam_distribs",
+                    [
+                        "Text Data Table"
+                    ],
+                    {
+                        "sulci_segments_model_type": "global_registered_spam",
+                        "sulci_database": "2008"
+                    }
+                ]
+            ],
+            "left_tal_to_global_transform": [
+                [
+                    "output:{foldauto}/{fautosub}_hemi-<side>_auto_Tal_TO_SPAM",
+                    [
+                        "Transformation matrix"
+                    ],
+                    {"side": "L"}
+                ]
+            ],
+            "left_t1_to_global_transform": [
+                [
+                    "output:{foldauto}/{fautosub}_hemi-<side>_auto_T1_TO_SPAM",
+                    [
+                        "Transformation matrix"
+                    ],
+                    {"side": "L"}
+                ]
+            ],
+            "left_local_model": [
+                [
+                    "shared:models/models_<sulci_database>/descriptive_models/segments/<sulci_segments_model_type>_left/spam_distribs",
+                    [
+                        "Text Data Table"
+                    ],
+                    {
+                        "sulci_segments_model_type": "locally_from_global_registred_spam",
+                        "sulci_database": "2008"
+                    }
+                ]
+            ],
+            "left_local_referentials": [
+                [
+                    "shared:models/models_<sulci_database>/descriptive_models/segments/<sulci_segments_model_type>_left/local_referentials",
+                    [
+                        "Text Data Table"
+                    ],
+                    {
+                        "sulci_segments_model_type": "locally_from_global_registred_spam",
+                        "sulci_database": "2008"
+                    }
+                ]
+            ],
+            "left_direction_priors": [
+                [
+                    "shared:models/models_<sulci_database>/descriptive_models/segments/<sulci_segments_model_type>_left/bingham_direction_trm_priors",
+                    [
+                        "Text Data Table"
+                    ],
+                    {
+                        "sulci_segments_model_type": "locally_from_global_registred_spam",
+                        "sulci_database": "2008"
+                    }
+                ]
+            ],
+            "left_angle_priors": [
+                [
+                    "shared:models/models_<sulci_database>/descriptive_models/segments/<sulci_segments_model_type>_left/vonmises_angle_trm_priors",
+                    [
+                        "Text Data Table"
+                    ],
+                    {
+                        "sulci_segments_model_type": "locally_from_global_registred_spam",
+                        "sulci_database": "2008"
+                    }
+                ]
+            ],
+            "left_translation_priors": [
+                [
+                    "shared:models/models_<sulci_database>/descriptive_models/segments/<sulci_segments_model_type>_left/gaussian_translation_trm_priors",
+                    [
+                        "Text Data Table"
+                    ],
+                    {
+                        "sulci_segments_model_type": "locally_from_global_registred_spam",
+                        "sulci_database": "2008"
+                    }
+                ]
+            ],
+            "left_global_to_local_transforms": [
+                [
+                    "output:{foldauto}/{fautosub}_hemi-<side>_auto_global_TO_local",
+                    [
+                        "Directory"
+                    ],
+                    {"side": "R"}
+                ]
+            ],
+            "right_labelled_graph": [
+                [
+                    "output:{foldauto}/{fautosub}_hemi-<side>_auto",
+                    [
+                        "Graph and data"
+                    ],
+                    {"side": "R"}
+                ]
+            ],
+            "right_model_file": [["shared:models/models_2019/cnn_models/sulci_unet_model_right",
+                 "Deep model file", {"side": "R"}]],
+            "right_param_file": [["shared:models/models_2019/cnn_models/sulci_unet_model_params_right",
+                 "JSON file", {"side": "R"}]],
+            "right_posterior_probabilities": [
+                [
+                    "output:{foldauto}/{fautosub}_hemi-<side>_auto_proba",
+                    [
+                        "CSV file"
+                    ],
+                    {"side": "R"}
+                ]
+            ],
+            "right_labels_priors": [
+                [
+                    "shared:models/models_<sulci_database>/descriptive_models/labels_priors/frequency_segments_priors_<side>/frequency_segments_priors",
+                    [
+                        "Text Data Table"
+                    ],
+                    {
+                        "side": "right",
+                        "sulci_database": "2008"
+                    }
+                ]
+            ],
+            "right_global_model": [
+                [
+                    "shared:models/models_<sulci_database>/descriptive_models/segments/<sulci_segments_model_type>_right/spam_distribs",
+                    [
+                        "Text Data Table"
+                    ],
+                    {
+                        "sulci_segments_model_type": "global_registered_spam",
+                        "sulci_database": "2008"
+                    }
+                ]
+            ],
+            "right_tal_to_global_transform": [
+                [
+                    "output:{foldauto}/{fautosub}_hemi-<side>_auto_Tal_TO_SPAM",
+                    [
+                        "Transformation matrix"
+                    ],
+                    {"side": "R"}
+                ]
+            ],
+            "right_t1_to_global_transform": [
+                [
+                    "output:{foldauto}/{fautosub}_hemi-<side>_auto_T1_TO_SPAM",
+                    [
+                        "Transformation matrix"
+                    ],
+                    {"side": "R"}
+                ]
+            ],
+            "right_local_model": [
+                [
+                    "shared:models/models_<sulci_database>/descriptive_models/segments/<sulci_segments_model_type>_right/spam_distribs",
+                    [
+                        "Text Data Table"
+                    ],
+                    {
+                        "sulci_segments_model_type": "locally_from_global_registred_spam",
+                        "sulci_database": "2008"
+                    }
+                ]
+            ],
+            "right_local_referentials": [
+                [
+                    "shared:models/models_<sulci_database>/descriptive_models/segments/<sulci_segments_model_type>_right/local_referentials",
+                    [
+                        "Text Data Table"
+                    ],
+                    {
+                        "sulci_segments_model_type": "locally_from_global_registred_spam",
+                        "sulci_database": "2008"
+                    }
+                ]
+            ],
+            "right_direction_priors": [
+                [
+                    "shared:models/models_<sulci_database>/descriptive_models/segments/<sulci_segments_model_type>_right/bingham_direction_trm_priors",
+                    [
+                        "Text Data Table"
+                    ],
+                    {
+                        "sulci_segments_model_type": "locally_from_global_registred_spam",
+                        "sulci_database": "2008"
+                    }
+                ]
+            ],
+            "right_angle_priors": [
+                [
+                    "shared:models/models_<sulci_database>/descriptive_models/segments/<sulci_segments_model_type>_right/vonmises_angle_trm_priors",
+                    [
+                        "Text Data Table"
+                    ],
+                    {
+                        "sulci_segments_model_type": "locally_from_global_registred_spam",
+                        "sulci_database": "2008"
+                    }
+                ]
+            ],
+            "right_translation_priors": [
+                [
+                    "shared:models/models_<sulci_database>/descriptive_models/segments/<sulci_segments_model_type>_right/gaussian_translation_trm_priors",
+                    [
+                        "Text Data Table"
+                    ],
+                    {
+                        "sulci_segments_model_type": "locally_from_global_registred_spam",
+                        "sulci_database": "2008"
+                    }
+                ]
+            ],
+            "right_global_to_local_transforms": [
+                [
+                    "output:{foldauto}/{fautosub}_hemi-<side>_auto_global_TO_local",
+                    [
+                        "Directory"
+                    ],
+                    {"side": "R"}
+                ]
+            ],
+            "sulcal_morpho_measures": [
+                [
+                    "output:{foldauto}/{fautosub}_auto_sulcal_morphometry",
+                    [
+                        "CSV file"
+                    ]
+                ]
+            ],
+            "left_csf":
+                [["output:{seg}/{sub}_hemi-<side>_csf","images",{"side":"L"}]],
+            "right_csf":
+                [["output:{seg}/{sub}_hemi-<side>_csf","images",{"side":"R"}]],
+            "brain_volumes_file": [
+                ["output:{seg}/{sub}_sul-<sulci_recognition_session>_brain_volumes", "CSV file"],
+                ["output:{seg}/{sub}_brain_volumes", "CSV file"]
+            ],
+            "subject": [["none:<subject>", "no ext"]],
+            "bids":
+                [["none:<bids>_sul-<sulci_recognition_session>", "no ext"]],
+
+            "normative_brain_stats": "{shared.normative_brain_volumes_file}",
+            "report": [
+                ["output:{analysis}/{sub}_sul-<sulci_recognition_session>_morphologist_report", "PDF File"],
+                ["output:{analysis}/{sub}_morphologist_report", "PDF File"]
+            ],
+            "report_json": [
+                ["output:{analysis}/{sub}_sul-<sulci_recognition_session>_morphologist_report", "JSON file"],
+                ["output:{analysis}/{sub}_morphologist_report", "JSON file"],
+            ],
+            "inter_subject_qc_table":
+                [["output:qc/qc","TSV file"]],
+        },
 
     }
 }
