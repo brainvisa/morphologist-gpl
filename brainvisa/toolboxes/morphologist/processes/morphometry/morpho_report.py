@@ -99,12 +99,12 @@ def initialization(self):
                 all_bids = f'{all_bids}_sul-{sulc}'
             return all_bids
 
-    def linkReport(self, proc):
+    def linkBrainVolumes(self, proc):
         item = self.left_labelled_graph
         if item is None:
             item = self.t1mri
         if item is not None:
-            return self.signature['report'].findValue(item)
+            return self.signature['brain_volumes_file'].findValue(item)
 
     self.setOptional('left_grey_white', 'right_grey_white',
                      'left_gm_mesh', 'right_gm_mesh',
@@ -124,8 +124,8 @@ def initialization(self):
     self.linkParameters('left_labelled_graph', 't1mri')
     self.linkParameters('right_labelled_graph', 'left_labelled_graph')
     self.linkParameters('talairach_transform', 't1mri')
-    self.linkParameters('brain_volumes_file', 't1mri')
-    self.linkParameters('report', ('t1mri', 'left_labelled_graph'), linkReport)
+    self.linkParameters('brain_volumes_file', ('t1mri', 'left_labelled_graph'), linkBrainVolumes)
+    self.linkParameters('report', 'brain_volumes_file')
     self.linkParameters('report_json', 'report')
     self.linkParameters('inter_subject_qc_table', 'report_json')
     self.normative_brain_stats = self.signature[

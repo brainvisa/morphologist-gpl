@@ -37,7 +37,7 @@ from brainvisa import registration
 from six.moves import zip
 
 
-name = 'Simplified Morphologist 2015'
+name = 'Simplified Morphologist 2025'
 userLevel = 0
 
 signature = Signature(
@@ -239,6 +239,8 @@ signature = Signature(
     'sulci_label_attribute', String(),
     'brain_volumes_file', WriteDiskItem(
         'Brain volumetry measurements', 'CSV file'),
+    'normative_brain_stats', ReadDiskItem('Normative brain volumes stats',
+                                          'JSON file'),
     'report', WriteDiskItem('Morphologist report', 'PDF file'),
     'report_json', WriteDiskItem('Morphologist JSON report', 'JSON file'),
     'inter_subject_qc_table', WriteDiskItem('QC table', 'TSV file'),
@@ -366,8 +368,25 @@ def initialization(self):
                 return x
             else:
                 return []
+
+    def linkReport(self, proc):
+        item = self.left_labelled_graph
+        if item is None:
+            item = self.t1mri
+        if item is not None:
+            return self.signature['report'].findValue(item)
+
+    self.setOptional('normalized_t1mri')
+    self.setOptional('source_referential')
+    self.setOptional('anatomical_template')
+    self.setOptional('normative_brain_stats')
+    #self.setOptional( 'job_file' )
+
     self.anatomical_template = self.signature['anatomical_template'].findValue(
         {'databasename': 'spm', 'skull_stripped': 'no'})
+    self.normative_brain_stats = self.signature[
+        'normative_brain_stats'].findValue({})
+
     #self.linkParameters( 'job_file', 't1mri' )
     self.linkParameters('transformations_information', 't1mri')
     self.linkParameters('normalized_t1mri', 't1mri')
@@ -380,11 +399,6 @@ def initialization(self):
     self.linkParameters('tal_to_normalized_transform',
                         'normalized_referential', linkACPC_to_norm)
 
-    self.setOptional('normalized_t1mri')
-    self.setOptional('source_referential')
-
-    self.setOptional('anatomical_template')
-    #self.setOptional( 'job_file' )
 
     self.signature['anatomical_template'].userLevel = 100
     #self.signature[ 'job_file' ].userLevel = 100
@@ -575,8 +589,9 @@ def initialization(self):
     self.linkParameters('sulci_label_attribute',
                         ('left_labelled_graph', 'right_labelled_graph'),
                         self.linkSulciLabelAtt)
-    self.linkParameters('brain_volumes_file', 't1mri')
-    self.linkParameters('report', 't1mri')
+    self.linkParameters('brain_volumes_file',('t1mri', 'left_labelled_graph'),
+                        linkReport)
+    self.linkParameters('report', 'brain_volumes_file')
     self.linkParameters('report_json', 'report')
     self.linkParameters('inter_subject_qc_table', 'report')
 
