@@ -275,6 +275,7 @@
           "subject": [["none:<subject>", "no ext"]],
         },
         "Morphologist.Report": {
+          "normative_brain_stats": "{shared.normative_brain_volumes_file}",
           "report":
               [["output:{analysis}/morphologist_report","PDF File"]],
           "report_json":
@@ -1098,6 +1099,7 @@
                     ]
                 ]
             ],
+            "normative_brain_stats": "{shared.normative_brain_volumes_file}",
             "report": [
                 [
                     "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/morphologist_report",

@@ -307,6 +307,7 @@
           "GlobalMorphometry_subject": [["none:<subject>", "no ext"]],
 
           # PDF report
+          "Report_normative_brain_stats": "{shared.normative_brain_volumes_file}",
           "Report_report":
               [["output:{analysis}/morphologist_report","PDF File"]],
           "Report_report_json":
@@ -998,6 +999,7 @@
               [["output:{analysis}/segmentation/brain_volumes_<subject>","CSV file"]],
           "subject": [["none:<subject>", "no ext"]],
 
+          "normative_brain_stats": "{shared.normative_brain_volumes_file}",
           "report":
               [["output:{analysis}/morphologist_report","PDF File"]],
           "report_json":

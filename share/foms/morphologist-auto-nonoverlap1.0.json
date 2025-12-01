@@ -309,6 +309,8 @@
           "GlobalMorphometry_subject": [["none:<subject>", "no ext"]],
 
           # PDF report
+          "Report_normative_brain_stats":
+              "{shared.normative_brain_volumes_file}",
           "Report_report":
               [["output:{analysis}/morphologist_report","PDF File"]],
           "Report_subject": [["none:<subject>", "no ext"]]
@@ -997,6 +999,7 @@
               [["output:{analysis}/segmentation/brain_volumes_<subject>","CSV file"]],
           "subject": [["none:<subject>", "no ext"]],
 
+          "normative_brain_stats": "{shared.normative_brain_volumes_file}",
           "report":
               [["output:{analysis}/morphologist_report","PDF File"]]
         },
@@ -1118,6 +1121,7 @@
                     ]
                 ]
             ],
+            "normative_brain_stats": "{shared.normative_brain_volumes_file}",
             "report": [
                 [
                     "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/morphologist_report",
