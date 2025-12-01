@@ -181,9 +181,24 @@ This pipeline is now named "<b>Morphologist</b>", and is the main entry point of
 <p>
 Morphologist 2021 does not change in terms of segmentation, but now switches to a CNN-based  (Convolutional Neural Networks) sulci recognition method. This step is also now enabled by default.
 </p>
+<p>Morphologist 2025 adds a few steps for global volumetric and morphometric mesurements, and a QC report, which may be used along with normative data.<br/>
+A few bugs have also been fixed, especially the sulcal opening and cortical thickness after a split in the CNN sulci recognition, which were not redone appropriately. Thus is is recommended to run at lest the process <a href="CorticalFoldsGraphUpgradeFromOld.html">CorticalFoldsGraphUpgradeFromOld</a> on data processed with the 2023 or 2021 pipeline.
+</p>
 <p>Older versions of the pipeline are still available in the sub-directory <a href="categories/morphologist/segmentationpipeline/older_pipelines/category_documentation.html">"segmentation Pipeline / Older pipelines"</a>, and should normally work as they used to.
 </p>
 
+<div class="note"><h4>News in 2025:</h4>
+  <ul>
+    <li>
+    Morphologist 2025 adds a few steps for global volumetric and morphometric mesurements, and a QC report, which may be used along with normative data.
+    </li>
+    <li>QC report and normative data</li>
+    <li>new BIDS layout which is more in accordance to the BIDS standard spirit: use the <tt>morphologist-bids-2.0</tt> ontology.
+    </li>
+    <li>A few bugs have also been fixed, especially the sulcal opening and cortical thickness after a split in the CNN sulci recognition, which were not redone appropriately. Thus is is recommended to run at lest the process <a href="CorticalFoldsGraphUpgradeFromOld.html">CorticalFoldsGraphUpgradeFromOld</a>
+    </li>
+  </ul>
+</div>
 <div class="note"><h4>News in 2023:</h4>
   <ul>
     <li>
@@ -193,10 +208,6 @@ Morphologist 2021 does not change in terms of segmentation, but now switches to 
     The CNN sulci recognition could produce (in rare bad cases) both sulcus vertices with disconnected voxels, and adjacent cut vertices with the same label (which was not severe but useless). This has been reworked and fixed. As a consequence, the outputs of CNN sulci recognition are different in 5.1 and 5.0.
     </li>
   </ul>
-</div>
-
-<div class="note"><h4>News in 2021 vs. 2015:</h4>
-The sulci recognition sub-pipeline has been enriched with a 3rd generation of methods, based on deep learning CNN models. It performs slightly better than the former SPAM model, and is also way faster. However it needs a fair amount of memory to run (about 6 Gb), or a GPU with Cuda enabled.
 </div>
 
 <p>
