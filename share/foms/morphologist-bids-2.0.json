@@ -1673,7 +1673,7 @@
                     [
                         "Directory"
                     ],
-                    {"side": "R"}
+                    {"side": "L"}
                 ]
             ],
             "right_labelled_graph": [
@@ -1840,7 +1840,7 @@
             ],
             "inter_subject_qc_table":
                 [["output:qc/qc","TSV file"]],
-        },
+        }
 
     }
 }
