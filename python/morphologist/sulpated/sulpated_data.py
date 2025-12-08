@@ -113,13 +113,15 @@ class SulcalPattern(object):
             #print('t:', time.time() - t0)
 
     def save(self):
-        print('SAVE')
+        # print('SAVE')
         if self.locked():
+            print('locked')
             self.save_backup()
             raise LockedDataError(self.filename)
         if not os.path.exists(osp.dirname(self.filename)):
             os.makedirs(osp.dirname(self.filename), exist_ok=True)
         if self.status == 'conflict':
+            print('conflict')
             # try reload and resolve
             self.save_backup()
             if self.status == 'conflict':
@@ -329,13 +331,22 @@ class SulcalPattern(object):
                 patterns = json.load(f)
         except FileNotFoundError:
             # file has been removed in the meantime: just rewrite it
-            print('save_backup, orig file', self.filename, 'could not be read. Saving backup:', backup_file)
-            os.makedirs(osp.dirname(backup_file), exist_ok=True)
-            with open(backup_file, 'w') as f:
+
+            # this code was reusing the backup file, I don't remember why,
+            # and it contradicts the comment just 1 line above.
+            # I switch (again?) to the regular save. 2025-05-22
+            #print('save_backup, orig file', self.filename, 'could not be read. Saving backup:', backup_file)
+            #os.makedirs(osp.dirname(backup_file), exist_ok=True)
+            #with open(backup_file, 'w') as f:
+                #json.dump(self.patterns, f)
+
+            os.makedirs(osp.dirname(self.filename), exist_ok=True)
+            with open(self.filename, 'w') as f:
                 json.dump(self.patterns, f)
+
             patterns = self.patterns
 
-        if patterns == self.patterns:
+        if patterns == self.patterns and osp.exists(self.filename):
             # OK after all
             if osp.exists(backup_file):
                 os.unlink(backup_file)
@@ -354,9 +365,10 @@ class SulcalPattern(object):
         return osp.exists(self.lock_file)
 
     def lock(self):
-        if osp.exists(osp.dirname(self.lock_file)):
-            with open(self.lock_file, 'w') as f:
-                print(datetime.datetime.now(), file=f)
+        if not osp.exists(osp.dirname(self.lock_file)):
+            os.makedirs(osp.dirname(self.lock_file))
+        with open(self.lock_file, 'w') as f:
+            print(datetime.datetime.now(), file=f)
 
     def unlock(self):
         if osp.exists(self.lock_file):
@@ -632,7 +644,7 @@ class SulcalPatternsData(Qt.QObject):
                     self.ro_database = db_settings_ro.directory
                     print('found ro:', self.ro_database)
 
-            sel = {'_database': db_settings.directory}
+            sel = {'_database': self.sulci_database}
             sel.update(self.db_filter)
             if self.out_db_filter:
                 sel_bak = dict(sel)
@@ -812,6 +824,17 @@ class SulcalPatternsData(Qt.QObject):
         if self.update_thread:
             self.update_thread.join()
 
+    def _new_pattern(self, subject, side, graph):
+        pat_file = osp.join(
+            self.out_database, 'sub-%s' % subject, 'patterns',
+            self.region, side, 'patterns.json')
+        force_sulci_locks_state = self.db_def.get('force_sulci_locks_state')
+        pat = SulcalPattern(pat_file, graph, self.out_database,
+                            self.sulci_database,
+                            force_sulci_lock=force_sulci_locks_state,
+                            out_db_filter=self.out_db_filter)
+        return pat
+
     def set_pattern_state(self, subject, side, pattern, state_dict,
                           remove_keys=None):
         # print('set_pattern_state', subject, side, pattern, state_dict)
@@ -837,6 +860,7 @@ class SulcalPatternsData(Qt.QObject):
                 pat.patterns[pattern] = sd
                 # import traceback
                 # traceback.print_stack()
+            # else: print('no change:', sd, pd)
 
     def check_updated(self):
         if not osp.exists(self.version_file):
@@ -875,6 +899,7 @@ class SulcalPatternsData(Qt.QObject):
                     self.save_version()
                 except (LockedDataError, OutdatedError):
                     backup_filename = pattern.backup_filename()
+                    # print('locked or outdated')
                     self.notify_backup_saved.emit(subject, side,
                                                   backup_filename)
 
@@ -888,6 +913,29 @@ class SulcalPatternsData(Qt.QObject):
                 if saved:
                     self.save_version()
         return saved
+
+    def unsaved_data(self):
+        unsaved = {}
+        with self.lock:
+            for subject, mitems in self.patterns.items():
+                for side, patterns in mitems.items():
+                    if patterns.modified:
+                        unsaved.setdefault(subject, {})[side] \
+                            = {'patterns': True}
+                    if patterns.sulci_modified():
+                        unsaved.setdefault(subject, {}).setdefault(
+                            side, {})['sulci'] = True
+        return unsaved
+
+    def save_all(self):
+        # print('save all')
+        unsaved = self.unsaved_data()
+        for subject, sides in unsaved.items():
+            for side, items in sides.items():
+                if items.get('patterns'):
+                    self.save_individual_pattern(subject, side)
+                if items.get('sulci'):
+                    self.save_sulci(subject, side)
 
     def get_sulci_graph_file(self, subject, side, use_backup=False):
         with self.lock:

@@ -239,4 +239,5 @@ FileType('Right Sulci Mask', 'Label Volume')
 
 #-----------Report file---------------------------
 FileType('Morphologist report', 'PDF file', 'PDF file')
+FileType('Morphologist JSON report', 'Text file', 'JSON file')
 

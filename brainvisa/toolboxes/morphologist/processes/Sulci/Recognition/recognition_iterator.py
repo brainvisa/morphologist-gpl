@@ -141,7 +141,7 @@ def initialization(self):
 
     eNode.addChild('RecognitionError',
                    ProcessExecutionNode(p2, optional=1))
-    eNode.RecognitionError.removeLink('labeled_graph', 'base_graph')
+    eNode.RecognitionError.removeLink('labelled_graph', 'base_graph')
     eNode.addLink('AutomaticRecognition.data_graph', 'data_graph')
     eNode.addLink('AutomaticRecognition.model', 'model')
     eNode.addLink('AutomaticRecognition.output_graph', 'session',
@@ -150,7 +150,7 @@ def initialization(self):
     eNode.addLink('RecognitionError.model', 'model')
     eNode.addLink('RecognitionError.base_graph',
                   'AutomaticRecognition.data_graph')
-    eNode.addLink('RecognitionError.labeled_graph',
+    eNode.addLink('RecognitionError.labelled_graph',
                   'AutomaticRecognition.output_graph')
     eNode.addLink(None, 'parallelism_mode', eNode.signature_callback)
     self.addLink(None, 'model', self.parallel_config_directory_callback)
@@ -291,7 +291,7 @@ class LocalParallelTaskManager(ParallelTaskManager):
     def update(self, processes, selected):
         p = processes[1]
         if selected[p.name]:
-            subject = p.labeled_graph.get('subject')
+            subject = p.labelled_graph.get('subject')
             rate = float(p.parent['error_rate'])
             self.rates[subject] = rate
             self.stream.write("%s\t%f\n" % (subject, rate))
@@ -318,12 +318,12 @@ def taskManagerFactory(self, context):
 ################################# Processes ####################################
 def change_signature_test(self, process):
     if self.parallelism_mode in ['grid', 'duch', 'LSF']:
-        del process.signature['labeled_graph']
-        process.signature['labeled_graph'] = \
+        del process.signature['labelled_graph']
+        process.signature['labelled_graph'] = \
             WriteDiskItem('Data graph', 'Graph')
     else:
-        del process.signature['labeled_graph']
-        process.signature['labeled_graph'] = \
+        del process.signature['labelled_graph']
+        process.signature['labelled_graph'] = \
             ReadDiskItem('Data graph', 'Graph')
     process.changeSignature(process.signature)
 

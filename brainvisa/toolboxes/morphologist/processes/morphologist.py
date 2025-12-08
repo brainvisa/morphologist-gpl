@@ -652,19 +652,45 @@ def initialization(self):
             #rightNode.SulciSkeleton.addLink(None, 'hemi_cortex',
                                             #self.change_fom_format)
             leftNode.SulciRecognition.CNN_recognition19.forbid_completion(
-                ['skeleton', 'roots', 'graph', 'labeled_graph'])
+                ['skeleton', 'roots', 'graph', 'labelled_graph',
+                 'grey_white', 'hemi_cortex', 'white_mesh', 'pial_mesh'])
             rightNode.SulciRecognition.CNN_recognition19.forbid_completion(
-                ['skeleton', 'roots', 'graph', 'labeled_graph'])
+                ['skeleton', 'roots', 'graph', 'labelled_graph',
+                 'grey_white', 'hemi_cortex', 'white_mesh', 'pial_mesh'])
             leftNode.addDoubleLink(
                 'SulciSkeleton.skeleton',
                 'SulciRecognition.CNN_recognition19.skeleton')
             leftNode.addDoubleLink('SulciSkeleton.roots',
                                    'SulciRecognition.CNN_recognition19.roots')
+            leftNode.addDoubleLink(
+                'GreyWhiteClassification.grey_white',
+                'SulciRecognition.CNN_recognition19.grey_white')
+            leftNode.addDoubleLink(
+                'GreyWhiteTopology.hemi_cortex',
+                'SulciRecognition.CNN_recognition19.hemi_cortex')
+            leftNode.addDoubleLink(
+                'GreyWhiteMesh.white_mesh',
+                'SulciRecognition.CNN_recognition19.white_mesh')
+            leftNode.addDoubleLink(
+                'PialMesh.pial_mesh',
+                'SulciRecognition.CNN_recognition19.pial_mesh')
             rightNode.addDoubleLink(
                 'SulciSkeleton.skeleton',
                 'SulciRecognition.CNN_recognition19.skeleton')
             rightNode.addDoubleLink('SulciSkeleton.roots',
                                     'SulciRecognition.CNN_recognition19.roots')
+            rightNode.addDoubleLink(
+                'GreyWhiteClassification.grey_white',
+                'SulciRecognition.CNN_recognition19.grey_white')
+            rightNode.addDoubleLink(
+                'GreyWhiteTopology.hemi_cortex',
+                'SulciRecognition.CNN_recognition19.hemi_cortex')
+            rightNode.addDoubleLink(
+                'GreyWhiteMesh.white_mesh',
+                'SulciRecognition.CNN_recognition19.white_mesh')
+            rightNode.addDoubleLink(
+                'PialMesh.pial_mesh',
+                'SulciRecognition.CNN_recognition19.pial_mesh')
             eNode.addDoubleLink(
                 'allow_multithreading',
                 lhemi

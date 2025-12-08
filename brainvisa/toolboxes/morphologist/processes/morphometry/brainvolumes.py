@@ -109,6 +109,7 @@ def initialization(self):
     self.linkParameters('right_gm_mesh', 'split_brain')
     self.linkParameters('left_wm_mesh', 'split_brain')
     self.linkParameters('right_wm_mesh', 'split_brain')
+
     self.linkParameters('sulci_label_attribute',
                         ('left_labelled_graph', 'right_labelled_graph'),
                         linkSulciLabelAtt)
@@ -181,8 +182,19 @@ def execution(self, context):
           'both.cerebellum_stem_volume': 'cereb_stem',
           'left.brain_volume': 'left_filled_brain',
           'right.brain_volume': 'right_filled_brain',
+          'left.hull_area': 'left.hull_area',
+          'right.hull_area': 'right.hull_area',
+          'left.skel_points': 'left_skel_points',
+          'right.skel_points': 'right_skel_points',
+          'left.skel_labelled_points': 'left_skel_labelled_points',
+          'right.skel_labelled_points': 'right_skel_labelled_points',
         }
-        vols_cm3 = [k for k in col_names.keys() if k != 'subject']
+        vols_cm3 = [k for k in col_names.keys()
+                    if k not in ('subject', 'left.skel_points',
+                                 'right.skel_points',
+                                 'left.skel_labelled_points',
+                                 'right.skel_labelled_points',
+                                 'left.hull_area', 'right.hull_area')]
 
     for k, cn in col_names.items():
         th.append('<td>' + cn + '</td>')
@@ -212,7 +224,6 @@ def execution(self, context):
                   + '</th><tr>' + ''.join(table) + '</tr></table>')
 
     if self.brain_volumes_file is not None:
-        f = open(self.brain_volumes_file.fullPath(), 'w')
-        f.write(';'.join(csvh) + '\n')
-        f.write(';'.join(csvt))
-        f.close()
+        with open(self.brain_volumes_file.fullPath(), 'w') as f:
+            f.write(';'.join(csvh) + '\n')
+            f.write(';'.join(csvt))

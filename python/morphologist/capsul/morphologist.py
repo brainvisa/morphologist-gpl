@@ -314,9 +314,7 @@ class Morphologist(
         self.add_link('sulci_recognition_spam_global_model_type->'
                       'SulciRecognition_1.'
                       'SPAM_recognition09_global_recognition_model_type')
-        if 'CNN_recognition19' in self.nodes['SulciRecognition'].nodes:
-          self.add_link(
-              'allow_multithreading->SulciRecognition.CNN_recognition19_allow_multithreading')
+        if 'CNN_recognition19' in self.nodes['SulciRecognition'].process.nodes:
           self.export_parameter(
               'SulciRecognition',
               'CNN_recognition19_rebuild_attributes',

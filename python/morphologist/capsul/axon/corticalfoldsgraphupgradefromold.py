@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
-from soma.controller import File, Directory, undefined, Any, \
-    Literal, field
 try:
-    from pydantic.v1 import conlist
+    from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
+        List, Any, Undefined
 except ImportError:
-    from pydantic import conlist
+    from enthought.traits.api import File, Directory, Float, Int, Bool, Enum, \
+        Str, List, Any, Undefined
+
 from capsul.api import Process
+import six
 from capsul.api import Pipeline
 from capsul.api import Switch
 
 
-class FSLnormalizationPipeline(Pipeline):
+class CorticalFoldsGraphUpgradeFromOld(Pipeline):
     def __init__(self, autoexport_nodes_parameters=True, **kwargs):
         self._autoexport_nodes_parameters = autoexport_nodes_parameters
-        super(FSLnormalizationPipeline, self).__init__(False, **kwargs)
+        super(CorticalFoldsGraphUpgradeFromOld, self).__init__(False, **kwargs)
         del self._autoexport_nodes_parameters
 #        if autoexport_nodes_parameters:
 #            self.autoexport_nodes_parameters()
@@ -21,37 +23,35 @@ class FSLnormalizationPipeline(Pipeline):
 
     def pipeline_definition(self):
         # nodes section
-        self.add_process('NormalizeFSL', 'morphologist.capsul.axon.normalization_fsl_reinit.Normalization_FSL_reinit')
-        self.add_process('ConvertFSLnormalizationToAIMS', 'morphologist.capsul.axon.fslnormalizationtoaims.FSLnormalizationToAims')
-        self.add_process('ReorientAnatomy', 'morphologist.capsul.axon.reorientanatomy.ReorientAnatomy')
+        self.add_process('FoldGraphUpgradeStructure', 'morphologist.capsul.axon.foldgraphupgradestructure.foldgraphupgradestructure')
+        self.add_process('SulciVoronoi', 'morphologist.capsul.axon.sulcivoronoi.sulcivoronoi')
+        self.add_process('CorticalFoldsGraphThickness', 'morphologist.capsul.axon.corticalfoldsgraphthickness.CorticalFoldsGraphThickness')
 
         # exports section
         # export input parameter
-        self.export_parameter('NormalizeFSL', 'anatomy_data', 't1mri')
+        self.export_parameter('FoldGraphUpgradeStructure', 'old_graph', 'old_graph')
+        # export input parameter
+        self.export_parameter('FoldGraphUpgradeStructure', 'skeleton', 'skeleton')
+        # export input parameter
+        self.export_parameter('FoldGraphUpgradeStructure', 'graph_version', 'graph_version')
         # export output parameter
-        self.export_parameter('ReorientAnatomy', 'output_transformation', 'transformation')
+        self.export_parameter('FoldGraphUpgradeStructure', 'graph', 'graph')
         # export input parameter
-        self.export_parameter('NormalizeFSL', 'anatomical_template', 'template')
+        self.export_parameter('FoldGraphUpgradeStructure', 'commissure_coordinates', 'commissure_coordinates')
         # export input parameter
-        self.export_parameter('NormalizeFSL', 'Alignment', 'alignment')
+        self.export_parameter('FoldGraphUpgradeStructure', 'Talairach_transform', 'Talairach_transform')
         # export input parameter
-        self.export_parameter('ConvertFSLnormalizationToAIMS', 'set_transformation_in_source_volume', 'set_transformation_in_source_volume')
-        # export input parameter
-        self.export_parameter('ReorientAnatomy', 'allow_flip_initial_MRI', 'allow_flip_initial_MRI')
-        # export input parameter
-        self.export_parameter('NormalizeFSL', 'allow_retry_initialization', 'allow_retry_initialization')
-        # export output parameter
-        self.export_parameter('ReorientAnatomy', 'output_t1mri', 'reoriented_t1mri')
+        self.export_parameter('SulciVoronoi', 'hemi_cortex', 'SulciVoronoi_hemi_cortex')
 
         # links section
-        self.add_link('t1mri->ConvertFSLnormalizationToAIMS.source_volume')
-        self.add_link('t1mri->ReorientAnatomy.t1mri')
-        self.add_link('template->ConvertFSLnormalizationToAIMS.registered_volume')
-        self.add_link('NormalizeFSL.transformation_matrix->ConvertFSLnormalizationToAIMS.read')
-        self.add_link('ConvertFSLnormalizationToAIMS.write->ReorientAnatomy.transformation')
+        self.add_link('FoldGraphUpgradeStructure.graph->SulciVoronoi.graph')
+        self.add_link('FoldGraphUpgradeStructure.graph->CorticalFoldsGraphThickness.graph')
+        self.add_link('CorticalFoldsGraphThickness.output_graph->graph')
+        self.add_link('SulciVoronoi_hemi_cortex->CorticalFoldsGraphThickness.hemi_cortex')
+        self.add_link('SulciVoronoi.sulci_voronoi->CorticalFoldsGraphThickness.sulci_voronoi')
+        self.add_link('SulciVoronoi_hemi_cortex->CorticalFoldsGraphThickness.hemi_cortex')
 
         # initialization section
-        self.nodes_activation.ReorientAnatomy = False
         # export orphan parameters
         if not hasattr(self, '_autoexport_nodes_parameters') \
                 or self._autoexport_nodes_parameters:

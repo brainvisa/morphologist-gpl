@@ -47,36 +47,21 @@ class SulciLabellingSPAM(Pipeline):
 
         # links section
         self.add_link('global_recognition.output_graph->output_graph')
-        self.add_link(
-            'global_recognition.output_graph->local_recognition.data_graph')
-        self.add_link(
-            'global_recognition.output_graph->markovian_recognition.data_graph')
-        self.add_link(
-            'global_recognition_labels_translation_map->local_recognition.labels_translation_map')
-        self.add_link(
-            'global_recognition_labels_translation_map->markovian_recognition.labels_translation_map')
-        self.add_link(
-            'global_recognition_labels_priors->local_recognition.labels_priors')
-        self.add_link(
-            'global_recognition_labels_priors->markovian_recognition.labels_priors')
-        self.add_link(
-            'global_recognition_initial_transformation->local_recognition.initial_transformation')
-        self.add_link(
-            'global_recognition_initial_transformation->markovian_recognition.initial_transformation')
-        self.add_link(
-            'global_recognition.output_transformation->local_recognition.global_transformation')
-        self.add_link(
-            'global_recognition.output_transformation->markovian_recognition.global_transformation')
-        self.add_link(
-            'global_recognition_labels_translation_map->local_recognition.labels_translation_map')
-        self.add_link(
-            'global_recognition_labels_priors->local_recognition.labels_priors')
-        self.add_link(
-            'global_recognition_initial_transformation->local_recognition.initial_transformation')
-        self.add_link(
-            'local_recognition.output_graph->local_or_markovian.local_recognition_switch_output_graph')
-        self.add_link(
-            'markovian_recognition.output_graph->local_or_markovian.markovian_recognition_switch_output_graph')
+        self.add_link('global_recognition.output_graph->local_recognition.data_graph')
+        self.add_link('global_recognition.output_graph->markovian_recognition.data_graph')
+        self.add_link('global_recognition_labels_translation_map->local_recognition.labels_translation_map')
+        self.add_link('global_recognition_labels_translation_map->markovian_recognition.labels_translation_map')
+        self.add_link('global_recognition_labels_priors->local_recognition.labels_priors')
+        self.add_link('global_recognition_labels_priors->markovian_recognition.labels_priors')
+        self.add_link('global_recognition_initial_transformation->local_recognition.initial_transformation')
+        self.add_link('global_recognition_initial_transformation->markovian_recognition.initial_transformation')
+        self.add_link('global_recognition.output_transformation->local_recognition.global_transformation')
+        self.add_link('global_recognition.output_transformation->markovian_recognition.global_transformation')
+        self.add_link('global_recognition_labels_translation_map->local_recognition.labels_translation_map')
+        self.add_link('global_recognition_labels_priors->local_recognition.labels_priors')
+        self.add_link('global_recognition_initial_transformation->local_recognition.initial_transformation')
+        self.add_link('markovian_recognition.output_graph->local_or_markovian.markovian_recognition_switch_output_graph')
+        self.add_link('local_recognition.output_graph->local_or_markovian.local_recognition_switch_output_graph')
 
         # initialization section
         if 'local_recognition' in self.nodes:

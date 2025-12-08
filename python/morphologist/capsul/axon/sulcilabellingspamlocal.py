@@ -39,7 +39,7 @@ class SulciLabellingSPAMLocal(Process):
                        extensions=['.trm'], optional=True)
 
         # initialization section
-        self.labels_translation_map = '/volatile/riviere/casa-distro/conda/brainvisa-6.0/build/share/brainvisa-share-5.2/nomenclature/translation/sulci_model_2008.trl'
+        self.labels_translation_map = '/volatile/home/dr144257/casa_distro/condadev/brainvisa-6.0/build/share/brainvisa-share-5.2/nomenclature/translation/sulci_model_2008.trl'
 
     def execute(self, context=None):
         from brainvisa import axon

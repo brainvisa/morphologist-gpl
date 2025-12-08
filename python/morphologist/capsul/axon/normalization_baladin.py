@@ -20,7 +20,11 @@ class Normalization_Baladin(Process):
         self.add_field('normalized_anatomy_data', File, write=True,
                        extensions=['.ima', '.dim', '.nii', '.nii.gz'])
 
-    def execute(self, context=None):
+
+        # initialization section
+        self.anatomical_template = '/volatile/riviere/casa-distro/conda/brainvisa-6.0/build/share/brainvisa-share-5.2/anatomical_templates/MNI152_T1_2mm_brain.nii'
+
+    def _run_process(self):
         from brainvisa import axon
         from brainvisa.configuration import neuroConfig
         import brainvisa.processes

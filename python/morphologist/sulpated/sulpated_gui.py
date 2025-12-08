@@ -12,6 +12,7 @@ import getpass
 import sip
 import sys
 import os.path as osp
+import time
 
 
 # FIXME: taken from database_qc_table process, should move to soma-base
@@ -111,6 +112,7 @@ class SulcalPatternsEditor(Qt.QWidget):
 
     notify_update_started = Qt.Signal()
     notify_update_finished = Qt.Signal()
+    CLICK_MINTIME = 0.05  # 20 ms between clicks, at least
 
     def __init__(self, out_db, region, sulci_db=None, db_filter={},
                  ro_db=None):
@@ -131,6 +133,7 @@ class SulcalPatternsEditor(Qt.QWidget):
         self.disable_conflict_warn = False
         self.displayed_sulci = {}
         self.sulci_window_block = None
+        self._last_click = 0.
 
         # force initialization from main thread
         tc = qtThread.QtThreadCall()
@@ -502,6 +505,10 @@ class SulcalPatternsEditor(Qt.QWidget):
         return subject, side, pattern, control_btn
 
     def item_clicked(self, item):
+        # prevent double call via click and activate callbacks
+        if time.time() - self._last_click < self.CLICK_MINTIME:
+            return
+
         # print('CLICK')
         subject, side, pattern, control_btn = self.item_id(item)
         # print('control_btn:', control_btn)
@@ -518,6 +525,8 @@ class SulcalPatternsEditor(Qt.QWidget):
         elif pattern is not None:
             self.summary_table.setCurrentItem(item)
             self.summary_table.editItem(item)
+
+        self._last_click = time.time()
 
     #def item_right_clicked(self, item):
         #print('RIGHT CLICK')
@@ -888,17 +897,7 @@ class SulcalPatternsEditor(Qt.QWidget):
         item.setIcon(self.conflict_icon)
 
     def unsaved_data(self):
-        unsaved = {}
-        with self.data_model.lock:
-            for subject, mitems in self.data_model.patterns.items():
-                for side, patterns in mitems.items():
-                    if patterns.modified:
-                        unsaved.setdefault(subject, {})[side] \
-                            = {'patterns': True}
-                    if patterns.sulci_modified():
-                        unsaved.setdefault(subject, {}).setdefault(
-                            side, {})['sulci'] = True
-        return unsaved
+        return self.data_model.unsaved_data()
 
     def save_all(self):
         # print('save all')
@@ -948,6 +947,8 @@ class SulcalPatternsEditor(Qt.QWidget):
             cw = a.getControlWindow()
             if cw:
                 cw.close()
+        # force exit since the ipython kernel doesn't exit
+        sys.exit(0)
 
     def sulci_window(self):
         if self.sulci_window_block \
@@ -990,6 +991,7 @@ class SulcalPatternsEditor(Qt.QWidget):
             from brainvisa import processes
 
             a = anatomist.Anatomist()
+            a.setExitOnQuit(True)
 
             graph_file = self.data_model.get_sulci_graph_file(subject, side,
                                                               use_backup=True)

@@ -41,7 +41,7 @@ class SplitBrain(Process):
         # initialization section
         self.use_ridges = True
         self.use_template = True
-        self.split_template = '/volatile/riviere/casa-distro/conda/brainvisa-6.0/build/share/brainvisa-share-5.2/hemitemplate/closedvoronoi.ima'
+        self.split_template = '/volatile/home/dr144257/casa_distro/condadev/brainvisa-6.0/build/share/brainvisa-share-5.2/hemitemplate/closedvoronoi.ima'
         self.mode = 'Watershed (2011)'
         self.variant = 'GW Barycentre'
         self.bary_factor = 0.6

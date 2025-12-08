@@ -158,12 +158,13 @@ def execution(self, context):
         i = sorted_items[item]
         t1mri = self.t1mri[i]
         database = t1mri['_database']
-        schema_name = 'brainvisa'  # FIXME
-        #metadata = ProcessMetadata(mp, capsul.engine().execution_context(mp))
-        schema = getattr(metadata, schema_name)
-        schema.center = t1mri['center']
-        schema.subject = t1mri['subject']
-        schema.acquisition = t1mri['acquisition']
+        if cversion >= (2, 1):
+            attributes = pf.get_attribute_values().export_to_dict()
+        else:
+            attributes = pf.attributes
+        attributes['center'] = t1mri['center']
+        attributes['subject'] = t1mri['subject']
+        attributes['acquisition'] = t1mri['acquisition']
         j = i
         if len(self.analysis) <= j:
             j = -1
@@ -172,19 +173,20 @@ def execution(self, context):
             j = -1
         schema.sulci_recognition_session = self.sulci_recognition_session[j]
         # handle input format
-        ext = t1mri.fullPath().rsplit('.', 1)[-1]
-        if ext == 'gz':
-            ext = '.'.join(t1mri.fullPath().rsplit('.', 2)[-2:])
-        schema.extension = ext
-        if database != datasets.input.path \
-                or database != datasets.output.path:
-            datasets.input.path = database
-            datasets.output.path = database
-        # context.write('config:', capsul.config.builtin.asdict())
-        # context.write('meta:', metadata.asdict())
-        metadata.generate_paths(mp)
-        mp.resolve_paths(metadata.execution_context)
-        # context.write('imported T1:', mp.imported_t1mri)
+        if database != study_config.input_directory \
+                or database != study_config.output_directory \
+                or format != study_config.volumes_format:
+            # need to reconfigure FOMs for this new dirs/format
+            study_config.input_directory = database
+            study_config.output_directory = database
+            study_config.volumes_format = format
+            study_config.initialize_modules()
+        format = axon_to_capsul_formats.get(t1mri.format.name,
+                                            t1mri.format.name)
+        if cversion >= (2, 1):
+            pf.complete_parameters({'capsul_attributes': attributes})
+        else:
+            pf.create_completion()
 
         #transfers = []
         #if self.transfer_inputs \

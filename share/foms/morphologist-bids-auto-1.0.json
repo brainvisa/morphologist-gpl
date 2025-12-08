@@ -277,6 +277,8 @@
         "Morphologist.Report": {
           "report":
               [["output:{analysis}/morphologist_report","PDF File"]],
+          "report_json":
+              [["output:{analysis}/morphologist_json_report","JSON file"]],
           "subject": [["none:<subject>", "no ext"]]
         },
         "Morphologist.PrepareSubject.StandardACPC": {
@@ -940,6 +942,218 @@
                     ]
                 ]
             ]
+        },
+        "brainvolumes": {
+            "split_brain": [
+                [
+                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/voronoi_<subject>",
+                    "Aims readable volume formats"
+                ]
+            ],
+            "left_grey_white": [
+                [
+                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/Lgrey_white_<subject>",
+                    "Aims readable volume formats"                ]
+            ],
+            "right_grey_white": [
+                [
+                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/Rgrey_white_<subject>",
+                    "Aims readable volume formats"
+                ]
+            ],
+            "left_csf": [
+                [
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/Lcsf_<subject>",
+                    "Aims readable volume formats"
+                ]
+            ],
+            "right_csf": [
+                [
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/Rcsf_<subject>",
+                    "Aims readable volume formats"
+                ]
+            ],
+            "left_labelled_graph": [
+                [
+                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/L<subject>_<sulci_recognition_session>_auto",
+                    [
+                        "Graph and data"
+                    ]
+                ]
+            ],
+            "right_labelled_graph": [
+                [
+                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/R<subject>_<sulci_recognition_session>_auto",
+                    [
+                        "Graph and data"
+                    ]
+                ]
+            ],
+            "left_gm_mesh": [
+                [
+                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_Lhemi",
+                    "Aims mesh formats"
+                ]
+            ],
+            "right_gm_mesh": [
+                [
+                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_Rhemi",
+                    "Aims mesh formats"
+                ]
+            ],
+            "left_wm_mesh": [
+                [
+                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_Lwhite",
+                    "Aims mesh formats"
+                ]
+            ],
+            "right_wm_mesh": [
+                [
+                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_Rwhite",
+                    "Aims mesh formats"
+                ]
+            ],
+            "subject": [["none:<subject>", "no ext"]],
+            "brain_volumes_file": [
+                [
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/brain_volumes_<subject>",
+                    [
+                        "CSV file"
+                    ]
+                ]
+            ]
+        },
+        "morpho_report": {
+            "t1mri": [
+                [
+                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<subject>",
+                    "Aims readable volume formats"
+                ]
+            ],
+            "left_grey_white": [
+                [
+                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/Lgrey_white_<subject>",
+                    "Aims readable volume formats"
+                ]
+            ],
+            "right_grey_white": [
+                [
+                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/Rgrey_white_<subject>",
+                    "Aims readable volume formats"
+                ]
+            ],
+            "left_gm_mesh": [
+                [
+                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_Lhemi",
+                    "Aims mesh formats"
+                ]
+            ],
+            "right_gm_mesh": [
+                [
+                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_Rhemi",
+                    "Aims mesh formats"
+                ]
+            ],
+            "left_wm_mesh": [
+                [
+                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_Lwhite",
+                    "Aims mesh formats"
+                ]
+            ],
+            "right_wm_mesh": [
+                [
+                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_Rwhite",
+                    "Aims mesh formats"
+                ]
+            ],
+            "left_labelled_graph": [
+                [
+                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/L<subject>_<sulci_recognition_session>_auto",
+                    [
+                        "Graph and data"
+                    ]
+                ]
+            ],
+            "right_labelled_graph": [
+                [
+                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/R<subject>_<sulci_recognition_session>_auto",
+                    [
+                        "Graph and data"
+                    ]
+                ]
+            ],
+            "talairach_transform": [
+                [
+                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/registration/RawT1-<subject>_<acquisition>_TO_Talairach-ACPC",
+                    [
+                        "Transformation matrix"
+                    ]
+                ]
+            ],
+            "brain_volumes_file": [
+                [
+                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/brain_volumes_<subject>",
+                    [
+                        "CSV file"
+                    ]
+                ]
+            ],
+            "report": [
+                [
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/morphologist_report",
+                    [
+                        "PDF File"
+                    ]
+                ]
+            ],
+            "report_json": [
+                [
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/morphologist_json_report",
+                    [
+                        "JSON file"
+                    ]
+                ]
+            ]
+        },
+
+        "CorticalFoldsGraphUpgradeFromOld": {
+            "old_graph": [
+                ["input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/<side><subject>_<sulci_recognition_session>_auto", "Graph and data"],
+                ["input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<side><subject>", "Graph and data"]],
+            "skeleton": [[
+                "inut:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/<side>skeleton_<subject>",
+                "Aims writable volume formats"]],
+            "commissure_coordinates": [[
+                "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<subject>",
+                "Commissure coordinates"]],
+            "Talairach_transform": [[
+                "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/registration/RawT1-<subject>_<acquisition>_TO_Talairach-ACPC",
+                "Transformation matrix"]],
+            "SulciVoronoi_hemi_cortex": [[
+                "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/<side>cortex_<subject>", "Aims writable volume formats"]],
+            "CorticalFoldsGraphThickness_GW_interface": [[
+                "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/Lgrey_white_<subject>",
+                "Aims writable volume formats"]],
+            "CorticalFoldsGraphThickness_white_mesh": [[
+                "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_<side>white",
+                "Aims mesh formats"]],
+            "CorticalFoldsGraphThickness_hemi_mesh": [[
+                "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_<side>hemi",
+                "Aims mesh formats"]],
+            "graph": [
+                ["output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<side><subject>", "Graph and data"],
+                ["output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/<side><subject>_<sulci_recognition_session>_auto", "Graph and data"]],
+            "SulciVoronoi_sulci_voronoi": [
+                ["output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/<side>sulcivoronoi_<subject>_<sulci_recognition_session>_auto",
+                "Aims writable volume formats"],
+                ["output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<side>sulcivoronoi_<subject>",
+                 "Aims writable volume formats"]],
+            "CorticalFoldsGraphThickness_output_mid_interface": [
+                ["output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/<side>gw_interface_<subject>_<sulci_recognition_session>_auto",
+                "Aims writable volume formats"],
+                ["output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<side>gw_interface_<subject>",
+                 "Aims writable volume formats"]]
         }
+
     }
 }
