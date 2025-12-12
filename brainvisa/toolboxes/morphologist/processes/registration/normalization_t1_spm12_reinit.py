@@ -33,8 +33,10 @@
 
 from brainvisa.processes import *
 from brainvisa.validation import ValidationError
-import os
 from soma.wip.application.api import Application
+from soma import aims
+import numpy as np
+import os
 
 
 configuration = Application().configuration
@@ -113,14 +115,10 @@ def execution(self, context):
             failed = True
         else:
             # sanity check
-
-            from soma import aims
-            import numpy as np
-
-            vol = aims.read(self.anatomy_data.fullPath())
+            vol_init = aims.read(self.anatomy_data.fullPath())
             s_init = np.sum(vol_init.np)
             vol = aims.read(self.normalized_anatomy_data.fullPath())
-            s = np.sum(vol_init.np)
+            s = np.sum(vol.np)
             if s < s_init * 0.6:
                 context.write('the normalization has probably failed and the '
                               'field of view is wrong')
