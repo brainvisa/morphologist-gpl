@@ -885,14 +885,18 @@ def execution(self, context):
                            output_local_transformations=self.right_global_to_local_transforms,
                            initial_transformation=None,
                            global_transformation=self.right_tal_to_global_transform)
-    
-    elif self.perform_sulci_recognition=='DeepCNN':
+
+    elif self.perform_sulci_recognition == 'DeepCNN':
         context.runProcess('capsul://deepsulci.sulci_labeling.capsul.labeling',
                            graph=self.left_graph,
                            model_file=self.left_model_file,
                            param_file=self.left_param_file,
                            roots=self.left_roots,
                            skeleton=self.left_skeleton,
+                           hemi_cortex=self.left_hemi_cortex,
+                           grey_white=self.left_grey_white,
+                           white_mesh=self.left_white_mesh,
+                           pial_mesh=self.left_pial_mesh,
                            labelled_graph=self.left_labelled_graph)
         context.runProcess('capsul://deepsulci.sulci_labeling.capsul.labeling',
                            graph=self.right_graph,
@@ -900,8 +904,12 @@ def execution(self, context):
                            param_file=self.right_param_file,
                            roots=self.right_roots,
                            skeleton=self.right_skeleton,
+                           hemi_cortex=self.right_hemi_cortex,
+                           grey_white=self.right_grey_white,
+                           white_mesh=self.right_white_mesh,
+                           pial_mesh=self.right_pial_mesh,
                            labelled_graph=self.right_labelled_graph)
-    if self.perform_sulci_recognition!='No':
+    if self.perform_sulci_recognition != 'No':
         # Sulcal Morphometry
         context.runProcess('sulcigraphmorphometrybysubject',
                            left_sulci_graph=self.left_labelled_graph,
