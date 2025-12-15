@@ -11,16 +11,15 @@ from capsul.api import Process
 class FSLnormalizationToAims(Process):
     def __init__(self, **kwargs):
         super(FSLnormalizationToAims, self).__init__(**kwargs)
-        self.add_trait('read', File(allowed_extensions=['.mat']))
-        self.add_trait('source_volume', File(allowed_extensions=['.nii.gz', '.svs', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg', '.scn', '.mnc', '.nii', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.bif', '.czi', '.mnc.gz']))
-        self.add_trait('write', File(allowed_extensions=['.trm'], output=True))
-        self.add_trait('registered_volume', File(allowed_extensions=['.nii', '.nii.gz']))
-        self.add_trait('standard_template', Enum(0))
-        self.add_trait('set_transformation_in_source_volume', Bool())
+        self.add_field('read', File, read=True, extensions=['.mat'])
+        self.add_field('source_volume', File, read=True, extensions=['.nii.gz', '.svs', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg', '.scn', '.mnc', '.nii', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.bif', '.czi', '.mnc.gz'])
+        self.add_field('write', File, write=True, extensions=['.trm'])
+        self.add_field('registered_volume', File, read=True, extensions=['.nii', '.nii.gz'])
+        self.add_field('standard_template', Literal[0, 1, 2])
+        self.add_field('set_transformation_in_source_volume', bool)
 
 
         # initialization section
-        self.registered_volume = '/volatile/riviere/casa-distro/conda/brainvisa-6.0/build/share/brainvisa-share-5.2/anatomical_templates/MNI152_T1_2mm_brain.nii'
         self.standard_template = 0
         self.set_transformation_in_source_volume = True
 
@@ -32,7 +31,6 @@ class FSLnormalizationToAims(Process):
         neuroConfig.gui = False
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
-
 
         axon.initializeProcesses()
 

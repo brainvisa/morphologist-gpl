@@ -13,12 +13,9 @@ class SPMsn3dToAims(Process):
         super(SPMsn3dToAims, self).__init__(**kwargs)
         self.add_field('read', File, read=True, extensions=['.mat'])
         self.add_field('write', File, write=True, extensions=['.trm'])
-        self.add_field(
-            'target', Literal['MNI template', 'unspecified template', 'normalized_volume in AIMS orientation'])
-        self.add_field('source_volume', File, read=True, extensions=[
-                       '.nii', '.img', '.hdr'], optional=True)
-        self.add_field('normalized_volume', File, read=True, extensions=[
-                       '.nii', '.img', '.hdr'], optional=True, dataset=None)
+        self.add_field('target', Literal['MNI template', 'unspecified template', 'normalized_volume in AIMS orientation'])
+        self.add_field('source_volume', File, read=True, extensions=['.nii', '.img', '.hdr'], optional=True)
+        self.add_field('normalized_volume', File, read=True, extensions=['.nii', '.img', '.hdr'], optional=True, dataset=None)
         self.add_field('removeSource', bool)
 
 
@@ -34,7 +31,6 @@ class SPMsn3dToAims(Process):
         neuroConfig.gui = False
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
-
 
         axon.initializeProcesses()
 

@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
+from soma.controller import File, Directory, undefined, Any, \
+    Literal, field
 try:
-    from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
-        List, Any, Undefined
+    from pydantic.v1 import conlist
 except ImportError:
-    from enthought.traits.api import File, Directory, Float, Int, Bool, Enum, \
-        Str, List, Any, Undefined
-
+    from pydantic import conlist
 from capsul.api import Process
-import six
 from capsul.api import Pipeline
 from capsul.api import Switch
 

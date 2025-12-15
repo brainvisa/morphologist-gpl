@@ -29,8 +29,7 @@ class BrainOrientation(Pipeline):
         self.nodes['TalairachFromNormalization']._weak_outputs = True
 
         # switches section
-        self.add_switch('select_AC_PC_Or_Normalization', ['StandardACPC', 'Normalization'], ['commissure_coordinates', 'reoriented_t1mri', 'talairach_transformation'], output_types=[field(type_=File, write=True, optional=True, extensions=['.APC']), field(type_=File, write=True, extensions=[
-                        '.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.gif', '.ima', '.dim', '.jpg', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz']), field(type_=File, write=True, extensions=['.trm'])])
+        self.add_switch('select_AC_PC_Or_Normalization', ['StandardACPC', 'Normalization'], ['commissure_coordinates', 'reoriented_t1mri', 'talairach_transformation'], output_types=[field(type_=File, write=True, optional=True, extensions=['.APC']), field(type_=File, write=True, extensions=['.nii.gz', '.dcm', '', '.i', '.v', '.fdf', '.ima', '.dim', '.jpg', '.mnc', '.nii', '.img', '.hdr', '.tiff', '.tif', '.mnc.gz']), field(type_=File, write=True, extensions=['.trm'])])
 
         # exports section
         # export input parameter
@@ -51,16 +50,15 @@ class BrainOrientation(Pipeline):
         self.add_link('allow_flip_initial_MRI->Normalization.allow_flip_initial_MRI')
         self.add_link('Normalization.transformation->TalairachFromNormalization.normalization_transformation')
         self.add_link('Normalization.reoriented_t1mri->TalairachFromNormalization.t1mri')
-        self.add_link('TalairachFromNormalization.Talairach_transform->select_AC_PC_Or_Normalization.Normalization_switch_talairach_transformation')
-        self.add_link('Normalization.reoriented_t1mri->select_AC_PC_Or_Normalization.Normalization_switch_reoriented_t1mri')
-        self.add_link('StandardACPC.reoriented_t1mri->select_AC_PC_Or_Normalization.StandardACPC_switch_reoriented_t1mri')
         self.add_link('TalairachFromNormalization.commissure_coordinates->select_AC_PC_Or_Normalization.Normalization_switch_commissure_coordinates')
+        self.add_link('StandardACPC.reoriented_t1mri->select_AC_PC_Or_Normalization.StandardACPC_switch_reoriented_t1mri')
         self.add_link('StandardACPC.commissure_coordinates->select_AC_PC_Or_Normalization.StandardACPC_switch_commissure_coordinates')
+        self.add_link('Normalization.reoriented_t1mri->select_AC_PC_Or_Normalization.Normalization_switch_reoriented_t1mri')
+        self.add_link('TalairachFromNormalization.Talairach_transform->select_AC_PC_Or_Normalization.Normalization_switch_talairach_transformation')
 
         # initialization section
         if 'Normalization' in self.nodes:
-            self.dispatch_value(
-                self, 'select_AC_PC_Or_Normalization', 'Normalization')
+            self.dispatch_value(self, 'select_AC_PC_Or_Normalization', 'Normalization')
         # export orphan parameters
         if not hasattr(self, '_autoexport_nodes_parameters') \
                 or self._autoexport_nodes_parameters:

@@ -11,15 +11,11 @@ from capsul.api import Process
 class SulciLabellingANN(Process):
     def __init__(self, **kwargs):
         super(SulciLabellingANN, self).__init__(**kwargs)
-        self.add_field('data_graph', File, read=True,
-                       extensions=['.arg', '.data'])
-        self.add_field('model', File, read=True, extensions=[
-                       '.arg', '.data'], dataset="shared")
-        self.add_field('output_graph', File, write=True,
-                       extensions=['.arg', '.data'])
+        self.add_field('data_graph', File, read=True, extensions=['.arg', '.data'])
+        self.add_field('model', File, read=True, extensions=['.arg', '.data'], dataset="shared")
+        self.add_field('output_graph', File, write=True, extensions=['.arg', '.data'])
         self.add_field('model_hint', Literal[0, 1])
-        self.add_field('energy_plot_file', File,
-                       write=True, extensions=['.nrj'])
+        self.add_field('energy_plot_file', File, write=True, extensions=['.nrj'])
         self.add_field('rate', float)
         self.add_field('stopRate', float)
         self.add_field('niterBelowStopProp', int)
@@ -28,7 +24,6 @@ class SulciLabellingANN(Process):
 
 
         # initialization section
-        self.model = '/volatile/riviere/casa-distro/conda/brainvisa-6.0/build/share/brainvisa-share-5.2/models/models_2008/discriminative_models/3.0/Lfolds_noroots/Lfolds_noroots.arg'
         self.model_hint = 0
         self.rate = 0.98
         self.stopRate = 0.05
@@ -44,7 +39,6 @@ class SulciLabellingANN(Process):
         neuroConfig.gui = False
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
-
 
         axon.initializeProcesses()
 

@@ -1,26 +1,24 @@
 # -*- coding: utf-8 -*-
+from soma.controller import File, Directory, undefined, Any, \
+    Literal, field
 try:
-    from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
-        List, Any, Undefined
+    from pydantic.v1 import conlist
 except ImportError:
-    from enthought.traits.api import File, Directory, Float, Int, Bool, Enum, \
-        Str, List, Any, Undefined
-
+    from pydantic import conlist
 from capsul.api import Process
-import six
 
 
 class foldgraphupgradestructure(Process):
     def __init__(self, **kwargs):
         super(foldgraphupgradestructure, self).__init__(**kwargs)
-        self.add_trait('old_graph', File(allowed_extensions=['.arg', '.data']))
-        self.add_trait('skeleton', File(allowed_extensions=['.nii.gz', '.svs', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg', '.scn', '.mnc', '.nii', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.bif', '.czi', '.mnc.gz']))
-        self.add_trait('graph_version', Str(trait=Str(), default_value='3.1'))
-        self.add_trait('graph', File(allowed_extensions=['.arg', '.data'], output=True))
-        self.add_trait('commissure_coordinates', File(allowed_extensions=['.APC'], optional=True))
-        self.add_trait('Talairach_transform', File(allowed_extensions=['.trm']))
-        self.add_trait('compute_fold_meshes', Bool())
-        self.add_trait('allow_multithreading', Bool())
+        self.add_field('old_graph', File, read=True, extensions=['.arg', '.data'])
+        self.add_field('skeleton', File, read=True, extensions=['.nii.gz', '.svs', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg', '.scn', '.mnc', '.nii', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.bif', '.czi', '.mnc.gz'])
+        self.add_field('graph_version', str, trait=str(), default_value='3.1')
+        self.add_field('graph', File, write=True, extensions=['.arg', '.data'])
+        self.add_field('commissure_coordinates', File, read=True, extensions=['.APC'], optional=True)
+        self.add_field('Talairach_transform', File, read=True, extensions=['.trm'])
+        self.add_field('compute_fold_meshes', bool)
+        self.add_field('allow_multithreading', bool)
 
 
         # initialization section
@@ -28,7 +26,7 @@ class foldgraphupgradestructure(Process):
         self.compute_fold_meshes = True
         self.allow_multithreading = True
 
-    def _run_process(self):
+    def execute(self, context=None):
         from brainvisa import axon
         from brainvisa.configuration import neuroConfig
         import brainvisa.processes
@@ -37,17 +35,17 @@ class foldgraphupgradestructure(Process):
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
 
-
         axon.initializeProcesses()
 
         kwargs = {}
-        for name in self.user_traits():
+        for field in self.fields():
+            name = field.name
             value = getattr(self, name)
-            if value is Undefined:
+            if value is undefined:
                 continue
-            if isinstance(self.trait(name).trait_type, File) and value != '':
+            if field.path_type and value != '':
                 kwargs[name] = value
-            elif isinstance(self.trait(name).trait_type, List):
+            elif field.is_list():
                 kwargs[name] = list(value)
             else:
                 kwargs[name] = value

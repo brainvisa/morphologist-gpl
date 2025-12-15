@@ -11,23 +11,19 @@ from capsul.api import Process
 class normalization_t1_spm12_reinit(Process):
     def __init__(self, **kwargs):
         super(normalization_t1_spm12_reinit, self).__init__(**kwargs)
-        self.add_field('anatomy_data', File, read=True,
-                       extensions=['.nii', '.img', '.hdr'])
-        self.add_field('anatomical_template', File, read=True, extensions=[
-                       '.nii', '.mnc', '.img', '.hdr'], optional=True, dataset="shared")
+        self.add_field('anatomy_data', File, read=True, extensions=['.nii', '.img', '.hdr'])
+        self.add_field('anatomical_template', File, read=True, extensions=['.nii', '.mnc', '.img', '.hdr'], optional=True, dataset="shared")
         self.add_field('voxel_size', Literal['[1 1 1]'])
         self.add_field('cutoff_option', int)
         self.add_field('nbiteration', int)
-        self.add_field('transformations_informations', File,
-                       write=True, extensions=['.mat'])
-        self.add_field('normalized_anatomy_data', File,
-                       write=True, extensions=['.nii', '.img', '.hdr'])
+        self.add_field('transformations_informations', File, write=True, extensions=['.mat'])
+        self.add_field('normalized_anatomy_data', File, write=True, extensions=['.nii', '.img', '.hdr'])
         self.add_field('allow_retry_initialization', bool)
         self.add_field('init_translation_origin', Literal[0, 1])
 
 
         # initialization section
-        self.anatomical_template = '/volatile/local/spm12-standalone/spm12_mcr/spm12/spm12/toolbox/OldNorm/T1.nii'
+        self.anatomical_template = '/home_local/a-sac-ns-brainvisa/bbi-daily/soma-env-0.1/.pixi/envs/default/spm12/spm12_mcr/spm/spm12/toolbox/OldNorm/T1.nii'
         self.voxel_size = '[1 1 1]'
         self.cutoff_option = 25
         self.nbiteration = 16
@@ -42,7 +38,6 @@ class normalization_t1_spm12_reinit(Process):
         neuroConfig.gui = False
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
-
 
         axon.initializeProcesses()
 

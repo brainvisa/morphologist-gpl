@@ -31,8 +31,7 @@ class Normalization(Pipeline):
         self.nodes['Normalization_AimsMIRegister']._weak_outputs = True
 
         # switches section
-        self.add_switch('select_Normalization_pipeline', ['NormalizeFSL', 'NormalizeSPM', 'NormalizeBaladin', 'Normalization_AimsMIRegister'], ['transformation', 'normalized', 'reoriented_t1mri'], output_types=[field(type_=File, write=True, optional=True, extensions=['.trm']), field(type_=File, write=True, optional=True, extensions=['.nii.gz', '.nii', '.img', '.hdr', '.ima', '.dim', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.gif', '.jpg', '.mnc', '.pbm', '.pgm',
-                        '.png', '.ppm', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz']), field(type_=File, write=True, read=True, extensions=['.nii.gz', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.gif', '.ima', '.dim', '.jpg', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.xbm', '.xpm', '.mnc.gz', '.svs', '.mgh', '.mgz', '.ndpi', '.vms', '.vmu', '.scn', '.svslide', '.bif', '.czi'])])
+        self.add_switch('select_Normalization_pipeline', ['NormalizeFSL', 'NormalizeSPM', 'NormalizeBaladin', 'Normalization_AimsMIRegister'], ['transformation', 'normalized', 'reoriented_t1mri'], output_types=[field(type_=File, write=True, optional=True, extensions=['.trm']), field(type_=File, write=True, optional=True, extensions=['.nii.gz', '.nii', '.img', '.hdr', '.ima', '.dim', '.dcm', '', '.i', '.v', '.fdf', '.jpg', '.mnc', '.tiff', '.tif', '.mnc.gz']), field(type_=File, write=True, read=True, extensions=['.nii.gz', '.dcm', '', '.i', '.v', '.fdf', '.ima', '.dim', '.jpg', '.mnc', '.nii', '.img', '.hdr', '.tiff', '.tif', '.mnc.gz', '.svs', '.mgh', '.mgz', '.ndpi', '.vms', '.vmu', '.scn', '.svslide', '.bif', '.czi'])])
 
         # exports section
         # export input parameter
@@ -64,26 +63,22 @@ class Normalization(Pipeline):
         self.add_link('NormalizeSPM.ReorientAnatomy_output_commissures_coordinates->output_commissures_coordinates')
         self.add_link('NormalizeBaladin.ReorientAnatomy_output_commissures_coordinates->output_commissures_coordinates')
         self.add_link('init_translation_origin->NormalizeSPM.init_translation_origin')
-        self.add_link('Normalization_AimsMIRegister.normalized_anatomy_data->select_Normalization_pipeline.Normalization_AimsMIRegister_switch_normalized')
-        self.add_link('NormalizeBaladin.reoriented_t1mri->select_Normalization_pipeline.NormalizeBaladin_switch_reoriented_t1mri')
-        self.add_link('NormalizeFSL.NormalizeFSL_normalized_anatomy_data->select_Normalization_pipeline.NormalizeFSL_switch_normalized')
+        self.add_link('NormalizeSPM.reoriented_t1mri->select_Normalization_pipeline.NormalizeSPM_switch_reoriented_t1mri')
         self.add_link('Normalization_AimsMIRegister.transformation_to_MNI->select_Normalization_pipeline.Normalization_AimsMIRegister_switch_transformation')
-        self.add_link('NormalizeFSL.transformation->select_Normalization_pipeline.NormalizeFSL_switch_transformation')
-        self.add_link('NormalizeBaladin.transformation->select_Normalization_pipeline.NormalizeBaladin_switch_transformation')
-        self.add_link('NormalizeBaladin.NormalizeBaladin_normalized_anatomy_data->select_Normalization_pipeline.NormalizeBaladin_switch_normalized')
-        self.add_link('t1mri->select_Normalization_pipeline.Normalization_AimsMIRegister_switch_reoriented_t1mri')
-        self.add_link('NormalizeSPM.normalized_t1mri->select_Normalization_pipeline.NormalizeSPM_switch_normalized')
+        self.add_link('NormalizeFSL.NormalizeFSL_normalized_anatomy_data->select_Normalization_pipeline.NormalizeFSL_switch_normalized')
         self.add_link('NormalizeSPM.transformation->select_Normalization_pipeline.NormalizeSPM_switch_transformation')
         self.add_link('NormalizeFSL.reoriented_t1mri->select_Normalization_pipeline.NormalizeFSL_switch_reoriented_t1mri')
-        self.add_link('NormalizeSPM.reoriented_t1mri->select_Normalization_pipeline.NormalizeSPM_switch_reoriented_t1mri')
+        self.add_link('Normalization_AimsMIRegister.normalized_anatomy_data->select_Normalization_pipeline.Normalization_AimsMIRegister_switch_normalized')
+        self.add_link('t1mri->select_Normalization_pipeline.Normalization_AimsMIRegister_switch_reoriented_t1mri')
+        self.add_link('NormalizeBaladin.reoriented_t1mri->select_Normalization_pipeline.NormalizeBaladin_switch_reoriented_t1mri')
+        self.add_link('NormalizeBaladin.NormalizeBaladin_normalized_anatomy_data->select_Normalization_pipeline.NormalizeBaladin_switch_normalized')
+        self.add_link('NormalizeFSL.transformation->select_Normalization_pipeline.NormalizeFSL_switch_transformation')
+        self.add_link('NormalizeBaladin.transformation->select_Normalization_pipeline.NormalizeBaladin_switch_transformation')
+        self.add_link('NormalizeSPM.normalized_t1mri->select_Normalization_pipeline.NormalizeSPM_switch_normalized')
 
         # initialization section
-        self.nodes['NormalizeFSL'].allow_flip_initial_MRI = False
-        self.nodes['NormalizeSPM'].allow_flip_initial_MRI = False
-        self.nodes['NormalizeBaladin'].allow_flip_initial_MRI = False
         if 'NormalizeSPM' in self.nodes:
-            self.dispatch_value(
-                self, 'select_Normalization_pipeline', 'NormalizeSPM')
+            self.dispatch_value(self, 'select_Normalization_pipeline', 'NormalizeSPM')
         # export orphan parameters
         if not hasattr(self, '_autoexport_nodes_parameters') \
                 or self._autoexport_nodes_parameters:

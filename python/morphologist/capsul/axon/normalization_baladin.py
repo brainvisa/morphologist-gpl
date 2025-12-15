@@ -11,20 +11,16 @@ from capsul.api import Process
 class Normalization_Baladin(Process):
     def __init__(self, **kwargs):
         super(Normalization_Baladin, self).__init__(**kwargs)
-        self.add_field('anatomy_data', File, read=True,
-                       extensions=['.ima', '.dim'])
-        self.add_field('anatomical_template', File, read=True,
-                       extensions=['.ima', '.dim'], dataset="shared")
-        self.add_field('transformation_matrix', File,
-                       write=True, extensions=['.txt'])
-        self.add_field('normalized_anatomy_data', File, write=True,
-                       extensions=['.ima', '.dim', '.nii', '.nii.gz'])
+        self.add_field('anatomy_data', File, read=True, extensions=['.ima', '.dim'])
+        self.add_field('anatomical_template', File, read=True, extensions=['.ima', '.dim'], dataset="shared")
+        self.add_field('transformation_matrix', File, write=True, extensions=['.txt'])
+        self.add_field('normalized_anatomy_data', File, write=True, extensions=['.ima', '.dim', '.nii', '.nii.gz'])
 
 
         # initialization section
-        self.anatomical_template = '/volatile/riviere/casa-distro/conda/brainvisa-6.0/build/share/brainvisa-share-5.2/anatomical_templates/MNI152_T1_2mm_brain.nii'
+        self.anatomical_template = '/home_local/a-sac-ns-brainvisa/bbi-daily/soma-env-0.1/.pixi/envs/default/spm12/spm12_mcr/spm/spm12/canonical/single_subj_T1.nii'
 
-    def _run_process(self):
+    def execute(self, context=None):
         from brainvisa import axon
         from brainvisa.configuration import neuroConfig
         import brainvisa.processes
@@ -32,7 +28,6 @@ class Normalization_Baladin(Process):
         neuroConfig.gui = False
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
-
 
         axon.initializeProcesses()
 

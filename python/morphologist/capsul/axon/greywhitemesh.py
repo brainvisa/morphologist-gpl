@@ -11,10 +11,9 @@ from capsul.api import Process
 class GreyWhiteMesh(Process):
     def __init__(self, **kwargs):
         super(GreyWhiteMesh, self).__init__(**kwargs)
-        self.add_field('hemi_cortex', File, read=True, extensions=['.nii.gz', '.svs', '.bmp', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.gif', '.ima', '.dim', '.ndpi', '.vms', '.vmu',
-                       '.jpg', '.scn', '.mnc', '.nii', '.pbm', '.pgm', '.png', '.ppm', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.vimg', '.vinfo', '.vhdr', '.bif', '.xbm', '.xpm', '.czi', '.mnc.gz'])
-        self.add_field('white_mesh', File, write=True, extensions=[
-                       '.gii', '.mesh', '.obj', '.ply', '.tri'])
+        self.add_field('hemi_cortex', File, read=True, extensions=['.nii.gz', '.svs', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg', '.scn', '.mnc', '.nii', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.bif', '.czi', '.mnc.gz'])
+        self.add_field('white_mesh', File, write=True, extensions=['.gii', '.mesh', '.obj', '.ply', '.tri'])
+
 
     def execute(self, context=None):
         from brainvisa import axon
@@ -24,7 +23,6 @@ class GreyWhiteMesh(Process):
         neuroConfig.gui = False
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
-
 
         axon.initializeProcesses()
 

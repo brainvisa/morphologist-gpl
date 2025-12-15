@@ -11,25 +11,19 @@ from capsul.api import Process
 class Normalization_FSL_reinit(Process):
     def __init__(self, **kwargs):
         super(Normalization_FSL_reinit, self).__init__(**kwargs)
-        self.add_field('anatomy_data', File, read=True,
-                       extensions=['.nii', '.nii.gz'])
-        self.add_field('anatomical_template', File, read=True,
-                       extensions=['.nii', '.nii.gz'], dataset="shared")
-        self.add_field('Alignment', Literal['Already Virtually Aligned',
-                       'Not Aligned but Same Orientation', 'Incorrectly Oriented'])
-        self.add_field('transformation_matrix', File,
-                       write=True, extensions=['.mat'])
-        self.add_field('normalized_anatomy_data', File,
-                       write=True, extensions=['.nii.gz', '.nii'])
-        self.add_field(
-            'cost_function', Literal['corratio', 'mutualinfo', 'normcorr', 'normmi', 'leastsq', 'labeldiff'])
-        self.add_field('search_cost_function',
-                       Literal['corratio', 'mutualinfo', 'normcorr', 'normmi', 'leastsq', 'labeldiff'])
+        self.add_field('anatomy_data', File, read=True, extensions=['.nii', '.nii.gz'])
+        self.add_field('anatomical_template', File, read=True, extensions=['.nii', '.nii.gz'], dataset="shared")
+        self.add_field('Alignment', Literal['Already Virtually Aligned', 'Not Aligned but Same Orientation', 'Incorrectly Oriented'])
+        self.add_field('transformation_matrix', File, write=True, extensions=['.mat'])
+        self.add_field('normalized_anatomy_data', File, write=True, extensions=['.nii.gz', '.nii'])
+        self.add_field('cost_function', Literal['corratio', 'mutualinfo', 'normcorr', 'normmi', 'leastsq', 'labeldiff'])
+        self.add_field('search_cost_function', Literal['corratio', 'mutualinfo', 'normcorr', 'normmi', 'leastsq', 'labeldiff'])
         self.add_field('allow_retry_initialization', bool)
         self.add_field('init_translation_origin', Literal[0, 1])
 
 
         # initialization section
+        self.anatomical_template = '/home_local/a-sac-ns-brainvisa/bbi-daily/soma-env-0.1/.pixi/envs/default/spm12/spm12_mcr/spm/spm12/toolbox/OldNorm/T1.nii'
         self.Alignment = 'Not Aligned but Same Orientation'
         self.cost_function = 'corratio'
         self.search_cost_function = 'corratio'
@@ -44,7 +38,6 @@ class Normalization_FSL_reinit(Process):
         neuroConfig.gui = False
         neuroConfig.fastStart = True
         neuroConfig.logFileName = ''
-
 
         axon.initializeProcesses()
 
