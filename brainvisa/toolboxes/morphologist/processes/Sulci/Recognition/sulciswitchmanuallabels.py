@@ -30,7 +30,6 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
-from __future__ import absolute_import
 from brainvisa.processes import *
 from brainvisa import registration
 
@@ -45,12 +44,14 @@ signature = Signature(
                                   requiredAttributes={'labelled': 'Yes'}),
     'source_labeling', Choice(('Auto', 'label'), ('Manual', 'name')),
     'destinaton_labeling', Choice(('Auto', 'label'), ('Manual', 'name')),
+    'output_database', Choice(),
     'output_session', String(),
 )
 
 
 def initialization(self):
-    def linkLabelAttribute(self, process):
+
+    def link_output_graph(self, process):
         la = None
         if self.destinaton_labeling == 'label':
             la = 'automatically_labelled'
@@ -59,18 +60,20 @@ def initialization(self):
             la = 'manually_labelled'
             nola = 'automatically_labelled'
         req = {'labelled': 'Yes', la: 'Yes', nola: 'No'}
+        if self.output_database is not None:
+            req['_database'] = self.output_database
         if self.output_session is not None:
             req['sulci_recognition_session'] = self.output_session
         di = WriteDiskItem("Data graph", 'Graph', requiredAttributes=req)
         return di.findValue(self.input_graph)
 
-    def linkSourceLabeling(self, process):
+    def link_source_labeling(self, process):
         if self.input_graph.get('manually_labelled', None) == 'Yes':
             return 'name'
         else:
             return 'label'
 
-    def linkDestLabeling(self, process):
+    def link_dest_labeling(self, process):
         if self.output_graph is None:
             return 'name'
         if self.output_graph.get('automatically_labelled', None) == 'Yes':
@@ -78,13 +81,24 @@ def initialization(self):
         else:
             return 'name'
 
+    # list of possible databases, while respecting the ontology
+    # ontology: brainvisa-3.2.0
+    databases = [h.name for h in neuroHierarchy.hierarchies()
+                 if not h.builtin and (h.fso.name == "brainvisa-3.2.0"
+                                       or 'morphologist' in h.fso.name)]
+    self.signature["output_database"].setChoices(*databases)
+    if len(databases) != 0:
+        self.output_database = databases[0]
+    else:
+        self.signature["output_database"] = OpenChoice()
+
     self.linkParameters('output_graph',
                         ('input_graph', 'destinaton_labeling',
-                         'output_session'),
-                        linkLabelAttribute)
-    self.linkParameters('source_labeling', 'input_graph', linkSourceLabeling)
+                         'output_database', 'output_session'),
+                        link_output_graph)
+    self.linkParameters('source_labeling', 'input_graph', link_source_labeling)
     self.linkParameters('destinaton_labeling', 'output_graph',
-                        linkDestLabeling)
+                        link_dest_labeling)
     self.setOptional('output_session')
 
 
