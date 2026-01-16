@@ -45,30 +45,23 @@ signature = Signature(
                                   requiredAttributes={'labelled': 'Yes'}),
     'source_labeling', Choice(('Auto', 'label'), ('Manual', 'name')),
     'destinaton_labeling', Choice(('Auto', 'label'), ('Manual', 'name')),
+    'output_session', String(),
 )
 
 
 def initialization(self):
     def linkLabelAttribute(self, process):
         la = None
-        if self.input_graph:
-            la = self.input_graph.get('manually_labelled', None)
-            if la == 'Yes':
-                la = 'automatically_labelled'
-                nola = 'manually_labelled'
-            else:
-                la = self.input_graph.get('automatically_labelled', None)
-                if la == 'Yes':
-                    la = 'manually_labelled'
-                    nola = 'automatically_labelled'
-                else:
-                    la = None
-        if la:
-            di = WriteDiskItem("Data graph", 'Graph',
-                               requiredAttributes={'labelled': 'Yes', la: 'Yes', nola: 'No'})
+        if self.destinaton_labeling == 'label':
+            la = 'automatically_labelled'
+            nola = 'manually_labelled'
         else:
-            di = WriteDiskItem("Data graph", 'Graph',
-                               requiredAttributes={'labelled': 'Yes'})
+            la = 'manually_labelled'
+            nola = 'automatically_labelled'
+        req = {'labelled': 'Yes', la: 'Yes', nola: 'No'}
+        if self.output_session is not None:
+            req['sulci_recognition_session'] = self.output_session
+        di = WriteDiskItem("Data graph", 'Graph', requiredAttributes=req)
         return di.findValue(self.input_graph)
 
     def linkSourceLabeling(self, process):
@@ -78,15 +71,21 @@ def initialization(self):
             return 'label'
 
     def linkDestLabeling(self, process):
+        if self.output_graph is None:
+            return 'name'
         if self.output_graph.get('automatically_labelled', None) == 'Yes':
             return 'label'
         else:
             return 'name'
 
-    self.linkParameters('output_graph', 'input_graph', linkLabelAttribute)
+    self.linkParameters('output_graph',
+                        ('input_graph', 'destinaton_labeling',
+                         'output_session'),
+                        linkLabelAttribute)
     self.linkParameters('source_labeling', 'input_graph', linkSourceLabeling)
     self.linkParameters('destinaton_labeling', 'output_graph',
                         linkDestLabeling)
+    self.setOptional('output_session')
 
 
 def execution(self, context):
