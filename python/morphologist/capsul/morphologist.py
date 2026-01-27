@@ -286,6 +286,12 @@ class Morphologist(morphologist.capsul.axon.axonmorphologist.AxonMorphologist):
                               'sulci_recognition_spam_local_or_markovian')
         self.add_link('sulci_recognition_spam_local_or_markovian'
                       '->SulciRecognition_1.SPAM_recognition09_local_or_markovian')
+
+        self.remove_link(
+            't1mri->Report.t1mri')
+        self.add_link('importation.output->Report.t1mri')
+
+
         self.export_parameter(
             'SulciRecognition',
             'SPAM_recognition09_global_recognition_model_type',

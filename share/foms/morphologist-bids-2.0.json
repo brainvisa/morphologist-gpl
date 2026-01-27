@@ -1840,6 +1840,37 @@
             ],
             "inter_subject_qc_table":
                 [["output:qc/qc","TSV file"]],
+        },
+
+        "ImportT1Mri": {
+            "input": [
+                [
+                    "input:{acquisition}/{sub}_T1w",
+                    "Aims readable volume formats"
+                ],
+                [
+                    "input:sub-<subject>/ses-<session>/{sub}_T1w",
+                    "Aims readable volume formats"
+                ],
+                [
+                    "input:sub-<subject>/ses-<session>/sub-<subject>_ses-<session>_T1w",
+                    "Aims readable volume formats"
+                ],
+                [
+                    "input:{acquisition}/sub-<subject>_ses-<session>_T1w",
+                    "Aims readable volume formats",
+                ],
+                [
+                    "input:{acquisition}/{sub}_desc-conform_T1w",
+                    "Aims readable volume formats"
+                ]
+            ],
+            "output": [
+                [
+                    "output:{acquisition}/{sub}_desc-conform_T1w",
+                    "Aims readable volume formats"
+                ]
+            ]
         }
 
     }
