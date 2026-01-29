@@ -84,8 +84,9 @@ def initialization(self):
     # list of possible databases, while respecting the ontology
     # ontology: brainvisa-3.2.0
     databases = [h.name for h in neuroHierarchy.hierarchies()
-                 if not h.builtin and (h.fso.name == "brainvisa-3.2.0"
-                                       or 'morphologist' in h.fso.name)]
+                 if not h.builtin and not h.read_only
+                 and (h.fso.name == "brainvisa-3.2.0"
+                      or 'morphologist' in h.fso.name)]
     self.signature["output_database"].setChoices(*databases)
     if len(databases) != 0:
         self.output_database = databases[0]
