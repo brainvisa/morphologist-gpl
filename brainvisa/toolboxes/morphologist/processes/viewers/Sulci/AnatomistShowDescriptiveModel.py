@@ -47,7 +47,8 @@ def validation():
 
 
 signature = Signature(
-    'read', ReadDiskItem('Sulci Segments Model', 'Text data table'),
+    # 'read', ReadDiskItem('Sulci Segments Model', 'Text data table'),
+    'read', ReadDiskItem('Model sulci graph', 'Graph and data'),
     'levels', Choice((_t_('1: High probability (70% rejected)'), 1),
                      (_t_('2: Intermediate probability (40% rejected)'), 2),
                      (_t_('3: Low probability (20% rejected)'), 4),
@@ -89,7 +90,7 @@ def initialization(self):
 
 def execution(self, context):
     a = anatomist.Anatomist()
-    meshdir = os.path.join(os.path.dirname(self.read.fullPath()), 'meshes')
+    meshdir = os.path.dirname(self.read.fullPath())
     graphs = glob.glob(os.path.join(meshdir, '*.arg'))
     objlist = []
     aref = None
@@ -98,15 +99,13 @@ def execution(self, context):
             (hie, br) = context.runProcess('AnatomistShowNomenclature',
                                            read=self.nomenclature)
         tm = registration.getTransformationManager()
-        ref = tm.referential(self.read.get('referential'))
-        if ref:
-            aref = a.createReferential(ref.fullPath())
         for graphname in graphs:
             level = int(graphname[-5]) + 1
             if level == 3:
                 level = 4  # make level a binary mask
             if level & self.levels:
                 graph = a.loadObject(graphname)
+                graph.applyBuiltinReferential()
                 objlist.append(graph)
                 if self.levels not in (1, 2, 4):
                     if level == 2:
@@ -114,8 +113,6 @@ def execution(self, context):
                     elif level == 4:
                         graph.setMaterial(diffuse=[1., 1., 1., 0.2])
         w = a.createWindow('3D')
-        if ref:
-            a.assignReferential(aref, objlist + [w])
         w.addObjects(objlist, add_graph_nodes=True)
         objlist += [w, br, hie]
         if not self.show_unknown:

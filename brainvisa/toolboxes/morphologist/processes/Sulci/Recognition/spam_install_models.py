@@ -115,7 +115,7 @@ def addSharedDatabase(context, destdir):
 
 def execution(self, context):
     files = []
-    modelsversion = '4.2'
+    modelsversion = '4.2.1'
     if self.install_in_compatible_database != -1:
         destdir = self.install_in_compatible_database
     else:

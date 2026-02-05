@@ -81,3 +81,5 @@ FileType('Template model domain', 'Any Type', 'Template model domain')
 
 FileType('Sulci groups list', 'Any Type', 'JSON file')
 FileType('Sulcal morphometry measurements', 'CSV File')
+
+FileType('Model sulci graph', 'Model Graph', 'Graph and data')
