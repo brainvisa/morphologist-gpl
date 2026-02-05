@@ -72,6 +72,7 @@ descriptive_models = (
                 'global_SPAM', SetType('Referential'),
                 'white_SPAM', SetType('Referential'),
                 'Lwhite_TO_global_spam', SetType('Transformation'),
+                'Lspam_model_*', SetType('Model sulci graph'),
             ),
         ),
         '{sulci_segments_model_type}_right', SetWeakAttr('side', 'right'),
@@ -85,6 +86,7 @@ descriptive_models = (
             'local_referentials', SetType('Sulci Local referentials'),
             'meshes', SetContent(
                 'Rwhite_spam', SetType('White SPAM mesh'),
+                'Rspam_model_*', SetType('Model sulci graph'),
             ),
         ),
     ),

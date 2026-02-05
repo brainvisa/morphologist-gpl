@@ -5,16 +5,13 @@ enable_testing()
 
 BRAINVISA_FIND_PACKAGE( axon REQUIRED )
 BRAINVISA_FIND_PACKAGE( morphologist-nonfree QUIET )
-BRAINVISA_FIND_PACKAGE( aims-til QUIET )
 BRAINVISA_DEPENDENCY( RUN DEPENDS "axon" RUN
                       ">= ${axon_VERSION_MAJOR}.${axon_VERSION_MINOR}" )
 BRAINVISA_DEPENDENCY( RUN RECOMMENDS "morphologist-nonfree" RUN
                       ">= ${morphologist-nonfree_VERSION_MAJOR}.${morphologist-nonfree_VERSION_MINOR}" )
-BRAINVISA_DEPENDENCY( RUN RECOMMENDS "aims-til" RUN "= ${aims-til_VERSION}" )
 BRAINVISA_DEPENDENCY( RUN RECOMMENDS "anatomist-gpl" RUN
                       "= ${anatomist-gpl_VERSION}" )
 BRAINVISA_DEPENDENCY( DEV DEPENDS "${PROJECT_NAME}" RUN "= ${${PROJECT_NAME}_VERSION}" )
-BRAINVISA_DEPENDENCY( DEV RECOMMENDS "aims-til" DEV "= ${aims-til_VERSION}" )
 BRAINVISA_DEPENDENCY( DEV RECOMMENDS "anatomist-gpl" DEV
                       "= ${anatomist-gpl_VERSION}" )
 BRAINVISA_DEPENDENCY(
