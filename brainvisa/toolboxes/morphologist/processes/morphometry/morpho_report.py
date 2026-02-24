@@ -623,7 +623,7 @@ def execution(self, context):
         pdf.drawString(
             30, 330,
             f'normative reference: {osp.basename(osp.dirname(self.normative_brain_stats.fullName()))}')
-        y += 20
+        y -= 20
     if comments:
         for i, c in enumerate(comments):
             pdf.drawString(30, y - 12 * i, c)
