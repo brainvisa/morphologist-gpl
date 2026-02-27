@@ -1,5 +1,11 @@
  Changelog
 
+## [6.0.10] 2026-02-27
+
+### Changed
+
+- morpho-deepsulci: fixed models installation issue (spam model graphs 2019 were not installed)
+
 ## [6.0.9] 2026-02-27
 
 ### Changed
