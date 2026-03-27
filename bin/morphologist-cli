@@ -83,7 +83,7 @@ def morphologist(
                 subjects_args += ["-a", f"{att}={repr(val)}"]
         else:
             for att, val in atts.items():
-                subjects_args += ["-a", f"{att}=\"{val[0]}\""]
+                subjects_args += ["-a", f"{att}={val[0]}"]
     # print('subjects_args:', subjects_args)
 
     # if iterations are involved, disable any in-process multithreading
