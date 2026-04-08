@@ -1,4 +1,10 @@
- Changelog
+# Changelog
+
+## [6.0.14] 2026-04-07
+
+### Changed
+
+- morphologist-cli fixed subject ID which got quotes for single subject
 
 ## [6.0.10] 2026-02-27
 
