@@ -1299,9 +1299,9 @@ def test_normative(brain_volumes_files, normative_file, variables=None,
 
             ax.scatter(xp, p[:, i], color='green')
 
-            # ax.plot(ages, mavg[:, i], color='orange')
-            # ax.plot(ages, mavg[:, i] + bstd[:, i], '--', color='orange')
-            # ax.plot(ages, mavg[:, i] - bstd[:, i], '--', color='orange')
+            ax.plot(ages, mavg[:, i], color='orange')
+            ax.plot(ages, mavg[:, i] + bstd[:, i], '--', color='orange')
+            ax.plot(ages, mavg[:, i] - bstd[:, i], '--', color='orange')
 
             fig.tight_layout()
     plt.show()
@@ -1320,8 +1320,11 @@ def dict_transform(d, values):
 
 
 def read_datasets_def(ds_filename, datasets=None):
-    with open(ds_filename) as f:
-        ds = yaml.safe_load(f)
+    if isinstance(ds_filename, str):
+        with open(ds_filename) as f:
+            ds = yaml.safe_load(f)
+    else:
+        ds = ds_filename
 
     covar_files = {}
     # bmorph_files = []
@@ -1414,18 +1417,25 @@ def read_datasets_def(ds_filename, datasets=None):
         if not isinstance(bmorph, dict):
             print('WARNING: no brain_morphometry file for', dataset)
             continue
-        for loc, fdef in bmorph.items():
-            if isinstance(fdef, dict):
-                fname = fdef['filename']
-                prefix = fdef.get('sub-prefix', sub_prefix)
-            else:
-                fname = fdef
-                prefix = sub_prefix
-            if not osp.exists(fname):
-                continue
-            morph_csvs[fname] = F'{dataset}_'
-            sub_prefixes[fname] = prefix
-            break
+        for loc, fldef in bmorph.items():
+            if not isinstance(fldef, list):
+                fldef = [fldef]
+            ok = False
+            for fdef in fldef:
+                if isinstance(fdef, dict):
+                    fname = fdef['filename']
+                    prefix = fdef.get('sub-prefix', sub_prefix)
+                else:
+                    fname = fdef
+                    prefix = sub_prefix
+                if not osp.exists(fname):
+                    ok = False
+                    break
+                ok = True
+                morph_csvs[fname] = F'{dataset}_'
+                sub_prefixes[fname] = prefix
+            if ok:
+                break
     hdr, morph = read_multiple_csv(morph_csvs, sub_prefix=sub_prefixes,
                                    add_sub_prefix=morph_csvs)
     ds_def['morphometry'] = {'header': hdr, 'table': morph}

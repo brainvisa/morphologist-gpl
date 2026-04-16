@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<minf expander="minf_2.0">
+<d>
+  <d name="en">
+    <xhtml name="short">Build normative brain volule stats from a dataset.</xhtml>
+    <xhtml name="long">The normative stats are used by the process <a href="bvprocess://morpho_report">morpho_report</a>.
+This process is a simplified (easier) version of <a href="bvprocess://normative_brainvolumes_stats_mult">normative_brainvolumes_stats_mult</a> for a single normative dataset with a single covariables table.<br/>
+The other process is able to use several datasets, with covariables spread across multiple <tt>.csv</tt> tables, but it requires to write a datasets config file.</xhtml>
+    <d name="parameters">
+      <xhtml name="covariables">Covariables to be taken into account to build stratified stats. If not provided, only global stats are built.<br/>
+The covariables mayu be either a list (in <tt>JSON</tt> format), like <tt>["sex", "age"]</tt>, or a dict which tells which column of the covariables table actually contains the information, ex: <tt>{"age": "Age", "sex": "Gender"}</tt>. If several covariable tables are needed, or if covariates transformations are required (for instance if sex is not "M", "F" but 0, 1, or age is in months instead of years), then you will need to use the other process, <a href="bvprocess://normative_brainvolumes_stats_mult">normative_brainvolumes_stats_mult</a>.</xhtml>
+    </d>
+  </d>
+</d>
+</minf>
