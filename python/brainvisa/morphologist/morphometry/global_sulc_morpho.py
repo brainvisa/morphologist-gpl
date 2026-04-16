@@ -10,6 +10,8 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import SplineTransformer
 import pickle
 import json
+import yaml
+from functools import partial
 
 
 removed_labels = ['ventricle']
@@ -428,26 +430,44 @@ def sulcal_and_brain_morpho(
 
 # -- inter-subject part --
 
-def read_multiple_csv(csv_list, sub_prefix=None):
+def read_multiple_csv(csvs, sub_prefix=None, add_sub_prefix=None):
     '''
     Read multiple CSV files with compatible headers.
 
     The final header includes all fields of all files, with columns missing in
     some files filled with None values.
 
+    Parameters
+    ----------
+    sub_prefix: str | dict
+        prefix which should be removed from subjects IDs
+    add_sub_prefix: dict
+        dict of prefixes which should be prepended to subjects IDs, indexed by
+        file name
+
     Returns
     -------
-    hdr: list of str
+    hdr: list[str]
         list of header fields names
     table: list of list
         table elements. The 1st column is suposed to be the subject name and is
         left as a sting, others are converted to float.
-    sub_prefix: str
-        prefix which should be removed from subjects IDs
     '''
     table = []
     hdr = {}
-    for csv_file in csv_list:
+
+    if add_sub_prefix is None and isinstance(csvs, dict):
+        add_sub_prefix = csvs
+
+    for csv_file in csvs:
+        if isinstance(sub_prefix, dict):
+            prefix = sub_prefix.get(csv_file)
+        else:
+            prefix = sub_prefix
+        print('read:', csv_file, ', prefix:', prefix)
+        add_prefix = None
+        if add_sub_prefix:
+            add_prefix = add_sub_prefix.get(csv_file)
         with open(csv_file) as f:
             csv_reader = csv.reader(f, csv.Sniffer().sniff(f.readline()))
             f.seek(0)
@@ -471,8 +491,10 @@ def read_multiple_csv(csv_list, sub_prefix=None):
                 for i, v in enumerate(row):
                     c = hdr[hdr2[i]]
                     if c == 0:
-                        if sub_prefix and v.startswith(sub_prefix):
-                            v = v[len(sub_prefix):]
+                        if prefix and v.startswith(prefix):
+                            v = v[len(prefix):]
+                        if add_prefix is not None:
+                            v = add_prefix + v
                         trow[c] = v
                     else:
                         trow[c] = float(v)
@@ -480,12 +502,32 @@ def read_multiple_csv(csv_list, sub_prefix=None):
     return list(hdr.keys()), table
 
 
-def read_covar_table(covar_csv, covariables, skip_invalid=False):
+def read_covar_table(covar_csv, covariables, skip_invalid=False,
+                     sub_prefix=None, add_sub_prefix=None, filter=None):
+    '''
+    Parameters
+    ----------
+    covar_csv: str
+    covariables: list | dict
+        if dict: {dataset: {var: {'var_in_file': name, 'filename': xxx,
+                                  'interpret': func}}}
+    skip_invalid: bool
+    sub_prefix: str
+    add_sub_prefix: str
+        prefix which should be prepended to subjects IDs
+    filter: dict
+    '''
     with open(covar_csv) as f:
         dialect = csv.Sniffer().sniff(f.readline())
         sep = dialect.delimiter
 
     covar_table = pd.read_csv(covar_csv, sep=sep)
+
+    if filter is not None:
+        for k, v in filter.items():
+            covar_table = covar_table.loc[covar_table[k] == v]
+        covar_table.index = range(len(covar_table))
+        covar_table = covar_table.copy()
     # 1st col should be subject
     scol = covar_table.columns[0]
     if str(covar_table[scol].dtype) != 'str':
@@ -494,6 +536,28 @@ def read_covar_table(covar_csv, covariables, skip_invalid=False):
         covar_table.insert(0, scol, subs)
         covar_table = covar_table.copy()
     alt_covar = {'sex': 'gender'}
+    var_transform = {}
+    print('read file:', covar_csv)
+    # print('covariables:', covariables)
+    if isinstance(covariables, dict):
+        # {dataset: {var: {'var_in_file': name, 'filename': xxx,
+        #                  'interpret': func}}}
+        alt_covar = {}
+        for cv_set in covariables.values():
+            for var, vdef in cv_set.items():
+                if vdef['filename'] != covar_csv:
+                    continue
+                tvar = vdef['var_in_file']
+                alt_covar[var] = tvar.lower()
+                tr = vdef.get('interpret')
+                if tr is not None:
+                    var_transform[var] = tr
+        cov = []
+        for d in covariables.values():
+            cov += [k for k in d if k not in cov]
+        covariables = cov
+
+    print('alt_covar:', alt_covar)
     alt_covar.update({v: k for k, v in alt_covar.items()})
     new_covar = {}
     missing = []
@@ -551,23 +615,77 @@ def read_covar_table(covar_csv, covariables, skip_invalid=False):
         covar_table = covar_table.copy()
         covar_table.index = range(covar_table.shape[0])
 
+    for var, tvar in var_transform.items():
+        col = new_covar.get(var, [var, None])[0]
+        covar_table[col] = tr(covar_table[col])
+
+    if sub_prefix is not None:
+        sl = len(sub_prefix)
+        subs = [s[sl:] if s.startswith(sub_prefix) else s
+                for s in covar_table[covar_table.columns[0]]]
+        sub_col = covar_table.columns[0]
+        covar_table[sub_col] = subs
+    if add_sub_prefix is not None:
+        sub_col = covar_table.columns[0]
+        covar_table[sub_col] = add_sub_prefix + covar_table[sub_col]
+
     return covar_table, new_covar
 
 
-def read_covar_tables(covar_csvs, covariables, skip_invalid=False):
-    tables = []
-    new_covars = []
-    for covar_csv in covar_csvs:
+def read_covar_tables(covar_csvs, covariables, skip_invalid=False,
+                      sub_prefix=None, add_sub_prefix=None):
+    '''
+    Parameters
+    ----------
+    covar_csvs: list[str] | dict
+    covariables: list | dict
+        if dict: {dataset: {var: {'var_in_file': name, 'filename': xxx,
+                                  'interpret': func}}}
+    skip_invalid: bool
+    add_sub_prefix: dict
+        dict of prefixes which should be prepended to subjects IDs, indexed by
+        file name
+    '''
+    fmap = {}
+    if isinstance(covariables, dict):
+        for dataset, cv in covariables.items():
+            for var, vdef in cv.items():
+                fdef = fmap.setdefault(vdef['filename'], {})
+                fdef['dataset'] = dataset
+                fdef.setdefault('vars', []).append(var)
+    tables = {}
+    new_covars = {}
+    if not isinstance(covar_csvs, dict):
+        covar_csvs = {c: None for c in covar_csvs}
+    for covar_csv, filt in covar_csvs.items():
+        add_prefix = None
+        fmdict = fmap.get(covar_csv, {})
+        dataset = fmdict.get('dataset', len(tables))
+        print('read', dataset, ':', covar_csv)
+        if add_sub_prefix is not None:
+            add_prefix = add_sub_prefix.get(covar_csv)
         table, new_covar = read_covar_table(covar_csv, covariables,
-                                            skip_invalid=skip_invalid)
+                                            skip_invalid=skip_invalid,
+                                            sub_prefix=sub_prefix,
+                                            add_sub_prefix=add_prefix,
+                                            filter=filt)
+        print('table:', len(table))
         tcov = [table.columns[0]] + [x[0] for x in new_covar.values()]
         table = table[tcov]
         table.columns = ['subject'] + list(new_covar.keys())
         new_covar = {k: [k, v[1]] for k, v in new_covar.items()}
-        tables.append(table)
-        new_covars.append(new_covar)
-    table = pd.concat(tables, ignore_index=True)
-    return table, new_covars[0]
+        if dataset in tables:
+            print('merge tables', fmdict['vars'], len(tables[dataset]), len(table))
+            tables[dataset][fmdict['vars']] = table[fmdict['vars']]
+        else:
+            tables[dataset] = table
+        new_covars.update(new_covar)
+
+    # merge tables on subject col
+    table = pd.concat(tables.values(), keys=['subject'] * len(tables))
+    table.index = range(len(table))
+
+    return table, new_covars
 
 
 def build_normative_brain_vol_stats_from_files(csv_files, sub_prefix=None):
@@ -672,6 +790,59 @@ def grid_data(X, nmin=100):
     return grid
 
 
+def grid_data2(X, perbin=500, max_rel_width=0.1, nmin=100):
+    if isinstance(X, pd.DataFrame):
+        X = X.to_numpy()
+    xmin = np.min(X, axis=0)
+    xmax = np.max(X, axis=0)
+    # print('xmin:', xmin, ', xmax:', xmax)
+    nbins = int(np.ceil(X.shape[0] / perbin))
+    grid = [[] for x in range(X.shape[1])]
+    for c in range(X.shape[1]):
+        s = np.argsort(X[:, c])
+        bins = [xmin[c]]
+        for b in range(nbins):
+            if b != nbins - 1:
+                cut = int(X.shape[0] * (b + 1) / nbins)
+                y = (X[s[cut], c] + X[s[cut + 1], c]) / 2
+            else:
+                cut = X.shape[0] - 1
+                y = X[s[cut], c]
+            w = y - bins[-1]
+            if w > max_rel_width * (xmax[c] - xmin[c]):
+                # print('bin too large', w, max_rel_width * (xmax[c] - xmin[c]), bins, s)
+                if b == nbins - 1:
+                    y0 = xmax[c]
+                else:
+                    y0 = (X[s[cut], c]
+                          + X[s[int(X.shape[0] * b / nbins)], c]) / 2
+                n0 = np.where(np.logical_and(X[:, c] >= bins[-1],
+                                             X[:, c] < y0))[0].shape[0]
+                if n0 >= nmin:
+                    # new additional bin
+                    bins.append(y0)
+                else:
+                    # merge with previous bin
+                    bins[-1] = y0
+                if b != nbins - 1:
+                    n1 = np.where(np.logical_and(X[:, c] >= bins[-1],
+                                                 X[:, c] < y))[0].shape[0]
+                else:
+                    n1 = np.where(X[:, c] >= bins[-1])[0].shape[0]
+                if n1 >= nmin:
+                    # new additional bin
+                    bins.append(y)
+                # else: # merge with next bin
+            else:
+                if y != bins[-1]:
+                    bins.append(y)
+                else:
+                    bins[-1] = y
+        grid[c] = bins
+
+    return grid
+
+
 def model(X, y):
     wh = np.unique(np.where(np.isnan(X))[0])
     wh2 = np.unique(np.where(np.isnan(y))[0])
@@ -718,7 +889,7 @@ def model_distributions(covar_subtable, covariables, npmorph, hdr):
     morph = npmorph[ix]
     print('valid values:', X.shape)
 
-    grid = grid_data(X)
+    grid = grid_data2(X, 300, 0.02)
     print('grid:', grid)
     mod = {}
 
@@ -741,7 +912,7 @@ def model_distributions(covar_subtable, covariables, npmorph, hdr):
                 print('   filter:', c, '>=', bmin, ', <', bmax)
                 xdata = xdata[np.logical_and(xdata[c] >= bmin,
                                              xdata[c] < bmax)]
-            print('xdata:', xdata)
+            print('xdata:', xdata.shape)
             y = morph[xdata.index]
 
         print('index:', index, ', data:', y.shape, ', init:', X.shape)
@@ -849,24 +1020,15 @@ def load_stats(filename):
 
 
 def build_stratified_normative_brain_vol_stats(
-    csv_files: list[str],
-    covar_csvs: list[str] = None,
-    covariables: list[str] = None,
-    sub_prefix: str = None
+    datasets: dict
 ):
     '''
     Computes averages and std deviations for the given CSV files list.
 
     Parameters
     ----------
-    csv_files: list
-        brain volumes files list
-    covar_csvs: list[str]
-        covariables CSV file
-    covariables: list
-        covariables for stratificaton or regression (ex: ["age", "sex"])
-    sub_prefix: str
-        prefix which should be removed from subjects IDs
+    datasets: dict
+        result of read_datasets_def()
     '''
     def glob_dict(hdr, avg, std, sums, quantiles):
         gstats = {
@@ -878,13 +1040,8 @@ def build_stratified_normative_brain_vol_stats(
         }
         return gstats
 
-    if not covar_csvs:
-        hdr, morph, avg, std, sums, quantiles \
-            = build_normative_brain_vol_stats_from_files(
-                csv_files, sub_prefix=sub_prefix)
-        return {'global': glob_dict(hdr, avg, std, sums, quantiles)}
-
-    covar_table, covariables = read_covar_tables(covar_csvs, covariables)
+    covar_table = datasets['covar_table']
+    covariables = datasets['variables_map']
 
     # 1. separate by categorial variables and continuous variables
     cat_var = {v: [] for v, cdef in covariables.items() if cdef[1] == 'cat'}
@@ -896,7 +1053,9 @@ def build_stratified_normative_brain_vol_stats(
                if cdef[1] != 'cat'}
 
     # 2. read brain data and filter out invalid subjects
-    hdr, morph = read_multiple_csv(csv_files, sub_prefix=sub_prefix)
+    hdr = datasets['morphometry']['header']
+    morph = datasets['morphometry']['table']
+
     subs = [x[0] for x in morph]
     valid = covar_table[covar_table.columns[0]].isin(subs)
     covar_table = covar_table.loc[valid]
@@ -1049,8 +1208,16 @@ def test_normative(brain_volumes_files, normative_file, variables=None,
                    indiv_covar_files=None):
     import matplotlib.pyplot as plt
 
-    morph_hdr, morph = read_multiple_csv(brain_volumes_files,
-                                         sub_prefix='sub-')
+    covar_table = None
+    if isinstance(brain_volumes_files, dict) \
+            and 'morphometry' in brain_volumes_files:
+        morph_hdr = brain_volumes_files['morphometry']['header']
+        morph = brain_volumes_files['morphometry']['table']
+        covar_table = brain_volumes_files['covar_table']
+        new_covar = brain_volumes_files['variables_map']
+    else:
+        morph_hdr, morph = read_multiple_csv(brain_volumes_files,
+                                             sub_prefix='sub-')
     pmorph = pd.DataFrame(morph, columns=morph_hdr)
     models = load_stats(normative_file)
     stat_cols = models['global']['columns']
@@ -1061,7 +1228,7 @@ def test_normative(brain_volumes_files, normative_file, variables=None,
 
     covar = {
         'sex': ['M', 'F'],
-        'age': list(range(22, 90, 5)),
+        'age': list(np.arange(8, 90, 0.5)),
     }
 
     if not variables:
@@ -1079,7 +1246,7 @@ def test_normative(brain_volumes_files, normative_file, variables=None,
     nf = len(morph_hdr) - 1
 
     for sex in covar['sex']:
-        if indiv_covar_files is not None:
+        if covar_table is not None:
             sel_p = covar_table[new_covar['sex'][0]] == sex
             xp = covar_table.iloc[sel_p][new_covar['age'][0]]
             sub = covar_table.iloc[sel_p]['subject']
@@ -1101,7 +1268,7 @@ def test_normative(brain_volumes_files, normative_file, variables=None,
         for i, age in enumerate(ages):
             zstat = range_zstats(models, [morph[0]], morph_hdr,
                                  {'sex': sex, 'age': age})
-            if indiv_covar_files is None:
+            if covar_table is None:
                 p[i] = morph[0][1:]
             mavg[i] = zstat['models_avg']
             z[i] = zstat['z']
@@ -1123,28 +1290,153 @@ def test_normative(brain_volumes_files, normative_file, variables=None,
             fig, ax = plt.subplots()
             ax.set_xlabel(f'sex: {sex}, {feat} (age)')
             ax.plot(ages, gavg[:, i], color='yellow')
-            ax.plot(ages, gavg[:, i] + gstd[:, i], color='yellow')
-            ax.plot(ages, gavg[:, i] - gstd[:, i], color='yellow')
+            ax.plot(ages, gavg[:, i] + gstd[:, i], '--', color='yellow')
+            ax.plot(ages, gavg[:, i] - gstd[:, i], '--', color='yellow')
 
             ax.plot(ages, bavg[:, i], color='purple')
-            ax.plot(ages, bavg[:, i] + bstd[:, i], color='purple')
-            ax.plot(ages, bavg[:, i] - bstd[:, i], color='purple')
+            ax.plot(ages, bavg[:, i] + bstd[:, i], '--', color='purple')
+            ax.plot(ages, bavg[:, i] - bstd[:, i], '--', color='purple')
 
             ax.scatter(xp, p[:, i], color='green')
 
-            ax.plot(ages, mavg[:, i], color='orange')
-            ax.plot(ages, mavg[:, i] + bstd[:, i], color='orange')
-            ax.plot(ages, mavg[:, i] - bstd[:, i], color='orange')
+            # ax.plot(ages, mavg[:, i], color='orange')
+            # ax.plot(ages, mavg[:, i] + bstd[:, i], '--', color='orange')
+            # ax.plot(ages, mavg[:, i] - bstd[:, i], '--', color='orange')
 
-            # ax2 = ax.twinx()
-            # ax2.plot(ages, z[:, i], color='red')
-            # ax2.plot(ages, mz[:, i], color='blue')
             fig.tight_layout()
     plt.show()
 
 
+value_transforms = {
+    'months': lambda x: x / 12,
+}
+
+
+def dict_transform(d, values):
+    tval = []
+    for v in values:
+        tval.append(d[v])
+    return tval
+
+
+def read_datasets_def(ds_filename, datasets=None):
+    with open(ds_filename) as f:
+        ds = yaml.safe_load(f)
+
+    covar_files = {}
+    # bmorph_files = []
+    ds_variables = {}
+    prefixes = {}
+
+    if datasets is None:
+        datasets = list(ds.keys())
+
+    for dataset in datasets:
+        dsd = ds[dataset]
+        var = dsd['variables']
+        vtrans = {}
+        for var_d, vdesc in var.items():
+            # variable: location
+            vars = [v.strip() for v in var_d.split(',')]
+            for loc, vdef in vdesc.items():
+                # location: {var_repl: file}
+                if isinstance(vdef, list):
+                    vdef = vdef[0]  # FIXME
+                print(dataset, vars, loc)
+                for i, (k, fname) in enumerate(vdef.items()):
+                    filt = None
+                    if isinstance(fname, dict):
+                        filt = fname.get('filter')
+                        fname = fname['filename']
+                    # k: var_repl or "var_repl (note)"
+                    # or "var_repl (value1: repl1, value2: repl2...)"
+                    print('   ', i, k)
+                    if not osp.exists(fname):
+                        break
+                    if i >= len(vars):
+                        break
+                    var = vars[i]
+                    if var in vtrans:
+                        continue
+                    k2 = [x.strip() for x in k.split('(', 1)]
+                    print(var, loc, k2)
+                    meaning = None
+                    if len(k2) == 2:
+                        meaningd = k2[1][:-1].strip()
+                        meaningd = [m.strip() for m in meaningd.split(',')]
+                        if len(meaningd) == 1:
+                            meaning = meaningd[0]
+                            meaning = value_transforms[meaning]
+                        else:
+                            meaning = {}
+                            for m in meaningd:
+                                m2 = [x.strip() for x in m.split(':', 1)]
+                                try:
+                                    m2[0] = float(m2[0])
+                                except ValueError:
+                                    pass
+                                meaning[m2[0]] = m2[1]
+                            meaning = partial(dict_transform, meaning)
+                    d = {'var_in_file': k2[0],
+                         'filename': fname}
+                    if meaning is not None:
+                        d['interpret'] = meaning
+                    if filt is not None:
+                        d['filter'] = filt
+                    vtrans[var] = d
+                    if fname not in covar_files:
+                        covar_files[fname] = filt
+                        prefixes[fname] = f'{dataset}_'
+
+        ds_variables[dataset] = vtrans
+        # print('var for ds', dataset, ':', vtrans)
+
+    sub_prefix = 'sub-'
+    covar_table, covar = read_covar_tables(
+        covar_files, ds_variables, skip_invalid=True, sub_prefix=sub_prefix,
+        add_sub_prefix=prefixes)
+    # covar_table = None
+
+    ds_def = {
+        'raw_dataset_def': ds,
+        'covar_files': covar_files,
+        'dataset_variables': ds_variables,
+        'covar_table': covar_table,
+        'variables_map': covar,
+    }
+
+    # read brain volumes files
+    morph_csvs = {}
+    sub_prefixes = {}
+    for dataset in datasets:
+        dsd = ds[dataset]
+        bmorph = dsd['brain_morphometry']
+        if not isinstance(bmorph, dict):
+            print('WARNING: no brain_morphometry file for', dataset)
+            continue
+        for loc, fdef in bmorph.items():
+            if isinstance(fdef, dict):
+                fname = fdef['filename']
+                prefix = fdef.get('sub-prefix', sub_prefix)
+            else:
+                fname = fdef
+                prefix = sub_prefix
+            if not osp.exists(fname):
+                continue
+            morph_csvs[fname] = F'{dataset}_'
+            sub_prefixes[fname] = prefix
+            break
+    hdr, morph = read_multiple_csv(morph_csvs, sub_prefix=sub_prefixes,
+                                   add_sub_prefix=morph_csvs)
+    ds_def['morphometry'] = {'header': hdr, 'table': morph}
+
+    return ds_def
+
+
 if __name__ == '__main__':
     from soma.qt_gui.qt_backend import Qt
+
+    dataset_file = '/home/dr144257/data/datasets.yaml'
 
     bvfile = '/neurospin/dico/data/human/hcp/derivatives/morphologist-2023/morphometry/brain_volumes.csv'
     covar_csv = '/neurospin/dico/data/human/hcp/participants.csv'
@@ -1154,14 +1446,16 @@ if __name__ == '__main__':
         bvfiles = [bvfile, '/home/dr144257/data/ukb/morphometry/brain_volumes.csv']
         covar_csv = '/home/dr144257/data/hcp/participants.csv'
         covar_csvs = [covar_csv, '/home/dr144257/data/ukb/participants.tsv']
-    normative_file = '/home/dr144257/data/hcp/3T_morphologist/tables/BL/morphologist_normative_brain_volumes_stats.json'
+    # normative_file = '/home/dr144257/data/hcp/3T_morphologist/tables/BL/morphologist_normative_brain_volumes_stats.json'
     indiv_vol_file = '/volatile/home/dr144257/data/baseessai/subjects/sujet01/t1mri/default_acquisition/default_analysis/segmentation/brain_volumes_sujet01.csv'
 
-    make_stats = False
-    save_stats = False
+    normative_file = '/home/dr144257/data/normative_data/all/morphologist_normative_brain_volumes_stats.json'
+
+    make_stats = True
+    save_stats = True
     if make_stats:
-        models = build_stratified_normative_brain_vol_stats(
-            bvfiles, covar_csvs, ['age', 'sex'], sub_prefix='sub-')
+        ds_def = read_datasets_def('/home/dr144257/data/datasets.yaml')
+        models = build_stratified_normative_brain_vol_stats(ds_def)
         if save_stats:
             save_stats(models, normative_file)
     else:
@@ -1171,6 +1465,6 @@ if __name__ == '__main__':
     if app is None:
         app = Qt.QApplication([])
 
-    test_normative(indiv_vol_file, normative_file)
+    test_normative([indiv_vol_file], normative_file)
 
     app.exec()

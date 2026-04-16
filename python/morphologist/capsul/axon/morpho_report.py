@@ -30,6 +30,8 @@ class morpho_report(Process):
         self.add_trait('inter_subject_qc_table', File(allowed_extensions=['.tsv'], output=True, optional=True))
         self.add_trait('subject', Str())
         self.add_trait('bids', Str())
+        self.add_trait('covariables_file', File(allowed_extensions=['.csv'], optional=True))
+        self.add_trait('covariables', Str(optional=True))
 
 
     def _run_process(self):
