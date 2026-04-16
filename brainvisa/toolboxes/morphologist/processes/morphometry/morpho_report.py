@@ -448,7 +448,8 @@ def execution(self, context):
             unit = None
             try:
                 j = morph_hdr.index(k)
-                iz = col_ord[j]
+                iz = j - 1  # col_ord[j]
+                qi = col_ord[j]
                 val = morph[0][j]
                 v = str(round(val, 2))
                 unit = units.get(k)
@@ -460,11 +461,11 @@ def execution(self, context):
                         q = n_quant[:, iz]
                         # print(q)
                         # add 3 values at each extrema
-                        # and remove extrema (0, 100% qantiles)
+                        # and remove extrema (0, 100% quantiles)
                         q = np.hstack((np.zeros((3, )), q[1: -1],
                                        np.zeros((3, ))))
-                        qv1 = quantiles[1][iz]
-                        qv99 = quantiles[-2][iz]
+                        qv1 = quantiles[1][qi]
+                        qv99 = quantiles[-2][qi]
                         if k == 'log_ratio.skel_points' \
                                 and (val <= qv1 * 1.6 or val >= qv99 * 1.6):
                             # problem detection from the skel log ratio:
