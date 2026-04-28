@@ -778,6 +778,7 @@ def build_normative_brain_vol_stats(npmorph: np.ndarray):
 
 
 def grid_data(X, nmin=100):
+    '''regular bins grid'''
     nmin = np.min((nmin, X.shape[0]))
     grid = [[] for x in range(X.shape[1])]
     for c in range(X.shape[1]):
@@ -791,6 +792,8 @@ def grid_data(X, nmin=100):
 
 
 def grid_data2(X, perbin=500, max_rel_width=0.1, nmin=100):
+    ''' grid dataset with bins of approx. the same number of samples in each.
+    '''
     if isinstance(X, pd.DataFrame):
         X = X.to_numpy()
     xmin = np.min(X, axis=0)
@@ -844,6 +847,7 @@ def grid_data2(X, perbin=500, max_rel_width=0.1, nmin=100):
 
 
 def model(X, y):
+    # spline fit model (finally unused for now)
     wh = np.unique(np.where(np.isnan(X))[0])
     wh2 = np.unique(np.where(np.isnan(y))[0])
     wh = np.unique(np.concatenate((wh, wh2)))
@@ -858,6 +862,7 @@ def model(X, y):
 
 
 def nd_iter(sizes):
+    # iterate over all dimensions
     imax = [s - 1 for s in sizes]
     index = [0] * len(sizes)
 
@@ -880,8 +885,6 @@ def model_distributions(covar_subtable, covariables, npmorph, hdr):
     print('covar:', covariables)
     # print('covar_subtable:', covar_subtable)
     X = covar_subtable[[x[0] for x in covariables.values()]]
-    # print('X:')
-    # print(X)
     wh = np.unique(np.where(np.isnan(X))[0])
     ix = np.ones((X.shape[0], ), dtype=bool)
     ix[wh] = False
@@ -890,11 +893,10 @@ def model_distributions(covar_subtable, covariables, npmorph, hdr):
     print('valid values:', X.shape)
 
     grid = grid_data2(X, 300, 0.02)
-    print('grid:', grid)
     mod = {}
 
     mod['grid'] = {c: g for c, g in zip(covariables, grid)}
-    print('grid:', mod['grid'])
+    # print('grid:', mod['grid'])
 
     for index in nd_iter([len(x) - 1 for x in grid]):
         print('    index:', index)
@@ -905,51 +907,37 @@ def model_distributions(covar_subtable, covariables, npmorph, hdr):
             bmax = grid[i][index[i] + 1]
             c = X.columns[i]
             if i == len(index) - 1:
-                print('   filter:', c, '>=', bmin, ', <=', bmax)
+                # print('   filter:', c, '>=', bmin, ', <=', bmax)
                 xdata = xdata[np.logical_and(xdata[c] >= bmin,
                                              xdata[c] <= bmax)]
             else:
-                print('   filter:', c, '>=', bmin, ', <', bmax)
+                # print('   filter:', c, '>=', bmin, ', <', bmax)
                 xdata = xdata[np.logical_and(xdata[c] >= bmin,
                                              xdata[c] < bmax)]
-            print('xdata:', xdata.shape)
+            # print('xdata:', xdata.shape)
             y = morph[xdata.index]
 
         print('index:', index, ', data:', y.shape, ', init:', X.shape)
-        print('avg 29:', np.average(y, axis=0)[29])
         avg, std, sums, quantiles = build_normative_brain_vol_stats(y)
-        print('norm avg 29:', avg[29])
         mod[tuple(index)] = {'averages': avg.astype(float),
                              'std': std.astype(float),
                              'N': sums.astype(int),
                              'quantiles': [x.astype(float) for x in quantiles]
                              }
 
-    models = {}
-    for c, col in enumerate(hdr[1:]):
-        y = morph[:, c]
-        # print(c, y)
-        m = model(X, y)
-        models[col] = {'model': m}
+    # the spline model was an optional attempt, which doesn't fit
+    # the data closely enough at boundaries. Drop it for now.
 
-    mod['models'] = models
+    # models = {}
+    # for c, col in enumerate(hdr[1:]):
+    #     y = morph[:, c]
+    #     # print(c, y)
+    #     m = model(X, y)
+    #     models[col] = {'model': m}
+    #
+    # mod['models'] = models
 
     return mod
-
-
-def _plot_it(X, y, model):
-    from matplotlib import pyplot as plt
-
-    wh = np.unique(np.where(np.isnan(X))[0])
-    ix = np.ones((X.shape[0], ), dtype=bool)
-    ix[wh] = False
-    X = X.iloc[ix]
-    y = y[ix]
-
-    ax = plt.figure().add_subplot(projection='3d')
-    ax.scatter(X[X.columns[0]], X[X.columns[1]], y)
-    ax.scatter(X[X.columns[0]], X[X.columns[1]], model.predict(X))
-    plt.show()
 
 
 class NumpyEncoder(json.JSONEncoder):
@@ -960,6 +948,7 @@ class NumpyEncoder(json.JSONEncoder):
 
 
 def save_stats(models, filename):
+    ''' save stratified stats and possibly models '''
     mstrat = models.get('stratified', {})
     smodels = copy.deepcopy(models)
     for k, val in mstrat.items():
@@ -968,15 +957,16 @@ def save_stats(models, filename):
         smodels['stratified'][key] = smodels['stratified'][k]
         del smodels['stratified'][k]
         mods = val.get('models', {})
-        dname = osp.join(filename.rsplit('.', 1)[0] + '.models', keydir)
-        os.makedirs(dname, exist_ok=True)
-        for feature, mdef in mods.items():
-            mod = mdef.get('model')
-            fname = osp.join(dname, f'model_{feature}.pickle')
-            with open(fname, 'wb') as f:
-                pickle.dump(mod, f)
-            rfname = osp.relpath(fname, osp.dirname(filename))
-            smodels['stratified'][key]['models'][feature]['model'] = rfname
+        if mods:
+            dname = osp.join(filename.rsplit('.', 1)[0] + '.models', keydir)
+            os.makedirs(dname, exist_ok=True)
+            for feature, mdef in mods.items():
+                mod = mdef.get('model')
+                fname = osp.join(dname, f'model_{feature}.pickle')
+                with open(fname, 'wb') as f:
+                    pickle.dump(mod, f)
+                rfname = osp.relpath(fname, osp.dirname(filename))
+                smodels['stratified'][key]['models'][feature]['model'] = rfname
         for gk, gval in val.items():
             if gk in ('models', 'grid'):
                 continue
@@ -989,6 +979,7 @@ def save_stats(models, filename):
 
 
 def load_stats(filename):
+    ''' load normative stats '''
     with open(filename) as f:
         models = json.load(f)
 
@@ -1095,6 +1086,8 @@ def build_stratified_normative_brain_vol_stats(
 
 
 def range_global_zstats(stat_models, indiv_morpho, morph_hdr, columns=None):
+    ''' get Z stats for a sample from non-stratified normative stats '''
+
     norm_stat = stat_models.get('global')
     if norm_stat is None:
         # older global-only format
@@ -1136,6 +1129,8 @@ def range_global_zstats(stat_models, indiv_morpho, morph_hdr, columns=None):
 
 
 def range_zstats(stat_models, indiv_morpho, morph_hdr, covariables):
+    ''' get Z stats for a sample from normative stats (stratified or not) '''
+
     if not covariables or 'stratified' not in stat_models:
         zstat = range_global_zstats(stat_models, indiv_morpho, morph_hdr)
         zstat['mode'] = 'global'
@@ -1159,7 +1154,7 @@ def range_zstats(stat_models, indiv_morpho, morph_hdr, covariables):
         zstat['mode'] = 'global'
         return zstat
 
-    print('found cat:', cat_found)
+    # print('found cat:', cat_found)
     flt_covar = {k: v for k, v in covariables.items() if k not in cat_found}
     grid = cat_model['grid']
     grid_i = []
@@ -1183,22 +1178,24 @@ def range_zstats(stat_models, indiv_morpho, morph_hdr, covariables):
         zstat = range_global_zstats(stat_models, indiv_morpho, morph_hdr)
         std = stat_models['global']['std']
     # print('zstat for cat:', zstat)
-    models = cat_model['models']
-    # print('model avg:', )
-    stat_cols = stat_models['global']['columns']
-    cols = {i: (c, stat_cols.index(c)) for i, c in enumerate(morph_hdr[1:])
-            if c in models}
-    mod_avg = [None] * (len(morph_hdr) - 1)
-    mod_z = [None] * (len(morph_hdr) - 1)
-    for i, (c, j) in cols.items():
-        mod_avg[i] = models[c]['model'].predict(
-            np.array([list(flt_covar.values())]))[0]
-        p = indiv_morpho[0][i + 1]
-        if p is not None and not np.isnan(p):
-            mod_z[i] = (indiv_morpho[0][i + 1] - mod_avg[i]) / std[j]
+    models = cat_model.get('models')
+    if models is not None:
+        # print('model avg:', )
+        stat_cols = stat_models['global']['columns']
+        cols = {i: (c, stat_cols.index(c)) for i, c in enumerate(morph_hdr[1:])
+                if c in models}
+        mod_avg = [None] * (len(morph_hdr) - 1)
+        mod_z = [None] * (len(morph_hdr) - 1)
+        for i, (c, j) in cols.items():
+            mod_avg[i] = models[c]['model'].predict(
+                np.array([list(flt_covar.values())]))[0]
+            p = indiv_morpho[0][i + 1]
+            if p is not None and not np.isnan(p):
+                mod_z[i] = (indiv_morpho[0][i + 1] - mod_avg[i]) / std[j]
 
-    zstat['models_avg'] = mod_avg
-    zstat['models_z'] = mod_z
+        zstat['models_avg'] = mod_avg
+        zstat['models_z'] = mod_z
+
     zstat['mode'] = mode
     zstat['cat_bin'] = cat_found
     zstat['cont_bin_ind'] = grid_i
@@ -1226,7 +1223,7 @@ def test_normative(brain_volumes_files, normative_file, variables=None,
     cols = {i: (c, stat_cols.index(c))
             for i, c in enumerate(morph_hdr[1:])
             if c in stat_cols}
-    print('cols:', cols)
+    # print('cols:', cols)
 
     covar = {
         'sex': ['M', 'F'],
@@ -1272,9 +1269,11 @@ def test_normative(brain_volumes_files, normative_file, variables=None,
                                  {'sex': sex, 'age': age})
             if covar_table is None:
                 p[i] = morph[0][1:]
-            mavg[i] = zstat['models_avg']
             z[i] = zstat['z']
-            mz[i] = zstat['models_z']
+            mod = zstat.get('models_avg')
+            if mod is not None:
+                mavg[i] = mod
+                mz[i] = zstat['models_z']
             bindex = zstat['cont_bin_ind']
             box = models['stratified'][tuple(zstat['cat_bin'].items())][bindex]
             for j, feat in enumerate(morph_hdr[1:]):
@@ -1301,9 +1300,10 @@ def test_normative(brain_volumes_files, normative_file, variables=None,
 
             ax.scatter(xp, p[:, i], color='green')
 
-            ax.plot(ages, mavg[:, i], color='orange')
-            ax.plot(ages, mavg[:, i] + bstd[:, i], '--', color='orange')
-            ax.plot(ages, mavg[:, i] - bstd[:, i], '--', color='orange')
+            if mod is not None:
+                ax.plot(ages, mavg[:, i], color='orange')
+                ax.plot(ages, mavg[:, i] + bstd[:, i], '--', color='orange')
+                ax.plot(ages, mavg[:, i] - bstd[:, i], '--', color='orange')
 
             fig.tight_layout()
     plt.show()
@@ -1477,6 +1477,7 @@ if __name__ == '__main__':
     if app is None:
         app = Qt.QApplication([])
 
-    test_normative([indiv_vol_file], normative_file)
+    # test_normative([indiv_vol_file], normative_file)
+    test_normative(ds_def, normative_file)
 
     app.exec()
