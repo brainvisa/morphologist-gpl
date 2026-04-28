@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<minf expander="minf_2.0">
+<d>
+  <d name="en">
+    <xhtml name="short">Build normative brain volule stats from one or several datasets.</xhtml>
+    <xhtml name="long"><h2>Use case</h2>
+The normative stats are used by the process morpho_report. This process is a more complete version of <a href="bvprocess://normative_brainvolumes_stats">normative_brainvolumes_stats</a>. It is able to handle several normative datasets, several covariables table per dataset, and covariables conversion/transformation.<br/>
+However its input is a <tt>YAML</tt> config file which needs to be written beforehand.
+
+<h2>Dataset YAML file</h2>
+The <tt>dataset_description</tt> file is a YAML dictionary, which is expected to contain a list of datasets descriptions.
+
+<h3>Syntax</h3>
+<ul>
+<li>
+<pre>
+&lt;dataset_name&gt;: &lt;dataset_def&gt;
+...
+</pre>
+</li>
+<li>
+a <tt>&lt;dataset_def&gt;</tt> is:
+<pre>
+variables: &lt;variables_def&gt;
+brain_morphometry: &lt;brain_morpho_def&gt;
+</pre>
+</li>
+<li> <tt>&lt;variables_def&gt;</tt>:
+<pre>
+&lt;variable&gt;: &lt;var_def&gt;
+...
+</pre>
+<tt>&lt;variable&gt;</tt> may actually be a single name (<tt>age</tt>) or a coma-separated list of variables, if the definition is the same for all (<tt>age, sex</tt>). Then the <tt>&lt;var_in_csv&gt;</tt> items (see later) are applied in the same order as the variables list here.
+</li> 
+<li><tt>&lt;var_def&gt;</tt>:
+<pre>
+&lt;filesytem_name&gt;:
+    &lt;var_in_csv&gt;: &lt;var_csv_def&gt;
+    ...
+</pre>
+<tt>&lt;filesystem_name&gt;</tt> allows to povide a list of alternative places for the dataset files, so that the same definition file may apply to several machines, locations, mount points. Whenever a file is actually found in a filesystem location, the next ones are skipped and not taken into account.
+</li>
+<li><tt>&lt;var_in_csv&gt;</tt> is the column name in the covariables <tt>.csv</tt> file for the given variable. However it may also contain values translation information:
+<pre>
+&lt;var_in_csv_name&gt;[ (&lt;var_transl&gt;)]
+</pre>
+</li>
+<li><tt>&lt;var_transl&gt;</tt> may be a translation dictionary applied to categorical values, or a translation method name applied to values:
+<pre>
+&lt;covar_csv_value&gt;: &lt;final_value&gt;[, ...]
+</pre>
+ex: <tt>1: M, 2: F</tt> transforms <tt>1</tt> to <tt>M</tt>, and <tt>2</tt> to <tt>F</tt>.<br/>
+or: <tt>month</tt>: apply month to year transformation.
+</li>
+<li><tt> &lt;var_csv_def&gt;</tt>: may be either directly a <tt>.csv</tt> covariables filename, or a dictionary:
+<pre>
+filename: &lt;csv_filename&gt;
+[filter: &lt;filter_def&gt;]
+</pre>
+</li>
+<li><tt>&lt;filter_def&gt;</tt> may be used to select data in the covariables tables, for instance to select a precise acquisition:
+<pre>
+&lt;column_label&gt;: &lt;value&gt;
+...
+</pre>
+</li>
+<li><tt>&lt;brain_morpho_def&gt;</tt>:
+<pre>
+&lt;filesystem_name&gt;: &lt;morpho_def&gt;
+...
+</pre>
+As in the variables definition, <tt>&lt;filesystem_name&gt;</tt> allows to provide several alternative locations for files. Once one file is found in a location, other locations are nor used.
+</li>
+<li><tt>&lt;morpho_def&gt;</tt> may be a single <tt>.csv</tt> filename, or a dictionary:
+<pre>
+filename: &lt;morpho_filename&gt;
+[sub-prefix: &lt;prefix&gt;]
+</pre>
+<tt>&lt;prefix&gt;</tt> is removed from subjects IDs, if this prefix is present in the morphometyric tables but not in the covariables tables.
+</li>
+</ul>
+
+<h3>Example</h3>
+<pre>
+ABCD:
+  variables:
+    age:
+      local:
+        ab_g_dyn__visit_age:
+          filename: /home/denis/data/abcd/phenotype/ab_g_dyn.tsv
+          filter:
+            session_id: ses-00A
+      TGCC irene:
+        - ab_g_dyn__visit_age:
+            filename: /ccc/workflash/cont003/n4habcd/n4habcd/abcd/phenotype/ab_g_dyn.tsv
+            filter:
+              session_id: ses-00A
+        - interview_age (months): /ccc/workflash/cont003/n4habcd/n4habcd/archives/r5/phenotype/core/abcd-general/abcd_y_lt.csv
+    sex:
+      local:
+        "ab_g_stc__cohort_sex (1: M, 2: F)": /home/denis/data/abcd/phenotype/ab_g_stc.tsv
+      TGCC irene:
+        - "ab_g_stc__cohort_sex (1: M, 2: F)": /ccc/workflash/cont003/n4habcd/n4habcd/abcd/phenotype/ab_g_stc.tsv
+        - demo_sex_v2,demo_gender_id_v2: /ccc/workflash/cont003/n4habcd/n4habcd/archives/r5/phenotype/core/abcd-general/abcd_p_demo.csv
+
+  brain_morphometry:
+      local:
+        filename: /home/denis/data/abcd/morphometry/brainvolumes_abcd.csv
+        sub-prefix: sub-NDARINV
+      NS:
+        filename: /neurospin/dico/denis/abcd/brainvolumes_abcd.csv
+        sub-prefix: sub-NDARINV
+
+UKB:
+  variables:
+    age, sex:
+      local:
+        age: /home/denis/data/ukb/participants.tsv
+        Sex: /home/denis/data/ukb/participants.tsv
+      NS:
+        age: /neurospin/dico/data/human/UKBioBank/participants.tsv
+        Sex: /neurospin/dico/data/human/UKBioBank/participants.tsv
+  brain_morphometry:
+    local:
+      /home/denis/data/ukb/morphometry/brain_volumes.csv
+
+HCP:
+  variables:
+    age, sex:
+      local:
+        Age: /home/denis/data/hcp/participants.csv
+        Gender: /home/denis/data/hcp/participants.csv
+      NS:
+        Age: /neurospin/dico/data/human/hcp/participants.csv
+        Gender: /neurospin/dico/data/human/hcp/participants.csv
+      TGCC irene:
+        Age: /ccc/workflash/cont003/n4hhcp/n4hhcp/hcp/participants.csv
+        Gender: /ccc/workflash/cont003/n4hhcp/n4hhcp/hcp/participants.csv
+  brain_morphometry:
+    local:
+      /home/denis/data/hcp/3T_morphologist/morphometry/brain_volumes.csv
+    NS:
+      /neurospin/dico/data/human/hcp/derivatives/morphologist-2023/morphometry/brain_volumes.csv
+</pre>
+</xhtml>
+    <d name="parameters">
+    </d>
+  </d>
+</d>
+</minf>

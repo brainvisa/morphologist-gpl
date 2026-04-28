@@ -3,6 +3,7 @@ from brainvisa.processes import *
 import os.path as osp
 import json
 import numpy as np
+from brainvisa.morphologist.morphometry import global_sulc_morpho
 try:
     from reportlab.pdfgen import canvas
     # from reportlab.pdfbase import pdfmetrics
@@ -56,6 +57,8 @@ signature = Signature(
     'inter_subject_qc_table', WriteDiskItem('QC table', 'TSV file'),
     'subject', String(),
     'bids', String(),
+    'covariables_file', ReadDiskItem('CSV file', 'CSV file'),
+    'covariables', String(),
 )
 
 
@@ -112,7 +115,8 @@ def initialization(self):
                      'left_labelled_graph', 'right_labelled_graph',
                      'brain_volumes_file', 'normative_brain_stats',
                      'talairach_transform', 'report_json',
-                     'inter_subject_qc_table')
+                     'inter_subject_qc_table', 'covariables_file',
+                     'covariables')
     self.linkParameters('subject', 't1mri', linkSubject)
     self.linkParameters('bids', ('t1mri', 'left_labelled_graph'), linkBids)
     self.linkParameters('left_grey_white', 't1mri')
@@ -363,32 +367,41 @@ def execution(self, context):
                 row = [row[0]] + [float(x) for x in row[1:]]
                 morph.append(row)
         if self.normative_brain_stats is not None:
-            with open(self.normative_brain_stats.fullPath()) as f:
-                norm_stat = json.load(f)
-            ncols = {c: i for i, c in enumerate(norm_stat.get('columns', []))}
+            norm_stat = global_sulc_morpho.load_stats(
+                self.normative_brain_stats.fullPath())
+            covar = None  # {'age': 70, 'sex': 'F'}
+            if 'stratified' in norm_stat:
+                if self.covariables is not None:
+                    covar = json.loads(self.covariables)
+                elif self.covariables_file is not None:
+                    k = next(iter(norm_stat['stratified']))
+                    covariables = list(dict(k).keys())
+                    covariables += norm_stat['stratified'][k]['grid'].keys()
+                    covar_table = global_sulc_morpho.read_covar_tables(
+                        [self.covariables_file.fullPath()],
+                        covariables=covariables, skip_invalid=True,
+                        sub_prefix='sub-')
+                    covar_row = covar_table.loc[
+                        covar_table['subject'] == self.subject].iloc[0]
+                    covar = {v: covar_row[v] for v in covariables}
+
+            zstat = global_sulc_morpho.range_zstats(
+                norm_stat, morph, morph_hdr, covar)
+            gstat = norm_stat.get('global', norm_stat)
+            ncols = {c: i for i, c in enumerate(gstat.get('columns', []))}
             col_ord = {j: ncols.get(morph_hdr[j])
                        for j in range(len(morph[0]))}
-            morph_z = [None] * len(morph[0])
-            avg = norm_stat.get('averages')
-            std = norm_stat.get('std')
-            quantiles = norm_stat.get('quantiles')
-            if avg and std:
-                # print('avg:', len(avg), ', quantiles:', len(quantiles))
-                for i, mv in enumerate(morph[0]):
-                    c = col_ord.get(i)
-                    if c is not None:
-                        z0 = avg[c]
-                        zs = std[c]
-                        if z0 is not None and zs != 0:
-                            z = (mv - z0) / zs
-                            morph_z[i] = z
-            if quantiles:
-                n_quant = np.array([(np.array(q) - avg) / std
-                                    for q in quantiles])
-            # morph and morph_z have the subject column,
-            # whereas n_quand, std, avg have not.
-        #else:
-            #morph_z = [None] * len(morph[0])
+            morph_z = zstat['z']
+            n_quant = zstat['quantiles']
+            if zstat['mode'] == 'stratified':
+                cat_k = tuple(zstat['cat_bin'].items())
+                cont_k = zstat['cont_bin_ind']
+                bin_def = norm_stat['stratified'][cat_k][cont_k]
+            else:
+                bin_def = gstat
+            avg = bin_def['averages']
+            std = bin_def['std']
+            quantiles = bin_def['quantiles']
 
     keymap = {
         'both.brain_volume': 'brain volume',
@@ -435,21 +448,24 @@ def execution(self, context):
             unit = None
             try:
                 j = morph_hdr.index(k)
+                iz = j - 1  # col_ord[j]
+                qi = col_ord[j]
                 val = morph[0][j]
                 v = str(round(val, 2))
                 unit = units.get(k)
                 if morph_z:
-                    z = morph_z[j]
+                    # z = morph_z[j]
+                    z = morph_z[iz]
                     zvals[i] = z
                     if n_quant is not None:
-                        q = n_quant[:, col_ord[j]]
+                        q = n_quant[:, iz]
                         # print(q)
                         # add 3 values at each extrema
-                        # and remove extrema (0, 100% qantiles)
+                        # and remove extrema (0, 100% quantiles)
                         q = np.hstack((np.zeros((3, )), q[1: -1],
                                        np.zeros((3, ))))
-                        qv1 = quantiles[1][col_ord[j]]
-                        qv99 = quantiles[-2][col_ord[j]]
+                        qv1 = quantiles[1][qi]
+                        qv99 = quantiles[-2][qi]
                         if k == 'log_ratio.skel_points' \
                                 and (val <= qv1 * 1.6 or val >= qv99 * 1.6):
                             # problem detection from the skel log ratio:
@@ -541,6 +557,21 @@ def execution(self, context):
         ax.add_patch(plt.Rectangle((-0.5, -1), len(keymap), 2.,
                                    facecolor='#d0f0d0', fill=True,
                                    edgecolor='#d0f0d0'))
+        quant_colors = [
+            '#c04040ff',
+            '#ff7070ff',
+            '#f0d080ff',
+            '#e0ff90ff',
+            '#a0ffa0ff',
+            '#c0ffc0ff',
+            '#e0ffe0ff',
+            '#c0ffc0ff',
+            '#a0ffa0ff',
+            '#e0ff90ff',
+            '#f0d080ff',
+            '#ff7070ff',
+            '#c04040ff',
+        ]
         if quantiles:
             nq = 0
             for q in quants:
@@ -551,21 +582,6 @@ def execution(self, context):
                 if q is None:
                     quants[i] = np.zeros(nq)
             quants = np.array(quants).T
-            quant_colors = [
-                '#c04040ff',
-                '#ff7070ff',
-                '#f0d080ff',
-                '#e0ff90ff',
-                '#a0ffa0ff',
-                '#c0ffc0ff',
-                '#e0ffe0ff',
-                '#c0ffc0ff',
-                '#a0ffa0ff',
-                '#e0ff90ff',
-                '#f0d080ff',
-                '#ff7070ff',
-                '#c04040ff',
-            ]
             while len(quant_colors) > len(quants):
                 quant_colors = quant_colors[1:-1]
             # reorder quantiles 0->0.5 then 1->0.5 for good plot overlapping
@@ -622,8 +638,24 @@ def execution(self, context):
     if morph_z:
         pdf.drawString(
             30, 330,
-            f'normative reference: {osp.basename(osp.dirname(self.normative_brain_stats.fullName()))}')
-        y -= 20
+            'normative reference: '
+            f'{osp.basename(osp.dirname(self.normative_brain_stats.fullName()))} '
+            f'({zstat["mode"]})')
+        y -= 10
+        if zstat['mode'] == 'stratified':
+            bin_def = norm_stat['stratified'][cat_k]
+            bin_str = ', '.join([f'{k}: {v}'
+                                 for k, v in zstat['cat_bin'].items()])
+            pdf.drawString(60, y, bin_str)
+            y -= 10
+            grid = bin_def['grid']
+            cbin = zstat['cont_bin_ind']
+            bin_str = []
+            for i, (k, v) in zip(cbin, grid.items()):
+                bin_str.append(f'{k} in [{v[i]}:{v[i + 1]}]')
+            pdf.drawString(60, y, ', '.join(bin_str))
+            y -= 10
+        y -= 10
     if comments:
         for i, c in enumerate(comments):
             pdf.drawString(30, y - 12 * i, c)

@@ -2,11 +2,16 @@
 <minf expander="minf_2.0">
 <d>
   <d name="en">
-    <xhtml name="short"/>
-    <xhtml name="long"/>
+    <xhtml name="short">Morphologist processing report</xhtml>
+    <xhtml name="long">This process runs at the end of the Morphologist pipeline. It generates both a .json report and a PDF document where the main steps results are displayed, and the global brain measurements are summarized. It may make use of normative stats to asses if the processing is within the norm, and if not, some processing failures may be detected from it.</xhtml>
     <d name="parameters">
-      <xhtml name="normative_brain_stats">Optional normative data. These normative stats may be built from a database (or several) using the process:
-<a href="bvprocess://normative_brainvolumes_stats">normative_brainvolumes_stats</a></xhtml>
+      <xhtml name="normative_brain_stats">Optional normative data. These normative stats may be built from a database (or several) using one of the processes:
+<a href="bvprocess://normative_brainvolumes_stats">normative_brainvolumes_stats</a>, or <a href="bvprocess://normative_brainvolumes_stats_mult">normative_brainvolumes_stats_mult</a>.<br/>
+Some normative data may be stratified by sex and age, which makes the comparison much more meaningfil. In this situation, the user has to provide sex and age covariables for the current subject. They may be input "by hand" using the <tt>covariables</tt> parameter, or using a <tt>.csv</tt> or <tt>.tsv</tt> table, which may be the BIDS <tt>participants.tsv</tt> table, if the columns <tt>sex</tt> and <tt>age</tt> are present there.</xhtml>
+      <xhtml name="covariables_file">This optional file is meant to provide sex and age information for the subject, in order to use matched stratified normative data. So it is useful only when using such stratified normative data. This file is an alternative to the <tt>covariables</tt> parameter, and may contain several subjects, as long as the subject ID is found in the first table column. <tt>sex</tt> and <tt>age</tt> columns are needed in this table. The table may be the BIDS <tt>participants.tsv</tt> file, if the expected columns are present there.^</xhtml>
+      <xhtml name="covariables">When using stratified normative data to compare global brain morphometric measurements, the subject covariables, <tt>sex</tt> and <tt>age</tt> are needed. This parameter allows to provide them on a single subject basis (see the <tt>covariables_file</tt> parameter for an alternative). The format here is a JSON dictionary: for instance:<br/>
+<pre>{"sex": "M", "age": 35}
+</pre></xhtml>
     </d>
   </d>
 </d>
