@@ -290,7 +290,7 @@
             "sulci_file":
             "{shared.sulcal_morphometry_sulci_file}"
         },
-        "Morphologist.GlobalMorphometry": {
+        "GlobalMorphometry": {
           "left_csf":
               [["output:{seg}/{sub}_hemi-<side>_csf","images",{"side":"L"}]],
           "right_csf":
