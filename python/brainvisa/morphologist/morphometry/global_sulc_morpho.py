@@ -1114,6 +1114,8 @@ def range_global_zstats(stat_models, indiv_morpho, morph_hdr, columns=None):
         std = std.tolist()
     quantiles = norm_stat.get('quantiles')
     n_quant = None
+    if quantiles:
+        n_quant = np.zeros((len(quantiles), len(indiv_morpho[0]) - 1))
     if avg is not None and std is not None:
         # print('avg:', len(avg), ', quantiles:', len(quantiles))
         for i, mv in enumerate(indiv_morpho[0][1:]):
@@ -1126,9 +1128,9 @@ def range_global_zstats(stat_models, indiv_morpho, morph_hdr, columns=None):
                 if z0 is not None and zs != 0:
                     z = (mv - z0) / zs
                     morph_z[i] = z
-    if quantiles:
-        n_quant = np.array([(np.array(q) - avg) / std
-                            for q in quantiles])
+                if quantiles is not None:
+                    if zs != 0:
+                        n_quant[:, i] = [(q[c] - z0) / zs for q in quantiles]
 
     return {'z': morph_z, 'quantiles': n_quant}
 
