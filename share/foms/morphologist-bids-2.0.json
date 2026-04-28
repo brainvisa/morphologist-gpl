@@ -301,7 +301,7 @@
           ],
           "subject": [["none:<subject>", "no ext"]],
         },
-        "morpho_eport": {
+        "morpho_report": {
           "normative_brain_stats": "{shared.normative_brain_volumes_file}",
           "report": [
                 ["output:{analysis}/{sub}_sul-<sulci_recognition_session>_morphologist_report", "PDF File"],
@@ -1856,20 +1856,40 @@
             "transform_to_scanner_based": [[
                 "output:{reg}/{sub}_T1w_TO_Scanner_Based",
                 ["Transformation matrix"]]],
+            "T1_output": [[
+                "output:{acquisition}/{sub}_desc-conform_T1w",
+                "Aims readable volume formats"]],
             "bias_corrected_output": [[
                 "output:{seg}/{sub}_nobias", "images"]],
-            "histo_analysis": [[
-                "output:{seg}/{sub}_nobias",
-                ["Histo Analysis"]]],
-            "brain_mask_output": [[
-                "output:{seg}/{sub}_brain",
-                "Aims writable volume formats"]],
             "T1_referential": [[
                 "output:{reg}/{sub}_T1w",
                 ["Referential"]]],
             "normalization_transformation": [[
                 "output:{reg}/{sub}_T1w_TO_MNI152",
                 ["Transformation matrix"]]],
+            "talairach_transform": [[
+                "output:{reg}/{sub}_T1w_TO_Talairach-ACPC",
+                ["Transformation matrix"]]],
+            "commissure_coordinates": [[
+                "output:{acquisition}/{sub}",
+                ["Commissure coordinates"]]],
+            "histo_analysis": [[
+                "output:{seg}/{sub}_nobias",
+                ["Histo Analysis"]]],
+            "brain_mask_output": [[
+                "output:{seg}/{sub}_brain",
+                "Aims writable volume formats"]],
+            "split_brain_output": [[
+                "output:{seg}/{sub}_voronoi",
+                "Aims writable volume formats"]],
+            "left_grey_white_output": [[
+                "output:{seg}/{sub}_hemi-<side>_grey_white",
+                "Aims writable volume formats",
+                {"side": "L"}]],
+            "right_grey_white_output": [[
+                "output:{seg}/{sub}_hemi-<side>_grey_white",
+                "Aims writable volume formats",
+                {"side": "R"}]],
         },
 
         "MorphologistFromFreesurfer.SulciSkeleton": {
@@ -2110,6 +2130,86 @@
             "param_file":
                 [["shared:models/models_2019/cnn_models/sulci_unet_model_params_right",
                   "JSON file", {"side": "R"}]],
+        },
+
+        # need to force output database on intermediate params
+        "MorphologistFromFreesurfer": {
+            "imported_t1mri": [[
+                "output:{acquisition}/{sub}_desc-conform_T1w",
+                "Aims readable volume formats"]],
+            "talairach_transform": [[
+                "output:{reg}/{sub}_T1w_TO_Talairach-ACPC",
+                ["Transformation matrix"]]],
+            "split_brain": [[
+                "output:{seg}/{sub}_voronoi",
+                "Aims writable volume formats"]],
+            "GreyWhiteClassification_grey_white": [[
+                "output:{seg}/{sub}_hemi-<side>_grey_white",
+                "Aims writable volume formats",
+                {"side": "L"}]],
+            "GreyWhiteClassification_1_grey_white": [[
+                "output:{seg}/{sub}_hemi-<side>_grey_white",
+                "Aims writable volume formats",
+                {"side": "R"}]],
+            "GreyWhiteTopology_hemi_cortex": [[
+                "output:{seg}/{sub}_hemi-<side>_cortex",
+                "Aims writable volume formats",
+                {"side": "L"}]],
+            "GreyWhiteTopology_1_hemi_cortex": [[
+                "output:{seg}/{sub}_hemi-<side>_cortex",
+                "Aims writable volume formats",
+                {"side": "R"}]],
+            "GreyWhiteMesh_white_mesh": [[
+                "output:{mesh}/{sub}_hemi-<side>_white.surf",
+                "Aims mesh formats",
+                {"side": "L"}]],
+            "GreyWhiteMesh_1_white_mesh": [[
+                "output:{mesh}/{sub}_hemi-<side>_white.surf",
+                "Aims mesh formats",
+                {"side": "R"}]],
+            "SulciSkeleton_skeleton": [[
+                "output:{seg}/{sub}_hemi-<side>_skeleton",
+                "Aims writable volume formats",
+                {"side": "L"}]],
+            "SulciSkeleton_1_skeleton": [[
+                "output:{seg}/{sub}_hemi-<side>_skeleton",
+                "Aims writable volume formats",
+                {"side": "R"}]],
+            "PialMesh_pial_mesh": [[
+                "output:{mesh}/{sub}_hemi-<side>_pial.surf",
+                "Aims mesh formats",
+                {"side": "L"}]],
+            "PialMesh_1_pial_mesh": [[
+                "output:{mesh}/{sub}_hemi-<side>_pial.surf",
+                "Aims mesh formats",
+                {"side": "R"}]],
+            "left_graph": [[
+                "output:{fold}/{sub}_hemi-<side>",
+                ["Graph and data"],
+                {"side": "L"}]],
+            "right_graph": [[
+                "output:{fold}/{sub}_hemi-<side>",
+                ["Graph and data"],
+                {"side": "R"}]],
+            "left_labelled_graph": [[
+                "output:{foldauto}/{fautosub}_hemi-<side>_auto",
+                ["Graph and data"],
+                {"side": "L"}]],
+            "right_labelled_graph": [[
+                "output:{foldauto}/{fautosub}_hemi-<side>_auto",
+                ["Graph and data"],
+                {"side": "R"}]],
+            "GlobalMorphometry_brain_volumes_file": [[
+                "output:{seg}/{sub}_sul-<sulci_recognition_session>_brain_volumes", "CSV file"],
+                ["output:{seg}/{sub}_brain_volumes", "CSV file"]],
+            "SulciSkeleton_roots": [[
+                "output:{seg}/{sub}_hemi-<side>_roots",
+                "Aims writable volume formats",
+                {"side": "L"}]],
+            "SulciSkeleton_1_roots": [[
+                "output:{seg}/{sub}_hemi-<side>_roots",
+                "Aims writable volume formats",
+                {"side": "R"}]],
         }
 
     }
