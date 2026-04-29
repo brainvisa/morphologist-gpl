@@ -371,9 +371,9 @@ def execution(self, context):
                 self.normative_brain_stats.fullPath())
             covar = None  # {'age': 70, 'sex': 'F'}
             if 'stratified' in norm_stat:
-                if self.covariables is not None:
+                if self.covariables:
                     covar = json.loads(self.covariables)
-                elif self.covariables_file is not None:
+                elif self.covariables_file:
                     k = next(iter(norm_stat['stratified']))
                     covariables = list(dict(k).keys())
                     covariables += norm_stat['stratified'][k]['grid'].keys()
