@@ -36,14 +36,37 @@ insert('hemitemplate',
        "closed*", SetType("Hemispheres Template"),
        )
 
-insert('normative_tables/morphologist',
-       'ukb_hcp', SetContent(
-              'morphologist_normative_brain_volumes_stats',
-              SetType('Normative brain volumes stats'),
-              SetPriorityOffset(+1),
+insert(
+    'normative_tables',
+    'morphologist',
+    SetWeakAttr('segmentation', 'morphologist'),
+    SetPriorityOffset(+1),
+    SetContent(
+       '*-strat', SetContent(
+           'morphologist_normative_brain_volumes_stats',
+           SetType('Normative brain volumes stats'),
+           SetWeakAttr('stratified', True),
+           SetPriorityOffset(+1),
        ),
        '*', SetContent(
-              'morphologist_normative_brain_volumes_stats',
-              SetType('Normative brain volumes stats'),
+           'morphologist_normative_brain_volumes_stats',
+           SetType('Normative brain volumes stats'),
+           SetWeakAttr('stratified', False),
        )
+    ),
+    'freesurfer',
+    SetWeakAttr('segmentation', 'freesurfer'),
+    SetContent(
+       '*-strat', SetContent(
+           'morphologist_normative_brain_volumes_stats',
+           SetType('Normative brain volumes stats'),
+           SetWeakAttr('stratified', True),
+           SetPriorityOffset(+1),
+       ),
+       '*', SetContent(
+           'morphologist_normative_brain_volumes_stats',
+           SetType('Normative brain volumes stats'),
+           SetWeakAttr('stratified', False),
+       )
+    ),
 )
