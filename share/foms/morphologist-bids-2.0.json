@@ -1804,6 +1804,14 @@
             ]
         },
 
+        "Morphologist.CorticalFoldsGraph": {
+            ".process_attributes": {"side": "L"}
+        },
+
+        "Morphologist.CorticalFoldsGraph_1": {
+            ".process_attributes": {"side": "R"}
+        },
+
         "SulciGraph": {
             "commissure_coordinates": [[
                     "output:{acquisition}/{sub}",
@@ -1899,6 +1907,10 @@
             ".process_attributes": {"side": "R"}
         },
 
+        "MorphologistFromFreesurfer.CorticalFoldsGraph": {
+            ".process_attributes": {"side": "L"}
+        },
+
         "MorphologistFromFreesurfer.CorticalFoldsGraph_1": {
             ".process_attributes": {"side": "R"}
         },
@@ -1908,28 +1920,6 @@
                     "output:{seg}/{sub}_hemi-<side>_cortex",
                     "Aims writable volume formats",
                     {"side": "R"}]]
-        },
-
-        "MorphologistFromFreesurfer.CorticalFoldsGraph_1": {
-            "graph": [[
-                    "output:{fold}/{sub}_hemi-<side>",
-                    ["Graph and data"],
-                    {"side": "R"}
-                ]],
-            "sulci_voronoi": [
-                [
-                    "output:{fold}/{sub}_hemi-<side>_sulcivoronoi",
-                    "Aims writable volume formats",
-                    {"side": "R"}
-                ]
-            ],
-            "cortex_mid_interface": [
-                [
-                    "output:{seg}/{sub}_hemi-<side>_gw_interface",
-                    "Aims writable volume formats",
-                    {"side": "R"}
-                ]
-            ]
         },
 
         "MorphologistFromFreesurfer.SulciRecognition_1.SPAM_recognition09.global_recognition": {
