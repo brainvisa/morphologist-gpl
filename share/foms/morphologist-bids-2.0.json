@@ -140,21 +140,6 @@
             ### TalairachFromNormalization
             "PrepareSubject_TalairachFromNormalization_transform_chain_ACPC_to_Normalized": "{shared.talairach_TO_spm_transform}",
 
-            ## CNN_recognition19
-            #  (need to be forced because the generic process needs a side)
-            "SulciRecognition_CNN_recognition19_model_file":
-                [["shared:models/models_2019/cnn_models/sulci_unet_model_left",
-                  "Deep model file", {"side": "L"}]],
-            "SulciRecognition_1_CNN_recognition19_model_file":
-                [["shared:models/models_2019/cnn_models/sulci_unet_model_right",
-                  "Deep model file", {"side": "R"}]],
-            "SulciRecognition_CNN_recognition19_param_file":
-                [["shared:models/models_2019/cnn_models/sulci_unet_model_params_left",
-                  "JSON file", {"side": "L"}]],
-            "SulciRecognition_1_CNN_recognition19_param_file":
-                [["shared:models/models_2019/cnn_models/sulci_unet_model_params_right",
-                  "JSON file", {"side": "R"}]],
-
         },
         "Morphologist.PrepareSubject": {
             "commissure_coordinates": [
@@ -2102,24 +2087,10 @@
 
         "MorphologistFromFreesurfer.SulciRecognition.CNN_recognition19": {
             ".process_attributes": {"side": "L"},
-            #  (need to be forced because the generic process needs a side)
-            "model_file":
-                [["shared:models/models_2019/cnn_models/sulci_unet_model_left",
-                  "Deep model file", {"side": "L"}]],
-            "param_file":
-                [["shared:models/models_2019/cnn_models/sulci_unet_model_params_left",
-                  "JSON file", {"side": "L"}]],
         },
 
         "MorphologistFromFreesurfer.SulciRecognition_1.CNN_recognition19": {
             ".process_attributes": {"side": "R"},
-            #  (need to be forced because the generic process needs a side)
-            "model_file":
-                [["shared:models/models_2019/cnn_models/sulci_unet_model_right",
-                  "Deep model file", {"side": "R"}]],
-            "param_file":
-                [["shared:models/models_2019/cnn_models/sulci_unet_model_params_right",
-                  "JSON file", {"side": "R"}]],
         },
 
         # need to force output database on intermediate params
