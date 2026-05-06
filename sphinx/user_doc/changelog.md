@@ -1,5 +1,15 @@
 # Changelog
 
+## [6.0.15] 2026-05-06
+
+### Added
+
+- Stratified normative stats for Morphologist
+
+### Changed
+
+- Fixed and improved FOMs (File Organization Model) for Morphologist/Capsul
+
 ## [6.0.14] 2026-04-07
 
 ### Changed
