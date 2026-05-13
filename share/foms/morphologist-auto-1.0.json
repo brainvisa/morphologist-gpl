@@ -57,19 +57,19 @@
 
             ### NormalizeSPM
             "PrepareSubject_Normalization_NormalizeSPM_template": "{shared.anatomical_template_t1}",
-            "normalization_spm_native_transformation_pass1": [["output:{acquisition}/<subject>_sn", "Matlab file"]],
+            "normalization_spm_native_transformation_pass1": [["output:{acquisition}/<subject>_sn_pass1", "Matlab file"]],
             "normalization_spm_native_transformation": [["output:{acquisition}/<subject>_sn", "Matlab file"]],
 
             ### NormalizeFSL
             "normalization_fsl_native_transformation_pass1":
-                [["output:{acquisition}/<subject>_fsl", "Matlab file"]],
+                [["output:{acquisition}/<subject>_fsl_pass1", "Matlab file"]],
             "normalization_fsl_native_transformation":
                 [["output:{acquisition}/<subject>_fsl", "Matlab file"]],
             "PrepareSubject_Normalization_NormalizeFSL_template": "{shared.anatomical_template_t1}",
 
             ### NormalizeBaladin
             "normalization_baladin_native_transformation_pass1":
-                [["output:{acquisition}/<subject>_baladin", "Text file"]],
+                [["output:{acquisition}/<subject>_baladin_pass1", "Text file"]],
             "normalization_baladin_native_transformation":
                 [["output:{acquisition}/<subject>_baladin", "Text file"]],
             "PrepareSubject_Normalization_NormalizeBaladin_template": "{shared.anatomical_template_t1}",
@@ -307,13 +307,13 @@
 
         "Morphologist.PrepareSubject": {
             "normalization_transformation":
-                [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-MNI1",
+                [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-MNI-pass1",
                     "Transformation matrix"]],
             "commissure_coordinates":
-                [["output:{acquisition}/<subject>",
+                [["output:{acquisition}/<subject>-pass1",
                     "Commissure coordinates"]],
             "talairach_transformation":
-                [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-ACPC",
+                [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-ACPC-pass1",
                   "Transformation matrix"]],
         },
 
@@ -1112,7 +1112,10 @@
                         "JSON file"
                     ]
                 ]
-            ]
+            ],
+            "inter_subject_qc_table": [[
+                "output:qc/qc", ["TSV file"]
+            ]]
         },
 
         "CorticalFoldsGraphUpgradeFromOld": {
