@@ -15,6 +15,7 @@
       "acquisition": "<center>/<subject>/t1mri/<acquisition>",
       "analysis": "{acquisition}/<analysis>",
       "recognition_analysis": "{analysis}/folds/<graph_version>/<sulci_recognition_session>_auto",
+      "subject": "<subject>",
     },
 
     "processes" : {
@@ -29,8 +30,6 @@
                 [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>", "Referential"]],
             "reoriented_t1mri":
                 [["output:{acquisition}/<subject>", "images"]],
-#            "commissure_coordinates":
-#                [["output:{acquisition}/<subject>", "Commissure coordinates"]],
             "t1mri_nobias":
                 [["output:{analysis}/nobias_<subject>", "images" ]],
             "split_brain":
@@ -51,42 +50,21 @@
             "Talairach_transform":
                 [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-ACPC",
                     "Transformation matrix"]],
-#            "MNI_transform":
-#                [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-MNI",
-#                    "Transformation matrix"]],
-
-            # PrepareSubject
-
-#            "PrepareSubject_commissure_coordinates": [["output:{acquisition}/<subject>", "Commissure coordinates"]],
 
             ### AimsMIRegister
             "PrepareSubject_Normalization_Normalization_AimsMIRegister_anatomical_template": "{shared.anatomical_template_t1}",
             "PrepareSubject_Normalization_Normalization_AimsMIRegister_mni_to_acpc": "{shared.talairach_TO_spm_transform}",
-#             "PrepareSubject_Normalization_Normalization_AimsMIRegister_transformation_to_ACPC":
-#                 [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-ACPC",
-#                     "Transformation matrix"]],
 
             ### NormalizeSPM
             "PrepareSubject_Normalization_NormalizeSPM_template": "{shared.anatomical_template_t1}",
             "normalization_spm_native_transformation_pass1": [["output:{acquisition}/<subject>_sn", "Matlab file"]],
-#            "normalization_spm_native_job_file_pass1": [["output:{acquisition}/<subject>_job_anat_normalization", "Matlab file"]],
             "normalization_spm_native_transformation": [["output:{acquisition}/<subject>_sn", "Matlab file"]],
-#            "normalization_spm_native_job_file": [["output:{acquisition}/<subject>_job_anat_normalization", "Matlab file"]],
-            # "PrepareSubject_Normalization_NormalizeSPM_normalized_t1mri": [["output:{acquisition}/normalized_<normalization>_<subject>","images", {"normalization":"SPM"}]],
-
-            #### ConvertSPMnormalizationToAIMS
-            # "PrepareSubject_Normalization_NormalizeSPM_ConvertSPMnormalizationToAIMS_normalized_volume":
-            #     [["output:{acquisition}/normalized_<normalization>_<subject>",
-            #         "images",
-            #         {"normalization": "SPM"}]],
 
             ### NormalizeFSL
             "normalization_fsl_native_transformation_pass1":
                 [["output:{acquisition}/<subject>_fsl", "Matlab file"]],
             "normalization_fsl_native_transformation":
                 [["output:{acquisition}/<subject>_fsl", "Matlab file"]],
-#            "PrepareSubject_Normalization_NormalizeFSL_ReorientAnatomy_output_t1mri":
-#                [["output:{acquisition}/<subject>", "images"]],
             "PrepareSubject_Normalization_NormalizeFSL_template": "{shared.anatomical_template_t1}",
 
             ### NormalizeBaladin
@@ -103,10 +81,10 @@
 
             #Bias Correction
             "BiasCorrection_field": [ ["output:{analysis}/biasfield_<subject>","images"] ],
-            "BiasCorrection_hfiltered": [ ["output:{analysis}/hfiltered_<subject>",  "images"] ], 
-            "BiasCorrection_white_ridges": [ ["output:{analysis}/whiteridge_<subject>", "images"] ], 
-            "BiasCorrection_variance": [ ["output:{analysis}/variance_<subject>","images"] ], 
-            "BiasCorrection_edges": [ ["output:{analysis}/edges_<subject>","images"] ], 
+            "BiasCorrection_hfiltered": [ ["output:{analysis}/hfiltered_<subject>",  "images"] ],
+            "BiasCorrection_white_ridges": [ ["output:{analysis}/whiteridge_<subject>", "images"] ],
+            "BiasCorrection_variance": [ ["output:{analysis}/variance_<subject>","images"] ],
+            "BiasCorrection_edges": [ ["output:{analysis}/edges_<subject>","images"] ],
             "BiasCorrection_meancurvature": [ ["output:{analysis}/mean_curvature_<subject>", "images" ] ],
 
             #Histogram Analysis
@@ -307,7 +285,8 @@
           "GlobalMorphometry_subject": [["none:<subject>", "no ext"]],
 
           # PDF report
-          "Report_normative_brain_stats": "{shared.normative_brain_volumes_file}",
+          "Report_normative_brain_stats":
+              "{shared.normative_brain_volumes_file}",
           "Report_report":
               [["output:{analysis}/morphologist_report","PDF File"]],
           "Report_report_json":
@@ -386,12 +365,6 @@
                 [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-ACPC",
                     "Transformation matrix"]],
         },
-
-#        "Morphologist.select_Talairach": {
-#            "Talairach_transform":
-#                [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-ACPC",
-#                    "Transformation matrix"]],
-#        },
 
         "Morphologist.Renorm": {
             "transformation":
@@ -496,7 +469,7 @@
             ],
             "source_referential": [
                 [
-                    "input:<center>/<subject>/t1mri/<acquisition>/registration/RawT1-<subject>_<acquisition>",
+                    "output:<center>/<subject>/t1mri/<acquisition>/registration/RawT1-<subject>_<acquisition>",
                     [
                         "Referential"
                     ]
@@ -734,6 +707,10 @@
                     ]
                 ]
             ],
+            "left_model_file": [["shared:models/models_2019/cnn_models/sulci_unet_model_left",
+                 "Deep model file", {"side": "L"}]],
+            "left_param_file": [["shared:models/models_2019/cnn_models/sulci_unet_model_params_left",
+                 "JSON file", {"side": "L"}]],
             "left_posterior_probabilities": [
                 [
                     "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/L<subject>_<sulci_recognition_session>_auto_proba",
@@ -754,10 +731,6 @@
                     }
                 ]
             ],
-            "left_model_file": [["shared:models/models_2019/cnn_models/sulci_unet_model_left",
-                 "Deep model file", {"side": "L"}]],
-            "left_param_file": [["shared:models/models_2019/cnn_models/sulci_unet_model_params_left",
-                 "JSON file", {"side": "L"}]],
             "left_global_model": [
                 [
                     "shared:models/models_<sulci_database>/descriptive_models/segments/<sulci_segments_model_type>_left/spam_distribs",
@@ -1013,6 +986,133 @@
                 [["output:{acquisition}/<subject>", "images"]],
             "referential":
                 [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>", "Referential"]],
+        },
+
+        "brainvolumes": {
+            "split_brain": [["input:{analysis}/segmentation/voronoi_<subject>","images"]],
+            "left_grey_white": [
+                [
+                    "input:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/Lgrey_white_<subject>",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "right_grey_white": [
+                [
+                    "input:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/Rgrey_white_<subject>",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "left_csf": [["output:{analysis}/segmentation/<side>csf_<subject>","images",{"side":"L"}]],
+            "right_csf": [["output:{analysis}/segmentation/<side>csf_<subject>","images",{"side":"R"}]],
+            "left_labelled_graph": [["input:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto",
+                    "Graph and data", {"side": "L"}]],
+            "right_labelled_graph": [["input:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto",
+                    "Graph and data", {"side": "R"}]],
+            "left_gm_mesh":  [
+                [
+                    "input:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_Lhemi",
+                    "Aims mesh formats"
+                ]
+            ],
+            "right_gm_mesh":  [
+                [
+                    "input:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_Rhemi",
+                    "Aims mesh formats"
+                ]
+            ],
+            "left_wm_mesh": [
+                [
+                    "input:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_Lwhite",
+                    "Aims mesh formats"
+                ]
+            ],
+            "right_wm_mesh": [
+                [
+                    "input:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_Rwhite",
+                    "Aims mesh formats"
+                ]
+            ],
+            "subject": [["none:<subject>", "no ext"]],
+            "brain_volumes_file": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/brain_volumes_<subject>",
+                    [
+                        "CSV file"
+                    ]
+                ]
+            ]
+        },
+        "morpho_report": {
+            "t1mri": [["input:{acquisition}/<subject>", "images"]],
+            "left_grey_white": [
+                [
+                    "input:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/Lgrey_white_<subject>",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "right_grey_white": [
+                [
+                    "input:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/Rgrey_white_<subject>",
+                    "Aims writable volume formats"
+                ]
+            ],
+            "left_gm_mesh":  [
+                [
+                    "input:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_Lhemi",
+                    "Aims mesh formats"
+                ]
+            ],
+            "right_gm_mesh":  [
+                [
+                    "input:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_Rhemi",
+                    "Aims mesh formats"
+                ]
+            ],
+            "left_wm_mesh": [
+                [
+                    "input:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_Lwhite",
+                    "Aims mesh formats"
+                ]
+            ],
+            "right_wm_mesh": [
+                [
+                    "input:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_Rwhite",
+                    "Aims mesh formats"
+                ]
+            ],
+            "left_labelled_graph": [["input:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto",
+                    "Graph and data", {"side": "L"}]],
+            "right_labelled_graph": [["input:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto",
+                    "Graph and data", {"side": "R"}]],
+            "talairach_transform":
+                [["input:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-ACPC",
+                    "Transformation matrix"]],
+
+            "brain_volumes_file": [
+                [
+                    "input:<center>/<subject>/t1mri/<acquisition>/<analysis>/segmentation/brain_volumes_<subject>",
+                    [
+                        "CSV file"
+                    ]
+                ]
+            ],
+            "normative_brain_stats": "{shared.normative_brain_volumes_file}",
+            "report": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/morphologist_report",
+                    [
+                        "PDF File"
+                    ]
+                ]
+            ],
+            "report_json": [
+                [
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/morphologist_json_report",
+                    [
+                        "JSON file"
+                    ]
+                ]
+            ]
         },
 
         "CorticalFoldsGraphUpgradeFromOld": {

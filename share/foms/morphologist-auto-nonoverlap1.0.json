@@ -30,8 +30,6 @@
                 [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>", "Referential"]],
             "reoriented_t1mri":
                 [["output:{acquisition}/<subject>", "images"]],
-#            "commissure_coordinates":
-#                [["output:{acquisition}/<subject>", "Commissure coordinates"]],
             "t1mri_nobias":
                 [["output:{analysis}/nobias_<subject>", "images" ]],
             "split_brain":
@@ -52,44 +50,22 @@
             "Talairach_transform":
                 [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-ACPC",
                     "Transformation matrix"]],
-#            "MNI_transform":
-#                [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-MNI",
-#                    "Transformation matrix"]],
-
-            # PrepareSubject
-
-#            "PrepareSubject_commissure_coordinates": [["output:{acquisition}/<subject>_pass1", "Commissure coordinates"]],
 
             ### AimsMIRegister
             "PrepareSubject_Normalization_Normalization_AimsMIRegister_anatomical_template": "{shared.anatomical_template_t1}",
             "PrepareSubject_Normalization_Normalization_AimsMIRegister_mni_to_acpc": "{shared.talairach_TO_spm_transform}",
- #             "PrepareSubject_Normalization_Normalization_AimsMIRegister_transformation_to_ACPC":
-#                 [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-ACPC",
-#                     "Transformation matrix"]],
 
             ### NormalizeSPM
             "PrepareSubject_Normalization_NormalizeSPM_template": "{shared.anatomical_template_t1}",
             "normalization_spm_native_transformation_pass1": [["output:{acquisition}/<subject>_sn_pass1", "Matlab file"]],
-#            "normalization_spm_native_job_file_pass1": [["output:{acquisition}/<subject>_job_anat_normalization_pass1", "Matlab file"]],
             "normalization_spm_native_transformation": [["output:{acquisition}/<subject>_sn", "Matlab file"]],
-#            "normalization_spm_native_job_file": [["output:{acquisition}/<subject>_job_anat_normalization", "Matlab file"]],
-            # "PrepareSubject_Normalization_NormalizeSPM_normalized_t1mri": [["output:{acquisition}/normalized_<normalization>_<subject>","images", {"normalization":"SPM"}]],
-
-            #### ConvertSPMnormalizationToAIMS
-            # "PrepareSubject_Normalization_NormalizeSPM_ConvertSPMnormalizationToAIMS_normalized_volume":
-            #     [["output:{acquisition}/normalized_<normalization>_<subject>",
-            #         "images",
-            #         {"normalization": "SPM"}]],
 
             ### NormalizeFSL
             "normalization_fsl_native_transformation_pass1":
                 [["output:{acquisition}/<subject>_fsl_pass1", "Matlab file"]],
             "normalization_fsl_native_transformation":
                 [["output:{acquisition}/<subject>_fsl", "Matlab file"]],
-#            "PrepareSubject_Normalization_NormalizeFSL_ReorientAnatomy_output_t1mri":
-#                 [["output:{acquisition}/<subject>", "images"]],
             "PrepareSubject_Normalization_NormalizeFSL_template": "{shared.anatomical_template_t1}",
-
 
             ### NormalizeBaladin
             "normalization_baladin_native_transformation_pass1":
@@ -313,6 +289,8 @@
               "{shared.normative_brain_volumes_file}",
           "Report_report":
               [["output:{analysis}/morphologist_report","PDF File"]],
+          "Report_report_json":
+              [["output:{analysis}/morphologist_json_report","JSON file"]],
           "Report_subject": [["none:<subject>", "no ext"]]
         },
 
@@ -387,12 +365,6 @@
                 [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-ACPC",
                     "Transformation matrix"]],
         },
-
-#        "Morphologist.select_Talairach": {
-#            "Talairach_transform":
-#                [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-ACPC-pass1",
-#                    "Transformation matrix"]],
-#        },
 
         "Morphologist.Renorm": {
             "transformation":
@@ -983,6 +955,7 @@
                     ]
                 ]
             ],
+            "sulci_file": "{shared.sulcal_morphometry_sulci_file}",
             "sulcal_morpho_measures": [
                 [
                     "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/<subject>_<sulci_recognition_session>_auto_sulcal_morphometry",
@@ -1001,7 +974,9 @@
 
           "normative_brain_stats": "{shared.normative_brain_volumes_file}",
           "report":
-              [["output:{analysis}/morphologist_report","PDF File"]]
+              [["output:{analysis}/morphologist_report","PDF File"]],
+          "report_json":
+              [["output:{analysis}/morphologist_json_report","JSON file"]],
         },
 
         "ImportT1Mri": {
