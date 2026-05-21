@@ -57,7 +57,7 @@ signature = Signature(
     'inter_subject_qc_table', WriteDiskItem('QC table', 'TSV file'),
     'subject', String(),
     'bids', String(),
-    'covariables_file', ReadDiskItem('CSV file', 'CSV file'),
+    'covariables_file', ReadDiskItem('Participants file', ['CSV file', 'TSV file']),
     'covariables', String(),
 )
 
@@ -132,6 +132,7 @@ def initialization(self):
     self.linkParameters('report', 'brain_volumes_file')
     self.linkParameters('report_json', 'report')
     self.linkParameters('inter_subject_qc_table', 'report_json')
+    self.linkParameters('covariables_file', 't1mri')
     self.normative_brain_stats = self.signature[
         'normative_brain_stats'].findValue({})
 
@@ -373,17 +374,28 @@ def execution(self, context):
             if 'stratified' in norm_stat:
                 if self.covariables:
                     covar = json.loads(self.covariables)
-                elif self.covariables_file:
+                elif self.covariables_file \
+                        and osp.exists(self.covariables_file.fullPath()):
                     k = next(iter(norm_stat['stratified']))
                     covariables = list(dict(k).keys())
                     covariables += norm_stat['stratified'][k]['grid'].keys()
-                    covar_table = global_sulc_morpho.read_covar_tables(
+                    # context.write('reading covariables file:', self.covariables_file)
+                    covar_table, _ = global_sulc_morpho.read_covar_tables(
                         [self.covariables_file.fullPath()],
                         covariables=covariables, skip_invalid=True,
                         sub_prefix='sub-')
-                    covar_row = covar_table.loc[
-                        covar_table['subject'] == self.subject].iloc[0]
-                    covar = {v: covar_row[v] for v in covariables}
+                    if any(v not in covar_table.columns for v in covariables):
+                        context.write('missing covariables: using global '
+                                      'normative stats')
+                    else:
+                        try:
+                            covar_row = covar_table.loc[
+                                covar_table['subject'] == self.subject].iloc[0]
+                            covar = {v: covar_row[v] for v in covariables}
+                        except IndexError:
+                            context.write(
+                                'subject ID not found in covariables file. '
+                                'Using global normative stats.')
 
             zstat = global_sulc_morpho.range_zstats(
                 norm_stat, morph, morph_hdr, covar)

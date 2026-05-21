@@ -939,7 +939,9 @@
             "subject": [["none:<subject>", "no ext"]],
             "bids": [[
                 "none:ses-<session>_<bids>_sul-<sulci_recognition_session>",
-                "no ext"]]
+                "no ext"]],
+            "covariables_file": [[
+                "input:participants", ["TSV file", "CSV file"]]]
         },
 
         "CorticalFoldsGraphUpgradeFromOld": {
