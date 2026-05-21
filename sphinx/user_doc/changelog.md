@@ -1,14 +1,15 @@
 # Changelog
 
-## [6.0.15] 2026-05-06
+## [6.0.15] 2026-05-21
 
 ### Added
 
-- Stratified normative stats for Morphologist
+- Stratified normative stats for Morphologist, separated by age/sex.
 
 ### Changed
 
-- Fixed and improved FOMs (File Organization Model) for Morphologist/Capsul
+- Fixed and improved FOMs (File Organization Model) for Morphologist/Capsul.
+- the two versions of brainvisa-1.0 FOMs ("auto" and "nonoverlap") have been merged, based on the non-overlapping one, and are now the same ("overlap" loads the regular one and adds nothing to it, its name has been left for backward compatibility).
 
 ## [6.0.14] 2026-04-07
 
