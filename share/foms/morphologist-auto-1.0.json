@@ -1309,12 +1309,10 @@
         "ImportFreesurferToMorpho": {
             "T1_orig": [[
                 "input:<subject>/mri/orig",
-                ["FreesurferMGZ", "FreesurferMGH",
-                "gz compressed NIFTI-1 image", "NIFTI-1 image"]]],
+                ["FreesurferMGZ", "FreesurferMGH"]]],
             "ribbon_image": [[
                 "input:<subject>/mri/ribbon",
-                ["FreesurferMGZ", "FreesurferMGH",
-                "gz compressed NIFTI-1 image", "NIFTI-1 image"]]],
+                ["FreesurferMGZ", "FreesurferMGH"]]],
             "Talairach_Auto": [[
                 "input:<subject>/mri/transforms/talairach.auto",
                 ["MINC transformation matrix"]]],
