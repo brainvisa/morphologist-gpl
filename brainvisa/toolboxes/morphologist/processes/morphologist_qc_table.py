@@ -1,6 +1,9 @@
 
-from brainvisa.processes import *
-from six.moves import zip
+from brainvisa.processes import (
+    Signature, Choice, ListOf, String, WriteDiskItem, OpenChoice,
+    getProcessInstance
+)
+from brainvisa.data import neuroHierarchy
 import json
 
 name = 'Morphologist QC table'
