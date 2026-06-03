@@ -72,12 +72,9 @@
             #### NormalizeSPM
             "normalization_spm_native_transformation_pass1": [["output:{acquisition}/{sub}_sn_pass1", "Matlab file"]],
 
-            "t1mri_nobias": [
-                [
-                    "output:{seg}/{sub}_nobias",
-                    "Aims writable volume formats"
-                ]
-            ],
+            "t1mri_nobias": [[
+                "output:{seg}/{sub}_nobias",
+                "Aims writable volume formats"]],
             "commissure_coordinates": [
                 [
                     "output:{acquisition}/{sub}",
@@ -401,13 +398,10 @@
             ]
         },
         "Morphologist.GreyWhiteMesh": {
-            "white_mesh": [
-                [
-                    "output:{mesh}/{sub}_hemi-<side>_white.surf",
-                    "Aims mesh formats",
-                    {"side": "L"}
-                ]
-            ]
+            "white_mesh": [[
+                "output:{mesh}/{sub}_hemi-<side>_white.surf",
+                "Aims mesh formats",
+                {"side": "L"}]]
         },
         "Morphologist.SulciSkeleton": {
             ".process_attributes": {"side": "L"},
@@ -423,12 +417,9 @@
         },
 
         "PialMesh": {
-            "pial_mesh": [
-                [
-                    "output:{mesh}/{sub}_hemi-<side>_pial.surf",
-                    "Aims mesh formats",
-                ]
-            ]
+            "pial_mesh": [[
+                "output:{mesh}/{sub}_hemi-<side>_pial.surf",
+                "Aims mesh formats"]]
         },
 
         "Morphologist.GreyWhiteClassification_1": {
@@ -1883,6 +1874,49 @@
                 "output:{seg}/{sub}_hemi-<side>_roots",
                 "Aims writable volume formats",
                 {"side": "R"}]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.AnaT1MRIViewer": {
+            "main_input": [[
+                "input:{acquisition}/{sub}_desc-conform_T1w",
+                "Aims readable volume formats"]]
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.AnaWhiteMeshViewer": {
+            "main_input": [[
+                "input:{mesh}/{sub}_hemi-<side>_white.surf",
+                "Aims mesh formats"]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.AnaPialMeshViewer": {
+            "main_input": [[
+                "input:{mesh}/{sub}_hemi-<side>_pial.surf",
+                "Aims mesh formats"]]
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.AnaSulciViewer": {
+            "main_input": [
+                [
+                    "input:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>",
+                    ["Graph and data"],
+                    {"sulci_recognition_type": "auto"}],
+                [
+                    "input:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>",
+                    ["Graph and data"],
+                    {"sulci_recognition_type": "manual"}],
+                [
+                    "input:{fold}/{sub}_hemi-<side>",
+                    ["Graph and data"]],
+            ],
+            "white_mesh": [[
+                "input:{mesh}/{sub}_hemi-<side>_white.surf",
+                "Aims mesh formats"]],
+            "pial_mesh": [[
+                "input:{mesh}/{sub}_hemi-<side>_pial.surf",
+                "Aims mesh formats"]],
+            "mri_corrected": [[
+                "output:{seg}/{sub}_nobias",
+                "Aims writable volume formats"]],
         }
 
     }

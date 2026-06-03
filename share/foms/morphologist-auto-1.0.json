@@ -1550,6 +1550,45 @@
                 "images",
                 {"side": "R"}]],
 
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.AnaT1MRIViewer": {
+            "main_input": [[
+                "output:{acquisition}/<subject>", "images"]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.AnaWhiteMeshViewer": {
+            "main_input": [[
+                "input:{analysis}/segmentation/mesh/<subject>_<side>white",
+                "mesh"]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.AnaPialMeshViewer": {
+            "main_input": [[
+                "input:{analysis}/segmentation/mesh/<subject>_<side>hemi",
+                "mesh"]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.AnaSulciViewer": {
+            "main_input": [
+                [
+                    "input:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>",
+                    "Graph and data", {"sulci_recognition_type": "auto"}],
+                [
+                    "input:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>",
+                    "Graph and data", {"sulci_recognition_type": "manual"}],
+                [
+                    "input:{analysis}/folds/<graph_version>/<side><subject>",
+                    "Graph and data"],
+            ],
+            "white_mesh": [[
+                "input:{analysis}/segmentation/mesh/<subject>_<side>white",
+                "mesh"]],
+            "pial_mesh": [[
+                "input:{analysis}/segmentation/mesh/<subject>_<side>hemi",
+                "mesh"]],
+            "mri_corrected": [[
+                "output:{analysis}/nobias_<subject>", "images" ]],
         }
 
      }
