@@ -10,7 +10,7 @@ import re
 import os
 import math
 import numpy
-from soma.qt_gui.qt_backend import QtGui, QtCore
+from soma.qt_gui.qt_backend import QtWidgets, QtGui, QtCore
 from soma.qt_gui.qt_backend import init_matplotlib_backend
 from six.moves import range
 init_matplotlib_backend()
@@ -82,7 +82,7 @@ class HistoData(object):
             self.data = data
 
 
-class HistoAnalysisWidget(QtGui.QWidget):
+class HistoAnalysisWidget(QtWidgets.QWidget):
 
     '''Histogram + white and gray analysis view. The view may be editable
     (see set_editable()).
@@ -95,7 +95,7 @@ class HistoAnalysisWidget(QtGui.QWidget):
     CURVE = 1
 
     def __init__(self, parent=None, flags=QtCore.Qt.WindowType(0)):
-        QtGui.QWidget.__init__(self, parent, flags)
+        QtWidgets.QWidget.__init__(self, parent, flags)
         self.histodata = HistoData()
         self.mfig = None
         self.bins = []
@@ -111,7 +111,7 @@ class HistoAnalysisWidget(QtGui.QWidget):
         self._histo_view_mode = self.CURVE
 
         # combine matplotlib / Qt
-        lay = QtGui.QVBoxLayout(self)
+        lay = QtWidgets.QVBoxLayout(self)
         lay.setContentsMargins(0, 0, 0, 0)
         lay.setSpacing(0)
         self.mfig = pyplot.figure()
@@ -124,7 +124,7 @@ class HistoAnalysisWidget(QtGui.QWidget):
         self.mwidget.setParent(self)
         self.setPalette(p.palette())
         lay.addWidget(self.mwidget)
-        toolbar = self.findChild(QtGui.QToolBar)
+        toolbar = self.findChild(QtWidgets.QToolBar)
         toolbar.hide()
         statusbar = self.mwidget.statusBar()
         statusbar.setSizeGripEnabled(False)
@@ -144,7 +144,7 @@ class HistoAnalysisWidget(QtGui.QWidget):
         '''reimplemented from QWidget to handle matplotlib widget and
         mainwindow status bar
         '''
-        QtGui.QWidget.setPalette(self, palette)
+        QtWidgets.QWidget.setPalette(self, palette)
         colorname = str(palette.color(QtGui.QPalette.Window).name())
         self.mfig.set_facecolor(colorname)
         self.mfig.set_edgecolor(colorname)
@@ -575,7 +575,7 @@ class HistoAnalysisWidget(QtGui.QWidget):
 
     def show_toolbar(self, state):
         '''Activate or disable the toolbar display in the widget'''
-        toolbar = self.findChild(QtGui.QToolBar)
+        toolbar = self.findChild(QtWidgets.QToolBar)
         if state:
             toolbar.show()
         else:
@@ -600,7 +600,7 @@ class HistoAnalysisWidget(QtGui.QWidget):
             if self._pick is None:
                 self._pick = self.mfig.canvas.mpl_connect('pick_event',
                                                           self._his_mouse_press)
-            toolbar = self.findChild(QtGui.QToolBar)
+            toolbar = self.findChild(QtWidgets.QToolBar)
             if hasattr(toolbar, '_active'):
                 forcemode = (toolbar._active is not None)
             else:
@@ -615,9 +615,7 @@ class HistoAnalysisWidget(QtGui.QWidget):
                     p.set_picker(False)
             self.mfig.canvas.mpl_disconnect(self._pick)
             self._pick = None
-            toolbar = self.findChild(QtGui.QToolBar)
-            print('toolbar:', toolbar)
-            print(toolbar.__dict__.keys())
+            toolbar = self.findChild(QtWidgets.QToolBar)
             if hasattr(toolbar, '_active'):
                 forcemode = (toolbar._active != 'PAN')
             else:
@@ -727,8 +725,8 @@ if __name__ == '__main__':
     # load histogram data
     histo_data = load_histo_data(hanfile)
     app = None
-    if QtGui.QApplication.instance() is None:
-        app = QtGui.QApplication(sys.argv)
+    if QtWidgets.QApplication.instance() is None:
+        app = QtWidgets.QApplication(sys.argv)
     # histo analysis widget
     win = HistoAnalysisWidget()
     win.setAttribute(QtCore.Qt.WA_DeleteOnClose)

@@ -1588,8 +1588,38 @@
                 "input:{analysis}/segmentation/mesh/<subject>_<side>hemi",
                 "mesh"]],
             "mri_corrected": [[
-                "output:{analysis}/nobias_<subject>", "images" ]],
-        }
+                "input:{analysis}/nobias_<subject>", "images" ]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.HistoAnalysisViewer": {
+            "main_input": [[
+                "input:{analysis}/nobias_<subject>", "Histo Analysis"]],
+            "histo": [[
+                "input:{analysis}/nobias_<subject>", "Histogram"]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.HistoAnalysisEditor": {
+            "main_input": [[
+                "input:{analysis}/nobias_<subject>", "Histo Analysis"]],
+            "histo": [[
+                "input:{analysis}/nobias_<subject>", "Histogram"]],
+            "mri_corrected": [[
+                "input:{analysis}/nobias_<subject>", "images" ]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.AnaBiasCorrectionViewer": {
+            "main_input": [[
+                "input:{analysis}/nobias_<subject>", "images" ]],
+            "histo_analysis": [[
+                "input:{analysis}/nobias_<subject>", "Histo Analysis"]],
+            "t1mri": [[
+                "input:{acquisition}/<subject>", "images"]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.PDFViewer": {
+            "main_input": [[
+                "input:{analysis}/morphologist_report", "PDF File"]],
+        },
 
      }
 

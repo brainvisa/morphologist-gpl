@@ -83,14 +83,9 @@
                     ]
                 ]
             ],
-            "histo_analysis": [
-                [
-                    "output:{seg}/{sub}_nobias",
-                    [
-                        "Histo Analysis"
-                    ]
-                ]
-            ],
+            "histo_analysis": [[
+                "output:{seg}/{sub}_nobias",
+                ["Histo Analysis"]]],
             "split_brain": [
                 [
                     "output:{seg}/{sub}_voronoi",
@@ -834,12 +829,9 @@
         },
 
         "morpho_report": {
-            "t1mri": [
-                [
-                    "input:{acquisition}/{sub}_T1w",
-                    "Aims readable volume formats"
-                ]
-            ],
+            "t1mri": [[
+                "input:{acquisition}/{sub}_T1w",
+                "Aims readable volume formats"]],
             "left_grey_white": [
                 [
                     "input:{seg}/{sub}_hemi-<side>_grey_white",
@@ -1905,8 +1897,7 @@
                     ["Graph and data"],
                     {"sulci_recognition_type": "manual"}],
                 [
-                    "input:{fold}/{sub}_hemi-<side>",
-                    ["Graph and data"]],
+                    "input:{fold}/{sub}_hemi-<side>", ["Graph and data"]],
             ],
             "white_mesh": [[
                 "input:{mesh}/{sub}_hemi-<side>_white.surf",
@@ -1915,9 +1906,41 @@
                 "input:{mesh}/{sub}_hemi-<side>_pial.surf",
                 "Aims mesh formats"]],
             "mri_corrected": [[
-                "output:{seg}/{sub}_nobias",
-                "Aims writable volume formats"]],
-        }
+                "input:{seg}/{sub}_nobias", "Aims writable volume formats"]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.HistoAnalysisViewer": {
+            "main_input": [[
+                "input:{seg}/{sub}_nobias", ["Histo Analysis"]]],
+            "histo": [[
+                "input:{seg}/{sub}_nobias", ["Histogram"]]]
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.HistoAnalysisEditor": {
+            "main_input": [[
+                "input:{seg}/{sub}_nobias", ["Histo Analysis"]]],
+            "histo": [[
+                "input:{seg}/{sub}_nobias", ["Histogram"]]],
+            "mri_corrected": [[
+                "input:{seg}/{sub}_nobias", "Aims writable volume formats"]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.AnaBiasCorrectionViewer": {
+            "main_input": [[
+                "input:{seg}/{sub}_nobias", "Aims writable volume formats"]],
+            "histo_analysis": [[
+                "input:{seg}/{sub}_nobias", ["Histo Analysis"]]],
+            "t1mri": [[
+                "input:{acquisition}/{sub}_desc-conform_T1w",
+                "Aims readable volume formats"]]
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.PDFViewer": {
+            "main_input": [
+                ["output:{analysis}/{sub}_sul-<sulci_recognition_session>_morphologist_report", "PDF File"],
+                ["output:{analysis}/{sub}_morphologist_report", "PDF File"]
+            ]
+        },
 
     }
 }

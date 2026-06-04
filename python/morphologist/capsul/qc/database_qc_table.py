@@ -465,7 +465,7 @@ class DatabaseQcTable(Process):
             return
         row, col = item.position
         elements = self.elements[row, col]
-        print('item_clicked:', row, col, elements)
+        # print('item_clicked:', row, col, elements)
         element = None
         if isinstance(elements, list):
             menu = Qt.QMenu()
@@ -502,7 +502,7 @@ class DatabaseQcTable(Process):
                     # element = elements[chosen_action.number]
         else:
             element = elements
-        print('element:', element)
+        # print('element:', element)
 
         if element is not None:
             self.item_view.setText(element['path'])
@@ -521,8 +521,8 @@ class DatabaseQcTable(Process):
     def get_viewers(self, element, process, data_type, check_values):
         viewers = find_viewer.find_viewers(self.get_study_config().engine,
                                            element['path'])
-        print('get viewers for:', element['path'], ':')
-        print(viewers)
+        # print('get viewers for:', element['path'], ':')
+        # print(viewers)
         return viewers
 
     def get_data_editors(self, element, process, data_type, check_values):
@@ -630,7 +630,7 @@ class DatabaseQcTable(Process):
             element, data_type = element_d
             viewers = self.get_viewers(element, process=self,
                                        data_type=data_type, check_values=True)
-            print('viewers:', viewers)
+            # print('viewers:', viewers)
 
             for viewer in viewers:
                 try:
@@ -673,7 +673,6 @@ class DatabaseQcTable(Process):
                         self._set_compl_attribs(att, element['attributes'])
                         pc.complete_parameters()
                     res = editor()
-                    print('res:', res)
                     self._editor = res
                     break
                 except Exception:
@@ -1084,6 +1083,8 @@ if __name__ == '__main__':
     proc.set_study_config(engine.study_config)
     proc.database = '/home/dr144257/data/baseessai'
     proc.fom = 'morphologist-auto-1.0'
+    # proc.database = '/home/dr144257/data/morpho_bids/derivatives/morphologist-6.0'
+    # proc.fom = 'morphologist-bids-2.0'
     proc.data_types = [
         'morphologist.capsul.morphologist.Morphologist.t1mri',
         'morphologist.capsul.morphologist.Morphologist.t1mri_nobias',
@@ -1098,6 +1099,8 @@ if __name__ == '__main__':
         'morphologist.capsul.morphologist.Morphologist.right_graph',
         'morphologist.capsul.morphologist.Morphologist.left_labelled_graph',
         'morphologist.capsul.morphologist.Morphologist.right_labelled_graph',
+
+        'morphologist.capsul.morphologist.Morphologist.Report_report',
         'morphologist.capsul.morphologist.Morphologist.Report_report_json']
     proc.data_filters = ["{'center': 'subjects'}"]
     proc.keys = ['subject', 'acquisition', 'bids', 'sulci_recognition_session']
@@ -1111,8 +1114,8 @@ if __name__ == '__main__':
         'Left Hemisphere Mesh', 'Right Hemisphere Mesh',
         'Left Cortical Sulci', 'Right Cortical Sulci',
         'Left Labelled Sulci', 'Right Labelled Sulci',
-        # 'Sulcal morphometry measurements', 'Brain volumes', 'Report',
-        'QC']
+        # 'Sulcal morphometry measurements', 'Brain volumes',
+        'Report', 'QC']
     # proc.output_file = '/tmp/qc_report.pdf'
 
     qapp = Qt.QApplication([])
