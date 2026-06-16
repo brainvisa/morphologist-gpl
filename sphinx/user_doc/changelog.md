@@ -1,5 +1,16 @@
 # Changelog
 
+## [6.0.16] 2026-06-16
+
+### Added
+
+- database_qc_table reimplemented for Capsul (parsing filesystem) with a few viewer processes
+
+### Changed
+
+- VipSplitBrain: fixed normalized coordinates in tyemplate in one of the functions (not sure it is actually used)
+
+
 ## [6.0.15] 2026-05-21
 
 ### Added
