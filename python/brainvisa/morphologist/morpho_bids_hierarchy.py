@@ -270,6 +270,8 @@ def t1mri_acq_content():
             SetType('Transformation to Scanner Based Referential'),
             f'{sub}_T1w_scanner', SetType('Scanner Based Referential'), SetWeakAttr(
                 'destination_referential', str(registration.talairachMNIReferentialId)),
+            '*', SetType('Referential'),
+            '*', SetType('Transformation matrix'),
         ),  # registration
 
         "ana-{analysis}", SetType('T1 MRI Analysis Directory'),
@@ -515,13 +517,6 @@ hierarchy = (
                 DeclareAttributes('time_point', 'time_duration',
                                   'rescan', 'acquisition_date'),
                 SetContent(
-                    # The "registration" directory in each subject contains:
-                    #   - all the referentials related to this subjects
-                    #   - all the transformations that links two referetials
-                    #     from this directory or from the common referentials
-                    #     directory (in "shared" directory)
-                    'registration', SetType('Registration Directory'),
-                    SetContent(*registration_content()),
                     *raw_t1,
                     *t1mri_acq_content(),
                 ),
