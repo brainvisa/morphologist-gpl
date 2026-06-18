@@ -612,6 +612,9 @@
             "brain_volumes_file": [[
                 "output:{analysis}/segmentation/brain_volumes_<subject>",
                 "CSV file"]],
+            "split_template": "{shared.split_template}",
+            "icbm_brain_mask_template":
+                "{shared.anatomical_template_t1_skull_stripped}",
         },
 
         "morpho_report": {
@@ -879,14 +882,7 @@
                     "Aims writable volume formats"
                 ]
             ],
-            "split_template": [
-                [
-                    "shared:hemitemplate/closedvoronoi",
-                    [
-                        "GIS image",
-                    ]
-                ]
-            ],
+            "split_template": "{shared.split_template}",
             "talairach_ACPC_transform": [
                 [
                     "output:<center>/<subject>/t1mri/<acquisition>/registration/RawT1-<subject>_<acquisition>_TO_Talairach-ACPC",

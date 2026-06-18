@@ -1,9 +1,12 @@
 
 from brainvisa.processes import *
+from brainvisa.configuration import neuroConfig
+import os
 import os.path as osp
 import json
 import numpy as np
 from brainvisa.morphologist.morphometry import global_sulc_morpho
+from soma import aims
 try:
     from reportlab.pdfgen import canvas
     # from reportlab.pdfbase import pdfmetrics
@@ -128,7 +131,8 @@ def initialization(self):
     self.linkParameters('left_labelled_graph', 't1mri')
     self.linkParameters('right_labelled_graph', 'left_labelled_graph')
     self.linkParameters('talairach_transform', 't1mri')
-    self.linkParameters('brain_volumes_file', ('t1mri', 'left_labelled_graph'), linkBrainVolumes)
+    self.linkParameters('brain_volumes_file', ('t1mri', 'left_labelled_graph'),
+                        linkBrainVolumes)
     self.linkParameters('report', 'brain_volumes_file')
     self.linkParameters('report_json', 'report')
     self.linkParameters('inter_subject_qc_table', 'report_json')
@@ -284,7 +288,6 @@ def execution(self, context):
         status = 3
         comments.append('Missing G/W mesh file')
 
-
     objs = []
     if self.left_gm_mesh is not None \
             and osp.exists(self.left_gm_mesh.fullPath()):
@@ -313,7 +316,6 @@ def execution(self, context):
         pdf.drawString(360, 650, 'MISSING')
         status = 3
         comments.append('Missing pial mesh file')
-
 
     objs = []
     hie_file = aims.carto.Paths.findResourceFile(
@@ -349,10 +351,8 @@ def execution(self, context):
         status = 3
         comments.append('Missing sulci graph file')
 
-
     pdf.setFillColorRGB(0., 0., 0.)
 
-    hdr = []
     morph = []
     morph_z = []
     norm_stat = {}
@@ -425,10 +425,19 @@ def execution(self, context):
         'left.gi_native_space': 'gyration index',
         'both.fold_length': 'total folds length',
         'both.mean_depth': 'avg. folds depth',
-        'both.mean_thickness': 'avg. cortical thickness',
+        'both.mean_thickness': 'avg. cort. thick.',
         'both.mean_opening': 'avg. folds opening',
         'both.skel_points': 'skel. pts',
         'log_ratio.skel_points': 'skel. log. ratio',
+        "brain_template_overlap": 'templ. jaccard',
+        "brain_template_out": 'out templ.',
+        "brain_template_missing": 'empty',
+        "left.sulci_template_overlap": 'left sulc. jaccard',
+        "left.sulci_template_out": 'left sulc. out templ.',
+        "left.sulci_template_missing": 'left sulc. empty',
+        "right.sulci_template_overlap": 'right sulc. jaccard',
+        "right.sulci_template_out": 'right sulc. out templ.',
+        "right.sulci_template_missing": 'right sulc. empty'
     }
     units = {
         'both.brain_volume': 'mm3',
@@ -442,6 +451,17 @@ def execution(self, context):
         'both.mean_thickness': 'mm',
         'both.mean_opening': 'mm',
         'both.skel_points': 'vox',
+    }
+    signed_warn = {
+        "brain_template_overlap": '<',
+        "brain_template_out": '>',
+        "brain_template_missing": '>',
+        "left.sulci_template_overlap": '<',
+        "left.sulci_template_out": '>',
+        "left.sulci_template_missing": '>',
+        "right.sulci_template_overlap": '<',
+        "right.sulci_template_out": '>',
+        "right.sulci_template_missing": '>'
     }
 
     skel_asym_low = [-0.097663, -0.169090]
@@ -511,15 +531,18 @@ def execution(self, context):
                                     'Possible segmentation problem or '
                                     'important anomaly:',
                                     '      large asymmetry in folds sizes.']
-                        elif val <= qv1 or val >= qv99:
-                            if val <= qv1:
-                                q[2] = z
-                            else:
-                                q[-3] = z
-                            status = np.max((1, status))
-                            comments.append(
-                                f'Possible problem: {tk} out of 1-99% '
-                                'percentile.')
+                        else:
+                            ws = signed_warn.get(k)
+                            if (val <= qv1 and ws in (None, '<')) \
+                                    or (val >= qv99 and ws in (None, '>')):
+                                if val <= qv1:
+                                    q[2] = z
+                                else:
+                                    q[-3] = z
+                                status = np.max((1, status))
+                                comments.append(
+                                    f'Possible problem: {tk} out of 1-99% '
+                                    'percentile.')
                         quants[i] = q
                 else:  # no normative stats
                     if k == 'log_ratio.skel_points' \
@@ -605,7 +628,7 @@ def execution(self, context):
             for i, q in enumerate(quants):
                 c = quant_colors[i]
                 ax.bar(np.arange(len(q)), q, width=0.5, color=c)
-        plt.xticks(rotation=60)
+        plt.xticks(rotation=60, ha='right')
         ax.set_xticks(range(len(keymap)))
         ax.set_xticklabels(keymap.values())
         #ax.plot([-0.7, len(keymap) + 0.7], [0, 0], '-', color='black')
@@ -640,16 +663,17 @@ def execution(self, context):
     status_colors = [(0., 0., 0.), (0.7, 0.7, 0.), (0.8, 0.5, 0.),
                         (0.6, 0., 0.)]
 
-    pdf.drawString(30, 350, 'QC status:')
+    y = 250
+    pdf.drawString(30, y, 'QC status:')
     pdf.setFont('Helvetica-Bold', 10)
     pdf.setFillColorRGB(*status_colors[status])
-    pdf.drawString(100, 350, statuses[status])
+    pdf.drawString(100, y, statuses[status])
     pdf.setFillColorRGB(0., 0., 0.)
     pdf.setFont('Helvetica', 10)
-    y = 330
+    y -= 15
     if morph_z:
         pdf.drawString(
-            30, 330,
+            30, y,
             'normative reference: '
             f'{osp.basename(osp.dirname(self.normative_brain_stats.fullName()))} '
             f'({zstat["mode"]})')

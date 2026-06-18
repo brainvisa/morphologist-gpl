@@ -825,7 +825,10 @@
             "subject": [["none:<subject>", "no ext"]],
             "brain_volumes_file": [[
                 "output:{seg}/{sub}_brain_volumes",
-                ["CSV file"]]]
+                ["CSV file"]]],
+            "split_template": "{shared.split_template}",
+            "icbm_brain_mask_template":
+                "{shared.anatomical_template_t1_skull_stripped}",
         },
 
         "morpho_report": {
@@ -1111,14 +1114,7 @@
                     "Aims writable volume formats"
                 ]
             ],
-            "split_template": [
-                [
-                    "shared:hemitemplate/closedvoronoi",
-                    [
-                        "GIS image",
-                    ]
-                ]
-            ],
+            "split_template": "{shared.split_template}",
             "talairach_ACPC_transform": [
                 [
                     "output:{reg}/{sub}_T1w_TO_Talairach-ACPC",

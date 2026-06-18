@@ -1027,7 +1027,10 @@
                         "CSV file"
                     ]
                 ]
-            ]
+            ],
+            "split_template": "{shared.split_template}",
+            "icbm_brain_mask_template":
+                "{shared.anatomical_template_t1_skull_stripped}",
         },
         "morpho_report": {
             "t1mri": [

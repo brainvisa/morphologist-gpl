@@ -30,11 +30,15 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license version 2 and that you accept its terms.
 
-from __future__ import absolute_import
-from brainvisa.processes import *
-from soma import aims
+from brainvisa.processes import (
+    Signature, ReadDiskItem, WriteDiskItem, String, Choice,
+)
 from brainvisa.morphologist.morphometry import global_sulc_morpho
+from morphologist.qc import morpho_qc
+from soma import aims
 import os
+import os.path as osp
+
 
 name = 'Brain Volumes'
 userLevel = 1
@@ -59,11 +63,16 @@ signature = Signature(
     'left_gm_mesh', ReadDiskItem('Hemisphere mesh', 'aims mesh formats',
                                  requiredAttributes={'side': 'left'}),
     'right_gm_mesh', ReadDiskItem('Hemisphere mesh', 'aims mesh formats',
-                                 requiredAttributes={'side': 'right'}),
+                                  requiredAttributes={'side': 'right'}),
     'left_wm_mesh', ReadDiskItem('Hemisphere white mesh', 'aims mesh formats',
                                  requiredAttributes={'side': 'left'}),
     'right_wm_mesh', ReadDiskItem('Hemisphere white mesh', 'aims mesh formats',
-                                 requiredAttributes={'side': 'right'}),
+                                  requiredAttributes={'side': 'right'}),
+    'split_template', ReadDiskItem('Hemispheres template',
+                                   'aims readable volume formats'),
+    'icbm_brain_mask_template', ReadDiskItem(
+        'Anatomical template', 'aims readable volume formats',
+        requiredAttributes={'skull_stripped': 'yes', 'Size': '1 mm'}),
     'subject', String(),
     'sulci_label_attribute', String(),
     'table_format', Choice('2023', 'old'),
@@ -102,10 +111,15 @@ def initialization(self):
                 self.split_brain)
         return None
 
+    self.split_template = self.signature['split_template'].findValue({})
+    self.icbm_brain_mask_template \
+        = self.signature['icbm_brain_mask_template'].findValue({})
+
     self.sulci_label_attribute = 'label'
     self.setOptional('left_labelled_graph', 'right_labelled_graph',
                      'left_gm_mesh', 'right_gm_mesh',
-                     'left_wm_mesh', 'right_wm_mesh')
+                     'left_wm_mesh', 'right_wm_mesh', 'split_template',
+                     'icbm_brain_mask_template')
     self.linkParameters('subject', 'split_brain', linkSubject)
     self.linkParameters('left_grey_white', 'split_brain')
     self.linkParameters('right_grey_white', 'split_brain')
@@ -128,12 +142,26 @@ def initialization(self):
 
 def execution(self, context):
     context.write('Extracting left and right CSF inside sulci.\n')
-    context.runProcess('AnaComputeLCRClassif',
-                       left_grey_white=self.left_grey_white,
-                       right_grey_white=self.right_grey_white,
-                       left_csf=self.left_csf,
-                       right_csf=self.right_csf,
-                       split_mask=self.split_brain)
+    do_csf = False
+    if not osp.exists(self.left_csf.fullPath()) \
+            or not osp.exists(self.right_csf.fullPath()):
+        do_csf = True
+    if not do_csf and (
+            os.stat(self.left_grey_white.fullPath()).st_mtime
+            >= os.stat(self.left_csf.fullPath()).st_mtime
+            or os.stat(self.right_grey_white.fullPath()).st_mtime
+            >= os.stat(self.right_csf.fullPath()).st_mtime):
+        do_csf = True
+
+    if not do_csf:
+        context.write('CSF masks are up-to-date.')
+    else:
+        context.runProcess('AnaComputeLCRClassif',
+                           left_grey_white=self.left_grey_white,
+                           right_grey_white=self.right_grey_white,
+                           left_csf=self.left_csf,
+                           right_csf=self.right_csf,
+                           split_mask=self.split_brain)
     context.write('Computing volumes.\n')
 
     lg = None
@@ -230,6 +258,52 @@ def execution(self, context):
                     v = str(round(v, 3))
             table.append('<td>' + v + '</td>')
             csvt.append(v)
+
+    if self.split_template is not None \
+            and self.icbm_brain_mask_template is not None:
+        split_template = aims.read(self.split_template.fullPath())
+        icbm_template = aims.read(self.icbm_brain_mask_template.fullPath())
+        qc_sb_res = morpho_qc.split_brain_overlaps(
+            self.split_brain.fullPath(), split_template, icbm_template)
+        qc_fold_res = morpho_qc.graphs_overlaps(
+            self.left_labelled_graph.fullPath(),
+            self.right_labelled_graph.fullPath(),
+            split_template, icbm_template)
+        ncols = ['brain_template_overlap', 'brain_template_out',
+                 'brain_template_missing',
+                 'left.template_overlap', 'left.template_out',
+                 'left.template_missing',
+                 'right.template_overlap', 'right.template_out',
+                 'right.template_missing',
+                 'left.sulci_template_overlap', 'left.sulci_template_out',
+                 'left.sulci_template_missing',
+                 'right.sulci_template_overlap', 'right.sulci_template_out',
+                 'right.sulci_template_missing',]
+        csvh += ncols
+        th += [f'<td>{x}</td>' for x in ncols]
+        gb = qc_sb_res['global']
+        nv = [gb['jaccard'],
+              gb['outside'] / gb['template_size'],
+              gb['missing'] / gb['template_size']]
+        gb = qc_sb_res['left_hemi']
+        nv += [gb['jaccard'],
+               gb['outside'] / gb['template_size'],
+               gb['missing'] / gb['template_size']]
+        gb = qc_sb_res['right_hemi']
+        nv += [gb['jaccard'],
+               gb['outside'] / gb['template_size'],
+               gb['missing'] / gb['template_size']]
+        gb = qc_fold_res['left_hemi']
+        nv += [gb['jaccard'],
+               gb['outside'] / gb['template_size'],
+               gb['missing'] / gb['template_size']]
+        gb = qc_fold_res['right_hemi']
+        nv += [gb['jaccard'],
+               gb['outside'] / gb['template_size'],
+               gb['missing'] / gb['template_size']]
+        nv = [f'{x:.3}' for x in nv]
+        csvt += nv
+        table += [f'<td>{x}</td>' for x in nv]
 
     context.write('<table style="border: 1px"><th>' + ''.join(th)
                   + '</th><tr>' + ''.join(table) + '</tr></table>')

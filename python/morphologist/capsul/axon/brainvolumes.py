@@ -24,6 +24,8 @@ class brainvolumes(Process):
         self.add_trait('right_gm_mesh', File(allowed_extensions=['.gii', '.mesh', '.obj', '.ply', '.tri'], optional=True))
         self.add_trait('left_wm_mesh', File(allowed_extensions=['.gii', '.mesh', '.obj', '.ply', '.tri'], optional=True))
         self.add_trait('right_wm_mesh', File(allowed_extensions=['.gii', '.mesh', '.obj', '.ply', '.tri'], optional=True))
+        self.add_trait('split_template', File(allowed_extensions=['.nii.gz', '.svs', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg', '.scn', '.mnc', '.nii', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.bif', '.czi', '.mnc.gz'], optional=True))
+        self.add_trait('icbm_brain_mask_template', File(allowed_extensions=['.nii.gz', '.svs', '.dcm', '', '.i', '.v', '.fdf', '.mgh', '.mgz', '.ima', '.dim', '.ndpi', '.vms', '.vmu', '.jpg', '.scn', '.mnc', '.nii', '.img', '.hdr', '.svslide', '.tiff', '.tif', '.bif', '.czi', '.mnc.gz'], optional=True))
         self.add_trait('subject', Str())
         self.add_trait('sulci_label_attribute', Str())
         self.add_trait('table_format', Enum('2023', 'old'))
@@ -31,6 +33,8 @@ class brainvolumes(Process):
 
 
         # initialization section
+        self.split_template = '/volatile/home/dr144257/brainvisa-6.0/build/share/brainvisa-share-6.0/hemitemplate/closedvoronoi.ima'
+        self.icbm_brain_mask_template = '/volatile/home/dr144257/brainvisa-6.0/build/share/brainvisa-share-6.0/anatomical_templates/MNI152_T1_1mm_brain.nii'
         self.sulci_label_attribute = 'label'
         self.table_format = '2023'
 

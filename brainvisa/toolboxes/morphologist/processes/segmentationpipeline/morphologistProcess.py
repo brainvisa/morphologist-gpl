@@ -932,7 +932,9 @@ def execution(self, context):
                        right_wm_mesh=self.right_white_mesh,
                        subject=self.subject,
                        sulci_label_attribute=self.sulci_label_attribute,
-                       brain_volumes_file=self.brain_volumes_file)
+                       brain_volumes_file=self.brain_volumes_file,
+                       split_template=self.split_template,
+                       icbm_brain_mask_template=self.anatomical_template_skull_stripped)
     # report
     context.runProcess('morpho_report',
                        t1mri=self.t1mri,
