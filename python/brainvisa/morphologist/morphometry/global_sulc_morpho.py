@@ -821,7 +821,7 @@ def grid_data2(X, perbin=500, max_rel_width=0.1, nmin=100):
                           + X[s[int(X.shape[0] * b / nbins)], c]) / 2
                 n0 = np.where(np.logical_and(X[:, c] >= bins[-1],
                                              X[:, c] < y0))[0].shape[0]
-                if n0 >= nmin:
+                if n0 >= nmin or b == 0:
                     # new additional bin
                     bins.append(y0)
                 else:
@@ -1051,7 +1051,7 @@ def build_stratified_normative_brain_vol_stats(
     valid = covar_table[covar_table.columns[0]].isin(subs)
     covar_table = covar_table.loc[valid]
     covar_table.index = range(len(covar_table.index))
-    print('valid data:', covar_table.shape)
+    # print('valid data:', covar_table.shape)
     subs = set(covar_table[covar_table.columns[0]])  # subject
     morph = [row for row in morph if row[0] in subs]
     npmorph = np.array([row[1:] for row in morph], dtype=float)
@@ -1070,7 +1070,7 @@ def build_stratified_normative_brain_vol_stats(
         for i in range(1, len(index)):
             data &= covar_table[cti[i]] == cat_var[ci[i]][index[i]]
         data = covar_table.iloc[data]
-        print('cat ndata:', data.shape)
+        print('cat data:', data.shape)
 
         indices = [m_sub_map[covar_table.iloc[i]['subject']]
                    for i in data.index]
