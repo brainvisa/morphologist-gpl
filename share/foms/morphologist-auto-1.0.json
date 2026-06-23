@@ -577,7 +577,7 @@
                 "images",
                 {"side":"L"}]],
             "right_grey_white": [[
-                "output:{analysis}/segmentation/<side>grey_white_<subject>",
+                "input:{analysis}/segmentation/<side>grey_white_<subject>",
                 "images",
                 {"side":"R"}]],
             "left_csf": [[
