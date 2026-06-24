@@ -263,10 +263,13 @@ def execution(self, context):
             and self.icbm_brain_mask_template is not None:
         split_template = aims.read(self.split_template.fullPath())
         icbm_template = aims.read(self.icbm_brain_mask_template.fullPath())
+        lgraph = aims.read(self.left_labelled_graph.fullPath())
+        mni_tr = aims.GraphManip.getICBMTransform(lgraph)
         qc_sb_res = morpho_qc.split_brain_overlaps(
-            self.split_brain.fullPath(), split_template, icbm_template)
+            self.split_brain.fullPath(), split_template, icbm_template,
+            mni_tr=mni_tr)
         qc_fold_res = morpho_qc.graphs_overlaps(
-            self.left_labelled_graph.fullPath(),
+            lgraph,
             self.right_labelled_graph.fullPath(),
             split_template, icbm_template)
         ncols = ['brain_template_overlap', 'brain_template_out',
