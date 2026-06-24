@@ -26,7 +26,7 @@ def get_mni_transform(vol):
     elif aims.StandardReferentials.acPcReferential() in refs:
         iref = refs.index(aims.StandardReferentials.acPcReferential())
     if iref is None:
-        raise KeyError('could not fond a transformation to ICBM152 space')
+        raise KeyError('could not find a transformation to ICBM152 space')
     tal_tr = aims.AffineTransformation3d(hdr['transformations'][iref])
     return aims.StandardReferentials.talairachToICBM() * tal_tr
 
