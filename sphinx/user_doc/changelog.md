@@ -1,5 +1,19 @@
 # Changelog
 
+## [6.0.17] 2026-06-26
+
+### Added
+
+- QC table GUI ported from Axon to Capsul
+- QC measurements comparing segmentations and folds to the MNI template
+- morphologist report includes the new QC measurements
+
+### Changed
+
+- Fixes in FOMs and Axon hierarchies
+- fix in stratified morphometric stats recordiong for small datasets
+
+
 ## [6.0.16] 2026-06-16
 
 ### Added
