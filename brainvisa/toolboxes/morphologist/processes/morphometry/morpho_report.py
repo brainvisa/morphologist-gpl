@@ -489,7 +489,7 @@ def execution(self, context):
                     # z = morph_z[j]
                     z = morph_z[iz]
                     zvals[i] = z
-                    if n_quant is not None:
+                    if n_quant is not None and z is not None:
                         q = n_quant[:, iz]
                         # print(q)
                         # add 3 values at each extrema
@@ -564,7 +564,6 @@ def execution(self, context):
                                 '      large asymmetry in folds sizes.']
             except Exception as e:
                 context.write(e)
-                raise
                 v = '<MISSING>'
                 status = 3
                 comments.append('missing stat')
