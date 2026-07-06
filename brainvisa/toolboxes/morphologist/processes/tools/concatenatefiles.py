@@ -71,6 +71,7 @@ def execution(self, context):
 
     f = open(self.group_measures.fullPath(), 'w')
     first = True
+    failed = False
     for item, subject in zip(self.measures_by_subject, self.subjects):
         ifi = open(item.fullPath())
         if not self.measures_files_without_header:
@@ -80,10 +81,14 @@ def execution(self, context):
                 first_header = header
                 first = False
             elif header != first_header:
+                if not failed:
+                    context.error(
+                        'CSV headers do not match. Header of the first subject:\n%s' % first_header)
+                else:
+                    failed = True
                 context.error(
-                    'CSV headers do not match. Header of the first subject:\n%s' % first_header)
-                context.error(
-                    'Header of the failed subject "%s":\n%s' % (subject, header))
-                raise ValueError('CSV headers do not match')
+                    'Header of the failed (skipped) subject "%s":\n%s\n' % (subject, header))
+                # raise ValueError('CSV headers do not match')
+                continue  # skip this one
         for line in ifi.readlines():
             f.write(';'.join([subject, line.strip()]) + '\n')
