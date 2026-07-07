@@ -610,8 +610,9 @@ def read_covar_table(covar_csv, covariables, skip_invalid=False,
 
     if skip_invalid:
         tcov = [x[0] for x in new_covar.values()]
+        print('tcov:', tcov)
         covar_table = covar_table.iloc[
-            ~np.any(covar_table[tcov].isna(), axis=1)]
+            np.where(~np.any(covar_table[tcov].isna(), axis=1))[0]]
         covar_table = covar_table.copy()
         covar_table.index = range(covar_table.shape[0])
 
@@ -1463,12 +1464,12 @@ if __name__ == '__main__':
 
     normative_file = '/home/dr144257/data/normative_data/all/morphologist_normative_brain_volumes_stats.json'
 
-    make_stats = True
-    save_stats = True
+    make_stats = False
+    do_save_stats = True
+    ds_def = read_datasets_def('/home/dr144257/data/datasets.yaml')
     if make_stats:
-        ds_def = read_datasets_def('/home/dr144257/data/datasets.yaml')
         models = build_stratified_normative_brain_vol_stats(ds_def)
-        if save_stats:
+        if do_save_stats:
             save_stats(models, normative_file)
     else:
         models = load_stats(normative_file)
@@ -1478,6 +1479,8 @@ if __name__ == '__main__':
         app = Qt.QApplication([])
 
     # test_normative([indiv_vol_file], normative_file)
-    test_normative(ds_def, normative_file)
+    test_normative(ds_def, normative_file,
+                   # variables=['both.brain_volume', 'both.GM', 'both.GM_area'])
+                   variables=['left.template_overlap', 'left.template_out', 'left.template_missing', 'left.sulci_template_overlap'])
 
     app.exec()
