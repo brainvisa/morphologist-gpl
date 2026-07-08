@@ -523,18 +523,6 @@ def read_covar_table(covar_csv, covariables, skip_invalid=False,
 
     covar_table = pd.read_csv(covar_csv, sep=sep)
 
-    if filter is not None:
-        for k, v in filter.items():
-            covar_table = covar_table.loc[covar_table[k] == v]
-        covar_table.index = range(len(covar_table))
-        covar_table = covar_table.copy()
-    # 1st col should be subject
-    scol = covar_table.columns[0]
-    if str(covar_table[scol].dtype) != 'str':
-        subs = [str(x) for x in covar_table[scol]]
-        covar_table = covar_table.drop(scol, axis=1)
-        covar_table.insert(0, scol, subs)
-        covar_table = covar_table.copy()
     alt_covar = {'sex': 'gender'}
     var_transform = {}
     print('read file:', covar_csv)
@@ -547,15 +535,57 @@ def read_covar_table(covar_csv, covariables, skip_invalid=False,
             for var, vdef in cv_set.items():
                 if vdef['filename'] != covar_csv:
                     continue
+                if 'filter' in vdef:
+                    filter = vdef['filter']
                 tvar = vdef['var_in_file']
                 alt_covar[var] = tvar.lower()
                 tr = vdef.get('interpret')
                 if tr is not None:
+                    if isinstance(tr, str):
+                        meaningd = tr.strip()
+                        meaningd = [m.strip() for m in meaningd.split(',')]
+                        if len(meaningd) == 1:
+                            meaning = meaningd[0]
+                            meaning = value_transforms[meaning]
+                        else:
+                            meaning = {}
+                            for m in meaningd:
+                                m2 = [x.strip() for x in m.split(':', 1)]
+                                try:
+                                    m2[0] = float(m2[0])
+                                except ValueError:
+                                    pass
+                                meaning[m2[0]] = m2[1]
+                            meaning = partial(dict_transform, meaning)
+                        tr = meaning
+                    elif isinstance(tr, dict):
+                        meaning = {}
+                        for k, v in tr.items():
+                            try:
+                                k = float(k)
+                            except ValueError:
+                                pass
+                            meaning[k] = v
+                        tr = partial(dict_transform, meaning)
+
                     var_transform[var] = tr
         cov = []
         for d in covariables.values():
             cov += [k for k in d if k not in cov]
         covariables = cov
+
+    if filter is not None:
+        for k, v in filter.items():
+            covar_table = covar_table.loc[covar_table[k] == v]
+        covar_table.index = range(len(covar_table))
+        covar_table = covar_table.copy()
+    # 1st col should be subject
+    scol = covar_table.columns[0]
+    if str(covar_table[scol].dtype) != 'str':
+        subs = [str(x) for x in covar_table[scol]]
+        covar_table = covar_table.drop(scol, axis=1)
+        covar_table.insert(0, scol, subs)
+        covar_table = covar_table.copy()
 
     print('alt_covar:', alt_covar)
     alt_covar.update({v: k for k, v in alt_covar.items()})
@@ -585,7 +615,7 @@ def read_covar_table(covar_csv, covariables, skip_invalid=False,
             c = cdef[0]
             tcol = covar_table[c]
             print('age col:', str(tcol.dtype))
-            if str(tcol.dtype) == 'str':
+            if str(tcol.dtype) in ('str', np.dtype(object)):
                 new_age = []
                 for i in range(len(tcol)):
                     age = tcol.iloc[i]
@@ -616,6 +646,7 @@ def read_covar_table(covar_csv, covariables, skip_invalid=False,
         covar_table = covar_table.copy()
         covar_table.index = range(covar_table.shape[0])
 
+    # print('var_transform:', var_transform)
     for var, tvar in var_transform.items():
         col = new_covar.get(var, [var, None])[0]
         covar_table[col] = tr(covar_table[col])
@@ -1466,7 +1497,7 @@ if __name__ == '__main__':
 
     make_stats = False
     do_save_stats = True
-    ds_def = read_datasets_def('/home/dr144257/data/datasets.yaml')
+    ds_def = read_datasets_def(dataset_file)
     if make_stats:
         models = build_stratified_normative_brain_vol_stats(ds_def)
         if do_save_stats:
