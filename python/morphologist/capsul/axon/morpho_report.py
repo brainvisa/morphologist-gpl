@@ -32,6 +32,7 @@ class morpho_report(Process):
         self.add_trait('bids', Str())
         self.add_trait('covariables_file', File(allowed_extensions=['.csv', '.tsv'], optional=True))
         self.add_trait('covariables', Str(optional=True))
+        self.add_trait('covariables_specs', Str(optional=True))
 
     def _run_process(self):
         from brainvisa import axon
