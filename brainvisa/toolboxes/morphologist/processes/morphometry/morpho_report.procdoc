@@ -12,6 +12,14 @@ Some normative data may be stratified by sex and age, which makes the comparison
       <xhtml name="covariables">When using stratified normative data to compare global brain morphometric measurements, the subject covariables, <tt>sex</tt> and <tt>age</tt> are needed. This parameter allows to provide them on a single subject basis (see the <tt>covariables_file</tt> parameter for an alternative). The format here is a JSON dictionary: for instance:<br/>
 <pre>{"sex": "M", "age": 35}
 </pre></xhtml>
+      <xhtml name="covariables_specs">This parameter may be used optionally to replace <tt>covariables_file</tt> and <tt>covariables</tt> in the context of stratified normative data to compare global brain morphometric measurements. It allows to use covariables (normally <tt>age</tt> and <tt>sex</tt>) which may be scattered in multiple files, and add data filters and values transformations. The string here is a JSON dictionary secifying, for each covariable, where and how to find it.
+<br/>
+Example (inspired by the ABCD cohort phenotypes files):<br/>
+<pre>
+{"age": {"filename": "/data/abcd/phenotype/ab_g_dyn.tsv", "var_in_file": "ab_g_dyn__visit_age", "filter": {"session_id": "ses-00A"}}, "sex": {"filename": "/data/abcd/phenotype/ab_g_stc.tsv", "var_in_file": "ab_g_stc__cohort_sex", "interpret": {"1": "M", "2": "F"}}}
+</pre>
+This means that <tt>age</tt> and <tt>sex</tt> variables are found in different files (<tt>ab_g_dyn.tsv</tt> and <tt>ab_g_stc.tsv</tt> respectrively) under column names <tt>ab_g_dyn__visit_age</tt> and <tt>ab_g_stc__cohort_sex</tt>, that the subject age table has to be filtered using only <tt>session_id</tt> column value being <tt>ses-00A</tt> (the baseline of a longitudinal study where the same subject may have multiple acquisitioins at different ages), and the <tt>sex</tt> value is not ("<tt>M</tt>", "<tt>F</tt>") as expected, but numerical values (<tt>1</tt>, <tt>2</tt>) which need to be translated.<br/>
+The <tt>interpret</tt> field may be a dict as in this example to simply translate values, or a string naming a translation function. To date, only the value <tt>months</tt> is understood to translate age in months into years.</xhtml>
     </d>
   </d>
 </d>

@@ -62,6 +62,7 @@ signature = Signature(
     'bids', String(),
     'covariables_file', ReadDiskItem('Participants file', ['CSV file', 'TSV file']),
     'covariables', String(),
+    'covariables_specs', String(),
 )
 
 
@@ -119,7 +120,7 @@ def initialization(self):
                      'brain_volumes_file', 'normative_brain_stats',
                      'talairach_transform', 'report_json',
                      'inter_subject_qc_table', 'covariables_file',
-                     'covariables')
+                     'covariables', 'covariables_specs')
     self.linkParameters('subject', 't1mri', linkSubject)
     self.linkParameters('bids', ('t1mri', 'left_labelled_graph'), linkBids)
     self.linkParameters('left_grey_white', 't1mri')
@@ -374,14 +375,22 @@ def execution(self, context):
             if 'stratified' in norm_stat:
                 if self.covariables:
                     covar = json.loads(self.covariables)
-                elif self.covariables_file \
-                        and osp.exists(self.covariables_file.fullPath()):
+                elif (self.covariables_file
+                      and osp.exists(self.covariables_file.fullPath())) \
+                          or self.covariables_specs:
                     k = next(iter(norm_stat['stratified']))
                     covariables = list(dict(k).keys())
                     covariables += norm_stat['stratified'][k]['grid'].keys()
                     # context.write('reading covariables file:', self.covariables_file)
+                    if self.covariables_specs:
+                        covariables = json.loads(self.covariables_specs)
+                        covar_specs = [c.get('filename')
+                                       for c in covariables.values()]
+                        covariables = {'dataset': covariables}
+                    else:
+                        covar_specs = [self.covariables_file.fullPath()]
                     covar_table, _ = global_sulc_morpho.read_covar_tables(
-                        [self.covariables_file.fullPath()],
+                        covar_specs,
                         covariables=covariables, skip_invalid=True,
                         sub_prefix='sub-')
                     if any(v not in covar_table.columns for v in covariables):
