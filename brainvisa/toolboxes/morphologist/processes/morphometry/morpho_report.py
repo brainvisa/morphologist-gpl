@@ -386,12 +386,13 @@ def execution(self, context):
                         covariables = json.loads(self.covariables_specs)
                         covar_specs = [c.get('filename')
                                        for c in covariables.values()]
-                        covariables = {'dataset': covariables}
+                        covar_def = {'dataset': covariables}
                     else:
                         covar_specs = [self.covariables_file.fullPath()]
+                        covar_def = covariables
                     covar_table, _ = global_sulc_morpho.read_covar_tables(
                         covar_specs,
-                        covariables=covariables, skip_invalid=True,
+                        covariables=covar_def, skip_invalid=True,
                         sub_prefix='sub-')
                     if any(v not in covar_table.columns for v in covariables):
                         context.write('missing covariables: using global '
