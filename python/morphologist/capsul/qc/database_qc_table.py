@@ -77,11 +77,13 @@ status_for_type = {}
 
 class DatabaseQcTable(Process):
 
+    roles = ['qc']
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.add_trait('database', traits.Directory())
-        self.add_trait('fom', traits.Str())
+        self.add_trait('database', traits.Directory(optional=True))
+        self.add_trait('fom', traits.Str(optional=True))
         self.add_trait('data_types', traits.ListStr())
         self.add_trait('data_filters', traits.ListStr())
         self.add_trait('keys', traits.ListStr())
@@ -93,15 +95,26 @@ class DatabaseQcTable(Process):
 
         self.status_for_type = status_for_type
         self.statuses = statuses
-        self.fom = 'morphologist-bids-2.0'
+        # self.fom = 'morphologist-bids-2.0'
 
         # possibleTypes = [t.name for t in getAllDiskItemTypes()]
 
         self.keys = ['subject']
+        sc = getattr(self, 'study_config', None)
+        if sc is not None:
+            self.database = sc.input_directory
+            self.fom = sc.input_fom
 
     def _run_process(self):
         self.row_ids = {}
         self.elements = None
+
+        if self.database in (None, traits.Undefined, ''):
+            sc = self.get_study_config()
+            self.database = sc.input_directory
+        if self.fom in (None, traits.Undefined, ''):
+            sc = self.get_study_config()
+            self.fom = sc.input_fom
         # find data
         data = self.find_data()
 
@@ -173,8 +186,9 @@ class DatabaseQcTable(Process):
             config = session.config('fom', 'global')
             config.input_fom = self.fom
             config.output_fom = self.fom
-            config.input_directory = self.database
-            config.output_directory = self.database
+            if self.database is not None:
+                config.input_directory = self.database
+                config.output_directory = self.database
 
         procname, param = dtype.rsplit('.', 1)
 
@@ -187,7 +201,7 @@ class DatabaseQcTable(Process):
         else:
             proc = engine.get_process_instance(procname)
             self._cached_procs[procname] = [proc, dfilt]
-            cached_atts = {}
+            cached_atts = None
         if cached_atts != dfilt:
             pc = ProcessCompletionEngine.get_completion_engine(proc)
             att = pc.get_attribute_values()
