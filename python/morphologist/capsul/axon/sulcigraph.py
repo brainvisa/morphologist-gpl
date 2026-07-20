@@ -29,6 +29,7 @@ class SulciGraph(Process):
         self.add_trait('sulci_voronoi', File(allowed_extensions=['.nii.gz', '.dcm', '', '.i', '.v', '.fdf', '.ima', '.dim', '.jpg', '.mnc', '.nii', '.img', '.hdr', '.tiff', '.tif', '.mnc.gz'], output=True))
         self.add_trait('write_cortex_mid_interface', Bool())
         self.add_trait('cortex_mid_interface', File(allowed_extensions=['.nii.gz', '.dcm', '', '.i', '.v', '.fdf', '.ima', '.dim', '.jpg', '.mnc', '.nii', '.img', '.hdr', '.tiff', '.tif', '.mnc.gz'], output=True, optional=True))
+        self.add_trait('min_vertex_size', Int())
 
 
         # initialization section
@@ -36,6 +37,7 @@ class SulciGraph(Process):
         self.allow_multithreading = True
         self.graph_version = '3.1'
         self.write_cortex_mid_interface = False
+        self.min_vertex_size = 15
 
     def _run_process(self):
         from brainvisa import axon
