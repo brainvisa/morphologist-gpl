@@ -68,6 +68,7 @@ signature = Signature(
     'write_cortex_mid_interface', Boolean(),
     'cortex_mid_interface', WriteDiskItem('Grey White Mid-Interface Volume',
                                           'Aims writable volume formats'),
+    'min_vertex_size', Integer(),
 )
 
 
@@ -172,6 +173,7 @@ def initialization(self):
     self.compute_fold_meshes = True
     self.allow_multithreading = True
     self.write_cortex_mid_interface = False
+    self.min_vertex_size = 15
 
 
 def execution(self, context):
@@ -189,7 +191,8 @@ def execution(self, context):
     command = ['VipFoldArg',
                '-i', self.skeleton,
                '-v', self.roots,
-               '-o', graph]
+               '-o', graph,
+               '-s', self.min_vertex_size]
     if self.graph_version != '3.0':
         command += ['-w', 'g']
     context.system(*command)
