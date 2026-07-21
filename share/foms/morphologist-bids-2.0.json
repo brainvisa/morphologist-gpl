@@ -1902,7 +1902,7 @@
                 "input:{mesh}/{sub}_hemi-<side>_pial.surf",
                 "Aims mesh formats"]],
             "mri_corrected": [[
-                "input:{seg}/{sub}_nobias", "Aims writable volume formats"]],
+                "input:{seg}/{sub}_nobias", "Aims readable volume formats"]],
         },
 
         "morphologist.capsul.qc.ana_morpho_viewers.HistoAnalysisViewer": {
@@ -1918,12 +1918,12 @@
             "histo": [[
                 "input:{seg}/{sub}_nobias", ["Histogram"]]],
             "mri_corrected": [[
-                "input:{seg}/{sub}_nobias", "Aims writable volume formats"]],
+                "input:{seg}/{sub}_nobias", "Aims readable volume formats"]],
         },
 
         "morphologist.capsul.qc.ana_morpho_viewers.AnaBiasCorrectionViewer": {
             "main_input": [[
-                "input:{seg}/{sub}_nobias", "Aims writable volume formats"]],
+                "input:{seg}/{sub}_nobias", "Aims readable volume formats"]],
             "histo_analysis": [[
                 "input:{seg}/{sub}_nobias", ["Histo Analysis"]]],
             "t1mri": [[
@@ -1931,11 +1931,70 @@
                 "Aims readable volume formats"]]
         },
 
-        "morphologist.capsul.qc.ana_morpho_viewers.PDFViewer": {
+        "morphologist.capsul.qc.ana_morpho_viewers.AnaBrainMaskViewer": {
+            "main_input": [[
+                "input:{seg}/{sub}_brain", "Aims readable volume formats"]],
+            "t1mri_nobias": [[
+                "input:{seg}/{sub}_nobias", "Aims readable volume formats"]]
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.AnaSplitBrainViewer": {
+            "main_input": [[
+               "input:{seg}/{sub}_voronoi", "Aims readable volume formats"]],
+             "t1mri_nobias": [[
+                "input:{seg}/{sub}_nobias", "Aims readable volume formats"]]
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.AnaHeadMeshViewer": {
+            "main_input": [[
+                "input:{mesh}/{sub}_head.surf", "Aims mesh formats"]]
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.AnaGWMaskViewer": {
+            "main_input": [[
+                "input:{seg}/{sub}_hemi-<side>_grey_white",
+                "Aims readable volume formats"]],
+            "t1mri_nobias": [[
+                "input:{seg}/{sub}_nobias", "Aims readable volume formats"]]
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.AnaCortexMaskViewer": {
+            "main_input": [[
+                "input:{seg}/{sub}_hemi-<side>_cortex",
+                "Aims readable volume formats"]],
+            "t1mri_nobias": [[
+                "input:{seg}/{sub}_nobias", "Aims readable volume formats"]]
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.AnaSkeletonViewer": {
+            "main_input": [[
+                "input:{seg}/{sub}_hemi-<side>_skeleton",
+                "Aims readable volume formats"]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.MorphometryViewer": {
+            "main_input": [[
+                "input:{foldauto}/{fautosub}_auto_sulcal_morphometry",
+                "CSV file"]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.BrainVolumesViewer": {
+            "main_input": [[
+                "input:{seg}/{sub}_sul-<sulci_recognition_session>_brain_volumes", "CSV file"],
+                ["input:{seg}/{sub}_brain_volumes", "CSV file"]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.MorphoReportViewer": {
             "main_input": [
-                ["output:{analysis}/{sub}_sul-<sulci_recognition_session>_morphologist_report", "PDF File"],
-                ["output:{analysis}/{sub}_morphologist_report", "PDF File"]
+                ["input:{analysis}/{sub}_sul-<sulci_recognition_session>_morphologist_report", "PDF File"],
+                ["input:{analysis}/{sub}_morphologist_report", "PDF File"]
             ]
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.QCViewer": {
+            "main_input": [[
+                "input:{analysis}/{sub}_sul-<sulci_recognition_session>_morphologist_report", "JSON file"],
+                ["input:{analysis}/{sub}_morphologist_report", "JSON file"]],
         },
 
     }

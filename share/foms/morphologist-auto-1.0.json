@@ -1550,7 +1550,7 @@
 
         "morphologist.capsul.qc.ana_morpho_viewers.AnaT1MRIViewer": {
             "main_input": [[
-                "output:{acquisition}/<subject>", "images"]],
+                "input:{acquisition}/<subject>", "images"]],
         },
 
         "morphologist.capsul.qc.ana_morpho_viewers.AnaWhiteMeshViewer": {
@@ -1612,9 +1612,67 @@
                 "input:{acquisition}/<subject>", "images"]],
         },
 
-        "morphologist.capsul.qc.ana_morpho_viewers.PDFViewer": {
+        "morphologist.capsul.qc.ana_morpho_viewers.AnaBrainMaskViewer": {
+            "main_input": [[
+                "input:{analysis}/segmentation/brain_<subject>", "images"]],
+            "t1mri_nobias": [[
+                "input:{analysis}/nobias_<subject>", "images"]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.AnaSplitBrainViewer": {
+            "main_input": [[
+                "input:{analysis}/segmentation/voronoi_<subject>", "images"]],
+            "t1mri_nobias": [[
+                "input:{analysis}/nobias_<subject>", "images"]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.AnaHeadMeshViewer": {
+            "main_input": [[
+                "input:{analysis}/segmentation/mesh/<subject>_head", "mesh"]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.AnaGWMaskViewer": {
+            "main_input": [[
+                "input:{analysis}/segmentation/<side>grey_white_<subject>",
+                "images"]],
+            "t1mri_nobias": [[
+                "input:{analysis}/nobias_<subject>", "images"]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.AnaCortexMaskViewer": {
+            "main_input": [[
+                "input:{analysis}/segmentation/<side>cortex_<subject>",
+                "images"]],
+            "t1mri_nobias": [[
+                "input:{analysis}/nobias_<subject>", "images"]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.AnaSkeletonViewer": {
+            "main_input": [[
+                "input:{analysis}/segmentation/<side>skeleton_<subject>",
+                "images"]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.MorphometryViewer": {
+            "main_input": [[
+                "input:{recognition_analysis}/<subject>_<sulci_recognition_session>_auto_sulcal_morphometry",
+                "CSV file"]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.BrainVolumesViewer": {
+            "main_input": [[
+                "input:{analysis}/segmentation/brain_volumes_<subject>",
+                "CSV file"]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.MorphoReportViewer": {
             "main_input": [[
                 "input:{analysis}/morphologist_report", "PDF File"]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.QCViewer": {
+            "main_input": [[
+                "input:{analysis}/morphologist_json_report", "JSON file"]],
         },
 
      }

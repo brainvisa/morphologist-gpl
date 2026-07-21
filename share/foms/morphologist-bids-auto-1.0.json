@@ -26,8 +26,9 @@
         }
     },
     "shared_patterns": {
-      "acquisition": "sub-<subject>/ses-<session>/anat/t1mri/<acquisition>",
-      "analysis": "{acquisition}/<analysis>"
+        "acquisition": "sub-<subject>/ses-<session>/anat/t1mri/<acquisition>",
+        "analysis": "{acquisition}/<analysis>",
+        "recognition_analysis": "{analysis}/folds/<graph_version>/<sulci_recognition_session>_auto",
     },
 
     "processes": {
@@ -1733,5 +1734,134 @@
             "inter_subject_qc_table":
                 [["output:qc/qc","TSV file"]],
         },
+
+
+        "morphologist.capsul.qc.ana_morpho_viewers.AnaT1MRIViewer": {
+            "main_input": [[
+                "input:{acquisition}/<subject>", "images"]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.AnaWhiteMeshViewer": {
+            "main_input": [[
+                "input:{analysis}/segmentation/mesh/<subject>_<side>white",
+                "mesh"]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.AnaPialMeshViewer": {
+            "main_input": [[
+                "input:{analysis}/segmentation/mesh/<subject>_<side>hemi",
+                "mesh"]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.AnaSulciViewer": {
+            "main_input": [
+                [
+                    "input:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto",
+                    "Graph and data"],
+                [
+                    "input:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_manual",
+                    "Graph and data"],
+                [
+                    "input:{analysis}/folds/<graph_version>/<side><subject>",
+                    "Graph and data"],
+            ],
+            "white_mesh": [[
+                "input:{analysis}/segmentation/mesh/<subject>_<side>white",
+                "mesh"]],
+            "pial_mesh": [[
+                "input:{analysis}/segmentation/mesh/<subject>_<side>hemi",
+                "mesh"]],
+            "mri_corrected": [[
+                "input:{analysis}/nobias_<subject>", "images" ]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.HistoAnalysisViewer": {
+            "main_input": [[
+                "input:{analysis}/nobias_<subject>", "Histo Analysis"]],
+            "histo": [[
+                "input:{analysis}/nobias_<subject>", "Histogram"]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.HistoAnalysisEditor": {
+            "main_input": [[
+                "input:{analysis}/nobias_<subject>", "Histo Analysis"]],
+            "histo": [[
+                "input:{analysis}/nobias_<subject>", "Histogram"]],
+            "mri_corrected": [[
+                "input:{analysis}/nobias_<subject>", "images" ]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.AnaBiasCorrectionViewer": {
+            "main_input": [[
+                "input:{analysis}/nobias_<subject>", "images" ]],
+            "histo_analysis": [[
+                "input:{analysis}/nobias_<subject>", "Histo Analysis"]],
+            "t1mri": [[
+                "input:{acquisition}/<subject>", "images"]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.AnaBrainMaskViewer": {
+            "main_input": [[
+                "input:{analysis}/segmentation/brain_<subject>", "images"]],
+            "t1mri_nobias": [[
+                "input:{analysis}/nobias_<subject>", "images"]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.AnaSplitBrainViewer": {
+            "main_input": [[
+                "input:{analysis}/segmentation/voronoi_<subject>", "images"]],
+            "t1mri_nobias": [[
+                "input:{analysis}/nobias_<subject>", "images"]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.AnaHeadMeshViewer": {
+            "main_input": [[
+                "input:{analysis}/segmentation/mesh/<subject>_head", "mesh"]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.AnaGWMaskViewer": {
+            "main_input": [[
+                "input:{analysis}/segmentation/<side>grey_white_<subject>",
+                "images"]],
+            "t1mri_nobias": [[
+                "input:{analysis}/nobias_<subject>", "images"]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.AnaCortexMaskViewer": {
+            "main_input": [[
+                "input:{analysis}/segmentation/<side>cortex_<subject>",
+                "images"]],
+            "t1mri_nobias": [[
+                "input:{analysis}/nobias_<subject>", "images"]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.AnaSkeletonViewer": {
+            "main_input": [[
+                "input:{analysis}/segmentation/<side>skeleton_<subject>",
+                "images"]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.MorphometryViewer": {
+            "main_input": [[
+                "input:{recognition_analysis}/<subject>_<sulci_recognition_session>_auto_sulcal_morphometry",
+                "CSV file"]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.BrainVolumesViewer": {
+            "main_input": [[
+                "input:{analysis}/segmentation/brain_volumes_<subject>",
+                "CSV file"]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.MorphoReportViewer": {
+            "main_input": [[
+                "input:{analysis}/morphologist_report", "PDF File"]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.QCViewer": {
+            "main_input": [[
+                "input:{analysis}/morphologist_json_report", "JSON file"]],
+        },
+
     }
 }

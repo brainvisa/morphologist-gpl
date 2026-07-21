@@ -32,8 +32,17 @@ class MorphologistQcTable(database_qc_table.DatabaseQcTable):
             'morphologist.capsul.morphologist.Morphologist.t1mri_nobias',
             'morphologist.capsul.morphologist.Morphologist.histo_analysis',
 
+            'morphologist.capsul.morphologist.Morphologist.BrainSegmentation_brain_mask',
+            'morphologist.capsul.morphologist.Morphologist.split_brain',
+            'morphologist.capsul.morphologist.Morphologist.HeadMesh_head_mesh',
+            'morphologist.capsul.morphologist.Morphologist.GreyWhiteClassification_grey_white',
+            'morphologist.capsul.morphologist.Morphologist.GreyWhiteClassification_1_grey_white',
+            'morphologist.capsul.morphologist.Morphologist.GreyWhiteTopology_hemi_cortex',
+            'morphologist.capsul.morphologist.Morphologist.GreyWhiteTopology_1_hemi_cortex',
             'morphologist.capsul.morphologist.Morphologist.GreyWhiteMesh_white_mesh',
             'morphologist.capsul.morphologist.Morphologist.GreyWhiteMesh_1_white_mesh',
+            'morphologist.capsul.morphologist.Morphologist.SulciSkeleton_skeleton',
+            'morphologist.capsul.morphologist.Morphologist.SulciSkeleton_1_skeleton',
 
             'morphologist.capsul.morphologist.Morphologist.PialMesh_pial_mesh',
             'morphologist.capsul.morphologist.Morphologist.PialMesh_1_pial_mesh',
@@ -42,21 +51,23 @@ class MorphologistQcTable(database_qc_table.DatabaseQcTable):
             'morphologist.capsul.morphologist.Morphologist.left_labelled_graph',
             'morphologist.capsul.morphologist.Morphologist.right_labelled_graph',
 
+            'morphologist.capsul.morphologist.Morphologist.sulcal_morpho_measures',
+            'morphologist.capsul.morphologist.Morphologist.GlobalMorphometry_brain_volumes_file',
             'morphologist.capsul.morphologist.Morphologist.Report_report',
             'morphologist.capsul.morphologist.Morphologist.Report_report_json']
         # self.data_filters = ["{'center': 'subjects'}"]
         self.keys = ['subject', 'acquisition', 'bids', 'sulci_recognition_session']
         self.type_labels = [
-            'Raw T1 MRI', 'Bias Corrected', 'Histo Analysis',
-            # 'Brain Mask', 'Hemispheres Split', 'Head Mesh',
-            # 'Left Grey White Mask', 'Right Grey White Mask',
-            # 'Left CSF+GREY Mask', 'Right CSF+GREY Mask',
+            'Raw T1 MRI', 'Bias Corrected', 'Histo Analysis', 'Brain Mask',
+            'Hemispheres Split', 'Head Mesh',
+            'Left Grey White Mask', 'Right Grey White Mask',
+            'Left CSF+GREY Mask', 'Right CSF+GREY Mask',
             'Left Hemisphere White Mesh', 'Right Hemisphere White Mesh',
-            # 'Left Cortex Skeleton', 'Right Cortex Skeleton',
+            'Left Cortex Skeleton', 'Right Cortex Skeleton',
             'Left Hemisphere Mesh', 'Right Hemisphere Mesh',
             'Left Cortical Sulci', 'Right Cortical Sulci',
             'Left Labelled Sulci', 'Right Labelled Sulci',
-            # 'Sulcal morphometry measurements', 'Brain volumes',
+            'Sulcal morphometry measurements', 'Brain volumes',
             'Report', 'QC']
 
 

@@ -34,7 +34,10 @@ class MainThreadList:
 
     def extend(self, other):
         with self.lock:
-            self.list.ref().extnd(other.list.ref())
+            if hasattr(other, 'list'):
+                self.list.ref().extend(other.list.ref())
+            else:
+                self.list.ref().extend(other)
 
     def __getitem__(self, index):
         with self.lock:
@@ -108,6 +111,12 @@ class AnaPialMeshViewer(AWindowViewer):
 
 
 class AnaWhiteMeshViewer(AWindowViewer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.view_type = '3D'
+
+
+class AnaHeadMeshViewer(AWindowViewer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.view_type = '3D'
@@ -343,6 +352,52 @@ class AnaBiasCorrectionViewer(AWindowViewer):
                      hanfile=self.histo_analysis, parent=self.block))
 
 
+class AnaBrainMaskViewer(AWindowViewer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.add_trait('t1mri_nobias', traits.File())
+        self.palette = 'GREEN-ufusion'
+        self.fmode = 'linear_A_if_B_white'
+        self.rate = 0.7
+
+    def exec_mainthread(self, result):
+        import anatomist.api as ana
+
+        a = ana.Anatomist()
+        mri = a.loadObject(self.t1mri_nobias)
+        mask = a.loadObject(self.main_input, duplicate=True)
+        mask.setPalette(self.palette)
+        fusion = a.fusionObjects([mri, mask], method='Fusion2DMethod')
+        a.execute('TexturingParams', objects=[fusion], mode=self.fmode,
+                  texture_index=1, rate=self.rate)
+        a.execute(
+            "Fusion2DParams", object=fusion, reorder_objects=[mri, mask])
+        window = a.createWindow(self.view_type)
+        window.assignReferential(mri.referential)
+        window.addObjects([fusion])
+
+        result.extend([fusion, window])
+
+
+class AnaSplitBrainViewer(AnaBrainMaskViewer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.palette = 'RAINBOW'
+
+
+class AnaGWMaskViewer(AnaSplitBrainViewer):
+    pass
+
+
+class AnaCortexMaskViewer(AnaSplitBrainViewer):
+    pass
+
+
+class AnaSkeletonViewer(AWindowViewer):
+    pass
+
+
 class KillablePopen:
     def __init__(self, popen):
         self.popen = popen
@@ -364,6 +419,37 @@ class PDFViewer(Process):
 
     def _run_process(self):
         result = MainThreadList(threading.RLock())
-        cmd = ['bv_pdf_viewer', self.main_input]
+        print('REPORT:', self.main_input)
+        cmd = ['bv_pdf_viewer', os.path.abspath(self.main_input)]
         result.append(KillablePopen(subprocess.Popen(cmd)))
         return result
+
+
+class MorphoReportViewer(PDFViewer):
+    pass
+
+
+class GenericViewer(Process):
+    roles = ['qc', 'viewer']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.add_trait('main_input', traits.File())
+
+    def _run_process(self):
+        result = MainThreadList(threading.RLock())
+        cmd = ['xdg-open', self.main_input]
+        result.append(KillablePopen(subprocess.Popen(cmd)))
+        return result
+
+
+class MorphometryViewer(GenericViewer):
+    pass
+
+
+class BrainVolumesViewer(GenericViewer):
+    pass
+
+
+class QCViewer(GenericViewer):
+    pass
