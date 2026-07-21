@@ -46,7 +46,7 @@ def find_process_from_fom(engine, proc_name):
         pass
 
     if '.' in proc_name:
-        # it's a full name but not foud as is, so let's give up
+        # it's a full name but not found as is, so let's give up
         return None
 
     # look in loaded modules
