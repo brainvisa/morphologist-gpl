@@ -72,6 +72,24 @@ class statuses:
     INVALID_ABSENT = 21
 
 
+class QSortingTabeWidgetItem(Qt.QTableWidgetItem):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.sort_data = None
+
+    def __lt__(self, other):
+        if self.sort_data is not None \
+                and getattr(other, 'sort_data', None) is not None:
+            return (self.sort_data < other.sort_data)
+        return super().__lt__(other)
+
+    def __gt__(self, other):
+        if self.sort_data is not None \
+                and getattr(other, 'sort_data', None) is not None:
+            return (self.sort_data > other.sort_data)
+        return super().__gt__(other)
+
+
 status_for_type = {}
 
 
@@ -425,21 +443,25 @@ class DatabaseQcTable(Process):
         for row_id, row in row_ids.items():
             for c, key in enumerate(row_id):
                 if key is not None:
-                    tablew.setItem(row, c, Qt.QTableWidgetItem(key))
+                    tablew.setItem(row, c, QSortingTabeWidgetItem(key))
 
         for col in range(ncols):
             for row in range(nrows):
                 elem = self.elements[row, col]
                 if elem is None:
-                    titem = Qt.QTableWidgetItem(no_icon, '')
+                    titem = QSortingTabeWidgetItem(no_icon, '')
+                    titem.sort_data = statuses.ABSENT
                 elif isinstance(elem, list):
-                    titem = Qt.QTableWidgetItem(mult_icon, '')
+                    titem = QSortingTabeWidgetItem(mult_icon, '')
+                    titem.sort_data = -1
                     titem.position = (row, col)
                 else:
                     status = self.file_status(elem['path'],
                                               self.data_types[col])
                     icon = status_icons[status]
-                    titem = Qt.QTableWidgetItem(icon, '')
+                    titem = QSortingTabeWidgetItem(icon, '')
+                    titem.sort_data = status
+                    titem.setData(15, status)
                     titem.position = (row, col)
                 tablew.setItem(row, col + nkeys, titem)
 
