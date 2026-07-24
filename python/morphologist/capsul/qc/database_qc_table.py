@@ -282,7 +282,8 @@ class DatabaseQcTable(Process):
             whereproc = f'fom_process in ("{procname}", ' \
                         f'"{procname.rsplit(".", 1)[-1]}")'
             del dfilt2['fom_process']
-        where = ' AND '.join(f'{k}="{v}"' for k, v in dfilt2.items())
+        where = ' AND '.join(f'({k} == "{v}" OR {k} IS NULL)'
+                             for k, v in dfilt2.items())
         if whereproc:
             where = f'{whereproc} AND {where}'
         for item in self.db.execute(
