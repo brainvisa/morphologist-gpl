@@ -1,5 +1,6 @@
 from capsul.api import Process
 from capsul.attributes import fom_index
+import capsul.info as capinfo
 import traits.api as traits
 import os.path as osp
 
@@ -32,7 +33,9 @@ class IndexDatabase(Process):
             config.output_directory = self.database
 
         if self.database_sqlite in (traits.Undefined, None, ''):
-            self.database_sqlite = osp.join(self.database, 'capsul.sqlite')
+            self.database_sqlite = osp.join(
+                self.database,
+                f'capsul-{capinfo.version_major}.{capinfo.version_minor}.sqlite')
 
         proc = None
         if self.main_process not in (traits.Undefined, None, ''):
