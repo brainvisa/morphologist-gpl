@@ -325,7 +325,6 @@ class DatabaseQcTable(Process):
                 where2.insert(0, where)
             sql = f'SELECT {keys} FROM files WHERE ' + ' AND '.join(where2)
             items = list(self.db.execute(sql))
-            print('->', len(items))
             if len(items) == 0:
                 continue  # look for next name
             for item in items:
