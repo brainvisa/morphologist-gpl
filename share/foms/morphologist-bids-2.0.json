@@ -824,8 +824,8 @@
                 {"side": "R"}]],
             "subject": [["none:<subject>", "no ext"]],
             "brain_volumes_file": [[
-                "output:{seg}/{sub}_brain_volumes",
-                ["CSV file"]]],
+                "output:{seg}/{sub}_sul-<sulci_recognition_session>_brain_volumes", "CSV file"],
+                ["output:{seg}/{sub}_brain_volumes", "CSV file"]],
             "split_template": "{shared.split_template}",
             "icbm_brain_mask_template":
                 "{shared.anatomical_template_t1_skull_stripped}",
@@ -903,14 +903,9 @@
                     ]
                 ]
             ],
-            "brain_volumes_file": [
-                [
-                    "input:{seg}/{sub}_brain_volumes",
-                    [
-                        "CSV file"
-                    ]
-                ]
-            ],
+            "brain_volumes_file": [[
+                "input:{seg}/{sub}_sul-<sulci_recognition_session>_brain_volumes", "CSV file"],
+                ["input:{seg}/{sub}_brain_volumes", "CSV file"]],
             "normative_brain_stats": "{shared.normative_brain_volumes_file}",
             "report": [
                 ["output:{analysis}/{sub}_sul-<sulci_recognition_session>_morphologist_report", "PDF File"],
