@@ -29,7 +29,7 @@
 #     return context.runProcess(self.proc, database=self.database, ...)
 #
 
-from capsul.api import Process
+from capsul.api import Process, Pipeline
 from capsul.attributes.completion_engine import ProcessCompletionEngine
 from soma.wip.application.api import findIconFile
 from soma.qt_gui.qtThread import MainThreadLife, QtThreadCall
@@ -241,7 +241,7 @@ class DatabaseQcTable(Process):
             self._cached_procs[procname][1] = dfilt
 
         if self.db is not None:
-            return self.find_items_sqlite(procname, param, dfilt)
+            return self.find_items_sqlite(proc, procname, param, dfilt)
 
         path_pat = getattr(proc, param)
         # print('path_pat:', path_pat)
@@ -270,28 +270,70 @@ class DatabaseQcTable(Process):
 
         return data
 
-    def find_items_sqlite(self, procname, param, dfilt):
+    def proc_param_names(self, proc, proname, param):
+        names = []
+        fallbacks = []
+        fom = self.get_study_config().engine._modules_data[
+            'fom']['all_foms'][self.fom]
+        todo = []
+        if isinstance(proc, Pipeline):
+            node = proc.pipeline_node
+        else:
+            node = proc
+        todo.append((node, proc.name, param, {}))
+        while todo:
+            node, procname, param, attr = todo.pop(0)
+            # check for FOM-imposed attributes on the process
+            fom_patterns = fom.patterns.get(procname)
+            if fom_patterns is not None:
+                pa = fom_patterns.get('.process_attributes', {})
+                attr.update(pa)
+            names.append((procname, param, attr))
+            if isinstance(node, Process):
+                break
+            if hasattr(node, 'process'):
+                fb = (node.process.name, param, attr)
+                if fb not in fallbacks:
+                    fallbacks.append(fb)
+            plug = node.plugs[param]
+            links = [plug.links_to, plug.links_from][int(plug.output)]
+            for link in links:
+                todo.append((link[2], f'{procname}.{link[0]}', link[1], attr))
+
+        return names + [fb for fb in fallbacks if fb not in names]
+
+    def find_items_sqlite(self, proc, procname, param, dfilt):
         data = []
-        dfilt2 = dict(dfilt)
-        dfilt2['fom_process'] = procname
-        dfilt2['fom_parameter'] = param
         cols = [x[1] for x in self.db.execute('PRAGMA table_info(files)')]
         keys = ', '.join(cols)
-        whereproc = None
-        if '.' in procname:
-            whereproc = f'fom_process in ("{procname}", ' \
-                        f'"{procname.rsplit(".", 1)[-1]}")'
-            del dfilt2['fom_process']
-        where = ' AND '.join(f'({k} == "{v}" OR {k} IS NULL)'
-                             for k, v in dfilt2.items())
-        if whereproc:
-            where = f'{whereproc} AND {where}'
-        for item in self.db.execute(
-                f'SELECT {keys} FROM files WHERE {where}'):
-            atts = {k: v for k, v in zip(cols, item) if v is not None}
-            path = osp.join(self.database, atts['filename'])
-            del atts['filename']
-            data.append({'attributes': atts, 'path': path})
+        names = self.proc_param_names(proc, procname, param)
+        for procname, param, att in names:
+            dfilt2 = dict(dfilt)
+            incompatible = False
+            for k, v in att.items():
+                if k in dfilt2 and dfilt2[k] != v:
+                    incompatible = True
+                    break
+                dfilt2[k] = v
+            if incompatible:
+                continue
+            where = ' AND '.join(f'({k} == "{v}" OR {k} IS NULL)'
+                                 for k, v in dfilt2.items())
+            where2 = [f'fom_process = "{procname}"',
+                      f'fom_parameter = "{param}"']
+            if where != '':
+                where2.insert(0, where)
+            sql = f'SELECT {keys} FROM files WHERE ' + ' AND '.join(where2)
+            items = list(self.db.execute(sql))
+            print('->', len(items))
+            if len(items) == 0:
+                continue  # look for next name
+            for item in items:
+                atts = {k: v for k, v in zip(cols, item) if v is not None}
+                path = osp.join(self.database, atts['filename'])
+                del atts['filename']
+                data.append({'attributes': atts, 'path': path})
+            break  # procname found, don't continue search
 
         return data
 
