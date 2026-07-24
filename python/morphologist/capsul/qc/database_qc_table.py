@@ -44,6 +44,7 @@ import os
 import os.path as osp
 import tempfile
 import glob
+import sqlite3
 
 
 wkhtmltopdf = shutil.which('wkhtmltopdf')
@@ -102,6 +103,7 @@ class DatabaseQcTable(Process):
 
         self.add_trait('database', traits.Directory(optional=True))
         self.add_trait('fom', traits.Str(optional=True))
+        self.add_trait('database_sqlite', traits.File(optional=True))
         self.add_trait('data_types', traits.ListStr())
         self.add_trait('data_filters', traits.ListStr())
         self.add_trait('keys', traits.ListStr())
@@ -126,10 +128,15 @@ class DatabaseQcTable(Process):
     def _run_process(self):
         self.row_ids = {}
         self.elements = None
+        self.db = None
 
         if self.database in (None, traits.Undefined, ''):
             sc = self.get_study_config()
             self.database = sc.input_directory
+        if self.database_sqlite:
+            self.db = sqlite3.connect(self.database_sqlite)
+        if self.fom in (None, traits.Undefined, '') and self.db is not None:
+            self.fom = list(self.db.execute('SELECT fom_name FROM fom'))[0][0]
         if self.fom in (None, traits.Undefined, ''):
             sc = self.get_study_config()
             self.fom = sc.input_fom
@@ -183,6 +190,7 @@ class DatabaseQcTable(Process):
             elements[old_nrow:, :] = None
         self.elements = elements
         self.row_ids = row_ids
+        del self.db
 
         if self.output_file:
             self.save()
@@ -232,6 +240,9 @@ class DatabaseQcTable(Process):
             pc.complete_parameters()
             self._cached_procs[procname][1] = dfilt
 
+        if self.db is not None:
+            return self.find_items_sqlite(procname, param, dfilt)
+
         path_pat = getattr(proc, param)
         # print('path_pat:', path_pat)
         if profile: t1 = time.time(); print('    t1 (compl):', t1 - t0); t0 = t1
@@ -256,6 +267,30 @@ class DatabaseQcTable(Process):
                     data.append({'attributes': atts[2], 'path': p})
                     break
         if profile: t1 = time.time(); print('    t3 (fom)  :', t1 - t0); t0 = t1
+
+        return data
+
+    def find_items_sqlite(self, procname, param, dfilt):
+        data = []
+        dfilt2 = dict(dfilt)
+        dfilt2['fom_process'] = procname
+        dfilt2['fom_parameter'] = param
+        cols = [x[1] for x in self.db.execute('PRAGMA table_info(files)')]
+        keys = ', '.join(cols)
+        whereproc = None
+        if '.' in procname:
+            whereproc = f'fom_process in ("{procname}", ' \
+                        f'"{procname.rsplit(".", 1)[-1]}")'
+            del dfilt2['fom_process']
+        where = ' AND '.join(f'{k}="{v}"' for k, v in dfilt2.items())
+        if whereproc:
+            where = f'{whereproc} AND {where}'
+        for item in self.db.execute(
+                f'SELECT {keys} FROM files WHERE {where}'):
+            atts = {k: v for k, v in zip(cols, item) if v is not None}
+            path = osp.join(self.database, atts['filename'])
+            del atts['filename']
+            data.append({'attributes': atts, 'path': path})
 
         return data
 
