@@ -156,8 +156,7 @@ class DatabaseQcTable(Process):
         else:
             nrows = max([len(values[1]) for values in data])
         ncols = len(self.data_types)
-        elements = np.zeros((nrows, ncols), dtype=object)
-        elements[:, :] = None
+        elements = [[None] * ncols for row in range(nrows)]
 
         keys = self.keys
         row_ids = {}
@@ -172,33 +171,24 @@ class DatabaseQcTable(Process):
                 row, row_id, changed_id = self.get_row(key_vals, row_ids)
                 # print('item', key_vals, ':', row, row_id, changed_id)
                 if changed_id:
-                    if row >= elements.shape[0]:
-                        # should not happen if get_row() had no bug...
-                        # print('warning: adding row', row, '>=', elements.shape[0])
-                        # print('row_ids:', row_ids)
-                        # print('row_id:', row_id)
-                        old_nrow = elements.shape[0]
-                        elements.resize((row + 1, ncols))
-                        elements[old_nrow:, :] = None
+                    if row > len(elements):
+                        old_nrow = len(elements)
+                        elements += [[None] * ncols for row in range(old_nrow, row + 1)]
                     max_row = max((max_row, row))
-                element = elements[row, elem_col]
+                element = elements[row][elem_col]
                 if isinstance(element, list):
-                    elements[row, elem_col].append(item_d)
+                    elements[row][elem_col].append(item_d)
                 elif element is None:
-                    elements[row, elem_col] = item_d
-                elif isinstance(element, list):
-                    elements[row, elem_col] = element + [item_d]
+                    elements[row][elem_col] = item_d
                 else:
-                    elements[row, elem_col] = [element, item_d]
-
+                    elements[row][elem_col] = [element, item_d]
+                    
         t2 = time.time()
         print('table building time:', datetime.timedelta(seconds=t2 - t1))
 
         nrows = max_row + 1
-        old_nrow = elements.shape[0]
-        elements.resize((nrows, ncols))
-        if nrows > old_nrow:
-            elements[old_nrow:, :] = None
+        old_nrow = len(elements)
+        elements += [[None] * ncols for row in range(len(elements), nrows)]
         self.elements = elements
         self.row_ids = row_ids
         result = None
@@ -459,7 +449,7 @@ class DatabaseQcTable(Process):
                 self.status_db_col = cname
                 return  # OK
             if self.index_status == 'Force':
-                for col in range(self.elements.shape[1]):
+                for col in range(len(data_types)):
                     data_type = self.data_types[col]
                     stat_func = self.status_for_type.get(data_type)
                     if stat_func is not None:
@@ -511,7 +501,7 @@ class DatabaseQcTable(Process):
         self._viewer = None
         self._editor = None
 
-        nrows, ncols = self.elements.shape
+        nrows, ncols = len(self.elements), len(self.data_types)
         nkeys = len(self.keys)
 
         tablew.setHorizontalHeader(RotatedHeaderView(Qt.Qt.Horizontal, tablew))
@@ -584,7 +574,7 @@ class DatabaseQcTable(Process):
 
         for col in range(ncols):
             for row in range(nrows):
-                elem = self.elements[row, col]
+                elem = self.elements[row][col]
                 if elem is None:
                     titem = QSortingTabeWidgetItem(no_icon, '')
                     titem.sort_data = statuses.ABSENT
@@ -645,7 +635,7 @@ class DatabaseQcTable(Process):
             self.current_item = None
             return
         row, col = item.position
-        elements = self.elements[row, col]
+        elements = self.elements[row][col]
         # print('item_clicked:', row, col, elements)
         element = None
         if isinstance(elements, list):
@@ -716,7 +706,7 @@ class DatabaseQcTable(Process):
             # no data under this item
             return
         row, col = item.position
-        elements = self.elements[row, col]
+        elements = self.elements[row][col]
         element = None
         if isinstance(elements, list):
             element = elements[0]
@@ -735,7 +725,7 @@ class DatabaseQcTable(Process):
             # no data under this item
             return
         row, col = item.position
-        elements = self.elements[row, col]
+        elements = self.elements[row][col]
         element = None
         if isinstance(elements, list):
             element = elements[num]
@@ -759,7 +749,7 @@ class DatabaseQcTable(Process):
             # no data under this item
             return
         row, col = item.position
-        elements = self.elements[row, col]
+        elements = self.elements[row][col]
         element = None
         if isinstance(elements, list):
             element = elements[num]
@@ -1038,7 +1028,7 @@ class DatabaseQcTable(Process):
     <colgroup>
 ''')
 
-            nrows, ncols = self.elements.shape
+            nrows, ncols = len(self.elements), len(self.data_types)
 
             labels = self.keys + self.type_labels \
                 + self.data_types[len(self.type_labels):]
@@ -1103,7 +1093,7 @@ class DatabaseQcTable(Process):
     def save_csv(self, filename):
         f = open(filename, 'w')
 
-        nrows, ncols = self.elements.shape
+        nrows, ncols = len(self.elements), len(self.data_types)
 
         labels = self.keys + self.type_labels \
             + self.data_types[len(self.type_labels):]
