@@ -114,9 +114,11 @@ class DatabaseQcTable(Process):
                        traits.File(allowed_extensions=['HTML', 'PDF file',
                                                        'CSV file'],
                                    output=True, optional=True))
+        self.add_trait('index_status', traits.Enum(('False', 'Force', 'Use')))
 
         self.status_for_type = status_for_type
         self.statuses = statuses
+        self.index_status = 'Use'
         # self.fom = 'morphologist-bids-2.0'
 
         # possibleTypes = [t.name for t in getAllDiskItemTypes()]
@@ -199,12 +201,15 @@ class DatabaseQcTable(Process):
             elements[old_nrow:, :] = None
         self.elements = elements
         self.row_ids = row_ids
-        del self.db
+        result = None
 
         if self.output_file:
             self.save()
         else:
-            return QtThreadCall().call(self.exec_mainthread)
+            result = QtThreadCall().call(self.exec_mainthread)
+
+        del self.db
+        return result
 
     def find_items(self, dtype, dfilt):
         profile = False
@@ -421,11 +426,58 @@ class DatabaseQcTable(Process):
             return statuses.ABSENT
         stat_func = self.status_for_type.get(data_type)
         if stat_func is not None:
-            return stat_func(self, filename)
+            if self.status_db_col is not None and self.index_status == 'Use':
+                rfname = osp.relpath(filename, self.database)
+                status = list(
+                    self.db.execute(
+                        f'SELECT DISTINCT {self.status_db_col} FROM files '
+                        f'WHERE filename="{rfname}" '
+                        f'AND {self.status_db_col} IS NOT NULL'))
+                if len(status) != 0:
+                    return status[0][0]
+            status = stat_func(self, filename)
+            if self.status_db_col is not None \
+                    and self.index_status == 'Force':
+                rfname = osp.relpath(filename, self.database)
+                self.db.execute(
+                    f'UPDATE files SET {self.status_db_col}="{status}" WHERE filename="{rfname}"')
+                self._commit = True
+            return status
         return statuses.PRESENT
+
+    def prepare_staus_column(self):
+        # check / add status cols in SQLite database
+        self.status_db_col = None
+        if self.index_status in ('Use', 'Force') and self.db is not None:
+            cname = 'database_qc_status'
+            # # reopen DB in this thread
+            # if self.database_sqlite:
+            #     self.db = sqlite3.connect(self.database_sqlite)
+            cols = [c[1] for c in
+                    self.db.execute('PRAGMA table_info(files)')]
+            self.db_cols = cols
+            if cname in cols:
+                self.status_db_col = cname
+                return  # OK
+            if self.index_status == 'Force':
+                for col in range(self.elements.shape[1]):
+                    data_type = self.data_types[col]
+                    stat_func = self.status_for_type.get(data_type)
+                    if stat_func is not None:
+                        # create missing column
+                        self.db.execute(
+                            f'ALTER TABLE files ADD {cname} INTEGER')
+                        self.status_db_col = cname
+                        cols = [c[1] for c in
+                                self.db.execute('PRAGMA table_info(files)')]
+                        self.db_cols = cols
+                        return
 
     def exec_mainthread(self):
         t1 = time.time()
+
+        self.prepare_staus_column()
+
         mw = Qt.QMainWindow()
         wid = Qt.QWidget()
         mw.setCentralWidget(wid)
@@ -550,6 +602,9 @@ class DatabaseQcTable(Process):
                     titem.setData(15, status)
                     titem.position = (row, col)
                 tablew.setItem(row, col + nkeys, titem)
+
+        if self.db and getattr(self, '_commit', False):
+            self.db.execute('COMMIT')
 
         tablew.itemClicked.connect(self.item_clicked)
         tablew.itemDoubleClicked.connect(self.item_double_clicked)
