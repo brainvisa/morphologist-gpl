@@ -428,13 +428,12 @@ class DatabaseQcTable(Process):
         if stat_func is not None:
             if self.status_db_col is not None and self.index_status == 'Use':
                 rfname = osp.relpath(filename, self.database)
-                status = list(
-                    self.db.execute(
-                        f'SELECT DISTINCT {self.status_db_col} FROM files '
-                        f'WHERE filename="{rfname}" '
-                        f'AND {self.status_db_col} IS NOT NULL'))
-                if len(status) != 0:
-                    return status[0][0]
+                if not hasattr(self, 'file_statuses'):
+                    # cache all statuses in a single request
+                    statusl = self.db.execute(f'SELECT DISTINCT filename, {self.status_db_col} FROM files WHERE {self.status_db_col} IS NOT NULL')
+                    self.file_statuses = {
+                        status[0]: status[1] for status in statusl}
+                return self.file_statuses.get(rfname, statuses.PRESENT)
             status = stat_func(self, filename)
             if self.status_db_col is not None \
                     and self.index_status == 'Force':
@@ -445,7 +444,7 @@ class DatabaseQcTable(Process):
             return status
         return statuses.PRESENT
 
-    def prepare_staus_column(self):
+    def prepare_status_column(self):
         # check / add status cols in SQLite database
         self.status_db_col = None
         if self.index_status in ('Use', 'Force') and self.db is not None:
@@ -476,7 +475,7 @@ class DatabaseQcTable(Process):
     def exec_mainthread(self):
         t1 = time.time()
 
-        self.prepare_staus_column()
+        self.prepare_status_column()
 
         mw = Qt.QMainWindow()
         wid = Qt.QWidget()
