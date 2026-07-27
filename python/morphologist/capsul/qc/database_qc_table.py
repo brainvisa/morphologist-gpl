@@ -156,10 +156,13 @@ class DatabaseQcTable(Process):
         else:
             nrows = max([len(values[1]) for values in data])
         ncols = len(self.data_types)
-        elements = [[None] * ncols for row in range(nrows)]
+        elements = [[None] * ncols]
 
         keys = self.keys
         row_ids = {}
+        # [key_i]: {value: set(rows)}
+        row_sets = [{} for s in range(len(keys))]
+        row_ids_sets = [row_ids, row_sets, []]
         max_row = 0
 
         for elem_col, (dtype, items) in enumerate(data):
@@ -168,12 +171,13 @@ class DatabaseQcTable(Process):
                 # print('item_d:', item_d)
                 item = item_d['attributes']
                 key_vals = [item.get(att) for att in keys]
-                row, row_id, changed_id = self.get_row(key_vals, row_ids)
+                row, row_id, changed_id = self.get_row(key_vals, row_ids_sets)
                 # print('item', key_vals, ':', row, row_id, changed_id)
                 if changed_id:
-                    if row > len(elements):
+                    if row >= len(elements):
                         old_nrow = len(elements)
-                        elements += [[None] * ncols for row in range(old_nrow, row + 1)]
+                        elements += [[None] * ncols
+                                     for row in range(old_nrow, row + 1)]
                     max_row = max((max_row, row))
                 element = elements[row][elem_col]
                 if isinstance(element, list):
@@ -182,7 +186,7 @@ class DatabaseQcTable(Process):
                     elements[row][elem_col] = item_d
                 else:
                     elements[row][elem_col] = [element, item_d]
-                    
+
         t2 = time.time()
         print('table building time:', datetime.timedelta(seconds=t2 - t1))
 
@@ -367,9 +371,10 @@ class DatabaseQcTable(Process):
 
         return data
 
-    def get_row(self, key_vals, row_ids):
+    def get_row(self, key_vals, row_ids_sets):
         # print('get_row for:', key_vals)
         row_id = tuple(key_vals)
+        row_ids, row_sets, rows = row_ids_sets
         # print('row_id:', row_id)
         row = row_ids.get(row_id)
         if row is not None:
@@ -379,35 +384,53 @@ class DatabaseQcTable(Process):
             # print('changed id:', row_id)
             changed_id = True
             row = None
-            for id, i in row_ids.items():
-                kvals2 = list(id)
-                same = True
-                for j, key in enumerate(id):
-                    if key is not None and key_vals[j] is not None \
-                            and key != key_vals[j]:
-                        # different element
-                        same = False
-                        break
-                    if key_vals[j] is not None:
-                        kvals2[j] = key_vals[j]
-
-                if same:
-                    # print('found old row:', i, 'for id:', row_id, ':', kvals2, id)
-                    row = i
-                    if kvals2 != id:
-                        # delete key with None values to avoid ambiguities with
-                        # other different key values which may come later
-                        del row_ids[id]
-                    row_id = tuple(kvals2)
+            matching = set()
+            first = True
+            for i, v in enumerate(key_vals):
+                if v is not None:
+                    m = row_sets[i].get(v, set()).union(
+                        row_sets[i].get(None, []))
+                    # print(i, ':', m)
+                    if first:
+                        matching = set(m)
+                        first = False
+                    else:
+                        matching = matching.intersection(m)
+            if len(matching) != 0:
+                # print('matching:', matching)
+                # print(rows)
+                # print(row_sets)
+                row = next(iter(matching))
+                old_id = rows[row]
+                # print('found old row:', row, 'for id:', row_id, ':', old_id)
+                nkey = list(old_id)
+                for i, v in enumerate(key_vals):
+                    if v is not None:
+                        nkey[i] = v
+                        # register new key for row
+                        olds = row_sets[i].get(None)
+                        if olds is not None:
+                            olds.discard(row)
+                        row_sets[i].setdefault(v, set()).add(row)
+                row_id = tuple(nkey)
+                # print('new id:', row_id)
+                if old_id != row_id:
+                    rows[row] = row_id
+                    # delete key with None values to avoid ambiguities with
+                    # other different key values which may come later
+                    del row_ids[old_id]
                     row_ids[row_id] = row
-                    break
             if row is None:
                 if len(row_ids) == 0:
                     row = 0
                 else:
-                    row = max(row_ids.values()) + 1
+                    row = len(rows)
+                # print('new row:', row, row_id)
+                if len(rows) <= row:
+                    rows.append(row_id)
                 row_ids[row_id] = row
-                # print('new row:', row, 'for id:', row_id)
+                for i, v in enumerate(row_id):
+                    row_sets[i].setdefault(v, set()).add(row)
 
         return row, row_id, changed_id
 
@@ -449,7 +472,7 @@ class DatabaseQcTable(Process):
                 self.status_db_col = cname
                 return  # OK
             if self.index_status == 'Force':
-                for col in range(len(data_types)):
+                for col in range(len(self.data_types)):
                     data_type = self.data_types[col]
                     stat_func = self.status_for_type.get(data_type)
                     if stat_func is not None:
