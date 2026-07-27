@@ -45,6 +45,8 @@ import os.path as osp
 import tempfile
 import glob
 import sqlite3
+import time
+import datetime
 
 
 wkhtmltopdf = shutil.which('wkhtmltopdf')
@@ -141,7 +143,11 @@ class DatabaseQcTable(Process):
             sc = self.get_study_config()
             self.fom = sc.input_fom
         # find data
+        t0 = time.time()
+        self.t0 = t0
         data = self.find_data()
+        t1 = time.time()
+        print('query/parse time:', datetime.timedelta(seconds=t1 - t0))
 
         if len(data) == 0:
             nrows = 0
@@ -183,6 +189,9 @@ class DatabaseQcTable(Process):
                 else:
                     elements[row, elem_col] = [element, item_d]
 
+        t2 = time.time()
+        print('table building time:', datetime.timedelta(seconds=t2 - t1))
+
         nrows = max_row + 1
         old_nrow = elements.shape[0]
         elements.resize((nrows, ncols))
@@ -200,7 +209,6 @@ class DatabaseQcTable(Process):
     def find_items(self, dtype, dfilt):
         profile = False
         if profile:
-            import time
             t0 = time.time()
 
         data = []
@@ -417,6 +425,7 @@ class DatabaseQcTable(Process):
         return statuses.PRESENT
 
     def exec_mainthread(self):
+        t1 = time.time()
         mw = Qt.QMainWindow()
         wid = Qt.QWidget()
         mw.setCentralWidget(wid)
@@ -562,6 +571,11 @@ class DatabaseQcTable(Process):
 
         mw.resize(800, 800)
         mw.show()
+
+        t2 = time.time()
+        print('GUI build time:', datetime.timedelta(seconds=t2 - t1))
+        print('total:', datetime.timedelta(seconds=t2 - self.t0))
+
 
         return MainThreadLife(mw)
 
