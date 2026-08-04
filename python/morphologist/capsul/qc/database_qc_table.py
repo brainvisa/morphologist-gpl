@@ -263,6 +263,19 @@ class DatabaseQcTable(Process):
                 if len(attl) == 1:
                     atts = attl[0]
                 else:
+                    com_att = {}  # keep common attributes across PTAs
+                    dif_att = set()
+                    for item in attl:
+                        att = item[2]
+                        for k, v in att.items():
+                            if k in dif_att:
+                                continue
+                            if v != '*':
+                                if com_att.get(k, v) != v:
+                                    dif_att.add(k)
+                                    del com_att[k]
+                                else:
+                                    com_att[k] = v
                     attl_filt = [item for item in attl
                                  if item[2]['fom_process'] == procname
                                  and item[2]['fom_parameter'] == param]
@@ -270,6 +283,7 @@ class DatabaseQcTable(Process):
                         atts = attl_filt[0]
                     elif len(attl) != 0:
                         atts = attl[0]
+                    atts[2].update(com_att)
                 if atts is not None:
                     data.append({'attributes': atts[2], 'path': p})
                     break
@@ -798,6 +812,7 @@ class DatabaseQcTable(Process):
                     try:
                         viewer.reference_process = self
                         viewer.main_input = element['path']
+                        viewer.protect_parameter('main_input')
                         pc = ProcessCompletionEngine.get_completion_engine(
                             viewer)
                         if pc is not None:

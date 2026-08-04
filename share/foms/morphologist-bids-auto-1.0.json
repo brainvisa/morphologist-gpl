@@ -82,34 +82,27 @@
             ],
             "left_graph": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/L<subject>",
-                    [
-                        "Graph and data"
-                    ]
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<side><subject>",
+                    ["Graph and data"], {"side": "L"}
+
                 ]
             ],
             "right_graph": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/R<subject>",
-                    [
-                        "Graph and data"
-                    ]
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<side><subject>",
+                    ["Graph and data"], {"side": "R"}
                 ]
             ],
             "left_labelled_graph": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/L<subject>_<sulci_recognition_session>_auto",
-                    [
-                        "Graph and data"
-                    ]
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/<side><subject>_<sulci_recognition_session>_auto",
+                    ["Graph and data"], {"side": "L"}
                 ]
             ],
             "right_labelled_graph": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/R<subject>_<sulci_recognition_session>_auto",
-                    [
-                        "Graph and data"
-                    ]
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/<side><subject>_<sulci_recognition_session>_auto",
+                    ["Graph and data"], {"side": "R"}
                 ]
             ],
 
@@ -400,121 +393,133 @@
             ]
         },
         "Morphologist.GreyWhiteClassification": {
+            ".process_attributes": {"side": "L"},
             "grey_white": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/Lgrey_white_<subject>",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/<side>grey_white_<subject>",
                     "Aims writable volume formats"
                 ]
             ]
         },
         "Morphologist.GreyWhiteTopology": {
+            ".process_attributes": {"side": "L"},
             "hemi_cortex": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/Lcortex_<subject>",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/<side>cortex_<subject>",
                     "Aims writable volume formats"
                 ]
             ]
         },
         "Morphologist.GreyWhiteMesh": {
+            ".process_attributes": {"side": "L"},
             "white_mesh": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_Lwhite",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_<side>white",
                     "Aims mesh formats"
                 ]
             ]
         },
         "Morphologist.SulciSkeleton": {
+            ".process_attributes": {"side": "L"},
             "skeleton": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/Lskeleton_<subject>",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/<side>skeleton_<subject>",
                     "Aims writable volume formats"
                 ]
             ],
             "roots": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/Lroots_<subject>",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/<side>roots_<subject>",
                     "Aims writable volume formats"
                 ]
             ]
         },
         "Morphologist.PialMesh": {
+            ".process_attributes": {"side": "L"},
             "pial_mesh": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_Lhemi",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_<side>hemi",
                     "Aims mesh formats"
                 ]
             ]
         },
         "Morphologist.CorticalFoldsGraph": {
+            ".process_attributes": {"side": "L"},
             "sulci_voronoi": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/Lsulcivoronoi_<subject>",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<side>sulcivoronoi_<subject>",
                     "Aims writable volume formats"
                 ]
             ],
             "cortex_mid_interface": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/Lgw_interface_<subject>",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/<side>gw_interface_<subject>",
                     "Aims writable volume formats"
                 ]
             ]
         },
         "Morphologist.GreyWhiteClassification_1": {
+            ".process_attributes": {"side": "R"},
             "grey_white": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/Rgrey_white_<subject>",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/<side>grey_white_<subject>",
                     "Aims writable volume formats"
                 ]
             ]
         },
         "Morphologist.GreyWhiteTopology_1": {
+            ".process_attributes": {"side": "R"},
             "hemi_cortex": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/Rcortex_<subject>",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/<side>cortex_<subject>",
                     "Aims writable volume formats"
                 ]
             ]
         },
         "Morphologist.GreyWhiteMesh_1": {
+            ".process_attributes": {"side": "R"},
             "white_mesh": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_Rwhite",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_<side>white",
                     "Aims mesh formats"
                 ]
             ]
         },
         "Morphologist.SulciSkeleton_1": {
+            ".process_attributes": {"side": "R"},
             "skeleton": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/Rskeleton_<subject>",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/<side>skeleton_<subject>",
                     "Aims writable volume formats"
                 ]
             ],
             "roots": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/Rroots_<subject>",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/<side>roots_<subject>",
                     "Aims writable volume formats"
                 ]
             ]
         },
         "Morphologist.PialMesh_1": {
+            ".process_attributes": {"side": "R"},
             "pial_mesh": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_Rhemi",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_<side>hemi",
                     "Aims mesh formats"
                 ]
             ]
         },
         "Morphologist.CorticalFoldsGraph_1": {
+            ".process_attributes": {"side": "R"},
             "sulci_voronoi": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/Rsulcivoronoi_<subject>",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<side>sulcivoronoi_<subject>",
                     "Aims writable volume formats"
                 ]
             ],
             "cortex_mid_interface": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/Rgw_interface_<subject>",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/<side>gw_interface_<subject>",
                     "Aims writable volume formats"
                 ]
             ]
@@ -578,10 +583,16 @@
                 ]
             ]
         },
+        "Morphologist.SulciRecognition": {
+            ".process_attributes": {"side": "L"}
+        },
+        "Morphologist.SulciRecognition_1": {
+            ".process_attributes": {"side": "R"}
+        },
         "Morphologist.SulciRecognition.recognition2000": {
             "model": [
                 [
-                    "shared:models/models_<sulci_database>/discriminative_models/<graph_version>/Lfolds_noroots/Lfolds_noroots",
+                    "shared:models/models_<sulci_database>/discriminative_models/<graph_version>/<side>folds_noroots/Lfolds_noroots",
                     [
                         "Graph and data"
                     ],
@@ -593,7 +604,7 @@
             ],
             "energy_plot_file": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/L<subject>_<sulci_recognition_session>_auto",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/<side><subject>_<sulci_recognition_session>_auto",
                     [
                         "siRelax Fold Energy"
                     ]
@@ -603,7 +614,7 @@
         "Morphologist.SulciRecognition_1.recognition2000": {
             "model": [
                 [
-                    "shared:models/models_<sulci_database>/discriminative_models/<graph_version>/Rfolds_noroots/Rfolds_noroots",
+                    "shared:models/models_<sulci_database>/discriminative_models/<graph_version>/<side>folds_noroots/Rfolds_noroots",
                     [
                         "Graph and data"
                     ],
@@ -615,7 +626,7 @@
             ],
             "energy_plot_file": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/R<subject>_<sulci_recognition_session>_auto",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/<side><subject>_<sulci_recognition_session>_auto",
                     [
                         "siRelax Fold Energy"
                     ]

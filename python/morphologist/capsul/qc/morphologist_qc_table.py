@@ -28,7 +28,7 @@ class MorphologistQcTable(database_qc_table.DatabaseQcTable):
             'morphologist.capsul.morphologist.Morphologist.Report_report_json'
             ] = MorphologistQcTable.get_qc_status
         self.data_types = [
-            'morphologist.capsul.morphologist.Morphologist.t1mri',
+            'morphologist.capsul.morphologist.Morphologist.imported_t1mri',
             'morphologist.capsul.morphologist.Morphologist.t1mri_nobias',
             'morphologist.capsul.morphologist.Morphologist.histo_analysis',
 
