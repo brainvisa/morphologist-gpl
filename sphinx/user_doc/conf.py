@@ -279,6 +279,13 @@ try:
 except ImportError:
     pass
 
+capsul_version = '2.6'
+try:
+    from capsul import info as capinfo
+    capsul_version = f'{capinfo.version_major}.{capinfo.version_minor}'
+except ImportError:
+    pass
+
 extlinks = {
     'axon': ('../../axon-' + axon_version + '/%s', 'axon '),
     'axonusr': ('../../axon-' + axon_version + '/user_doc/%s', 'axon '),
@@ -318,6 +325,7 @@ extlinks = {
     'web': ('https://brainvisa.info/%s', 'brainvisa '),
     'documentation': ('../../%s', 'docs '),
     'documents': ('../../documents-' + version + '/%s', 'documents '),
+    'capsul': (f'../../capsul-{capsul_version}/%s', None),
 }
 
 docpath = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(
@@ -333,7 +341,9 @@ intersphinx_mapping = {
     'somaworkflow': (os.path.join(docpath, 'soma-workflow-'
                                   + somaworkflow_version + '/sphinx'), None),
     'python': ('https://docs.python.org/%d.%d' % sys.version_info[:2], None),
-    'morphouiusr': ('doc/morphologist-ui-%s/' % morphoui_version, None),
+    'morphouiusr': (os.path.join(docpath,
+                                 'doc/morphologist-ui-%s/' % morphoui_version),
+                    None),
 }
 
 # generate pipeline and processes docs

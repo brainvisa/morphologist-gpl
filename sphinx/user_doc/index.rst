@@ -24,6 +24,12 @@ Docmentation :morphouiusr:`can be found here <index.html>`
 It can be run either as a standalone program (``morphologist``), or through BrainVISA.
 
 
+Morphologist commandline
+------------------------
+
+Starting with BrainVisa 6.0 a new commandline version of Morphologist is born: :doc:`morphologist-cli`.
+
+
 Morphologist toolbox in Brainvisa
 ---------------------------------
 
@@ -32,6 +38,15 @@ Morphologist toolbox in Brainvisa
 * :morphoproc:`Morphologist toolbox documentation <categories/morphologist/category_documentation.html>`
 
 * :morpho_api:`Developers documentation <index.html>`
+
+
+Morphologist QC tables
+----------------------
+
+Morphologist 6 also brings a new QC report and a QC table
+
+:doc:`morphologist-qc`
+
 
 Morpho-DeepSulci
 ----------------
