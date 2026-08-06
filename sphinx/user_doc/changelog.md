@@ -1,5 +1,30 @@
 # Changelog
 
+## [6.0.19] 2026-08-06
+
+### Added
+
+- added an optional parameter in morpho_report allowing to specify complex covariables files
+- added min_vertex_size parameter to corticalfoldgraph process
+- Capsul implementation of morphologist_qc_table, with optional use of a sqlite database to speed parsing up, and all needed viewers (editors are not ready yet).
+- Capsul process for database FOM indexing (used in the database_qc_table process)
+- doc for `morphologist-cli`
+- doc for QC tables and Morphologist report
+
+### Changed
+
+- error handling change in concatenatefiles process (CSV concat) to avoid failures on missing data
+- wider support for differing versions of pandas in global morphometry
+- database_qc_table / Capsul: some parameters become optional when specified via engine settings (data paths, FOMs) or database indexing
+- database_qc_table / Capsul: allow to sort by status colomns
+- database_qc_table / Capsul: optimizations in parsing / building time
+- improvements in some FOM definitions (in order to have all attributes)
+- Fixes in Morphologist UI: several crashes fixed in importation
+- Fixes in Morphologist UI: spurious "missing input files" error fixed
+- Fixes in Morphologist UI: crash when the current workflow is deleted from outside (from `soma_workflow_gui` for instance)
+- Fixes in Morphologist UI: fixed help browser which was broken
+
+
 ## [6.0.17] 2026-06-26
 
 ### Added
