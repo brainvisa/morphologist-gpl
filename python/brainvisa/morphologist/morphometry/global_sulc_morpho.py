@@ -15,6 +15,8 @@ from functools import partial
 
 
 removed_labels = ['ventricle']
+nan_values = set(('n/a', 'na', 'NA', 'N/A', 'None', 'null', 'NaN', 'nan',
+                  'NAN'))
 
 
 def global_sulcal_morphometry(l_graph, r_graph, remove_nonfold=True,
@@ -502,6 +504,72 @@ def read_multiple_csv(csvs, sub_prefix=None, add_sub_prefix=None):
     return list(hdr.keys()), table
 
 
+def parse_var_meaning(meanings):
+    meaning = None
+
+    if isinstance(meanings, dict):
+        meaning = {}
+        for k, v in meanings.items():
+            try:
+                k = float(k)
+            except ValueError:
+                pass
+            meaning[k] = v
+        meaning = partial(dict_transform, meaning)
+    elif isinstance(meanings, str):
+        meaningd = meanings.strip()
+        if ':' not in meaningd:  # function name
+            meaning = meaningd
+            meaning_params = []
+            meaning_params_kw = {}
+            mf = meaning.split('(', 1)  # parameters ?
+            if len(mf) == 2 and mf[-1].endswith(')'):
+                # yes
+                meaning = mf[0]
+                for p in mf[1][:-1].split(','):
+                    p = p.strip()
+                    if '=' in p:
+                        k, v = p.split('=', 1)
+                        k = k.strip()
+                        v = eval(v.strip())
+                        meaning_params_kw[k] = v
+                    else:
+                        meaning_params.append(eval(p))
+            meaning = value_transforms[meaning]
+            if meaning_params or meaning_params_kw:
+                meaning = partial(meaning, *meaning_params,
+                                  **meaning_params_kw)
+        else:  # translation dict
+            meaningd = [m.strip()
+                        for m in meaningd.split(',')]
+            meaning = {}
+            for m in meaningd:
+                m2 = [x.strip() for x in m.split(':', 1)]
+                try:
+                    m2[0] = float(m2[0])
+                except ValueError:
+                    pass
+                meaning[m2[0]] = m2[1]
+            meaning = partial(dict_transform, meaning)
+    else:
+        meaning = meanings  # already a function
+
+    return meaning
+
+
+def parse_covar_dict(covariables, alt_covar, var_transform, covar_csv):
+    for cv_set in covariables.values():
+        for var, vdef in cv_set.items():
+            if vdef['filename'] != covar_csv:
+                continue
+            tvar = vdef['var_in_file']
+            alt_covar[var] = tvar.lower()
+            tr = vdef.get('interpret')
+            if tr is not None:
+                tr = parse_var_meaning(tr)
+                var_transform[var] = tr
+
+
 def read_covar_table(covar_csv, covariables, skip_invalid=False,
                      sub_prefix=None, add_sub_prefix=None, filter=None):
     '''
@@ -521,7 +589,14 @@ def read_covar_table(covar_csv, covariables, skip_invalid=False,
         dialect = csv.Sniffer().sniff(f.readline())
         sep = dialect.delimiter
 
-    covar_table = pd.read_csv(covar_csv, sep=sep)
+    try:
+        covar_table = pd.read_csv(covar_csv, sep=sep)
+    except pd.errors.ParserError:
+        if sep != '\t':
+            sep = '\t'
+            covar_table = pd.read_csv(covar_csv, sep=sep)
+        else:
+            raise
 
     alt_covar = {'sex': 'gender'}
     var_transform = {}
@@ -531,44 +606,7 @@ def read_covar_table(covar_csv, covariables, skip_invalid=False,
         # {dataset: {var: {'var_in_file': name, 'filename': xxx,
         #                  'interpret': func}}}
         alt_covar = {}
-        for cv_set in covariables.values():
-            for var, vdef in cv_set.items():
-                if vdef['filename'] != covar_csv:
-                    continue
-                if 'filter' in vdef:
-                    filter = vdef['filter']
-                tvar = vdef['var_in_file']
-                alt_covar[var] = tvar.lower()
-                tr = vdef.get('interpret')
-                if tr is not None:
-                    if isinstance(tr, str):
-                        meaningd = tr.strip()
-                        meaningd = [m.strip() for m in meaningd.split(',')]
-                        if len(meaningd) == 1:
-                            meaning = meaningd[0]
-                            meaning = value_transforms[meaning]
-                        else:
-                            meaning = {}
-                            for m in meaningd:
-                                m2 = [x.strip() for x in m.split(':', 1)]
-                                try:
-                                    m2[0] = float(m2[0])
-                                except ValueError:
-                                    pass
-                                meaning[m2[0]] = m2[1]
-                            meaning = partial(dict_transform, meaning)
-                        tr = meaning
-                    elif isinstance(tr, dict):
-                        meaning = {}
-                        for k, v in tr.items():
-                            try:
-                                k = float(k)
-                            except ValueError:
-                                pass
-                            meaning[k] = v
-                        tr = partial(dict_transform, meaning)
-
-                    var_transform[var] = tr
+        parse_covar_dict(covariables, alt_covar, var_transform, covar_csv)
         cov = []
         for d in covariables.values():
             cov += [k for k in d if k not in cov]
@@ -576,7 +614,20 @@ def read_covar_table(covar_csv, covariables, skip_invalid=False,
 
     if filter is not None:
         for k, v in filter.items():
-            covar_table = covar_table.loc[covar_table[k] == v]
+            for op in ('!=', '>', '>=', '<', '<=', 'in', 'not in'):
+                # value with operator: >= 37.2 ; != totor
+                if v.startswith(op):
+                    v = v[len(op):].strip()
+                    covar_table = covar_table.loc[
+                        eval(f'covar_table[k] {op} {repr(v)}')]
+                    break
+            else:
+                if '%(x)s' in v:
+                    # expression: np.and(%(x)s != "F", %(x)s != "O")
+                    covar_table = covar_table.loc[
+                        eval(v % {'x': covar_table[k]})]
+                else:
+                    covar_table = covar_table.loc[covar_table[k] == v]
         covar_table.index = range(len(covar_table))
         covar_table = covar_table.copy()
     # 1st col should be subject
@@ -618,8 +669,10 @@ def read_covar_table(covar_csv, covariables, skip_invalid=False,
             if str(tcol.dtype) in ('str', np.dtype(object)):
                 new_age = []
                 for i in range(len(tcol)):
-                    age = tcol.iloc[i]
-                    if '+' in age:
+                    age = str(tcol.iloc[i])
+                    if age in nan_values:
+                        new_age.append(np.nan)
+                    elif '+' in age:
                         new_age.append(None)
                     elif '-' in age:
                         age1, age2 = age.split('-')
@@ -628,7 +681,11 @@ def read_covar_table(covar_csv, covariables, skip_invalid=False,
                     elif age in (None, ''):
                         new_age.append(None)
                     else:
-                        new_age.append(float(age))
+                        try:
+                            age = float(age)
+                        except ValueError:
+                            pass
+                        new_age.append(age)
                 # todel.append(v)
                 # v = f'{v}_conv'
                 # toadd[v] = cdef
@@ -640,7 +697,6 @@ def read_covar_table(covar_csv, covariables, skip_invalid=False,
 
     if skip_invalid:
         tcov = [x[0] for x in new_covar.values()]
-        print('tcov:', tcov)
         covar_table = covar_table.iloc[
             np.where(~np.any(covar_table[tcov].isna(), axis=1))[0]]
         covar_table = covar_table.copy()
@@ -649,7 +705,7 @@ def read_covar_table(covar_csv, covariables, skip_invalid=False,
     # print('var_transform:', var_transform)
     for var, tvar in var_transform.items():
         col = new_covar.get(var, [var, None])[0]
-        covar_table[col] = tr(covar_table[col])
+        covar_table[col] = tvar(covar_table[col])
 
     if sub_prefix is not None:
         sl = len(sub_prefix)
@@ -661,7 +717,26 @@ def read_covar_table(covar_csv, covariables, skip_invalid=False,
         sub_col = covar_table.columns[0]
         covar_table[sub_col] = add_sub_prefix + covar_table[sub_col]
 
+    covar_table = remove_covar_duplicates(covar_table)
+
     return covar_table, new_covar
+
+
+def remove_covar_duplicates(covar_table):
+    sub_col = covar_table.columns[0]
+    subs, counts = np.unique(covar_table[sub_col], return_counts=True)
+    if subs.shape != covar_table.shape[0]:
+        nu = np.where(counts != 1)[0]
+        to_del = []
+        for i in nu:
+            s = subs[i]
+            w = np.where(covar_table[sub_col] == s)[0]
+            ref = covar_table.iloc[w[0]]
+            for j in w[1:]:
+                if not np.all(ref == covar_table.iloc[j]):
+                    to_del.append(j)
+        covar_table = covar_table.drop(index=to_del, axis=0)
+    return covar_table
 
 
 def read_covar_tables(covar_csvs, covariables, skip_invalid=False,
@@ -1341,8 +1416,19 @@ def test_normative(brain_volumes_files, normative_file, variables=None,
     plt.show()
 
 
+def to_float(x):
+    if x in nan_values:
+        return np.nan
+    return float(x)
+
+
 value_transforms = {
     'months': lambda x: x / 12,
+    'item_index_float': lambda index, x: [
+        to_float(y.split(',')[index].strip()) if isinstance(y, str)
+        else y for y in x],
+    'item_index': lambda index, x: [y.split(',')[index].strip()
+                                    if isinstance(y, str) else y for y in x]
 }
 
 
@@ -1399,21 +1485,7 @@ def read_datasets_def(ds_filename, datasets=None):
                     print(var, loc, k2)
                     meaning = None
                     if len(k2) == 2:
-                        meaningd = k2[1][:-1].strip()
-                        meaningd = [m.strip() for m in meaningd.split(',')]
-                        if len(meaningd) == 1:
-                            meaning = meaningd[0]
-                            meaning = value_transforms[meaning]
-                        else:
-                            meaning = {}
-                            for m in meaningd:
-                                m2 = [x.strip() for x in m.split(':', 1)]
-                                try:
-                                    m2[0] = float(m2[0])
-                                except ValueError:
-                                    pass
-                                meaning[m2[0]] = m2[1]
-                            meaning = partial(dict_transform, meaning)
+                        meaning = parse_var_meaning(k2[1][:-1])
                     d = {'var_in_file': k2[0],
                          'filename': fname}
                     if meaning is not None:
@@ -1470,6 +1542,9 @@ def read_datasets_def(ds_filename, datasets=None):
                 sub_prefixes[fname] = prefix
             if ok:
                 break
+        else:
+            print('could not read a morphometry file for', dataset)
+
     hdr, morph = read_multiple_csv(morph_csvs, sub_prefix=sub_prefixes,
                                    add_sub_prefix=morph_csvs)
     ds_def['morphometry'] = {'header': hdr, 'table': morph}
@@ -1481,19 +1556,19 @@ if __name__ == '__main__':
     from soma.qt_gui.qt_backend import Qt
 
     dataset_file = '/home/dr144257/data/datasets.yaml'
-
-    bvfile = '/neurospin/dico/data/human/hcp/derivatives/morphologist-2023/morphometry/brain_volumes.csv'
-    covar_csv = '/neurospin/dico/data/human/hcp/participants.csv'
-    bvfiles = [bvfile]
-    if not osp.exists(bvfile):
-        bvfile = '/home/dr144257/data/hcp/3T_morphologist/morphometry/brain_volumes.csv'
-        bvfiles = [bvfile, '/home/dr144257/data/ukb/morphometry/brain_volumes.csv']
-        covar_csv = '/home/dr144257/data/hcp/participants.csv'
-        covar_csvs = [covar_csv, '/home/dr144257/data/ukb/participants.tsv']
-    # normative_file = '/home/dr144257/data/hcp/3T_morphologist/tables/BL/morphologist_normative_brain_volumes_stats.json'
-    indiv_vol_file = '/volatile/home/dr144257/data/baseessai/subjects/sujet01/t1mri/default_acquisition/default_analysis/segmentation/brain_volumes_sujet01.csv'
-
     normative_file = '/home/dr144257/data/normative_data/all/morphologist_normative_brain_volumes_stats.json'
+
+    # bvfile = '/neurospin/dico/data/human/hcp/derivatives/morphologist-2023/morphometry/brain_volumes.csv'
+    # covar_csv = '/neurospin/dico/data/human/hcp/participants.csv'
+    # bvfiles = [bvfile]
+    # if not osp.exists(bvfile):
+    #     bvfile = '/home/dr144257/data/hcp/3T_morphologist/morphometry/brain_volumes.csv'
+    #     bvfiles = [bvfile, '/home/dr144257/data/ukb/morphometry/brain_volumes.csv']
+    #     covar_csv = '/home/dr144257/data/hcp/participants.csv'
+    #     covar_csvs = [covar_csv, '/home/dr144257/data/ukb/participants.tsv']
+    # # normative_file = '/home/dr144257/data/hcp/3T_morphologist/tables/BL/morphologist_normative_brain_volumes_stats.json'
+    # indiv_vol_file = '/volatile/home/dr144257/data/baseessai/subjects/sujet01/t1mri/default_acquisition/default_analysis/segmentation/brain_volumes_sujet01.csv'
+
 
     make_stats = False
     do_save_stats = True

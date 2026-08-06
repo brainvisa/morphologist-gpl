@@ -19,7 +19,22 @@ Example (inspired by the ABCD cohort phenotypes files):<br/>
 {"age": {"filename": "/data/abcd/phenotype/ab_g_dyn.tsv", "var_in_file": "ab_g_dyn__visit_age", "filter": {"session_id": "ses-00A"}}, "sex": {"filename": "/data/abcd/phenotype/ab_g_stc.tsv", "var_in_file": "ab_g_stc__cohort_sex", "interpret": {"1": "M", "2": "F"}}}
 </pre>
 This means that <tt>age</tt> and <tt>sex</tt> variables are found in different files (<tt>ab_g_dyn.tsv</tt> and <tt>ab_g_stc.tsv</tt> respectrively) under column names <tt>ab_g_dyn__visit_age</tt> and <tt>ab_g_stc__cohort_sex</tt>, that the subject age table has to be filtered using only <tt>session_id</tt> column value being <tt>ses-00A</tt> (the baseline of a longitudinal study where the same subject may have multiple acquisitioins at different ages), and the <tt>sex</tt> value is not ("<tt>M</tt>", "<tt>F</tt>") as expected, but numerical values (<tt>1</tt>, <tt>2</tt>) which need to be translated.<br/>
-The <tt>interpret</tt> field may be a dict as in this example to simply translate values, or a string naming a translation function. To date, only the value <tt>months</tt> is understood to translate age in months into years.</xhtml>
+
+The ``filter`` value may be:
+<ul>
+  <li>a single value (tested for equality),</li>
+  <li>an operator and a value: <tt>&lt;= 27.5</tt></li>
+  <li>a python expression using <tt>%(x)s</tt> to reference the variable: <tt>np.logical_and(%(x)s &gt;= 27.5, not np.isnan(%(x)s)</tt></li>
+</ul>
+
+The <tt>interpret</tt> field may be a dict as in this example to simply translate values, or a string naming a translation function. To date, the only valid values are:
+or:
+<ul>
+    <li><tt>month</tt>: apply month to year transformation.</li>
+    <li><tt>item_index</tt> with an int index parameter, ex: <tt>item_index(0)</tt>, takes the item at given index in a coma-separated list</li>
+    <li><tt>item_index_float</tt> with an int index parameter, ex: <tt>item_index_float(0)</tt>, takes the item at given index in a coma-separated list, and converts it to float</li>
+</ul>
+</xhtml>
     </d>
   </d>
 </d>

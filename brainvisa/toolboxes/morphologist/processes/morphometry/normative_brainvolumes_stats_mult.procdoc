@@ -45,12 +45,17 @@ brain_morphometry: &lt;brain_morpho_def&gt;
 &lt;var_in_csv_name&gt;[ (&lt;var_transl&gt;)]
 </pre>
 </li>
-<li><tt>&lt;var_transl&gt;</tt> may be a translation dictionary applied to categorical values, or a translation method name applied to values:
+<li><tt>&lt;var_transl&gt;</tt> may be a translation dictionary applied to categorical values, or a translation method name applied to values, plus optional arguments:
 <pre>
 &lt;covar_csv_value&gt;: &lt;final_value&gt;[, ...]
 </pre>
 ex: <tt>1: M, 2: F</tt> transforms <tt>1</tt> to <tt>M</tt>, and <tt>2</tt> to <tt>F</tt>.<br/>
-or: <tt>month</tt>: apply month to year transformation.
+or:
+  <ul>
+    <li><tt>month</tt>: apply month to year transformation.</li>
+    <li><tt>item_index</tt> with an int index, ex: <tt>item_index(0)</tt>, takes the item at given index in a coma-separated list</li>
+    <li><tt>item_index_float</tt> with an int index, ex: <tt>item_index_float(0)</tt>, takes the item at given index in a coma-separated list, and converts it to float</li>
+  </ul>
 </li>
 <li><tt> &lt;var_csv_def&gt;</tt>: may be either directly a <tt>.csv</tt> covariables filename, or a dictionary:
 <pre>
@@ -63,6 +68,12 @@ filename: &lt;csv_filename&gt;
 &lt;column_label&gt;: &lt;value&gt;
 ...
 </pre>
+  The <tt>value</tt> definition may be:
+  <ul>
+    <li>a single value (tested for equality),</li>
+    <li>an operator and a value: <tt>&lt;= 27.5</tt></li>
+    <li>a python expression using <tt>%(x)s</tt> to reference the variable: <tt>np.logical_and(%(x)s &gt;= 27.5, not np.isnan(%(x)s)</tt></li>
+  </ul>
 </li>
 <li><tt>&lt;brain_morpho_def&gt;</tt>:
 <pre>

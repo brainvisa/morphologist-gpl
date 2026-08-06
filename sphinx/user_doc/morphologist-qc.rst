@@ -115,4 +115,14 @@ Specifying a covaribales file
 
   This means that ``age`` and ``sex`` variables are found in different files (``ab_g_dyn.tsv`` and ``ab_g_stc.tsv`` respectrively) under column names ``ab_g_dyn__visit_age`` and ``ab_g_stc__cohort_sex``, that the subject age table has to be filtered using only ``session_id`` column value being ``ses-00A`` (the baseline of a longitudinal study where the same subject may have multiple acquisitioins at different ages), and the ``sex`` value is not ("``M``", "``F``") as expected, but numerical values (``1``, ``2``) which need to be translated.
 
-  The ``interpret`` field may be a dict as in this example to simply translate values, or a string naming a translation function. To date, only the value ``months`` is understood to translate age in months into years.
+  The ``filter`` value may be:
+
+  * a single value (test if the column matches this exact value)
+  * an operator and a value, ex: ``>= 27.5``
+  * a python expression using ``%(x)s`` to reference the variable: ``np.logical_and(%(x)s >= 27.5, not np.isnan(%(x)s)``
+
+  The ``interpret`` field may be a dict as in this example to simply translate values, or a string naming a translation function. To date, the only valid values are:
+
+  * ``months`` is understood to translate age in months into years.
+  * ``item_index`` with an int index parameter, ex: ``item_index(0)``, takes the item at given index in a coma-separated list.
+  * ``item_index_float`` with an int index parameter, ex: ``item_index_float(0)``, takes the item at given index in a coma-separated list, and converts it to float.
