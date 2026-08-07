@@ -42,6 +42,12 @@ insert(
     SetWeakAttr('segmentation', 'morphologist'),
     SetPriorityOffset(+1),
     SetContent(
+       'ukb_hcp_abcd_openbhb26-strat', SetContent(
+           'morphologist_normative_brain_volumes_stats',
+           SetType('Normative brain volumes stats'),
+           SetWeakAttr('stratified', True),
+           SetPriorityOffset(+2),
+       ),
        '*-strat', SetContent(
            'morphologist_normative_brain_volumes_stats',
            SetType('Normative brain volumes stats'),
@@ -57,6 +63,12 @@ insert(
     'freesurfer',
     SetWeakAttr('segmentation', 'freesurfer'),
     SetContent(
+       'ukb_hcp_abcd_openbhb26-strat', SetContent(
+           'morphologist_normative_brain_volumes_stats',
+           SetType('Normative brain volumes stats'),
+           SetWeakAttr('stratified', True),
+           SetPriorityOffset(+2),
+       ),
        '*-strat', SetContent(
            'morphologist_normative_brain_volumes_stats',
            SetType('Normative brain volumes stats'),
