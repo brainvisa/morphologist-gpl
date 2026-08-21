@@ -202,22 +202,12 @@
                     "Aims writable volume formats"
                 ]
             ],
-            "transformation": [
-                [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/registration/RawT1-<subject>_<acquisition>_TO_Talairach-MNI",
-                    [
-                        "Transformation matrix"
-                    ]
-                ]
-            ],
-            "talairach_transformation": [
-                [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/registration/RawT1-<subject>_<acquisition>_TO_Talairach-ACPC",
-                    [
-                        "Transformation matrix"
-                    ]
-                ]
-            ],
+            "transformation": [[
+                "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/registration/RawT1-<subject>_<acquisition>_TO_Talairach-MNI",
+                ["Transformation matrix"]]],
+            "talairach_transformation": [[
+                "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/registration/RawT1-<subject>_<acquisition>_TO_Talairach-ACPC",
+                ["Transformation matrix"]]],
             "template": "{shared.anatomical_template_t1_skull_stripped}"
         },
         "Morphologist.SplitBrain": {
@@ -1874,5 +1864,17 @@
                 "input:{analysis}/morphologist_json_report", "JSON file"]],
         },
 
+        "morphologist.capsul.replace_normalization.ReplaceNormalization": {
+            "transformation": [[
+                "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/registration/RawT1-<subject>_<acquisition>_TO_Talairach-ACPC",
+                ["Transformation matrix"]]],
+            "acquisition_dir": [["input:{acquisition}", "Directory"]],
+            "talairach_transform": [[
+                "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/registration/RawT1-<subject>_<acquisition>_TO_Talairach-ACPC",
+                ["Transformation matrix"]]],
+            "icbm_transform": [[
+                "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/registration/RawT1-<subject>_<acquisition>_TO_Talairach-MNI",
+                ["Transformation matrix"]]],
+        },
     }
 }

@@ -1675,6 +1675,19 @@
                 "input:{analysis}/morphologist_json_report", "JSON file"]],
         },
 
+        "morphologist.capsul.replace_normalization.ReplaceNormalization": {
+            "transformation": [[
+                "input:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-ACPC",
+                    "Transformation matrix"]],
+            "acquisition_dir": [["input:{acquisition}", "Directory"]],
+            "talairach_transform": [[
+                "output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-ACPC",
+                    "Transformation matrix"]],
+            "icbm_transform": [[
+                "output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-MNI",
+                    "Transformation matrix"]],
+        },
+
      }
 
 }

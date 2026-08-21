@@ -191,22 +191,12 @@
                     "Aims writable volume formats"
                 ]
             ],
-            "transformation": [
-                [
-                    "output:{reg}/{sub}_T1w_TO_MNI152",
-                    [
-                        "Transformation matrix"
-                    ]
-                ]
-            ],
-            "talairach_transformation": [
-                [
-                    "output:{reg}/{sub}_T1w_TO_Talairach-ACPC",
-                    [
-                        "Transformation matrix"
-                    ]
-                ]
-            ],
+            "transformation": [[
+                "output:{reg}/{sub}_T1w_TO_MNI152",
+                ["Transformation matrix"]]],
+            "talairach_transformation": [[
+                "output:{reg}/{sub}_T1w_TO_Talairach-ACPC",
+                ["Transformation matrix"]]],
             "template": "{shared.anatomical_template_t1_skull_stripped}"
         },
         "Morphologist.SplitBrain": {
@@ -1992,5 +1982,17 @@
                 ["input:{analysis}/{sub}_morphologist_report", "JSON file"]],
         },
 
+        "morphologist.capsul.replace_normalization.ReplaceNormalization": {
+            "transformation": [[
+                "input:{reg}/{sub}_T1w_TO_Talairach-ACPC",
+                ["Transformation matrix"]]],
+            "acquisition_dir": [["input:{acquisition}", "Directory"]],
+            "talairach_transform": [[
+                "output:{reg}/{sub}_T1w_TO_Talairach-ACPC",
+                ["Transformation matrix"]]],
+            "icbm_transform": [[
+                "input:{reg}/{sub}_T1w_TO_MNI152",
+                ["Transformation matrix"]]],
+        },
     }
 }

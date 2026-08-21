@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
 
 try:
     from traits.api import File, Directory, Float, Int, Bool, Enum, Str, \
