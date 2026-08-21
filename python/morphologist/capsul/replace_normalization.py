@@ -32,13 +32,15 @@ class ReplaceNormalization(Process):
             'icbm_transform',
             traits.File(output=True, optional=True,
                         allowed_extensions=['.trm']))
+        self.add_trait('t1mri', traits.File(optional=True))
+        self.add_trait('commissure_coordinates',
+                       traits.File(output=True, optional=True))
         self.add_trait('threads', traits.Int())
         self.dry_run = False  # debug
         self.verbose = False  # debug
         self.threads = 0
 
     def _run_process(self):
-        print('ReplaceNormalization')
         trans = aims.read(self.transformation)
         if self.target_referential == 'Talairach-ACPC':
             self.tal_trans = trans
@@ -60,6 +62,7 @@ class ReplaceNormalization(Process):
             if self.verbose:
                 print('write', self.icbm_transform)
             aims.write(self.icbm_trans, self.icbm_transform)
+        self.update_commissures()
 
         todo = []
 
@@ -144,3 +147,39 @@ class ReplaceNormalization(Process):
         if not self.dry_run:
             aims.write(data, fullp)
         del data
+
+    def update_commissures(self):
+        if (self.t1mri in (traits.Undefined, None, '')
+                or self.commissure_coordinates
+                in (traits.Undefined, None, '')):
+            return
+
+        if self.dry_run or self.verbose:
+            print('write', self.commissure_coordinates)
+
+        f = aims.Finder()
+        f.check(self.t1mri)
+        va = f.header()
+        vs = va.get('voxel_size', [1., 1., 1.])
+        trinv = self.tal_trans.inverse()
+        acmm = trinv.transform([0., 0., 0.])
+        pcmm = trinv.transform([0., 30., 0.])
+        ipmm = trinv.transform([0., 40., -60.])
+        ac = [int(round(x / y)) for x, y in zip(acmm, vs)]
+        pc = [int(round(x / y)) for x, y in zip(pcmm, vs)]
+        ip = [int(round(x / y)) for x, y in zip(ipmm, vs)]
+        print('AC:', ac, ', mm:', list(acmm))
+        print('PC:', pc, ', mm:', list(pcmm))
+        print('IP:', ip, ', mm:', list(ipmm))
+        if not self.dry_run:
+            with open(self.commissure_coordinates, 'w') as apc:
+                print('AC:', ' '.join([str(x) for x in ac]), file=apc)
+                print('PC:', ' '.join([str(x) for x in pc]), file=apc)
+                print('IH:', ' '.join([str(x) for x in ip]), file=apc)
+                print('The previous coordinates, used by the system, are '
+                      'defined in voxels', file=apc)
+                print('They stem from the following coordinates in '
+                      'millimeters:', file=apc)
+                print('ACmm:', ' '.join([str(x) for x in acmm]), file=apc)
+                print('PCmm:', ' '.join([str(x) for x in pcmm]), file=apc)
+                print('IHmm:', ' '.join([str(x) for x in ipmm]), file=apc)

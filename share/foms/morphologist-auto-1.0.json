@@ -1686,6 +1686,11 @@
             "icbm_transform": [[
                 "output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-MNI",
                     "Transformation matrix"]],
+            "t1mri": [[
+                "input:{acquisition}/<subject>", "images"]],
+            "commissure_coordinates": [[
+                "output:{acquisition}/<subject>-pass1",
+                "Commissure coordinates"]],
         },
 
      }

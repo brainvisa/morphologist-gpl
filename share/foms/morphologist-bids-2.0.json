@@ -75,14 +75,9 @@
             "t1mri_nobias": [[
                 "output:{seg}/{sub}_nobias",
                 "Aims writable volume formats"]],
-            "commissure_coordinates": [
-                [
-                    "output:{acquisition}/{sub}",
-                    [
-                        "Commissure coordinates"
-                    ]
-                ]
-            ],
+            "commissure_coordinates": [[
+                "output:{acquisition}/{sub}",
+                ["Commissure coordinates"]]],
             "histo_analysis": [[
                 "output:{seg}/{sub}_nobias",
                 ["Histo Analysis"]]],
@@ -823,7 +818,7 @@
 
         "morpho_report": {
             "t1mri": [[
-                "input:{acquisition}/{sub}_T1w",
+                "input:{acquisition}/{sub}_desc-conform_T1w",
                 "Aims readable volume formats"]],
             "left_grey_white": [
                 [
@@ -1993,6 +1988,12 @@
             "icbm_transform": [[
                 "input:{reg}/{sub}_T1w_TO_MNI152",
                 ["Transformation matrix"]]],
+            "t1mri": [[
+                "input:{acquisition}/{sub}_desc-conform_T1w",
+                "Aims readable volume formats"]],
+            "commissure_coordinates": [[
+                "output:{acquisition}/{sub}",
+                ["Commissure coordinates"]]],
         },
     }
 }

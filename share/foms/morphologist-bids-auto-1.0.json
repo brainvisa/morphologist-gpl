@@ -41,12 +41,9 @@
                     "Aims readable volume formats"
                 ]
             ],
-            "imported_t1mri": [
-                [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<subject>",
-                    "Aims readable volume formats"
-                ]
-            ],
+            "imported_t1mri": [[
+                "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<subject>",
+                "Aims readable volume formats"]],
             "reoriented_t1mri":
                 [["output:{acquisition}/<subject>", "Aims writable volume formats"]],
             #### NormalizeSPM
@@ -58,14 +55,9 @@
                     "Aims writable volume formats"
                 ]
             ],
-            "commissure_coordinates": [
-                [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<subject>",
-                    [
-                        "Commissure coordinates"
-                    ]
-                ]
-            ],
+            "commissure_coordinates": [[
+                "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<subject>",
+                ["Commissure coordinates"]]],
             "histo_analysis": [
                 [
                     "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/nobias_<subject>",
@@ -1875,6 +1867,12 @@
             "icbm_transform": [[
                 "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/registration/RawT1-<subject>_<acquisition>_TO_Talairach-MNI",
                 ["Transformation matrix"]]],
+            "t1mri": [[
+                "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<subject>",
+                "Aims readable volume formats"]],
+            "commissure_coordinates": [[
+                "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<subject>",
+                ["Commissure coordinates"]]],
         },
     }
 }
