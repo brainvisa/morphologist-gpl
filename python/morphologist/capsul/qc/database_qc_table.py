@@ -250,6 +250,7 @@ class DatabaseQcTable(Process):
         if self.db is not None:
             return self.find_items_sqlite(proc, procname, param, dfilt)
 
+        short_procname = procname.rsplit('.')[-1]
         path_pat = getattr(proc, param)
         # print('path_pat:', path_pat)
         if profile: t1 = time.time(); print('    t1 (compl):', t1 - t0); t0 = t1
@@ -259,7 +260,10 @@ class DatabaseQcTable(Process):
             for fom_type in ('input', 'output'):
                 pta = engine._modules_data['fom']['fom_pta'][fom_type]
                 attl = list(pta.parse_path(osp.relpath(p, self.database)))
+                if len(attl) == 0:
+                    continue  # pattern does not match
                 atts = None
+                # print('path:', p, 'attl:', len(attl), ', proc:', procname)
                 if len(attl) == 1:
                     atts = attl[0]
                 else:
@@ -277,8 +281,10 @@ class DatabaseQcTable(Process):
                                 else:
                                     com_att[k] = v
                     attl_filt = [item for item in attl
-                                 if item[2]['fom_process'] == procname
+                                 if item[2]['fom_process'] in (procname,
+                                                               short_procname)
                                  and item[2]['fom_parameter'] == param]
+                    # print('attl_filt:', attl_filt)
                     if len(attl_filt) != 0:
                         atts = attl_filt[0]
                     elif len(attl) != 0:
