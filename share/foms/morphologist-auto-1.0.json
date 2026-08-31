@@ -1693,6 +1693,29 @@
                 "Commissure coordinates"]],
         },
 
+        "morphologist.capsul.foetus.imprints_skeleton.ImprintsSkeleton": {
+            # "imprints_texture": [[]]],
+            "white_mesh": [[
+                "input:{analysis}/segmentation/mesh/<subject>_<side>white",
+                "mesh"]],
+            "cortex": [[
+                "input:{analysis}/segmentation/<side>cortex_<subject>",
+                "images"]],
+            "output_cortex": [[
+                "output:{analysis}/segmentation/<side>cortex_imprints_<subject>",
+                "images"]],
+            # "immortals": [[]],
+            "grey_white": [[
+                "input:{analysis}/segmentation/<side>grey_white_<subject>",
+                "images"]],
+            "skeleton": [[
+                "output:{analysis}/segmentation/<side>skeleton_<subject>",
+                "images"]],
+            "roots": [[
+                "output:{analysis}/segmentation/<side>roots_<subject>",
+                "images"]],
+        },
+
      }
 
 }

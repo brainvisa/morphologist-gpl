@@ -1874,5 +1874,28 @@
                 "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<subject>",
                 ["Commissure coordinates"]]],
         },
+
+        "morphologist.capsul.foetus.imprints_skeleton.ImprintsSkeleton": {
+            # "imprints_texture": [[]]],
+            "white_mesh": [[
+                "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/mesh/<subject>_<side>white",
+                "Aims mesh formats"]],
+            "cortex": [[
+                "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/<side>cortex_<subject>",
+                "Aims writable volume formats"]],
+            "output_cortex": [[
+                "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/<side>cortex_<subject>",
+                "Aims writable volume formats"]],
+            # "immortals": [[]],
+            "grey_white": [[
+                "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/<side>grey_white_<subject>",
+                "Aims writable volume formats"]],
+            "skeleton": [[
+                "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/<side>skeleton_<subject>",
+                "Aims writable volume formats"]],
+            "roots": [[
+                "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/<side>roots_<subject>",
+                "Aims writable volume formats"]],
+        },
     }
 }

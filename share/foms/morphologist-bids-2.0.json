@@ -1995,5 +1995,29 @@
                 "output:{acquisition}/{sub}",
                 ["Commissure coordinates"]]],
         },
+
+        "morphologist.capsul.foetus.imprints_skeleton.ImprintsSkeleton": {
+            # "imprints_texture": [[]]],
+            "white_mesh": [[
+                "input:{mesh}/{sub}_hemi-<side>_white.surf",
+                "Aims mesh formats"]],
+            "cortex": [[
+                "input:{seg}/{sub}_hemi-<side>_cortex",
+                "Aims writable volume formats"]],
+            "output_cortex": [[
+                "output:{seg}/{sub}_hemi-<side>_cortex_imprints",
+                "Aims writable volume formats"]],
+            # "immortals": [[]],
+            "grey_white": [[
+                "input:{seg}/{sub}_hemi-<side>_grey_white",
+                "Aims writable volume formats"]],
+            "skeleton": [[
+                "output:{seg}/{sub}_hemi-<side>_skeleton",
+                "Aims writable volume formats"]],
+            "roots": [[
+                "output:{seg}/{sub}_hemi-<side>_roots",
+                "Aims writable volume formats"]],
+        },
+
     }
 }

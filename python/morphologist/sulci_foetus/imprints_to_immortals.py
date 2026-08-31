@@ -1,6 +1,4 @@
 
-#!/usr/bin/env python
-
 from soma import aims, aimsalgo
 import argparse
 import subprocess
@@ -124,25 +122,19 @@ def add_to_cortex(vol, gw):
     return gw2
 
 
-if __name__ == '__main__':
+def imprints_to_skeleton(
+        tex_f, mesh_f, cort_f, out_cort_f, out_imm_f=None,
+        out_skel_f=None, out_roots_f=None, gw_f=None):
+    ''' Folds imprints texture to cortex image immortals.
+    Adds immortals to cortex image for input to skeletonization.
+    Optionally performs the skeletonization.
+    '''
 
-    parser = argparse.ArgumentParser(
-        'Folds imprints texture to cortex image immortals. '
-        'Adds immortals to cortex image for input to skeletonization')
-    parser.add_argument('-i', '--input', help='input imprints texture')
-    parser.add_argument('-m', '--mesh', help='input white mesh')
-    parser.add_argument('-c', '--cortex', help='input cortex volume')
-    parser.add_argument('-o', '--output', help='output modified cortex')
-    parser.add_argument('-I', '--immortals',
-                        help='output immortals volume (optional)')
-    # parser.add_argument_group()
-
-    opts = parser.parse_args()
-    tex_f = opts.input
-    mesh_f = opts.mesh
-    cort_f = opts.cortex
-    out_cort_f = opts.output
-    out_imm_f = opts.immortals
+    if (out_skel_f is not None or out_roots_f is not None
+            or gw_f is not None) \
+            and (out_skel_f is None or out_roots_f is None or gw_f is None):
+        raise ValueError('out_skel_f, out_roots_f and gw_f parameters must be '
+                         'used together')
 
     tex = aims.read(tex_f)
     mesh = aims.read(mesh_f)
@@ -154,9 +146,59 @@ if __name__ == '__main__':
     if out_imm_f:
         aims.write(immortals, out_imm_f)
 
+    # skeleton
+    if out_skel_f is not None:
+        cmd = ['VipSkeleton', '-i', out_cort_f, '-so', out_skel_f,
+               '-vo', out_roots_f, '-g', gw_f, '-ve', '2', '-sk', 'w', '-k',
+               '-im', 'a']
+        subprocess.check_call(cmd)
+
+
+if __name__ == '__main__':
+
+    parser = argparse.ArgumentParser(
+        'Folds imprints texture to cortex image immortals. '
+        'Adds immortals to cortex image for input to skeletonization')
+    parser.add_argument('-i', '--input', help='input imprints texture')
+    parser.add_argument('-m', '--mesh', help='input white mesh')
+    parser.add_argument('-c', '--cortex', help='input cortex volume')
+    parser.add_argument('-o', '--output', help='output modified cortex')
+    parser.add_argument('-I', '--immortals',
+                        help='output immortals volume (optional)')
+    group1 = parser.add_argument_group(
+        'Skeleton building',
+        description='Optional skeleton buildig part')
+    group1.add_argument(
+        '-so', '--skeleton',
+        help='output skeleton image. Needs also -vo and -g options')
+    group1.add_argument(
+        '-vo', '--voronoi',
+        help='output roots voronoi image. Needs also -so and -g options')
+    group1.add_argument(
+        '-g', '--grey',
+        help='input grey/white segmentation image. Needs also -vo and -so '
+        'options')
+
+    opts = parser.parse_args()
+    tex_f = opts.input
+    mesh_f = opts.mesh
+    cort_f = opts.cortex
+    out_cort_f = opts.output
+    out_imm_f = opts.immortals
+
+    out_skel_f = opts.skeleton
+    out_roots_f = opts.voronoi
+    gw_f = opts.grey
+
+    try:
+        imprints_to_skeleton(tex_f, mesh_f, cort_f, out_cort_f, out_imm_f,
+                            out_skel_f, out_roots_f, gw_f)
+    except ValueError:
+        raise ValueError('-so, -vo and -g options must be used together')
+
     # ---
 
-    # bv python ~/brainvisa/src/perso/riviere/sandbox/dimples_in_graphs.py -i Rsub-CC00918XX19_ses-14031_sulci_manual.gii -m sub-CC00918XX19_ses-14031/t1mri/default_acquisition/default_analysis/segmentation/mesh/sub-CC00918XX19_ses-14031_Rwhite.gii -c sub-CC00918XX19_ses-14031/t1mri/default_acquisition/default_analysis/segmentation/Rcortex_sub-CC00918XX19_ses-14031.nii.gz -o segs/Rcortex_mod.nii.gz  # -I segs/immortals.nii.gz
+    # bv python -m morphologist.sulci_foetus.imprints_to_immortals -i Rsub-CC00918XX19_ses-14031_sulci_manual.gii -m sub-CC00918XX19_ses-14031/t1mri/default_acquisition/default_analysis/segmentation/mesh/sub-CC00918XX19_ses-14031_Rwhite.gii -c sub-CC00918XX19_ses-14031/t1mri/default_acquisition/default_analysis/segmentation/Rcortex_sub-CC00918XX19_ses-14031.nii.gz -o segs/Rcortex_mod.nii.gz  # -I segs/immortals.nii.gz
 
     # VipSkeleton -i segs/Rcortex_mod.nii.gz -so segs/Rskel.nii.gz -vo segs/Rroots.nii.gz -g sub-CC00918XX19_ses-14031/t1mri/default_acquisition/default_analysis/segmentation/Rgrey_white_sub-CC00918XX19_ses-14031.nii.gz -ve 2 -sk w -k -im a
 
