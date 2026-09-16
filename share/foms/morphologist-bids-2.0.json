@@ -71,7 +71,9 @@
                 "Aims writable volume formats"]],
             #### NormalizeSPM
             "normalization_spm_native_transformation_pass1": [["output:{acquisition}/{sub}_sn_pass1", "Matlab file"]],
-
+            "Talairach_transform": [[
+                "output:{reg}/{sub}_T1w_TO_Talairach-ACPC",
+                ["Transformation matrix"]]],
             "t1mri_nobias": [[
                 "output:{seg}/{sub}_nobias",
                 "Aims writable volume formats"]],
@@ -127,6 +129,52 @@
             ### TalairachFromNormalization
             "PrepareSubject_TalairachFromNormalization_transform_chain_ACPC_to_Normalized": "{shared.talairach_TO_spm_transform}",
 
+            # forced to avoid ending up in input fom
+            "GreyWhiteClassification_grey_white": [[
+                "output:{seg}/{sub}_hemi-<side>_grey_white",
+                "Aims writable volume formats",
+                {"side": "L"}]],
+            "GreyWhiteClassification_1_grey_white": [[
+                "output:{seg}/{sub}_hemi-<side>_grey_white",
+                "Aims writable volume formats",
+                {"side": "R"}]],
+            "GreyWhiteTopology_hemi_cortex": [[
+                "output:{seg}/{sub}_hemi-<side>_cortex",
+                "Aims writable volume formats",
+                {"side": "L"}]],
+            "GreyWhiteTopology_1_hemi_cortex": [[
+                "output:{seg}/{sub}_hemi-<side>_cortex",
+                "Aims writable volume formats",
+                {"side": "R"}]],
+            "GreyWhiteMesh_white_mesh": [[
+                "output:{mesh}/{sub}_hemi-<side>_white.surf",
+                "Aims mesh formats",
+                {"side": "L"}]],
+            "GreyWhiteMesh_1_white_mesh": [[
+                "output:{mesh}/{sub}_hemi-<side>_white.surf",
+                "Aims mesh formats",
+                {"side": "R"}]],
+            "PialMesh_pial_mesh": [[
+                "output:{mesh}/{sub}_hemi-<side>_pial.surf",
+                "Aims mesh formats", {"side": "L"}]],
+            "PialMesh_1_pial_mesh": [[
+                "output:{mesh}/{sub}_hemi-<side>_pial.surf",
+                "Aims mesh formats", {"side": "R"}]],
+            "SulciSkeleton_skeleton": [[
+                "output:{seg}/{sub}_hemi-<side>_skeleton",
+                "Aims writable volume formats", {"side": "L"}]],
+            "SulciSkeleton_1_skeleton": [[
+                "output:{seg}/{sub}_hemi-<side>_skeleton",
+                "Aims writable volume formats", {"side": "R"}]],
+            "SulciSkeleton_roots": [[
+                "output:{seg}/{sub}_hemi-<side>_roots",
+                "Aims writable volume formats", {"side": "L"}]],
+            "SulciSkeleton_1_roots": [[
+                "output:{seg}/{sub}_hemi-<side>_roots",
+                "Aims writable volume formats", {"side": "R"}]],
+            "GlobalMorphometry_brain_volumes_file": [[
+                "output:{seg}/{sub}_sul-<sulci_recognition_session>_brain_volumes", "CSV file"],
+                ["output:{seg}/{sub}_brain_volumes", "CSV file"]],
         },
 
         "Morphologist.PrepareSubject": {
@@ -359,23 +407,17 @@
             ]
         },
         "Morphologist.GreyWhiteClassification": {
-            "grey_white": [
-                [
-                    "output:{seg}/{sub}_hemi-<side>_grey_white",
-                    "Aims writable volume formats",
-                    {"side": "L"}
-                ]
-            ]
+            "grey_white": [[
+                "output:{seg}/{sub}_hemi-<side>_grey_white",
+                "Aims writable volume formats",
+                {"side": "L"}]]
         },
 
         "GreyWhiteTopology": {
-            "hemi_cortex": [
-                [
-                    "output:{seg}/{sub}_hemi-<side>_cortex",
-                    "Aims writable volume formats",
-                    {"side": "L"}
-                ]
-            ]
+            "hemi_cortex": [[
+                "output:{seg}/{sub}_hemi-<side>_cortex",
+                "Aims writable volume formats",
+                {"side": "L"}]]
         },
         "Morphologist.GreyWhiteMesh": {
             "white_mesh": [[
@@ -403,13 +445,10 @@
         },
 
         "Morphologist.GreyWhiteClassification_1": {
-            "grey_white": [
-                [
-                    "output:{seg}/{sub}_hemi-<side>_grey_white",
-                    "Aims writable volume formats",
-                    {"side": "R"}
-                ]
-            ]
+            "grey_white": [[
+                "output:{seg}/{sub}_hemi-<side>_grey_white",
+                "Aims writable volume formats",
+                {"side": "R"}]]
         },
         "Morphologist.GreyWhiteTopology_1": {
             "hemi_cortex": [
