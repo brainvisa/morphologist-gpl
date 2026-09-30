@@ -5,6 +5,7 @@
                    "shared-brainvisa-1.0"],
 
     "attribute_definitions" : {
+        "center": {"default_value": "subjects"},
         "acquisition" : {"default_value" : "default_acquisition"},
         "analysis" : {"default_value" : "default_analysis"},
         "sulci_recognition_session" :  {"default_value" : "default_session"},
