@@ -71,7 +71,7 @@ class MorphologistQcTable(database_qc_table.DatabaseQcTable):
             'Report', 'QC']
 
 
-del database_qc_table  # just to avois ambiguity on the process in the module
+del database_qc_table  # just to avoid ambiguity on the process in the module
 
 
 if __name__ == '__main__':

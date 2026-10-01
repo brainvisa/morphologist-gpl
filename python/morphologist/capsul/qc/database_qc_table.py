@@ -53,6 +53,7 @@ wkhtmltopdf = shutil.which('wkhtmltopdf')
 
 
 class statuses:
+    UNDEFINED = -1
     OK = 0
     PRESENT = 1
     WARNING = 2
@@ -114,11 +115,12 @@ class DatabaseQcTable(Process):
                        traits.File(allowed_extensions=['HTML', 'PDF file',
                                                        'CSV file'],
                                    output=True, optional=True))
-        self.add_trait('index_status', traits.Enum(('False', 'Force', 'Use')))
+        self.add_trait('index_status', traits.Enum(('False', 'Force', 'Use',
+                                                    'Set_if_absent')))
 
         self.status_for_type = status_for_type
         self.statuses = statuses
-        self.index_status = 'Use'
+        self.index_status = 'Set_if_absent'
         # self.fom = 'morphologist-bids-2.0'
 
         # possibleTypes = [t.name for t in getAllDiskItemTypes()]
@@ -459,17 +461,21 @@ class DatabaseQcTable(Process):
             return statuses.ABSENT
         stat_func = self.status_for_type.get(data_type)
         if stat_func is not None:
-            if self.status_db_col is not None and self.index_status == 'Use':
+            if self.status_db_col is not None and \
+                    self.index_status in ('Use', 'Set_if_absent'):
                 rfname = osp.relpath(filename, self.database)
                 if not hasattr(self, 'file_statuses'):
                     # cache all statuses in a single request
                     statusl = self.db.execute(f'SELECT DISTINCT filename, {self.status_db_col} FROM files WHERE {self.status_db_col} IS NOT NULL')
                     self.file_statuses = {
                         status[0]: status[1] for status in statusl}
-                return self.file_statuses.get(rfname, statuses.PRESENT)
+                status = self.file_statuses.get(rfname, statuses.PRESENT)
+                if status >= 0 or self.index_status != 'Set_if_absent':
+                    return status
+                # print('Empty status')
             status = stat_func(self, filename)
             if self.status_db_col is not None \
-                    and self.index_status == 'Force':
+                    and self.index_status in ('Force', 'Set_if_absent'):
                 rfname = osp.relpath(filename, self.database)
                 self.db.execute(
                     f'UPDATE files SET {self.status_db_col}="{status}" WHERE filename="{rfname}"')
@@ -480,7 +486,8 @@ class DatabaseQcTable(Process):
     def prepare_status_column(self):
         # check / add status cols in SQLite database
         self.status_db_col = None
-        if self.index_status in ('Use', 'Force') and self.db is not None:
+        if self.index_status in ('Use', 'Force', 'Set_if_absent') \
+                and self.db is not None:
             cname = 'database_qc_status'
             # # reopen DB in this thread
             # if self.database_sqlite:
@@ -491,14 +498,14 @@ class DatabaseQcTable(Process):
             if cname in cols:
                 self.status_db_col = cname
                 return  # OK
-            if self.index_status == 'Force':
+            if self.index_status in ('Force', 'Set_if_absent'):
                 for col in range(len(self.data_types)):
                     data_type = self.data_types[col]
                     stat_func = self.status_for_type.get(data_type)
                     if stat_func is not None:
                         # create missing column
                         self.db.execute(
-                            f'ALTER TABLE files ADD {cname} INTEGER')
+                            f'ALTER TABLE files ADD {cname} INTEGER DEFAULT -1')
                         self.status_db_col = cname
                         cols = [c[1] for c in
                                 self.db.execute('PRAGMA table_info(files)')]
@@ -564,6 +571,7 @@ class DatabaseQcTable(Process):
 
         tablew.setRowCount(nrows)
 
+        undefined_icon = Qt.QIcon(findIconFile('absent.png'))
         no_icon = Qt.QIcon(findIconFile('absent.png'))
         present_icon = Qt.QIcon(findIconFile('ok.png'))
         ok_icon = Qt.QIcon(findIconFile('code_ok.png'))
@@ -586,6 +594,7 @@ class DatabaseQcTable(Process):
         invalid_bad_icon = Qt.QIcon(findIconFile('code_invalid_bad.png'))
 
         status_icons = {
+            statuses.UNDEFINED: undefined_icon,
             statuses.OK: ok_icon,
             statuses.PRESENT: present_icon,
             statuses.WARNING: warn_icon,
