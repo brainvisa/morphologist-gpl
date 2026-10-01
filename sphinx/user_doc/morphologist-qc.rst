@@ -40,7 +40,7 @@ Using files status checks
 ::
 
     bv python -m capsul -y -i /data/hcp_part_sulci-bids/derivatives/morphologist-6.0 \
-        --if morphologist-bidfs-2.0 morphologist.capsul.qc.morphologist_qc_table
+        --if morphologist-bids-2.0 morphologist.capsul.qc.morphologist_qc_table
 
 Note the ``-y`` parameter in the commandline, which tells that the process to be run is an interactive GUI process, so the program should not just quit after runing. If you forget it, the commandline will just exit without having time to show anything to the user. It may be useful to save a document (HTML or PDF output) without interaction.
 
@@ -53,14 +53,14 @@ Using a database
 To overcome this, we need to build a Capsul database file::
 
     bv python -m capsul -i /data/hcp_part_sulci-bids/derivatives/morphologist-6.0 \
-        --if morphologist-bidfs-2.0 morphologist.capsul.qc.index_db
+        --if morphologist-bids-2.0 morphologist.capsul.qc.index_db
 
 This process scans the dataset directory and builds a ``capsul-<version>.sqlite`` database which can be reused afterwards.
 
 Then::
 
     bv python -m capsul -y -i /data/hcp_part_sulci-bids/derivatives/morphologist-6.0 \
-        --if morphologist-bidfs-2.0 morphologist.capsul.qc.morphologist_qc_table \
+        --if morphologist-bids-2.0 morphologist.capsul.qc.morphologist_qc_table \
         database_sqlite=/data/hcp_part_sulci-bids/derivatives/morphologist-6.0/capsul-2.6.sqlite \
         index_status=Force
 
@@ -69,7 +69,7 @@ The ``index_status`` parameter here tells to index in the database status files 
 Once it is done once, the parameter `index_status=Force` should be removed (or replaced with `index_status=Use`) so that the status is now queried from the database and not read from files::
 
     bv python -m capsul -y -i /data/hcp_part_sulci-bids/derivatives/morphologist-6.0 \
-        --if morphologist-bidfs-2.0 morphologist.capsul.qc.morphologist_qc_table \
+        --if morphologist-bids-2.0 morphologist.capsul.qc.morphologist_qc_table \
         database_sqlite=/data/hcp_part_sulci-bids/derivatives/morphologist-6.0/capsul-2.6.sqlite
 
 Once database indexing is done, the QC table process can manage very large datasets (we use it on datasets of over 40000 subjects).
