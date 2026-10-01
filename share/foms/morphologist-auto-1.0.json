@@ -9,6 +9,7 @@
         "acquisition" : {"default_value" : "default_acquisition"},
         "analysis" : {"default_value" : "default_analysis"},
         "sulci_recognition_session" :  {"default_value" : "default_session"},
+        "sulci_recognition_type": {"default_value": "auto"},
         "graph_version": {"default_value": "3.1"},
         "sulci_database": {"default_value": "2008"}
     },
@@ -16,7 +17,7 @@
     "shared_patterns": {
         "acquisition": "<center>/<subject>/t1mri/<acquisition>",
         "analysis": "{acquisition}/<analysis>",
-        "recognition_analysis": "{analysis}/folds/<graph_version>/<sulci_recognition_session>_auto",
+        "recognition_analysis": "{analysis}/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>",
         "subject": "<subject>",
     },
 
@@ -41,14 +42,14 @@
                 "Graph and data",
                 {"side": "L", "labelled": "No"}]],
             "left_labelled_graph": [[
-                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto",
+                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>",
                 "Graph and data",
                 {"side": "L"}]],
             "right_graph":
                 [["output:{analysis}/folds/<graph_version>/<side><subject>",
                     "Graph and data", {"side":"R","labelled":"No"}]],
             "right_labelled_graph":
-                [["output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto",
+                [["output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>",
                     "Graph and data", {"side": "R"}]],
             "Talairach_transform": [[
                 "output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-ACPC",
@@ -173,13 +174,13 @@
                 [["shared:{sulci_recognition_ann_model}", "Graph and data",
                     {"side": "L"}]],
             "SulciRecognition_recognition2000_energy_plot_file":
-                [["output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto",
+                [["output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>",
                     "siRelax Fold Energy", {"side": "L"}]],
             "SulciRecognition_1_recognition2000_model":
                 [["shared:{sulci_recognition_ann_model}", "Graph and data",
                     {"side": "R"}]],
             "SulciRecognition_1_recognition2000_energy_plot_file": [[
-                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto",
+                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>",
                 "siRelax Fold Energy", {"side": "R"}]],
 
             ## recognition09
@@ -192,13 +193,13 @@
                 [["shared:{spam_distribs}", "Text Data Table",
                     {"sulci_segments_model_type": "global_registered_spam", "side": "left"}]],
             "SulciRecognition_SPAM_recognition09_global_recognition_posterior_probabilities": [[
-                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto_proba",
+                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>_proba",
                 "CSV file", {"side": "L"}]],
             "SulciRecognition_SPAM_recognition09_global_recognition_output_transformation": [[
-                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto_Tal_TO_SPAM",
+                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>_Tal_TO_SPAM",
                 "Transformation matrix", {"side": "L"}]],
             "SulciRecognition_SPAM_recognition09_global_recognition_output_t1_to_global_transformation":
-                [["output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto_T1_TO_SPAM",
+                [["output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>_T1_TO_SPAM",
                     "Transformation matrix", {"side": "L"}]],
             "SulciRecognition_1_SPAM_recognition09_global_recognition_labels_priors":
                 [["shared:{spam_labels_priors}", "Text Data Table",
@@ -207,15 +208,15 @@
                 [["shared:{spam_distribs}", "Text Data Table",
                     {"sulci_segments_model_type": "global_registered_spam", "side": "right"}]],
             "SulciRecognition_1_SPAM_recognition09_global_recognition_posterior_probabilities": [[
-                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto_proba",
+                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>_proba",
                 "CSV file",
                 {"side": "R"}]],
             "SulciRecognition_1_SPAM_recognition09_global_recognition_output_transformation": [[
-                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto_Tal_TO_SPAM",
+                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>_Tal_TO_SPAM",
                 "Transformation matrix",
                 {"side": "R"}]],
             "SulciRecognition_1_SPAM_recognition09_global_recognition_output_t1_to_global_transformation": [[
-                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto_T1_TO_SPAM",
+                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>_T1_TO_SPAM",
                 "Transformation matrix",
                 {"side": "R"}]],
 
@@ -236,10 +237,10 @@
                 [["shared:{spam_translation_priors}", "Text Data Table",
                     {"sulci_segments_model_type": "locally_from_global_registred_spam", "side": "left"}]],
             "SulciRecognition_SPAM_recognition09_local_recognition_posterior_probabilities":
-                [["output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto_proba",
+                [["output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>_proba",
                     "CSV file", {"side": "L"}]],
             "SulciRecognition_SPAM_recognition09_local_recognition_output_local_transformations":
-                [["output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto_global_TO_local",
+                [["output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>_global_TO_local",
                     "Directory", {"side": "L"}]],
             "SulciRecognition_1_SPAM_recognition09_local_recognition_model":
                 [["shared:{spam_distribs}", "Text Data Table",
@@ -257,10 +258,10 @@
                 [["shared:{spam_translation_priors}", "Text Data Table",
                     {"sulci_segments_model_type": "locally_from_global_registred_spam", "side": "right"}]],
             "SulciRecognition_1_SPAM_recognition09_local_recognition_posterior_probabilities":
-                [["output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto_proba",
+                [["output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>_proba",
                     "CSV file", {"side": "R"}]],
             "SulciRecognition_1_SPAM_recognition09_local_recognition_output_local_transformations": [[
-                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto_global_TO_local",
+                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>_global_TO_local",
                 "Directory", {"side": "R"}]],
 
             ### Markovian
@@ -271,7 +272,7 @@
                 [["shared:{spam_segments_relations_model}", "Text Data Table",
                     {"side": "left"}]],
             "SulciRecognition_SPAM_recognition09_markovian_recognition_posterior_probabilities": [[
-                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto_proba",
+                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>_proba",
                 "CSV file",
                 {"side": "L"}]],
             "SulciRecognition_1_SPAM_recognition09_markovian_recognition_model":
@@ -281,7 +282,7 @@
                 [["shared:{spam_segments_relations_model}", "Text Data Table",
                     {"side": "right"}]],
             "SulciRecognition_1_SPAM_recognition09_markovian_recognition_posterior_probabilities": [[
-                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto_proba",
+                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>_proba",
                 "CSV file",
                 {"side": "R"}]],
 
@@ -302,7 +303,7 @@
 
             # Sulcal morphometry
             "sulcal_morpho_measures":
-                [["output:{recognition_analysis}/<subject>_<sulci_recognition_session>_auto_sulcal_morphometry",
+                [["output:{recognition_analysis}/<subject>_<sulci_recognition_session>_<sulci_recognition_type>_sulcal_morphometry",
                     "CSV file"]],
             "sulcal_morphometry_sulci_file":
                 "{shared.sulcal_morphometry_sulci_file}",
@@ -445,7 +446,7 @@
 
         "sulcigraphmorphometrybysubject": {
             "sulcal_morpho_measures": [[
-                "output:{recognition_analysis}/<subject>_<sulci_recognition_session>_auto_sulcal_morphometry",
+                "output:{recognition_analysis}/<subject>_<sulci_recognition_session>_<sulci_recognition_type>_sulcal_morphometry",
                 "CSV file"]],
             "sulci_file":
             "{shared.sulcal_morphometry_sulci_file}"
@@ -483,7 +484,7 @@
                 "shared:models/models_<sulci_database>/discriminative_models/3.0/<side>folds_noroots/<side>folds_noroots",
                 ["Graph and data"]]],
             "energy_plot_file": [[
-                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto",
+                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>",
                 "siRelax Fold Energy"]],
         },
 
@@ -493,7 +494,7 @@
                 ["Text Data Table"],
                 {"sulci_segments_model_type": "global_registered_spam"}]],
             "posterior_probabilities": [[
-                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto_proba",
+                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>_proba",
                 "CSV file",
                 {"side": "L"}]],
             "labels_translation_map": [[
@@ -505,10 +506,10 @@
                 ["Text Data Table"],
                 {"side": "L"}]],
             "output_transformation": [[
-                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto_Tal_TO_SPAM",
+                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>_Tal_TO_SPAM",
                 "Transformation matrix", {"side": "L"}]],
             "output_t1_to_global_transformation": [[
-                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto_T1_TO_SPAM",
+                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>_T1_TO_SPAM",
                 "Transformation matrix",
                 {"side": "L"}]],
         },
@@ -519,7 +520,7 @@
                 ["Text Data Table"],
                 {"sulci_segments_model_type": "locally_from_global_registred_spam"}]],
             "posterior_probabilities": [[
-                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto_proba",
+                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>_proba",
                 "CSV file",
                 {"side": "L"}]],
             "local_referentials": [[
@@ -540,7 +541,7 @@
                 ["Text Data Table"],
                 {"sulci_segments_model_type": "locally_from_global_registred_spam"}]],
             "output_local_transformations": [[
-                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto_global_TO_local",
+                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>_global_TO_local",
                 "Directory", {"side": "L"}]],
         },
 
@@ -553,7 +554,7 @@
                 "shared:models/<sulci_database>/descriptive_models//segments_relations/mindist_relations_left/gamma_exponential_mixture_distribs",
                 ["Text Data Table"]]],
             "posterior_probabilities": [[
-                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto_proba",
+                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>_proba",
                 "CSV file",
                 {"side": "L"}]],
         },
@@ -586,11 +587,11 @@
             "right_csf": [[
                 "output:{analysis}/segmentation/<side>csf_<subject>","images",{"side":"R"}]],
             "left_labelled_graph": [[
-                "input:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto",
+                "input:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>",
                 "Graph and data",
                 {"side": "L"}]],
             "right_labelled_graph": [[
-                "input:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto",
+                "input:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>",
                 "Graph and data",
                 {"side": "R"}]],
             "left_gm_mesh": [[
@@ -646,11 +647,11 @@
                 "mesh",
                 {"side":"R"}]],
             "left_labelled_graph": [[
-                "input:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto",
+                "input:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>",
                 "Graph and data",
                 {"side": "L"}]],
             "right_labelled_graph": [[
-                "input:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto",
+                "input:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>",
                 "Graph and data",
                 {"side": "R"}]],
             "talairach_transform": [[
@@ -676,7 +677,7 @@
 
         "CorticalFoldsGraphUpgradeFromOld": {
             "old_graph": [
-                ["input:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto", "Graph and data"],
+                ["input:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>", "Graph and data"],
                 ["input:{analysis}/folds/<graph_version>/<side><subject>", "Graph and data"]],
             "skeleton": [[
                 "input:{analysis}/segmentation/<side>skeleton_<subject>","images"]],
@@ -693,7 +694,7 @@
             "CorticalFoldsGraphThickness_hemi_mesh": [[
                 "input:{analysis}/segmentation/mesh/<subject>_<side>hemi","mesh"]],
             "graph": [
-                ["output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto", "Graph and data"],
+                ["output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>", "Graph and data"],
                 ["output:{analysis}/folds/<graph_version>/<side><subject>", "Graph and data"]],
             "SulciVoronoi_sulci_voronoi": [
                 ["output:{recognition_analysis}/<side>sulcivoronoi_<subject>", "images"],
@@ -997,7 +998,7 @@
             ],
             "left_labelled_graph": [
                 [
-                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/L<subject>_<sulci_recognition_session>_auto",
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/L<subject>_<sulci_recognition_session>_<sulci_recognition_type>",
                     [
                         "Graph and data"
                     ]
@@ -1009,7 +1010,7 @@
                  "JSON file", {"side": "L"}]],
             "left_posterior_probabilities": [
                 [
-                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/L<subject>_<sulci_recognition_session>_auto_proba",
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/L<subject>_<sulci_recognition_session>_<sulci_recognition_type>_proba",
                     [
                         "CSV file"
                     ]
@@ -1037,7 +1038,7 @@
             ],
             "left_tal_to_global_transform": [
                 [
-                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/L<subject>_<sulci_recognition_session>_auto_Tal_TO_SPAM",
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/L<subject>_<sulci_recognition_session>_<sulci_recognition_type>_Tal_TO_SPAM",
                     [
                         "Transformation matrix"
                     ]
@@ -1045,7 +1046,7 @@
             ],
             "left_t1_to_global_transform": [
                 [
-                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/L<subject>_<sulci_recognition_session>_auto_T1_TO_SPAM",
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/L<subject>_<sulci_recognition_session>_<sulci_recognition_type>_T1_TO_SPAM",
                     [
                         "Transformation matrix"
                     ]
@@ -1108,7 +1109,7 @@
             ],
             "left_global_to_local_transforms": [
                 [
-                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/L<subject>_<sulci_recognition_session>_auto_global_TO_local",
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/L<subject>_<sulci_recognition_session>_<sulci_recognition_type>_global_TO_local",
                     [
                         "Directory"
                     ]
@@ -1116,7 +1117,7 @@
             ],
             "right_labelled_graph": [
                 [
-                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/R<subject>_<sulci_recognition_session>_auto",
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/R<subject>_<sulci_recognition_session>_<sulci_recognition_type>",
                     [
                         "Graph and data"
                     ]
@@ -1128,7 +1129,7 @@
                  "JSON file", {"side": "R"}]],
             "right_posterior_probabilities": [
                 [
-                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/R<subject>_<sulci_recognition_session>_auto_proba",
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/R<subject>_<sulci_recognition_session>_<sulci_recognition_type>_proba",
                     [
                         "CSV file"
                     ]
@@ -1156,7 +1157,7 @@
             ],
             "right_tal_to_global_transform": [
                 [
-                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/R<subject>_<sulci_recognition_session>_auto_Tal_TO_SPAM",
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/R<subject>_<sulci_recognition_session>_<sulci_recognition_type>_Tal_TO_SPAM",
                     [
                         "Transformation matrix"
                     ]
@@ -1164,7 +1165,7 @@
             ],
             "right_t1_to_global_transform": [
                 [
-                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/R<subject>_<sulci_recognition_session>_auto_T1_TO_SPAM",
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/R<subject>_<sulci_recognition_session>_<sulci_recognition_type>_T1_TO_SPAM",
                     [
                         "Transformation matrix"
                     ]
@@ -1227,7 +1228,7 @@
             ],
             "right_global_to_local_transforms": [
                 [
-                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/R<subject>_<sulci_recognition_session>_auto_global_TO_local",
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/R<subject>_<sulci_recognition_session>_<sulci_recognition_type>_global_TO_local",
                     [
                         "Directory"
                     ]
@@ -1236,7 +1237,7 @@
             "sulci_file": "{shared.sulcal_morphometry_sulci_file}",
             "sulcal_morpho_measures": [
                 [
-                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/<subject>_<sulci_recognition_session>_auto_sulcal_morphometry",
+                    "output:<center>/<subject>/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/<subject>_<sulci_recognition_session>_<sulci_recognition_type>_sulcal_morphometry",
                     [
                         "CSV file"
                     ]
@@ -1388,7 +1389,7 @@
                 ["Text Data Table"],
                 {"sulci_segments_model_type": "global_registered_spam"}]],
             "posterior_probabilities": [[
-                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto_proba",
+                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>_proba",
                 "CSV file",
                 {"side": "R"}]],
             "labels_translation_map": [[
@@ -1399,11 +1400,11 @@
                 ["Text Data Table"],
                 {"side": "R"}]],
             "output_transformation": [[
-                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto_Tal_TO_SPAM",
+                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>_Tal_TO_SPAM",
                 "Transformation matrix",
                 {"side": "R"}]],
             "output_t1_to_global_transformation": [[
-                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto_T1_TO_SPAM",
+                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>_T1_TO_SPAM",
                 "Transformation matrix",
                 {"side": "R"}]],
         },
@@ -1414,7 +1415,7 @@
                 ["Text Data Table"],
                 {"sulci_segments_model_type": "locally_from_global_registred_spam"}]],
             "posterior_probabilities": [[
-                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto_proba",
+                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>_proba",
                 "CSV file",
                 {"side": "R"}]],
             "local_referentials": [[
@@ -1434,7 +1435,7 @@
                 ["Text Data Table"],
                 {"sulci_segments_model_type": "locally_from_global_registred_spam"}]],
             "output_local_transformations": [[
-                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto_global_TO_local",
+                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>_global_TO_local",
                 "Directory", {"side": "R"}]],
         },
 
@@ -1448,7 +1449,7 @@
                 ["Text Data Table"]
             ]],
             "posterior_probabilities": [[
-                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto_proba",
+                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>_proba",
                 "CSV file",
                 {"side": "R"}]],
         },
@@ -1528,11 +1529,11 @@
                 "Graph and data",
                 {"side": "R", "labelled": "No"}]],
             "left_labelled_graph": [[
-                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto",
+                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>",
                 "Graph and data",
                 {"side": "L", "labelled": "Yes"}]],
             "right_labelled_graph": [[
-                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto",
+                "output:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>",
                 "Graph and data",
                 {"side": "R", "labelled": "Yes"}]],
             "GlobalMorphometry_brain_volumes_file": [[
@@ -1656,7 +1657,7 @@
 
         "morphologist.capsul.qc.ana_morpho_viewers.MorphometryViewer": {
             "main_input": [[
-                "input:{recognition_analysis}/<subject>_<sulci_recognition_session>_auto_sulcal_morphometry",
+                "input:{recognition_analysis}/<subject>_<sulci_recognition_session>_<sulci_recognition_type>_sulcal_morphometry",
                 "CSV file"]],
         },
 

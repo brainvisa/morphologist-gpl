@@ -21,6 +21,9 @@
         "sulci_recognition_session": {
             "default_value": "default_session"
         },
+        "sulci_recognition_type": {
+            "default_value": "auto"
+        },
         "center": {
             "default_value": "subjects"
         }
@@ -28,7 +31,7 @@
     "shared_patterns": {
         "acquisition": "sub-<subject>/ses-<session>/anat/t1mri/<acquisition>",
         "analysis": "{acquisition}/<analysis>",
-        "recognition_analysis": "{analysis}/folds/<graph_version>/<sulci_recognition_session>_auto",
+        "recognition_analysis": "{analysis}/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>",
     },
 
     "processes": {
@@ -87,13 +90,13 @@
             ],
             "left_labelled_graph": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/<side><subject>_<sulci_recognition_session>_auto",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>",
                     ["Graph and data"], {"side": "L"}
                 ]
             ],
             "right_labelled_graph": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/<side><subject>_<sulci_recognition_session>_auto",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>",
                     ["Graph and data"], {"side": "R"}
                 ]
             ],
@@ -232,7 +235,7 @@
         "Morphologist.SulcalMorphometry": {
             "sulcal_morpho_measures": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/<subject>_<sulci_recognition_session>_auto_sulcal_morphometry",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/<subject>_<sulci_recognition_session>_<sulci_recognition_type>_sulcal_morphometry",
                     [
                         "CSV file"
                     ]
@@ -586,7 +589,7 @@
             ],
             "energy_plot_file": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/<side><subject>_<sulci_recognition_session>_auto",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>",
                     [
                         "siRelax Fold Energy"
                     ]
@@ -608,7 +611,7 @@
             ],
             "energy_plot_file": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/<side><subject>_<sulci_recognition_session>_auto",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>",
                     [
                         "siRelax Fold Energy"
                     ]
@@ -640,7 +643,7 @@
             ],
             "posterior_probabilities": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/L<subject>_<sulci_recognition_session>_auto_proba",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/L<subject>_<sulci_recognition_session>_<sulci_recognition_type>_proba",
                     [
                         "CSV file"
                     ]
@@ -669,7 +672,7 @@
             ],
             "output_transformation": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/L<subject>_<sulci_recognition_session>_auto_Tal_TO_SPAM",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/L<subject>_<sulci_recognition_session>_<sulci_recognition_type>_Tal_TO_SPAM",
                     [
                         "Transformation matrix"
                     ]
@@ -677,7 +680,7 @@
             ],
             "output_t1_to_global_transformation": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/L<subject>_<sulci_recognition_session>_auto_T1_TO_SPAM",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/L<subject>_<sulci_recognition_session>_<sulci_recognition_type>_T1_TO_SPAM",
                     [
                         "Transformation matrix"
                     ]
@@ -699,7 +702,7 @@
             ],
             "posterior_probabilities": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/R<subject>_<sulci_recognition_session>_auto_proba",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/R<subject>_<sulci_recognition_session>_<sulci_recognition_type>_proba",
                     [
                         "CSV file"
                     ]
@@ -728,7 +731,7 @@
             ],
             "output_transformation": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/R<subject>_<sulci_recognition_session>_auto_Tal_TO_SPAM",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/R<subject>_<sulci_recognition_session>_<sulci_recognition_type>_Tal_TO_SPAM",
                     [
                         "Transformation matrix"
                     ]
@@ -736,7 +739,7 @@
             ],
             "output_t1_to_global_transformation": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/R<subject>_<sulci_recognition_session>_auto_T1_TO_SPAM",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/R<subject>_<sulci_recognition_session>_<sulci_recognition_type>_T1_TO_SPAM",
                     [
                         "Transformation matrix"
                     ]
@@ -758,7 +761,7 @@
             ],
             "posterior_probabilities": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/L<subject>_<sulci_recognition_session>_auto_proba",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/L<subject>_<sulci_recognition_session>_<sulci_recognition_type>_proba",
                     [
                         "CSV file"
                     ]
@@ -814,7 +817,7 @@
             ],
             "output_local_transformations": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/L<subject>_<sulci_recognition_session>_auto_global_TO_local",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/L<subject>_<sulci_recognition_session>_<sulci_recognition_type>_global_TO_local",
                     [
                         "Directory"
                     ]
@@ -836,7 +839,7 @@
             ],
             "posterior_probabilities": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/L<subject>_<sulci_recognition_session>_auto_proba",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/L<subject>_<sulci_recognition_session>_<sulci_recognition_type>_proba",
                     [
                         "CSV file"
                     ]
@@ -858,7 +861,7 @@
             ],
             "posterior_probabilities": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/R<subject>_<sulci_recognition_session>_auto_proba",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/R<subject>_<sulci_recognition_session>_<sulci_recognition_type>_proba",
                     [
                         "CSV file"
                     ]
@@ -914,7 +917,7 @@
             ],
             "output_local_transformations": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/R<subject>_<sulci_recognition_session>_auto_global_TO_local",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/R<subject>_<sulci_recognition_session>_<sulci_recognition_type>_global_TO_local",
                     [
                         "Directory"
                     ]
@@ -936,7 +939,7 @@
             ],
             "posterior_probabilities": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/R<subject>_<sulci_recognition_session>_auto_proba",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/R<subject>_<sulci_recognition_session>_<sulci_recognition_type>_proba",
                     [
                         "CSV file"
                     ]
@@ -975,7 +978,7 @@
             ],
             "left_labelled_graph": [
                 [
-                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/L<subject>_<sulci_recognition_session>_auto",
+                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/L<subject>_<sulci_recognition_session>_<sulci_recognition_type>",
                     [
                         "Graph and data"
                     ]
@@ -983,7 +986,7 @@
             ],
             "right_labelled_graph": [
                 [
-                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/R<subject>_<sulci_recognition_session>_auto",
+                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/R<subject>_<sulci_recognition_session>_<sulci_recognition_type>",
                     [
                         "Graph and data"
                     ]
@@ -1071,7 +1074,7 @@
             ],
             "left_labelled_graph": [
                 [
-                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/L<subject>_<sulci_recognition_session>_auto",
+                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/L<subject>_<sulci_recognition_session>_<sulci_recognition_type>",
                     [
                         "Graph and data"
                     ]
@@ -1079,7 +1082,7 @@
             ],
             "right_labelled_graph": [
                 [
-                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/R<subject>_<sulci_recognition_session>_auto",
+                    "input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/R<subject>_<sulci_recognition_session>_<sulci_recognition_type>",
                     [
                         "Graph and data"
                     ]
@@ -1122,7 +1125,7 @@
 
         "CorticalFoldsGraphUpgradeFromOld": {
             "old_graph": [
-                ["input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/<side><subject>_<sulci_recognition_session>_auto", "Graph and data"],
+                ["input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>", "Graph and data"],
                 ["input:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<side><subject>", "Graph and data"]],
             "skeleton": [[
                 "inut:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/<side>skeleton_<subject>",
@@ -1146,14 +1149,14 @@
                 "Aims mesh formats"]],
             "graph": [
                 ["output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<side><subject>", "Graph and data"],
-                ["output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/<side><subject>_<sulci_recognition_session>_auto", "Graph and data"]],
+                ["output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>", "Graph and data"]],
             "SulciVoronoi_sulci_voronoi": [
-                ["output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/<side>sulcivoronoi_<subject>_<sulci_recognition_session>_auto",
+                ["output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/<side>sulcivoronoi_<subject>_<sulci_recognition_session>_<sulci_recognition_type>",
                 "Aims writable volume formats"],
                 ["output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<side>sulcivoronoi_<subject>",
                  "Aims writable volume formats"]],
             "CorticalFoldsGraphThickness_output_mid_interface": [
-                ["output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/<side>gw_interface_<subject>_<sulci_recognition_session>_auto",
+                ["output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/<side>gw_interface_<subject>_<sulci_recognition_session>_<sulci_recognition_type>",
                 "Aims writable volume formats"],
                 ["output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<side>gw_interface_<subject>",
                  "Aims writable volume formats"]]
@@ -1445,7 +1448,7 @@
             ],
             "left_labelled_graph": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/L<subject>_<sulci_recognition_session>_auto",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/L<subject>_<sulci_recognition_session>_<sulci_recognition_type>",
                     [
                         "Graph and data"
                     ]
@@ -1457,7 +1460,7 @@
                  "JSON file", {"side": "L"}]],
             "left_posterior_probabilities": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/L<subject>_<sulci_recognition_session>_auto_proba",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/L<subject>_<sulci_recognition_session>_<sulci_recognition_type>_proba",
                     [
                         "CSV file"
                     ]
@@ -1489,7 +1492,7 @@
             ],
             "left_tal_to_global_transform": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/L<subject>_<sulci_recognition_session>_auto_Tal_TO_SPAM",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/L<subject>_<sulci_recognition_session>_<sulci_recognition_type>_Tal_TO_SPAM",
                     [
                         "Transformation matrix"
                     ]
@@ -1497,7 +1500,7 @@
             ],
             "left_t1_to_global_transform": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/L<subject>_<sulci_recognition_session>_auto_T1_TO_SPAM",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/L<subject>_<sulci_recognition_session>_<sulci_recognition_type>_T1_TO_SPAM",
                     [
                         "Transformation matrix"
                     ]
@@ -1565,7 +1568,7 @@
             ],
             "left_global_to_local_transforms": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/L<subject>_<sulci_recognition_session>_auto_global_TO_local",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/L<subject>_<sulci_recognition_session>_<sulci_recognition_type>_global_TO_local",
                     [
                         "Directory"
                     ]
@@ -1573,7 +1576,7 @@
             ],
             "right_labelled_graph": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/R<subject>_<sulci_recognition_session>_auto",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/R<subject>_<sulci_recognition_session>_<sulci_recognition_type>",
                     [
                         "Graph and data"
                     ]
@@ -1585,7 +1588,7 @@
                  "JSON file", {"side": "R"}]],
             "right_posterior_probabilities": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/R<subject>_<sulci_recognition_session>_auto_proba",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/R<subject>_<sulci_recognition_session>_<sulci_recognition_type>_proba",
                     [
                         "CSV file"
                     ]
@@ -1617,7 +1620,7 @@
             ],
             "right_tal_to_global_transform": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/R<subject>_<sulci_recognition_session>_auto_Tal_TO_SPAM",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/R<subject>_<sulci_recognition_session>_<sulci_recognition_type>_Tal_TO_SPAM",
                     [
                         "Transformation matrix"
                     ]
@@ -1625,7 +1628,7 @@
             ],
             "right_t1_to_global_transform": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/R<subject>_<sulci_recognition_session>_auto_T1_TO_SPAM",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/R<subject>_<sulci_recognition_session>_<sulci_recognition_type>_T1_TO_SPAM",
                     [
                         "Transformation matrix"
                     ]
@@ -1693,7 +1696,7 @@
             ],
             "right_global_to_local_transforms": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/R<subject>_<sulci_recognition_session>_auto_global_TO_local",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/R<subject>_<sulci_recognition_session>_<sulci_recognition_type>_global_TO_local",
                     [
                         "Directory"
                     ]
@@ -1701,7 +1704,7 @@
             ],
             "sulcal_morpho_measures": [
                 [
-                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_auto/<subject>_<sulci_recognition_session>_auto_sulcal_morphometry",
+                    "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/folds/<graph_version>/<sulci_recognition_session>_<sulci_recognition_type>/<subject>_<sulci_recognition_session>_<sulci_recognition_type>_sulcal_morphometry",
                     [
                         "CSV file"
                     ]
@@ -1749,7 +1752,7 @@
         "morphologist.capsul.qc.ana_morpho_viewers.AnaSulciViewer": {
             "main_input": [
                 [
-                    "input:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_auto",
+                    "input:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_<sulci_recognition_type>",
                     "Graph and data"],
                 [
                     "input:{recognition_analysis}/<side><subject>_<sulci_recognition_session>_manual",
@@ -1836,7 +1839,7 @@
 
         "morphologist.capsul.qc.ana_morpho_viewers.MorphometryViewer": {
             "main_input": [[
-                "input:{recognition_analysis}/<subject>_<sulci_recognition_session>_auto_sulcal_morphometry",
+                "input:{recognition_analysis}/<subject>_<sulci_recognition_session>_<sulci_recognition_type>_sulcal_morphometry",
                 "CSV file"]],
         },
 

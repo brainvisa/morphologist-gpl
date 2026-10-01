@@ -18,6 +18,9 @@
         "sulci_recognition_session": {
             "default_value": "0"
         },
+        "sulci_recognition_type": {
+            "default_value": "auto"
+        },
         "bids": {
             "default_value": "run-0"
         },
@@ -31,7 +34,7 @@
       "seg": "{analysis}/segmentation",
       "mesh": "{analysis}/mesh",
       "fold": "{analysis}/folds/<graph_version>",
-      "foldauto": "{fold}/sul-<sulci_recognition_session>_auto",
+      "foldauto": "{fold}/sul-<sulci_recognition_session>_<sulci_recognition_type>",
       "fautosub": "{sub}_sul-<sulci_recognition_session>"
     },
 
@@ -109,7 +112,7 @@
             ],
             "left_labelled_graph": [
                 [
-                    "output:{foldauto}/{fautosub}_hemi-<side>_auto",
+                    "output:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>",
                     [
                         "Graph and data"
                     ],
@@ -118,7 +121,7 @@
             ],
             "right_labelled_graph": [
                 [
-                    "output:{foldauto}/{fautosub}_hemi-<side>_auto",
+                    "output:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>",
                     [
                         "Graph and data"
                     ],
@@ -274,7 +277,7 @@
         "sulcigraphmorphometrybysubject": {
             "sulcal_morpho_measures": [
                 [
-                    "output:{foldauto}/{fautosub}_auto_sulcal_morphometry",
+                    "output:{foldauto}/{fautosub}_<sulci_recognition_type>_sulcal_morphometry",
                     [
                         "CSV file"
                     ]
@@ -539,7 +542,7 @@
                 "shared:models/models_<sulci_database>/discriminative_models/3.0/<side>folds_noroots/<side>folds_noroots",
                 ["Graph and data"]]],
             "energy_plot_file": [[
-                "output:{foldauto}/{fautosub}_hemi-<side>_auto",
+                "output:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>",
                 ["siRelax Fold Energy"]]]
         },
 
@@ -560,7 +563,7 @@
                 ["Text Data Table"],
                 {"sulci_segments_model_type": "global_registered_spam"}]],
             "posterior_probabilities": [[
-                "output:{foldauto}/{fautosub}_hemi-<side>_auto_proba",
+                "output:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>_proba",
                 ["CSV file"],
                 {"side": "L"}]],
             "labels_translation_map": [[
@@ -572,11 +575,11 @@
                 ["Text Data Table"],
                 {"side": "L"}]],
             "output_transformation": [[
-                "output:{foldauto}/{fautosub}_hemi-<side>_auto_Tal_TO_SPAM",
+                "output:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>_Tal_TO_SPAM",
                 ["Transformation matrix"],
                 {"side": "L"}]],
             "output_t1_to_global_transformation": [[
-                "output:{foldauto}/{fautosub}_hemi-<side>_auto_T1_TO_SPAM",
+                "output:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>_T1_TO_SPAM",
                 ["Transformation matrix"],
                 {"side": "L"}]]
         },
@@ -595,7 +598,7 @@
             ],
             "posterior_probabilities": [
                 [
-                    "output:{foldauto}/{fautosub}_hemi-<side>_auto_proba",
+                    "output:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>_proba",
                     [
                         "CSV file"
                     ],
@@ -624,7 +627,7 @@
             ],
             "output_transformation": [
                 [
-                    "output:{foldauto}/{fautosub}_hemi-<side>_auto_Tal_TO_SPAM",
+                    "output:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>_Tal_TO_SPAM",
                     [
                         "Transformation matrix"
                     ],
@@ -633,7 +636,7 @@
             ],
             "output_t1_to_global_transformation": [
                 [
-                    "output:{foldauto}/{fautosub}_hemi-<side>_auto_T1_TO_SPAM",
+                    "output:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>_T1_TO_SPAM",
                     [
                         "Transformation matrix"
                     ],
@@ -648,7 +651,7 @@
                 ["Text Data Table"],
                 {"sulci_segments_model_type": "locally_from_global_registred_spam"}]],
             "posterior_probabilities": [[
-                "output:{foldauto}/{fautosub}_hemi-<side>_auto_proba",
+                "output:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>_proba",
                 ["CSV file"],
                 {"side": "L"}]],
             "local_referentials": [[
@@ -669,7 +672,7 @@
                 ["Text Data Table"],
                 {"sulci_segments_model_type": "locally_from_global_registred_spam"}]],
             "output_local_transformations": [[
-                "output:{foldauto}/{fautosub}_hemi-<side>_auto_global_TO_local",
+                "output:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>_global_TO_local",
                 ["Directory"],
                 {"side": "L"}]]
         },
@@ -683,7 +686,7 @@
                 "shared:models/<sulci_database>/descriptive_models//segments_relations/mindist_relations_left/gamma_exponential_mixture_distribs",
                 ["Text Data Table"]]],
             "posterior_probabilities": [[
-                "output:{foldauto}/{fautosub}_hemi-<side>_auto_proba",
+                "output:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>_proba",
                 ["CSV file"],
                 {"side": "L"}]]
         },
@@ -702,7 +705,7 @@
             ],
             "posterior_probabilities": [
                 [
-                    "output:{foldauto}/{fautosub}_hemi-<side>_auto_proba",
+                    "output:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>_proba",
                     [
                         "CSV file"
                     ],
@@ -755,7 +758,7 @@
             ],
             "output_local_transformations": [
                 [
-                    "output:{foldauto}/{fautosub}_hemi-<side>_auto_global_TO_local",
+                    "output:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>_global_TO_local",
                     [
                         "Directory"
                     ],
@@ -781,7 +784,7 @@
             ]],
             "posterior_probabilities": [
                 [
-                    "output:{foldauto}/{fautosub}_hemi-<side>_auto_proba",
+                    "output:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>_proba",
                     [
                         "CSV file"
                     ],
@@ -823,11 +826,11 @@
                 "Aims readable volume formats",
                 {"side": "R"}]],
             "left_labelled_graph": [[
-                "input:{foldauto}/{fautosub}_hemi-<side>_auto",
+                "input:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>",
                 ["Graph and data"],
                 {"side": "L"}]],
             "right_labelled_graph": [[
-                "input:{foldauto}/{fautosub}_hemi-<side>_auto",
+                "input:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>",
                 ["Graph and data"],
                 {"side": "R"}]],
             "left_gm_mesh": [[
@@ -903,7 +906,7 @@
             ],
             "left_labelled_graph": [
                 [
-                    "input:{foldauto}/{fautosub}_hemi-<side>_auto",
+                    "input:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>",
                     [
                         "Graph and data"
                     ],
@@ -912,7 +915,7 @@
             ],
             "right_labelled_graph": [
                 [
-                    "input:{foldauto}/{fautosub}_hemi-<side>_auto",
+                    "input:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>",
                     [
                         "Graph and data"
                     ],
@@ -951,7 +954,7 @@
 
         "CorticalFoldsGraphUpgradeFromOld": {
             "old_graph": [
-                ["input:{foldauto}/{fautosub}_hemi-<side>_auto", "Graph and data"],
+                ["input:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>", "Graph and data"],
                 ["input:{fold}/{sub}_hemi-<side>", "Graph and data"]],
             "skeleton": [[
                 "inut:{seg}/{sub}_hemi-<side>_skeleton",
@@ -975,7 +978,7 @@
                 "Aims mesh formats"]],
             "graph": [
                 ["output:{fold}/{sub}_hemi-<side>", "Graph and data"],
-                ["output:{foldauto}/{fautosub}_hemi-<side>_auto",
+                ["output:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>",
                  "Graph and data"]],
             "SulciVoronoi_sulci_voronoi": [
                 ["output:{foldauto}/{fautosub}_hemi-<side>_sulcivoronoi",
@@ -1283,7 +1286,7 @@
             ],
             "left_labelled_graph": [
                 [
-                    "output:{foldauto}/{fautosub}_hemi-<side>_auto",
+                    "output:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>",
                     [
                         "Graph and data"
                     ],
@@ -1296,7 +1299,7 @@
                  "JSON file", {"side": "L"}]],
             "left_posterior_probabilities": [
                 [
-                    "output:{foldauto}/{fautosub}_hemi-<side>_auto_proba",
+                    "output:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>_proba",
                     [
                         "CSV file"
                     ],
@@ -1327,7 +1330,7 @@
             ],
             "left_tal_to_global_transform": [
                 [
-                    "output:{foldauto}/{fautosub}_hemi-<side>_auto_Tal_TO_SPAM",
+                    "output:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>_Tal_TO_SPAM",
                     [
                         "Transformation matrix"
                     ],
@@ -1336,7 +1339,7 @@
             ],
             "left_t1_to_global_transform": [
                 [
-                    "output:{foldauto}/{fautosub}_hemi-<side>_auto_T1_TO_SPAM",
+                    "output:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>_T1_TO_SPAM",
                     [
                         "Transformation matrix"
                     ],
@@ -1400,7 +1403,7 @@
             ],
             "left_global_to_local_transforms": [
                 [
-                    "output:{foldauto}/{fautosub}_hemi-<side>_auto_global_TO_local",
+                    "output:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>_global_TO_local",
                     [
                         "Directory"
                     ],
@@ -1409,7 +1412,7 @@
             ],
             "right_labelled_graph": [
                 [
-                    "output:{foldauto}/{fautosub}_hemi-<side>_auto",
+                    "output:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>",
                     [
                         "Graph and data"
                     ],
@@ -1422,7 +1425,7 @@
                  "JSON file", {"side": "R"}]],
             "right_posterior_probabilities": [
                 [
-                    "output:{foldauto}/{fautosub}_hemi-<side>_auto_proba",
+                    "output:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>_proba",
                     [
                         "CSV file"
                     ],
@@ -1453,7 +1456,7 @@
             ],
             "right_tal_to_global_transform": [
                 [
-                    "output:{foldauto}/{fautosub}_hemi-<side>_auto_Tal_TO_SPAM",
+                    "output:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>_Tal_TO_SPAM",
                     [
                         "Transformation matrix"
                     ],
@@ -1462,7 +1465,7 @@
             ],
             "right_t1_to_global_transform": [
                 [
-                    "output:{foldauto}/{fautosub}_hemi-<side>_auto_T1_TO_SPAM",
+                    "output:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>_T1_TO_SPAM",
                     [
                         "Transformation matrix"
                     ],
@@ -1526,7 +1529,7 @@
             ],
             "right_global_to_local_transforms": [
                 [
-                    "output:{foldauto}/{fautosub}_hemi-<side>_auto_global_TO_local",
+                    "output:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>_global_TO_local",
                     [
                         "Directory"
                     ],
@@ -1535,7 +1538,7 @@
             ],
             "sulcal_morpho_measures": [
                 [
-                    "output:{foldauto}/{fautosub}_auto_sulcal_morphometry",
+                    "output:{foldauto}/{fautosub}_<sulci_recognition_type>_sulcal_morphometry",
                     [
                         "CSV file"
                     ]
@@ -1721,7 +1724,7 @@
                 ["Text Data Table"],
                 {"sulci_segments_model_type": "global_registered_spam"}]],
             "posterior_probabilities": [[
-                "output:{foldauto}/{fautosub}_hemi-<side>_auto_proba",
+                "output:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>_proba",
                 ["CSV file"],
                 {"side": "R"}]],
             "labels_translation_map": [[
@@ -1732,11 +1735,11 @@
                 ["Text Data Table"],
                 {"side": "R"}]],
             "output_transformation": [[
-                "output:{foldauto}/{fautosub}_hemi-<side>_auto_Tal_TO_SPAM",
+                "output:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>_Tal_TO_SPAM",
                 ["Transformation matrix"],
                 {"side": "R"}]],
             "output_t1_to_global_transformation": [[
-                "output:{foldauto}/{fautosub}_hemi-<side>_auto_T1_TO_SPAM",
+                "output:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>_T1_TO_SPAM",
                 ["Transformation matrix"],
                 {"side": "R"}]]
         },
@@ -1747,7 +1750,7 @@
                 ["Text Data Table"],
                 {"sulci_segments_model_type": "locally_from_global_registred_spam"}]],
             "posterior_probabilities": [[
-                "output:{foldauto}/{fautosub}_hemi-<side>_auto_proba",
+                "output:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>_proba",
                 ["CSV file"],
                 {"side": "R"}]],
             "local_referentials": [[
@@ -1767,7 +1770,7 @@
                 ["Text Data Table"],
                 {"sulci_segments_model_type": "locally_from_global_registred_spam"}]],
             "output_local_transformations": [[
-                "output:{foldauto}/{fautosub}_hemi-<side>_auto_global_TO_local",
+                "output:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>_global_TO_local",
                 ["Directory"],
                 {"side": "R"}]]
         },
@@ -1782,7 +1785,7 @@
                 ["Text Data Table"]
             ]],
             "posterior_probabilities": [[
-                "output:{foldauto}/{fautosub}_hemi-<side>_auto_proba",
+                "output:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>_proba",
                 ["CSV file"],
                 {"side": "R"}]]
         },
@@ -1863,11 +1866,11 @@
                 ["Graph and data"],
                 {"side": "R"}]],
             "left_labelled_graph": [[
-                "output:{foldauto}/{fautosub}_hemi-<side>_auto",
+                "output:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>",
                 ["Graph and data"],
                 {"side": "L"}]],
             "right_labelled_graph": [[
-                "output:{foldauto}/{fautosub}_hemi-<side>_auto",
+                "output:{foldauto}/{fautosub}_hemi-<side>_<sulci_recognition_type>",
                 ["Graph and data"],
                 {"side": "R"}]],
             "GlobalMorphometry_brain_volumes_file": [[
@@ -1993,7 +1996,7 @@
 
         "morphologist.capsul.qc.ana_morpho_viewers.MorphometryViewer": {
             "main_input": [[
-                "input:{foldauto}/{fautosub}_auto_sulcal_morphometry",
+                "input:{foldauto}/{fautosub}_<sulci_recognition_type>_sulcal_morphometry",
                 "CSV file"]],
         },
 
