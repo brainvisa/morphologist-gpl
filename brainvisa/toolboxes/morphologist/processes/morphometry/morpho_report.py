@@ -150,6 +150,9 @@ def execution(self, context):
     # 3: Bad (stat over limit, or missing data)
     status = 0
     comments = []
+    missing_files = []
+    missing_features = []
+    status_detail = {}
 
     context.write('<h1>Morphologist report</h1>')
     pdf = canvas.Canvas(self.report.fullPath())
@@ -255,6 +258,7 @@ def execution(self, context):
         pdf.drawString(160, 650, 'MISSING')
         status = 3
         comments.append('Missing segmentation file')
+        missing_files.append('gw_segmentation')
 
     objs = []
     wmeshes = []
@@ -288,6 +292,7 @@ def execution(self, context):
         pdf.drawString(260, 650, 'MISSING')
         status = 3
         comments.append('Missing G/W mesh file')
+        missing_files.append('gw_mesh')
 
     objs = []
     if self.left_gm_mesh is not None \
@@ -317,6 +322,7 @@ def execution(self, context):
         pdf.drawString(360, 650, 'MISSING')
         status = 3
         comments.append('Missing pial mesh file')
+        missing_files.append('pial_mesh')
 
     objs = []
     hie_file = aims.carto.Paths.findResourceFile(
@@ -351,6 +357,7 @@ def execution(self, context):
         pdf.drawString(460, 650, 'MISSING')
         status = 3
         comments.append('Missing sulci graph file')
+        missing_files.append('sulci')
 
     pdf.setFillColorRGB(0., 0., 0.)
 
@@ -485,7 +492,7 @@ def execution(self, context):
         #print('morph_z:', len(morph_z))
     if morph_hdr is not None:
         for i, (k, tk) in enumerate(keymap.items()):
-            missing = False
+            missing_data = False
             z = None
             unit = None
             try:
@@ -534,6 +541,7 @@ def execution(self, context):
                                     'Probable segmentation problem or '
                                     'important anomaly:',
                                     '      large asymmetry in folds sizes.']
+                                status_detail['log_ratio.skel_points'] = 3
                             else:
                                 # suspected segmentation problem
                                 status = np.max((2, status))
@@ -541,6 +549,7 @@ def execution(self, context):
                                     'Possible segmentation problem or '
                                     'important anomaly:',
                                     '      large asymmetry in folds sizes.']
+                                status_detail['log_ratio.skel_points'] = 3
                         else:
                             ws = signed_warn.get(k)
                             if (val <= qv1 and ws in (None, '<')) \
@@ -553,6 +562,7 @@ def execution(self, context):
                                 comments.append(
                                     f'Possible problem: {tk} out of 1-99% '
                                     'percentile.')
+                                status_detail[k] = 1
                         quants[i] = q
                 else:  # no normative stats
                     if k == 'log_ratio.skel_points' \
@@ -565,6 +575,7 @@ def execution(self, context):
                                 'Probable segmentation problem or important '
                                 'anomaly:',
                                 '      large asymmetry in folds sizes.']
+                            status_detail[k] = 3
                         else:
                             # suspected segmentation problem
                             status = np.max((2, status))
@@ -572,16 +583,19 @@ def execution(self, context):
                                 'Possible segmentation problem or important '
                                 'anomaly:',
                                 '      large asymmetry in folds sizes.']
+                            status_detail[k] = 2
             except Exception as e:
                 context.write(e)
                 v = '<MISSING>'
                 status = 3
-                comments.append('missing stat')
+                comments.append(f'missing stat {tk}')
+                status_detail[k] = 3
                 unit = None
-                missing = True
+                missing_data = True
+                missing_features.append(k)
             h = 530 - i * 12
             pdf.drawString(30, h, '%s:' % tk)
-            if missing:
+            if missing_data:
                 pdf.setFillColorRGB(0.6, 0., 0.)
             elif z is not None:
                 pdf.drawRightString(270, h, '%+1.2f σ' % z)
@@ -590,7 +604,7 @@ def execution(self, context):
                 pdf.setFontSize(8)
                 pdf.drawString(210, h, unit)
                 pdf.setFontSize(10)
-            if missing:
+            if missing_data:
                 pdf.setFillColorRGB(0., 0., 0.)
 
     if morph_z:
@@ -670,7 +684,7 @@ def execution(self, context):
     # status
     statuses = ['OK', 'Warning', 'Suspicious', 'Bad']
     status_colors = [(0., 0., 0.), (0.7, 0.7, 0.), (0.8, 0.5, 0.),
-                        (0.6, 0., 0.)]
+                     (0.6, 0., 0.)]
 
     y = 250
     pdf.drawString(30, y, 'QC status:')
@@ -680,6 +694,7 @@ def execution(self, context):
     pdf.setFillColorRGB(0., 0., 0.)
     pdf.setFont('Helvetica', 10)
     y -= 15
+    stratified = False
     if morph_z:
         pdf.drawString(
             30, y,
@@ -688,6 +703,7 @@ def execution(self, context):
             f'({zstat["mode"]})')
         y -= 10
         if zstat['mode'] == 'stratified':
+            stratified = True
             bin_def = norm_stat['stratified'][cat_k]
             bin_str = ', '.join([f'{k}: {v}'
                                  for k, v in zstat['cat_bin'].items()])
@@ -710,6 +726,17 @@ def execution(self, context):
     report = {
         'status': statuses[status],
         'comments': comments
+    }
+    if missing_files:
+        report['missing_files'] = missing_files
+    if missing_features:
+        report['missing_features'] = missing_features
+    if status_detail:
+        report['status_detail'] = status_detail
+    report['normative_stats'] = {
+        'reference':
+            osp.basename(osp.dirname(self.normative_brain_stats.fullPath())),
+        'stratified': stratified,
     }
 
     if self.report_json is not None:
