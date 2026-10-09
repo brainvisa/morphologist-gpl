@@ -39,7 +39,6 @@ from morphologist.capsul.qc import find_viewer
 import traits.api as traits
 import subprocess
 import shutil
-import numpy as np
 import os
 import os.path as osp
 import tempfile
@@ -47,6 +46,7 @@ import glob
 import sqlite3
 import time
 import datetime
+import re
 
 
 wkhtmltopdf = shutil.which('wkhtmltopdf')
@@ -74,6 +74,29 @@ class statuses:
     INVALID_SUSPICIOUS = 19
     INVALID_BAD = 20
     INVALID_ABSENT = 21
+
+
+status_str = {
+    statuses.UNDEFINED: 'undefined',
+    statuses.OK: 'ok',
+    statuses.PRESENT: 'present',
+    statuses.WARNING: 'warning',
+    statuses.SUSPICIOUS: 'suspicious',
+    statuses.BAD: 'bad',
+    statuses.ABSENT: 'absent',
+    statuses.VALID_OK: 'valid_ok',
+    statuses.VALID_PRESENT: 'valid_present',
+    statuses.VALID_WARNING: 'valid_warning',
+    statuses.VALID_SUSPICIOUS: 'valid_suspicious',
+    statuses.VALID_BAD: 'valid_bad',
+    statuses.VALID_ABSENT: 'valid_absent',
+    statuses.INVALID_OK: 'invalid_ok',
+    statuses.INVALID_PRESENT: 'invalid_present',
+    statuses.INVALID_WARNING: 'invalid_warning',
+    statuses.INVALID_SUSPICIOUS: 'invalid_suspicious',
+    statuses.INVALID_BAD: 'invalid_bad',
+    statuses.INVALID_ABSENT: 'invalid_absent',
+}
 
 
 class QSortingTabeWidgetItem(Qt.QTableWidgetItem):
@@ -108,7 +131,7 @@ class DatabaseQcTable(Process):
         self.add_trait('fom', traits.Str(optional=True))
         self.add_trait('database_sqlite', traits.File(optional=True))
         self.add_trait('data_types', traits.ListStr())
-        self.add_trait('data_filters', traits.ListStr())
+        self.add_trait('data_filters', traits.Str(optional=True))
         self.add_trait('keys', traits.ListStr())
         self.add_trait('type_labels', traits.ListStr())
         self.add_trait('output_file',
@@ -189,6 +212,48 @@ class DatabaseQcTable(Process):
                 else:
                     elements[row][elem_col] = [element, item_d]
 
+        # print('filter status:', self.need_status, self.status_filters)
+        if self.need_status:
+            # filter out by status
+            todel = []
+            for row, items in enumerate(elements):
+                # print(items)
+                for c, sfilt in enumerate(self.status_filters):
+                    if not sfilt:
+                        continue
+                    if items[c] is None:
+                        if sfilt != 'absent':
+                            todel.append(row)
+                        continue
+                    if sfilt == 'absent':
+                        todel.append(row)
+                        continue
+                    citems = items[c]
+                    citems = citems if isinstance(citems, list) else (
+                        [] if citems is None else [citems])
+                    fitems = []
+                    dtype = self.data_types[c]
+                    for item in citems:
+                        status = status_str[
+                            self.file_status(item['path'], dtype)]
+                        if status == sfilt:
+                            fitems.append(item)
+                    if len(fitems) == 0:
+                        todel.append(row)
+                        continue
+            # print('to del:', todel)
+            delid = []
+            for row in reversed(todel):
+                del elements[row]
+                for row_id, r in row_ids.items():
+                    if r == row:
+                        delid.append(row_id)
+                    elif r >= row:
+                        row_ids[row_id] = r - 1
+            for row_id in delid:
+                del row_ids[row_id]
+            max_row -= len(todel)
+
         t2 = time.time()
         print('table building time:', datetime.timedelta(seconds=t2 - t1))
 
@@ -207,7 +272,7 @@ class DatabaseQcTable(Process):
         del self.db
         return result
 
-    def find_items(self, dtype, dfilt):
+    def find_items(self, dtype, dfilt, sfilt):
         profile = False
         if profile:
             t0 = time.time()
@@ -250,7 +315,8 @@ class DatabaseQcTable(Process):
             self._cached_procs[procname][1] = dfilt
 
         if self.db is not None:
-            return self.find_items_sqlite(proc, procname, param, dfilt)
+            return self.find_items_sqlite(proc, procname, param, dfilt, sfilt,
+                                          dtype)
 
         short_procname = procname.rsplit('.')[-1]
         path_pat = getattr(proc, param)
@@ -299,7 +365,13 @@ class DatabaseQcTable(Process):
                         atts = attl[0]
                     atts[2].update(com_att)
                 if atts is not None:
-                    data.append({'attributes': atts[2], 'path': p})
+                    do_add = True
+                    if sfilt:
+                        status = status_str[self.file_status(p, dtype)]
+                        if status != sfilt:
+                            do_add = False
+                    if do_add:
+                        data.append({'attributes': atts[2], 'path': p})
                     break
         if profile:
             t1 = time.time()
@@ -340,7 +412,7 @@ class DatabaseQcTable(Process):
 
         return names + [fb for fb in fallbacks if fb not in names]
 
-    def find_items_sqlite(self, proc, procname, param, dfilt):
+    def find_items_sqlite(self, proc, procname, param, dfilt, sfilt, dtype):
         data = []
         cols = [x[1] for x in self.db.execute('PRAGMA table_info(files)')]
         keys = ', '.join(cols)
@@ -369,7 +441,13 @@ class DatabaseQcTable(Process):
                 atts = {k: v for k, v in zip(cols, item) if v is not None}
                 path = osp.join(self.database, atts['filename'])
                 del atts['filename']
-                data.append({'attributes': atts, 'path': path})
+                do_add = True
+                if sfilt:
+                    status = status_str[self.file_status(path, dtype)]
+                    if status != sfilt:
+                        do_add = False
+                if do_add:
+                    data.append({'attributes': atts, 'path': path})
             break  # procname found, don't continue search
 
         return data
@@ -382,23 +460,42 @@ class DatabaseQcTable(Process):
             print('find_data')
             t0 = time.time()
 
-        for i, dtype in enumerate(self.data_types):
-            if len(self.data_filters) > i or len(self.data_filters) == 1:
-                ifilt = i
-                if len(self.data_filters) == 1:
-                    # broadcast filter
-                    ifilt = 0
-                filt = self.data_filters[ifilt]
-                if filt == '':
-                    dfilt = {}
-                else:
-                    dfilt = eval(filt)
+        data_filters = [{} for i in range(len(self.data_types))]
+        self.status_filters = [{} for i in range(len(self.data_types))]
+        self.need_status = False
+        if self.data_filters:
+            df = eval(self.data_filters)
+            if isinstance(df, list):
+                data_filters = df
+            elif isinstance(df, dict):
+                for k, v in df.items():
+                    kr = re.compile(k)
+                    cols = [i for i, c in enumerate(self.type_labels)
+                            if kr.match(c)]
+                    if len(cols) == 0:
+                        raise ValueError(
+                            f'data filer column "{k}" is not found')
+                    sf = v.get('file_status')
+                    if sf:
+                        v = {x: y for x, y in v.items() if x != 'file_status'}
+                        self.need_status = True
+                    for i in cols:
+                        data_filters[i].update(v)
+                        if sf:
+                            self.status_filters[i] = sf
             else:
-                dfilt = {}
-            items = self.find_items(dtype, dfilt)
+                raise ValueError('data_filters is not recognized')
+
+        if self.need_status:
+            self.prepare_status_column()
+
+        for i, dtype in enumerate(self.data_types):
+            items = self.find_items(dtype, data_filters[i],
+                                    self.status_filters[i])
             data.append((dtype, items))
             # print(dtype, ':', len(items), 'items')
-            if profile: print('time:', time.time() - t0)
+            if profile:
+                print('time:', time.time() - t0)
 
         return data
 
@@ -1336,7 +1433,7 @@ if __name__ == '__main__':
 
         'morphologist.capsul.morphologist.Morphologist.Report_report',
         'morphologist.capsul.morphologist.Morphologist.Report_report_json']
-    proc.data_filters = ["{'center': 'subjects'}"]
+    proc.data_filters = "{'*': {'center': 'subjects'}}"
     proc.keys = ['subject', 'acquisition', 'bids', 'sulci_recognition_session']
     proc.type_labels = [
         'Raw T1 MRI', 'Bias Corrected', 'Histo Analysis',
