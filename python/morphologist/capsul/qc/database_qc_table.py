@@ -255,9 +255,15 @@ class DatabaseQcTable(Process):
         short_procname = procname.rsplit('.')[-1]
         path_pat = getattr(proc, param)
         # print('path_pat:', path_pat)
-        if profile: t1 = time.time(); print('    t1 (compl):', t1 - t0); t0 = t1
+        if profile:
+            t1 = time.time()
+            print('    t1 (compl):', t1 - t0)
+            t0 = t1
         paths = glob.glob(path_pat)
-        if profile: t1 = time.time(); print('    t2 (glob) :', t1 - t0); t0 = t1
+        if profile:
+            t1 = time.time()
+            print('    t2 (glob) :', t1 - t0)
+            t0 = t1
         for p in paths:
             for fom_type in ('input', 'output'):
                 pta = engine._modules_data['fom']['fom_pta'][fom_type]
@@ -295,7 +301,10 @@ class DatabaseQcTable(Process):
                 if atts is not None:
                     data.append({'attributes': atts[2], 'path': p})
                     break
-        if profile: t1 = time.time(); print('    t3 (fom)  :', t1 - t0); t0 = t1
+        if profile:
+            t1 = time.time()
+            print('    t3 (fom)  :', t1 - t0)
+            t0 = t1
 
         return data
 
@@ -480,6 +489,7 @@ class DatabaseQcTable(Process):
                 self.db.execute(
                     f'UPDATE files SET {self.status_db_col}="{status}" WHERE filename="{rfname}"')
                 self._commit = True
+                self.file_statuses[rfname] = status
             return status
         return statuses.PRESENT
 
