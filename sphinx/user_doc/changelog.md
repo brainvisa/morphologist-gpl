@@ -1,5 +1,16 @@
 # Changelog
 
+## [6.0.20] 2026-10-12
+
+### Added
+
+- Capsul QC tables can take filters on file status (absent/present, or more for custom QC status, like ok, bad, warning, ...)
+
+### Changed
+
+- Capsul QC table processes parameter change: data_filters is now a string containing a python (or JSON) list or dict. The dict key is the column name and can be a regex or "all".
+
+
 ## [6.0.19] 2026-08-06
 
 ### Added
