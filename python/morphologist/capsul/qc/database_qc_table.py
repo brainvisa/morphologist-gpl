@@ -221,13 +221,15 @@ class DatabaseQcTable(Process):
                 for c, sfilt in enumerate(self.status_filters):
                     if not sfilt:
                         continue
-                    if items[c] is None:
+                    if not items[c]:
                         if sfilt != 'absent':
+                            # print('not present', row)
                             todel.append(row)
-                        continue
-                    if sfilt == 'absent':
+                            break
+                    if sfilt == 'absent' and items[c]:
+                        # print('remove absent row:', row, items[c])
                         todel.append(row)
-                        continue
+                        break
                     citems = items[c]
                     citems = citems if isinstance(citems, list) else (
                         [] if citems is None else [citems])
@@ -238,9 +240,11 @@ class DatabaseQcTable(Process):
                             self.file_status(item['path'], dtype)]
                         if status == sfilt:
                             fitems.append(item)
-                    if len(fitems) == 0:
+                    if len(fitems) == 0 and sfilt != 'absent':
+                        # print('del fitems', row, ':', fitems)
                         todel.append(row)
-                        continue
+                        break
+
             # print('to del:', todel)
             delid = []
             for row in reversed(todel):
@@ -366,7 +370,7 @@ class DatabaseQcTable(Process):
                     atts[2].update(com_att)
                 if atts is not None:
                     do_add = True
-                    if sfilt:
+                    if sfilt and sfilt != 'absent':
                         status = status_str[self.file_status(p, dtype)]
                         if status != sfilt:
                             do_add = False
@@ -442,7 +446,7 @@ class DatabaseQcTable(Process):
                 path = osp.join(self.database, atts['filename'])
                 del atts['filename']
                 do_add = True
-                if sfilt:
+                if sfilt and sfilt != 'absent':
                     status = status_str[self.file_status(path, dtype)]
                     if status != sfilt:
                         do_add = False
