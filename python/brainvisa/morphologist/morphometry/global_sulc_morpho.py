@@ -805,6 +805,8 @@ def build_normative_brain_vol_stats_from_files(csv_files, sub_prefix=None):
     ----------
     csv_files: list
         brain volumes files list
+    sub_prefix: str
+        prefix which should be removed from subjects IDs
 
     Returns
     -------
@@ -821,16 +823,17 @@ def build_normative_brain_vol_stats_from_files(csv_files, sub_prefix=None):
     sums: numpy array (1 line)
         number of elements in the average for each column, taking into account
         missing and discarded ones (NaN/None values)
-    quantiles: numpy array (9 lines)
-        quantiles for 0%, 1%, 10%, 20%, 50%, 80%, 90%, 99%, 100% of the
-        population
-    sub_prefix: str
-        prefix which should be removed from subjects IDs
+    quantiles: numpy array (11 lines)
+        quantiles for 0%, 0.1%, 1%, 10%, 20%, 50%, 80%, 90%, 99%, 99.9%, 100%
+        of the population
+    quantiles_th: list (11 elements)
+        quantiles threshold values (0, 0.1%, 1% etc)
     '''
     hdr, morph = read_multiple_csv(csv_files, sub_prefix=sub_prefix)
     npmorph = np.array([row[1:] for row in morph], dtype=float)
-    avg, std, sums, quantiles = build_normative_brain_vol_stats(npmorph)
-    return hdr, morph, avg, std, sums, quantiles
+    avg, std, sums, quantiles, quantiles_th \
+        = build_normative_brain_vol_stats(npmorph)
+    return hdr, morph, avg, std, sums, quantiles, quantiles_th
 
 
 def build_normative_brain_vol_stats(npmorph: np.ndarray):
@@ -854,24 +857,25 @@ def build_normative_brain_vol_stats(npmorph: np.ndarray):
     sums: numpy array (1 line)
         number of elements in the average for each column, taking into account
         missing and discarded ones (NaN/None values)
-    quantiles: numpy array (9 lines)
-        quantiles for 0%, 1%, 10%, 20%, 50%, 80%, 90%, 99%, 100% of the
-        population
+    quantiles: numpy array (11 lines)
+        quantiles for 0%, 0.1%, 1%, 10%, 20%, 50%, 80%, 90%, 99%, 99.9%, 100%
+        of the population
+    quantiles_th: list (11 elements)
+        quantiles threshold values (0, 0.1%, 1% etc)
     '''
     wh = np.isnan(npmorph) != True
     avg = np.mean(npmorph, axis=0, where=wh)
     std = np.std(npmorph, axis=0, where=wh)
     sums = np.sum(wh, axis=0)
     quantiles = []
+    quantiles_th = [0., 0.001, 0.01, 0.1, 0.2, 0.5, 0.8, 0.9, 0.99, 0.999, 1.]
     for col in range(npmorph.shape[1]):
         mcol = npmorph[:, col]
         mcol2 = mcol[np.where(np.logical_not(np.isnan(mcol)))]
         if mcol2.shape[0] == 0:
-            quantiles.append([0., 0., 0., 0., 0., 0., 0., 0., 0.])
+            quantiles.append([0. for x in quantiles_th])
         else:
-            quantiles.append(
-                np.quantile(mcol2,
-                            q=[0., 0.01, 0.1, 0.2, 0.5, 0.8, 0.9, 0.99, 1.]))
+            quantiles.append(np.quantile(mcol2, q=quantiles_th))
     quantiles = np.array(quantiles).T
     if np.any(np.isnan(quantiles)):
         print('NaN in quantiles')
@@ -881,7 +885,7 @@ def build_normative_brain_vol_stats(npmorph: np.ndarray):
         print('col:', col, ', row:', np.unique(nw[0]))
         # print([csv_files[r] for r in np.unique(nw[0])])
         print(npmorph[nw[0][0], nw[1][0]])
-    return avg, std, sums, quantiles
+    return avg, std, sums, quantiles, quantiles_th
 
 
 def grid_data(X, nmin=100):
@@ -1025,12 +1029,15 @@ def model_distributions(covar_subtable, covariables, npmorph, hdr):
             y = morph[xdata.index]
 
         print('index:', index, ', data:', y.shape, ', init:', X.shape)
-        avg, std, sums, quantiles = build_normative_brain_vol_stats(y)
-        mod[tuple(index)] = {'averages': avg.astype(float),
-                             'std': std.astype(float),
-                             'N': sums.astype(int),
-                             'quantiles': [x.astype(float) for x in quantiles]
-                             }
+        avg, std, sums, quantiles, quantiles_th \
+            = build_normative_brain_vol_stats(y)
+        mod[tuple(index)] = {
+            'averages': avg.astype(float),
+            'std': std.astype(float),
+            'N': sums.astype(int),
+            'quantiles': [x.astype(float) for x in quantiles],
+            'quantiles_th': quantiles_th,
+        }
 
     # the spline model was an optional attempt, which doesn't fit
     # the data closely enough at boundaries. Drop it for now.
@@ -1128,13 +1135,14 @@ def build_stratified_normative_brain_vol_stats(
     datasets: dict
         result of read_datasets_def()
     '''
-    def glob_dict(hdr, avg, std, sums, quantiles):
+    def glob_dict(hdr, avg, std, sums, quantiles, quantiles_th):
         gstats = {
             'columns': [c for c in hdr if c != 'subject'],
             'averages': list(avg.astype(float)),
             'std': list(std.astype(float)),
             'quantiles': [list(x) for x in quantiles],
             'N': [int(x) for x in sums],
+            'quantiles_th': quantiles_th,
         }
         return gstats
 
@@ -1550,6 +1558,31 @@ def read_datasets_def(ds_filename, datasets=None):
     ds_def['morphometry'] = {'header': hdr, 'table': morph}
 
     return ds_def
+
+
+def less_corralated_vars(morph, varlist, rmin):
+    import statsmodels as sm
+
+    rmax = 1.
+    varl = list(varlist)
+    removed = {}
+    while rmax > rmin and len(varl) > 1:
+        # look for most correlated var
+        kmax = None
+        rmax = 0
+        for key in varl:
+            okeys = set(varl).difference([key])
+            X = sm.add_constant(morph[list(okeys)])
+            m = sm.OLS(morph[key], X).fit()
+            # print(key, ':', m.rsquared)
+            if m.rsquared > rmax:
+                kmax = key
+                rmax = m.rsquared
+        if rmax > rmin:
+            varl = [k for k in varl if k != kmax]
+            removed[kmax] = rmax
+
+    return varl, removed
 
 
 if __name__ == '__main__':

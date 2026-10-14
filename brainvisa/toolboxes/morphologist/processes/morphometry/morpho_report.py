@@ -431,6 +431,9 @@ def execution(self, context):
             avg = bin_def['averages']
             std = bin_def['std']
             quantiles = bin_def['quantiles']
+            quantiles_th = norm_stat['global'].get(
+                'quantiles_th',
+                [0.0, 0.01, 0.1, 0.2, 0.5, 0.8, 0.9, 0.99, 1.0])
 
     keymap = {
         'both.brain_volume': 'brain volume',
@@ -480,6 +483,17 @@ def execution(self, context):
         "right.sulci_template_out": '>',
         "right.sulci_template_missing": '>'
     }
+    thresholds = {
+        # (quantile, multiplier): z of given quantile * multiplier
+        'log_ratio.skel_points': {
+            'min': [(0.01, 2.8253), (0.01, 1.5356), (0.01, 1.2)],
+            'max': [(0.99, 2.3727), (0.99, 1.5844), (0.99, 1.2)]},
+        "left.sulci_template_overlap": {
+            'min': [(0.01, 2.5), (0.01, 1.6), (0.01, 1.2)]},
+    }
+    warn_comments = {
+        'log_ratio.skel_points': 'large asymmetry in folds sizes.'
+    }
 
     skel_asym_low = [-0.097663, -0.169090]
     skel_asym_high = [0.073922, 0.116971]
@@ -513,56 +527,140 @@ def execution(self, context):
                         # and remove extrema (0, 100% quantiles)
                         q = np.hstack((np.zeros((3, )), q[1: -1],
                                        np.zeros((3, ))))
-                        qv1 = quantiles[1][qi]
-                        qv99 = quantiles[-2][qi]
-                        if k == 'log_ratio.skel_points' \
-                                and (val <= qv1 * 1.6 or val >= qv99 * 1.6):
-                            # problem detection from the skel log ratio:
-                            # use hard-coded empirical values
-                            # origin: if value exceeds quantile(1%)) * 1.6
-                            # qv1_6 = qv1 * 1.6
-                            # qv99_6 = qv99 * 1.6
-                            qv1_susp = skel_asym_low[0]
-                            qv99_susp = skel_asym_high[0]
-                            qv1_bad = skel_asym_low[1]
-                            qv99_bad = skel_asym_high[1]
-                            q[2] = (qv1_susp - avg[j - 1]) / std[j - 1]
-                            q[-3] = (qv99_susp - avg[j - 1]) / std[j - 1]
-                            q[1] = (qv1_bad - avg[j - 1]) / std[j - 1]
-                            q[-2] = (qv99_bad - avg[j - 1]) / std[j - 1]
-                            if val <= qv1:
+                        th = thresholds.get(k, {})
+                        thl = th.get('min', [(0.01, 2.5), (0.01, 1.6),
+                                             (0.01, 1.2)])
+                        thh = th.get('max', [(0.99, 2.5), (0.99, 1.6),
+                                             (0.99, 1.2)])
+                        av = avg[qi]
+                        s = std[qi]
+                        qzl = [(quantiles[quantiles_th.index(x[0])][qi] - av)
+                               / s * x[1] for x in thl]
+                        qzh = [(quantiles[quantiles_th.index(x[0])][qi] - av)
+                               / s * x[1] for x in thh]
+                        ws = signed_warn.get(k)
+
+                        if (z <= qzl[2] and ws in (None, '<')):
+                            q[2] = z
+                            status = np.max((1, status))
+                            status_detail[k] = 1
+                            c = warn_comments.get(
+                                k, f'{tk} out of expected bounds')
+                            if z <= qzl[0]:
                                 q[0] = z
-                            else:
-                                q[-1] = z
-                            if val <= qv1_bad or val >= qv99_bad:
-                                # segmentation problem almost certain
+                                q[1] = qzl[0]
+                                q[2] = qzl[1]
                                 status = np.max((3, status))
+                                status_detail[k] = 3
                                 comments += [
                                     'Probable segmentation problem or '
                                     'important anomaly:',
-                                    '      large asymmetry in folds sizes.']
-                                status_detail['log_ratio.skel_points'] = 3
-                            else:
-                                # suspected segmentation problem
+                                    f'      {c}']
+                                print('bad:', tk, z, val, qzl, q)
+                                print('thl:', thl)
+                                print('av: ', av, ', s:', s)
+                                print('q:', quantiles[quantiles_th.index(thl[0][0])][qi])
+                                print('qz:', (quantiles[quantiles_th.index(thl[0][0])][qi] - av) / s)
+                            elif z <= qzl[1]:
+                                q[2] = qzl[1]
+                                q[1] = z
                                 status = np.max((2, status))
+                                status_detail[k] = 2
                                 comments += [
                                     'Possible segmentation problem or '
                                     'important anomaly:',
-                                    '      large asymmetry in folds sizes.']
-                                status_detail['log_ratio.skel_points'] = 3
-                        else:
-                            ws = signed_warn.get(k)
-                            if (val <= qv1 and ws in (None, '<')) \
-                                    or (val >= qv99 and ws in (None, '>')):
-                                if val <= qv1:
-                                    q[2] = z
-                                else:
-                                    q[-3] = z
-                                status = np.max((1, status))
-                                comments.append(
-                                    f'Possible problem: {tk} out of 1-99% '
-                                    'percentile.')
-                                status_detail[k] = 1
+                                    f'      {c}']
+                            else:
+                                comments += [
+                                    'Slight warning:',
+                                    f'      {c}']
+                        elif (z >= qzh[2] and ws in (None, '>')):
+                            q[-3] = z
+                            # q[-1] = z
+                            status = np.max((1, status))
+                            status_detail[k] = 1
+                            c = warn_comments.get(
+                                k, f'{tk}out of expected bounds')
+                            if z >= qzh[0]:
+                                q[-1] = z
+                                q[-2] = qzh[0]
+                                q[-3] = qzh[1]
+                                status = np.max((3, status))
+                                status_detail[k] = 3
+                                comments += [
+                                    'Probable segmentation problem or '
+                                    'important anomaly:',
+                                    f'      {c}']
+                            elif z >= qzh[1]:
+                                q[-2] = qzh[1]
+                                q[-1] = z
+                                status = np.max((2, status))
+                                status_detail[k] = 2
+                                comments += [
+                                    'Possible segmentation problem or '
+                                    'important anomaly:',
+                                    f'      {c}']
+                            else:
+                                comments += [
+                                    'Slight warning:',
+                                    f'      {c}']
+
+
+                        # if k == 'log_ratio.skel_points' \
+                        #         and (val <= qv1 * 1.6 or val >= qv99 * 1.6):
+                        #     # problem detection from the skel log ratio:
+                        #     # use hard-coded empirical values
+                        #     # origin: if value exceeds quantile(1%)) * 1.6
+                        #     # qv1_6 = qv1 * 1.6
+                        #     # qv99_6 = qv99 * 1.6
+                        #     qv1_susp = skel_asym_low[0]
+                        #     qv99_susp = skel_asym_high[0]
+                        #     qv1_bad = skel_asym_low[1]
+                        #     qv99_bad = skel_asym_high[1]
+                        #     q[2] = (qv1_susp - avg[j - 1]) / std[j - 1]
+                        #     q[-3] = (qv99_susp - avg[j - 1]) / std[j - 1]
+                        #     q[1] = (qv1_bad - avg[j - 1]) / std[j - 1]
+                        #     q[-2] = (qv99_bad - avg[j - 1]) / std[j - 1]
+                        #     if val <= qv1:
+                        #         q[0] = z
+                        #     else:
+                        #         q[-1] = z
+                        #     if val <= qv1_bad or val >= qv99_bad:
+                        #         # segmentation problem almost certain
+                        #         status = np.max((3, status))
+                        #         comments += [
+                        #             'Probable segmentation problem or '
+                        #             'important anomaly:',
+                        #             '      large asymmetry in folds sizes.']
+                        #         status_detail['log_ratio.skel_points'] = 3
+                        #     else:
+                        #         # suspected segmentation problem
+                        #         status = np.max((2, status))
+                        #         comments += [
+                        #             'Possible segmentation problem or '
+                        #             'important anomaly:',
+                        #             '      large asymmetry in folds sizes.']
+                        #         status_detail['log_ratio.skel_points'] = 3
+                        # else:
+                        #     ws = signed_warn.get(k)
+                        #     if (val <= qv1 and ws in (None, '<')) \
+                        #             or (val >= qv99 and ws in (None, '>')):
+                        #         if val <= qv1:
+                        #             q[2] = z
+                        #         else:
+                        #             q[-3] = z
+                        #         status = np.max((1, status))
+                        #         comments.append(
+                        #             f'Possible problem: {tk} out of 1-99% '
+                        #             'percentile.')
+                        #         status_detail[k] = 1
+
+                        for k in range(len(q) // 2):
+                            if q[k] != 0 and q[k] > q[k + 1]:
+                                q[k + 1] = q[k]
+                        for k in range(len(q) - 1, len(q) // 2, -1):
+                            if q[k] != 0 and q[k] < q[k - 1]:
+                                q[k - 1] = q[k]
                         quants[i] = q
                 else:  # no normative stats
                     if k == 'log_ratio.skel_points' \
@@ -611,25 +709,27 @@ def execution(self, context):
         import matplotlib.pyplot as plt
 
         fig, ax = plt.subplots()
-        fig.subplots_adjust(bottom=0.31, top=1., left=0.05)
+        fig.subplots_adjust(bottom=0.31, top=1., left=0.07)
         ax.add_patch(plt.Rectangle((-0.5, -1), len(keymap), 2.,
                                    facecolor='#d0f0d0', fill=True,
                                    edgecolor='#d0f0d0'))
-        quant_colors = [
-            '#c04040ff',
-            '#ff7070ff',
-            '#f0d080ff',
-            '#e0ff90ff',
-            '#a0ffa0ff',
-            '#c0ffc0ff',
-            '#e0ffe0ff',
-            '#c0ffc0ff',
-            '#a0ffa0ff',
-            '#e0ff90ff',
-            '#f0d080ff',
-            '#ff7070ff',
-            '#c04040ff',
-        ]
+        quant_colors_d = {
+            '-Abn.' : '#c04040ff',
+            '-Susp.': '#ff7070ff',
+            '0.1%': '#f0b080ff',
+            '1%': '#f0d080ff',
+            '10%': '#e0ff90ff',
+            '20%': '#a0ffa0ff',
+            'avg.': '#c0ffc0ff',
+            'med.': '#e0ffe0ff',
+            '80%': '#c0ffc0ff',
+            '90%': '#a0ffa0ff',
+            '99%': '#e0ff90ff',
+            '99.9%': '#f0d080ff',
+            'Susp.': '#f0b080ff',
+            'Abn.': '#ff7070ff',
+            'Top': '#c04040ff',
+        }
         if quantiles:
             nq = 0
             for q in quants:
@@ -640,6 +740,11 @@ def execution(self, context):
                 if q is None:
                     quants[i] = np.zeros(nq)
             quants = np.array(quants).T
+            if 0.001 not in quantiles_th:
+                del quant_colors_d['0.1%']
+                quant_colors_d['Susp.'] = quant_colors_d['99.9%']
+                del quant_colors_d['99.9%']
+            quant_colors = list(quant_colors_d.values())
             while len(quant_colors) > len(quants):
                 quant_colors = quant_colors[1:-1]
             # reorder quantiles 0->0.5 then 1->0.5 for good plot overlapping
@@ -661,12 +766,13 @@ def execution(self, context):
 
         pdf.drawImage(tmpimage6.fullPath(), 290, 290, width=310, height=250)
         pdf.drawString(380, 275, 'Z scores and quantiles')
-        pdf.drawString(370, 250, 'Quantiles:')
+        pdf.drawString(350, 250, 'Quantiles:')
         pdf.rotate(90)
         w = 15
-        for i, s in enumerate(('Abn.', 'Susp.', '1%', '10%', '20%', 'avg.',
-                               'med.', '80%', '90%', '99%', 'Susp.', 'Abn.')):
-            pdf.drawString(200, -(390 + i * w), s)
+        for i, s in enumerate(list(quant_colors_d.keys())[:-1]):
+            if s.startswith('-'):
+                s = s[1:]
+            pdf.drawString(200, -(350 + i * w), s)
         pdf.rotate(-90)
         status_colors_rgb = [tuple(int(c[1+i*2:3+i*2], base=16)/255.
                                    for i in range(3))
@@ -677,7 +783,7 @@ def execution(self, context):
             if i > len(status_colors_rgb) / 2:
                 j = len(status_colors_rgb) - i - 1
             pdf.setFillColorRGB(*status_colors_rgb[j])
-            pdf.rect(i * w + 370, 230, w, 10, fill=True)
+            pdf.rect(i * w + 330, 230, w, 10, fill=True)
         pdf.setStrokeColorRGB(0., 0., 0.)
         pdf.setFillColorRGB(0., 0., 0.)
 
@@ -732,7 +838,8 @@ def execution(self, context):
     if missing_features:
         report['missing_features'] = missing_features
     if status_detail:
-        report['status_detail'] = status_detail
+        report['status_detail'] = {k: statuses[v]
+                                   for k, v in status_detail.items()}
     report['normative_stats'] = {
         'reference':
             osp.basename(osp.dirname(self.normative_brain_stats.fullPath())),
