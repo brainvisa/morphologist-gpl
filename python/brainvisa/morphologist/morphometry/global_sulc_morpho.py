@@ -1174,7 +1174,7 @@ def build_stratified_normative_brain_vol_stats(
     morph = [row for row in morph if row[0] in subs]
     npmorph = np.array([row[1:] for row in morph], dtype=float)
     m_sub_map = {row[0]: i for i, row in enumerate(morph)}
-    print('total morph:', morph.shape[0])
+    print('total morph:', npmorph.shape[0])
 
     # 3. ,stratify by categorical variable values
     models = {}
