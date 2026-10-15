@@ -466,7 +466,8 @@ def read_multiple_csv(csvs, sub_prefix=None, add_sub_prefix=None):
             prefix = sub_prefix.get(csv_file)
         else:
             prefix = sub_prefix
-        print('read:', csv_file, ', prefix:', prefix)
+        print('read:', csv_file, ', prefix:', prefix, end='')
+        n = len(table)
         add_prefix = None
         if add_sub_prefix:
             add_prefix = add_sub_prefix.get(csv_file)
@@ -501,6 +502,8 @@ def read_multiple_csv(csvs, sub_prefix=None, add_sub_prefix=None):
                     else:
                         trow[c] = float(v)
                 table.append(trow)
+        print(', N:', len(table) - n)
+    print('total N:', len(table))
     return list(hdr.keys()), table
 
 
@@ -1010,7 +1013,7 @@ def model_distributions(covar_subtable, covariables, npmorph, hdr):
     # print('grid:', mod['grid'])
 
     for index in nd_iter([len(x) - 1 for x in grid]):
-        print('    index:', index)
+        # print('    index:', index)
         xdata = X.copy()
         xdata.index = range(xdata.shape[0])
         for i in range(len(index)):
@@ -1028,7 +1031,7 @@ def model_distributions(covar_subtable, covariables, npmorph, hdr):
             # print('xdata:', xdata.shape)
             y = morph[xdata.index]
 
-        print('index:', index, ', data:', y.shape, ', init:', X.shape)
+        # print('index:', index, ', data:', y.shape, ', init:', X.shape)
         avg, std, sums, quantiles, quantiles_th \
             = build_normative_brain_vol_stats(y)
         mod[tuple(index)] = {
@@ -1171,6 +1174,7 @@ def build_stratified_normative_brain_vol_stats(
     morph = [row for row in morph if row[0] in subs]
     npmorph = np.array([row[1:] for row in morph], dtype=float)
     m_sub_map = {row[0]: i for i, row in enumerate(morph)}
+    print('total morph:', morph.shape[0])
 
     # 3. ,stratify by categorical variable values
     models = {}
