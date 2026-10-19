@@ -545,7 +545,7 @@ def execution(self, context):
                             status = np.max((1, status))
                             status_detail[k] = 1
                             c = warn_comments.get(
-                                k, f'{tk} out of expected bounds')
+                                k, f'{tk} below expected bounds')
                             if z <= qzl[0]:
                                 q[0] = z
                                 q[1] = qzl[0]
@@ -580,7 +580,7 @@ def execution(self, context):
                             status = np.max((1, status))
                             status_detail[k] = 1
                             c = warn_comments.get(
-                                k, f'{tk}out of expected bounds')
+                                k, f'{tk} over expected bounds')
                             if z >= qzh[0]:
                                 q[-1] = z
                                 q[-2] = qzh[0]
