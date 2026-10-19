@@ -840,7 +840,7 @@ class DatabaseQcTable(Process):
 
         if element is not None:
             self.item_view.setText(element['path'])
-            self.current_item = (element, self.data_types[col])
+            self.current_item = (element, self.data_types[col], row, col)
             viewers = self.get_viewers(element, process=self,
                                        data_type=self.data_types[col],
                                        check_values=True)
@@ -895,7 +895,7 @@ class DatabaseQcTable(Process):
 
         if element is not None:
             self.item_view.setText(element['path'])
-            self.current_item = (element, self.data_types[col])
+            self.current_item = (element, self.data_types[col], row, col)
             viewers = self.get_viewers(element, process=self,
                                        data_type=self.data_types[col],
                                        check_values=True)
@@ -943,7 +943,8 @@ class DatabaseQcTable(Process):
                             viewer)
                         if pc is not None:
                             att = pc.get_attribute_values()
-                            self._set_compl_attribs(att, element['attributes'])
+                            self._set_compl_attribs(
+                                att, element['attributes'], row, col)
                             pc.complete_parameters()
                         res = viewer()
                         viewer_res[num] = res
@@ -952,17 +953,43 @@ class DatabaseQcTable(Process):
                     except Exception:
                         pass
 
-    def _set_compl_attribs(self, atts, val_dict):
+    def _set_compl_attribs(self, atts, val_dict, row, col):
+        done = set()
         for k, v in val_dict.items():
             if atts.trait(k) is not None:
                 setattr(atts, k, v)
+                done.add(k)
+
+        if len(done) != len(atts.user_traits()):
+            # some attributes are missing in the main input: look for
+            # them in other elements of the same table row
+            missing = set(atts.user_traits()).difference(done)
+            row_elements = self.elements[row]
+            for c in range(len(row_elements)):
+                if c == col:
+                    continue
+                elements = row_elements[c]
+                if elements is None:
+                    continue
+                if not isinstance(elements, list):
+                    elements = [elements]
+                for element in elements:
+                    eatts = element['attributes']
+                    for k in missing:
+                        if k in eatts:
+                            setattr(atts, k, eatts[k])
+                            missing.remove(k)
+                            if len(missing) == 0:
+                                break
+                    if len(missing) == 0:
+                        break
 
     def viewer_clicked(self, checked):
         if checked:
             element_d = self.current_item
             if element_d is None:
                 return
-            element, data_type = element_d
+            element, data_type, row, col = element_d
             viewers = self.get_viewers(element, process=self,
                                        data_type=data_type, check_values=True)
             # print('viewers:', viewers)
@@ -974,7 +1001,8 @@ class DatabaseQcTable(Process):
                     pc = ProcessCompletionEngine.get_completion_engine(viewer)
                     if pc is not None:
                         att = pc.get_attribute_values()
-                        self._set_compl_attribs(att, element['attributes'])
+                        self._set_compl_attribs(att, element['attributes'],
+                                                row, col)
                         pc.complete_parameters()
                     res = viewer()
                     self._viewer = res
@@ -994,7 +1022,7 @@ class DatabaseQcTable(Process):
             element_d = self.current_item
             if element_d is None:
                 return
-            element, data_type = element_d
+            element, data_type, row, col = element_d
             editors = self.get_data_editors(element, process=self,
                                             data_type=data_type,
                                             check_values=True)
@@ -1005,7 +1033,8 @@ class DatabaseQcTable(Process):
                     pc = ProcessCompletionEngine.get_completion_engine(editor)
                     if pc is not None:
                         att = pc.get_attribute_values()
-                        self._set_compl_attribs(att, element['attributes'])
+                        self._set_compl_attribs(att, element['attributes'],
+                                                row, col)
                         pc.complete_parameters()
                     res = editor()
                     self._editor = res
@@ -1021,7 +1050,7 @@ class DatabaseQcTable(Process):
         element_d = self.current_item
         if element_d is None:
             return
-        element, data_type = element_d
+        element, data_type, _, _ = element_d
         viewers = self.get_viewers(element, process=self,
                                    data_type=data_type, check_values=True)
         self.show_interactive_viewers(element, data_type, viewers)
@@ -1030,7 +1059,7 @@ class DatabaseQcTable(Process):
         element_d = self.current_item
         if element_d is None:
             return
-        element, data_type = element_d
+        element, data_type, _, _ = element_d
         viewers = self.get_data_editors(element, process=self,
                                         data_type=data_type, check_values=True)
         self.show_interactive_viewers(element, data_type, viewers)
@@ -1055,7 +1084,9 @@ class DatabaseQcTable(Process):
                     pc = ProcessCompletionEngine.get_completion_engine(viewer)
                     if pc is not None:
                         att = pc.get_attribute_values()
-                        self._set_compl_attribs(att, element['attributes'])
+                        row, col = self.current_item[2:4]
+                        self._set_compl_attribs(att, element['attributes'],
+                                                row, col)
                         pc.complete_parameters()
                     self.show_process(viewer)
                 except Exception:
