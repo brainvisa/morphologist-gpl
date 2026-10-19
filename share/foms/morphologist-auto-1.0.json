@@ -1725,7 +1725,7 @@
             "main_input":
                 [["input:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-MNI",
                     "Transformation matrix"]],
-            "t1mri_nobias": [[
+            "t1mri_nobias":
                 [["input:{analysis}/nobias_<subject>", "images" ]],
             "referential":
                 [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>", "Referential"]],
