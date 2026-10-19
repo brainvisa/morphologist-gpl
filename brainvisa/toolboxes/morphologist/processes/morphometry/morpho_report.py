@@ -488,19 +488,7 @@ def execution(self, context):
         'log_ratio.skel_points': {
             'min': [(0.01, 2.8253), (0.01, 1.5356), (0.01, 1.2)],
             'max': [(0.99, 2.3727), (0.99, 1.5844), (0.99, 1.2)]},
-        'brain_template_out': {
-            'max': [(0.01, 3.5), (0.01, 2.), (0.01, 1.6)],},
-        'brain_template_missing': {
-            'max': [(0.01, 3.5), (0.01, 2.), (0.01, 1.6)],},
-        'left.sulci_template_out': {
-            'max': [(0.01, 3.5), (0.01, 2.), (0.01, 1.6)],},
-        'left.sulci_template_missing': {
-            'max': [(0.01, 3.5), (0.01, 2.), (0.01, 1.6)],},
-        'right.sulci_template_out': {
-            'max': [(0.01, 3.5), (0.01, 2.), (0.01, 1.6)],},
-        'right.sulci_template_overlap': {
-            'max': [(0.01, 3.5), (0.01, 2.), (0.01, 1.6)],},
-        'left.sulci_template_overlap': {
+        "left.sulci_template_overlap": {
             'min': [(0.01, 2.5), (0.01, 1.6), (0.01, 1.2)]},
     }
     warn_comments = {
@@ -752,11 +740,10 @@ def execution(self, context):
                 if q is None:
                     quants[i] = np.zeros(nq)
             quants = np.array(quants).T
-            # if 0.001 not in quantiles_th:
-            del quant_colors_d['0.1%']
-            quant_colors_d['Susp.'] = quant_colors_d['99.9%']
-            del quant_colors_d['99.9%']
-
+            if 0.001 not in quantiles_th:
+                del quant_colors_d['0.1%']
+                quant_colors_d['Susp.'] = quant_colors_d['99.9%']
+                del quant_colors_d['99.9%']
             quant_colors = list(quant_colors_d.values())
             while len(quant_colors) > len(quants):
                 quant_colors = quant_colors[1:-1]
