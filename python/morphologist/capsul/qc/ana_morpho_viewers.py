@@ -468,7 +468,7 @@ class AnaNormalizationViewer(AWindowViewer):
 
         refdel = [self.AutoDel(mref),
                   self.AutoDel(tpl.referential)]
-        if a.config().get('userLevel') > 1:
+        if a.config().get('userLevel', 0) > 1:
             # find disk ref of template
             for t in a.getTransformations():
                 if t.destination().internalRep is tpl.referential.internalRep \
