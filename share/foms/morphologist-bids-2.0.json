@@ -2061,5 +2061,20 @@
                 "Aims writable volume formats"]],
         },
 
+
+        "morphologist.capsul.qc.ana_morpho_viewers.AnaNormalizationViewer": {
+            "main_input": [[
+                "input:{reg}/{sub}_T1w_TO_MNI152",
+                "Transformation matrix"]],
+            "t1mri_nobias": [[
+                "input:{seg}/{sub}_nobias",
+                "Aims readable volume formats"]],
+            "referential":
+                [["input:{reg}/{sub}_T1w", "Referential"]],
+            "mni_template":
+                [["shared:anatomical_templates/MNI152_T1_1mm_brain_mask",
+                  "images"]]
+        },
+
     }
 }

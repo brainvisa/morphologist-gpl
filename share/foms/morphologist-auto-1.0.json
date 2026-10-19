@@ -106,6 +106,9 @@
             "Renorm_skull_stripped": [["output:{analysis}/segmentation/skull_stripped_<subject>","images"]],
             "Renorm_template": "{shared.anatomical_template_t1_skull_stripped}",
             "Renorm_Normalization_Normalization_AimsMIRegister_mni_to_acpc": "{shared.talairach_TO_spm_transform}",
+            "MNI_transform":
+                [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-MNI",
+                    "Transformation matrix"]],
 
             # Split Brain
             "SplitBrain_split_template": "{shared.split_template}",
@@ -1716,6 +1719,18 @@
             "roots": [[
                 "output:{analysis}/segmentation/<side>roots_<subject>",
                 "images"]],
+        },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.AnaNormalizationViewer": {
+            "main_input":
+                [["input:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-MNI",
+                    "Transformation matrix"]],
+            "t1mri_nobias": [[
+                [["input:{analysis}/nobias_<subject>", "images" ]],
+            "referential":
+                [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>", "Referential"]],
+            "mni_template":
+                [["shared:anatomical_templates/MNI152_T1_1mm_brain_mask", "images"]]
         },
 
      }

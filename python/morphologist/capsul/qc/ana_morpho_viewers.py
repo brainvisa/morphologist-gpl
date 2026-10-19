@@ -398,6 +398,88 @@ class AnaSkeletonViewer(AWindowViewer):
     pass
 
 
+class AnaNormalizationViewer(AWindowViewer):
+    class AutoDel:
+        def __init__(self, element):
+            self.element = element
+
+        def __del__(self):
+            import anatomist.api as ana
+            a = ana.Anatomist()
+            a.deleteElements(self.element)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # self.add_trait('MNI_transform', traits.File())
+        self.add_trait('t1mri_nobias', traits.File())
+        self.add_trait('referential', traits.File())
+        self.add_trait('mni_template', traits.File())
+        self.palette = 'BLUE-ufusion'
+        self.fmode = 'linear_A_if_B_white'
+        self.rate = 0.7
+
+    def _run_process(self):
+        import anatomist.api as ana
+
+        a = ana.Anatomist()
+        self.block = a.createWindowsBlock()
+        return super()._run_process()
+
+    def exec_mainthread(self, result):
+        import anatomist.api as ana
+
+        a = ana.Anatomist()
+        mri = a.loadObject(self.t1mri_nobias)
+        ref_file = self.referential
+        if ref_file in (traits.Undefined, None):
+            ref_file = ''
+        mref = a.createReferential(ref_file)
+        mri.assignReferential(mref)
+        a.loadTransformation(
+            self.main_input, mref,
+            ana.cpp.Referential.mniTemplateReferential())
+        tpl = a.loadObject(self.mni_template)
+        tpl.applyBuiltinReferential()
+
+        tpl.setPalette(self.palette)
+        fusion = a.fusionObjects([mri, tpl], method='Fusion2DMethod')
+        a.execute('TexturingParams', objects=[fusion], mode=self.fmode,
+                  texture_index=1, rate=self.rate)
+        a.execute(
+            "Fusion2DParams", object=fusion, reorder_objects=[mri, tpl])
+        window1 = a.createWindow('Coronal', block=self.block)
+        window1.assignReferential(mri.referential)
+        window1.addObjects([fusion])
+        window2 = a.createWindow('Sagittal', block=self.block)
+        window2.assignReferential(mri.referential)
+        window2.addObjects([fusion])
+        window3 = a.createWindow('Axial', block=self.block)
+        window3.assignReferential(mri.referential)
+        window3.addObjects([fusion])
+
+        sz = [self.block.internalWidget.widget.width(),
+              self.block.internalWidget.widget.height()]
+        if sz[0] < 800:
+            sz[0] = 800
+        if sz[1] < 800:
+            sz[1] = 800
+        self.block.internalWidget.widget.resize(*sz)
+
+        refdel = [self.AutoDel(mref),
+                  self.AutoDel(tpl.referential)]
+        if a.config().get('userLevel') > 1:
+            # find disk ref of template
+            for t in a.getTransformations():
+                if t.destination().internalRep is tpl.referential.internalRep \
+                        and not t.isGenerated() \
+                        and t.destination() is not \
+                        ana.cpp.Referential.mniTemplateReferential():
+                    refdel.append(self.AutoDel(t.source()))
+
+        result.extend([fusion, window1, window2, window3] + refdel)
+
+
 class KillablePopen:
     def __init__(self, popen):
         self.popen = popen

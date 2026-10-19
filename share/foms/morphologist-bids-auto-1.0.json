@@ -1900,5 +1900,18 @@
                 "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/<analysis>/segmentation/<side>roots_<subject>",
                 "Aims writable volume formats"]],
         },
+
+        "morphologist.capsul.qc.ana_morpho_viewers.AnaNormalizationViewer": {
+            "main_input": [[
+                "input:{acquisition}/registration/RawT1-<subject>_<acquisition>_TO_Talairach-MNI",
+                "Transformation matrix"]],
+            "t1mri_nobias": [[
+                "input:{analysis}/nobias_<subject>", "images"]],
+            "referential":
+                [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>", "Referential"]],
+            "mni_template":
+                [["shared:anatomical_templates/MNI152_T1_1mm_brain_mask", "images"]]
+        },
+
     }
 }

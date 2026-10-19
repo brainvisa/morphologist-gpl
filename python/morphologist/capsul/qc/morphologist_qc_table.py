@@ -34,6 +34,7 @@ class MorphologistQcTable(database_qc_table.DatabaseQcTable):
 
             'morphologist.capsul.morphologist.Morphologist.BrainSegmentation_brain_mask',
             'morphologist.capsul.morphologist.Morphologist.split_brain',
+            'morphologist.capsul.morphologist.Morphologist.MNI_transform',
             'morphologist.capsul.morphologist.Morphologist.HeadMesh_head_mesh',
             'morphologist.capsul.morphologist.Morphologist.GreyWhiteClassification_grey_white',
             'morphologist.capsul.morphologist.Morphologist.GreyWhiteClassification_1_grey_white',
@@ -59,7 +60,7 @@ class MorphologistQcTable(database_qc_table.DatabaseQcTable):
         self.keys = ['subject', 'acquisition', 'bids', 'sulci_recognition_session']
         self.type_labels = [
             'Raw T1 MRI', 'Bias Corrected', 'Histo Analysis', 'Brain Mask',
-            'Hemispheres Split', 'Head Mesh',
+            'Hemispheres Split', 'Normalization', 'Head Mesh',
             'Left Grey White Mask', 'Right Grey White Mask',
             'Left CSF+GREY Mask', 'Right CSF+GREY Mask',
             'Left Hemisphere White Mesh', 'Right Hemisphere White Mesh',
