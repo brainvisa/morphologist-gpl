@@ -590,6 +590,8 @@ class DatabaseQcTable(Process):
                 self.db.execute(
                     f'UPDATE files SET {self.status_db_col}="{status}" WHERE filename="{rfname}"')
                 self._commit = True
+                if not hasattr(self, 'file_statuses'):
+                    self.file_statuses = {}
                 self.file_statuses[rfname] = status
             return status
         return statuses.PRESENT
