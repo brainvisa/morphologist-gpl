@@ -434,6 +434,17 @@ def execution(self, context):
             quantiles_th = norm_stat['global'].get(
                 'quantiles_th',
                 [0.0, 0.01, 0.1, 0.2, 0.5, 0.8, 0.9, 0.99, 1.0])
+            # drop quantiles 0.001 and 0.999, not robust enough
+            if 0.001 in quantiles_th:
+                context.write('remove quant 0.001')
+                del quantiles_th[0]
+                n_quant = n_quant[1:]
+                quantiles = quantiles[1:]
+            if 0.999 in quantiles_th:
+                context.write('remove quant 0.999')
+                del quantiles_th[-1]
+                n_quant = n_quant[:-1]
+                quantiles = quantiles[:-1]
 
     keymap = {
         'both.brain_volume': 'brain volume',
@@ -759,6 +770,8 @@ def execution(self, context):
             quant_colors = list(quant_colors_d.values())
             while len(quant_colors) > len(quants):
                 quant_colors = quant_colors[1:-1]
+            while len(quants) > len(quant_colors):
+                quants = quants[1:-1, :]
             # reorder quantiles 0->0.5 then 1->0.5 for good plot overlapping
             quant_colors = quant_colors[:len(quants) // 2 + 1] \
                 + quant_colors[len(quants) - 1:len(quants) // 2:-1]
