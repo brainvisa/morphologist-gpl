@@ -2073,7 +2073,10 @@
                 [["input:{reg}/{sub}_T1w", "Referential"]],
             "mni_template":
                 [["shared:anatomical_templates/MNI152_T1_1mm_brain_mask",
-                  "images"]]
+                  "images"]],
+            "split_brain": [[
+                "input:{seg}/{sub}_voronoi",
+                "Aims readable volume formats"]],
         },
 
     }

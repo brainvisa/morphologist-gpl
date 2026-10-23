@@ -415,8 +415,9 @@ class AnaNormalizationViewer(AWindowViewer):
         self.add_trait('t1mri_nobias', traits.File())
         self.add_trait('referential', traits.File())
         self.add_trait('mni_template', traits.File())
-        self.palette = 'BLUE-ufusion'
-        self.fmode = 'linear_A_if_B_white'
+        self.add_trait('split_brain', traits.File(optional=True))
+        self.palette = 'RED-lfusion'
+        self.fmode = 'linear_A_if_B_black'
         self.rate = 0.7
 
     def _run_process(self):
@@ -440,14 +441,33 @@ class AnaNormalizationViewer(AWindowViewer):
             self.main_input, mref,
             ana.cpp.Referential.mniTemplateReferential())
         tpl = a.loadObject(self.mni_template)
+        a.execute('TexturingParams', objects=[tpl],
+                    value_interpolation=0)
         tpl.applyBuiltinReferential()
 
         tpl.setPalette(self.palette)
-        fusion = a.fusionObjects([mri, tpl], method='Fusion2DMethod')
+        fus_obj = [mri, tpl]
+        if self.split_brain:
+            split = a.loadObject(self.split_brain)
+            split.assignReferential(mref)
+            pal = a.getPalette('split_in_norm')
+            if pal is None:
+                pal = a.createPalette('split_in_norm')
+                pal.setColors([0, 0, 0,  0, 0, 255,  0, 255, 0,  255, 255, 0])
+            split.setPalette(pal, minVal=0, maxVal=3, absoluteMode=1)
+            a.execute('TexturingParams', objects=[split],
+                      value_interpolation=0)
+            fus_obj.append(split)
+        fusion = a.fusionObjects(fus_obj, method='Fusion2DMethod')
         a.execute('TexturingParams', objects=[fusion], mode=self.fmode,
                   texture_index=1, rate=self.rate)
         a.execute(
-            "Fusion2DParams", object=fusion, reorder_objects=[mri, tpl])
+            "Fusion2DParams", object=fusion, reorder_objects=fus_obj)
+        if self.split_brain:
+            a.execute('TexturingParams', objects=[fusion],
+                      texture_index=1, rate=0.57)
+            a.execute('TexturingParams', objects=[fusion],
+                      texture_index=2, rate=0.5)
         window1 = a.createWindow('Coronal', block=self.block)
         window1.assignReferential(mri.referential)
         window1.addObjects([fusion])

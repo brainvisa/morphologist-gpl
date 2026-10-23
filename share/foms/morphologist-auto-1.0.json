@@ -1730,7 +1730,9 @@
             "referential":
                 [["output:{acquisition}/registration/RawT1-<subject>_<acquisition>", "Referential"]],
             "mni_template":
-                [["shared:anatomical_templates/MNI152_T1_1mm_brain_mask", "images"]]
+                [["shared:anatomical_templates/MNI152_T1_1mm_brain_mask", "images"]],
+            "split_brain": [[
+                "intput:{analysis}/segmentation/voronoi_<subject>","images"]],
         },
 
      }
