@@ -794,6 +794,11 @@ def execution(self, context):
         pdf.drawString(350, 250, 'Quantiles:')
         pdf.rotate(90)
         w = 15
+        if '0.1%' in quant_colors_d:
+            # drop 0.1% limits
+            del quant_colors_d['0.1%']
+            quant_colors_d['Susp.'] = quant_colors_d['99.9%']
+            del quant_colors_d['99.9%']
         for i, s in enumerate(list(quant_colors_d.keys())[:-1]):
             if s.startswith('-'):
                 s = s[1:]
