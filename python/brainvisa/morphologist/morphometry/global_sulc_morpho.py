@@ -336,7 +336,8 @@ def brain_volumes(split_brain, left_grey_white, right_grey_white, left_csf,
     res['both.WM'] = lwm_vol + rwm_vol
     res['left.GM'] = lgm_vol
     res['right.GM'] = rgm_vol
-    res['both.GM'] = lgm_vol + rwm_vol
+    res['both.GM'] = lgm_vol + rgm_vol
+    res['both.GM/WM_volume'] = (lgm_vol + rgm_vol) / (lwm_vol + rwm_vol)
     res['left.hemi_volume'] = lh_vol
     res['right.hemi_volume'] = rh_vol
     res['both.brain_volume'] = brain_vol
@@ -385,6 +386,8 @@ def brain_surfaces(left_gm_mesh, right_gm_mesh, left_wm_mesh, right_wm_mesh):
         res['right.WM_area'] = aims.SurfaceManip.meshArea(right_wm_mesh)
         if left_wm_mesh:
             res['both.WM_area'] = res['left.WM_area'] + res['right.WM_area']
+    if 'both.GM_area' in res and 'both.WM_area' in res:
+        res['both.GM/WM_area'] = res['both.GM_area'] / res['both.WM_area']
 
     return res
 
@@ -426,6 +429,12 @@ def sulcal_and_brain_morpho(
     ress = brain_surfaces(left_gm_mesh, right_gm_mesh, left_wm_mesh,
                           right_wm_mesh)
     res.update(ress)
+
+    if 'both.GM_area' in res:
+        res['both.GM_area/volume'] = res['both.GM_area'] / res['both.GM']
+    if 'both.WM_area' in res:
+        res['both.WM_area/volume'] = res['both.WM_area'] / res['both.WM']
+
 
     return res
 
