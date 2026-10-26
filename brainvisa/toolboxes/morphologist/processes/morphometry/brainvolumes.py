@@ -236,7 +236,6 @@ def execution(self, context):
                                  'left.hull_area', 'right.hull_area')]
 
     for k, cn in col_names.items():
-        th.append('<td>' + cn + '</td>')
         csvh.append(cn)
         v = res[k]
         if not isinstance(v, str):
@@ -244,19 +243,18 @@ def execution(self, context):
                 v = str(round(v / 1000., 3))
             else:
                 v = str(round(v, 3))
-        table.append('<td>' + v + '</td>')
+        table.append('<tr><td>' + cn + '</td><td>' + v + '</td></tr>')
         csvt.append(v)
 
     for k, v in res.items():
         if k not in col_names:
-            th.append('<td>' + k + '</td>')
             csvh.append(k)
             if not isinstance(v, str):
                 if k in vols_cm3:
                     v = str(round(v / 1000., 3))
                 else:
                     v = str(round(v, 3))
-            table.append('<td>' + v + '</td>')
+            table.append('<tr><td>' + k + '</td><td>' + v + '</td></tr>')
             csvt.append(v)
 
     if self.split_template is not None \
@@ -283,7 +281,6 @@ def execution(self, context):
                  'right.sulci_template_overlap', 'right.sulci_template_out',
                  'right.sulci_template_missing',]
         csvh += ncols
-        th += [f'<td>{x}</td>' for x in ncols]
         gb = qc_sb_res['global']
         nv = [gb['jaccard'],
               gb['outside'] / gb['template_size'],
@@ -306,10 +303,12 @@ def execution(self, context):
                gb['missing'] / gb['template_size']]
         nv = [f'{x:.3}' for x in nv]
         csvt += nv
-        table += [f'<td>{x}</td>' for x in nv]
+        table += [f'<tr><td>{c}</td><td>{x}</td></tr>'
+                  for c, x in zip(ncols, nv)]
+        th = ['<td>feature</td><td>value</td>']
 
     context.write('<table style="border: 1px"><th>' + ''.join(th)
-                  + '</th><tr>' + ''.join(table) + '</tr></table>')
+                  + '</th>' + ''.join(table) + '</table>')
 
     if self.brain_volumes_file is not None:
         with open(self.brain_volumes_file.fullPath(), 'w') as f:
