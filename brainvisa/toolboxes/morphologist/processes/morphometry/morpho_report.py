@@ -849,7 +849,7 @@ def execution(self, context):
             cbin = zstat['cont_bin_ind']
             bin_str = []
             for i, (k, v) in zip(cbin, grid.items()):
-                bin_str.append(f'{k} in [{v[i]}:{v[i + 1]}]')
+                bin_str.append(f'{k} in [{v[i]:.1f}:{v[i + 1]:.1f}]')
             pdf.drawString(60, y, ', '.join(bin_str))
             y -= 10
         y -= 10
