@@ -441,8 +441,7 @@ class AnaNormalizationViewer(AWindowViewer):
             self.main_input, mref,
             ana.cpp.Referential.mniTemplateReferential())
         tpl = a.loadObject(self.mni_template)
-        a.execute('TexturingParams', objects=[tpl],
-                    value_interpolation=0)
+        a.execute('TexturingParams', objects=[tpl], value_interpolation=0)
         tpl.applyBuiltinReferential()
 
         tpl.setPalette(self.palette)
