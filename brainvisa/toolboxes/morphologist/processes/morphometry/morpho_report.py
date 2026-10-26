@@ -453,6 +453,10 @@ def execution(self, context):
         'both.eTIV': 'eTIV',
         'both.GM_area': 'GM area',
         'both.WM_area': 'WM area',
+        'both.GM/WM_volume': 'GM/WM vol.',
+        'both.GM/WM_area': 'GM/WM area',
+        'both.GM_area/volume': 'GM area/vol.',
+        'both.WM_area/volume': 'WM area/vol.',
         'left.gi_native_space': 'gyration index',
         'both.fold_length': 'total folds length',
         'both.mean_depth': 'avg. folds depth',
@@ -822,7 +826,7 @@ def execution(self, context):
     status_colors = [(0., 0., 0.), (0.7, 0.7, 0.), (0.8, 0.5, 0.),
                      (0.6, 0., 0.)]
 
-    y = 250
+    y = 200
     pdf.drawString(30, y, 'QC status:')
     pdf.setFont('Helvetica-Bold', 10)
     pdf.setFillColorRGB(*status_colors[status])
