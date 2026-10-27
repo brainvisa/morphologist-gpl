@@ -33,7 +33,7 @@ from capsul.api import Process, Pipeline
 from capsul.attributes.completion_engine import ProcessCompletionEngine
 from soma.wip.application.api import findIconFile
 from soma.qt_gui.qtThread import MainThreadLife, QtThreadCall
-from soma.qt_gui.qt_backend.Qt import QTableWidgetItem
+# from soma.qt_gui.qt_backend.Qt import QTableWidgetItem
 from soma.qt_gui.qt_backend import Qt
 from morphologist.capsul.qc import find_viewer
 import traits.api as traits
@@ -99,7 +99,7 @@ status_str = {
 }
 
 
-class QSortingTabeWidgetItem(Qt.QTableWidgetItem):
+class QSortingItem(Qt.QStandardItem):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.sort_data = None
@@ -115,6 +115,33 @@ class QSortingTabeWidgetItem(Qt.QTableWidgetItem):
                 and getattr(other, 'sort_data', None) is not None:
             return (self.sort_data > other.sort_data)
         return super().__gt__(other)
+
+
+class CustomSortProxyModel(Qt.QSortFilterProxyModel):
+    def lessThan(self, left_index, right_index):
+        while not isinstance(left_index.model(), Qt.QStandardItemModel):
+            proxy = left_index.model()
+            if proxy is None:
+                break
+            left_index = proxy.mapToSource(left_index)
+        left_item = left_index.model().itemFromIndex(left_index)
+        while not isinstance(right_index.model(), Qt.QStandardItemModel):
+            proxy = right_index.model()
+            if proxy is None:
+                break
+            right_index = proxy.mapToSource(right_index)
+        right_item = right_index.model().itemFromIndex(right_index)
+
+        if left_item is None:
+            return True
+        if right_item is None:
+            return False
+
+        try:
+            return left_item < right_item
+        except TypeError:
+            # Sécurité si les types ne sont pas comparables
+            return super().lessThan(left_index, right_index)
 
 
 status_for_type = {}
@@ -635,7 +662,7 @@ class DatabaseQcTable(Process):
         mw.setCentralWidget(wid)
         lay = Qt.QVBoxLayout()
         wid.setLayout(lay)
-        tablew = Qt.QTableWidget()
+        tablew = Qt.QTableView()
         lay.addWidget(tablew)
 
         eye = Qt.QIcon(findIconFile('eye.png'))
@@ -667,22 +694,22 @@ class DatabaseQcTable(Process):
         nrows, ncols = len(self.elements), len(self.data_types)
         nkeys = len(self.keys)
 
+        model = Qt.QStandardItemModel(nrows, ncols + nkeys)
+        self.model = model
+
         tablew.setHorizontalHeader(RotatedHeaderView(Qt.Qt.Horizontal, tablew))
 
         header = tablew.horizontalHeader()
         header.setSectionsClickable(True)
         header.setSectionsMovable(True)
 
-        tablew.setColumnCount(ncols + nkeys)
         header.setDefaultSectionSize(32)
         header.setDefaultAlignment(Qt.Qt.AlignLeft)
         labels = self.keys + self.type_labels \
             + self.data_types[len(self.type_labels):]
-        tablew.setHorizontalHeaderLabels(labels)
+        model.setHorizontalHeaderLabels(labels)
         tablew.setSortingEnabled(True)
         tablew.setEditTriggers(tablew.NoEditTriggers)
-
-        tablew.setRowCount(nrows)
 
         undefined_icon = Qt.QIcon(findIconFile('absent.png'))
         no_icon = Qt.QIcon(findIconFile('absent.png'))
@@ -735,33 +762,37 @@ class DatabaseQcTable(Process):
         for row_id, row in row_ids.items():
             for c, key in enumerate(row_id):
                 if key is not None:
-                    tablew.setItem(row, c, QSortingTabeWidgetItem(key))
+                    model.setItem(row, c, Qt.QStandardItem(key))
 
         for col in range(ncols):
             for row in range(nrows):
                 elem = self.elements[row][col]
                 if elem is None:
-                    titem = QSortingTabeWidgetItem(no_icon, '')
+                    titem = QSortingItem(no_icon, '')
                     titem.sort_data = statuses.ABSENT
                 elif isinstance(elem, list):
-                    titem = QSortingTabeWidgetItem(mult_icon, '')
+                    titem = QSortingItem(mult_icon, '')
                     titem.sort_data = -1
                     titem.position = (row, col)
                 else:
                     status = self.file_status(elem['path'],
                                               self.data_types[col])
                     icon = status_icons[status]
-                    titem = QSortingTabeWidgetItem(icon, '')
+                    titem = QSortingItem(icon, '')
                     titem.sort_data = status
-                    titem.setData(15, status)
+                    # titem.setData(15, status + 10)
                     titem.position = (row, col)
-                tablew.setItem(row, col + nkeys, titem)
+                model.setItem(row, col + nkeys, titem)
 
         if self.db and getattr(self, '_commit', False):
             self.db.execute('COMMIT')
 
-        tablew.itemClicked.connect(self.item_clicked)
-        tablew.itemDoubleClicked.connect(self.item_double_clicked)
+        proxy = CustomSortProxyModel()
+        proxy.setSourceModel(model)
+        tablew.setModel(proxy)
+        # tablew.setModel(model)
+        tablew.clicked.connect(self.item_clicked)
+        tablew.doubleClicked.connect(self.item_double_clicked)
 
         tablew.sortByColumn(0, Qt.Qt.AscendingOrder)
         for col in range(nkeys):
@@ -785,10 +816,16 @@ class DatabaseQcTable(Process):
         print('GUI build time:', datetime.timedelta(seconds=t2 - t1))
         print('total:', datetime.timedelta(seconds=t2 - self.t0))
 
-
         return MainThreadLife(mw)
 
-    def item_clicked(self, item):
+    def item_clicked(self, index):
+        while index.model() is not self.model:
+            proxy = index.model()
+            if proxy is None:
+                break
+            index = proxy.mapToSource(index)
+        item = self.model.itemFromIndex(index)
+
         if not self._viewer:
             self.view_btn.setEnabled(False)
         if not self._editor:
@@ -866,7 +903,13 @@ class DatabaseQcTable(Process):
             self.get_study_config().engine, element['path'])
         return editors
 
-    def item_double_clicked(self, item):
+    def item_double_clicked(self, index):
+        while index.model() is not self.model:
+            proxy = index.model()
+            if proxy is None:
+                break
+            index = proxy.mapToSource(index)
+        item = self.model.itemFromIndex(index)
         if not hasattr(item, 'position'):
             # no data under this item
             return
@@ -1362,8 +1405,8 @@ class RotatedHeaderView(Qt.QHeaderView):
 
 class QActionWithViewer(Qt.QWidgetAction):
 
-    action_triggered = Qt.Signal(QTableWidgetItem, int)
-    viewer_triggered = Qt.Signal(QTableWidgetItem, int)
+    action_triggered = Qt.Signal(Qt.QStandardItem, int)
+    viewer_triggered = Qt.Signal(Qt.QStandardItem, int)
 
     def __init__(self, text, checked, item, num, parent):
         super().__init__(parent)
