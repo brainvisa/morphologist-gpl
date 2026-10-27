@@ -65,6 +65,7 @@ def execution(self, context):
               'Histo Analysis',
               'T1 Brain Mask',
               'Split Brain Mask',
+              'Transform Raw T1 MRI to Talairach-MNI template-SPM',
               'Head Mesh',
               'Left Grey White Mask', 'Right Grey White Mask',
               'Left CSF+GREY Mask', 'Right CSF+GREY Mask',
@@ -78,7 +79,8 @@ def execution(self, context):
               'Morphologist JSON report']
 
     tlabels = ['Raw T1 MRI', 'Bias Corrected', 'Histo Analysis',
-               'Brain Mask', 'Hemispheres Split', 'Head Mesh',
+               'Brain Mask', 'Hemispheres Split', 'Normalization',
+               'Head Mesh',
                'Left Grey White Mask', 'Right Grey White Mask',
                'Left CSF+GREY Mask', 'Right CSF+GREY Mask',
                'Left Hemisphere White Mesh', 'Right Hemisphere White Mesh',
@@ -93,9 +95,11 @@ def execution(self, context):
     if self.data_filters:
         custom_filt = eval(self.data_filters)
 
+    filter0 = {}
     filter1 = {}
     if self.acquisition:
         filter1.update({'acquisition': self.acquisition})
+        filter0.update({'acquisition': self.acquisition})
     if self.bids:
         filter1.update({'bids': self.bids})
     filter2 = dict(filter1)
@@ -122,6 +126,7 @@ def execution(self, context):
         'Histo Analysis': dict(filter2),
         'Brain Mask': dict(filter2),
         'Hemispheres Split': dict(filter2),
+        'Normalization': dict(filter0),
         'Head Mesh': dict(filter2),
         'Left Grey White Mask': dict(filter3_l),
         'Right Grey White Mask': dict(filter3_r),
