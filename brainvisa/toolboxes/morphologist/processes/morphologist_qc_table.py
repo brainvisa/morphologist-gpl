@@ -17,7 +17,7 @@ signature = Signature(
     'bids', String(),
     'analysis', String(),
     'graph_version', String(),
-    'data_filters', ListOf(String()),
+    'data_filters', String(),
     'output_file', WriteDiskItem(
         'Text File', ['HTML', 'PDF file', 'CSV file']),
 )
@@ -89,11 +89,9 @@ def execution(self, context):
                'Sulcal morphometry measurements', 'Brain volumes', 'Report',
                'QC']
 
-    custom_filt = [eval(filt) for filt in self.data_filters]
-    if len(custom_filt) == 1:
-        custom_filt = custom_filt * len(dtypes)
-    if len(custom_filt) < len(dtypes):
-        custom_filt = custom_filt + [{}] * (len(dtypes) - len(custom_filt))
+    custom_filt = {}
+    if self.data_filters:
+        custom_filt = eval(self.data_filters)
 
     filter1 = {}
     if self.acquisition:
@@ -118,19 +116,35 @@ def execution(self, context):
     if self.graph_version:
         filter2.update({'graph_version': self.graph_version})
 
-    filters = [filter1,
-               filter2, filter2, filter2, filter2, filter2,
-               filter3_l, filter3_r,
-               filter3_l, filter3_r,
-               filter3_l, filter3_r,
-               filter3_l, filter3_r,
-               filter3_l, filter3_r,
-               filter4_l, filter4_r,
-               filter4_l, filter4_r,
-               filter5, filter5, filter5, filter5]
-    for filt, custfilt in zip(filters, custom_filt):
-        filt.update(custfilt)
-    filters = [repr(filt) for filt in filters]
+    filters = {
+        'Raw T1 MRI': filter1,
+        'Bias Corrected': filter2,
+        'Histo Analysis': dict(filter2),
+        'Brain Mask': dict(filter2),
+        'Hemispheres Split': dict(filter2),
+        'Head Mesh': dict(filter2),
+        'Left Grey White Mask': dict(filter3_l),
+        'Right Grey White Mask': dict(filter3_r),
+        'Left CSF\\+GREY Mask': dict(filter3_l),
+        'Right CSF\\+GREY Mask': dict(filter3_r),
+        'Left Hemisphere White Mesh': dict(filter3_l),
+        'Right Hemisphere White Mesh': dict(filter3_r),
+        'Left Cortex Skeleton': dict(filter3_l),
+        'Right Cortex Skeleton': dict(filter3_r),
+        'Left Hemisphere Mesh': dict(filter3_l),
+        'Right Hemisphere Mesh': dict(filter3_r),
+        'Left Cortical Sulci': dict(filter4_l),
+        'Right Cortical Sulci': dict(filter4_r),
+        'Left Labelled Sulci': dict(filter4_l),
+        'Right Labelled Sulci': dict(filter4_r),
+        'Sulcal morphometry measurements': dict(filter5),
+        'Brain volumes': dict(filter5),
+        'Report': dict(filter5),
+        'QC': dict(filter5),
+    }
+    for k, v in custom_filt.items():
+        filters.setdefault(k, {}).update(v)
+    filters = repr(filters)
 
     self.proc = getProcessInstance('database_qc_table')
     self.proc.status_for_type['Morphologist JSON report'] = get_qc_status
