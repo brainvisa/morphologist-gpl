@@ -143,6 +143,33 @@ class CustomSortProxyModel(Qt.QSortFilterProxyModel):
             # Sécurité si les types ne sont pas comparables
             return super().lessThan(left_index, right_index)
 
+    def filterAcceptsRow(self, sourceRow, sourceParent):
+        if self.filterRegularExpression() is None:
+            return True
+        col = self.filterKeyColumn()
+        if col != -1:
+            index = self.sourceModel().index(sourceRow, col, sourceParent)
+            item = self.sourceModel().itemFromIndex(index)
+            if item is None or not hasattr(item, 'sort_data'):
+                return super().filterAcceptsRow(sourceRow, sourceParent)
+            stat_str = status_str[item.sort_data]
+            return self.filterRegularExpression().match(stat_str).hasMatch()
+        res = False
+        for col in range(self.sourceModel().columnCount()):
+            index = self.sourceModel().index(sourceRow, col, sourceParent)
+            item = self.sourceModel().itemFromIndex(index)
+            if item is None or not hasattr(item, 'sort_data'):
+                res |= super().filterAcceptsRow(sourceRow, sourceParent)
+                if res:
+                    break
+            else:
+                stat_str = status_str[item.sort_data]
+                res |= \
+                    self.filterRegularExpression().match(stat_str).hasMatch()
+                if res:
+                    break
+        return res
+
 
 status_for_type = {}
 
@@ -790,7 +817,6 @@ class DatabaseQcTable(Process):
         proxy = CustomSortProxyModel()
         proxy.setSourceModel(model)
         tablew.setModel(proxy)
-        # tablew.setModel(model)
         tablew.clicked.connect(self.item_clicked)
         tablew.doubleClicked.connect(self.item_double_clicked)
 
@@ -807,10 +833,16 @@ class DatabaseQcTable(Process):
         fmenu = menu.addMenu('File')
         action = fmenu.addAction('Save HTML or PDF...')
         action.triggered.connect(self.save_gui)
+        emenu = menu.addMenu('Edit')
+        action = emenu.addAction('Find...')
+        action.setShortcut(Qt.QKeySequence(Qt.Qt.CTRL + Qt.Qt.Key_F))
+        action.triggered.connect(self.find_data_gui)
         mw.setMenuBar(menu)
 
         mw.resize(800, 800)
         mw.show()
+
+        self.table = tablew
 
         t2 = time.time()
         print('GUI build time:', datetime.timedelta(seconds=t2 - t1))
@@ -1367,6 +1399,96 @@ class DatabaseQcTable(Process):
                 else:
                     f.write('1\t')
             f.write('\n')
+
+    def find_data_gui(self):
+        if hasattr(self, 'find_dialog'):
+            dialog = self.find_dialog
+        else:
+            # self.current_search = None
+            self.current_search_col = 0
+            # self.current_filter = None
+            dialog = Qt.QDialog()
+            dialog.setWindowTitle('Find elements')
+            lay = Qt.QVBoxLayout(dialog)
+            lay.addWidget(Qt.QLabel('Find elements'))
+            grid = Qt.QGridLayout()
+            lay.addLayout(grid)
+            text = Qt.QLineEdit()
+            grid.addWidget(Qt.QLabel('What'), 0, 0)
+            grid.addWidget(Qt.QLabel('Where'), 0, 1)
+            grid.addWidget(text, 1, 0)
+            combo = Qt.QComboBox()
+            grid.addWidget(combo, 1, 1)
+            combo.addItem('Current column')
+            combo.addItem('Whole table')
+
+            bl = Qt.QHBoxLayout()
+            lay.addLayout(bl)
+            ok = Qt.QPushButton('OK')
+            ok.setSizePolicy(Qt.QSizePolicy.Fixed, Qt.QSizePolicy.Fixed)
+            bl.addWidget(ok)
+            ok.pressed.connect(dialog.accept)
+            filt = Qt.QToolButton()
+            filt.setCheckable(True)
+            filt.setText('Filter')
+            bl.addWidget(filt)
+            filt.hide()
+            filt.setChecked(True)
+            self.find_dialog = dialog
+            self.find_text = text
+            self.find_mode_combo = combo
+            self.find_filter_btn = filt
+            text.textChanged.connect(self.update_find_gui)
+            filt.toggled.connect(self.update_find_gui)
+            combo.textActivated.connect(self.update_find_gui)
+
+        index = self.table.currentIndex()
+        if index:
+            while index.model() is not self.model:
+                proxy = index.model()
+                if proxy is None:
+                    break
+                index = proxy.mapToSource(index)
+            item = self.model.itemFromIndex(index)
+            ctext = ''
+            if item is not None:
+                ctext = item.text()
+                if not ctext and hasattr(item, 'sort_data'):
+                    ctext = status_str[item.sort_data]
+            self.find_text.setText(ctext)
+
+        dialog.show()
+
+    def update_find_gui(self, _=None):
+        text = self.find_text.text()
+        filt = self.find_filter_btn.isChecked()
+        col_mode = self.find_mode_combo.currentText()
+        index = self.table.currentIndex()
+        item = None
+        col = self.current_search_col
+        if index:
+            while index.model() is not self.model:
+                proxy = index.model()
+                if proxy is None:
+                    break
+                index = proxy.mapToSource(index)
+            # item = self.model.itemFromIndex(index)
+            col = index.column()
+            if col >= 0:
+                self.current_search_col = col
+        # print('search:', text, filt, col_mode, index, item)
+        if col_mode == 'Whole table':
+            col = -1
+        elif col < 0:
+            col = self.current_search_col
+        if filt:
+            proxy = self.table.model()
+            proxy.setFilterKeyColumn(col)
+            regexp = Qt.QRegularExpression(
+                text, Qt.QRegularExpression.NoPatternOption)
+            proxy.setFilterRegularExpression(regexp)
+        else:
+            proxy.setFilterRegularExpression(None)
 
 
 class RotatedHeaderView(Qt.QHeaderView):
