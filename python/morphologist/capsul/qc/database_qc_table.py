@@ -697,7 +697,13 @@ class DatabaseQcTable(Process):
 
         vlay = Qt.QVBoxLayout()
         lay.addLayout(vlay)
-        vlay.addWidget(Qt.QLabel('Selected item:'))
+        slay = Qt.QHBoxLayout()
+        vlay.addLayout(slay)
+        slay.addWidget(Qt.QLabel('Selected item:'))
+        slay.addStretch()
+        count_label = Qt.QLabel()
+        self.count_label = count_label
+        slay.addWidget(count_label)
         hlay = Qt.QHBoxLayout()
         vlay.addLayout(hlay)
         self.view_btn = RightClickablePushButton()
@@ -720,6 +726,8 @@ class DatabaseQcTable(Process):
 
         nrows, ncols = len(self.elements), len(self.data_types)
         nkeys = len(self.keys)
+
+        count_label.setText(f'Items count: {nrows}')
 
         model = Qt.QStandardItemModel(nrows, ncols + nkeys)
         self.model = model
@@ -1465,7 +1473,7 @@ class DatabaseQcTable(Process):
         filt = self.find_filter_btn.isChecked()
         col_mode = self.find_mode_combo.currentText()
         index = self.table.currentIndex()
-        item = None
+        # item = None
         col = self.current_search_col
         if index:
             while index.model() is not self.model:
@@ -1490,6 +1498,8 @@ class DatabaseQcTable(Process):
             proxy.setFilterRegularExpression(regexp)
         else:
             proxy.setFilterRegularExpression(None)
+        nrows = proxy.rowCount()
+        self.count_label.setText(f'Items count: {nrows}')
 
 
 class RotatedHeaderView(Qt.QHeaderView):
