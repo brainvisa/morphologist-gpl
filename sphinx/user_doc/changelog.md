@@ -1,21 +1,29 @@
 # Changelog
 
-## [6.0.20] 2026-10-12
+## [6.0.20] 2026-10-28
 
 ### Added
 
-- Capsul QC tables can take filters on file status (absent/present, or more for custom QC status, like ok, bad, warning, ...)
+- Capsul version of database_qc_table improvements:
+  - can take filters on file status (absent/present, or more for custom QC status, like ok, bad, warning, ...)
+  - index_db new mode, made the default: store if it has not been done, use otherwise
 - New process to replace normalization matrix in an existing Morphologist run: replace_normalization
-- fixes in FOMs
 - sulcal surface imprints used to build skeletons: functions, capsul and axon processes. Useful for preterm babies and foetuses.
+- New features in brainvolumes process and normative stats, like volume and surface GM/WM ratios, and surface/volume
+- Normalization QC viewer
+- new Normalization column in QC table
+- Dynamic filtering in QC table GUI
 
 ### Changed
 
 - Capsul QC table processes parameter change: data_filters is now a string containing a python (or JSON) list or dict. The dict key is the column name and can be a regex or "all".
 - Improvements in normative datasets defintitions
-- New stratified normative stats including OpenBHB data
+- New stratified normative stats including OpenBHB data, and new QC features
 - set a default value to the "center" attribute in "classical FOM" morphologist-auto-1.0, so that morphologist-cli works with default options.
-- write more details in the JSON morphologist report
+- write more details and better presentation in the JSON morphologist report
+- fixes in FOMs
+- Morphologist individual QC JSON gets status for all features
+- Slightly reworked Morphologist QC status threasholds
 
 
 ## [6.0.19] 2026-08-06
