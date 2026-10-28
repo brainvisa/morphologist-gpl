@@ -846,7 +846,7 @@ class DatabaseQcTable(Process):
         action.setShortcut(Qt.QKeySequence(Qt.Qt.CTRL + Qt.Qt.Key_Q))
         action.triggered.connect(Qt.QApplication.instance().quit)
         emenu = menu.addMenu('Edit')
-        action = emenu.addAction('Find...')
+        action = emenu.addAction('Find / filter...')
         action.setShortcut(Qt.QKeySequence(Qt.Qt.CTRL + Qt.Qt.Key_F))
         action.triggered.connect(self.find_data_gui)
         mw.setMenuBar(menu)
