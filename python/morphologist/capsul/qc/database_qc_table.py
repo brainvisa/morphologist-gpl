@@ -942,6 +942,7 @@ class DatabaseQcTable(Process):
                 break
             index = proxy.mapToSource(index)
         item = self.model.itemFromIndex(index)
+
         if not hasattr(item, 'position'):
             # no data under this item
             return
