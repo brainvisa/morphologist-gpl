@@ -38,7 +38,7 @@ def update_qc_table(statuses, qc_file, prune=False):
                             # print('insert ind:', ind)
                             # print('cols:', qc_table.columns)
                             qc_table.insert(ind, k,
-                                            ['None'] * qc_table.shape[0])
+                                            ['OK'] * qc_table.shape[0])
 
             for sub_stat in statuses:
                 sub = sub_stat['subject']
@@ -50,7 +50,7 @@ def update_qc_table(statuses, qc_file, prune=False):
                 detail = sub_stat.get('status_detail')
                 if detail is None:
                     detail = {}
-                rdetail = [detail.get(k, 'None')
+                rdetail = [detail.get(k, 'OK')
                            for k in qc_table.columns[3:]]
                 # print('sub:', sub, 'detail:', detail)
                 # print('rdetail:', rdetail)
