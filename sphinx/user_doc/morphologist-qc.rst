@@ -4,7 +4,9 @@ Morphologist QC
 
 Morphologist now runs additional steps which perform some global measurements on segmented brains, and a QC which checks whether these measurements are within expected ranges.
 
-A table allows to display, at dataset level, the main outputs of the Morphologist pipeline, and show whether thay have been produced or not, and if the QC checks dit notice anything suspicious.
+A table allows to display, at dataset level, the main outputs of the Morphologist pipeline, and show whether thay have been produced or not, and if the QC checks did notice anything suspicious.
+
+Data filters may specified to build the table, and additional filters may be applied graphically on-the-fly to display only targetted items.
 
 
 QC table in Axon (Brainvisa classic)
