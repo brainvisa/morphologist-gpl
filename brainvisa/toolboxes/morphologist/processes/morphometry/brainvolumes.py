@@ -72,7 +72,7 @@ signature = Signature(
                                    'aims readable volume formats'),
     'icbm_brain_mask_template', ReadDiskItem(
         'Anatomical template', 'aims readable volume formats',
-        requiredAttributes={'skull_stripped': 'yes', 'Size': '1 mm'}),
+        requiredAttributes={'skull_stripped': 'yes', 'Size': '2 mm'}),
     'subject', String(),
     'sulci_label_attribute', String(),
     'table_format', Choice('2023', 'old'),
