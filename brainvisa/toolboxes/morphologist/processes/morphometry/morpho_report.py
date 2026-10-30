@@ -894,7 +894,9 @@ def execution(self, context):
     if self.inter_subject_qc_table is not None:
         from morphologist.qc import global_qc_table
 
+        detail = report.get('status_detail')
+
         global_qc_table.update_qc_table(
             {'subject': self.subject, 'bids_attributes': self.bids,
-             'status': statuses[status]},
+             'status': statuses[status], 'status_detail': detail},
             self.inter_subject_qc_table.fullPath())

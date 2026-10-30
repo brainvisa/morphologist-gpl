@@ -22,7 +22,7 @@
 - set a default value to the "center" attribute in "classical FOM" morphologist-auto-1.0, so that morphologist-cli works with default options.
 - write more details and better presentation in the JSON morphologist report
 - fixes in FOMs
-- Morphologist individual QC JSON gets status for all features
+- Morphologist individual QC JSON and group CSV get status for all features
 - Slightly reworked Morphologist QC status threasholds
 
 

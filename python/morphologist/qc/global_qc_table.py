@@ -15,11 +15,11 @@ def update_qc_table(statuses, qc_file, prune=False):
     try:
         with lock:
             if osp.exists(qc_file):
-                qc_table = pd.read_csv(qc_file, delimiter='\t')
+                qc_table = read_qc_table(qc_file)
                 if 'morpho_qc' not in qc_table.columns:
                     qc_table.insert(len(qc_table.columns), 'morpho_qc')
                 if 'bids' not in qc_table.columns:
-                    qc_table.insert(len(qc_table.columns) - 1, 'bids',
+                    qc_table.insert(1, 'bids',
                                     ['run-0'] * qc_table.shape[0])
             else:
                 qc_table = pd.DataFrame(columns=['participant_id', 'bids',
@@ -27,6 +27,19 @@ def update_qc_table(statuses, qc_file, prune=False):
             added_rows = []
             if isinstance(statuses, dict):
                 statuses = [statuses]
+
+            for sub_stat in statuses:
+                detail = sub_stat.get('status_detail')
+                if detail:
+                    for k in detail:
+                        if k not in qc_table.columns:
+                            new_cols = list(qc_table.columns[3:]) + [k]
+                            ind = sorted(new_cols).index(k) + 3
+                            # print('insert ind:', ind)
+                            # print('cols:', qc_table.columns)
+                            qc_table.insert(ind, k,
+                                            ['None'] * qc_table.shape[0])
+
             for sub_stat in statuses:
                 sub = sub_stat['subject']
                 if not sub.startswith('sub-'):
@@ -34,6 +47,14 @@ def update_qc_table(statuses, qc_file, prune=False):
                     sub = f'sub-{sub}'
                 bids = sub_stat.get('bids_attributes', 'run-0')
                 status = sub_stat.get('status', 'Undefined')
+                detail = sub_stat.get('status_detail')
+                if detail is None:
+                    detail = {}
+                rdetail = [detail.get(k, 'None')
+                           for k in qc_table.columns[3:]]
+                # print('sub:', sub, 'detail:', detail)
+                # print('rdetail:', rdetail)
+                # print('cols:', [k for k in qc_table.columns[3:]])
                 done = False
                 # print('sub:', sub, ', bids:', bids)
                 if not prune:
@@ -41,10 +62,13 @@ def update_qc_table(statuses, qc_file, prune=False):
                                    & (qc_table.bids == bids)]
                     if sel.shape[0] != 0:
                         qc_table.loc[sel.index, 'morpho_qc'] = status
+                        for i, v in enumerate(rdetail):
+                            qc_table.loc[sel.index, qc_table.columns[i + 3]] \
+                                = v
                         done = True
                 if not done:
                     # print('add row')
-                    added_rows.append([sub, bids, status])
+                    added_rows.append([sub, bids, status] + rdetail)
             # print('added_rows:', added_rows)
             # sys.stdout.flush()
             if prune:
@@ -63,12 +87,18 @@ def update_qc_table(statuses, qc_file, prune=False):
             pass
 
 
+def read_qc_table(qc_file):
+    return pd.read_csv(qc_file, delimiter='\t', dtype=str,
+                       keep_default_na=False, na_values=[])
+
+
 def _read_indiv_qc_file(qc_file, subject_def):
     with open(qc_file) as f:
         stats = json.load(f)
     return {'subject': subject_def.get('subject'),
             'bids_attributes': subject_def.get('bids'),
-            'status': stats.get('status')}
+            'status': stats.get('status'),
+            'status_detail': stats.get('status_detail')}
 
 
 def qc_table_from_indiv(indiv_qc_files, subjects_def, qc_file,
@@ -97,7 +127,7 @@ def qc_table_from_indiv(indiv_qc_files, subjects_def, qc_file,
         w.join()
 
     print('jobs done.')
-    print('qc_stats:', qc_stats)
+    # print('qc_stats:', qc_stats)
     import sys
     sys.stdout.flush()
     update_qc_table(qc_stats, qc_file, prune=prune)
