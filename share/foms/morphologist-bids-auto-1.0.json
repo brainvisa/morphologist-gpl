@@ -101,6 +101,10 @@
                 ]
             ],
 
+            "MNI_transform": [[
+                "output:sub-<subject>/ses-<session>/anat/t1mri/<acquisition>/registration/RawT1-<subject>_<acquisition>_TO_Talairach-MNI",
+                ["Transformation matrix"]]],
+
             ### TalairachFromNormalization
             "PrepareSubject_TalairachFromNormalization_transform_chain_ACPC_to_Normalized": "{shared.talairach_TO_spm_transform}",
 
