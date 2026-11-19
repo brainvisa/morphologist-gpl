@@ -16,7 +16,7 @@
         }
     },
     "processes": {
-        "ImportT1MRI": {
+        "ImportT1Mri": {
             "input": [
                 [
                     "input:sub-<subject>/ses-<session>/anat/sub-<subject>_ses-<session>_<bids|((task|acq|ce|rec|run|echo|part|chunk)-.*)?>_T1w",
@@ -46,6 +46,28 @@
                 #     "input:sub-<subject>/anat/sub-<subject>_ses-<session|(?:_ses-(.*))?><task|(?:_task-(.*))?><acq|(?:_acq-(.*))?><ce|(?:_ce-(.*))?><rec|(?:_rec-(.*))?><run|(?:_run-(.*))?><echo|(?:_echo-(.*))?><part|(?:_part-(.*))?><chunk|(?:_chunk-(.*))?>_T1w",
                 #     "Aims readable volume formats"
                 # ],
+
+                # the following for actually non-bids raw files
+                [
+                    "input:sub-<subject>_ses-<session>_<bids|((task|acq|ce|rec|run|echo|part|chunk)-.*)?>_T1w",
+                    "Aims readable volume formats"
+                ],
+                [
+                    "input:sub-<subject>_ses-<session>_T1w",
+                    "Aims readable volume formats"
+                ],
+                [
+                    "input:sub-<subject>_ses-<session>",
+                    "Aims readable volume formats"
+                ],
+                [
+                    "input:sub-<subject>",
+                    "Aims readable volume formats"
+                ],
+                [
+                    "input:<subject>",
+                    "Aims readable volume formats"
+                ],
             ]
         }
     }
