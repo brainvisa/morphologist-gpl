@@ -101,7 +101,7 @@ def initialization(self):
 
 def execution(self, context):
     from soma import aims
-    from soma.aims import fslTransformation
+    from soma.aims import fsl_transformation
     if self.registered_volume is None:
         if self.standard_template == 1:
             tmplimg = {'voxel_size': [2, 2, 2],
@@ -115,8 +115,8 @@ def execution(self, context):
     else:
         tmplimg = self.registered_volume.fullPath()
     # get aims -> aims matrix from read to template
-    trm = fslTransformation.fslMatToTrm(self.read.fullPath(),
-                                        self.source_volume.fullPath(), tmplimg)
+    trm = fsl_transformation.fsl_mat_to_trm(
+        self.read.fullPath(), self.source_volume.fullPath(), tmplimg)
 
     tm = registration.getTransformationManager()
 

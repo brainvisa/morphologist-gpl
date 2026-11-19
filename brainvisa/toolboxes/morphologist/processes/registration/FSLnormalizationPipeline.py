@@ -182,7 +182,11 @@ def initialization(self):
 
     # this seems not to work automatically
     self.alignment = 'Not Aligned but Same Orientation'
-    self.template = self.signature['template'].findValue({})
+    self.template = self.signature['template'].findValue(
+        {},
+        requiredAttributes={
+            'skull_stripped': 'no', 'Size': '1 mm',
+            'referential': '49e6b349-b115-211a-c8b9-20d0ece9846d'})
 
     self.setExecutionNode(eNode)
 
