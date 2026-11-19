@@ -29,74 +29,24 @@
 #     return context.runProcess(self.proc, database=self.database, ...)
 #
 
-from capsul.api import Process, Pipeline
+from capsul.api import Process
 from capsul.attributes.completion_engine import ProcessCompletionEngine
 from soma.wip.application.api import findIconFile
 from soma.qt_gui.qtThread import MainThreadLife, QtThreadCall
-# from soma.qt_gui.qt_backend.Qt import QTableWidgetItem
 from soma.qt_gui.qt_backend import Qt
 from morphologist.capsul.qc import find_viewer
+from capsul.datasel.data_selector import get_data_selector, DataSelector
 import traits.api as traits
 import subprocess
 import shutil
 import os
 import os.path as osp
 import tempfile
-import glob
-import sqlite3
 import time
 import datetime
-import re
 
 
 wkhtmltopdf = shutil.which('wkhtmltopdf')
-
-
-class statuses:
-    UNDEFINED = -1
-    OK = 0
-    PRESENT = 1
-    WARNING = 2
-    SUSPICIOUS = 3
-    BAD = 4
-    ABSENT = 5
-    # VALID_* for manually validated (marked OK)
-    VALID_OK = 8
-    VALID_PRESENT = 9
-    VALID_WARNING = 10
-    VALID_SUSPICIOUS = 11
-    VALID_BAD = 12
-    VALID_ABSENT = 13
-    # INVALID_* for manually invalidated (marked bad)
-    INVALID_OK = 16
-    INVALID_PRESENT = 17
-    INVALID_WARNING = 18
-    INVALID_SUSPICIOUS = 19
-    INVALID_BAD = 20
-    INVALID_ABSENT = 21
-
-
-status_str = {
-    statuses.UNDEFINED: 'undefined',
-    statuses.OK: 'ok',
-    statuses.PRESENT: 'present',
-    statuses.WARNING: 'warning',
-    statuses.SUSPICIOUS: 'suspicious',
-    statuses.BAD: 'bad',
-    statuses.ABSENT: 'absent',
-    statuses.VALID_OK: 'valid_ok',
-    statuses.VALID_PRESENT: 'valid_present',
-    statuses.VALID_WARNING: 'valid_warning',
-    statuses.VALID_SUSPICIOUS: 'valid_suspicious',
-    statuses.VALID_BAD: 'valid_bad',
-    statuses.VALID_ABSENT: 'valid_absent',
-    statuses.INVALID_OK: 'invalid_ok',
-    statuses.INVALID_PRESENT: 'invalid_present',
-    statuses.INVALID_WARNING: 'invalid_warning',
-    statuses.INVALID_SUSPICIOUS: 'invalid_suspicious',
-    statuses.INVALID_BAD: 'invalid_bad',
-    statuses.INVALID_ABSENT: 'invalid_absent',
-}
 
 
 class QSortingItem(Qt.QStandardItem):
@@ -152,7 +102,7 @@ class CustomSortProxyModel(Qt.QSortFilterProxyModel):
             item = self.sourceModel().itemFromIndex(index)
             if item is None or not hasattr(item, 'sort_data'):
                 return super().filterAcceptsRow(sourceRow, sourceParent)
-            stat_str = status_str[item.sort_data]
+            stat_str = DataSelector.status_str[item.sort_data]
             return self.filterRegularExpression().match(stat_str).hasMatch()
         res = False
         for col in range(self.sourceModel().columnCount()):
@@ -163,7 +113,7 @@ class CustomSortProxyModel(Qt.QSortFilterProxyModel):
                 if res:
                     break
             else:
-                stat_str = status_str[item.sort_data]
+                stat_str = DataSelector.status_str[item.sort_data]
                 res |= \
                     self.filterRegularExpression().match(stat_str).hasMatch()
                 if res:
@@ -196,7 +146,7 @@ class DatabaseQcTable(Process):
                                                     'Set_if_absent')))
 
         self.status_for_type = status_for_type
-        self.statuses = statuses
+        self.statuses = DataSelector.statuses
         self.index_status = 'Set_if_absent'
         # self.fom = 'morphologist-bids-2.0'
 
@@ -213,22 +163,22 @@ class DatabaseQcTable(Process):
         self.elements = None
         self.db = None
 
-        if self.database in (None, traits.Undefined, ''):
-            sc = self.get_study_config()
-            self.database = sc.input_directory
-        if self.database_sqlite:
-            self.db = sqlite3.connect(self.database_sqlite)
-        if self.fom in (None, traits.Undefined, '') and self.db is not None:
-            self.fom = list(self.db.execute('SELECT fom_name FROM fom'))[0][0]
-        if self.fom in (None, traits.Undefined, ''):
-            sc = self.get_study_config()
-            self.fom = sc.input_fom
         # find data
         t0 = time.time()
         self.t0 = t0
-        data = self.find_data()
+
+        self.data_selector = get_data_selector(
+            self.database,
+            engine=self.get_study_config().engine,
+            fom=self.fom,
+            database_sqlite=self.database_sqlite,
+            data_types=self.data_types,
+            data_filters=self.data_filters,
+            type_labels=self.type_labels,
+            index_status=self.index_status,
+            status_for_type=self.status_for_type)
+        data = list(self.data_selector.get_data())
         t1 = time.time()
-        print('query/parse time:', datetime.timedelta(seconds=t1 - t0))
 
         if len(data) == 0:
             nrows = 0
@@ -266,8 +216,8 @@ class DatabaseQcTable(Process):
                 else:
                     elements[row][elem_col] = [element, item_d]
 
-        # print('filter status:', self.need_status, self.status_filters)
-        if self.need_status:
+        # print('filter status:', self.data_selector.need_status, self.status_filters)
+        if self.data_selector.need_status:
             # filter out by status
             todel = []
             for row, items in enumerate(elements):
@@ -290,7 +240,7 @@ class DatabaseQcTable(Process):
                     fitems = []
                     dtype = self.data_types[c]
                     for item in citems:
-                        status = status_str[
+                        status = DataSelector.status_str[
                             self.file_status(item['path'], dtype)]
                         if status == sfilt:
                             fitems.append(item)
@@ -329,233 +279,6 @@ class DatabaseQcTable(Process):
 
         del self.db
         return result
-
-    def find_items(self, dtype, dfilt, sfilt):
-        profile = False
-        if profile:
-            t0 = time.time()
-
-        data = []
-        engine = self.get_study_config().engine
-        if not hasattr(engine, '_modules_data') \
-                or 'fom' not in engine._modules_data:
-            engine.load_modules(['fom', 'axon'])
-        with engine.settings as session:
-            config = session.config('fom', 'global')
-            config.input_fom = self.fom
-            config.output_fom = self.fom
-            if self.database is not None:
-                config.input_directory = self.database
-                config.output_directory = self.database
-
-        procname, param = dtype.rsplit('.', 1)
-
-        # use a cached process with its completion to speed up
-        # repeated parameters scan on the same process
-        if not hasattr(self, '_cached_procs'):
-            self._cached_procs = {}
-        if procname in self._cached_procs:
-            proc, cached_atts = self._cached_procs[procname]
-        else:
-            proc = engine.get_process_instance(procname)
-            self._cached_procs[procname] = [proc, dfilt]
-            cached_atts = None
-        if cached_atts != dfilt:
-            pc = ProcessCompletionEngine.get_completion_engine(proc)
-            att = pc.get_attribute_values()
-            for k, v in att.user_traits().items():
-                val = '*'
-                if k in dfilt:
-                    val = dfilt[k]
-                setattr(att, k, val)
-            # print('completion values:', att.export_to_dict())
-            pc.complete_parameters()
-            self._cached_procs[procname][1] = dfilt
-
-        if self.db is not None:
-            return self.find_items_sqlite(proc, procname, param, dfilt, sfilt,
-                                          dtype)
-
-        short_procname = procname.rsplit('.')[-1]
-        path_pat = getattr(proc, param)
-        # print('path_pat:', path_pat)
-        if profile:
-            t1 = time.time()
-            print('    t1 (compl):', t1 - t0)
-            t0 = t1
-        paths = glob.glob(path_pat)
-        if profile:
-            t1 = time.time()
-            print('    t2 (glob) :', t1 - t0)
-            t0 = t1
-        for p in paths:
-            for fom_type in ('input', 'output'):
-                pta = engine._modules_data['fom']['fom_pta'][fom_type]
-                attl = list(pta.parse_path(osp.relpath(p, self.database)))
-                if len(attl) == 0:
-                    continue  # pattern does not match
-                atts = None
-                # print('path:', p, 'attl:', len(attl), ', proc:', procname)
-                if len(attl) == 1:
-                    atts = attl[0]
-                else:
-                    com_att = {}  # keep common attributes across PTAs
-                    dif_att = set()
-                    for item in attl:
-                        att = item[2]
-                        for k, v in att.items():
-                            if k in dif_att:
-                                continue
-                            if v != '*':
-                                if com_att.get(k, v) != v:
-                                    dif_att.add(k)
-                                    del com_att[k]
-                                else:
-                                    com_att[k] = v
-                    attl_filt = [item for item in attl
-                                 if item[2]['fom_process'] in (procname,
-                                                               short_procname)
-                                 and item[2]['fom_parameter'] == param]
-                    # print('attl_filt:', attl_filt)
-                    if len(attl_filt) != 0:
-                        atts = attl_filt[0]
-                    elif len(attl) != 0:
-                        atts = attl[0]
-                    atts[2].update(com_att)
-                if atts is not None:
-                    do_add = True
-                    if sfilt and sfilt != 'absent':
-                        status = status_str[self.file_status(p, dtype)]
-                        if status != sfilt:
-                            do_add = False
-                    if do_add:
-                        data.append({'attributes': atts[2], 'path': p})
-                    break
-        if profile:
-            t1 = time.time()
-            print('    t3 (fom)  :', t1 - t0)
-            t0 = t1
-
-        return data
-
-    def proc_param_names(self, proc, proname, param):
-        names = []
-        fallbacks = []
-        fom = self.get_study_config().engine._modules_data[
-            'fom']['all_foms'][self.fom]
-        todo = []
-        if isinstance(proc, Pipeline):
-            node = proc.pipeline_node
-        else:
-            node = proc
-        todo.append((node, proc.name, param, {}))
-        while todo:
-            node, procname, param, attr = todo.pop(0)
-            # check for FOM-imposed attributes on the process
-            fom_patterns = fom.patterns.get(procname)
-            if fom_patterns is not None:
-                pa = fom_patterns.get('.process_attributes', {})
-                attr.update(pa)
-            names.append((procname, param, attr))
-            if isinstance(node, Process):
-                break
-            if hasattr(node, 'process'):
-                fb = (node.process.name, param, attr)
-                if fb not in fallbacks:
-                    fallbacks.append(fb)
-            plug = node.plugs[param]
-            links = [plug.links_to, plug.links_from][int(plug.output)]
-            for link in links:
-                todo.append((link[2], f'{procname}.{link[0]}', link[1], attr))
-
-        return names + [fb for fb in fallbacks if fb not in names]
-
-    def find_items_sqlite(self, proc, procname, param, dfilt, sfilt, dtype):
-        data = []
-        cols = [x[1] for x in self.db.execute('PRAGMA table_info(files)')]
-        keys = ', '.join(cols)
-        names = self.proc_param_names(proc, procname, param)
-        for procname, param, att in names:
-            dfilt2 = dict(dfilt)
-            incompatible = False
-            for k, v in att.items():
-                if k in dfilt2 and dfilt2[k] != v:
-                    incompatible = True
-                    break
-                dfilt2[k] = v
-            if incompatible:
-                continue
-            where = ' AND '.join(f'({k} == "{v}" OR {k} IS NULL)'
-                                 for k, v in dfilt2.items())
-            where2 = [f'fom_process = "{procname}"',
-                      f'fom_parameter = "{param}"']
-            if where != '':
-                where2.insert(0, where)
-            sql = f'SELECT {keys} FROM files WHERE ' + ' AND '.join(where2)
-            items = list(self.db.execute(sql))
-            if len(items) == 0:
-                continue  # look for next name
-            for item in items:
-                atts = {k: v for k, v in zip(cols, item) if v is not None}
-                path = osp.join(self.database, atts['filename'])
-                del atts['filename']
-                do_add = True
-                if sfilt and sfilt != 'absent':
-                    status = status_str[self.file_status(path, dtype)]
-                    if status != sfilt:
-                        do_add = False
-                if do_add:
-                    data.append({'attributes': atts, 'path': path})
-            break  # procname found, don't continue search
-
-        return data
-
-    def find_data(self):
-        data = []
-        profile = False
-        if profile:
-            import time
-            print('find_data')
-            t0 = time.time()
-
-        data_filters = [{} for i in range(len(self.data_types))]
-        self.status_filters = [{} for i in range(len(self.data_types))]
-        self.need_status = False
-        if self.data_filters:
-            df = eval(self.data_filters)
-            if isinstance(df, list):
-                data_filters = df
-            elif isinstance(df, dict):
-                for k, v in df.items():
-                    kr = re.compile(k)
-                    cols = [i for i, c in enumerate(self.type_labels)
-                            if kr.match(c)]
-                    if len(cols) == 0:
-                        raise ValueError(
-                            f'data filer column "{k}" is not found')
-                    sf = v.get('file_status')
-                    if sf:
-                        v = {x: y for x, y in v.items() if x != 'file_status'}
-                        self.need_status = True
-                    for i in cols:
-                        data_filters[i].update(v)
-                        if sf:
-                            self.status_filters[i] = sf
-            else:
-                raise ValueError('data_filters is not recognized')
-
-        if self.need_status:
-            self.prepare_status_column()
-
-        for i, dtype in enumerate(self.data_types):
-            items = self.find_items(dtype, data_filters[i],
-                                    self.status_filters[i])
-            data.append((dtype, items))
-            # print(dtype, ':', len(items), 'items')
-            if profile:
-                print('time:', time.time() - t0)
-
-        return data
 
     def get_row(self, key_vals, row_ids_sets):
         # print('get_row for:', key_vals)
@@ -620,69 +343,8 @@ class DatabaseQcTable(Process):
 
         return row, row_id, changed_id
 
-    def file_status(self, filename, data_type):
-        if filename is None:
-            return statuses.ABSENT
-        stat_func = self.status_for_type.get(data_type)
-        if stat_func is not None:
-            if self.status_db_col is not None and \
-                    self.index_status in ('Use', 'Set_if_absent'):
-                rfname = osp.relpath(filename, self.database)
-                if not hasattr(self, 'file_statuses'):
-                    # cache all statuses in a single request
-                    statusl = self.db.execute(f'SELECT DISTINCT filename, {self.status_db_col} FROM files WHERE {self.status_db_col} IS NOT NULL')
-                    self.file_statuses = {
-                        status[0]: status[1] for status in statusl}
-                status = self.file_statuses.get(rfname, statuses.PRESENT)
-                if status >= 0 or self.index_status != 'Set_if_absent':
-                    return status
-                # print('Empty status')
-            status = stat_func(self, filename)
-            if self.status_db_col is not None \
-                    and self.index_status in ('Force', 'Set_if_absent'):
-                rfname = osp.relpath(filename, self.database)
-                self.db.execute(
-                    f'UPDATE files SET {self.status_db_col}="{status}" WHERE filename="{rfname}"')
-                self._commit = True
-                if not hasattr(self, 'file_statuses'):
-                    self.file_statuses = {}
-                self.file_statuses[rfname] = status
-            return status
-        return statuses.PRESENT
-
-    def prepare_status_column(self):
-        # check / add status cols in SQLite database
-        self.status_db_col = None
-        if self.index_status in ('Use', 'Force', 'Set_if_absent') \
-                and self.db is not None:
-            cname = 'database_qc_status'
-            # # reopen DB in this thread
-            # if self.database_sqlite:
-            #     self.db = sqlite3.connect(self.database_sqlite)
-            cols = [c[1] for c in
-                    self.db.execute('PRAGMA table_info(files)')]
-            self.db_cols = cols
-            if cname in cols:
-                self.status_db_col = cname
-                return  # OK
-            if self.index_status in ('Force', 'Set_if_absent'):
-                for col in range(len(self.data_types)):
-                    data_type = self.data_types[col]
-                    stat_func = self.status_for_type.get(data_type)
-                    if stat_func is not None:
-                        # create missing column
-                        self.db.execute(
-                            f'ALTER TABLE files ADD {cname} INTEGER DEFAULT -1')
-                        self.status_db_col = cname
-                        cols = [c[1] for c in
-                                self.db.execute('PRAGMA table_info(files)')]
-                        self.db_cols = cols
-                        return
-
     def exec_mainthread(self):
         t1 = time.time()
-
-        self.prepare_status_column()
 
         mw = Qt.QMainWindow()
         wid = Qt.QWidget()
@@ -769,27 +431,27 @@ class DatabaseQcTable(Process):
         invalid_bad_icon = Qt.QIcon(findIconFile('code_invalid_bad.png'))
 
         status_icons = {
-            statuses.UNDEFINED: undefined_icon,
-            statuses.OK: ok_icon,
-            statuses.PRESENT: present_icon,
-            statuses.WARNING: warn_icon,
-            statuses.SUSPICIOUS: susp_icon,
-            statuses.BAD: bad_icon,
-            statuses.ABSENT: no_icon,
+            self.statuses.UNDEFINED: undefined_icon,
+            self.statuses.OK: ok_icon,
+            self.statuses.PRESENT: present_icon,
+            self.statuses.WARNING: warn_icon,
+            self.statuses.SUSPICIOUS: susp_icon,
+            self.statuses.BAD: bad_icon,
+            self.statuses.ABSENT: no_icon,
 
-            statuses.VALID_OK: valid_ok_icon,
-            statuses.VALID_PRESENT: valid_present_icon,
-            statuses.VALID_WARNING: valid_warn_icon,
-            statuses.VALID_SUSPICIOUS: valid_susp_icon,
-            statuses.VALID_BAD: valid_bad_icon,
-            statuses.VALID_ABSENT: valid_no_icon,
+            self.statuses.VALID_OK: valid_ok_icon,
+            self.statuses.VALID_PRESENT: valid_present_icon,
+            self.statuses.VALID_WARNING: valid_warn_icon,
+            self.statuses.VALID_SUSPICIOUS: valid_susp_icon,
+            self.statuses.VALID_BAD: valid_bad_icon,
+            self.statuses.VALID_ABSENT: valid_no_icon,
 
-            statuses.INVALID_OK: invalid_ok_icon,
-            statuses.INVALID_PRESENT: invalid_present_icon,
-            statuses.INVALID_WARNING: invalid_warn_icon,
-            statuses.INVALID_SUSPICIOUS: invalid_susp_icon,
-            statuses.INVALID_BAD: invalid_bad_icon,
-            statuses.INVALID_ABSENT: invalid_no_icon,
+            self.statuses.INVALID_OK: invalid_ok_icon,
+            self.statuses.INVALID_PRESENT: invalid_present_icon,
+            self.statuses.INVALID_WARNING: invalid_warn_icon,
+            self.statuses.INVALID_SUSPICIOUS: invalid_susp_icon,
+            self.statuses.INVALID_BAD: invalid_bad_icon,
+            self.statuses.INVALID_ABSENT: invalid_no_icon,
         }
 
         row_ids = self.row_ids
@@ -804,14 +466,14 @@ class DatabaseQcTable(Process):
                 elem = self.elements[row][col]
                 if elem is None:
                     titem = QSortingItem(no_icon, '')
-                    titem.sort_data = statuses.ABSENT
+                    titem.sort_data = self.statuses.ABSENT
                 elif isinstance(elem, list):
                     titem = QSortingItem(mult_icon, '')
                     titem.sort_data = -1
                     titem.position = (row, col)
                 else:
-                    status = self.file_status(elem['path'],
-                                              self.data_types[col])
+                    status = self.data_selector.file_status(
+                        elem['path'], self.data_types[col])
                     icon = status_icons[status]
                     titem = QSortingItem(icon, '')
                     titem.sort_data = status
@@ -1467,7 +1129,7 @@ class DatabaseQcTable(Process):
             if item is not None:
                 ctext = item.text()
                 if not ctext and hasattr(item, 'sort_data'):
-                    ctext = status_str[item.sort_data]
+                    ctext = DataSelector.status_str[item.sort_data]
             self.find_text.setText(ctext)
 
         dialog.show()
