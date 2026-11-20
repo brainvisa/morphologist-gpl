@@ -58,10 +58,10 @@ def global_sulcal_morphometry(l_graph, r_graph, remove_nonfold=True,
 
     if rrawfolds is not None and rrawhull is not None:
         rrawSI = rrawfolds / rrawhull
-        res['left.gi_native_space'] = rrawSI
+        res['right.gi_native_space'] = rrawSI
     if rreffolds is not None and rrefhull is not None:
         rrefSI = rreffolds / rrefhull
-        res['left.gi_talairach_space'] = rrefSI
+        res['right.gi_talairach_space'] = rrefSI
 
     if lrawfolds is not None and rrawfolds is not None \
             and lrawhull is not None and rrawhull is not None:
