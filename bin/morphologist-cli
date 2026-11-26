@@ -6,10 +6,8 @@ import textwrap
 import os
 import os.path as osp
 import subprocess
-
-#from capsul.api import capsul_engine
-#from capsul.attributes.completion_engine import ProcessCompletionEngine
-
+from capsul.api import capsul_engine
+from capsul.datasel import data_selector
 import morphologist.info
 
 
@@ -122,7 +120,81 @@ def morphologist(
     #process()
 
 
-def parse_bids_input_dir(input_directory, subjects=None):
+def parse_inputs(mris, output_dir, attributes=None):
+    input_directory = None
+    if len(mris) == 0:
+        input_directory = output_dir
+    elif len(mris) == 1 and osp.isdir(mris[0]):
+        input_directory = mris[0]
+    if input_directory:
+        return parse_bids_input_dir(input_directory, attributes)
+
+    input_directory = osp.dirname(mris[0])
+    engine = capsul_engine()
+    engine.load_modules(['fom'])
+    with engine.settings as session:
+        config = session.config('fom', 'global')
+        config.input_fom = 'morphologist-bids-2.0'
+        config.input_directory = input_directory
+
+    sel_dict = {'files_list': mris}
+
+    if attributes:
+        if len(attributes) != len(mris):
+            raise ValueError('attributes and mri lists sizes do not match')
+        sel_dict = {
+            'type': 'metadata',
+            'upstream_selector': sel_dict,
+            'metadata': attributes,
+        }
+
+    sel = data_selector.get_data_selector(
+        database=input_directory,
+        engine=engine,
+        data_types=['morphologist.capsul.import_t1_mri.ImportT1Mri.input'],
+        **sel_dict
+    )
+    data = sel.get_data()
+    return data
+
+
+def parse_bids_input_dir(input_directory, attributes=None):
+    engine = capsul_engine()
+    engine.load_modules(['fom'])
+    if osp.exists(osp.join(input_directory, 'sourcedata', 'raw')):
+        input_directory = osp.join(input_directory, 'sourcedata', 'raw')
+    elif osp.exists(osp.join(input_directory, 'rawdata')):
+        input_directory = osp.join(input_directory, 'rawdata')
+    with engine.settings as session:
+        config = session.config('fom', 'global')
+        config.input_fom = 'raw-bids-1.0'
+        config.input_directory = input_directory
+
+    sel_dict = {'upstream_selector': {'type': 'exhaustive'}}
+    if attributes:
+        afilt = {}
+        for att in attributes:
+            for k, v in att.items():
+                if k not in afilt:
+                    afilt[k] = v
+                if v not in afilt[k].split('|'):
+                    afilt[k] = f'{afilt[k]}|{v}'
+        sel_dict['data_filters'] = {'.*': afilt}
+    # print('sel_dict:', sel_dict)
+    sel = data_selector.get_data_selector(
+        database=input_directory,
+        engine=engine,
+        data_types=['morphologist.capsul.import_t1_mri.ImportT1Mri.input'],
+        **sel_dict
+    )
+    # print('input_directory:', input_directory)
+    # print('sel bids:', sel)
+    # print('filter:', sel.data_filters)
+    data = sel.get_data()
+    return data
+
+
+def parse_bids_input_dir_bak(input_directory, subjects=None):
     from capsul.api import capsul_engine
     from capsul.attributes.completion_engine import ProcessCompletionEngine
     from soma import fom
@@ -235,6 +307,14 @@ parser.add_argument(
     "a space separated list. If not specified, and if mri arguments are "
     "given, participants names will be created according to mri file names.")
 parser.add_argument(
+    '-a', '--attribute', default=[], nargs='*',
+    help='Attributes associated with input data. Given in the shape '
+    '"attribute=value", or "attribute=value1,value2..." for lists. If the mri '
+    'arguments is a list of MRI files, then attributes will be assigned to '
+    'each of the MRI files. If mri is a directory, then attributes will be '
+    'used as a filter to select parsed metadata. The -s parameter is just a '
+    'shorthand for -a subject=<something>.')
+parser.add_argument(
     "--dry-run", action="store_true",
     help="don't actually run Morphologist, just print the commandline which "
     "should be started.")
@@ -275,30 +355,39 @@ args = parser.parse_args(argv)
 
 mris = args.mri
 subjects = args.subject
+attributes = [{'subject': s} for s in subjects]
+for attd in args.attribute:
+    attn, attv = attd.split('=', 1)
+    attn = attn.strip()
+    attvl = [x.strip() for x in attv.split(',')]
+    if len(attributes) == 0:
+        attributes = [{attn: v} for v in attvl]
+    else:
+        if len(attvl) == 1:
+            v = attvl[0]
+            for an in attributes:
+                an[attn] = v
+        else:
+            for i, an in enumerate(attributes):
+                an[attn] = attvl[i if i < len(attvl) else -1]
+            for i in range(len(attributes), len(attvl)):
+                attributes.append(dict(attributes[-1]))
+                attributes[-1][attn] = attvl[i]
+
 input_dir = None
 input_fom = 'morphologist-bids-2.0'
-if len(args.mri) == 0:
-    input_dir = osp.join(args.output_dir, 'sourcedata', 'raw')
-elif len(args.mri) == 1 and osp.isdir(args.mri[0]):
-    input_dir = osp.join(args.mri[0], 'sourcedata', 'raw')
-if input_dir is not None:
-    if not osp.exists(input_dir):
-        input_dir = osp.join(args.mri[0], 'rawdata')
-        if not osp.exists(input_dir):
-            input_dir = args.mri[0]
-subjects_atts = [{'subject': s} for s in subjects]
-if input_dir is not None:  # and len(args.subject) == 0:
-    # process all subjects in BIDS raw data
-    if not osp.isdir(input_dir):
-        raise ValueError(f"Input directory {input_dir} does not exist")
-    mris, subjects_atts = parse_bids_input_dir(input_dir, subjects)
-    if len(subjects) != 0:
-        mris = [mris[s] for s, sa in enumerate(subjects_atts)
-                if sa.get('subject') in subjects]
-        subjects_atts = [sa for sa in subjects_atts
-                         if sa.get('subject') in subjects]
+input_data = parse_inputs(mris, args.output_dir, attributes)
+# print('inputs:')
+# print(input_data)
+
+suppressed = {'fom_name', 'fom_process', 'fom_parameter', 'fom_directory',
+              'fom_format'}
+mris = [item['path'] for item in input_data[0][1]]
+attributes = [{k: v for k, v in item['attributes'].items()
+               if k not in suppressed}
+              for item in input_data[0][1]]
 
 morphologist(mri=mris, output_dir=args.output_dir, input_dir=input_dir,
-             subjects_atts=subjects_atts, capsul_args=capsul_args,
+             subjects_atts=attributes, capsul_args=capsul_args,
              morpho_args=morpho_args, dry_run=args.dry_run,
              input_fom=input_fom)
