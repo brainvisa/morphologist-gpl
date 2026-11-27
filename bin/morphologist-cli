@@ -138,9 +138,9 @@ def parse_inputs(mris, output_dir, attributes=None, fom=None):
         fom = 'morphologist-bids-2.0'
     # print('fom:', fom)
     with engine.settings as session:
-        config = session.config('fom', 'globry = inpal')
+        config = session.config('fom', 'global')
         config.input_fom = fom
-        config.input_directout_directory
+        config.input_directory = input_directory
 
     sel_dict = {'files_list': mris}
 
