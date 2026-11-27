@@ -9,6 +9,7 @@ import subprocess
 from capsul.api import capsul_engine
 from capsul.datasel import data_selector
 import morphologist.info
+import capsul.info as cinfo
 
 
 morphologist_version = morphologist.info.__version__.rsplit(".", 1)[0]
@@ -93,7 +94,8 @@ def morphologist(
 
     capsul_cmd = [sys.executable, "-m", "capsul"] \
         + conf_options \
-        + ['--opengl', '--if', input_fom, '--of', 'morpho-deepsulci-bids-2.0'] \
+        + ['--opengl', '--if', input_fom,
+           '--of', 'morpho-deepsulci-bids-2.0'] \
         + iter_options + subjects_args + capsul_args \
         + ["morphologist.capsul.morphologist"] + t1mri_args + morpho_args
 
@@ -120,22 +122,25 @@ def morphologist(
     #process()
 
 
-def parse_inputs(mris, output_dir, attributes=None):
+def parse_inputs(mris, output_dir, attributes=None, fom=None):
     input_directory = None
     if len(mris) == 0:
         input_directory = output_dir
     elif len(mris) == 1 and osp.isdir(mris[0]):
         input_directory = mris[0]
     if input_directory:
-        return parse_bids_input_dir(input_directory, attributes)
+        return parse_bids_input_dir(input_directory, attributes, fom=fom)
 
     input_directory = osp.dirname(mris[0])
     engine = capsul_engine()
     engine.load_modules(['fom'])
+    if fom is None:
+        fom = 'morphologist-bids-2.0'
+    # print('fom:', fom)
     with engine.settings as session:
-        config = session.config('fom', 'global')
-        config.input_fom = 'morphologist-bids-2.0'
-        config.input_directory = input_directory
+        config = session.config('fom', 'globry = inpal')
+        config.input_fom = fom
+        config.input_directout_directory
 
     sel_dict = {'files_list': mris}
 
@@ -155,93 +160,76 @@ def parse_inputs(mris, output_dir, attributes=None):
         **sel_dict
     )
     data = sel.get_data()
-    return data
+    return input_directory, data
 
 
-def parse_bids_input_dir(input_directory, attributes=None):
+def parse_bids_input_dir(input_directory, attributes=None, fom=None):
     engine = capsul_engine()
     engine.load_modules(['fom'])
     if osp.exists(osp.join(input_directory, 'sourcedata', 'raw')):
         input_directory = osp.join(input_directory, 'sourcedata', 'raw')
     elif osp.exists(osp.join(input_directory, 'rawdata')):
         input_directory = osp.join(input_directory, 'rawdata')
-    with engine.settings as session:
-        config = session.config('fom', 'global')
-        config.input_fom = 'raw-bids-1.0'
-        config.input_directory = input_directory
+    if fom is None:
+        fom = 'raw-bids-1.0'
 
-    sel_dict = {'upstream_selector': {'type': 'exhaustive'}}
-    if attributes:
-        afilt = {}
-        for att in attributes:
-            for k, v in att.items():
-                if k not in afilt:
-                    afilt[k] = v
-                if v not in afilt[k].split('|'):
-                    afilt[k] = f'{afilt[k]}|{v}'
-        sel_dict['data_filters'] = {'.*': afilt}
-    # print('sel_dict:', sel_dict)
-    sel = data_selector.get_data_selector(
-        database=input_directory,
-        engine=engine,
-        data_types=['morphologist.capsul.import_t1_mri.ImportT1Mri.input'],
-        **sel_dict
-    )
-    # print('input_directory:', input_directory)
-    # print('sel bids:', sel)
-    # print('filter:', sel.data_filters)
-    data = sel.get_data()
-    return data
+    dbfile = osp.join(
+        input_directory,
+        f'capsul-{cinfo.version_major}.{cinfo.version_minor}.sqlite')
+    if osp.exists(dbfile):
+        foms = [None]
+    else:
+        dbfile = None
+        foms = [fom] + [x for x in ('raw-bids-1.0', 'morphologist-bids-2.0',
+                                    'morphologist-auto-1.0',
+                                    'morphologist-bids-1.0')
+                        if x != fom]
 
+    for fom in foms:
+        with engine.settings as session:
+            config = session.config('fom', 'global')
+            config.input_fom = fom
+            config.input_directory = input_directory
 
-def parse_bids_input_dir_bak(input_directory, subjects=None):
-    from capsul.api import capsul_engine
-    from capsul.attributes.completion_engine import ProcessCompletionEngine
-    from soma import fom
+        if fom == 'raw-bids-1.0':
+            sel_dict = {
+                'upstream_selector': {'type': 'exhaustive'},
+                'data_types':
+                    ['morphologist.capsul.import_t1_mri.ImportT1Mri.input']
+            }
+        else:
+            sel_dict = {
+                'data_types':
+                    ['morphologist.capsul.morphologist.Morphologist.'
+                     'imported_t1mri']
+            }
+            if dbfile is not None:
+                sel_dict['database_sqlite'] = dbfile
+        if attributes:
+            afilt = {}
+            for att in attributes:
+                for k, v in att.items():
+                    if k not in afilt:
+                        afilt[k] = v
+                    if v not in afilt[k].split('|'):
+                        afilt[k] = f'{afilt[k]}|{v}'
+            sel_dict['data_filters'] = {'.*': afilt}
+        # print(fom, ': sel_dict:', sel_dict)
+        sel = data_selector.get_data_selector(
+            database=input_directory,
+            engine=engine,
+            **sel_dict
+        )
+        # print('input_directory:', input_directory)
+        # print('sel bids:', sel)
+        # print('filter:', sel.data_filters)
+        data = sel.get_data()
+        if len(data[0][1]) != 0:
+            print('found input data using FOM', sel.fom)
+            return input_directory, data
 
-    engine = capsul_engine()
-    engine.load_modules(['fom'])
-    with engine.settings as session:
-        config = session.config('fom', 'global')
-        config.input_fom = 'morphologist-bids-2.0'
-        config.input_directory = input_directory
-
-    from soma.application import Application
-
-    soma_app = Application("capsul", plugin_modules=["soma.fom"])
-    if "soma.fom" not in soma_app.loaded_plugin_modules:
-        # WARNING: this is unsafe, may erase configured things, and
-        # probably not thread-safe.
-        soma_app.initialize()
-
-    bfom = soma_app.fom_manager.load_foms('raw-bids-1.0')
-    pta = fom.PathToAttributes(bfom)
-
-    lin = len(input_directory)
-    if not input_directory.endswith('/') \
-            and not  input_directory.endswith('\\'):
-        lin += 1
-
-    slist = []
-    mris = []
-    to_remove = {'fom_name', 'fom_process', 'fom_parameter', 'fom_directory',
-                 'fom_format'}
-    for p in os.walk(input_directory):
-        rp = p[0][lin:]
-        for f in p[2]:
-            path = os.path.join(rp, f)
-            attribs = list(pta.parse_path(path))
-            if len(attribs) != 0:
-                attribs = attribs[0][2]
-                if subjects and attribs.get('subject') not in subjects:
-                    continue
-                attribs = {k: v for k, v in attribs.items()
-                           if k not in to_remove}
-                if attribs:
-                    slist.append(attribs)
-                    mris.append(os.path.join(p[0], f))
-    # print('to be processed:', slist)
-    return mris, slist
+    print('no input data found...')
+    return input_directory, data  # empty if we get here...
 
 
 description = f"""Process one or several T1 MR image(s) with
@@ -312,8 +300,13 @@ parser.add_argument(
     '"attribute=value", or "attribute=value1,value2..." for lists. If the mri '
     'arguments is a list of MRI files, then attributes will be assigned to '
     'each of the MRI files. If mri is a directory, then attributes will be '
-    'used as a filter to select parsed metadata. The -s parameter is just a '
-    'shorthand for -a subject=<something>.')
+    'used as a filter to select parsed metadata.\n'
+    'Be careful that attributes values are considered to be regular '
+    'expressions: this means they can include regex patterns, and if you '
+    'intend an exact match, then you have to use "^" at values beginings and '
+    '"$" at ends, like: -a subject=^charles-axel$,^louis-.+$. '
+    'Attrinutes keys are not regular expressions.\n'
+    'The -s parameter is just a shorthand for -a subject=^<something>$.')
 parser.add_argument(
     "--dry-run", action="store_true",
     help="don't actually run Morphologist, just print the commandline which "
@@ -355,7 +348,7 @@ args = parser.parse_args(argv)
 
 mris = args.mri
 subjects = args.subject
-attributes = [{'subject': s} for s in subjects]
+attributes = [{'subject': f'^{s}$'} for s in subjects]
 for attd in args.attribute:
     attn, attv = attd.split('=', 1)
     attn = attn.strip()
@@ -374,11 +367,19 @@ for attd in args.attribute:
                 attributes.append(dict(attributes[-1]))
                 attributes[-1][attn] = attvl[i]
 
-input_dir = None
-input_fom = 'morphologist-bids-2.0'
-input_data = parse_inputs(mris, args.output_dir, attributes)
+input_fom = None
+for flag in ('--if', '--input-fom'):
+    if flag in capsul_args:
+        i = capsul_args.index(flag)
+        input_fom = capsul_args[i + 1]
+
+input_dir, input_data = parse_inputs(mris, args.output_dir, attributes,
+                                     fom=input_fom)
 # print('inputs:')
 # print(input_data)
+if len(input_data[0][1]) == 0:
+    print('Nothing to do.')
+    sys.exit(0)
 
 suppressed = {'fom_name', 'fom_process', 'fom_parameter', 'fom_directory',
               'fom_format'}
@@ -387,6 +388,8 @@ attributes = [{k: v for k, v in item['attributes'].items()
                if k not in suppressed}
               for item in input_data[0][1]]
 
+if input_fom is None:
+    input_fom = 'morphologist-bids-2.0'
 morphologist(mri=mris, output_dir=args.output_dir, input_dir=input_dir,
              subjects_atts=attributes, capsul_args=capsul_args,
              morpho_args=morpho_args, dry_run=args.dry_run,
